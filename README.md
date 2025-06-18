@@ -82,6 +82,4 @@ Under Apache 2.0 section 6, specifically:
 
 * You are **FORBIDDEN** to use `manager/src/main/res/mipmap*/ic_launcher*.png` image files, unless for displaying Shizuku itself.
 
-* You are **FORBIDDEN** to distribute the apk that use Shizuku as name
-or use `moe.shizuku.privileged.api` as application id or declare `moe.shizuku.manager.permission.*` permission
-to any store (IBNLT Google Play Store, F-Droid, Amazon Appstore etc.).
+* You are **FORBIDDEN** to use `Shizuku` as app name or use `moe.shizuku.privileged.api` as application id or declare `moe.shizuku.manager.permission.*` permission.
