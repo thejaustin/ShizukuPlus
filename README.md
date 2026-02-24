@@ -1,121 +1,89 @@
 <div align="center">
-   
-# Shizuku
 
-An Android app that allows other apps to use system-level APIs that require ADB/root privileges.
+# Shizuku+
 
-[![Stars](https://img.shields.io/github/stars/thedjchi/Shizuku?style=for-the-badge&color=bfb330&labelColor=807820&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHRpdGxlPnN0YXI8L3RpdGxlPjxwYXRoIGQ9Ik0xMiwxNy4yN0wxOC4xOCwyMUwxNi41NCwxMy45N0wyMiw5LjI0TDE0LjgxLDguNjJMMTIsMkw5LjE5LDguNjJMMiw5LjI0TDcuNDUsMTMuOTdMNS44MiwyMUwxMiwxNy4yN1oiIGZpbGw9IndoaXRlIiAvPjwvc3ZnPg==)](https://github.com/thedjchi/Shizuku/stargazers)
-[![Downloads](https://img.shields.io/github/downloads/thedjchi/Shizuku/total?style=for-the-badge&color=bf7830&labelColor=805020&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHRpdGxlPmRvd25sb2FkPC90aXRsZT48cGF0aCBkPSJNNSwyMEgxOVYxOEg1TTE5LDlIMTVWM0g5VjlINUwxMiwxNkwxOSw5WiIgZmlsbD0id2hpdGUiIC8+PC9zdmc+)](https://github.com/thedjchi/Shizuku/releases)
+An enhanced fork of [thedjchi/Shizuku](https://github.com/thedjchi/Shizuku), which is itself a fork of [RikkaApps/Shizuku](https://github.com/RikkaApps/Shizuku).
 
-[![Latest Stable](https://img.shields.io/github/v/release/thedjchi/Shizuku?style=for-the-badge&color=3060bf&labelColor=204080&label=Latest%20Stable&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBmaWxsPSIjZTNlM2UzIj48cGF0aCBkPSJNNDQwLTgycS03Ni04LTE0MS41LTQxLjV0LTExNC04N1ExMzYtMjY0IDEwOC0zMzNUODAtNDgwcTAtOTEgMzYuNS0xNjhUMjE2LTc4MGgtOTZ2LTgwaDI0MHYyNDBoLTgwdi0xMDlxLTU1IDQ0LTg3LjUgMTA4LjVUMTYwLTQ4MHEwIDEyMyA4MC41IDIxMi41VDQ0MC0xNjN2ODFabS0xNy0yMTRMMjU0LTQ2Nmw1Ni01NiAxMTMgMTEzIDIyNy0yMjcgNTYgNTctMjgzIDI4M1ptMTc3IDE5NnYtMjQwaDgwdjEwOXE1NS00NSA4Ny41LTEwOVQ4MDAtNDgwcTAtMTIzLTgwLjUtMjEyLjVUNTIwLTc5N3YtODFxMTUyIDE1IDI1NiAxMjh0MTA0IDI3MHEwIDkxLTM2LjUgMTY4VDc0NC0xODBoOTZ2ODBINjAwWiIvPjwvc3ZnPg==)](https://github.com/thedjchi/Shizuku/releases/latest?q=prerelease%3Afalse&expanded=true)
-[![Latest Beta](https://img.shields.io/github/v/release/thedjchi/Shizuku?sort=semver&style=for-the-badge&color=30bf60&labelColor=208040&label=Latest%20Beta&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjRweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSIyNHB4IiBmaWxsPSIjZTNlM2UzIj48cGF0aCBkPSJNMjAwLTEyMHEtNTEgMC03Mi41LTQ1LjVUMTM4LTI1MGwyMjItMjcwdi0yNDBoLTQwcS0xNyAwLTI4LjUtMTEuNVQyODAtODAwcTAtMTcgMTEuNS0yOC41VDMyMC04NDBoMzIwcTE3IDAgMjguNSAxMS41VDY4MC04MDBxMCAxNy0xMS41IDI4LjVUNjQwLTc2MGgtNDB2MjQwbDIyMiAyNzBxMzIgMzkgMTAuNSA4NC41VDc2MC0xMjBIMjAwWm04MC0xMjBoNDAwTDU0NC00MDBINDE2TDI4MC0yNDBabS04MCA0MGg1NjBMNTIwLTQ5MnYtMjY4aC04MHYyNjhMMjAwLTIwMFptMjgwLTI4MFoiLz48L3N2Zz4=)](https://github.com/thedjchi/Shizuku/releases)
+Shizuku lets normal apps use system-level APIs directly via a privileged process started with adb or root. Shizuku+ keeps full compatibility while adding quality-of-life improvements to the app management screen.
 
-[![Bug Reports](https://img.shields.io/github/issues-search/thedjchi/Shizuku?query=label%3Abug%20state%3Aopen&style=for-the-badge&color=bf3030&labelColor=802020&label=Bug%20Reports)](https://github.com/thedjchi/Shizuku/issues?q=is%3Aissue%20state%3Aopen%20label%3Abug)
-[![Feature Requests](https://img.shields.io/github/issues-search/thedjchi/Shizuku?query=label%3Aenhancement%20state%3Aopen&style=for-the-badge&color=30a7bf&labelColor=207080&label=Feature%20Requests)](https://github.com/thedjchi/Shizuku/issues?q=is%3Aissue%20state%3Aopen%20label%3Aenhancement)
-
-[![Translate on Crowdin](https://img.shields.io/badge/Translate%20on%20Crowdin-2e3340?style=for-the-badge&logo=crowdin&logoColor=ffffff)](https://crowdin.com/project/shizuku)
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-bfb330?style=for-the-badge&logo=buymeacoffee&logoColor=ffffff)](https://www.buymeacoffee.com/thedjchi)
+[![Stars](https://img.shields.io/github/stars/thejaustin/ShizukuPlus?style=for-the-badge&color=bfb330&labelColor=807820)](https://github.com/thejaustin/ShizukuPlus/stargazers)
+[![Downloads](https://img.shields.io/github/downloads/thejaustin/ShizukuPlus/total?style=for-the-badge&color=bf7830&labelColor=805020)](https://github.com/thejaustin/ShizukuPlus/releases)
+[![Latest Release](https://img.shields.io/github/v/release/thejaustin/ShizukuPlus?style=for-the-badge&color=3060bf&labelColor=204080&label=Latest)](https://github.com/thejaustin/ShizukuPlus/releases/latest)
 
 </div>
 
 ## ⚠️ Disclaimer
 
-This is a **FORK** of Shizuku. If you are looking for the original version, please visit the [RikkaApps/Shizuku](https://github.com/RikkaApps/Shizuku) repository.
+This is a **fork of a fork**. For the original Shizuku visit [RikkaApps/Shizuku](https://github.com/RikkaApps/Shizuku). For the intermediate fork this is based on visit [thedjchi/Shizuku](https://github.com/thedjchi/Shizuku).
 
 ## ⬇️ Download
 
-Get the latest [stable](https://github.com/thedjchi/Shizuku/releases/latest) or [beta](https://github.com/thedjchi/Shizuku/releases) version.
+Get the latest release from [GitHub Releases](https://github.com/thejaustin/ShizukuPlus/releases).
 
-All versions are distributed via [GitHub Releases](https://github.com/thedjchi/Shizuku/releases).
+## ✨ Shizuku+ additions
 
-## ✨ Added Features
+New in this fork on top of thedjchi's version:
 
-This version of Shizuku includes some extra features over the original version, such as:
+* **Swipe right** on any app in the management list to launch it (green reveal with play icon)
+* **Swipe left** on any app to open its Android system settings page (blue reveal with info icon)
+* **Long-press** an app for a context menu — Open app · App info · Grant/Revoke permission · Hide from list
+* **Tap the package name** on any row to copy it to the clipboard
+* **Search bar** filters the list by app name or package name in real time
+* **Filter chips** — show All, Granted, or Denied apps
+* **Sort** — Name (A–Z), Last installed, or Last updated
+* **Hide from list** — hide apps you don't want to see; an Undo snackbar lets you reverse it
+* **Staggered slide-in animation** when the list first loads
+* **First-run swipe hint** — an animated card demonstrates swipe gestures on first launch
+* **Customisable long-press actions** in Settings — disable any action you don't need; if only one remains enabled it triggers directly with no menu shown
+
+## ✨ Features from thedjchi/Shizuku
+
 * **More robust "start on boot":** waits for a Wi-Fi connection before starting the Shizuku service
-* **TCP mode:** (i.e., the `adb tcpip` command) once Shizuku successfully starts with Wi-Fi after a reboot, you can stop/restart Shizuku without a Wi-Fi connection!
-* **Watchdog service:** automatically restarts Shizuku if it stops unexpectedly, and can alert you of crashes/potential fixes
-* **Start/stop intents:** toggle Shizuku on-demand using automation apps (e.g., Tasker, MacroDroid, Automate)
+* **TCP mode:** once Shizuku starts with Wi-Fi after a reboot, you can stop/restart it without Wi-Fi
+* **Watchdog service:** automatically restarts Shizuku if it stops unexpectedly
+* **Start/stop intents:** toggle Shizuku on-demand using automation apps (e.g. Tasker, MacroDroid)
 * **[BETA] Stealth mode:** hide Shizuku from other apps that don't work when Shizuku is installed
-* **[BETA] In-app updates:** option to automatically check for new updates, and can automatically download/install the latest version from GitHub
-* **Android/Google TV and VR headset support:** UI is now compatible with D-Pad remotes, all TVs are supported (including Android 14+ TVs that require pairing), and the multi-window pairing dialog is toggleable in settings for VR headsets
-* **MediaTek support:** fixes a critical bug in the original v13.6.0 which prevented Shizuku from working on MediaTek devices
-* And more!
-
-## 📝 User Guide
-
-Please read the [wiki](https://github.com/thedjchi/Shizuku/wiki) for setup, info, and troubleshooting steps.
+* **[BETA] In-app updates:** automatically check for and install new versions from GitHub
+* **Android/Google TV and VR headset support:** D-Pad compatible UI, Android 14+ TV pairing support
+* **MediaTek support:** fixes a critical bug in v13.6.0 that prevented Shizuku from working on MediaTek devices
 
 ## ☑️ Requirements
 
-**Minimum Version: Android 7+**
+**Minimum: Android 7+**
 - **Root mode:** Requires a rooted device
-- **Wireless Debugging mode:** Works on Android 11+ and all Android TVs
-- **PC mode:** Works on all devices
-- **Start on boot:** Available only when using Wireless Debugging or Root mode
+- **Wireless Debugging mode:** Android 11+ and all Android TVs
+- **PC mode:** All devices
+- **Start on boot:** Available only with Wireless Debugging or Root mode
 
 ## 🔒 Privacy
 
-Shizuku takes user privacy very seriously.
-
-* No tracking or analytics
-* No telemetry
-* No proprietary libraries
-* No Google Play Services
-* Open-source codebase
-* Reproducible builds
-* Internet access is only used for wireless debugging connections and to fetch updates from GitHub
-* Only required permissions are declared
-
-### Permissions
-
-* **INTERNET:** required for the wireless debugging start mode to work. Also used to fetch updates from GitHub
-* **ACCESS_NETWORK_STATE:** used to determine when Wi-Fi is available for background start via wireless debugging
-* **POST_NOTIFICATIONS:** required for pairing notification and other alerts
-* **RECEIVE_BOOT_COMPLETED:** required for start on boot
-* **FOREGROUND_SERVICE:** prevents watchdog from being killed
-* **REQUEST_IGNORE_BATTERY_OPTIMIZATIONS:** prevents start on boot and watchdog services from being killed
-* **WRITE_SECURE_SETTINGS:** used to toggle USB and wireless debugging in the background when starting/stopping Shizuku
-* **REQUEST_DELETE_PACKAGES:** used to request uninstall for Shizuku/stub when using stealth mode
-* **REQUEST_INSTALL_PACKAGES:** used to request install for app updates, as well as Shizuku stub when using stealth mode
+* No tracking, analytics, or telemetry
+* No proprietary libraries or Google Play Services
+* Open-source — Apache 2.0
+* Internet used only for wireless debugging connections and GitHub update checks
 
 ## 🌎 Translations
 
-Contribute translations through the [Crowdin project](https://crowdin.com/project/shizuku).
-
-## 🎁 Donations
-
-This Shizuku fork and all of its features will always be free, and there will never be ads. If you've found any of the added features to be useful, consider [donating](https://www.buymeacoffee.com/thedjchi) to help me maintain the project!
+Contribute via the upstream [Crowdin project](https://crowdin.com/project/shizuku).
 
 ## 📱 Developer Guide
 
-### API & Demo Project
-The API guide and a demo project are available in the [Shizuku-API](https://github.com/thedjchi/Shizuku-API) repository
+See the [Shizuku-API](https://github.com/RikkaApps/Shizuku-API) repository for the API and demo project.
 
-### Notes
-
-1. Shizuku has different permissions in root and ADB mode. You can see permissions granted to ADB [here](https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/packages/Shell/AndroidManifest.xml).
-   If your app requires root permission, use `ShizukuService#getUid` to check if Shizuku is running as root or ADB, or use `ShizukuService#checkPermission` to check if the server has sufficient permissions.
-2. On devices running Android 8 or lower, if you need to use Shizuku in a Service or Broadcast Receiver that might not be started by an Activity, please trigger the send binder by starting a transparent activity.
-3. Please prefer using `ShizukuBinderWrapper` instead of directly using `transactRemote` when possible, as API calls can change across Android versions.
-
-## 🤝 Contritbuting
-
-### Building the App
-
-- Clone with `git clone --recurse-submodules`
-- Run gradle task `:manager:assembleDebug` or `:manager:assembleRelease`
-
-The `:manager:assembleDebug` task generates a debuggable server. You can attach a debugger to `shizuku_server` to debug the server. In Android Studio, ensure `Run/Debug configurations > Always install with package manager` is checked, so that the server will use the latest code.
-
-### Submitting Changes
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b branch-name`)
-3. Make your changes
-4. Commit your changes (`git commit -m 'Commit message'`)
-5. Push to the branch (`git push origin branch-name`)
-6. Open a Pull Request
+3. Commit your changes and open a Pull Request
+
+### Building
+
+```
+git clone --recurse-submodules https://github.com/thejaustin/ShizukuPlus
+```
+
+Run gradle task `:manager:assembleDebug` or `:manager:assembleRelease`.
 
 ## 📃 License
 
-All code files in this project are licensed under [Apache 2.0](LICENSE)
+[Apache 2.0](LICENSE)

@@ -82,6 +82,37 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="category_app_management"
+        android:title="@string/settings_app_management">
+
+        <Preference
+            android:key="lp_category_info"
+            style="?preferenceInformationStyle"
+            android:summary="@string/settings_lp_category_summary" />
+
+        <SwitchPreferenceCompat
+            android:key="lp_open_app"
+            android:title="@string/settings_lp_open_app"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="lp_app_info"
+            android:title="@string/settings_lp_app_info"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="lp_toggle_permission"
+            android:title="@string/settings_lp_toggle_permission"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="lp_hide_from_list"
+            android:title="@string/settings_lp_hide_from_list"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="category_support"
         android:title="@string/settings_support">
 

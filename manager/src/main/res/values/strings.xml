@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Shizuku</string>
+    <string name="app_name" translatable="false">Shizuku+</string>
 
     <!-- To translators: you can leave your here -->
     <string name="translation_contributors" />
@@ -99,6 +99,27 @@
     <string name="home_adb_is_limited_title">You need to take an extra step</string>
     <string name="home_adb_is_limited_description">Your device manufacturer has restricted adb permissions and apps using Shizuku will not work properly.\n\nUsually, this limitation can be lifted by adjusting some options in \"Developer options\". Please read the help for details on how to do this.\n\nYou may need to restart Shizuku for the operation to take effect.</string>
 
+    <!-- Application management - context menu -->
+    <string name="app_management_context_open_app">Open app</string>
+    <string name="app_management_context_app_info">App info</string>
+    <string name="app_management_context_grant">Grant permission</string>
+    <string name="app_management_context_revoke">Revoke permission</string>
+    <string name="app_management_context_hide">Hide from list</string>
+    <string name="app_management_no_launcher">This app has no launcher</string>
+    <string name="app_management_package_copied">Package name copied</string>
+    <string name="app_management_hidden">App hidden</string>
+    <string name="app_management_undo">Undo</string>
+
+    <!-- Application management - search / filter / sort -->
+    <string name="app_management_hint_search">Search apps…</string>
+    <string name="app_management_filter_all">All</string>
+    <string name="app_management_filter_granted">Granted</string>
+    <string name="app_management_filter_denied">Denied</string>
+    <string name="app_management_action_sort">Sort</string>
+    <string name="app_management_sort_a_to_z">Name (A–Z)</string>
+    <string name="app_management_sort_last_installed">Last installed</string>
+    <string name="app_management_sort_last_updated">Last updated</string>
+
     <!-- Application management -->
     <string name="app_management_dialog_adb_is_limited_title">The permission of adb is limited</string>
     <string name="app_management_dialog_adb_is_limited_message"><![CDATA[It\'s highly possible that your device manufacturer limits the permission of adb.<p>There may be a solution for your system in <b><a href=\"%1$s\">this document</a></b>.]]></string>
@@ -117,6 +138,20 @@
     <string name="terminal_tutorial_2_description">Tip: If your terminal app\'s home directory (~) is in the private files directory, placing the files there will allow you to run %1$s without writing the path.\n\nOtherwise, you can create an alias for %2$s in your terminal app\'s %3$s configuration file.</string>
     <string name="terminal_tutorial_3">Open a shell with the following command:</string>
     <string name="rish_description"><![CDATA[With %1$s, you can run shell commands in any terminal app.<p>Tap to learn more about how to use it.]]></string>
+
+    <!-- Settings — long-press customisation -->
+    <string name="settings_app_management">App management</string>
+    <string name="settings_lp_category_summary">Choose which actions appear when you long-press an app in the management list. If only one is enabled it triggers directly — no menu shown.</string>
+    <string name="settings_lp_open_app">Open app</string>
+    <string name="settings_lp_app_info">App info</string>
+    <string name="settings_lp_toggle_permission">Toggle Shizuku permission</string>
+    <string name="settings_lp_hide_from_list">Hide from list</string>
+
+    <!-- Swipe hint overlay -->
+    <string name="swipe_hint_title">Swipe gestures</string>
+    <string name="swipe_hint_right">Swipe right — Open app</string>
+    <string name="swipe_hint_left">Swipe left — App info</string>
+    <string name="swipe_hint_dismiss">Tap anywhere to dismiss</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>

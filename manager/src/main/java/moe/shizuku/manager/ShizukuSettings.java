@@ -40,6 +40,12 @@ public class ShizukuSettings {
         public static final String KEY_REPORT_BUG = "report_bug";
         public static final String KEY_LEGACY_PAIRING = "legacy_pairing";
         public static final String KEY_CATEGORY_ADVANCED = "category_advanced";
+
+        // Long-press action toggles (Shizuku+ additions)
+        public static final String KEY_LP_OPEN_APP = "lp_open_app";
+        public static final String KEY_LP_APP_INFO = "lp_app_info";
+        public static final String KEY_LP_TOGGLE_PERMISSION = "lp_toggle_permission";
+        public static final String KEY_LP_HIDE_FROM_LIST = "lp_hide_from_list";
     }
 
     private static SharedPreferences sPreferences;
@@ -188,6 +194,26 @@ public class ShizukuSettings {
             defValue = AppCompatDelegate.MODE_NIGHT_YES;
         }
         return getPreferences().getInt(Keys.KEY_NIGHT_MODE, defValue);
+    }
+
+    public static boolean getLongPressOpenApp() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_LP_OPEN_APP, true);
+    }
+
+    public static boolean getLongPressAppInfo() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_LP_APP_INFO, true);
+    }
+
+    public static boolean getLongPressTogglePermission() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_LP_TOGGLE_PERMISSION, true);
+    }
+
+    public static boolean getLongPressHideFromList() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_LP_HIDE_FROM_LIST, true);
     }
 
     public static Locale getLocale() {

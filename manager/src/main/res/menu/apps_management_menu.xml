@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_sort"
+        android:title="@string/app_management_action_sort"
+        android:showAsAction="never">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/sort_name"
+                    android:title="@string/app_management_sort_a_to_z" />
+                <item
+                    android:id="@+id/sort_last_installed"
+                    android:title="@string/app_management_sort_last_installed" />
+                <item
+                    android:id="@+id/sort_last_updated"
+                    android:title="@string/app_management_sort_last_updated" />
+            </group>
+        </menu>
+    </item>
+
+</menu>
