@@ -157,6 +157,13 @@
     <string name="onboarding_next">Next</string>
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_setup_title">Start Shizuku</string>
+    <string name="onboarding_setup_desc">Choose how to start Shizuku on this device. You can also do this later from the main screen.</string>
+    <string name="onboarding_setup_running">Shizuku is running</string>
+    <string name="onboarding_setup_later">I\'ll do this later</string>
+    <string name="onboarding_setup_wadb_desc">Android 11+, no computer needed. Uses wireless debugging.</string>
+    <string name="onboarding_setup_root_desc">Your device is rooted. Start Shizuku with root access.</string>
+    <string name="onboarding_setup_adb_desc">Any device. Run one ADB command from a computer to get started.</string>
 
     <!-- Swipe hint overlay -->
     <string name="swipe_hint_title">Swipe gestures</string>
