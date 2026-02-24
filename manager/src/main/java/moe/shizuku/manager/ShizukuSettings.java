@@ -216,6 +216,16 @@ public class ShizukuSettings {
         return p == null || p.getBoolean(Keys.KEY_LP_HIDE_FROM_LIST, true);
     }
 
+    public static boolean hasSeenOnboarding() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean("onboarding_seen", false);
+    }
+
+    public static void setOnboardingSeen() {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean("onboarding_seen", true).apply();
+    }
+
     public static Locale getLocale() {
         String tag = getPreferences().getString(Keys.KEY_LANGUAGE, null);
         if (TextUtils.isEmpty(tag) || "SYSTEM".equals(tag)) {

@@ -147,6 +147,17 @@
     <string name="settings_lp_toggle_permission">Toggle Shizuku permission</string>
     <string name="settings_lp_hide_from_list">Hide from list</string>
 
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">Welcome to Shizuku+</string>
+    <string name="onboarding_welcome_desc">An enhanced Shizuku with powerful app management features. Swipe gestures, quick actions, and customizable long-press — all in one place.</string>
+    <string name="onboarding_swipe_title">Swipe Gestures</string>
+    <string name="onboarding_swipe_desc">In the app management list, swipe right to open an app or swipe left to view its system settings page.</string>
+    <string name="onboarding_longpress_title">Customize Long-Press</string>
+    <string name="onboarding_longpress_desc">Choose which actions appear when you long-press an app in the management list. Enable just one and it triggers directly — no menu needed.</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_get_started">Get Started</string>
+
     <!-- Swipe hint overlay -->
     <string name="swipe_hint_title">Swipe gestures</string>
     <string name="swipe_hint_right">Swipe right — Open app</string>
