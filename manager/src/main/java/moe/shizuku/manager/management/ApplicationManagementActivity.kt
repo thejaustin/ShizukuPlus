@@ -80,7 +80,7 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
         viewModel.packages.observe(this) {
             when (it.status) {
                 Status.SUCCESS -> {
-                    adapter.updateData(it.data)
+                    adapter.updateData(it.data as List<PackageInfo>)
                     if (firstLoad && !it.data.isNullOrEmpty()) {
                         firstLoad = false
                         recyclerView.scheduleLayoutAnimation()

@@ -26,6 +26,7 @@ import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.adb.AdbPairingTutorialActivity
 import moe.shizuku.manager.app.AppActivity
 import moe.shizuku.manager.home.AdbDialogFragment
+import moe.shizuku.manager.home.AdbPairDialogFragment
 import moe.shizuku.manager.home.WadbEnableUsbDebuggingDialogFragment
 import moe.shizuku.manager.home.WadbNotEnabledDialogFragment
 import moe.shizuku.manager.home.StartWirelessAdbViewHolder
