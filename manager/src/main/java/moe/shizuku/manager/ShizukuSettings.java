@@ -41,6 +41,10 @@ public class ShizukuSettings {
         public static final String KEY_LEGACY_PAIRING = "legacy_pairing";
         public static final String KEY_CATEGORY_ADVANCED = "category_advanced";
 
+        // Dhizuku & API (Shizuku+ additions)
+        public static final String KEY_DHIZUKU_MODE = "dhizuku_mode";
+        public static final String KEY_CUSTOM_API_ENABLED = "custom_api_enabled";
+
         // Long-press action toggles (Shizuku+ additions)
         public static final String KEY_LP_OPEN_APP = "lp_open_app";
         public static final String KEY_LP_APP_INFO = "lp_app_info";
@@ -232,5 +236,25 @@ public class ShizukuSettings {
             return Locale.getDefault();
         }
         return Locale.forLanguageTag(tag);
+    }
+
+    public static boolean isDhizukuModeEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_DHIZUKU_MODE, false);
+    }
+
+    public static void setDhizukuModeEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_DHIZUKU_MODE, enable).apply();
+    }
+
+    public static boolean isCustomApiEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_CUSTOM_API_ENABLED, true);
+    }
+
+    public static void setCustomApiEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_CUSTOM_API_ENABLED, enable).apply();
     }
 }

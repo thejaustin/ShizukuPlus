@@ -78,6 +78,8 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     private lateinit var reportBugPreference: Preference
     private lateinit var legacyPairingPreference: TwoStatePreference
     private lateinit var advancedCategory: PreferenceCategory
+    private lateinit var dhizukuModePreference: TwoStatePreference
+    private lateinit var customApiPreference: TwoStatePreference
 
     private lateinit var batteryOptimizationListener: ActivityResultLauncher<Intent>
     private var batteryOptimizationContinuation: CancellableContinuation<Boolean>? = null
@@ -111,10 +113,40 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         reportBugPreference = findPreference(KEY_REPORT_BUG)!!
         legacyPairingPreference = findPreference(KEY_LEGACY_PAIRING)!!
         advancedCategory = findPreference(KEY_CATEGORY_ADVANCED)!!
+        dhizukuModePreference = findPreference(KEY_DHIZUKU_MODE)!!
+        customApiPreference = findPreference(KEY_CUSTOM_API_ENABLED)!!
 
         batteryOptimizationListener = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val accepted = SettingsHelper.isIgnoringBatteryOptimizations(requireContext())
             batteryOptimizationContinuation?.resume(accepted)
+        }
+
+        dhizukuModePreference.apply {
+            isChecked = ShizukuSettings.isDhizukuModeEnabled()
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) {
+                    val applyChange: () -> Unit = {
+                        ShizukuSettings.setDhizukuModeEnabled(newValue)
+                        isChecked = newValue
+                    }
+                    maybePromptRestart(KEY_DHIZUKU_MODE, newValue) { applyChange() }
+                }
+                false
+            }
+        }
+
+        customApiPreference.apply {
+            isChecked = ShizukuSettings.isCustomApiEnabled()
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) {
+                    val applyChange: () -> Unit = {
+                        ShizukuSettings.setCustomApiEnabled(newValue)
+                        isChecked = newValue
+                    }
+                    maybePromptRestart(KEY_CUSTOM_API_ENABLED, newValue) { applyChange() }
+                }
+                false
+            }
         }
 
         startOnBootPreference.apply {
@@ -374,6 +406,9 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
             KEY_TCP_PORT -> {
                 val newPort = newValue as? Int ?: ShizukuSettings.getTcpPort()
                 (currentPort > 0) && (currentPort != newPort)
+            }
+            KEY_DHIZUKU_MODE, KEY_CUSTOM_API_ENABLED -> {
+                true
             }
             else -> false
         }

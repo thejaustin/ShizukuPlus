@@ -29,13 +29,13 @@ class BugReportDialog : DialogFragment() {
         binding = BugReportDialogBinding.inflate(layoutInflater)
 
         val updateLink = getString(R.string.bug_report_dialog_link_update)
-            .asLink("https://github.com/thedjchi/Shizuku/releases/latest")
+            .asLink("https://github.com/thejaustin/ShizukuPlus/releases/latest")
 
         val wikiLink = getString(R.string.bug_report_dialog_link_wiki)
-            .asLink("https://github.com/thedjchi/Shizuku/releases/wiki#troubleshooting")
+            .asLink("https://github.com/thejaustin/ShizukuPlus/releases/wiki#troubleshooting")
 
         val issuesLink = getString(R.string.bug_report_dialog_link_issues)
-            .asLink("https://github.com/thedjchi/Shizuku/releases/issues")
+            .asLink("https://github.com/thejaustin/ShizukuPlus/releases/issues")
 
         binding.apply {
             updateText.applyTemplateArgs(updateLink)
@@ -48,7 +48,7 @@ class BugReportDialog : DialogFragment() {
             .setTitle(R.string.settings_report_bug)
             .setView(binding.root)
             .setPositiveButton("GitHub") { _, _ ->
-                CustomTabsHelper.launchUrlOrCopy(context, "https://github.com/thedjchi/Shizuku/issues/new")
+                CustomTabsHelper.launchUrlOrCopy(context, "https://github.com/thejaustin/ShizukuPlus/issues/new")
             }
             .setNegativeButton(R.string.bug_report_dialog_button_email) { _, _ ->
                 val plainBody = """

@@ -62,6 +62,10 @@ object AuthorizationManager {
         return packages
     }
 
+    fun isPlusApiSupported(pi: PackageInfo): Boolean {
+        return pi.applicationInfo?.metaData?.getBoolean("moe.shizuku.plus.API") == true
+    }
+
     fun granted(packageName: String, uid: Int): Boolean {
         return if (Shizuku.isPreV11()) {
             ShizukuSystemApis.checkPermission(Manifest.permission.API_V23, packageName, uid / 100000) == PackageManager.PERMISSION_GRANTED

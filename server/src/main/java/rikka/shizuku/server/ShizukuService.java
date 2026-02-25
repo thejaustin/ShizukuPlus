@@ -466,6 +466,19 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             reply.writeNoException();
             result.writeToParcel(reply, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
             return true;
+        } else if (code == ServerConstants.BINDER_TRANSACTION_isCustomApiEnabled) {
+            data.enforceInterface(ShizukuApiConstants.BINDER_DESCRIPTOR);
+            reply.writeNoException();
+            reply.writeInt(1); // Shizuku+ server always has it enabled at server level if running
+            return true;
+        } else if (code == ServerConstants.BINDER_TRANSACTION_getDhizukuBinder) {
+            data.enforceInterface(ShizukuApiConstants.BINDER_DESCRIPTOR);
+            // In Shizuku+, we share the DevicePolicyManager binder if Dhizuku mode is "active"
+            // (The manager app controls this via settings, but the server just provides the binder if asked)
+            IBinder dpm = ServiceManager.getService(Context.DEVICE_POLICY_SERVICE);
+            reply.writeNoException();
+            reply.writeStrongBinder(dpm);
+            return true;
         }
         return super.onTransact(code, data, reply, flags);
     }

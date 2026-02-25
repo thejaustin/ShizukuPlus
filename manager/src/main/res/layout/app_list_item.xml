@@ -59,6 +59,14 @@
                 android:layout_height="wrap_content"
                 android:text="@string/app_management_item_summary_requires_root" />
 
+            <TextView
+                android:id="@+id/requires_plus"
+                android:layout_width="wrap_content"
+                android:textAppearance="?textAppearanceBodyMedium"
+                android:layout_height="wrap_content"
+                android:textColor="?colorError"
+                android:text="@string/app_management_item_summary_requires_plus" />
+
         </LinearLayout>
 
     </LinearLayout>

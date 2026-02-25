@@ -124,6 +124,7 @@
     <string name="app_management_dialog_adb_is_limited_title">The permission of adb is limited</string>
     <string name="app_management_dialog_adb_is_limited_message"><![CDATA[It\'s highly possible that your device manufacturer limits the permission of adb.<p>There may be a solution for your system in <b><a href=\"%1$s\">this document</a></b>.]]></string>
     <string name="app_management_item_summary_requires_root">* requires Shizuku runs with root</string>
+    <string name="app_management_item_summary_requires_plus">* requires Shizuku+ Enhanced API</string>
     <string name="app_management_toggle_all">Toggle all</string>
 
     <!-- Terminal -->
@@ -205,6 +206,13 @@
     <string name="settings_advanced">Advanced</string>
     <string name="settings_legacy_pairing">Legacy pairing</string>
     <string name="settings_legacy_pairing_summary">Enter the pairing code in a dialog instead of a notification</string>
+
+    <!-- Shizuku+ Features -->
+    <string name="settings_shizuku_plus_features">Shizuku+ Features</string>
+    <string name="settings_dhizuku_mode">Dhizuku Mode</string>
+    <string name="settings_dhizuku_mode_summary">Share Device Owner (DevicePolicyManager) permissions with other apps</string>
+    <string name="settings_enhanced_api">Enhanced Shizuku API</string>
+    <string name="settings_enhanced_api_summary">Enable extended features like automatic reconnection and Kotlin Coroutines support for client apps</string>
 
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">First, please do the following:</string>

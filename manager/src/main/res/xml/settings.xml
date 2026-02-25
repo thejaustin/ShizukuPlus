@@ -39,6 +39,23 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="category_shizuku_plus"
+        android:title="@string/settings_shizuku_plus_features">
+
+        <SwitchPreferenceCompat
+            android:key="dhizuku_mode"
+            android:title="@string/settings_dhizuku_mode"
+            android:summary="@string/settings_dhizuku_mode_summary" />
+
+        <SwitchPreferenceCompat
+            android:key="custom_api_enabled"
+            android:title="@string/settings_enhanced_api"
+            android:summary="@string/settings_enhanced_api_summary"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="category_language"
         android:title="@string/settings_language">
 

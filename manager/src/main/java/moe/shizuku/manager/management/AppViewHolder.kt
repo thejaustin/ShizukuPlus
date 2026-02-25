@@ -51,6 +51,7 @@ class AppViewHolder(private val binding: AppListItemBinding) :
     private val pkg get() = binding.summary
     private val switchWidget get() = binding.switchWidget
     private val root get() = binding.requiresRoot
+    private val plus get() = binding.requiresPlus
 
     init {
         itemView.filterTouchesWhenObscured = true
@@ -204,6 +205,16 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         root.visibility = if (ai.metaData != null &&
             ai.metaData.getBoolean("moe.shizuku.client.V3_REQUIRES_ROOT"))
             View.VISIBLE else View.GONE
+
+        val isPlusRequired = AuthorizationManager.isPlusApiSupported(data)
+        val isPlusEnabled = ShizukuSettings.isCustomApiEnabled()
+        val isPlusMissing = isPlusRequired && !isPlusEnabled
+
+        plus.visibility = if (isPlusMissing) View.VISIBLE else View.GONE
+        
+        itemView.isEnabled = !isPlusMissing
+        itemView.alpha = if (isPlusMissing) 0.5f else 1.0f
+        switchWidget.isEnabled = !isPlusMissing
 
         loadIconJob = AppIconCache.loadIconBitmapAsync(context, ai, ai.uid / 100000, icon)
     }
