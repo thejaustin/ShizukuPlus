@@ -24,17 +24,24 @@ Get the latest release from [GitHub Releases](https://github.com/thejaustin/Shiz
 
 New in this fork on top of thedjchi's version:
 
-* **Swipe right** on any app in the management list to launch it (green reveal with play icon)
-* **Swipe left** on any app to open its Android system settings page (blue reveal with info icon)
-* **Long-press** an app for a context menu — Open app · App info · Grant/Revoke permission · Hide from list
-* **Tap the package name** on any row to copy it to the clipboard
-* **Search bar** filters the list by app name or package name in real time
-* **Filter chips** — show All, Granted, or Denied apps
-* **Sort** — Name (A–Z), Last installed, or Last updated
-* **Hide from list** — hide apps you don't want to see; an Undo snackbar lets you reverse it
-* **Staggered slide-in animation** when the list first loads
-* **First-run swipe hint** — an animated card demonstrates swipe gestures on first launch
-* **Customisable long-press actions** in Settings — disable any action you don't need; if only one remains enabled it triggers directly with no menu shown
+*   **Universal Privilege Provider**: Combines **Root**, **ADB Shell**, and **Dhizuku (Device Owner)** into a single unified interface.
+*   **Dhizuku Mode**: Share the system `DevicePolicyManager` binder with any app that has Shizuku permissions. No more account wipes or complex ADB setup for Dhizuku.
+*   **Enhanced Shizuku API**: Provides synchronous wrappers for high-level operations like Package Management, Overlay (RRO) management, and System Settings.
+*   **Dynamic App Management UI**: 
+    *   **Requires Plus** notice: Automatically detects and flags apps that leverage the new ShizukuPlus features.
+    *   **Safe Toggling**: Gray out and disable apps when the Enhanced API is required but turned off in settings, preventing crashes.
+*   **Swipe right** on any app in the management list to launch it (green reveal with play icon)
+*   **Swipe left** on any app to open its Android system settings page (blue reveal with info icon)
+*   **Long-press** an app for a context menu — Open app · App info · Grant/Revoke permission · Hide from list
+*   **Tap the package name** on any row to copy it to the clipboard
+*   **Search bar** filters the list by app name or package name in real time
+*   **Filter chips** — show All, Granted, or Denied apps
+*   **Sort** — Name (A–Z), Last installed, or Last updated
+*   **Hide from list** — hide apps you don't want to see; an Undo snackbar lets you reverse it
+*   **Staggered slide-in animation** when the list first loads
+*   **First-run swipe hint** — an animated card demonstrates swipe gestures on first launch
+*   **Customisable long-press actions** in Settings — disable any action you don't need; if only one remains enabled it triggers directly with no menu shown
+*   **Continuous Deployment**: Fully automated CI/CD pipeline that builds and releases signed APKs for every commit to the `master` branch.
 
 ## ✨ Features from thedjchi/Shizuku
 
@@ -68,7 +75,7 @@ Contribute via the upstream [Crowdin project](https://crowdin.com/project/shizuk
 
 ## 📱 Developer Guide
 
-See the [Shizuku-API](https://github.com/RikkaApps/Shizuku-API) repository for the API and demo project.
+See the [ShizukuPlus-API](https://github.com/thejaustin/ShizukuPlus-API) repository for the Enhanced API and documentation.
 
 ## 🤝 Contributing
 
