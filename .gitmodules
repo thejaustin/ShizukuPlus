@@ -1,4 +1,4 @@
 [submodule "api"]
 	path = api
-	url = https://github.com/thedjchi/Shizuku-API
+	url = https://github.com/thejaustin/ShizukuPlus-API
 	branch = master
