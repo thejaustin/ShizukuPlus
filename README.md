@@ -94,3 +94,7 @@ Run gradle task `:manager:assembleDebug` or `:manager:assembleRelease`.
 ## 📃 License
 
 [Apache 2.0](LICENSE)
+
+## 🚀 Release Status
+
+Automated builds are active. Check the [Releases](https://github.com/thejaustin/ShizukuPlus/releases) tab for the latest signed APKs.
