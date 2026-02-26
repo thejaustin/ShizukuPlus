@@ -1,5 +1,7 @@
 package com.rosan.dhizuku;
 
+import android.os.Bundle;
+
 interface IDhizuku {
 
     int getVersion() = 1;

@@ -27,6 +27,7 @@ android {
         buildConfig = true
         viewBinding = true
         prefab = true
+        aidl = true
     }
     signingConfigs {
         sign {}
