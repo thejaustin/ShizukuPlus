@@ -19,24 +19,26 @@ object SnackbarHelper {
         action: (() -> Unit)? = null,
         onDismiss: ((event: Int) -> Unit)? = null
     ) {
-        snackbar = Snackbar.make(view, msg, duration)
-            .setDuration(duration)
+        dismiss() // Dismiss any existing snackbar
+        val newSnackbar = Snackbar.make(view, msg, duration).setDuration(duration)
         if (action != null) {
-            snackbar!!.setAction(actionText ?: context.getString(android.R.string.ok)) { action() }
+            newSnackbar.setAction(actionText ?: context.getString(android.R.string.ok)) { action() }
         }
         if (onDismiss != null) {
-            snackbar!!.addCallback(object : Snackbar.Callback() {
+            newSnackbar.addCallback(object : Snackbar.Callback() {
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     onDismiss(event)
                 }
             })
         }
-        ThemeHelper.applySnackbarTheme(context, snackbar!!)
-        snackbar!!.show()
+        ThemeHelper.applySnackbarTheme(context, newSnackbar)
+        newSnackbar.show()
+        snackbar = newSnackbar
     }
 
     fun dismiss() {
         snackbar?.dismiss()
+        snackbar = null
     }
 
 }

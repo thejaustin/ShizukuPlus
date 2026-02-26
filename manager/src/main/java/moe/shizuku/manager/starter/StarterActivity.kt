@@ -46,15 +46,15 @@ class StarterActivity : AppBarActivity() {
 
         val binding = StarterActivityBinding.inflate(layoutInflater, rootView, true)
 
-        viewModel.output.observe(this) {
-            val output = it.data!!.trim()
+        viewModel.output.observe(this) { result ->
+            val output = result.data?.trim() ?: return@observe
             if (output.endsWith(Starter.serviceStartedMessage)) {
                 window?.decorView?.postDelayed({
                     if (!isFinishing) finish()
                 }, 3000)
-            } else if (it.status == Status.ERROR) {
+            } else if (result.status == Status.ERROR) {
                 var message = 0
-                when (it.error) {
+                when (result.error) {
                     is AdbKeyException -> {
                         message = R.string.adb_error_key_store
                     }

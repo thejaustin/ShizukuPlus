@@ -66,8 +66,8 @@ class AppViewHolder(private val binding: AppListItemBinding) :
     }
 
     private inline val packageName get() = data.packageName
-    private inline val ai get() = data.applicationInfo!!
-    private inline val uid get() = ai.uid
+    private inline val ai get() = data.applicationInfo
+    private inline val uid get() = ai?.uid ?: 0
 
     private var loadIconJob: Job? = null
 
@@ -78,8 +78,9 @@ class AppViewHolder(private val binding: AppListItemBinding) :
     override fun onLongClick(v: View): Boolean {
         val context = v.context
         val pm = context.packageManager
-        val appLabel = ai.loadLabel(pm)
-        val isGranted = runCatching { AuthorizationManager.granted(packageName, uid) }.getOrDefault(false)
+        val appInfo = ai ?: return true
+        val appLabel = appInfo.loadLabel(pm)
+        val isGranted = runCatching { AuthorizationManager.granted(packageName, appInfo.uid) }.getOrDefault(false)
 
         val enabled = buildEnabledActions(context, isGranted)
 
@@ -142,11 +143,12 @@ class AppViewHolder(private val binding: AppListItemBinding) :
 
     override fun onClick(v: View) {
         val context = v.context
+        val appInfo = ai ?: return
         try {
-            if (AuthorizationManager.granted(packageName, uid)) {
-                AuthorizationManager.revoke(packageName, uid)
+            if (AuthorizationManager.granted(packageName, appInfo.uid)) {
+                AuthorizationManager.revoke(packageName, appInfo.uid)
             } else {
-                AuthorizationManager.grant(packageName, uid)
+                AuthorizationManager.grant(packageName, appInfo.uid)
             }
         } catch (e: SecurityException) {
             val uid = runCatching { Shizuku.getUid() }.getOrDefault(-1)
@@ -191,19 +193,20 @@ class AppViewHolder(private val binding: AppListItemBinding) :
     }
 
     override fun onBind() {
+        val appInfo = ai ?: return
         val pm = itemView.context.packageManager
-        val userId = UserHandleCompat.getUserId(uid)
-        icon.setImageDrawable(ai.loadIcon(pm))
+        val userId = UserHandleCompat.getUserId(appInfo.uid)
+        icon.setImageDrawable(appInfo.loadIcon(pm))
         name.text = if (userId != UserHandleCompat.myUserId()) {
             val userInfo = ShizukuSystemApis.getUserInfo(userId)
-            "${ai.loadLabel(pm)} - ${userInfo.name} ($userId)"
+            "${appInfo.loadLabel(pm)} - ${userInfo.name} ($userId)"
         } else {
-            ai.loadLabel(pm)
+            appInfo.loadLabel(pm)
         }
-        pkg.text = ai.packageName
-        switchWidget.isChecked = AuthorizationManager.granted(packageName, uid)
-        root.visibility = if (ai.metaData != null &&
-            ai.metaData.getBoolean("moe.shizuku.client.V3_REQUIRES_ROOT"))
+        pkg.text = appInfo.packageName
+        switchWidget.isChecked = AuthorizationManager.granted(packageName, appInfo.uid)
+        root.visibility = if (appInfo.metaData != null &&
+            appInfo.metaData.getBoolean("moe.shizuku.client.V3_REQUIRES_ROOT"))
             View.VISIBLE else View.GONE
 
         val isPlusRequired = AuthorizationManager.isPlusApiSupported(data)
@@ -211,16 +214,17 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         val isPlusMissing = isPlusRequired && !isPlusEnabled
 
         plus.visibility = if (isPlusMissing) View.VISIBLE else View.GONE
-        
+
         itemView.isEnabled = !isPlusMissing
         itemView.alpha = if (isPlusMissing) 0.5f else 1.0f
         switchWidget.isEnabled = !isPlusMissing
 
-        loadIconJob = AppIconCache.loadIconBitmapAsync(context, ai, ai.uid / 100000, icon)
+        loadIconJob = AppIconCache.loadIconBitmapAsync(context, appInfo, appInfo.uid / 100000, icon)
     }
 
     override fun onBind(payloads: List<Any>) {
-        switchWidget.isChecked = AuthorizationManager.granted(packageName, uid)
+        val appInfo = ai ?: return
+        switchWidget.isChecked = AuthorizationManager.granted(packageName, appInfo.uid)
     }
 
     override fun onRecycle() {

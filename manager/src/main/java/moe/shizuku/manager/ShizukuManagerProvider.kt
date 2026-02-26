@@ -45,9 +45,10 @@ class ShizukuManagerProvider : ShizukuProvider() {
                             ShizukuStateMachine.asFlow().first { it == ShizukuStateMachine.State.RUNNING }
                             withContext(workerHandler.asCoroutineDispatcher()) {
                                 try {
-                                    val reply = Bundle()
                                     Shizuku.attachUserService(binder, bundleOf(USER_SERVICE_ARG_TOKEN to token))
-                                    reply!!.putParcelable(EXTRA_BINDER, BinderContainer(Shizuku.getBinder()))
+                                    val serviceBinder = Shizuku.getBinder() ?: return@withContext null
+                                    val reply = Bundle()
+                                    reply.putParcelable(EXTRA_BINDER, BinderContainer(serviceBinder))
                                     reply
                                 } catch (e: Throwable) {
                                     LOGGER.e(e, "attachUserService $token")

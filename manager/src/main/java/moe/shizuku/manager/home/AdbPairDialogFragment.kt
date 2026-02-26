@@ -58,7 +58,8 @@ class AdbPairDialogFragment : DialogFragment() {
     }
 
     private fun onDialogShow(dialog: AlertDialog) {
-        binding.pairingCode.editText!!.doAfterTextChanged {
+        val codeEditText = binding.pairingCode.editText
+        codeEditText?.doAfterTextChanged {
             binding.pairingCode.error = null
         }
 
@@ -72,8 +73,9 @@ class AdbPairDialogFragment : DialogFragment() {
 
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             val context = it.context
+            val portEditText = binding.port.editText
             val port = try {
-                binding.port.editText!!.text.toString().toInt()
+                portEditText?.text.toString().toInt()
             } catch (e: Exception) {
                 -1
             }
@@ -83,24 +85,25 @@ class AdbPairDialogFragment : DialogFragment() {
                 return@setOnClickListener
             }
 
-            val password = binding.pairingCode.editText!!.text.toString()
+            val password = codeEditText?.text.toString() ?: ""
 
             viewModel.run(port, password)
         }
 
-        viewModel.port.observe(this) {
-            if (it == -1) {
+        viewModel.port.observe(this) { portValue ->
+            val portEditText = binding.port.editText
+            if (portValue == -1) {
                 dialog.setTitle(R.string.dialog_adb_pairing_discovery)
                 binding.text1.isVisible = true
                 binding.pairingCode.isVisible = false
-                binding.port.editText!!.setText(it.toString())
+                portEditText?.setText(portValue.toString())
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).isVisible = false
                 dialog.getButton(AlertDialog.BUTTON_NEUTRAL).isVisible = true
             } else {
                 dialog.setTitle(R.string.dialog_adb_pairing_title)
                 binding.text1.isVisible = false
                 binding.pairingCode.isVisible = true
-                binding.port.editText!!.setText(it.toString())
+                portEditText?.setText(portValue.toString())
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).isVisible = true
                 dialog.getButton(AlertDialog.BUTTON_NEUTRAL).isVisible = false
             }
