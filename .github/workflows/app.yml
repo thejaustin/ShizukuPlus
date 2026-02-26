@@ -92,11 +92,14 @@ jobs:
           # Get version name from gradle before building
           VERSION=$(./gradlew :manager:properties -q --console=plain | grep "^versionName:" | cut -d' ' -f2 | tr -d "'")
           
+          # Write version to file for release job (GitHub blocks version in outputs as "secret")
+          echo "$VERSION" > version.txt
+          
           eval $CMD
           FILE=$(ls "$APK_DIR"/*.apk)
 
-          ARTIFACT_NAME="shizuku-v${VERSION}.apk"
-          [ "$IS_DEBUG" = "true" ] && ARTIFACT_NAME="shizuku-v${VERSION}-debug.apk"
+          ARTIFACT_NAME="shizuku.apk"
+          [ "$IS_DEBUG" = "true" ] && ARTIFACT_NAME="shizuku-debug.apk"
 
           RENAMED="$FILE"
           if [ "$(basename "$FILE")" != "$ARTIFACT_NAME" ]; then
@@ -104,7 +107,6 @@ jobs:
             mv "$FILE" "$RENAMED"
           fi
 
-          echo "versionName=${VERSION}" >> $GITHUB_OUTPUT
           echo "artifactName=${ARTIFACT_NAME}" >> $GITHUB_OUTPUT
           echo "filePath=${RENAMED}" >> $GITHUB_OUTPUT
 
@@ -113,6 +115,12 @@ jobs:
         with:
           name: ${{ steps.buildWithGradle.outputs.artifactName }}
           path: ${{ steps.buildWithGradle.outputs.filePath }}
+
+      - name: Upload Version File
+        uses: actions/upload-artifact@v6
+        with:
+          name: version-file
+          path: version.txt
 
       - name: Attest Build Provenance
         if: ${{ success() && !inputs.debug }}
@@ -136,15 +144,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create Release Tag
+      - name: Download Version File
+        uses: actions/download-artifact@v7
+        with:
+          name: version-file
+
+      - name: Read Version
+        id: version
         run: |
-          VERSION="${{ needs.build.outputs.versionName }}"
-          
+          VERSION=$(cat version.txt)
           if [ -z "$VERSION" ]; then
-            echo "::error::Version name is empty. Cannot create release tag."
+            echo "::error::Version file is empty"
             exit 1
           fi
-          
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Create Release Tag
+        run: |
           TAG_NAME="v${VERSION}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -165,7 +181,6 @@ jobs:
       - name: Create Release
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ needs.build.outputs.versionName }}
         run: |
           TAG_NAME="v${VERSION}"
           FLAGS=""
