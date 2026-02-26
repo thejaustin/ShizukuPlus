@@ -133,7 +133,7 @@ class OnboardingActivity : AppActivity() {
     }
 
     private fun updateDots(selected: Int) {
-        val active = resolveThemeColor(com.google.android.material.R.attr.colorPrimary)
+        val active = resolveThemeColor(android.R.attr.colorPrimary)
         val inactive = resolveThemeColor(com.google.android.material.R.attr.colorSurfaceVariant)
         dots.forEachIndexed { i, dot ->
             (dot.background as GradientDrawable).setColor(if (i == selected) active else inactive)
@@ -314,6 +314,18 @@ class OnboardingActivity : AppActivity() {
                 setOnCheckedChangeListener { _, checked ->
                     ShizukuSettings.getPreferences()
                         ?.edit()?.putBoolean(ShizukuSettings.Keys.KEY_LP_HIDE_FROM_LIST, checked)?.apply()
+                }
+            }
+            view.findViewById<MaterialSwitch>(R.id.switch_dhizuku).apply {
+                isChecked = ShizukuSettings.isDhizukuModeEnabled()
+                setOnCheckedChangeListener { _, checked ->
+                    ShizukuSettings.setDhizukuModeEnabled(checked)
+                }
+            }
+            view.findViewById<MaterialSwitch>(R.id.switch_enhanced_api).apply {
+                isChecked = ShizukuSettings.isCustomApiEnabled()
+                setOnCheckedChangeListener { _, checked ->
+                    ShizukuSettings.setCustomApiEnabled(checked)
                 }
             }
         }
