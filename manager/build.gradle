@@ -65,6 +65,11 @@ android {
     lint {
         checkReleaseBuilds = false
     }
+    sourceSets {
+        main {
+            aidl.srcDirs = ["src/main/aidl"]
+        }
+    }
 }
 
 autoResConfig {
