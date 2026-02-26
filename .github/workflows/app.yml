@@ -89,14 +89,14 @@ jobs:
 
           [ "$IS_PRERELEASE" = "true" ] && CMD="$CMD -Pbeta"
 
+          # Get version name from gradle before building
+          VERSION=$(./gradlew :manager:properties -q --console=plain | grep "^versionName:" | cut -d' ' -f2 | tr -d "'")
+          
           eval $CMD
           FILE=$(ls "$APK_DIR"/*.apk)
 
-          VERSION=$(echo "$(basename "$FILE")" | sed -E 's/^shizuku-(.*)-(debug|release)\.apk/\1/')
-
-          ARTIFACT_NAME="shizuku-$VERSION"
-          [ "$IS_DEBUG" = "true" ] && ARTIFACT_NAME="${ARTIFACT_NAME}-debug"
-          ARTIFACT_NAME="${ARTIFACT_NAME}.apk"
+          ARTIFACT_NAME="shizuku-v${VERSION}.apk"
+          [ "$IS_DEBUG" = "true" ] && ARTIFACT_NAME="shizuku-v${VERSION}-debug.apk"
 
           RENAMED="$FILE"
           if [ "$(basename "$FILE")" != "$ARTIFACT_NAME" ]; then
@@ -104,9 +104,9 @@ jobs:
             mv "$FILE" "$RENAMED"
           fi
 
-          echo "versionName=$VERSION" >> $GITHUB_OUTPUT
-          echo "artifactName=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
-          echo "filePath=$RENAMED" >> $GITHUB_OUTPUT
+          echo "versionName=${VERSION}" >> $GITHUB_OUTPUT
+          echo "artifactName=${ARTIFACT_NAME}" >> $GITHUB_OUTPUT
+          echo "filePath=${RENAMED}" >> $GITHUB_OUTPUT
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v6
@@ -139,15 +139,22 @@ jobs:
       - name: Create Release Tag
         run: |
           VERSION="${{ needs.build.outputs.versionName }}"
+          
+          if [ -z "$VERSION" ]; then
+            echo "::error::Version name is empty. Cannot create release tag."
+            exit 1
+          fi
+          
+          TAG_NAME="v${VERSION}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if git rev-parse "$VERSION" >/dev/null 2>&1; then
-            echo "Tag $VERSION already exists. Deleting it..."
-            git tag -d "$VERSION"
-            git push origin ":refs/tags/$VERSION"
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Tag $TAG_NAME already exists. Deleting it..."
+            git tag -d "$TAG_NAME"
+            git push origin ":refs/tags/$TAG_NAME" || true
           fi
-          git tag "$VERSION" -m "Release version $VERSION"
-          git push origin "$VERSION"
+          git tag "$TAG_NAME" -m "Release version $VERSION"
+          git push origin "$TAG_NAME"
 
       - name: Download Artifact
         uses: actions/download-artifact@v7
@@ -158,8 +165,9 @@ jobs:
       - name: Create Release
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_VERSION: ${{ needs.build.outputs.versionName }}
+          VERSION: ${{ needs.build.outputs.versionName }}
         run: |
+          TAG_NAME="v${VERSION}"
           FLAGS=""
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             FLAGS="--draft"
@@ -167,11 +175,11 @@ jobs:
           if [ "$IS_PRERELEASE" = "true" ]; then
             FLAGS="$FLAGS --prerelease"
           fi
-          
+
           # If release already exists, delete it first to allow re-release on same tag if needed
-          if gh release view "$RELEASE_VERSION" >/dev/null 2>&1; then
-            echo "Release $RELEASE_VERSION already exists. Deleting it..."
-            gh release delete "$RELEASE_VERSION" --yes
+          if gh release view "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Release $TAG_NAME already exists. Deleting it..."
+            gh release delete "$TAG_NAME" --yes
           fi
-          
-          gh release create "$RELEASE_VERSION" files/*.apk $FLAGS --title "Release $RELEASE_VERSION" --notes "Automated release for version $RELEASE_VERSION"
+
+          gh release create "$TAG_NAME" files/*.apk $FLAGS --title "Release $VERSION" --notes "Automated release for version $VERSION"
