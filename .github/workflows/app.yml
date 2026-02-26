@@ -76,8 +76,11 @@ jobs:
         id: buildWithGradle
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
-          echo 'org.gradle.caching=true' >> gradle.properties
+          echo 'org.gradle.caching=false' >> gradle.properties
           echo 'org.gradle.parallel=true' >> gradle.properties
+          
+          # Clean build to avoid cached compilation errors
+          ./gradlew clean --no-daemon
 
           if [ "$IS_DEBUG" = "true" ]; then
             CMD="./gradlew :manager:assembleDebug"
