@@ -24,14 +24,17 @@ object AuthorizationManager {
         return try {
             data.writeInterfaceToken("moe.shizuku.server.IShizukuService")
             data.writeInt(userId)
+            val binder = Shizuku.getBinder()
+                ?: throw IllegalStateException("Shizuku binder not available")
             try {
-                Shizuku.getBinder()!!.transact(ServerConstants.BINDER_TRANSACTION_getApplications, data, reply, 0)
+                binder.transact(ServerConstants.BINDER_TRANSACTION_getApplications, data, reply, 0)
             } catch (e: Throwable) {
                 throw RuntimeException(e)
             }
             reply.readException()
             @Suppress("UNCHECKED_CAST")
-            (ParcelableListSlice.CREATOR.createFromParcel(reply) as ParcelableListSlice<PackageInfo>).list!!
+            (ParcelableListSlice.CREATOR.createFromParcel(reply) as ParcelableListSlice<PackageInfo>).list
+                ?: emptyList()
         } finally {
             reply.recycle()
             data.recycle()

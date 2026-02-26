@@ -41,15 +41,17 @@ class ToggleAllViewHolder(private val binding: AppListToggleAllBinding) : BaseVi
     override fun onRecycle() {}
 
     private fun setAllEnabled(enabled: Boolean) {
-        val items = adapter.getItems()
+        @Suppress("UNCHECKED_CAST")
+        val items = adapter.getItems() as ArrayList<*>
         for (item in items) {
             if (item is PackageInfo) {
                 val pi = item
+                val appInfo = pi.applicationInfo ?: continue
                 try {
                     if (enabled) {
-                        AuthorizationManager.grant(pi.packageName, pi.applicationInfo!!.uid)
+                        AuthorizationManager.grant(pi.packageName, appInfo.uid)
                     } else {
-                        AuthorizationManager.revoke(pi.packageName, pi.applicationInfo!!.uid)
+                        AuthorizationManager.revoke(pi.packageName, appInfo.uid)
                     }
                 } catch (e: Exception) {}
             }
@@ -58,15 +60,17 @@ class ToggleAllViewHolder(private val binding: AppListToggleAllBinding) : BaseVi
     }
 
     private fun areAllEnabled(): Boolean {
-        val items = adapter.getItems()
+        @Suppress("UNCHECKED_CAST")
+        val items = adapter.getItems() as ArrayList<*>
         if (items.size <= 1) {
             return false
         }
         for (item in items) {
             if (item is PackageInfo) {
                 val pi = item
+                val appInfo = pi.applicationInfo ?: return false
                 try {
-                    if (!AuthorizationManager.granted(pi.packageName, pi.applicationInfo!!.uid)) return false
+                    if (!AuthorizationManager.granted(pi.packageName, appInfo.uid)) return false
                 } catch (e: Exception) {
                     return false
                 }

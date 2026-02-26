@@ -23,7 +23,7 @@ class AppsViewModel(application: Application) : AndroidViewModel(application) {
 
     private var rawPackages: List<PackageInfo> = emptyList()
     private val hiddenPackages: MutableSet<String> =
-        prefs.getStringSet(KEY_HIDDEN, emptySet())!!.toMutableSet()
+        (prefs.getStringSet(KEY_HIDDEN, emptySet()) ?: emptySet()).toMutableSet()
 
     var sortOrder: SortOrder = SortOrder.valueOf(
         prefs.getString(KEY_SORT, SortOrder.NAME_ASC.name) ?: SortOrder.NAME_ASC.name
@@ -81,7 +81,8 @@ class AppsViewModel(application: Application) : AndroidViewModel(application) {
                 var count = 0
                 for (pi in AuthorizationManager.getPackages()) {
                     if (pi.packageName !in hiddenPackages) list.add(pi)
-                    if (AuthorizationManager.granted(pi.packageName, pi.applicationInfo!!.uid)) count++
+                    val appInfo = pi.applicationInfo ?: continue
+                    if (AuthorizationManager.granted(pi.packageName, appInfo.uid)) count++
                 }
                 rawPackages = list
                 if (!onlyCount) applyFiltersAndSort()
@@ -100,17 +101,18 @@ class AppsViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val pm = appContext.packageManager
                 var list = rawPackages.filter { pi ->
-                    val label = pi.applicationInfo?.loadLabel(pm)?.toString() ?: ""
+                    val appInfo = pi.applicationInfo
+                    val label = appInfo?.loadLabel(pm)?.toString() ?: ""
                     val matchesSearch = searchQuery.isBlank() ||
                         label.contains(searchQuery, ignoreCase = true) ||
                         pi.packageName.contains(searchQuery, ignoreCase = true)
                     val matchesFilter = when (filterState) {
                         FilterState.ALL -> true
-                        FilterState.GRANTED -> runCatching {
-                            AuthorizationManager.granted(pi.packageName, pi.applicationInfo!!.uid)
+                        FilterState.GRANTED -> appInfo != null && runCatching {
+                            AuthorizationManager.granted(pi.packageName, appInfo.uid)
                         }.getOrDefault(false)
-                        FilterState.DENIED -> runCatching {
-                            !AuthorizationManager.granted(pi.packageName, pi.applicationInfo!!.uid)
+                        FilterState.DENIED -> appInfo == null || runCatching {
+                            !AuthorizationManager.granted(pi.packageName, appInfo.uid)
                         }.getOrDefault(true)
                     }
                     matchesSearch && matchesFilter
