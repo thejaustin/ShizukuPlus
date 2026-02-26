@@ -169,8 +169,9 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
 
             override fun onSwiped(vh: RecyclerView.ViewHolder, direction: Int) {
                 val pos = vh.adapterPosition
-                val items = adapter.getItems()
-                val item = items[pos] as? PackageInfo
+                @Suppress("UNCHECKED_CAST")
+                val items = adapter.getItems() as ArrayList<*>
+                val item = items.getOrNull(pos) as? PackageInfo
                 adapter.notifyItemChanged(pos) // snap back
                 item ?: return
                 val opts = ActivityOptions.makeCustomAnimation(
