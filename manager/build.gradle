@@ -12,6 +12,7 @@ plugins {
 
 android {
     namespace = "moe.shizuku.manager"
+    ndkVersion "27.0.12077973"
     defaultConfig {
         applicationId = "moe.shizuku.privileged.api"
         versionCode = rootProject.ext.versionCode
