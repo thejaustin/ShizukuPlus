@@ -9,21 +9,17 @@ idea.module {
 }
 
 subprojects { subproject ->
-    plugins.configureEach { plugin ->
-        if (plugin.class.name.startsWith("com.android.build.gradle.AppPlugin") ||
-            plugin.class.name.startsWith("com.android.build.gradle.LibraryPlugin")) {
-            android {
-                compileSdk = 35
-                buildToolsVersion = "35.0.0"
-                ndkVersion = "27.0.12077973"
-                defaultConfig {
-                    minSdk = 24
-                    targetSdk = 35
-                }
-                compileOptions {
-                    sourceCompatibility = JavaVersion.VERSION_21
-                    targetCompatibility = JavaVersion.VERSION_21
-                }
+    plugins.withId("com.android.base") {
+        android {
+            compileSdk = 36
+            ndkVersion = "29.0.13113456"
+            defaultConfig {
+                minSdk = 24
+                targetSdk = 36
+            }
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_21
+                targetCompatibility = JavaVersion.VERSION_21
             }
         }
     }
