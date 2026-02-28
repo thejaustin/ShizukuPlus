@@ -57,7 +57,7 @@ class ActivityLogActivity : AppBarActivity() {
             emptyView = TextView(this).apply {
                 text = getString(R.string.settings_activity_log_empty)
                 gravity = Gravity.CENTER
-                androidx.core.widget.TextViewCompat.setTextAppearance(this, rikka.material.R.style.TextAppearance_Material3_BodyLarge)
+                androidx.core.widget.TextViewCompat.setTextAppearance(this, com.google.android.material.R.style.TextAppearance_Material3_BodyLarge)
                 layoutParams = FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
