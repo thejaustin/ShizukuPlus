@@ -82,6 +82,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     }
 
     private fun syncAllFeaturesToServer() {
+        if (!Shizuku.pingBinder()) return
         lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val binder = Shizuku.getBinder() as? android.os.IBinder ?: return@launch
@@ -156,6 +157,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         serviceDoctorPreference = findPreference("service_doctor")!!
         activityLogPreference = findPreference("activity_log")!!
         updateDbPreference = findPreference("update_app_database")!!
+        rootHubPreference = findPreference("root_compatibility_hub")!!
         legacyPairingPreference = findPreference(KEY_LEGACY_PAIRING)!!
         advancedCategory = findPreference(KEY_CATEGORY_ADVANCED)!!
         dhizukuModePreference = findPreference(KEY_DHIZUKU_MODE)!!
