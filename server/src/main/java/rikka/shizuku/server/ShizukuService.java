@@ -499,7 +499,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 if (pi.applicationInfo == null) continue;
 
                 int uid = pi.applicationInfo.uid;
-                if (isHidden(uid)) continue;
+                try {
+                    if (isHidden(uid)) continue;
+                } catch (RemoteException e) {
+                    continue;
+                }
                 
                 int flags = 0;
                 ShizukuConfig.PackageEntry entry = configManager.find(uid);
