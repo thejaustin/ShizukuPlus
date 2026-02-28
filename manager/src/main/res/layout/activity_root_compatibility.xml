@@ -30,7 +30,7 @@
             android:padding="16dp">
 
             <com.google.android.material.card.MaterialCardView
-                style="?attr/materialCardViewStyleElevated"
+                style="@style/Widget.Material3.CardView.Elevated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
