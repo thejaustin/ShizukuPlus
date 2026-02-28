@@ -47,6 +47,8 @@ import moe.shizuku.common.util.OsUtils;
 import moe.shizuku.server.IShizukuApplication;
 import moe.shizuku.server.IVirtualMachineManager;
 import moe.shizuku.server.IStorageProxy;
+import moe.shizuku.server.IAICorePlus;
+import moe.shizuku.server.IWindowManagerPlus;
 import rikka.hidden.compat.ActivityManagerApis;
 import rikka.hidden.compat.DeviceIdleControllerApis;
 import rikka.hidden.compat.PackageManagerApis;
@@ -93,6 +95,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private final int managerAppId;
     private final VirtualMachineManagerImpl virtualMachineManager = new VirtualMachineManagerImpl();
     private final StorageProxyImpl storageProxy = new StorageProxyImpl();
+    private final AICorePlusImpl aiCorePlus = new AICorePlusImpl();
+    private final WindowManagerPlusImpl windowManagerPlus = new WindowManagerPlusImpl();
 
     public ShizukuService() {
         super();
@@ -621,6 +625,18 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     public IStorageProxy getStorageProxy() {
         enforceCallingPermission("getStorageProxy");
         return storageProxy;
+    }
+
+    @Override
+    public IAICorePlus getAICorePlus() {
+        enforceCallingPermission("getAICorePlus");
+        return aiCorePlus;
+    }
+
+    @Override
+    public IWindowManagerPlus getWindowManagerPlus() {
+        enforceCallingPermission("getWindowManagerPlus");
+        return windowManagerPlus;
     }
 
     @Override
