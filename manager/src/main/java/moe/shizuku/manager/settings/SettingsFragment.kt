@@ -113,6 +113,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     private lateinit var reportBugPreference: Preference
     private lateinit var activityLogPreference: Preference
     private lateinit var updateDbPreference: Preference
+    private lateinit var rootHubPreference: Preference
     private lateinit var legacyPairingPreference: TwoStatePreference
     private lateinit var advancedCategory: PreferenceCategory
     private lateinit var dhizukuModePreference: TwoStatePreference
@@ -185,6 +186,11 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
 
         activityLogPreference.setOnPreferenceClickListener {
             startActivity(Intent(context, ActivityLogActivity::class.java))
+            true
+        }
+
+        rootHubPreference.setOnPreferenceClickListener {
+            startActivity(Intent(context, RootCompatibilityActivity::class.java))
             true
         }
 

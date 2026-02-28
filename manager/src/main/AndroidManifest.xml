@@ -98,6 +98,9 @@
             android:name=".settings.ActivityLogActivity"
             android:label="@string/settings_activity_log" />
         <activity
+            android:name=".settings.RootCompatibilityActivity"
+            android:label="@string/root_hub_title" />
+        <activity
             android:name=".adb.AdbPairingTutorialActivity"
             android:label="@string/adb_pairing" />
         <activity

@@ -83,6 +83,11 @@
             android:summary="@string/settings_fake_su_summary"
             android:defaultValue="false" />
 
+        <Preference
+            android:key="root_compatibility_hub"
+            android:title="@string/settings_root_compatibility_hub"
+            android:summary="@string/settings_root_compatibility_hub_summary" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

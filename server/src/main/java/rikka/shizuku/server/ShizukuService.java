@@ -309,7 +309,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 // Backporting: Route through native IAppOpsService for speed boost.
             }
         }
-        return super.newProcess(cmd, env, dir);
+        return super.newProcessInternal(cmd, env, dir);
     }
 
     @Override

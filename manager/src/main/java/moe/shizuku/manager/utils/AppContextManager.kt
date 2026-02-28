@@ -27,6 +27,13 @@ object AppContextManager {
     private val dynamicDatabase = mutableMapOf<String, AppMetadata>()
 
     private val staticDatabase = mutableMapOf<String, AppMetadata>().apply {
+        // --- Legacy Root Apps (Confirmed to support custom SU paths) ---
+        put("com.keramidas.TitaniumBackup", AppMetadata("Titanium Backup: The classic root backup tool.", emptyList(), true))
+        put("eu.darken.sdm", AppMetadata("SD Maid (Legacy): Powerful system cleaner.", emptyList(), true))
+        put("me.timschneeberger.rootlessjamesdsp", AppMetadata("JamesDSP: Advanced audio engine.", emptyList(), true))
+        put("com.speedsoftware.explorer", AppMetadata("Root Explorer: Ultimate file manager for root users.", emptyList(), true))
+        put("com.jrummy.root.browserfree", AppMetadata("Root Browser: File management with root access.", emptyList(), true))
+
         // --- thejaustin's Apps ---
         put("thejaustin.hexodus", AppMetadata("Hexodus: Spiritual successor to Hex Installer for OneUI 8.", listOf(ENH_SHELL, ENH_WIN), true))
         put("thejaustin.afdroid", AppMetadata("afdroid: Expressive F-Droid client.", listOf(ENH_SHELL, ENH_STORAGE), true))
@@ -90,6 +97,15 @@ object AppContextManager {
     fun getMetadata(packageName: String): AppMetadata? {
         if (dynamicDatabase.isEmpty()) loadFromCache()
         return dynamicDatabase[packageName] ?: staticDatabase[packageName]
+    }
+
+    fun getRootLegacyPackages(): List<String> {
+        return listOf(
+            "com.keramidas.TitaniumBackup",
+            "eu.darken.sdm",
+            "com.speedsoftware.explorer",
+            "com.jrummy.root.browserfree"
+        )
     }
     
     fun getDescription(packageName: String): String? = getMetadata(packageName)?.description

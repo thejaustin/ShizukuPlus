@@ -268,6 +268,19 @@
     <string name="settings_adb_proxy_summary">Emulate an ADB server on port 15555 to support apps requiring Wireless ADB without keeping the system feature active.</string>
     <string name="settings_fake_su">Fake SU Binary (su wrapper)</string>
     <string name="settings_fake_su_summary">Provide a Shizuku-backed \'su\' binary for legacy root apps that support custom paths.</string>
+    <string name="settings_root_compatibility_hub">Root Compatibility Hub</string>
+    <string name="settings_root_compatibility_hub_summary">Configure and manage legacy root apps to work with Shizuku+ privileges.</string>
+    <string name="root_hub_title">Root Compatibility</string>
+    <string name="root_hub_description">Many legacy apps are built strictly for root access. Shizuku+ can "trick" these apps into using its privileges by providing a fake SU binary.</string>
+    <string name="root_hub_suggested_apps">Suggested Apps</string>
+    <string name="root_hub_suggested_apps_desc">These apps are known to allow custom SU paths. Point them to your exported \'su\' script.</string>
+    <string name="root_hub_active_sessions">Active Root Sessions</string>
+    <string name="root_hub_active_sessions_empty">No active legacy root sessions detected.</string>
+    <string name="root_hub_how_to_use">How to use:</string>
+    <string name="root_hub_step_1">1. Export Shizuku files from the Home screen.</string>
+    <string name="root_hub_step_2">2. Find the "SU Path" or "Binary Path" setting in your root app.</string>
+    <string name="root_hub_step_3">3. Change it to the path of the exported \'su\' file.</string>
+    <string name="root_hub_app_instruction">Set path in Settings > %s</string>
 
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">First, please do the following:</string>
