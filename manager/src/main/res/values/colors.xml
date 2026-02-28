@@ -4,4 +4,7 @@
 
     <color name="app_color_light">#3F51B5</color>
     <color name="app_color_dark">#B1B8DF</color>
+
+    <color name="status_ok">#4CAF50</color>
+    <color name="status_error">#F44336</color>
 </resources>

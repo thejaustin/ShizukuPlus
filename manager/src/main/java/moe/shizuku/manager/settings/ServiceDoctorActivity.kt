@@ -1,11 +1,8 @@
 package moe.shizuku.manager.settings
 
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.PowerManager
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -108,7 +105,6 @@ class ServiceDoctorActivity : AppBarActivity() {
         // 5. Xiaomi Restricted ADB
         val manufacturer = Build.MANUFACTURER.lowercase()
         if (manufacturer.contains("xiaomi")) {
-            // We can't easily check the security setting programmatically, but we can warn
             checks.add(DoctorCheck(
                 getString(R.string.doctor_check_permission, ""),
                 getString(R.string.doctor_status_limited),
@@ -127,9 +123,11 @@ class ServiceDoctorActivity : AppBarActivity() {
         }
 
         checkListAdapter.submitList(checks)
-        tipsTextView.text = if (tips.isEmpty()) "Your system seems well-configured for Shizuku+." else tips.joinToString("
-
-")
+        tipsTextView.text = if (tips.isEmpty()) {
+            "Your system seems well-configured for Shizuku+."
+        } else {
+            tips.joinToString("\n\n")
+        }
     }
 
     private data class DoctorCheck(

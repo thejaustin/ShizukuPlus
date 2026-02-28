@@ -445,7 +445,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         translationPreference.apply {
             summary = context.getString(R.string.settings_translation_summary, context.getString(R.string.app_name))
             setOnPreferenceClickListener {
-                CustomTabsHelper.launchUrlOrCopy(context, "https://github.com/thejaustin/ShizukuPlus")
+                CustomTabsHelper.launchUrlOrCopy(context, context.getString(R.string.translation_url))
                 true
             }
         }
