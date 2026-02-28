@@ -27,12 +27,19 @@ object AppContextManager {
     private val dynamicDatabase = mutableMapOf<String, AppMetadata>()
 
     private val staticDatabase = mutableMapOf<String, AppMetadata>().apply {
-        // --- Legacy Root Apps (Confirmed to support custom SU paths) ---
+        // --- Legacy Root Apps ---
         put("com.keramidas.TitaniumBackup", AppMetadata("Titanium Backup: The classic root backup tool.", emptyList(), true))
         put("eu.darken.sdm", AppMetadata("SD Maid (Legacy): Powerful system cleaner.", emptyList(), true))
-        put("me.timschneeberger.rootlessjamesdsp", AppMetadata("JamesDSP: Advanced audio engine.", emptyList(), true))
         put("com.speedsoftware.explorer", AppMetadata("Root Explorer: Ultimate file manager for root users.", emptyList(), true))
         put("com.jrummy.root.browserfree", AppMetadata("Root Browser: File management with root access.", emptyList(), true))
+        put("com.machiav3lli.neo_backup", AppMetadata("Neo Backup: Modern open-source backup solution.", listOf(ENH_STORAGE), true))
+        put("projekt.substratum.lite", AppMetadata("Substratum Lite: Theming engine for Android.", listOf(ENH_WIN), true))
+        put("com.oasisfeng.greenify", AppMetadata("Greenify: Maximize battery savings by hibernating apps.", listOf(ENH_SHELL), true))
+        put("com.franco.doze", AppMetadata("Naptime: Aggressive Doze for better battery life.", listOf(ENH_SHELL), true))
+        put("com.uzumapps.wakelockdetector", AppMetadata("Wakelock Detector: Find apps draining your battery.", listOf(ENH_SHELL), true))
+        put("com.asksven.betterbatterystats", AppMetadata("BetterBatteryStats: Deep dive into battery drain.", listOf(ENH_SHELL), true))
+        put("com.jrummy.apps.build.prop.editor", AppMetadata("BuildProp Editor: Edit system properties.", emptyList(), true))
+        put("org.swiftapps.swiftbackup", AppMetadata("Swift Backup: Fast and reliable backup tool.", listOf(ENH_STORAGE, ENH_SHELL), true))
 
         // --- thejaustin's Apps ---
         put("thejaustin.hexodus", AppMetadata("Hexodus: Spiritual successor to Hex Installer for OneUI 8.", listOf(ENH_SHELL, ENH_WIN), true))
@@ -99,12 +106,30 @@ object AppContextManager {
         return dynamicDatabase[packageName] ?: staticDatabase[packageName]
     }
 
-    fun getRootLegacyPackages(): List<String> {
-        return listOf(
-            "com.keramidas.TitaniumBackup",
-            "eu.darken.sdm",
-            "com.speedsoftware.explorer",
-            "com.jrummy.root.browserfree"
+    fun getRootLegacyPackages(): Map<String, List<String>> {
+        return mapOf(
+            "Backup & Cleaning" to listOf(
+                "com.keramidas.TitaniumBackup",
+                "eu.darken.sdm",
+                "org.swiftapps.swiftbackup",
+                "com.machiav3lli.neo_backup"
+            ),
+            "System Customization" to listOf(
+                "com.speedsoftware.explorer",
+                "com.jrummy.root.browserfree",
+                "projekt.substratum.lite",
+                "com.zacharee.tweaker"
+            ),
+            "Battery & Optimization" to listOf(
+                "com.oasisfeng.greenify",
+                "com.franco.doze", // Naptime
+                "com.paget96.chargemonitor"
+            ),
+            "Advanced Tools" to listOf(
+                "com.uzumapps.wakelockdetector",
+                "com.asksven.betterbatterystats",
+                "com.jrummy.apps.build.prop.editor"
+            )
         )
     }
     
