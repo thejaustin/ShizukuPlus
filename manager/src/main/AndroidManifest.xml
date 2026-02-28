@@ -101,6 +101,9 @@
             android:name=".settings.RootCompatibilityActivity"
             android:label="@string/root_hub_title" />
         <activity
+            android:name=".settings.ServiceDoctorActivity"
+            android:label="@string/home_service_doctor_title" />
+        <activity
             android:name=".adb.AdbPairingTutorialActivity"
             android:label="@string/adb_pairing" />
         <activity

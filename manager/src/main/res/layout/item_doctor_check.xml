@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -12,9 +13,9 @@
         android:id="@+id/icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/ic_help_outline_24dp"
         android:contentDescription="@null"
-        android:tint="?colorPrimary" />
+        android:tint="?colorPrimary"
+        tools:src="@drawable/ic_server_ok_24dp" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -24,20 +25,29 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/text1"
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/home_service_doctor_title"
-            android:textAppearance="?textAppearanceTitleMedium" />
+            android:textAppearance="?textAppearanceTitleMedium"
+            tools:text="Battery Optimization" />
 
         <TextView
-            android:id="@+id/text2"
+            android:id="@+id/status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/home_service_doctor_summary"
             android:textAppearance="?textAppearanceBodyMedium"
-            android:textColor="?colorOnSurfaceVariant" />
+            android:textColor="?colorOnSurfaceVariant"
+            tools:text="Optimized (May kill service)" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_fix"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/doctor_button_fix"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
 </LinearLayout>

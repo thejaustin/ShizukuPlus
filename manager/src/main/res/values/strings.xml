@@ -229,6 +229,7 @@
     <string name="settings_help">Help</string>
     <string name="settings_report_bug">Report a bug</string>
     <string name="settings_activity_log">Activity log</string>
+    <string name="settings_activity_log_empty">No activity recorded yet.</string>
     <string name="settings_enable_activity_log">Enable activity log</string>
     <string name="settings_show_activity_log_home">Show Activity Log</string>
     <string name="settings_home_visibility">Home screen visibility</string>
@@ -303,17 +304,26 @@
     <!-- Service Doctor -->
     <string name="home_service_doctor_title">Service Doctor</string>
     <string name="home_service_doctor_summary">Having trouble starting Shizuku? Tap to run a diagnostic check.</string>
-    <string name="doctor_dialog_title">Diagnostic Results</string>
+    <string name="doctor_dialog_title">System Diagnostics</string>
     <string name="doctor_check_battery">Battery optimization: ^1</string>
     <string name="doctor_check_adb">Wireless debugging: ^1</string>
     <string name="doctor_check_root">Root access: ^1</string>
     <string name="doctor_check_permission">ADB permission: ^1</string>
+    <string name="doctor_check_server">Shizuku server: ^1</string>
+    <string name="doctor_check_background">Background limits: ^1</string>
     <string name="doctor_status_ok">OK</string>
-    <string name="doctor_status_limited">Limited</string>
+    <string name="doctor_status_running">Running</string>
+    <string name="doctor_status_stopped">Stopped</string>
+    <string name="doctor_status_limited">Limited (Restricted ADB)</string>
     <string name="doctor_status_restricted">Restricted (System optimization enabled)</string>
     <string name="doctor_status_not_enabled">Not enabled</string>
-    <string name="doctor_status_optimized">Optimized (Can cause issues)</string>
+    <string name="doctor_status_optimized">Optimized (May kill service)</string>
     <string name="doctor_status_unlocked">Unlocked</string>
+    <string name="doctor_status_restricted_bg">Restricted background execution</string>
+    <string name="doctor_tip_xiaomi">Xiaomi/HyperOS: Enable "USB Debugging (Security Settings)" in Developer Options.</string>
+    <string name="doctor_tip_battery">Disable battery optimization for Shizuku+ to prevent it from being killed in the background.</string>
+    <string name="doctor_tip_adb">Wireless debugging must be active for Shizuku to start in non-root mode after a reboot.</string>
+    <string name="doctor_button_fix">Fix</string>
 
     <!-- Snackbar -->
     <string name="snackbar_invalid_port">Port must be between 1 and 65535</string>

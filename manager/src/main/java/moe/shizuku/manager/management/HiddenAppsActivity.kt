@@ -47,7 +47,7 @@ class HiddenAppsActivity : AppBarActivity(), AppViewHolder.Callbacks {
         viewModel.getHiddenPackagesResource().observe(this) {
             when (it.status) {
                 Status.SUCCESS -> {
-                    adapter.updateData(it.data!!)
+                    it.data?.let { data -> adapter.updateData(data) }
                 }
                 Status.ERROR -> {
                     Toast.makeText(this, Objects.toString(it.error, "unknown"), Toast.LENGTH_SHORT).show()

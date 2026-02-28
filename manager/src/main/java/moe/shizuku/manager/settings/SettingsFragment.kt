@@ -114,6 +114,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     private lateinit var useSystemColorPreference: TwoStatePreference
     private lateinit var helpPreference: Preference
     private lateinit var reportBugPreference: Preference
+    private lateinit var serviceDoctorPreference: Preference
     private lateinit var activityLogPreference: Preference
     private lateinit var updateDbPreference: Preference
     private lateinit var rootHubPreference: Preference
@@ -152,6 +153,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         useSystemColorPreference = findPreference(KEY_USE_SYSTEM_COLOR)!!
         helpPreference = findPreference(KEY_HELP)!!
         reportBugPreference = findPreference(KEY_REPORT_BUG)!!
+        serviceDoctorPreference = findPreference("service_doctor")!!
         activityLogPreference = findPreference("activity_log")!!
         updateDbPreference = findPreference("update_app_database")!!
         legacyPairingPreference = findPreference(KEY_LEGACY_PAIRING)!!
@@ -164,6 +166,11 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         batteryOptimizationListener = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val accepted = SettingsHelper.isIgnoringBatteryOptimizations(requireContext())
             batteryOptimizationContinuation?.resume(accepted)
+        }
+
+        serviceDoctorPreference.setOnPreferenceClickListener {
+            startActivity(Intent(context, ServiceDoctorActivity::class.java))
+            true
         }
 
         updateDbPreference.setOnPreferenceClickListener {

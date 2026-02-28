@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import moe.shizuku.manager.R
@@ -23,6 +25,13 @@ class RootCompatibilityActivity : AppBarActivity() {
         super.onCreate(savedInstanceState)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        val scrollView = findViewById<View>(R.id.suggested_apps_list)?.parent?.parent as? View ?: rootView
+        ViewCompat.setOnApplyWindowInsetsListener(scrollView) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, systemBars.bottom)
+            insets
+        }
 
         val recyclerView = findViewById<RecyclerView>(R.id.suggested_apps_list)
         recyclerView.layoutManager = LinearLayoutManager(this)

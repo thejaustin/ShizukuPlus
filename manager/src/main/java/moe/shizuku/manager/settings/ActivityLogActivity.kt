@@ -1,11 +1,16 @@
 package moe.shizuku.manager.settings
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import moe.shizuku.manager.R
 import moe.shizuku.manager.app.AppBarActivity
@@ -21,6 +26,7 @@ import java.util.Locale
 class ActivityLogActivity : AppBarActivity() {
 
     private val adapter = LogAdapter()
+    private var emptyView: TextView? = null
 
     override fun getLayoutId() = R.layout.apps_appbar_activity
 
@@ -32,13 +38,33 @@ class ActivityLogActivity : AppBarActivity() {
         supportActionBar?.setTitle(R.string.settings_activity_log)
         
         // Hide search/filter
-        findViewById<android.view.View>(R.id.search_layout).visibility = android.view.View.GONE
-        findViewById<android.view.View>(R.id.filter_chip_group).parent.let { 
-            if (it is android.view.View) it.visibility = android.view.View.GONE 
+        findViewById<View>(R.id.search_layout).visibility = View.GONE
+        findViewById<View>(R.id.filter_chip_group).parent.let { 
+            if (it is View) it.visibility = View.GONE 
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.list) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, systemBars.bottom)
+            insets
         }
 
         binding.list.adapter = adapter
-        adapter.update(ActivityLogManager.getRecords())
+        val records = ActivityLogManager.getRecords()
+        adapter.update(records)
+
+        if (records.isEmpty()) {
+            emptyView = TextView(this).apply {
+                text = getString(R.string.settings_activity_log_empty)
+                gravity = Gravity.CENTER
+                setTextAppearance(rikka.material.R.style.TextAppearance_Material3_BodyLarge)
+                layoutParams = FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+            }
+            (binding.list.parent as? ViewGroup)?.addView(emptyView)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

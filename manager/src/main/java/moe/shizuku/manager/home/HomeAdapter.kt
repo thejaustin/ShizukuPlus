@@ -45,10 +45,6 @@ class HomeAdapter(private val homeModel: HomeViewModel, private val appsModel: A
         clear()
         addItem(ServerStatusViewHolder.CREATOR, status, ID_STATUS)
 
-        if (!running && isPrimaryUser) {
-            addItem(ServiceDoctorViewHolder.CREATOR, Unit, ID_DOCTOR)
-        }
-
         if (adbPermission) {
             addItem(ManageAppsViewHolder.CREATOR, status to grantedCount, ID_APPS)
             if (moe.shizuku.manager.ShizukuSettings.showTerminalHome()) {

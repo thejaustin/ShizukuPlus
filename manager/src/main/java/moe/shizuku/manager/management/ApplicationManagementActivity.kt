@@ -307,20 +307,22 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
         }
         
         val bg = ColorDrawable(color)
-        val icon = AppCompatResources.getDrawable(this, iconRes)!!.mutate().also { it.setTint(Color.WHITE) }
+        val icon = AppCompatResources.getDrawable(this, iconRes)?.mutate()?.also { it.setTint(Color.WHITE) }
         val margin = v.height / 4
-        val top = v.top + (v.height - icon.intrinsicHeight) / 2
+        val intrinsicHeight = icon?.intrinsicHeight ?: 0
+        val intrinsicWidth = icon?.intrinsicWidth ?: 0
+        val top = v.top + (v.height - intrinsicHeight) / 2
         
         if (dX > 0) {
             bg.setBounds(v.left, v.top, v.left + dX.toInt(), v.bottom)
             bg.draw(c)
-            icon.setBounds(v.left + margin, top, v.left + margin + icon.intrinsicWidth, top + icon.intrinsicHeight)
-            icon.draw(c)
+            icon?.setBounds(v.left + margin, top, v.left + margin + intrinsicWidth, top + intrinsicHeight)
+            icon?.draw(c)
         } else {
             bg.setBounds(v.right + dX.toInt(), v.top, v.right, v.bottom)
             bg.draw(c)
-            icon.setBounds(v.right - margin - icon.intrinsicWidth, top, v.right - margin, top + icon.intrinsicHeight)
-            icon.draw(c)
+            icon?.setBounds(v.right - margin - intrinsicWidth, top, v.right - margin, top + intrinsicHeight)
+            icon?.draw(c)
         }
     }
 

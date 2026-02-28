@@ -257,7 +257,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="category_support_advanced"
+        android:key="category_advanced"
         android:title="@string/settings_advanced">
 
         <Preference
@@ -267,6 +267,11 @@
         <Preference
             android:key="report_bug"
             android:title="@string/settings_report_bug" />
+
+        <Preference
+            android:key="service_doctor"
+            android:title="@string/home_service_doctor_title"
+            android:summary="@string/home_service_doctor_summary" />
 
         <SwitchPreferenceCompat
             android:key="enable_activity_log"
