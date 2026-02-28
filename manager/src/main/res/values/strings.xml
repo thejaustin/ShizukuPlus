@@ -2,7 +2,8 @@
     <string name="app_name" translatable="false">Shizuku+</string>
 
     <!-- To translators: you can leave your here -->
-    <string name="translation_contributors" />
+    <string name="translation_contributors">thejaustin</string>
+    <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
 
     <!-- Home - Status -->
     <string name="home_status_service_is_running">%1$s is running</string>
