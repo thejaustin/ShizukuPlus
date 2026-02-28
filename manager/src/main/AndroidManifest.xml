@@ -92,6 +92,12 @@
             android:name=".management.ApplicationManagementActivity"
             android:label="@string/home_app_management_title" />
         <activity
+            android:name=".management.HiddenAppsActivity"
+            android:label="@string/app_management_action_hidden_apps" />
+        <activity
+            android:name=".settings.ActivityLogActivity"
+            android:label="@string/settings_activity_log" />
+        <activity
             android:name=".adb.AdbPairingTutorialActivity"
             android:label="@string/adb_pairing" />
         <activity
@@ -183,6 +189,20 @@
                     The watchdog service would ensure the API is always available for the apps to use.
                     The watchdog service uses minimal resources and battery. There is no constant polling; it only reacts when the API service stops unexpectedly.
                     The watchdog service is opt-in and toggleable via settings, so users can choose to disable it at any time if not desired." />
+        </service>
+
+        <service
+            android:name=".service.ShizukuTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_server_ok_24dp"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="true" />
         </service>
 
         <receiver

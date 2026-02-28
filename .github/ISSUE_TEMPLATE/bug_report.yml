@@ -1,69 +1,46 @@
 name: Bug Report
-description: Report a bug of Shizuku
-labels: bug
-
+description: Report a bug to help us improve Shizuku+
+labels: [bug]
 body:
   - type: checkboxes
-    id: before_you_begin
+    id: check
     attributes:
-      label: Before You Begin
+      label: Before reporting
       options:
-        - label: I read the [wiki](https://github.com/thedjchi/Shizuku/wiki#troubleshooting) and followed all relevant troubleshooting steps
+        - label: I read the [wiki](https://github.com/thejaustin/ShizukuPlus/wiki#troubleshooting) and followed all relevant troubleshooting steps
           required: true
-        - label: I searched through all [issues](https://github.com/thedjchi/Shizuku/issues) and confirmed that this is a new bug
+        - label: I searched through all [issues](https://github.com/thejaustin/ShizukuPlus/issues) and confirmed that this is a new bug
           required: true
-        - label: I am using the latest version of Shizuku
-          required: true
-
-  - type: checkboxes
-    id: requirements
-    attributes:
-      label: Requirements
-      options:
-        - label: Shizuku is not running in a virtual environment or broken ROM (e.g., GrapheneOS)
-          required: true
-        - label: Xposed is not installed/enabled for Shizuku
-          required: true  
-
-  - type: dropdown
-    id: mode
-    attributes:
-      label: Mode
-      options:
-        - adb
-        - root
-        - manual
-    validations:
-      required: true
-
   - type: input
     id: version
     attributes:
-      label: Shizuku Version
-    validations:
-      required: true 
-
-  - type: input
-    id: android_version
-    attributes:
-      label: Android Version
+      label: Shizuku version
+      description: What version of Shizuku are you using? (e.g., 13.5.4.r1000)
     validations:
       required: true
-
   - type: input
     id: device
     attributes:
-      label: Device
+      label: Device and Android version
+      description: What device and Android version are you using? (e.g., Pixel 7, Android 13)
     validations:
       required: true
-
   - type: textarea
-    id: logs
+    id: bug_description
     attributes:
-      label: Issue Description
-      description: Please upload any relevant logs and/or screenshots
-
+      label: Bug description
+      description: Please describe the bug clearly.
+    validations:
+      required: true
   - type: textarea
-    id: reproducer
+    id: reproduction
     attributes:
-      label: Steps To Reproduce
+      label: Steps to reproduce
+      description: Please provide clear steps to reproduce the bug.
+    validations:
+      required: true
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional context
+      description: Add any other context or screenshots about the bug report here.

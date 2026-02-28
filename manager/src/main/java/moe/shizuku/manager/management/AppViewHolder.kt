@@ -24,6 +24,8 @@ import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.authorization.AuthorizationManager
 import moe.shizuku.manager.databinding.AppListItemBinding
 import moe.shizuku.manager.ktx.toHtml
+import moe.shizuku.manager.utils.ActivityLogManager
+import moe.shizuku.manager.utils.AppContextManager
 import moe.shizuku.manager.utils.AppIconCache
 import moe.shizuku.manager.utils.ShizukuSystemApis
 import moe.shizuku.manager.utils.UserHandleCompat
@@ -49,6 +51,8 @@ class AppViewHolder(private val binding: AppListItemBinding) :
     private val icon get() = binding.icon
     private val name get() = binding.title
     private val pkg get() = binding.summary
+    private val appContextView get() = binding.appContext
+    private val checkbox get() = binding.checkbox
     private val switchWidget get() = binding.switchWidget
     private val root get() = binding.requiresRoot
     private val plus get() = binding.requiresPlus
@@ -59,6 +63,10 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         itemView.setOnLongClickListener(this)
         // Tap the package name to copy it
         pkg.setOnClickListener { v ->
+            if ((adapter as AppsAdapter).isSelectionMode()) {
+                onClick(itemView)
+                return@setOnClickListener
+            }
             val clipboard = v.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             clipboard.setPrimaryClip(ClipData.newPlainText("package_name", packageName))
             Toast.makeText(v.context, R.string.app_management_package_copied, Toast.LENGTH_SHORT).show()
@@ -76,6 +84,12 @@ class AppViewHolder(private val binding: AppListItemBinding) :
     private data class LpAction(val label: String, val run: () -> Unit)
 
     override fun onLongClick(v: View): Boolean {
+        val appsAdapter = adapter as AppsAdapter
+        if (!appsAdapter.isSelectionMode()) {
+            appsAdapter.isSelectionMode = true
+            appsAdapter.toggleSelection(packageName)
+            return true
+        }
         val context = v.context
         val pm = context.packageManager
         val appInfo = ai ?: return true
@@ -97,9 +111,11 @@ class AppViewHolder(private val binding: AppListItemBinding) :
 
     private fun buildEnabledActions(context: Context, isGranted: Boolean): List<LpAction> {
         val pm = context.packageManager
+        val appLabel = ai?.loadLabel(pm)?.toString() ?: packageName
         return buildList {
             if (ShizukuSettings.getLongPressOpenApp()) {
                 add(LpAction(context.getString(R.string.app_management_context_open_app)) {
+                    ActivityLogManager.log(appLabel, packageName, "Long-press: open_app")
                     val intent = pm.getLaunchIntentForPackage(packageName)
                     if (intent != null) launchActivity(context, intent)
                     else Toast.makeText(context, R.string.app_management_no_launcher, Toast.LENGTH_SHORT).show()
@@ -107,6 +123,7 @@ class AppViewHolder(private val binding: AppListItemBinding) :
             }
             if (ShizukuSettings.getLongPressAppInfo()) {
                 add(LpAction(context.getString(R.string.app_management_context_app_info)) {
+                    ActivityLogManager.log(appLabel, packageName, "Long-press: app_info")
                     launchActivity(context, Intent(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                         Uri.fromParts("package", packageName, null)
@@ -120,8 +137,13 @@ class AppViewHolder(private val binding: AppListItemBinding) :
                     context.getString(R.string.app_management_context_grant)
                 add(LpAction(label) {
                     try {
-                        if (isGranted) AuthorizationManager.revoke(packageName, uid)
-                        else AuthorizationManager.grant(packageName, uid)
+                        if (isGranted) {
+                            AuthorizationManager.revoke(packageName, uid)
+                            ActivityLogManager.log(appLabel, packageName, "Long-press: revoke_permission")
+                        } else {
+                            AuthorizationManager.grant(packageName, uid)
+                            ActivityLogManager.log(appLabel, packageName, "Long-press: grant_permission")
+                        }
                         adapter.notifyItemChanged(adapterPosition, Any())
                         adapter.notifyItemChanged(0)
                     } catch (e: SecurityException) {
@@ -133,6 +155,7 @@ class AppViewHolder(private val binding: AppListItemBinding) :
             }
             if (ShizukuSettings.getLongPressHideFromList()) {
                 add(LpAction(context.getString(R.string.app_management_context_hide)) {
+                    ActivityLogManager.log(appLabel, packageName, "Long-press: hide_app")
                     (context as? Callbacks)?.onHideApp(packageName)
                 })
             }
@@ -142,13 +165,21 @@ class AppViewHolder(private val binding: AppListItemBinding) :
     // ----- Regular tap: toggle permission -----
 
     override fun onClick(v: View) {
+        val appsAdapter = adapter as AppsAdapter
+        if (appsAdapter.isSelectionMode()) {
+            appsAdapter.toggleSelection(packageName)
+            return
+        }
         val context = v.context
         val appInfo = ai ?: return
+        val appLabel = appInfo.loadLabel(context.packageManager).toString()
         try {
             if (AuthorizationManager.granted(packageName, appInfo.uid)) {
                 AuthorizationManager.revoke(packageName, appInfo.uid)
+                ActivityLogManager.log(appLabel, packageName, context.getString(R.string.app_management_log_permission_toggle, context.getString(R.string.app_management_context_revoke)))
             } else {
                 AuthorizationManager.grant(packageName, appInfo.uid)
+                ActivityLogManager.log(appLabel, packageName, context.getString(R.string.app_management_log_permission_toggle, context.getString(R.string.app_management_context_grant)))
             }
         } catch (e: SecurityException) {
             val uid = runCatching { Shizuku.getUid() }.getOrDefault(-1)
@@ -203,9 +234,29 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         } else {
             appInfo.loadLabel(pm)
         }
-        pkg.text = appInfo.packageName
-        switchWidget.isChecked = AuthorizationManager.granted(packageName, appInfo.uid)
-        root.visibility = if (appInfo.metaData != null &&
+        
+        val appsAdapter = adapter as AppsAdapter
+        if (appsAdapter.isSelectionMode()) {
+            checkbox.visibility = View.VISIBLE
+            checkbox.isChecked = appsAdapter.selectedPackages.contains(packageName)
+            switchWidget.visibility = View.GONE
+        } else {
+            checkbox.visibility = View.GONE
+            switchWidget.visibility = View.VISIBLE
+            switchWidget.isChecked = AuthorizationManager.granted(packageName, appInfo.uid)
+        }
+
+                pkg.text = appInfo.packageName
+                
+                val description = AppContextManager.getDescription(packageName)
+                if (description != null) {
+                    appContextView.visibility = View.VISIBLE
+                    appContextView.text = context.getString(R.string.app_management_item_context, description)
+                } else {
+                    appContextView.visibility = View.GONE
+                }
+                
+                root.visibility = if (appInfo.metaData != null &&
             appInfo.metaData.getBoolean("moe.shizuku.client.V3_REQUIRES_ROOT"))
             View.VISIBLE else View.GONE
 

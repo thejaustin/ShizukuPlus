@@ -13,4 +13,20 @@
         <item>-1</item>
     </integer-array>
 
+    <string-array name="swipe_actions">
+        <item>@string/settings_action_none</item>
+        <item>@string/settings_action_open_app</item>
+        <item>@string/settings_action_app_info</item>
+        <item>@string/settings_action_toggle_permission</item>
+        <item>@string/settings_action_hide_from_list</item>
+    </string-array>
+
+    <string-array name="swipe_actions_values">
+        <item>none</item>
+        <item>open_app</item>
+        <item>app_info</item>
+        <item>toggle_permission</item>
+        <item>hide_from_list</item>
+    </string-array>
+
 </resources>

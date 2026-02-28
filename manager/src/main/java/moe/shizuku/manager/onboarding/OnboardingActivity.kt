@@ -45,7 +45,7 @@ class OnboardingActivity : AppActivity() {
     private lateinit var btnNext: MaterialButton
     private lateinit var btnSkip: MaterialButton
 
-    private val pageCount = 4
+    private val pageCount = 5
     private val dots = mutableListOf<View>()
     private val onboardingAdapter = OnboardingPagerAdapter()
 
@@ -70,7 +70,7 @@ class OnboardingActivity : AppActivity() {
         btnSkip = findViewById(R.id.btn_skip)
 
         pager.adapter = onboardingAdapter
-        pager.offscreenPageLimit = 3 // keep all pages in memory
+        pager.offscreenPageLimit = 4 // keep all pages in memory
 
         setupDots()
 
@@ -214,6 +214,7 @@ class OnboardingActivity : AppActivity() {
                 0 -> inflater.inflate(R.layout.page_onboarding_welcome, parent, false)
                 1 -> inflater.inflate(R.layout.page_onboarding_setup, parent, false)
                 2 -> inflater.inflate(R.layout.page_onboarding_swipe, parent, false)
+                3 -> inflater.inflate(R.layout.page_onboarding_gestures, parent, false)
                 else -> inflater.inflate(R.layout.page_onboarding_longpress, parent, false)
             }
             return object : RecyclerView.ViewHolder(view) {}
@@ -226,7 +227,7 @@ class OnboardingActivity : AppActivity() {
                     swipeIconRight = holder.itemView.findViewById(R.id.hint_icon_right)
                     swipeIconLeft = holder.itemView.findViewById(R.id.hint_icon_left)
                 }
-                3 -> bindLongPressPage(holder.itemView)
+                4 -> bindLongPressPage(holder.itemView)
             }
         }
 

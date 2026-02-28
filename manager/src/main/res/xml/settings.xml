@@ -9,6 +9,70 @@
         style="@style/Preference.Rikka.Material3.Empty" />
 
     <PreferenceCategory
+        android:key="category_shizuku_plus"
+        android:title="@string/settings_shizuku_plus_features">
+
+        <SwitchPreferenceCompat
+            android:key="dhizuku_mode"
+            android:title="@string/settings_dhizuku_mode"
+            android:summary="@string/settings_dhizuku_mode_summary" />
+
+        <SwitchPreferenceCompat
+            android:key="custom_api_enabled"
+            android:title="@string/settings_enhanced_api"
+            android:summary="@string/settings_enhanced_api_summary"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="category_app_management"
+        android:title="@string/settings_app_management">
+
+        <rikka.preference.SimpleMenuPreference
+            android:key="swipe_right_action"
+            android:title="@string/settings_swipe_right"
+            android:entries="@array/swipe_actions"
+            android:entryValues="@array/swipe_actions_values"
+            android:defaultValue="open_app"
+            android:summary="%s" />
+
+        <rikka.preference.SimpleMenuPreference
+            android:key="swipe_left_action"
+            android:title="@string/settings_swipe_left"
+            android:entries="@array/swipe_actions"
+            android:entryValues="@array/swipe_actions_values"
+            android:defaultValue="app_info"
+            android:summary="%s" />
+
+        <Preference
+            android:key="lp_category_info"
+            style="?preferenceInformationStyle"
+            android:summary="@string/settings_lp_category_summary" />
+
+        <SwitchPreferenceCompat
+            android:key="lp_open_app"
+            android:title="@string/settings_lp_open_app"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="lp_app_info"
+            android:title="@string/settings_lp_app_info"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="lp_toggle_permission"
+            android:title="@string/settings_lp_toggle_permission"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="lp_hide_from_list"
+            android:title="@string/settings_lp_hide_from_list"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="category_behavior"
         android:title="@string/settings_behavior">
 
@@ -39,44 +103,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="category_shizuku_plus"
-        android:title="@string/settings_shizuku_plus_features">
-
-        <SwitchPreferenceCompat
-            android:key="dhizuku_mode"
-            android:title="@string/settings_dhizuku_mode"
-            android:summary="@string/settings_dhizuku_mode_summary" />
-
-        <SwitchPreferenceCompat
-            android:key="custom_api_enabled"
-            android:title="@string/settings_enhanced_api"
-            android:summary="@string/settings_enhanced_api_summary"
-            android:defaultValue="true" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:key="category_language"
-        android:title="@string/settings_language">
-
-        <rikka.preference.SimpleMenuPreference
-            android:defaultValue="SYSTEM"
-            android:key="language"
-            android:summary="%s"
-            android:title="@string/settings_language" />
-
-        <Preference
-            style="?preferenceInformationStyle"
-            android:key="translation_contributors"
-            android:title="@string/settings_translation_contributors" />
-
-        <Preference
-            android:key="translation"
-            android:title="@string/settings_translation" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
         android:key="category_ui"
         android:title="@string/settings_user_interface">
 
@@ -96,42 +122,52 @@
             android:key="use_system_color"
             android:title="@string/settings_use_system_color" />
 
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:key="category_app_management"
-        android:title="@string/settings_app_management">
+        <rikka.preference.SimpleMenuPreference
+            android:defaultValue="SYSTEM"
+            android:key="language"
+            android:summary="%s"
+            android:title="@string/settings_language" />
 
         <Preference
-            android:key="lp_category_info"
             style="?preferenceInformationStyle"
-            android:summary="@string/settings_lp_category_summary" />
+            android:key="translation_contributors"
+            android:title="@string/settings_translation_contributors" />
+
+        <Preference
+            android:key="translation"
+            android:title="@string/settings_translation" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="category_home_visibility"
+        android:title="@string/settings_home_visibility">
 
         <SwitchPreferenceCompat
-            android:key="lp_open_app"
-            android:title="@string/settings_lp_open_app"
+            android:key="show_terminal_home"
+            android:title="@string/settings_show_terminal_home"
             android:defaultValue="true" />
 
         <SwitchPreferenceCompat
-            android:key="lp_app_info"
-            android:title="@string/settings_lp_app_info"
+            android:key="show_automation_home"
+            android:title="@string/settings_show_automation_home"
             android:defaultValue="true" />
 
         <SwitchPreferenceCompat
-            android:key="lp_toggle_permission"
-            android:title="@string/settings_lp_toggle_permission"
+            android:key="show_learn_more_home"
+            android:title="@string/settings_show_learn_more_home"
             android:defaultValue="true" />
 
         <SwitchPreferenceCompat
-            android:key="lp_hide_from_list"
-            android:title="@string/settings_lp_hide_from_list"
+            android:key="show_activity_log_home"
+            android:title="@string/settings_show_activity_log_home"
             android:defaultValue="true" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="category_support"
-        android:title="@string/settings_support">
+        android:key="category_support_advanced"
+        android:title="@string/settings_advanced">
 
         <Preference
             android:key="help"
@@ -141,11 +177,15 @@
             android:key="report_bug"
             android:title="@string/settings_report_bug" />
 
-    </PreferenceCategory>
+        <SwitchPreferenceCompat
+            android:key="enable_activity_log"
+            android:title="@string/settings_enable_activity_log"
+            android:defaultValue="true" />
 
-    <PreferenceCategory
-        android:key="category_advanced"
-        android:title="@string/settings_advanced">
+        <Preference
+            android:key="activity_log"
+            android:title="@string/settings_activity_log"
+            android:dependency="enable_activity_log" />
 
         <SwitchPreferenceCompat
             android:key="legacy_pairing"
