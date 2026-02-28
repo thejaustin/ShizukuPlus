@@ -41,6 +41,13 @@ public class ShizukuSettings {
         public static final String KEY_LEGACY_PAIRING = "legacy_pairing";
         public static final String KEY_CATEGORY_ADVANCED = "category_advanced";
 
+        // Home screen visibility (Shizuku+ additions)
+        public static final String KEY_SHOW_TERMINAL_HOME = "show_terminal_home";
+        public static final String KEY_SHOW_AUTOMATION_HOME = "show_automation_home";
+        public static final String KEY_SHOW_LEARN_MORE_HOME = "show_learn_more_home";
+        public static final String KEY_SHOW_ACTIVITY_LOG_HOME = "show_activity_log_home";
+        public static final String KEY_ENABLE_ACTIVITY_LOG = "enable_activity_log";
+
         // Dhizuku & API (Shizuku+ additions)
         public static final String KEY_DHIZUKU_MODE = "dhizuku_mode";
         public static final String KEY_CUSTOM_API_ENABLED = "custom_api_enabled";
@@ -50,6 +57,10 @@ public class ShizukuSettings {
         public static final String KEY_LP_APP_INFO = "lp_app_info";
         public static final String KEY_LP_TOGGLE_PERMISSION = "lp_toggle_permission";
         public static final String KEY_LP_HIDE_FROM_LIST = "lp_hide_from_list";
+
+        // Swipe action preferences (Shizuku+ additions)
+        public static final String KEY_SWIPE_RIGHT_ACTION = "swipe_right_action";
+        public static final String KEY_SWIPE_LEFT_ACTION = "swipe_left_action";
     }
 
     private static SharedPreferences sPreferences;
@@ -218,6 +229,41 @@ public class ShizukuSettings {
     public static boolean getLongPressHideFromList() {
         SharedPreferences p = getPreferences();
         return p == null || p.getBoolean(Keys.KEY_LP_HIDE_FROM_LIST, true);
+    }
+
+    public static String getSwipeRightAction() {
+        SharedPreferences p = getPreferences();
+        return p == null ? "open_app" : p.getString(Keys.KEY_SWIPE_RIGHT_ACTION, "open_app");
+    }
+
+    public static String getSwipeLeftAction() {
+        SharedPreferences p = getPreferences();
+        return p == null ? "app_info" : p.getString(Keys.KEY_SWIPE_LEFT_ACTION, "app_info");
+    }
+
+    public static boolean showTerminalHome() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_SHOW_TERMINAL_HOME, true);
+    }
+
+    public static boolean showAutomationHome() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_SHOW_AUTOMATION_HOME, true);
+    }
+
+    public static boolean showLearnMoreHome() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_SHOW_LEARN_MORE_HOME, true);
+    }
+
+    public static boolean showActivityLogHome() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_SHOW_ACTIVITY_LOG_HOME, true);
+    }
+
+    public static boolean isActivityLogEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_ENABLE_ACTIVITY_LOG, true);
     }
 
     public static boolean hasSeenOnboarding() {

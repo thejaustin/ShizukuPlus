@@ -30,11 +30,18 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
     private inline val textView get() = binding.text1
     private inline val summaryView get() = binding.text2
     private inline val iconView get() = binding.icon
+    private inline val logButton get() = binding.btnActivityLog
 
     override fun onBind() {
         val context = itemView.context
         val status = data
         val ok = status.isRunning
+        
+        logButton.visibility = if (ok && moe.shizuku.manager.ShizukuSettings.showActivityLogHome()) View.VISIBLE else View.GONE
+        logButton.setOnClickListener {
+            context.startActivity(android.content.Intent(context, moe.shizuku.manager.settings.ActivityLogActivity::class.java))
+        }
+
         val isRoot = status.uid == 0
         val apiVersion = status.apiVersion
         val patchVersion = status.patchVersion

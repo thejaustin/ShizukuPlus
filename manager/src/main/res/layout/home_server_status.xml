@@ -33,6 +33,16 @@
             android:layout_height="wrap_content"
             android:duplicateParentState="true" />
 
+        <Button
+            android:id="@+id/btn_activity_log"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/settings_activity_log"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
     </LinearLayout>
 
 </LinearLayout>

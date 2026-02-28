@@ -20,4 +20,9 @@
         </menu>
     </item>
 
+    <item
+        android:id="@+id/action_hidden_apps"
+        android:title="@string/app_management_action_hidden_apps"
+        android:showAsAction="never" />
+
 </menu>

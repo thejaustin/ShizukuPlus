@@ -45,6 +45,8 @@ import moe.shizuku.api.BinderContainer;
 import moe.shizuku.common.util.BuildUtils;
 import moe.shizuku.common.util.OsUtils;
 import moe.shizuku.server.IShizukuApplication;
+import moe.shizuku.server.IVirtualMachineManager;
+import moe.shizuku.server.IStorageProxy;
 import rikka.hidden.compat.ActivityManagerApis;
 import rikka.hidden.compat.DeviceIdleControllerApis;
 import rikka.hidden.compat.PackageManagerApis;
@@ -89,6 +91,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private final ShizukuClientManager clientManager;
     private final ShizukuConfigManager configManager;
     private final int managerAppId;
+    private final VirtualMachineManagerImpl virtualMachineManager = new VirtualMachineManagerImpl();
+    private final StorageProxyImpl storageProxy = new StorageProxyImpl();
 
     public ShizukuService() {
         super();
@@ -434,6 +438,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 if (pi.applicationInfo == null) continue;
 
                 int uid = pi.applicationInfo.uid;
+                if (isHidden(uid)) continue;
+                
                 int flags = 0;
                 ShizukuConfig.PackageEntry entry = configManager.find(uid);
                 if (entry != null) {
@@ -606,12 +612,31 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     // ------ Sui only ------
 
     @Override
+    public IVirtualMachineManager getVirtualMachineManager() {
+        enforceCallingPermission("getVirtualMachineManager");
+        return virtualMachineManager;
+    }
+
+    @Override
+    public IStorageProxy getStorageProxy() {
+        enforceCallingPermission("getStorageProxy");
+        return storageProxy;
+    }
+
+    @Override
     public void dispatchPackageChanged(Intent intent) throws RemoteException {
 
     }
 
     @Override
     public boolean isHidden(int uid) throws RemoteException {
+        ShizukuConfig.PackageEntry entry = configManager.find(uid);
+        if (entry != null) {
+            // Check if it's hidden in Shizuku+ terms (this might need to be linked to ShizukuSettings in the future,
+            // but for now the manager app handles the 'hidden' state via its own shared prefs).
+            // Actually, the server's 'isHidden' might be used for something else.
+            // Let's ensure it returns the correct state if we ever sync hidden state to server.
+        }
         return false;
     }
 }

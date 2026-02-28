@@ -76,6 +76,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     private lateinit var useSystemColorPreference: TwoStatePreference
     private lateinit var helpPreference: Preference
     private lateinit var reportBugPreference: Preference
+    private lateinit var activityLogPreference: Preference
     private lateinit var legacyPairingPreference: TwoStatePreference
     private lateinit var advancedCategory: PreferenceCategory
     private lateinit var dhizukuModePreference: TwoStatePreference
@@ -111,6 +112,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         useSystemColorPreference = findPreference(KEY_USE_SYSTEM_COLOR)!!
         helpPreference = findPreference(KEY_HELP)!!
         reportBugPreference = findPreference(KEY_REPORT_BUG)!!
+        activityLogPreference = findPreference("activity_log")!!
         legacyPairingPreference = findPreference(KEY_LEGACY_PAIRING)!!
         advancedCategory = findPreference(KEY_CATEGORY_ADVANCED)!!
         dhizukuModePreference = findPreference(KEY_DHIZUKU_MODE)!!
@@ -119,6 +121,11 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         batteryOptimizationListener = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val accepted = SettingsHelper.isIgnoringBatteryOptimizations(requireContext())
             batteryOptimizationContinuation?.resume(accepted)
+        }
+
+        activityLogPreference.setOnPreferenceClickListener {
+            startActivity(Intent(context, ActivityLogActivity::class.java))
+            true
         }
 
         dhizukuModePreference.apply {
