@@ -19,6 +19,7 @@ Get the latest release from [GitHub Releases](https://github.com/thejaustin/Shiz
 ## ✨ Shizuku+ Core Features
 
 *   **Universal Privilege Provider**: Combines **Root**, **ADB Shell**, and **Dhizuku (Device Owner)** into a single unified interface.
+*   **OneUI 8+ Theming Fix**: Provides the necessary **Overlay Manager Plus** bridge to allow engines like Hex Installer or Substratum to function on Android 16/17 and OneUI 8+.
 *   **Dhizuku Mode**: Share the system `DevicePolicyManager` binder with any app that has Shizuku permissions.
 *   **Customizable Gestures**: Configure swipe left, swipe right, and long-press actions for any app in the management list.
 *   **Bulk Management**: Multi-select apps to grant/revoke permissions or hide them in one tap.

@@ -28,6 +28,10 @@ object AppContextManager {
 
     private val staticDatabase = mutableMapOf<String, AppMetadata>().apply {
         // --- Legacy Root Apps ---
+        put("org.adaway", AppMetadata("AdAway: Open-source ad blocker. Use 'Local DNS Proxy' in Shizuku+ for rootless blocking.", listOf(ENH_SHELL), true))
+        put("dev.ukanth.ufirewall", AppMetadata("AFWall+: IPTables firewall. Use 'Network Governor' in Shizuku+ for rootless control.", listOf(ENH_SHELL), true))
+        put("com.samsung.android.hexinstall", AppMetadata("Hex Installer: Theming engine for Samsung. Shizuku+ provides the necessary Overlay Bridge for OneUI 8+.", listOf(ENH_WIN), true))
+        put("com.samsung.android.themepark", AppMetadata("Theme Park: Official Samsung customization. Enhanced by Shizuku+ Overlay API.", listOf(ENH_WIN), true))
         put("com.keramidas.TitaniumBackup", AppMetadata("Titanium Backup: The classic root backup tool.", emptyList(), true))
         put("eu.darken.sdm", AppMetadata("SD Maid (Legacy): Powerful system cleaner.", emptyList(), true))
         put("com.speedsoftware.explorer", AppMetadata("Root Explorer: Ultimate file manager for root users.", emptyList(), true))
@@ -118,15 +122,21 @@ object AppContextManager {
                 "com.speedsoftware.explorer",
                 "com.jrummy.root.browserfree",
                 "projekt.substratum.lite",
-                "com.zacharee.tweaker"
+                "com.zacharee.tweaker",
+                "com.samsung.android.themepark",
+                "com.samsung.android.hexinstall"
             ),
             "Battery & Optimization" to listOf(
                 "com.oasisfeng.greenify",
                 "com.franco.doze", // Naptime
                 "com.paget96.chargemonitor"
             ),
+            "Privacy & Security" to listOf(
+                "org.adaway",
+                "dev.ukanth.ufirewall", // AFWall+
+                "com.uzumapps.wakelockdetector"
+            ),
             "Advanced Tools" to listOf(
-                "com.uzumapps.wakelockdetector",
                 "com.asksven.betterbatterystats",
                 "com.jrummy.apps.build.prop.editor"
             )
