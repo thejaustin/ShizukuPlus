@@ -123,9 +123,12 @@ def collapseReleaseResourceNames = tasks.register("collapseReleaseResourceNames"
 }
 
 afterEvaluate {
-    tasks.getByName("optimizeReleaseResources").finalizedBy(collapseReleaseResourceNames)
-    tasks.getByName("preReleaseBuild").dependsOn(":shell:assembleRelease")
-    tasks.getByName("preDebugBuild").dependsOn(":shell:assembleDebug")
+    def optimizeReleaseResources = tasks.findByName("optimizeReleaseResources")
+    if (optimizeReleaseResources != null) {
+        optimizeReleaseResources.finalizedBy(collapseReleaseResourceNames)
+    }
+    tasks.findByName("preReleaseBuild")?.dependsOn(":shell:assembleRelease")
+    tasks.findByName("preDebugBuild")?.dependsOn(":shell:assembleDebug")
 }
 
 android.applicationVariants.configureEach { variant ->
