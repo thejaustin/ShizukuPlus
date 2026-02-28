@@ -205,6 +205,10 @@
                 android:value="true" />
         </service>
 
+        <service
+            android:name=".service.AdbProxyService"
+            android:exported="false" />
+
         <receiver
             android:name=".receiver.BinderRequestReceiver"
             android:directBootAware="true"

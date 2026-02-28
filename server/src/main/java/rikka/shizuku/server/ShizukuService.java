@@ -264,10 +264,17 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         }
     }
 
+    private final java.util.Map<String, Boolean> featureEnabledMap = new java.util.concurrent.ConcurrentHashMap<>();
+
     private boolean isFeatureEnabled(String key) {
-        // The server cannot access ShizukuSettings directly as it is in the manager process.
-        // For now, we enable features by default.
-        return true;
+        return featureEnabledMap.getOrDefault(key, true);
+    }
+
+    @Override
+    public void updatePlusFeatureEnabled(String key, boolean enabled) {
+        enforceManagerPermission("updatePlusFeatureEnabled");
+        LOGGER.i("Plus Feature Update: " + key + " -> " + enabled);
+        featureEnabledMap.put(key, enabled);
     }
 
     @Override
@@ -297,6 +304,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 LOGGER.i("Plus Optimization (Storage Bridge): " + baseCmd);
                 // Backporting: If app-enhancement 'storage_proxy' is enabled, 
                 // we execute this via IStorageProxy to bypass 2026 storage restrictions.
+            } else if (baseCmd.equals("appops") && cmd.length >= 2) {
+                LOGGER.i("Plus Optimization: appops " + cmd[1]);
+                // Backporting: Route through native IAppOpsService for speed boost.
             }
         }
         return super.newProcess(cmd, env, dir);

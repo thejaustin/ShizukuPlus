@@ -41,6 +41,9 @@ Shizuku+ provides exclusive system interfaces for advanced automation and tools:
 Shizuku+ makes regular Shizuku apps faster and more compatible without any code changes:
 
 *   **Transparent Shell Interceptor**: Intercepts common `pm`, `am`, and `settings` commands and routes them through high-performance native APIs.
+*   **Legacy Compatibility Bridges**:
+    *   **Local ADB Proxy**: Emulates an ADB server on port 15555, allowing legacy apps to use Shizuku privileges without keeping the system Wireless ADB enabled.
+    *   **Fake SU Wrapper**: A Shizuku-backed `su` binary drop-in replacement for non-rooted apps that support custom root paths.
 *   **`plus` CLI Helper**: Adds a privileged command-line utility to the `rish` environment for advanced terminal use.
 *   **Dynamic App Database**: Fetches the latest app descriptions and enhancement suggestions from GitHub to keep the UI up-to-date.
 

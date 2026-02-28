@@ -60,6 +60,10 @@ public class ShizukuSettings {
         public static final String KEY_AI_CORE_PLUS_ENABLED = "ai_core_plus_enabled";
         public static final String KEY_WINDOW_MANAGER_PLUS_ENABLED = "window_manager_plus_enabled";
 
+        // Legacy Compatibility (Shizuku+ additions)
+        public static final String KEY_ADB_PROXY_ENABLED = "adb_proxy_enabled";
+        public static final String KEY_FAKE_SU_ENABLED = "fake_su_enabled";
+
         // Long-press action toggles (Shizuku+ additions)
         public static final String KEY_LP_OPEN_APP = "lp_open_app";
         public static final String KEY_LP_APP_INFO = "lp_app_info";
@@ -370,5 +374,15 @@ public class ShizukuSettings {
     public static boolean isWindowManagerPlusEnabled() {
         SharedPreferences p = getPreferences();
         return p == null || p.getBoolean(Keys.KEY_WINDOW_MANAGER_PLUS_ENABLED, true);
+    }
+
+    public static boolean isAdbProxyEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_ADB_PROXY_ENABLED, false);
+    }
+
+    public static boolean isFakeSuEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_FAKE_SU_ENABLED, false);
     }
 }

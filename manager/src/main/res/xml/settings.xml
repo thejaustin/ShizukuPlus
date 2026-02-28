@@ -68,6 +68,24 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:key="category_legacy_compatibility"
+        android:title="@string/settings_category_legacy_compatibility">
+
+        <SwitchPreferenceCompat
+            android:key="adb_proxy_enabled"
+            android:title="@string/settings_adb_proxy"
+            android:summary="@string/settings_adb_proxy_summary"
+            android:defaultValue="false" />
+
+        <SwitchPreferenceCompat
+            android:key="fake_su_enabled"
+            android:title="@string/settings_fake_su"
+            android:summary="@string/settings_fake_su_summary"
+            android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:key="category_app_management"
         android:title="@string/settings_app_management">
 

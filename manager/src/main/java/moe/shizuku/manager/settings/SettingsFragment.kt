@@ -34,6 +34,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import moe.shizuku.api.Shizuku
+import moe.shizuku.server.IShizukuService
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.CancellableContinuation
@@ -63,6 +67,37 @@ import rikka.shizuku.manager.ShizukuLocales
 import java.util.*
 
 class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
+
+    private fun notifyServerFeatureUpdate(key: String, enabled: Boolean) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val binder = Shizuku.getBinder()
+                if (binder != null) {
+                    IShizukuService.Stub.asInterface(binder).updatePlusFeatureEnabled(key, enabled)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun syncAllFeaturesToServer() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                val binder = Shizuku.getBinder() ?: return@launch
+                val service = IShizukuService.Stub.asInterface(binder)
+                service.updatePlusFeatureEnabled("custom_api", ShizukuSettings.isCustomApiEnabled())
+                service.updatePlusFeatureEnabled("shell_interceptor", ShizukuSettings.isShellInterceptorEnabled())
+                service.updatePlusFeatureEnabled("avf_manager", ShizukuSettings.isAvfManagerEnabled())
+                service.updatePlusFeatureEnabled("storage_proxy", ShizukuSettings.isStorageProxyEnabled())
+                service.updatePlusFeatureEnabled("continuity_bridge", ShizukuSettings.isContinuityBridgeEnabled())
+                service.updatePlusFeatureEnabled("ai_core_plus", ShizukuSettings.isAICorePlusEnabled())
+                service.updatePlusFeatureEnabled("window_manager_plus", ShizukuSettings.isWindowManagerPlusEnabled())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     private lateinit var startOnBootPreference: TwoStatePreference
     private lateinit var watchdogPreference: TwoStatePreference
@@ -120,6 +155,8 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         dhizukuModePreference = findPreference(KEY_DHIZUKU_MODE)!!
         customApiPreference = findPreference(KEY_CUSTOM_API_ENABLED)!!
 
+        syncAllFeaturesToServer()
+
         batteryOptimizationListener = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val accepted = SettingsHelper.isIgnoringBatteryOptimizations(requireContext())
             batteryOptimizationContinuation?.resume(accepted)
@@ -172,10 +209,47 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
                     val applyChange: () -> Unit = {
                         ShizukuSettings.setCustomApiEnabled(newValue)
                         isChecked = newValue
+                        notifyServerFeatureUpdate("custom_api", newValue)
                     }
                     maybePromptRestart(KEY_CUSTOM_API_ENABLED, newValue) { applyChange() }
                 }
                 false
+            }
+        }
+
+        // --- Plus Feature Toggles Sync ---
+        val plusKeys = listOf(
+            "shell_interceptor_enabled" to "shell_interceptor",
+            "avf_manager_enabled" to "avf_manager",
+            "storage_proxy_enabled" to "storage_proxy",
+            "continuity_bridge_enabled" to "continuity_bridge",
+            "ai_core_plus_enabled" to "ai_core_plus",
+            "window_manager_plus_enabled" to "window_manager_plus"
+        )
+
+        plusKeys.forEach { (prefKey, serverKey) ->
+            findPreference<TwoStatePreference>(prefKey)?.apply {
+                setOnPreferenceChangeListener { _, newValue ->
+                    if (newValue is Boolean) {
+                        notifyServerFeatureUpdate(serverKey, newValue)
+                    }
+                    true
+                }
+            }
+        }
+
+        // Legacy compatibility
+        findPreference<TwoStatePreference>("adb_proxy_enabled")?.apply {
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) {
+                    val intent = Intent(context, moe.shizuku.manager.service.AdbProxyService::class.java)
+                    if (newValue) {
+                        context?.startService(intent)
+                    } else {
+                        context?.stopService(intent)
+                    }
+                }
+                true
             }
         }
 

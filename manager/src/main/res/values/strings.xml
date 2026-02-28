@@ -262,6 +262,13 @@
     <string name="settings_window_manager_plus">Advanced Window Tuner</string>
     <string name="settings_window_manager_plus_summary">Force free-form resizing, manage the Bubble Bar, and persistent overlays.</string>
 
+    <!-- Legacy Compatibility -->
+    <string name="settings_category_legacy_compatibility">Legacy App Compatibility</string>
+    <string name="settings_adb_proxy">Local ADB Proxy Server</string>
+    <string name="settings_adb_proxy_summary">Emulate an ADB server on port 15555 to support apps requiring Wireless ADB without keeping the system feature active.</string>
+    <string name="settings_fake_su">Fake SU Binary (su wrapper)</string>
+    <string name="settings_fake_su_summary">Provide a Shizuku-backed \'su\' binary for legacy root apps that support custom paths.</string>
+
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">First, please do the following:</string>
     <string name="bug_report_dialog_update">Check that you are using the ^1.</string>
