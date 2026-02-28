@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "last_updated": "2026-02-28",
+  "apps": {
+    "thejaustin.hexodus": {
+      "description": "Hexodus: Spiritual successor to Hex Installer for OneUI 8.",
+      "verified": true,
+      "enhancements": ["shell_interceptor", "win_plus"]
+    },
+    "thejaustin.afdroid": {
+      "description": "afdroid: Expressive F-Droid client.",
+      "verified": true,
+      "enhancements": ["shell_interceptor", "storage_proxy"]
+    },
+    "thejaustin.termux_ai": {
+      "description": "Termux AI: AI-powered terminal with NPU integration.",
+      "verified": true,
+      "enhancements": ["npu_plus", "vm_plus", "shell_interceptor"]
+    },
+    "com.aistra.hail": {
+      "description": "Hail: Modern app freezer.",
+      "verified": true,
+      "enhancements": ["shell_interceptor", "dpm_plus"]
+    },
+    "samolego.canta": {
+      "description": "Canta: Powerful system app debloater.",
+      "verified": true,
+      "enhancements": ["shell_interceptor"]
+    },
+    "rikka.appops": {
+      "description": "App Ops: Manage hidden app permissions.",
+      "verified": true,
+      "enhancements": ["shell_interceptor"]
+    },
+    "bin.mt.plus": {
+      "description": "MT Manager: Sophisticated file manager.",
+      "verified": true,
+      "enhancements": ["storage_proxy"]
+    },
+    "com.rosan.dhizuku": {
+      "description": "Dhizuku: Device Owner sharing bridge.",
+      "verified": true,
+      "enhancements": ["dpm_plus"]
+    },
+    "net.dinglisch.android.taskerm": {
+      "description": "Tasker: Advanced Android automation.",
+      "verified": true,
+      "enhancements": ["shell_interceptor", "storage_proxy"]
+    },
+    "com.arlosoft.macrodroid": {
+      "description": "MacroDroid: User-friendly automation.",
+      "verified": true,
+      "enhancements": ["shell_interceptor"]
+    },
+    "com.samsung.android.hexinstall": {
+      "description": "Hex Installer: Theming engine for Samsung. Shizuku+ provides the Overlay Bridge for OneUI 8+.",
+      "verified": true,
+      "enhancements": ["win_plus", "overlay_manager_plus"]
+    },
+    "org.adaway": {
+      "description": "AdAway: Open-source ad blocker. Use 'Network Governor' in Shizuku+ for rootless blocking.",
+      "verified": true,
+      "enhancements": ["shell_interceptor", "network_governor_plus"]
+    },
+    "dev.ukanth.ufirewall": {
+      "description": "AFWall+: IPTables firewall. Use 'Network Governor' in Shizuku+ for rootless control.",
+      "verified": true,
+      "enhancements": ["shell_interceptor", "network_governor_plus"]
+    },
+    "com.machiav3lli.neo_backup": {
+      "description": "Neo Backup: Modern open-source backup solution.",
+      "verified": true,
+      "enhancements": ["storage_proxy"]
+    }
+  }
+}
