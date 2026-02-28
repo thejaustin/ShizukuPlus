@@ -77,6 +77,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     private lateinit var helpPreference: Preference
     private lateinit var reportBugPreference: Preference
     private lateinit var activityLogPreference: Preference
+    private lateinit var updateDbPreference: Preference
     private lateinit var legacyPairingPreference: TwoStatePreference
     private lateinit var advancedCategory: PreferenceCategory
     private lateinit var dhizukuModePreference: TwoStatePreference
@@ -113,6 +114,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         helpPreference = findPreference(KEY_HELP)!!
         reportBugPreference = findPreference(KEY_REPORT_BUG)!!
         activityLogPreference = findPreference("activity_log")!!
+        updateDbPreference = findPreference("update_app_database")!!
         legacyPairingPreference = findPreference(KEY_LEGACY_PAIRING)!!
         advancedCategory = findPreference(KEY_CATEGORY_ADVANCED)!!
         dhizukuModePreference = findPreference(KEY_DHIZUKU_MODE)!!
@@ -121,6 +123,27 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         batteryOptimizationListener = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val accepted = SettingsHelper.isIgnoringBatteryOptimizations(requireContext())
             batteryOptimizationContinuation?.resume(accepted)
+        }
+
+        updateDbPreference.setOnPreferenceClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    val url = java.net.URL("https://raw.githubusercontent.com/thejaustin/ShizukuPlus/master/database/apps.json")
+                    val connection = url.openConnection() as java.net.HttpURLConnection
+                    connection.requestMethod = "GET"
+                    val content = connection.inputStream.bufferedReader().readText()
+                    withContext(Dispatchers.Main) {
+                        moe.shizuku.manager.utils.AppContextManager.updateDatabase(content)
+                        Toast.makeText(context, R.string.settings_update_app_database_success, Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, R.string.settings_update_app_database_error, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            true
         }
 
         activityLogPreference.setOnPreferenceClickListener {

@@ -47,6 +47,8 @@ public class ShizukuSettings {
         public static final String KEY_SHOW_LEARN_MORE_HOME = "show_learn_more_home";
         public static final String KEY_SHOW_ACTIVITY_LOG_HOME = "show_activity_log_home";
         public static final String KEY_ENABLE_ACTIVITY_LOG = "enable_activity_log";
+        public static final String KEY_LAST_DB_UPDATE = "last_db_update";
+        public static final String KEY_REMOTE_DB_JSON = "remote_db_json";
 
         // Dhizuku & API (Shizuku+ additions)
         public static final String KEY_DHIZUKU_MODE = "dhizuku_mode";
@@ -264,6 +266,36 @@ public class ShizukuSettings {
     public static boolean isActivityLogEnabled() {
         SharedPreferences p = getPreferences();
         return p == null || p.getBoolean(Keys.KEY_ENABLE_ACTIVITY_LOG, true);
+    }
+
+    public static String getRemoteDbJson() {
+        SharedPreferences p = getPreferences();
+        return p == null ? null : p.getString(Keys.KEY_REMOTE_DB_JSON, null);
+    }
+
+    public static void setRemoteDbJson(String json) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putString(Keys.KEY_REMOTE_DB_JSON, json).apply();
+    }
+
+    public static long getLastDbUpdate() {
+        SharedPreferences p = getPreferences();
+        return p == null ? 0 : p.getLong(Keys.KEY_LAST_DB_UPDATE, 0);
+    }
+
+    public static void setLastDbUpdate(long time) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putLong(Keys.KEY_LAST_DB_UPDATE, time).apply();
+    }
+
+    public static boolean isAppEnhancementEnabled(String packageName, String enhancementKey) {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean("enh_" + packageName + "_" + enhancementKey, false);
+    }
+
+    public static void setAppEnhancementEnabled(String packageName, String enhancementKey, boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean("enh_" + packageName + "_" + enhancementKey, enabled).apply();
     }
 
     public static boolean hasSeenOnboarding() {

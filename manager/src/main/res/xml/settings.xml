@@ -163,6 +163,11 @@
             android:title="@string/settings_show_activity_log_home"
             android:defaultValue="true" />
 
+        <Preference
+            android:key="update_app_database"
+            android:title="@string/settings_update_app_database"
+            android:summary="@string/settings_update_app_database_summary" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

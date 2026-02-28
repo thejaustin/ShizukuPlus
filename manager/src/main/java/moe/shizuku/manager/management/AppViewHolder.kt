@@ -223,6 +223,25 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         runCatching { dialog.show() }
     }
 
+    private fun showEnhancementSettings(context: Context, metadata: AppContextManager.AppMetadata) {
+        val enhancements = metadata.potentialEnhancements
+        val checkedItems = BooleanArray(enhancements.size) { i ->
+            ShizukuSettings.isAppEnhancementEnabled(packageName, enhancements[i].key)
+        }
+
+        MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.app_management_enhancements)
+            .setMessage(R.string.app_management_enhancements_desc)
+            .setMultiChoiceItems(enhancements.map { "${it.title}: ${it.description}" }.toTypedArray(), checkedItems) { _, which, isChecked ->
+                ShizukuSettings.setAppEnhancementEnabled(packageName, enhancements[which].key, isChecked)
+                ActivityLogManager.log(ai?.loadLabel(context.packageManager)?.toString() ?: packageName, packageName, "Toggle Enhancement: ${enhancements[which].key} -> $isChecked")
+            }
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                adapter.notifyItemChanged(adapterPosition)
+            }
+            .show()
+    }
+
     override fun onBind() {
         val appInfo = ai ?: return
         val pm = itemView.context.packageManager
@@ -246,18 +265,23 @@ class AppViewHolder(private val binding: AppListItemBinding) :
             switchWidget.isChecked = AuthorizationManager.granted(packageName, appInfo.uid)
         }
 
-                pkg.text = appInfo.packageName
-                
-                val description = AppContextManager.getDescription(packageName)
-                if (description != null) {
-                    appContextView.visibility = View.VISIBLE
-                    appContextView.text = context.getString(R.string.app_management_item_context, description)
-                } else {
-                    appContextView.visibility = View.GONE
-                }
-                
-                root.visibility = if (appInfo.metaData != null &&
-            appInfo.metaData.getBoolean("moe.shizuku.client.V3_REQUIRES_ROOT"))
+                        pkg.text = appInfo.packageName
+                        
+                        val metadata = AppContextManager.getMetadata(packageName)
+                        if (metadata != null) {
+                            appContextView.visibility = View.VISIBLE
+                            val enabledAny = metadata.potentialEnhancements.any { ShizukuSettings.isAppEnhancementEnabled(packageName, it.key) }
+                            val badge = if (enabledAny) context.getString(R.string.app_management_badge_enhanced) else context.getString(R.string.app_management_badge_upgrade)
+                            val color = if (enabledAny) "#4CAF50" else "#FF9800"
+                            
+                            appContextView.text = "<b><font color=\"$color\">[$badge]</font></b> ${metadata.description}".toHtml()
+                            appContextView.setOnClickListener { showEnhancementSettings(context, metadata) }
+                        } else {
+                            appContextView.visibility = View.GONE
+                            appContextView.setOnClickListener(null)
+                        }
+                        
+                        root.visibility = if (appInfo.metaData != null &&            appInfo.metaData.getBoolean("moe.shizuku.client.V3_REQUIRES_ROOT"))
             View.VISIBLE else View.GONE
 
         val isPlusRequired = AuthorizationManager.isPlusApiSupported(data)

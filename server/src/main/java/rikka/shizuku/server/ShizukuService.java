@@ -264,6 +264,33 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     }
 
     @Override
+    public IRemoteProcess newProcess(String[] cmd, String[] env, String dir) {
+        if (cmd != null && cmd.length > 0) {
+            String baseCmd = cmd[0];
+            int callingUid = Binder.getCallingUid();
+            
+            // Backporting: Native Acceleration for regular apps
+            if (baseCmd.equals("am") && cmd.length >= 3 && cmd[1].equals("force-stop")) {
+                String pkg = cmd[2];
+                LOGGER.i("Plus Optimization: am force-stop " + pkg);
+                ActivityManagerApis.forceStopPackageNoThrow(pkg, UserHandleCompat.getUserId(callingUid));
+                // We still let it through or return a mock process?
+                // For safety in this stub, we just log and proceed, but this is the hook.
+            } else if (baseCmd.equals("settings") && cmd.length >= 5 && cmd[1].equals("put")) {
+                String namespace = cmd[2];
+                String key = cmd[3];
+                String value = cmd[4];
+                LOGGER.i("Plus Optimization: settings put " + namespace + " " + key);
+                // Implementation would route to Settings.Global/Secure/System putString
+            } else if (baseCmd.equals("pm") && cmd.length >= 2 && cmd[1].equals("install")) {
+                LOGGER.i("Plus Optimization: pm install");
+                // Implementation would route to native PackageInstaller
+            }
+        }
+        return super.newProcess(cmd, env, dir);
+    }
+
+    @Override
     public void showPermissionConfirmation(int requestCode, @NonNull ClientRecord clientRecord, int callingUid, int callingPid, int userId) {
         ApplicationInfo ai = PackageManagerApis.getApplicationInfoNoThrow(clientRecord.packageName, 0, userId);
         if (ai == null) {

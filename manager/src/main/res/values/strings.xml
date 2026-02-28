@@ -131,6 +131,10 @@
     <string name="app_management_item_summary_requires_root">* requires Shizuku runs with root</string>
     <string name="app_management_item_summary_requires_plus">* requires Shizuku+ Enhanced API</string>
     <string name="app_management_item_context">About this app: %s</string>
+    <string name="app_management_enhancements">Enhancements</string>
+    <string name="app_management_enhancements_desc">Enable Plus features for this app to improve performance and compatibility.</string>
+    <string name="app_management_badge_enhanced">Enhanced</string>
+    <string name="app_management_badge_upgrade">Plus upgrade available</string>
     <string name="app_management_toggle_all">Toggle all</string>
     <string name="app_management_bulk_grant">Grant selected</string>
     <string name="app_management_bulk_revoke">Revoke selected</string>
@@ -228,6 +232,10 @@
     <string name="settings_enable_activity_log">Enable activity log</string>
     <string name="settings_show_activity_log_home">Show activity log on home screen</string>
     <string name="settings_home_visibility">Home screen visibility</string>
+    <string name="settings_update_app_database">Update app database</string>
+    <string name="settings_update_app_database_summary">Fetch latest app descriptions and enhancement suggestions from GitHub.</string>
+    <string name="settings_update_app_database_success">Database updated successfully</string>
+    <string name="settings_update_app_database_error">Failed to update database</string>
     <string name="settings_show_terminal_home">Show terminal (rish) card</string>
     <string name="settings_show_automation_home">Show automation card</string>
     <string name="settings_show_learn_more_home">Show developer guide card</string>
