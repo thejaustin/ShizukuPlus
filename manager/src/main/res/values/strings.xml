@@ -247,8 +247,8 @@
     <string name="settings_shizuku_plus_features">Shizuku+ Features</string>
     <string name="settings_dhizuku_mode">Dhizuku Mode</string>
     <string name="settings_dhizuku_mode_summary">Share Device Owner (DevicePolicyManager) permissions with other apps</string>
-    <string name="settings_enhanced_api">Advanced System APIs (2026)</string>
-    <string name="settings_enhanced_api_summary">Enable experimental support for Android 16/17+ features (AVF, Storage Bridge, AI, etc.).</string>
+    <string name="settings_enhanced_api">Plus API Features</string>
+    <string name="settings_enhanced_api_summary">Enable additional system interfaces exclusive to Shizuku+.</string>
     <string name="settings_shell_interceptor">Transparent Shell Interceptor</string>
     <string name="settings_shell_interceptor_summary">Accelerate standard apps by intercepting shell commands (pm, am, settings) and routing them through internal native bridges.</string>
     <string name="settings_avf_manager">Virtual Machine Manager (AVF)</string>

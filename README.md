@@ -2,7 +2,7 @@
 
 # Shizuku+
 
-An enhanced version of [Shizuku](https://github.com/RikkaApps/Shizuku) with quality-of-life improvements, backported optimizations, and advanced system APIs.
+An enhanced version of [Shizuku](https://github.com/RikkaApps/Shizuku) with quality-of-life improvements, backported optimizations, and exclusive Plus APIs.
 
 Shizuku lets normal apps use system-level APIs directly via a privileged process started with adb or root. Shizuku+ keeps full compatibility while adding features for power users and developers.
 
@@ -26,14 +26,14 @@ Get the latest release from [GitHub Releases](https://github.com/thejaustin/Shiz
 *   **Service Doctor**: In-app diagnostic tool to troubleshoot and fix service startup issues.
 *   **Quick Settings Tile**: Conveniently view and toggle the service status from your notification panel.
 
-## 🚀 Advanced System APIs (2026)
+## 🚀 Plus API Features
 
-Shizuku+ provides a foundational bridge for the next generation of Android (Android 16/17+):
+Shizuku+ provides exclusive system interfaces for advanced automation and tools:
 
 *   **AVF (Virtual Machine) Manager**: Manage isolated Linux/Microdroid VMs with VirtIO-GPU acceleration.
 *   **Privileged Storage Proxy**: Authenticated access to restricted paths like `/data/data/` for verified tools.
 *   **Intelligence Bridge (AI Core Plus)**: Privileged NPU scheduling and screen context intelligence.
-*   **Window Manager Plus**: Force free-form resizing, manage the Android 17 "Bubble Bar," and resilient overlays.
+*   **Window Manager Plus**: Force free-form resizing, manage the system "Bubble Bar," and resilient overlays.
 *   **Continuity Bridge**: Secure state and task handoff between ShizukuPlus-enabled devices.
 
 ## 🛠️ Backporting & Optimizations
@@ -48,7 +48,7 @@ Shizuku+ makes regular Shizuku apps faster and more compatible without any code 
 
 Everything in Shizuku+ is optional. Use the **Plus Features** category in Settings to toggle:
 *   Transparent Shell Interception
-*   Advanced System APIs (AVF, Storage, Intelligence, etc.)
+*   Individual Plus APIs (AVF, Storage, Intelligence, etc.)
 *   Home screen card visibility
 *   Activity Logging
 
@@ -62,7 +62,7 @@ Everything in Shizuku+ is optional. Use the **Plus Features** category in Settin
 
 ## 📱 Developer Guide
 
-See the [ShizukuPlus-API](https://github.com/thejaustin/ShizukuPlus-API) repository for documentation on the strategic API extensions.
+See the [ShizukuPlus-API](https://github.com/thejaustin/ShizukuPlus-API) repository for documentation on the exclusive Plus APIs.
 
 ## 📃 License
 
