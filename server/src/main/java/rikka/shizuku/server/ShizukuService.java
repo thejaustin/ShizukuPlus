@@ -49,6 +49,7 @@ import moe.shizuku.server.IVirtualMachineManager;
 import moe.shizuku.server.IStorageProxy;
 import moe.shizuku.server.IAICorePlus;
 import moe.shizuku.server.IWindowManagerPlus;
+import moe.shizuku.server.IContinuityBridge;
 import rikka.hidden.compat.ActivityManagerApis;
 import rikka.hidden.compat.DeviceIdleControllerApis;
 import rikka.hidden.compat.PackageManagerApis;
@@ -97,6 +98,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private final StorageProxyImpl storageProxy = new StorageProxyImpl();
     private final AICorePlusImpl aiCorePlus = new AICorePlusImpl();
     private final WindowManagerPlusImpl windowManagerPlus = new WindowManagerPlusImpl();
+    private final ContinuityBridgeImpl continuityBridge = new ContinuityBridgeImpl();
 
     public ShizukuService() {
         super();
@@ -637,6 +639,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     public IWindowManagerPlus getWindowManagerPlus() {
         enforceCallingPermission("getWindowManagerPlus");
         return windowManagerPlus;
+    }
+
+    @Override
+    public IContinuityBridge getContinuityBridge() {
+        enforceCallingPermission("getContinuityBridge");
+        return continuityBridge;
     }
 
     @Override
