@@ -44,6 +44,7 @@ import kotlin.collections.ArraysKt;
 import moe.shizuku.api.BinderContainer;
 import moe.shizuku.common.util.BuildUtils;
 import moe.shizuku.common.util.OsUtils;
+import moe.shizuku.server.IRemoteProcess;
 import moe.shizuku.server.IShizukuApplication;
 import moe.shizuku.server.IVirtualMachineManager;
 import moe.shizuku.server.IStorageProxy;
@@ -263,9 +264,15 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         }
     }
 
+    private boolean isFeatureEnabled(String key) {
+        // The server cannot access ShizukuSettings directly as it is in the manager process.
+        // For now, we enable features by default.
+        return true;
+    }
+
     @Override
     public IRemoteProcess newProcess(String[] cmd, String[] env, String dir) {
-        if (ShizukuSettings.isShellInterceptorEnabled() && cmd != null && cmd.length > 0) {
+        if (isFeatureEnabled("shell_interceptor") && cmd != null && cmd.length > 0) {
             String baseCmd = cmd[0];
             int callingUid = Binder.getCallingUid();
             
@@ -652,35 +659,35 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public IVirtualMachineManager getVirtualMachineManager() {
         enforceCallingPermission("getVirtualMachineManager");
-        if (!ShizukuSettings.isAvfManagerEnabled()) return null;
+        if (!isFeatureEnabled("avf_manager")) return null;
         return virtualMachineManager;
     }
 
     @Override
     public IStorageProxy getStorageProxy() {
         enforceCallingPermission("getStorageProxy");
-        if (!ShizukuSettings.isStorageProxyEnabled()) return null;
+        if (!isFeatureEnabled("storage_proxy")) return null;
         return storageProxy;
     }
 
     @Override
     public IAICorePlus getAICorePlus() {
         enforceCallingPermission("getAICorePlus");
-        if (!ShizukuSettings.isAICorePlusEnabled()) return null;
+        if (!isFeatureEnabled("ai_core_plus")) return null;
         return aiCorePlus;
     }
 
     @Override
     public IWindowManagerPlus getWindowManagerPlus() {
         enforceCallingPermission("getWindowManagerPlus");
-        if (!ShizukuSettings.isWindowManagerPlusEnabled()) return null;
+        if (!isFeatureEnabled("window_manager_plus")) return null;
         return windowManagerPlus;
     }
 
     @Override
     public IContinuityBridge getContinuityBridge() {
         enforceCallingPermission("getContinuityBridge");
-        if (!ShizukuSettings.isContinuityBridgeEnabled()) return null;
+        if (!isFeatureEnabled("continuity_bridge")) return null;
         return continuityBridge;
     }
 
