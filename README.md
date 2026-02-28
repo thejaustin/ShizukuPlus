@@ -34,6 +34,9 @@ Shizuku+ provides exclusive system interfaces for advanced automation and tools:
 *   **Privileged Storage Proxy**: Authenticated access to restricted paths like `/data/data/` for verified tools.
 *   **Intelligence Bridge (AI Core Plus)**: Privileged NPU scheduling and screen context intelligence.
 *   **Window Manager Plus**: Force free-form resizing, manage the system "Bubble Bar," and resilient overlays.
+*   **System Theming Bridge (Overlay Manager Plus)**: Expose privileged overlay management for rootless theming (like Hex Installer).
+*   **Network & DNS Governor**: Manage Private DNS and iptables routing for rootless ad-blockers and firewalls.
+*   **Deep Process Control (Activity Manager Plus)**: Allow advanced process managers to deeply kill apps and set standby buckets.
 *   **Continuity Bridge**: Secure state and task handoff between ShizukuPlus-enabled devices.
 
 ## 🛠️ Backporting & Optimizations

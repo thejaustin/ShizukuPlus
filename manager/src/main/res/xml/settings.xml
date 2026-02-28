@@ -65,6 +65,27 @@
             android:defaultValue="true"
             android:dependency="custom_api_enabled" />
 
+        <SwitchPreferenceCompat
+            android:key="overlay_manager_plus_enabled"
+            android:title="@string/settings_overlay_manager_plus"
+            android:summary="@string/settings_overlay_manager_plus_summary"
+            android:defaultValue="true"
+            android:dependency="custom_api_enabled" />
+
+        <SwitchPreferenceCompat
+            android:key="network_governor_plus_enabled"
+            android:title="@string/settings_network_governor_plus"
+            android:summary="@string/settings_network_governor_plus_summary"
+            android:defaultValue="true"
+            android:dependency="custom_api_enabled" />
+
+        <SwitchPreferenceCompat
+            android:key="activity_manager_plus_enabled"
+            android:title="@string/settings_activity_manager_plus"
+            android:summary="@string/settings_activity_manager_plus_summary"
+            android:defaultValue="true"
+            android:dependency="custom_api_enabled" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

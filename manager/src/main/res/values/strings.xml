@@ -261,6 +261,12 @@
     <string name="settings_ai_core_plus_summary">Expose privileged NPU scheduling and screen-aware contextual intelligence.</string>
     <string name="settings_window_manager_plus">Advanced Window Tuner</string>
     <string name="settings_window_manager_plus_summary">Force free-form resizing, manage the Bubble Bar, and persistent overlays.</string>
+    <string name="settings_overlay_manager_plus">System Theming Bridge</string>
+    <string name="settings_overlay_manager_plus_summary">Expose privileged overlay management for rootless theming (like Hex Installer).</string>
+    <string name="settings_network_governor_plus">Network &amp; DNS Governor</string>
+    <string name="settings_network_governor_plus_summary">Manage Private DNS and iptables routing for rootless ad-blockers and firewalls.</string>
+    <string name="settings_activity_manager_plus">Deep Process Control</string>
+    <string name="settings_activity_manager_plus_summary">Allow advanced process managers to deeply kill apps and set standby buckets.</string>
 
     <!-- Legacy Compatibility -->
     <string name="settings_category_legacy_compatibility">Legacy App Compatibility</string>

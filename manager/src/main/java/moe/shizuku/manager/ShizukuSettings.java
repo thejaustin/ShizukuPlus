@@ -59,6 +59,9 @@ public class ShizukuSettings {
         public static final String KEY_CONTINUITY_BRIDGE_ENABLED = "continuity_bridge_enabled";
         public static final String KEY_AI_CORE_PLUS_ENABLED = "ai_core_plus_enabled";
         public static final String KEY_WINDOW_MANAGER_PLUS_ENABLED = "window_manager_plus_enabled";
+        public static final String KEY_OVERLAY_MANAGER_PLUS_ENABLED = "overlay_manager_plus_enabled";
+        public static final String KEY_NETWORK_GOVERNOR_PLUS_ENABLED = "network_governor_plus_enabled";
+        public static final String KEY_ACTIVITY_MANAGER_PLUS_ENABLED = "activity_manager_plus_enabled";
 
         // Legacy Compatibility (Shizuku+ additions)
         public static final String KEY_ADB_PROXY_ENABLED = "adb_proxy_enabled";
@@ -374,6 +377,21 @@ public class ShizukuSettings {
     public static boolean isWindowManagerPlusEnabled() {
         SharedPreferences p = getPreferences();
         return p == null || p.getBoolean(Keys.KEY_WINDOW_MANAGER_PLUS_ENABLED, true);
+    }
+
+    public static boolean isOverlayManagerPlusEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_OVERLAY_MANAGER_PLUS_ENABLED, true);
+    }
+
+    public static boolean isNetworkGovernorPlusEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_NETWORK_GOVERNOR_PLUS_ENABLED, true);
+    }
+
+    public static boolean isActivityManagerPlusEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_ACTIVITY_MANAGER_PLUS_ENABLED, true);
     }
 
     public static boolean isAdbProxyEnabled() {

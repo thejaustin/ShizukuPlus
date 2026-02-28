@@ -51,6 +51,9 @@ import moe.shizuku.server.IStorageProxy;
 import moe.shizuku.server.IAICorePlus;
 import moe.shizuku.server.IWindowManagerPlus;
 import moe.shizuku.server.IContinuityBridge;
+import moe.shizuku.server.IOverlayManagerPlus;
+import moe.shizuku.server.INetworkGovernorPlus;
+import moe.shizuku.server.IActivityManagerPlus;
 import rikka.hidden.compat.ActivityManagerApis;
 import rikka.hidden.compat.DeviceIdleControllerApis;
 import rikka.hidden.compat.PackageManagerApis;
@@ -100,6 +103,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private final AICorePlusImpl aiCorePlus = new AICorePlusImpl();
     private final WindowManagerPlusImpl windowManagerPlus = new WindowManagerPlusImpl();
     private final ContinuityBridgeImpl continuityBridge = new ContinuityBridgeImpl();
+    private final OverlayManagerPlusImpl overlayManagerPlus = new OverlayManagerPlusImpl();
+    private final NetworkGovernorPlusImpl networkGovernorPlus = new NetworkGovernorPlusImpl();
+    private final ActivityManagerPlusImpl activityManagerPlus = new ActivityManagerPlusImpl();
 
     public ShizukuService() {
         super();
@@ -699,6 +705,27 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         enforceCallingPermission("getContinuityBridge");
         if (!isFeatureEnabled("continuity_bridge")) return null;
         return continuityBridge;
+    }
+
+    @Override
+    public IOverlayManagerPlus getOverlayManagerPlus() {
+        enforceCallingPermission("getOverlayManagerPlus");
+        if (!isFeatureEnabled("overlay_manager_plus")) return null;
+        return overlayManagerPlus;
+    }
+
+    @Override
+    public INetworkGovernorPlus getNetworkGovernorPlus() {
+        enforceCallingPermission("getNetworkGovernorPlus");
+        if (!isFeatureEnabled("network_governor_plus")) return null;
+        return networkGovernorPlus;
+    }
+
+    @Override
+    public IActivityManagerPlus getActivityManagerPlus() {
+        enforceCallingPermission("getActivityManagerPlus");
+        if (!isFeatureEnabled("activity_manager_plus")) return null;
+        return activityManagerPlus;
     }
 
     @Override

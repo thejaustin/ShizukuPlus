@@ -93,6 +93,9 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
                 service.updatePlusFeatureEnabled("continuity_bridge", ShizukuSettings.isContinuityBridgeEnabled())
                 service.updatePlusFeatureEnabled("ai_core_plus", ShizukuSettings.isAICorePlusEnabled())
                 service.updatePlusFeatureEnabled("window_manager_plus", ShizukuSettings.isWindowManagerPlusEnabled())
+                service.updatePlusFeatureEnabled("overlay_manager_plus", ShizukuSettings.isOverlayManagerPlusEnabled())
+                service.updatePlusFeatureEnabled("network_governor_plus", ShizukuSettings.isNetworkGovernorPlusEnabled())
+                service.updatePlusFeatureEnabled("activity_manager_plus", ShizukuSettings.isActivityManagerPlusEnabled())
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -230,7 +233,10 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
             "storage_proxy_enabled" to "storage_proxy",
             "continuity_bridge_enabled" to "continuity_bridge",
             "ai_core_plus_enabled" to "ai_core_plus",
-            "window_manager_plus_enabled" to "window_manager_plus"
+            "window_manager_plus_enabled" to "window_manager_plus",
+            "overlay_manager_plus_enabled" to "overlay_manager_plus",
+            "network_governor_plus_enabled" to "network_governor_plus",
+            "activity_manager_plus_enabled" to "activity_manager_plus"
         )
 
         plusKeys.forEach { (prefKey, serverKey) ->
