@@ -267,7 +267,7 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
             this, android.R.anim.fade_in, android.R.anim.fade_out
         ).toBundle()
         
-        val appLabel = item.applicationInfo.loadLabel(packageManager).toString()
+        val appLabel = item.applicationInfo?.loadLabel(packageManager)?.toString() ?: item.packageName
         ActivityLogManager.log(appLabel, item.packageName, "Swipe: $action")
         
         when (action) {
@@ -281,11 +281,12 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
                     Uri.fromParts("package", item.packageName, null)), opts
             )
             "toggle_permission" -> {
+                val uid = item.applicationInfo?.uid ?: return
                 try {
-                    if (AuthorizationManager.granted(item.packageName, item.applicationInfo.uid)) {
-                        AuthorizationManager.revoke(item.packageName, item.applicationInfo.uid)
+                    if (AuthorizationManager.granted(item.packageName, uid)) {
+                        AuthorizationManager.revoke(item.packageName, uid)
                     } else {
-                        AuthorizationManager.grant(item.packageName, item.applicationInfo.uid)
+                        AuthorizationManager.grant(item.packageName, uid)
                     }
                     adapter.notifyItemChanged(0) // update summary
                 } catch (e: SecurityException) {

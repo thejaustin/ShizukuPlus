@@ -75,7 +75,7 @@ class RootCompatibilityActivity : AppBarActivity() {
     private class AppViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val icon: ImageView = view.findViewById(android.R.id.icon)
         val appName: TextView = view.findViewById(android.R.id.title)
-        val packageName: TextView = view.findViewById(R.id.summary)
+        val packageName: TextView = view.findViewById(android.R.id.summary)
         val description: TextView = view.findViewById(R.id.app_context)
     }
 }

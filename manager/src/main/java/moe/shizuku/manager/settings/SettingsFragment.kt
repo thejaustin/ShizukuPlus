@@ -36,7 +36,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import moe.shizuku.api.Shizuku
+import rikka.shizuku.Shizuku
 import moe.shizuku.server.IShizukuService
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -71,7 +71,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     private fun notifyServerFeatureUpdate(key: String, enabled: Boolean) {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val binder = Shizuku.getBinder()
+                val binder = Shizuku.getBinder() as? android.os.IBinder
                 if (binder != null) {
                     IShizukuService.Stub.asInterface(binder).updatePlusFeatureEnabled(key, enabled)
                 }
@@ -84,7 +84,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     private fun syncAllFeaturesToServer() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val binder = Shizuku.getBinder() ?: return@launch
+                val binder = Shizuku.getBinder() as? android.os.IBinder ?: return@launch
                 val service = IShizukuService.Stub.asInterface(binder)
                 service.updatePlusFeatureEnabled("custom_api", ShizukuSettings.isCustomApiEnabled())
                 service.updatePlusFeatureEnabled("shell_interceptor", ShizukuSettings.isShellInterceptorEnabled())
@@ -438,7 +438,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         translationPreference.apply {
             summary = context.getString(R.string.settings_translation_summary, context.getString(R.string.app_name))
             setOnPreferenceClickListener {
-                CustomTabsHelper.launchUrlOrCopy(context, context.getString(R.string.translation_url))
+                CustomTabsHelper.launchUrlOrCopy(context, "https://github.com/thejaustin/ShizukuPlus")
                 true
             }
         }
