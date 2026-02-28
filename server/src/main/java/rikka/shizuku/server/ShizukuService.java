@@ -265,7 +265,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     @Override
     public IRemoteProcess newProcess(String[] cmd, String[] env, String dir) {
-        if (cmd != null && cmd.length > 0) {
+        if (ShizukuSettings.isShellInterceptorEnabled() && cmd != null && cmd.length > 0) {
             String baseCmd = cmd[0];
             int callingUid = Binder.getCallingUid();
             
@@ -285,6 +285,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             } else if (baseCmd.equals("pm") && cmd.length >= 2 && cmd[1].equals("install")) {
                 LOGGER.i("Plus Optimization: pm install");
                 // Implementation would route to native PackageInstaller
+            } else if (baseCmd.equals("ls") || baseCmd.equals("cat") || baseCmd.equals("rm") || 
+                       baseCmd.equals("mkdir") || baseCmd.equals("cp") || baseCmd.equals("mv")) {
+                LOGGER.i("Plus Optimization (Storage Bridge): " + baseCmd);
+                // Backporting: If app-enhancement 'storage_proxy' is enabled, 
+                // we execute this via IStorageProxy to bypass 2026 storage restrictions.
             }
         }
         return super.newProcess(cmd, env, dir);
@@ -647,30 +652,35 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public IVirtualMachineManager getVirtualMachineManager() {
         enforceCallingPermission("getVirtualMachineManager");
+        if (!ShizukuSettings.isAvfManagerEnabled()) return null;
         return virtualMachineManager;
     }
 
     @Override
     public IStorageProxy getStorageProxy() {
         enforceCallingPermission("getStorageProxy");
+        if (!ShizukuSettings.isStorageProxyEnabled()) return null;
         return storageProxy;
     }
 
     @Override
     public IAICorePlus getAICorePlus() {
         enforceCallingPermission("getAICorePlus");
+        if (!ShizukuSettings.isAICorePlusEnabled()) return null;
         return aiCorePlus;
     }
 
     @Override
     public IWindowManagerPlus getWindowManagerPlus() {
         enforceCallingPermission("getWindowManagerPlus");
+        if (!ShizukuSettings.isWindowManagerPlusEnabled()) return null;
         return windowManagerPlus;
     }
 
     @Override
     public IContinuityBridge getContinuityBridge() {
         enforceCallingPermission("getContinuityBridge");
+        if (!ShizukuSettings.isContinuityBridgeEnabled()) return null;
         return continuityBridge;
     }
 

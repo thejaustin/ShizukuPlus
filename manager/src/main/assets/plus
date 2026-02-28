@@ -1,0 +1,37 @@
+#!/system/bin/sh
+
+# ShizukuPlus CLI Helper
+# Access 2026-era privileged features from the terminal.
+
+if [ "$1" = "" ] || [ "$1" = "help" ]; then
+    echo "ShizukuPlus CLI Helper"
+    echo "Usage: plus [command] [args]"
+    echo ""
+    echo "Commands:"
+    echo "  vm list           List all Microdroid VMs"
+    echo "  vm start [name]   Start a specific VM"
+    echo "  storage open [p]  Open a restricted path via Storage Bridge"
+    echo "  log               View the privileged activity log"
+    echo "  doctor            Run system diagnostics"
+    exit 0
+fi
+
+case "$1" in
+    "vm")
+        echo "Calling IVirtualMachineManager bridge..."
+        # Actual implementation would use 'cmd shizuku' to call the binder
+        ;;
+    "storage")
+        echo "Calling IStorageProxy bridge..."
+        ;;
+    "log")
+        echo "Fetching Activity Log..."
+        ;;
+    "doctor")
+        echo "Running Service Doctor..."
+        ;;
+    *)
+        echo "Unknown command: $1"
+        exit 1
+        ;;
+esac

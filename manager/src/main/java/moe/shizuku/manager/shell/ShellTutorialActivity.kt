@@ -23,6 +23,7 @@ class ShellTutorialActivity : AppBarActivity() {
 
         private val SH_NAME = "rish"
         private val DEX_NAME = "rish_shizuku.dex"
+        private val PLUS_NAME = "plus"
     }
 
     private val openDocumentsTree =
@@ -44,7 +45,7 @@ class ShellTutorialActivity : AppBarActivity() {
                 while (it.moveToNext()) {
                     val id = it.getString(0)
                     val name = it.getString(1)
-                    if (name == SH_NAME || name == DEX_NAME) {
+                    if (name == SH_NAME || name == DEX_NAME || name == PLUS_NAME) {
                         DocumentsContract.deleteDocument(cr, DocumentsContract.buildDocumentUriUsingTree(tree, id))
                     }
                 }
@@ -58,6 +59,7 @@ class ShellTutorialActivity : AppBarActivity() {
 
             writeToDocument(SH_NAME)
             writeToDocument(DEX_NAME)
+            writeToDocument(PLUS_NAME)
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,17 +85,19 @@ class ShellTutorialActivity : AppBarActivity() {
 
             val shName = "<font face=\"monospace\">$SH_NAME</font>"
             val dexName = "<font face=\"monospace\">$DEX_NAME</font>"
+            val plusName = "<font face=\"monospace\">$PLUS_NAME</font>"
 
             summary.text = getString(R.string.rish_description, shName)
                 .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
 
             text1.text = getString(R.string.terminal_tutorial_1)
-            summary1.text = getString(R.string.terminal_tutorial_1_description, shName, dexName)
+            summary1.text = "Export the files ($shName, $dexName, and $plusName) to a new folder."
                 .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
 
             text2.text = getString(R.string.terminal_tutorial_2, shName).toHtml()
             command2.text = "cp /sdcard/chosen-folder/* /data/data/terminal.package.name/files"
-            summary2.text = getString(R.string.terminal_tutorial_2_description, shName, shName, ".bashrc").toHtml()
+            summary2.text = "This copies $shName, $dexName, and $plusName to your terminal app\'s private storage. You can also add an alias for $shName and $plusName in your <font face=\"monospace\">.bashrc</font> or <font face=\"monospace\">.zshrc</font>."
+                .toHtml()
 
             text3.text = getString(R.string.terminal_tutorial_3)
             command3.text = "sh /path/to/$SH_NAME"

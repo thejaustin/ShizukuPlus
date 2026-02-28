@@ -2,7 +2,7 @@
 
 # Shizuku+
 
-An enhanced version of [Shizuku](https://github.com/RikkaApps/Shizuku) with quality-of-life improvements and an expanded API.
+An enhanced version of [Shizuku](https://github.com/RikkaApps/Shizuku) with quality-of-life improvements, backported optimizations, and a strategic 2026-era API.
 
 Shizuku lets normal apps use system-level APIs directly via a privileged process started with adb or root. Shizuku+ keeps full compatibility while adding features for power users and developers.
 
@@ -16,27 +16,41 @@ Shizuku lets normal apps use system-level APIs directly via a privileged process
 
 Get the latest release from [GitHub Releases](https://github.com/thejaustin/ShizukuPlus/releases).
 
-## ✨ Shizuku+ Features
+## ✨ Shizuku+ Core Features
 
 *   **Universal Privilege Provider**: Combines **Root**, **ADB Shell**, and **Dhizuku (Device Owner)** into a single unified interface.
-*   **Dhizuku Mode**: Share the system `DevicePolicyManager` binder with any app that has Shizuku permissions. No more account wipes or complex ADB setup for Dhizuku.
-*   **Enhanced Shizuku API**: Provides synchronous wrappers for high-level operations like Package Management, Overlay (RRO) management, and System Settings.
-*   **Dynamic App Management UI**: 
-    *   **Requires Plus** notice: Automatically detects and flags apps that leverage the new ShizukuPlus features.
-    *   **Safe Toggling**: Gray out and disable apps when the Enhanced API is required but turned off in settings, preventing crashes.
+*   **Dhizuku Mode**: Share the system `DevicePolicyManager` binder with any app that has Shizuku permissions.
 *   **Customizable Gestures**: Configure swipe left, swipe right, and long-press actions for any app in the management list.
-*   **Swipe right** to launch an app, open its info, or toggle permissions.
-*   **Swipe left** for quick access to system settings or other common actions.
-*   **Tap the package name** on any row to copy it to the clipboard.
-*   **Search bar** filters the list by app name or package name in real time.
-*   **Filter chips** — show All, Granted, or Denied apps.
-*   **Sort** — Name (A–Z), Last installed, or Last updated.
-*   **Hide from list** — hide apps you don't want to see; an Undo snackbar lets you reverse it.
-*   **Staggered slide-in animation** when the list first loads.
-*   **First-run swipe hint** — an animated card demonstrates swipe gestures on first launch.
-*   **TCP mode:** once Shizuku starts with Wi-Fi after a reboot, you can stop/restart it without Wi-Fi.
-*   **Watchdog service:** automatically restarts Shizuku if it stops unexpectedly.
-*   **Continuous Deployment**: Fully automated CI/CD pipeline that builds and releases signed APKs for every commit to the `master` branch.
+*   **Bulk Management**: Multi-select apps to grant/revoke permissions or hide them in one tap.
+*   **Activity Log**: Audit trail of which apps are using Shizuku and what actions they are performing.
+*   **Service Doctor**: In-app diagnostic tool to troubleshoot and fix service startup issues.
+*   **Quick Settings Tile**: Conveniently view and toggle the service status from your notification panel.
+
+## 🚀 2026 Strategic API Extensions
+
+Shizuku+ provides a foundational bridge for the next generation of Android (Android 16/17+):
+
+*   **AVF (Virtual Machine) Manager**: Manage isolated Linux/Microdroid VMs with VirtIO-GPU acceleration.
+*   **Privileged Storage Proxy**: Authenticated access to restricted paths like `/data/data/` for verified tools.
+*   **Intelligence Bridge (AI Core Plus)**: Privileged NPU scheduling and screen context intelligence.
+*   **Window Manager Plus**: Force free-form resizing, manage the Android 17 "Bubble Bar," and resilient overlays.
+*   **Continuity Bridge**: Secure state and task handoff between ShizukuPlus-enabled devices.
+
+## 🛠️ Backporting & Optimizations
+
+Shizuku+ makes regular Shizuku apps faster and more compatible without any code changes:
+
+*   **Transparent Shell Interceptor**: Intercepts common `pm`, `am`, and `settings` commands and routes them through high-performance native APIs.
+*   **`plus` CLI Helper**: Adds a privileged command-line utility to the `rish` environment for advanced terminal use.
+*   **Dynamic App Database**: Fetches the latest app descriptions and enhancement suggestions from GitHub to keep the UI up-to-date.
+
+## ⚙️ Modular Control
+
+Everything in Shizuku+ is optional. Use the **Plus Features** category in Settings to toggle:
+*   Transparent Shell Interception
+*   Specific API Bridges (AVF, Storage, Intelligence, etc.)
+*   Home screen card visibility
+*   Activity Logging
 
 ## ☑️ Requirements
 
@@ -46,35 +60,10 @@ Get the latest release from [GitHub Releases](https://github.com/thejaustin/Shiz
 - **PC mode:** All devices
 - **Start on boot:** Available only with Wireless Debugging or Root mode
 
-## 🔒 Privacy
-
-* No tracking, analytics, or telemetry
-* No proprietary libraries or Google Play Services
-* Open-source — Apache 2.0
-* Internet used only for wireless debugging connections and GitHub update checks
-
 ## 📱 Developer Guide
 
-See the [ShizukuPlus-API](https://github.com/thejaustin/ShizukuPlus-API) repository for the Enhanced API and documentation.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b branch-name`)
-3. Commit your changes and open a Pull Request
-
-### Building
-
-```
-git clone --recurse-submodules https://github.com/thejaustin/ShizukuPlus
-```
-
-Run gradle task `:manager:assembleDebug` or `:manager:assembleRelease`.
+See the [ShizukuPlus-API](https://github.com/thejaustin/ShizukuPlus-API) repository for documentation on the strategic API extensions.
 
 ## 📃 License
 
 [Apache 2.0](LICENSE)
-
-## 🚀 Release Status
-
-Automated builds are active. Check the [Releases](https://github.com/thejaustin/ShizukuPlus/releases) tab for the latest signed APKs.

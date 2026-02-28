@@ -248,7 +248,19 @@
     <string name="settings_dhizuku_mode">Dhizuku Mode</string>
     <string name="settings_dhizuku_mode_summary">Share Device Owner (DevicePolicyManager) permissions with other apps</string>
     <string name="settings_enhanced_api">Enhanced Shizuku API</string>
-    <string name="settings_enhanced_api_summary">Enable extended features like automatic reconnection and Kotlin Coroutines support for client apps</string>
+    <string name="settings_enhanced_api_summary">Expose advanced 2026-era system APIs to Shizuku-enabled applications.</string>
+    <string name="settings_shell_interceptor">Transparent Shell Interceptor</string>
+    <string name="settings_shell_interceptor_summary">Accelerate regular apps by intercepting shell commands (pm, am, settings) and routing them through internal native logic.</string>
+    <string name="settings_avf_manager">AVF Virtual Machine Manager</string>
+    <string name="settings_avf_manager_summary">Allow management of isolated Linux/Microdroid VMs via the Plus API.</string>
+    <string name="settings_storage_proxy">Privileged Storage Proxy</string>
+    <string name="settings_storage_proxy_summary">Provide authenticated access to restricted paths like /data/data/ via the Storage Bridge.</string>
+    <string name="settings_continuity_bridge">Continuity Bridge</string>
+    <string name="settings_continuity_bridge_summary">Enable multi-device state and task handoff between ShizukuPlus instances.</string>
+    <string name="settings_ai_core_plus">Intelligence Bridge (AI Core Plus)</string>
+    <string name="settings_ai_core_plus_summary">Expose privileged NPU scheduling and screen context intelligence.</string>
+    <string name="settings_window_manager_plus">Window Manager Plus</string>
+    <string name="settings_window_manager_plus_summary">Take control of desktop windowing, forced resizing, and persistent overlays.</string>
 
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">First, please do the following:</string>

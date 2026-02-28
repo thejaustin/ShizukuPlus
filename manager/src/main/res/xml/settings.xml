@@ -23,6 +23,48 @@
             android:summary="@string/settings_enhanced_api_summary"
             android:defaultValue="true" />
 
+        <SwitchPreferenceCompat
+            android:key="shell_interceptor_enabled"
+            android:title="@string/settings_shell_interceptor"
+            android:summary="@string/settings_shell_interceptor_summary"
+            android:defaultValue="true"
+            android:dependency="custom_api_enabled" />
+
+        <SwitchPreferenceCompat
+            android:key="avf_manager_enabled"
+            android:title="@string/settings_avf_manager"
+            android:summary="@string/settings_avf_manager_summary"
+            android:defaultValue="true"
+            android:dependency="custom_api_enabled" />
+
+        <SwitchPreferenceCompat
+            android:key="storage_proxy_enabled"
+            android:title="@string/settings_storage_proxy"
+            android:summary="@string/settings_storage_proxy_summary"
+            android:defaultValue="true"
+            android:dependency="custom_api_enabled" />
+
+        <SwitchPreferenceCompat
+            android:key="continuity_bridge_enabled"
+            android:title="@string/settings_continuity_bridge"
+            android:summary="@string/settings_continuity_bridge_summary"
+            android:defaultValue="true"
+            android:dependency="custom_api_enabled" />
+
+        <SwitchPreferenceCompat
+            android:key="ai_core_plus_enabled"
+            android:title="@string/settings_ai_core_plus"
+            android:summary="@string/settings_ai_core_plus_summary"
+            android:defaultValue="true"
+            android:dependency="custom_api_enabled" />
+
+        <SwitchPreferenceCompat
+            android:key="window_manager_plus_enabled"
+            android:title="@string/settings_window_manager_plus"
+            android:summary="@string/settings_window_manager_plus_summary"
+            android:defaultValue="true"
+            android:dependency="custom_api_enabled" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

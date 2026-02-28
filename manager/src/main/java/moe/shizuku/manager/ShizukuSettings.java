@@ -53,6 +53,12 @@ public class ShizukuSettings {
         // Dhizuku & API (Shizuku+ additions)
         public static final String KEY_DHIZUKU_MODE = "dhizuku_mode";
         public static final String KEY_CUSTOM_API_ENABLED = "custom_api_enabled";
+        public static final String KEY_SHELL_INTERCEPTOR_ENABLED = "shell_interceptor_enabled";
+        public static final String KEY_AVF_MANAGER_ENABLED = "avf_manager_enabled";
+        public static final String KEY_STORAGE_PROXY_ENABLED = "storage_proxy_enabled";
+        public static final String KEY_CONTINUITY_BRIDGE_ENABLED = "continuity_bridge_enabled";
+        public static final String KEY_AI_CORE_PLUS_ENABLED = "ai_core_plus_enabled";
+        public static final String KEY_WINDOW_MANAGER_PLUS_ENABLED = "window_manager_plus_enabled";
 
         // Long-press action toggles (Shizuku+ additions)
         public static final String KEY_LP_OPEN_APP = "lp_open_app";
@@ -334,5 +340,35 @@ public class ShizukuSettings {
     public static void setCustomApiEnabled(boolean enable) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putBoolean(Keys.KEY_CUSTOM_API_ENABLED, enable).apply();
+    }
+
+    public static boolean isShellInterceptorEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_SHELL_INTERCEPTOR_ENABLED, true);
+    }
+
+    public static boolean isAvfManagerEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_AVF_MANAGER_ENABLED, true);
+    }
+
+    public static boolean isStorageProxyEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_STORAGE_PROXY_ENABLED, true);
+    }
+
+    public static boolean isContinuityBridgeEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_CONTINUITY_BRIDGE_ENABLED, true);
+    }
+
+    public static boolean isAICorePlusEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_AI_CORE_PLUS_ENABLED, true);
+    }
+
+    public static boolean isWindowManagerPlusEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_WINDOW_MANAGER_PLUS_ENABLED, true);
     }
 }
