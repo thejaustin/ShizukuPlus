@@ -9,24 +9,35 @@ idea.module {
 }
 
 subprojects { subproject ->
-    plugins.withId("com.android.base") {
-        android {
-            compileSdk = 35
-            buildToolsVersion = "35.0.0"
-            ndkVersion = "27.0.12077973"
-            defaultConfig {
-                minSdk = 24
-                targetSdk = 35
-            }
-            compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_21
-                targetCompatibility = JavaVersion.VERSION_21
+    plugins.configureEach { plugin ->
+        if (plugin.class.name.startsWith("com.android.build.gradle.AppPlugin") ||
+            plugin.class.name.startsWith("com.android.build.gradle.LibraryPlugin")) {
+            android {
+                compileSdk = 35
+                buildToolsVersion = "35.0.0"
+                ndkVersion = "27.0.12077973"
+                defaultConfig {
+                    minSdk = 24
+                    targetSdk = 35
+                }
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_21
+                    targetCompatibility = JavaVersion.VERSION_21
+                }
             }
         }
     }
 }
 
-def gitCommitCount = Integer.parseInt("git rev-list --count HEAD".execute([], project.rootDir).text.trim())
+def getGitCommitCount() {
+    try {
+        return Integer.parseInt("git rev-list --count HEAD".execute([], project.rootDir).text.trim())
+    } catch (Exception ignored) {
+        return 0
+    }
+}
+
+def gitCommitCount = getGitCommitCount()
 def baseVersionName = "13.6.0"
 def isBeta = project.hasProperty("beta")
 ext {
