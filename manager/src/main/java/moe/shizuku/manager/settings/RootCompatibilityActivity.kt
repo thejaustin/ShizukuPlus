@@ -2,7 +2,9 @@ package moe.shizuku.manager.settings
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -66,7 +68,7 @@ class RootCompatibilityActivity : AppBarActivity() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             return if (viewType == TYPE_HEADER) {
-                HeaderViewHolder(inflater.inflate(R.layout.preference_category_material, parent, false))
+                HeaderViewHolder(inflater.inflate(R.layout.list_section_header, parent, false))
             } else {
                 AppViewHolder(inflater.inflate(R.layout.app_list_item, parent, false))
             }
@@ -93,10 +95,35 @@ class RootCompatibilityActivity : AppBarActivity() {
                     holder.appName.text = info.loadLabel(pm)
                     holder.icon.setImageDrawable(info.loadIcon(pm))
                     holder.itemView.alpha = 1.0f
+                    holder.itemView.setOnClickListener {
+                        val intent = pm.getLaunchIntentForPackage(pkg)
+                        if (intent != null) {
+                            startActivity(intent)
+                        } else {
+                            try {
+                                startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$pkg")))
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
                 } catch (e: PackageManager.NameNotFoundException) {
                     holder.appName.text = pkg.split(".").last().replaceFirstChar { it.uppercase() }
                     holder.icon.setImageResource(R.drawable.ic_system_icon)
                     holder.itemView.alpha = 0.5f
+                    holder.itemView.setOnClickListener {
+                        try {
+                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$pkg")).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            })
+                        } catch (e: Exception) {
+                            try {
+                                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$pkg")))
+                            } catch (e2: Exception) {
+                                e2.printStackTrace()
+                            }
+                        }
+                    }
                 }
             }
         }

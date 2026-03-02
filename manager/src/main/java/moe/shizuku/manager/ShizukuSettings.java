@@ -40,6 +40,8 @@ public class ShizukuSettings {
         public static final String KEY_REPORT_BUG = "report_bug";
         public static final String KEY_LEGACY_PAIRING = "legacy_pairing";
         public static final String KEY_CATEGORY_ADVANCED = "category_advanced";
+        public static final String KEY_CATEGORY_BEHAVIOR = "category_behavior";
+        public static final String KEY_CATEGORY_UI = "category_ui";
 
         // Home screen visibility (Shizuku+ additions)
         public static final String KEY_SHOW_TERMINAL_HOME = "show_terminal_home";
