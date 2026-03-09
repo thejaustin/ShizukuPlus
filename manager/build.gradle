@@ -8,6 +8,7 @@ plugins {
     id "dev.rikka.tools.refine"
     id "dev.rikka.tools.autoresconfig"
     id "dev.rikka.tools.materialthemebuilder"
+    id "io.sentry.android.gradle"
 }
 
 android {
@@ -16,7 +17,9 @@ android {
         applicationId = "moe.shizuku.privileged.api"
         versionCode = rootProject.ext.versionCode
         versionName = rootProject.ext.versionName
-        buildConfigField "String", "SENTRY_DSN", "\"${project.findProperty('SENTRY_DSN') ?: ''}\""
+        def sentryDsn = project.findProperty('SENTRY_DSN') ?: ''
+        buildConfigField "String", "SENTRY_DSN", "\"${sentryDsn}\""
+        manifestPlaceholders = [sentryDsn: sentryDsn]
         externalNativeBuild {
             cmake {
                 arguments = ["-DANDROID_STL=none"]
@@ -212,6 +215,15 @@ dependencies {
     implementation "me.zhanghai.android.appiconloader:appiconloader:1.5.0"
 
     implementation "io.sentry:sentry-android:8.13.3"
+}
+
+sentry {
+    org = "af-developments"
+    projectName = "shizukuplus"
+    authToken = System.getenv("SENTRY_AUTH_TOKEN") ?: project.findProperty("SENTRY_AUTH_TOKEN") ?: ""
+    uploadNativeSymbols = false
+    includeNativeSources = false
+    autoUploadProguardMapping = provider { System.getenv("SENTRY_AUTH_TOKEN") != null || project.hasProperty("SENTRY_AUTH_TOKEN") }
 }
 
 apply from: rootProject.file("signing.gradle")

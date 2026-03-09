@@ -69,6 +69,10 @@
         tools:remove="android:appComponentFactory"
         tools:targetApi="33">
 
+        <meta-data android:name="io.sentry.dsn" android:value="${sentryDsn}" />
+        <meta-data android:name="io.sentry.traces-sample-rate" android:value="0.2" />
+        <meta-data android:name="io.sentry.attach-screenshot" android:value="false" />
+
         <activity
             android:name=".MainActivity"
             android:banner="@mipmap/banner"

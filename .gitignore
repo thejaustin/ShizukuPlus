@@ -12,3 +12,4 @@
 /out
 /signing.properties
 /.kotlin
+/sentry.properties

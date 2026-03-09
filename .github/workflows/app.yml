@@ -29,6 +29,8 @@ jobs:
 
     env:
       KEYSTORE: ${{ secrets.KEYSTORE }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       IS_DEBUG: ${{ github.event_name == 'workflow_dispatch' && inputs.debug || false }}
       IS_PRERELEASE: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && inputs.prerelease) }}
 
@@ -78,6 +80,7 @@ jobs:
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
           echo 'org.gradle.caching=true' >> gradle.properties
           echo 'org.gradle.parallel=true' >> gradle.properties
+          [ -n "$SENTRY_DSN" ] && echo "SENTRY_DSN=${SENTRY_DSN}" >> gradle.properties || true
 
           if [ "$IS_DEBUG" = "true" ]; then
             CMD="./gradlew :manager:assembleDebug"
