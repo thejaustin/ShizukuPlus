@@ -214,7 +214,8 @@ dependencies {
 
     implementation "me.zhanghai.android.appiconloader:appiconloader:1.5.0"
 
-    implementation "io.sentry:sentry-android:8.13.3"
+    implementation "io.sentry:sentry-android-core:8.13.3"
+    implementation "io.sentry:sentry-android-fragment:8.13.3"
 }
 
 sentry {
