@@ -90,6 +90,9 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
         findViewById<Chip>(R.id.chip_denied).setOnCheckedChangeListener { _, checked ->
             if (checked) viewModel.setFilter(FilterState.DENIED)
         }
+        findViewById<Chip>(R.id.chip_hidden)?.setOnCheckedChangeListener { _, checked ->
+            if (checked) viewModel.setFilter(FilterState.HIDDEN)
+        }
 
         viewModel.packages.observe(this) {
             when (it.status) {
@@ -116,6 +119,8 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
         recyclerView.layoutAnimation = AnimationUtils.loadLayoutAnimation(
             this, R.anim.layout_animation_slide_bottom
         )
+        recyclerView.setBackgroundColor(Color.TRANSPARENT)
+        recyclerView.addItemDecoration(AppListItemDecoration(this))
         recyclerView.fixEdgeEffect()
         recyclerView.addEdgeSpacing(top = 8f, bottom = 8f, unit = TypedValue.COMPLEX_UNIT_DIP)
 
@@ -143,7 +148,12 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
             menu.add(0, 10, 0, R.string.app_management_bulk_select_all).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
             menu.add(0, 11, 0, R.string.app_management_bulk_grant).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
             menu.add(0, 12, 0, R.string.app_management_bulk_revoke).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
-            menu.add(0, 13, 0, R.string.app_management_bulk_hide).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+            
+            if (viewModel.filterState == FilterState.HIDDEN) {
+                menu.add(0, 14, 0, R.string.app_management_undo).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+            } else {
+                menu.add(0, 13, 0, R.string.app_management_bulk_hide).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER)
+            }
             return true
         }
         menuInflater.inflate(R.menu.apps_management_menu, menu)
@@ -153,6 +163,7 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
             SortOrder.LAST_UPDATED -> R.id.sort_last_updated
         }
         menu.findItem(sortId)?.isChecked = true
+        menu.findItem(R.id.action_hidden_apps)?.isVisible = false
         return true
     }
 
@@ -184,6 +195,11 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
                     adapter.isSelectionMode = false
                     viewModel.load()
                 }
+                14 -> { // Unhide all
+                    adapter.selectedPackages.toList().forEach { viewModel.unhidePackage(it) }
+                    adapter.isSelectionMode = false
+                    viewModel.load()
+                }
                 android.R.id.home -> {
                     adapter.isSelectionMode = false
                     invalidateOptionsMenu()
@@ -197,10 +213,6 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
             R.id.sort_name -> { item.isChecked = true; viewModel.setSortOrder(SortOrder.NAME_ASC); true }
             R.id.sort_last_installed -> { item.isChecked = true; viewModel.setSortOrder(SortOrder.LAST_INSTALLED); true }
             R.id.sort_last_updated -> { item.isChecked = true; viewModel.setSortOrder(SortOrder.LAST_UPDATED); true }
-            R.id.action_hidden_apps -> {
-                startActivity(Intent(this, HiddenAppsActivity::class.java))
-                true
-            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -208,13 +220,19 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
     // ----- Hide callback -----
 
     override fun onHideApp(packageName: String) {
-        viewModel.hidePackage(packageName)
-        Snackbar.make(rootView, R.string.app_management_hidden, Snackbar.LENGTH_LONG)
-            .setAction(R.string.app_management_undo) {
-                viewModel.unhidePackage(packageName)
-                viewModel.load()
-            }
-            .show()
+        if (viewModel.filterState == FilterState.HIDDEN) {
+            viewModel.unhidePackage(packageName)
+            Snackbar.make(rootView, R.string.app_management_undo, Snackbar.LENGTH_LONG).show()
+            viewModel.load()
+        } else {
+            viewModel.hidePackage(packageName)
+            Snackbar.make(rootView, R.string.app_management_hidden, Snackbar.LENGTH_LONG)
+                .setAction(R.string.app_management_undo) {
+                    viewModel.unhidePackage(packageName)
+                    viewModel.load()
+                }
+                .show()
+        }
     }
 
     // ----- Swipe gestures -----
@@ -407,5 +425,48 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
     override fun onResume() {
         super.onResume()
         viewModel.refresh()
+    }
+}
+
+class AppListItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
+    private val cardPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+    private val dividerPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+    private val cornerRadius = 28f * context.resources.displayMetrics.density
+    private val dividerInset = 80f * context.resources.displayMetrics.density // icon width + margins
+    private val cardMargin = 16f * context.resources.displayMetrics.density
+
+    init {
+        val typedValue = TypedValue()
+        context.theme.resolveAttribute(R.attr.colorSurfaceContainerLow, typedValue, true)
+        cardPaint.color = typedValue.data
+        context.theme.resolveAttribute(R.attr.colorOutlineVariant, typedValue, true)
+        dividerPaint.color = typedValue.data
+        dividerPaint.strokeWidth = 1f * context.resources.displayMetrics.density
+    }
+
+    override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+        val count = parent.childCount
+        if (count == 0) return
+
+        var top = -1f
+        var bottom = -1f
+
+        for (i in 0 until count) {
+            val child = parent.getChildAt(i)
+            if (child.visibility != android.view.View.VISIBLE) continue
+            
+            if (top == -1f) top = child.top.toFloat()
+            bottom = child.bottom.toFloat()
+
+            if (i < count - 1) {
+                c.drawLine(child.left + dividerInset, child.bottom.toFloat(), child.right - cardMargin, child.bottom.toFloat(), dividerPaint)
+            }
+        }
+        
+        if (top != -1f && bottom != -1f) {
+            val left = cardMargin
+            val right = parent.width - cardMargin
+            c.drawRoundRect(left, top, right, bottom, cornerRadius, cornerRadius, cardPaint)
+        }
     }
 }

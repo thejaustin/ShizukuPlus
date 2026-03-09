@@ -244,7 +244,8 @@ class AppViewHolder(private val binding: AppListItemBinding) :
 
     override fun onBind() {
         val appInfo = ai ?: return
-        val pm = itemView.context.packageManager
+        val context = itemView.context
+        val pm = context.packageManager
         val userId = UserHandleCompat.getUserId(appInfo.uid)
         icon.setImageDrawable(appInfo.loadIcon(pm))
         name.text = if (userId != UserHandleCompat.myUserId()) {
@@ -253,7 +254,7 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         } else {
             appInfo.loadLabel(pm)
         }
-        
+
         val appsAdapter = adapter as AppsAdapter
         if (appsAdapter.isSelectionMode()) {
             checkbox.visibility = View.VISIBLE
@@ -265,23 +266,23 @@ class AppViewHolder(private val binding: AppListItemBinding) :
             switchWidget.isChecked = AuthorizationManager.granted(packageName, appInfo.uid)
         }
 
-                        pkg.text = appInfo.packageName
-                        
-                        val metadata = AppContextManager.getMetadata(packageName)
-                        if (metadata != null) {
-                            appContextView.visibility = View.VISIBLE
-                            val enabledAny = metadata.potentialEnhancements.any { ShizukuSettings.isAppEnhancementEnabled(packageName, it.key) }
-                            val badge = if (enabledAny) context.getString(R.string.app_management_badge_enhanced) else context.getString(R.string.app_management_badge_upgrade)
-                            val color = if (enabledAny) "#4CAF50" else "#FF9800"
-                            
-                            appContextView.text = "<b><font color=\"$color\">[$badge]</font></b> ${metadata.description}".toHtml()
-                            appContextView.setOnClickListener { showEnhancementSettings(context, metadata) }
-                        } else {
-                            appContextView.visibility = View.GONE
-                            appContextView.setOnClickListener(null)
-                        }
-                        
-                        root.visibility = if (appInfo.metaData != null &&            appInfo.metaData.getBoolean("moe.shizuku.client.V3_REQUIRES_ROOT"))
+        pkg.text = appInfo.packageName
+
+        val metadata = AppContextManager.getMetadata(packageName)
+        if (metadata != null) {
+            appContextView.visibility = View.VISIBLE
+            val enabledAny = metadata.potentialEnhancements.any { ShizukuSettings.isAppEnhancementEnabled(packageName, it.key) }
+            val badge = if (enabledAny) context.getString(R.string.app_management_badge_enhanced) else context.getString(R.string.app_management_badge_upgrade)
+            val color = if (enabledAny) "#4CAF50" else "#FF9800"
+
+            appContextView.text = "<b><font color=\"$color\">[$badge]</font></b> ${metadata.description}".toHtml()
+            appContextView.setOnClickListener { showEnhancementSettings(context, metadata) }
+        } else {
+            appContextView.visibility = View.GONE
+            appContextView.setOnClickListener(null)
+        }
+
+        root.visibility = if (appInfo.metaData != null && appInfo.metaData.getBoolean("moe.shizuku.client.V3_REQUIRES_ROOT"))
             View.VISIBLE else View.GONE
 
         val isPlusRequired = AuthorizationManager.isPlusApiSupported(data)

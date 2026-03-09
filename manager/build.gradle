@@ -16,6 +16,7 @@ android {
         applicationId = "moe.shizuku.privileged.api"
         versionCode = rootProject.ext.versionCode
         versionName = rootProject.ext.versionName
+        buildConfigField "String", "SENTRY_DSN", "\"${project.findProperty('SENTRY_DSN') ?: ''}\""
         externalNativeBuild {
             cmake {
                 arguments = ["-DANDROID_STL=none"]
@@ -209,6 +210,8 @@ dependencies {
     implementation "org.bouncycastle:bcpkix-jdk18on:1.80"
 
     implementation "me.zhanghai.android.appiconloader:appiconloader:1.5.0"
+
+    implementation "io.sentry:sentry-android:8.13.3"
 }
 
 apply from: rootProject.file("signing.gradle")
