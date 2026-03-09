@@ -30,7 +30,7 @@ jobs:
     env:
       KEYSTORE: ${{ secrets.KEYSTORE }}
       IS_DEBUG: ${{ github.event_name == 'workflow_dispatch' && inputs.debug || false }}
-      IS_PRERELEASE: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || false }}
+      IS_PRERELEASE: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && inputs.prerelease) }}
 
     outputs:
       versionName: ${{ steps.buildWithGradle.outputs.versionName }}
@@ -184,11 +184,10 @@ jobs:
         run: |
           TAG_NAME="v${VERSION}"
           FLAGS=""
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            FLAGS="--draft"
-          fi
           if [ "$IS_PRERELEASE" = "true" ]; then
-            FLAGS="$FLAGS --prerelease"
+            FLAGS="--prerelease"
+          else
+            FLAGS="--draft"
           fi
 
           # If release already exists, delete it first to allow re-release on same tag if needed
