@@ -109,7 +109,6 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     private lateinit var tcpPortPreference: EditTextPreference
     private lateinit var languagePreference: ListPreference
     private lateinit var translationPreference: Preference
-    private lateinit var translationContributorsPreference: Preference
     private lateinit var nightModePreference: IntegerSimpleMenuPreference
     private lateinit var blackNightThemePreference: TwoStatePreference
     private lateinit var useSystemColorPreference: TwoStatePreference
@@ -123,6 +122,24 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     private lateinit var advancedCategory: PreferenceCategory
     private lateinit var dhizukuModePreference: TwoStatePreference
     private lateinit var customApiPreference: TwoStatePreference
+
+    private fun syncVisibility() {
+        val behaviorCategory = findPreference<CollapsiblePreferenceCategory>(KEY_CATEGORY_BEHAVIOR)
+        if (behaviorCategory?.isExpanded() == true) {
+            tcpPortPreference.isVisible = tcpModePreference.isVisible && tcpModePreference.isChecked
+        }
+
+        val uiCategory = findPreference<CollapsiblePreferenceCategory>(KEY_CATEGORY_UI)
+        if (uiCategory?.isExpanded() == true) {
+            blackNightThemePreference.isVisible = ShizukuSettings.getNightMode() != AppCompatDelegate.MODE_NIGHT_NO
+            useSystemColorPreference.isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        }
+
+        val advancedCategory = findPreference<CollapsiblePreferenceCategory>(KEY_CATEGORY_ADVANCED)
+        if (advancedCategory?.isExpanded() == true) {
+            legacyPairingPreference.isVisible = !EnvironmentUtils.isTelevision()
+        }
+    }
 
     private lateinit var batteryOptimizationListener: ActivityResultLauncher<Intent>
     private var batteryOptimizationContinuation: CancellableContinuation<Boolean>? = null
@@ -148,7 +165,6 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         tcpPortPreference = findPreference(KEY_TCP_PORT)!!
         languagePreference = findPreference(KEY_LANGUAGE)!!
         translationPreference = findPreference(KEY_TRANSLATION)!!
-        translationContributorsPreference = findPreference(KEY_TRANSLATION_CONTRIBUTORS)!!
         nightModePreference = findPreference(KEY_NIGHT_MODE)!!
         blackNightThemePreference = findPreference(KEY_BLACK_NIGHT_THEME)!!
         useSystemColorPreference = findPreference(KEY_USE_SYSTEM_COLOR)!!
@@ -163,7 +179,17 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         dhizukuModePreference = findPreference(KEY_DHIZUKU_MODE)!!
         customApiPreference = findPreference(KEY_CUSTOM_API_ENABLED)!!
 
+        // Collapsible category listeners
+        preferenceScreen.forEach { pref ->
+            if (pref is CollapsiblePreferenceCategory) {
+                pref.onExpansionChanged = { isExpanded ->
+                    syncVisibility()
+                }
+            }
+        }
+
         syncAllFeaturesToServer()
+        syncVisibility()
 
         batteryOptimizationListener = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val accepted = SettingsHelper.isIgnoringBatteryOptimizations(requireContext())
@@ -344,7 +370,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
                             isEnabled = true
                             summary = context.getString(R.string.settings_tcp_mode_summary)
                             icon = maybeGetRestartIcon(KEY_TCP_MODE)
-                            tcpPortPreference.isVisible = newValue
+                            syncVisibility()
                         }
                         
                         if (!newValue && !ShizukuStateMachine.isRunning() && needsRestart(KEY_TCP_MODE, newValue)) {
@@ -362,7 +388,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         }
 
         tcpPortPreference.apply {
-            isVisible = tcpModePreference.isVisible && tcpModePreference.isChecked
+            syncVisibility()
             icon = maybeGetRestartIcon(KEY_TCP_PORT)
 
             setOnBindEditTextListener { editText ->
@@ -413,6 +439,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
                 if (value is Int) {
                     if (ShizukuSettings.getNightMode() != value) {
                         AppCompatDelegate.setDefaultNightMode(value)
+                        syncVisibility()
                         activity?.recreate()
                     }
                 }
@@ -421,18 +448,20 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         }
 
         blackNightThemePreference.apply {
-            if (ShizukuSettings.getNightMode() != AppCompatDelegate.MODE_NIGHT_NO) {
+            syncVisibility()
+            if (isVisible) {
                 isChecked = ThemeHelper.isBlackNightTheme(context)
                 setOnPreferenceChangeListener { _, _ ->
                     if (ResourceUtils.isNightMode(context.resources.configuration))
                         activity?.recreate()
                     true
                 }
-            } else isVisible = false
+            }
         }
 
         useSystemColorPreference.apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            syncVisibility()
+            if (isVisible) {
                 isChecked = ThemeHelper.isUsingSystemColor()
                 setOnPreferenceChangeListener { _, value ->
                     if (value is Boolean) {
@@ -441,7 +470,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
                     }
                     true
                 }
-            } else isVisible = false
+            }
         }
 
         translationPreference.apply {
@@ -450,13 +479,6 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
                 CustomTabsHelper.launchUrlOrCopy(context, context.getString(R.string.translation_url))
                 true
             }
-        }
-
-        translationContributorsPreference.apply {
-            val contributors = context.getString(R.string.translation_contributors).toHtml().toString()
-            if (contributors.isNotBlank()) {
-                summary = contributors
-            } else isVisible = false
         }
 
         helpPreference.setOnPreferenceClickListener {
@@ -470,10 +492,12 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         }
 
         legacyPairingPreference.apply {
-            isVisible = !EnvironmentUtils.isTelevision()
+            syncVisibility()
         }
 
-        advancedCategory.isVisible = legacyPairingPreference.isVisible
+        advancedCategory.apply {
+            syncVisibility()
+        }
     }
 
     override fun onResume() {
@@ -500,6 +524,14 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         savedInstanceState: Bundle?
     ): RecyclerView {
         val recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState)
+        val context = recyclerView.context
+
+        recyclerView.layoutTransition = android.animation.LayoutTransition().apply {
+            enableTransitionType(android.animation.LayoutTransition.CHANGING)
+            setDuration(300)
+        }
+        recyclerView.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+        recyclerView.addItemDecoration(SettingsItemDecoration(context))
 
         ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, insets ->
             val systemBarsInsets = insets.getInsets(Type.systemBars() or Type.displayCutout())
@@ -519,6 +551,68 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         recyclerView.fixEdgeEffect()
 
         return recyclerView
+    }
+
+    private class SettingsItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
+        private val cardPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+        private val dividerPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+        private val cornerRadius = 28f * context.resources.displayMetrics.density
+        private val dividerInset = 56f * context.resources.displayMetrics.density
+        private val cardMargin = 16f * context.resources.displayMetrics.density
+
+        init {
+            val typedValue = TypedValue()
+            context.theme.resolveAttribute(R.attr.colorSurfaceContainerLow, typedValue, true)
+            cardPaint.color = typedValue.data
+            context.theme.resolveAttribute(R.attr.colorOutlineVariant, typedValue, true)
+            dividerPaint.color = typedValue.data
+            dividerPaint.strokeWidth = 1f * context.resources.displayMetrics.density
+        }
+
+        override fun onDraw(c: android.graphics.Canvas, parent: RecyclerView, state: RecyclerView.State) {
+            val count = parent.childCount
+            if (count == 0) return
+
+            var currentCardTop = -1f
+            var currentCardBottom = -1f
+
+            for (i in 0 until count) {
+                val child = parent.getChildAt(i)
+                val pos = parent.getChildAdapterPosition(child)
+                if (pos == RecyclerView.NO_POSITION) continue
+
+                // Category headers are tagged in CollapsiblePreferenceCategory.onBindViewHolder
+                val isCategory = child.tag == "category_header"
+
+                if (isCategory) {
+                    drawCard(c, parent, currentCardTop, currentCardBottom)
+                    currentCardTop = -1f
+                    currentCardBottom = -1f
+                } else {
+                    if (child.visibility != View.VISIBLE) continue
+
+                    if (currentCardTop == -1f) currentCardTop = child.top.toFloat()
+                    currentCardBottom = child.bottom.toFloat()
+
+                    // Draw divider between consecutive preferences in the same group
+                    if (i < count - 1) {
+                        val nextChild = parent.getChildAt(i + 1)
+                        val nextIsCategory = nextChild.tag == "category_header"
+                        if (!nextIsCategory && nextChild.visibility == View.VISIBLE) {
+                            c.drawLine(child.left + dividerInset, child.bottom.toFloat(), child.right - cardMargin, child.bottom.toFloat(), dividerPaint)
+                        }
+                    }
+                }
+            }
+            drawCard(c, parent, currentCardTop, currentCardBottom)
+        }
+
+        private fun drawCard(c: android.graphics.Canvas, parent: RecyclerView, top: Float, bottom: Float) {
+            if (top == -1f || bottom == -1f) return
+            val left = cardMargin
+            val right = parent.width - cardMargin
+            c.drawRoundRect(left, top, right, bottom, cornerRadius, cornerRadius, cardPaint)
+        }
     }
 
     private fun needsRestart(setting: String, newValue: Any? = null): Boolean {

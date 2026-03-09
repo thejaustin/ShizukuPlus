@@ -42,7 +42,7 @@
     <style name="Theme" parent="Base.AppTheme" />
 
     <style name="AppTheme.PreferenceThemeOverlay" parent="@style/PreferenceThemeOverlay.Rikka.Material3">
-        <item name="switchPreferenceCompatStyle">@style/Preference.Rikka.MateriaSwitchPreference</item>
+        <item name="switchPreferenceCompatStyle">@style/Preference.Rikka.MaterialSwitchPreference</item>
     </style>
 
 </resources>

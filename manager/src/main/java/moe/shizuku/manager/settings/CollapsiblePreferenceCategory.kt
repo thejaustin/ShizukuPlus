@@ -3,7 +3,7 @@ package moe.shizuku.manager.settings
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.widget.ImageView
+import android.widget.TextView
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceManager
@@ -21,7 +21,7 @@ class CollapsiblePreferenceCategory @JvmOverloads constructor(
     init {
         layoutResource = R.layout.collapsible_preference_category_card
         isSelectable = true
-
+        
         val a = context.obtainStyledAttributes(attrs, intArrayOf(android.R.attr.defaultValue))
         expanded = a.getBoolean(0, false)
         a.recycle()
@@ -29,16 +29,20 @@ class CollapsiblePreferenceCategory @JvmOverloads constructor(
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
-        val arrow = holder.findViewById(R.id.arrow) as? ImageView
-        arrow?.rotation = if (expanded) 0f else 180f
-
+        
+        // In M3E Expressive, we toggle by clicking the header label
+        // We've removed the arrow as per latest guidelines
+        
+        holder.itemView.tag = "category_header"
         holder.itemView.setOnClickListener {
             expanded = !expanded
             updateChildren()
             onExpansionChanged?.invoke(expanded)
-
-            arrow?.animate()?.rotation(if (expanded) 0f else 180f)?.setDuration(200)?.start()
+            notifyChanged()
         }
+        
+        // Ensure children visibility is in sync
+        updateChildren()
     }
 
     fun isExpanded() = expanded
@@ -57,7 +61,7 @@ class CollapsiblePreferenceCategory @JvmOverloads constructor(
             getPreference(i).isVisible = expanded
         }
     }
-
+    
     override fun onAttachedToHierarchy(preferenceManager: PreferenceManager) {
         super.onAttachedToHierarchy(preferenceManager)
         updateChildren()

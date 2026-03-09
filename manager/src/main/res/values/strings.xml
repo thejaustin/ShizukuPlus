@@ -120,6 +120,7 @@
     <string name="app_management_filter_all">All</string>
     <string name="app_management_filter_granted">Granted</string>
     <string name="app_management_filter_denied">Denied</string>
+    <string name="app_management_filter_hidden">Hidden</string>
     <string name="app_management_action_sort">Sort</string>
     <string name="app_management_action_hidden_apps">Hidden apps</string>
     <string name="app_management_sort_a_to_z">Name (A–Z)</string>
