@@ -6,6 +6,7 @@ import android.os.Build
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import com.topjohnwu.superuser.Shell
+import io.sentry.android.core.SentryAndroid
 import moe.shizuku.manager.ktx.logd
 import moe.shizuku.manager.service.WatchdogService
 import moe.shizuku.manager.utils.ShizukuStateMachine
@@ -49,6 +50,13 @@ class ShizukuApplication : Application() {
         super.onCreate()
         application = this
         appContext = applicationContext
+        if (BuildConfig.SENTRY_DSN.isNotEmpty()) {
+            SentryAndroid.init(this) { options ->
+                options.dsn = BuildConfig.SENTRY_DSN
+                options.isAttachScreenshot = false
+                options.release = "shizuku-plus@${BuildConfig.VERSION_NAME}"
+            }
+        }
         init(this)
     }
 

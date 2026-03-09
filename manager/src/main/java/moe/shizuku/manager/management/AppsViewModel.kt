@@ -14,7 +14,7 @@ import moe.shizuku.manager.authorization.AuthorizationManager
 import rikka.lifecycle.Resource
 
 enum class SortOrder { NAME_ASC, LAST_INSTALLED, LAST_UPDATED }
-enum class FilterState { ALL, GRANTED, DENIED }
+enum class FilterState { ALL, GRANTED, DENIED, HIDDEN }
 
 class AppsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -108,8 +108,11 @@ class AppsViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val pm = appContext.packageManager
                 var list = rawPackages.filter { pi ->
-                    // Main list only shows non-hidden apps
-                    if (pi.packageName in hiddenPackages) return@filter false
+                    if (filterState == FilterState.HIDDEN) {
+                        if (pi.packageName !in hiddenPackages) return@filter false
+                    } else {
+                        if (pi.packageName in hiddenPackages) return@filter false
+                    }
                     
                     val appInfo = pi.applicationInfo
                     val label = appInfo?.loadLabel(pm)?.toString() ?: ""
@@ -117,7 +120,7 @@ class AppsViewModel(application: Application) : AndroidViewModel(application) {
                         label.contains(searchQuery, ignoreCase = true) ||
                         pi.packageName.contains(searchQuery, ignoreCase = true)
                     val matchesFilter = when (filterState) {
-                        FilterState.ALL -> true
+                        FilterState.ALL, FilterState.HIDDEN -> true
                         FilterState.GRANTED -> appInfo != null && runCatching {
                             AuthorizationManager.granted(pi.packageName, appInfo.uid)
                         }.getOrDefault(false)

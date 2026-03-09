@@ -372,8 +372,10 @@ public class IntegerSimpleMenuPreference extends Preference {
         mAnchor = holder.itemView.findViewById(android.R.id.empty);
 
         if (mAnchor == null) {
-            throw new IllegalStateException("SimpleMenuPreference item layout must contain" +
-                    "a view id is android.R.id.empty to support iconSpaceReserved");
+            mAnchor = holder.itemView.findViewById(android.R.id.title);
+        }
+        if (mAnchor == null) {
+            mAnchor = mItemView;
         }
     }
 }

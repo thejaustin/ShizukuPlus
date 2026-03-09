@@ -4,17 +4,19 @@
 # Allows legacy root apps to function via Shizuku+ privileges.
 # Drop-in replacement for /system/bin/su for apps that support custom paths.
 
+BASEDIR=$(dirname "$0")
+
 # If no arguments are provided, or if it's just a shell request, drop into rish
 if [ "$1" = "" ]; then
-    exec sh /data/data/moe.shizuku.privileged.api/files/rish
+    exec sh "$BASEDIR/rish"
 fi
 
 # The most common usage from legacy apps is: su -c "command"
 if [ "$1" = "-c" ]; then
     shift
     # Pass the rest of the arguments directly to rish
-    exec sh /data/data/moe.shizuku.privileged.api/files/rish -c "$*"
+    exec sh "$BASEDIR/rish" -c "$*"
 fi
 
 # Fallback: Just pass all arguments to rish
-exec sh /data/data/moe.shizuku.privileged.api/files/rish "$@"
+exec sh "$BASEDIR/rish" "$@"

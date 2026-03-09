@@ -92,9 +92,6 @@
             android:name=".management.ApplicationManagementActivity"
             android:label="@string/home_app_management_title" />
         <activity
-            android:name=".management.HiddenAppsActivity"
-            android:label="@string/app_management_action_hidden_apps" />
-        <activity
             android:name=".settings.ActivityLogActivity"
             android:label="@string/settings_activity_log" />
         <activity
