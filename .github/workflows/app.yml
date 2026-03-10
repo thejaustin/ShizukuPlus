@@ -101,8 +101,8 @@ jobs:
           eval $CMD
           FILE=$(ls "$APK_DIR"/*.apk)
 
-          ARTIFACT_NAME="shizuku.apk"
-          [ "$IS_DEBUG" = "true" ] && ARTIFACT_NAME="shizuku-debug.apk"
+          ARTIFACT_NAME="shizuku_plus.apk"
+          [ "$IS_DEBUG" = "true" ] && ARTIFACT_NAME="shizuku_plus-debug.apk"
 
           RENAMED="$FILE"
           if [ "$(basename "$FILE")" != "$ARTIFACT_NAME" ]; then
