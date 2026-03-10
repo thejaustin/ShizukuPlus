@@ -65,6 +65,11 @@ public class ShizukuSettings {
         public static final String KEY_NETWORK_GOVERNOR_PLUS_ENABLED = "network_governor_plus_enabled";
         public static final String KEY_ACTIVITY_MANAGER_PLUS_ENABLED = "activity_manager_plus_enabled";
 
+        // Home card extras (Shizuku+ additions)
+        public static final String KEY_SHOW_START_ADB_HOME = "show_start_adb_home";
+        public static final String KEY_CARD_ORDER = "home_card_order";
+        public static final String KEY_HIDDEN_HOME_CARDS = "hidden_home_cards";
+
         // Legacy Compatibility (Shizuku+ additions)
         public static final String KEY_ADB_PROXY_ENABLED = "adb_proxy_enabled";
         public static final String KEY_FAKE_SU_ENABLED = "fake_su_enabled";
@@ -405,6 +410,44 @@ public class ShizukuSettings {
     public static boolean isFakeSuEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_FAKE_SU_ENABLED, false);
+    }
+
+    public static boolean showStartAdbHome() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_SHOW_START_ADB_HOME, true);
+    }
+
+    @Nullable
+    public static String getCardOrder() {
+        SharedPreferences p = getPreferences();
+        return p != null ? p.getString(Keys.KEY_CARD_ORDER, null) : null;
+    }
+
+    public static void setCardOrder(@Nullable String order) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putString(Keys.KEY_CARD_ORDER, order).apply();
+    }
+
+    public static java.util.Set<String> getHiddenHomeCards() {
+        SharedPreferences p = getPreferences();
+        return p != null ? p.getStringSet(Keys.KEY_HIDDEN_HOME_CARDS, new java.util.HashSet<>()) : new java.util.HashSet<>();
+    }
+
+    public static void setHiddenHomeCards(java.util.Set<String> hidden) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putStringSet(Keys.KEY_HIDDEN_HOME_CARDS, hidden).apply();
+    }
+
+    public static void addHiddenHomeCard(String cardId) {
+        java.util.Set<String> hidden = new java.util.HashSet<>(getHiddenHomeCards());
+        hidden.add(cardId);
+        setHiddenHomeCards(hidden);
+    }
+
+    public static void removeHiddenHomeCard(String cardId) {
+        java.util.Set<String> hidden = new java.util.HashSet<>(getHiddenHomeCards());
+        hidden.remove(cardId);
+        setHiddenHomeCards(hidden);
     }
 
     @Nullable

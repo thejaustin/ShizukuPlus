@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedResources">
 
-    <dimen name="card_spacing">8dp</dimen>
+    <dimen name="card_spacing">4dp</dimen>
     <dimen name="list_item_spacing">16dp</dimen>
 
     <dimen name="margin_horizontal">16dp</dimen>

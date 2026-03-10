@@ -8,9 +8,11 @@ import android.os.Build
 import android.provider.Settings
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
@@ -44,7 +46,7 @@ class StartWirelessAdbViewHolder(binding: HomeStartWirelessAdbBinding, root: Vie
         fun creator (scope: CoroutineScope): Creator<Any> {
             return Creator { inflater: LayoutInflater, parent: ViewGroup? ->
                 val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
-                val inner = HomeStartWirelessAdbBinding.inflate(inflater, outer.root, true)
+                val inner = HomeStartWirelessAdbBinding.inflate(inflater, outer.cardContent, true)
                 StartWirelessAdbViewHolder(inner, outer.root, scope)
             }
         }
@@ -98,6 +100,17 @@ class StartWirelessAdbViewHolder(binding: HomeStartWirelessAdbBinding, root: Vie
         binding.button1.setOnClickListener { v: View ->
             start(v.context, scope)
         }
+        itemView.findViewById<View>(R.id.drag_handle).apply {
+            visibility = View.VISIBLE
+            setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_DOWN) HomeEditMode.startDragCallback?.invoke(this@StartWirelessAdbViewHolder)
+                false
+            }
+            setOnLongClickListener { HomeEditMode.enter(); true }
+        }
+        itemView.findViewById<View>(R.id.remove_btn).setOnClickListener {
+            HomeEditMode.removeCardCallback?.invoke(HomeAdapter.ID_START_WADB)
+        }
 
         if (EnvironmentUtils.isTlsSupported()) {
             binding.button3.setOnClickListener { v: View ->
@@ -119,6 +132,7 @@ class StartWirelessAdbViewHolder(binding: HomeStartWirelessAdbBinding, root: Vie
 
     override fun onBind(payloads: MutableList<Any>) {
         super.onBind(payloads)
+        itemView.findViewById<View>(R.id.remove_btn).isVisible = HomeEditMode.isActive
     }
 
     @RequiresApi(Build.VERSION_CODES.R)

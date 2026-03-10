@@ -3,9 +3,11 @@ package moe.shizuku.manager.home
 import android.content.Intent
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import moe.shizuku.manager.Helps
 import moe.shizuku.manager.R
 import moe.shizuku.manager.databinding.HomeItemContainerBinding
@@ -22,7 +24,7 @@ class StartRootViewHolder(private val binding: HomeStartRootBinding, root: View)
     companion object {
         val CREATOR = Creator<Boolean> { inflater: LayoutInflater, parent: ViewGroup? ->
             val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
-            val inner = HomeStartRootBinding.inflate(inflater, outer.root, true)
+            val inner = HomeStartRootBinding.inflate(inflater, outer.cardContent, true)
             StartRootViewHolder(inner, outer.root)
         }
     }
@@ -37,6 +39,17 @@ class StartRootViewHolder(private val binding: HomeStartRootBinding, root: View)
         start.setOnClickListener(listener)
         restart.setOnClickListener(listener)
         binding.text1.movementMethod = LinkMovementMethod.getInstance()
+        itemView.findViewById<View>(R.id.drag_handle).apply {
+            visibility = View.VISIBLE
+            setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_DOWN) HomeEditMode.startDragCallback?.invoke(this@StartRootViewHolder)
+                false
+            }
+            setOnLongClickListener { HomeEditMode.enter(); true }
+        }
+        itemView.findViewById<View>(R.id.remove_btn).setOnClickListener {
+            HomeEditMode.removeCardCallback?.invoke(HomeAdapter.ID_START_ROOT)
+        }
     }
 
     private fun onStartClicked(v: View) {
@@ -48,6 +61,7 @@ class StartRootViewHolder(private val binding: HomeStartRootBinding, root: View)
     }
 
     override fun onBind() {
+        itemView.findViewById<View>(R.id.remove_btn).isVisible = HomeEditMode.isActive
         start.isEnabled = true
         restart.isEnabled = true
         if (data!!) {

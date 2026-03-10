@@ -3,9 +3,11 @@ package moe.shizuku.manager.home
 import android.content.Intent
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import moe.shizuku.manager.Helps
 import moe.shizuku.manager.R
@@ -23,7 +25,7 @@ class StartAdbViewHolder(binding: HomeStartAdbBinding, root: View) : BaseViewHol
     companion object {
         val CREATOR = Creator<Any> { inflater: LayoutInflater, parent: ViewGroup? ->
             val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
-            val inner = HomeStartAdbBinding.inflate(inflater, outer.root, true)
+            val inner = HomeStartAdbBinding.inflate(inflater, outer.cardContent, true)
             StartAdbViewHolder(inner, outer.root)
         }
     }
@@ -66,5 +68,20 @@ class StartAdbViewHolder(binding: HomeStartAdbBinding, root: View) : BaseViewHol
         binding.text1.movementMethod = LinkMovementMethod.getInstance()
         binding.text1.text = context.getString(R.string.home_adb_description, Helps.ADB.get())
             .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
+        itemView.findViewById<View>(R.id.drag_handle).apply {
+            visibility = View.VISIBLE
+            setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_DOWN) HomeEditMode.startDragCallback?.invoke(this@StartAdbViewHolder)
+                false
+            }
+            setOnLongClickListener { HomeEditMode.enter(); true }
+        }
+        itemView.findViewById<View>(R.id.remove_btn).setOnClickListener {
+            HomeEditMode.removeCardCallback?.invoke(HomeAdapter.ID_START_ADB)
+        }
+    }
+
+    override fun onBind() {
+        itemView.findViewById<View>(R.id.remove_btn).isVisible = HomeEditMode.isActive
     }
 }
