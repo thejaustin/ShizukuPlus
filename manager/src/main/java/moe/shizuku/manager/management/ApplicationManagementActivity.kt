@@ -213,6 +213,10 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
             R.id.sort_name -> { item.isChecked = true; viewModel.setSortOrder(SortOrder.NAME_ASC); true }
             R.id.sort_last_installed -> { item.isChecked = true; viewModel.setSortOrder(SortOrder.LAST_INSTALLED); true }
             R.id.sort_last_updated -> { item.isChecked = true; viewModel.setSortOrder(SortOrder.LAST_UPDATED); true }
+            R.id.action_root_compat -> {
+                startActivity(Intent(this, moe.shizuku.manager.settings.RootCompatibilityActivity::class.java))
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

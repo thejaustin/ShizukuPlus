@@ -1,6 +1,9 @@
 package moe.shizuku.manager.settings
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -11,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +26,15 @@ import moe.shizuku.manager.utils.AppContextManager
 class RootCompatibilityActivity : AppBarActivity() {
 
     override fun getLayoutId() = R.layout.activity_root_compatibility
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: CategorizedSuggestedAppsAdapter
+
+    private val packageReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            refreshList()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,17 +48,36 @@ class RootCompatibilityActivity : AppBarActivity() {
             insets
         }
 
-        val recyclerView = findViewById<RecyclerView>(R.id.suggested_apps_list)
+        recyclerView = findViewById(R.id.suggested_apps_list)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        
-        val items = mutableListOf<Any>()
-        val categories = AppContextManager.getRootLegacyPackages()
-        categories.forEach { (category, packages) ->
-            items.add(category) // Header
-            items.addAll(packages) // App package names
+        adapter = CategorizedSuggestedAppsAdapter(buildItems())
+        recyclerView.adapter = adapter
+
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_PACKAGE_ADDED)
+            addAction(Intent.ACTION_PACKAGE_REMOVED)
+            addAction(Intent.ACTION_PACKAGE_CHANGED)
+            addDataScheme("package")
         }
-        
-        recyclerView.adapter = CategorizedSuggestedAppsAdapter(items)
+        ContextCompat.registerReceiver(this, packageReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
+    }
+
+    override fun onDestroy() {
+        unregisterReceiver(packageReceiver)
+        super.onDestroy()
+    }
+
+    private fun buildItems(): List<Any> {
+        val items = mutableListOf<Any>()
+        AppContextManager.getRootLegacyPackages().forEach { (category, packages) ->
+            items.add(category)
+            items.addAll(packages)
+        }
+        return items
+    }
+
+    private fun refreshList() {
+        adapter.updateItems(buildItems())
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -56,7 +88,15 @@ class RootCompatibilityActivity : AppBarActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private inner class CategorizedSuggestedAppsAdapter(val items: List<Any>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private inner class CategorizedSuggestedAppsAdapter(items: List<Any>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+        private val items = items.toMutableList()
+
+        fun updateItems(newItems: List<Any>) {
+            items.clear()
+            items.addAll(newItems)
+            notifyDataSetChanged()
+        }
         
         private val TYPE_HEADER = 0
         private val TYPE_APP = 1

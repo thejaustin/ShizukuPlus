@@ -25,4 +25,9 @@
         android:title="@string/app_management_action_hidden_apps"
         android:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_root_compat"
+        android:title="@string/root_hub_title"
+        android:showAsAction="never" />
+
 </menu>
