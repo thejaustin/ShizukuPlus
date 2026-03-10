@@ -1,6 +1,7 @@
 package moe.shizuku.manager.settings
 
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.TwoStatePreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

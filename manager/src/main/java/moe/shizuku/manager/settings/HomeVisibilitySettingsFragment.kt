@@ -2,6 +2,7 @@ package moe.shizuku.manager.settings
 
 import android.os.Bundle
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
