@@ -14,6 +14,8 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import moe.shizuku.manager.R
@@ -102,6 +104,39 @@ abstract class HomeActivity : AppBarActivity() {
         recyclerView.addItemSpacing(top = itemSpacing, bottom = itemSpacing)
         recyclerView.addEdgeSpacing(top = edgeSpacingV, bottom = edgeSpacingV, left = edgeSpacingH, right = edgeSpacingH)
 
+        // Drag-to-reorder support
+        val dragCallback = object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0
+        ) {
+            override fun isLongPressDragEnabled() = false
+
+            override fun getMovementFlags(rv: RecyclerView, vh: RecyclerView.ViewHolder): Int {
+                return if (adapter.isDraggable(vh.adapterPosition))
+                    makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
+                else
+                    makeMovementFlags(0, 0)
+            }
+
+            override fun onMove(rv: RecyclerView, src: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                if (!adapter.isDraggable(target.adapterPosition)) return false
+                adapter.moveItem(src.adapterPosition, target.adapterPosition)
+                return true
+            }
+
+            override fun onSwiped(vh: RecyclerView.ViewHolder, direction: Int) {}
+
+            override fun clearView(rv: RecyclerView, vh: RecyclerView.ViewHolder) {
+                super.clearView(rv, vh)
+                adapter.persistCardOrder()
+                adapter.updateData()
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(dragCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+
+        HomeEditMode.startDragCallback = { vh -> itemTouchHelper.startDrag(vh) }
+        HomeEditMode.exit()
+
         ShizukuStateMachine.addListener(stateListener)
     }
 
@@ -135,7 +170,19 @@ abstract class HomeActivity : AppBarActivity() {
         homeModel.reload()
     }
 
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun onBackPressed() {
+        if (HomeEditMode.isActive) {
+            HomeEditMode.exit()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     override fun onDestroy() {
+        HomeEditMode.onChanged = null
+        HomeEditMode.startDragCallback = null
+        HomeEditMode.removeCardCallback = null
         ShizukuStateMachine.removeListener(stateListener)
         super.onDestroy()
     }

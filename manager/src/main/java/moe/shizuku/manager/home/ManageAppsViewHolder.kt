@@ -22,7 +22,7 @@ class ManageAppsViewHolder(private val binding: HomeManageAppsItemBinding, root:
     companion object {
         val CREATOR = Creator<Pair<ServiceStatus, Int>> { inflater: LayoutInflater, parent: ViewGroup? ->
             val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
-            val inner = HomeManageAppsItemBinding.inflate(inflater, outer.root, true)
+            val inner = HomeManageAppsItemBinding.inflate(inflater, outer.cardContent, true)
             ManageAppsViewHolder(inner, outer.root)
         }
     }

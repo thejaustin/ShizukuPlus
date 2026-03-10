@@ -15,7 +15,7 @@ class AdbPermissionLimitedViewHolder(binding: HomeExtraStepRequiredBinding, root
     companion object {
         val CREATOR = Creator<Any> { inflater: LayoutInflater, parent: ViewGroup? ->
             val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
-            val inner = HomeExtraStepRequiredBinding.inflate(inflater, outer.root, true)
+            val inner = HomeExtraStepRequiredBinding.inflate(inflater, outer.cardContent, true)
             AdbPermissionLimitedViewHolder(inner, outer.root)
         }
     }

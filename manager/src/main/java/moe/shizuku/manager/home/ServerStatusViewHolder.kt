@@ -22,7 +22,7 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
     companion object {
         val CREATOR = Creator<ServiceStatus> { inflater: LayoutInflater, parent: ViewGroup? ->
             val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
-            val inner = HomeServerStatusBinding.inflate(inflater, outer.root, true)
+            val inner = HomeServerStatusBinding.inflate(inflater, outer.cardContent, true)
             ServerStatusViewHolder(inner, outer.root)
         }
     }

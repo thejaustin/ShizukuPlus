@@ -242,6 +242,8 @@
     <string name="settings_show_terminal_home">Show Terminal (rish)</string>
     <string name="settings_show_automation_home">Show Automation</string>
     <string name="settings_show_learn_more_home">Show Developer Guide</string>
+    <string name="settings_show_start_adb_home">Show Wired ADB Setup</string>
+    <string name="home_edit_mode_hint">Hold the grip to drag. Tap × to remove a card.</string>
     <string name="settings_advanced">Advanced</string>
     <string name="settings_legacy_pairing">Legacy pairing</string>
     <string name="settings_legacy_pairing_summary">Enter the pairing code in a dialog instead of a notification</string>

@@ -2,10 +2,12 @@ package moe.shizuku.manager.home
 
 import android.os.Build
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
@@ -31,7 +33,7 @@ class AutomationViewHolder(
         val CREATOR =
             Creator<Any> { inflater: LayoutInflater, parent: ViewGroup? ->
                 val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
-                val inner = HomeAutomationBinding.inflate(inflater, outer.root, true)
+                val inner = HomeAutomationBinding.inflate(inflater, outer.cardContent, true)
                 AutomationViewHolder(inner, outer.root)
             }
     }
@@ -43,6 +45,17 @@ class AutomationViewHolder(
     )
 
     init {
+        itemView.findViewById<View>(R.id.drag_handle).apply {
+            visibility = View.VISIBLE
+            setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_DOWN) HomeEditMode.startDragCallback?.invoke(this@AutomationViewHolder)
+                false
+            }
+            setOnLongClickListener { HomeEditMode.enter(); true }
+        }
+        itemView.findViewById<View>(R.id.remove_btn).setOnClickListener {
+            HomeEditMode.removeCardCallback?.invoke(HomeAdapter.ID_AUTOMATION)
+        }
         binding.button1.setOnClickListener { v ->
             val context = v.context
             val authToken = ShizukuSettings.getAuthToken()
@@ -115,6 +128,10 @@ class AutomationViewHolder(
                     .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
             }
         }
+    }
+
+    override fun onBind() {
+        itemView.findViewById<View>(R.id.remove_btn).isVisible = HomeEditMode.isActive
     }
 
     private fun getIntentAction(buttonId: Int): String =
