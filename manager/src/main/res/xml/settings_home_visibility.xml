@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreferenceCompat
+        android:key="show_terminal_home"
+        android:title="@string/settings_show_terminal_home"
+        android:defaultValue="true" />
+
+    <SwitchPreferenceCompat
+        android:key="show_automation_home"
+        android:title="@string/settings_show_automation_home"
+        android:defaultValue="true" />
+
+    <SwitchPreferenceCompat
+        android:key="show_learn_more_home"
+        android:title="@string/settings_show_learn_more_home"
+        android:defaultValue="true" />
+
+    <SwitchPreferenceCompat
+        android:key="show_activity_log_home"
+        android:title="@string/settings_show_activity_log_home"
+        android:defaultValue="true" />
+
+    <Preference
+        android:key="update_app_database"
+        android:title="@string/settings_update_app_database"
+        android:summary="@string/settings_update_app_database_summary" />
+
+</PreferenceScreen>

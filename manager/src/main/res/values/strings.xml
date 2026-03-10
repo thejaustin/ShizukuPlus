@@ -421,4 +421,14 @@
     <string name="dialog_requesting_legacy_button_open_shizuku">Open Shizuku</string>
     <string name="wadb_notification_attempt_now">Attempt now</string>
 
+
+    <!-- Settings navigation summaries -->
+    <string name="settings_nav_behavior_summary">Start on boot, watchdog, TCP mode</string>
+    <string name="settings_nav_shizuku_plus_summary">Enhanced API, shell interceptor, and more</string>
+    <string name="settings_nav_ui_summary">Theme, colors, language</string>
+    <string name="settings_nav_app_management_summary">Swipe and long-press actions</string>
+    <string name="settings_nav_home_summary">Visible cards and shortcuts</string>
+    <string name="settings_nav_legacy_summary">ADB proxy, fake su, root compatibility</string>
+    <string name="settings_nav_advanced_summary">Diagnostics, logs, help</string>
+
 </resources>

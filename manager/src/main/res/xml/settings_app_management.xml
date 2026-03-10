@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <rikka.preference.SimpleMenuPreference
+        android:key="swipe_right_action"
+        android:title="@string/settings_swipe_right"
+        android:entries="@array/swipe_actions"
+        android:entryValues="@array/swipe_actions_values"
+        android:defaultValue="open_app"
+        android:summary="%s" />
+
+    <rikka.preference.SimpleMenuPreference
+        android:key="swipe_left_action"
+        android:title="@string/settings_swipe_left"
+        android:entries="@array/swipe_actions"
+        android:entryValues="@array/swipe_actions_values"
+        android:defaultValue="app_info"
+        android:summary="%s" />
+
+    <Preference
+        android:key="lp_category_info"
+        style="?preferenceInformationStyle"
+        android:summary="@string/settings_lp_category_summary" />
+
+    <SwitchPreferenceCompat
+        android:key="lp_open_app"
+        android:title="@string/settings_lp_open_app"
+        android:defaultValue="true" />
+
+    <SwitchPreferenceCompat
+        android:key="lp_app_info"
+        android:title="@string/settings_lp_app_info"
+        android:defaultValue="true" />
+
+    <SwitchPreferenceCompat
+        android:key="lp_toggle_permission"
+        android:title="@string/settings_lp_toggle_permission"
+        android:defaultValue="true" />
+
+    <SwitchPreferenceCompat
+        android:key="lp_hide_from_list"
+        android:title="@string/settings_lp_hide_from_list"
+        android:defaultValue="true" />
+
+</PreferenceScreen>

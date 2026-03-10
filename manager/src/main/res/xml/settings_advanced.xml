@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:key="service_doctor"
+        android:title="@string/home_service_doctor_title"
+        android:summary="@string/home_service_doctor_summary" />
+
+    <SwitchPreferenceCompat
+        android:key="enable_activity_log"
+        android:title="@string/settings_enable_activity_log"
+        android:defaultValue="true" />
+
+    <Preference
+        android:key="activity_log"
+        android:title="@string/settings_activity_log"
+        android:dependency="enable_activity_log" />
+
+    <SwitchPreferenceCompat
+        android:key="legacy_pairing"
+        android:summary="@string/settings_legacy_pairing_summary"
+        android:title="@string/settings_legacy_pairing" />
+
+    <Preference
+        android:key="help"
+        android:title="@string/settings_help" />
+
+    <Preference
+        android:key="report_bug"
+        android:title="@string/settings_report_bug" />
+
+</PreferenceScreen>
