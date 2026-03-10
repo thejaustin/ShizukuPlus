@@ -290,6 +290,11 @@
     <string name="root_hub_step_2">2. Find the "SU Path" or "Binary Path" setting in your root app.</string>
     <string name="root_hub_step_3">3. Change it to the path of the exported \'su\' file.</string>
     <string name="root_hub_app_instruction">Set path in Settings > %s</string>
+    <string name="root_hub_su_path_label">Exported su path</string>
+    <string name="root_hub_copy_path">Copy path</string>
+    <string name="root_hub_path_copied">Path copied to clipboard</string>
+    <string name="root_hub_no_export">Export files first from the Home screen</string>
+    <string name="root_hub_copy_open">Copy path &amp; open</string>
 
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">First, please do the following:</string>

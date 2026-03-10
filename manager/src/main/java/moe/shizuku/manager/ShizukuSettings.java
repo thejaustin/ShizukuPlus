@@ -68,6 +68,7 @@ public class ShizukuSettings {
         // Legacy Compatibility (Shizuku+ additions)
         public static final String KEY_ADB_PROXY_ENABLED = "adb_proxy_enabled";
         public static final String KEY_FAKE_SU_ENABLED = "fake_su_enabled";
+        public static final String KEY_EXPORT_DIR_URI = "export_dir_uri";
 
         // Long-press action toggles (Shizuku+ additions)
         public static final String KEY_LP_OPEN_APP = "lp_open_app";
@@ -404,5 +405,16 @@ public class ShizukuSettings {
     public static boolean isFakeSuEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_FAKE_SU_ENABLED, false);
+    }
+
+    @Nullable
+    public static String getExportDirUri() {
+        SharedPreferences p = getPreferences();
+        return p != null ? p.getString(Keys.KEY_EXPORT_DIR_URI, null) : null;
+    }
+
+    public static void setExportDirUri(@Nullable String uri) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putString(Keys.KEY_EXPORT_DIR_URI, uri).apply();
     }
 }

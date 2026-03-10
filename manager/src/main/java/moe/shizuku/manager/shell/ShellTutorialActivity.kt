@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import kotlin.math.roundToInt
 import moe.shizuku.manager.Helps
 import moe.shizuku.manager.R
+import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.app.AppBarActivity
 import moe.shizuku.manager.databinding.TerminalTutorialActivityBinding
 import moe.shizuku.manager.ktx.toHtml
@@ -62,6 +63,8 @@ class ShellTutorialActivity : AppBarActivity() {
             writeToDocument(DEX_NAME)
             writeToDocument(PLUS_NAME)
             writeToDocument(SU_NAME)
+
+            ShizukuSettings.setExportDirUri(tree.toString())
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {

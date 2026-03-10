@@ -82,6 +82,32 @@
                 android:textColor="?colorError"
                 android:text="@string/app_management_item_summary_requires_plus" />
 
+            <TextView
+                android:id="@+id/su_path_nav"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textAppearance="?textAppearanceBodySmall"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:fontFamily="sans-serif-medium"
+                android:visibility="gone"
+                tools:text="Menu &gt; Preferences &gt; SU path"
+                tools:visibility="visible" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/su_copy_open"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_marginTop="6dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="12dp"
+                android:textSize="12sp"
+                android:text="@string/root_hub_copy_open"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
         </LinearLayout>
 
     </LinearLayout>
