@@ -13,5 +13,5 @@
     app:cardBackgroundColor="?colorSurfaceContainerLow"
     app:cardElevation="0dp"
     app:strokeWidth="0dp"
-    app:cardCornerRadius="28dp"
-    app:contentPadding="24dp" />
+    app:cardCornerRadius="@dimen/card_corner_radius"
+    app:contentPadding="@dimen/card_content_padding" />

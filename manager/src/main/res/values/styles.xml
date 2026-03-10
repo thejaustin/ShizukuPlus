@@ -32,12 +32,14 @@
     <style name="CardTitle">
         <item name="android:textAppearance">?textAppearanceBodyLarge</item>
         <item name="android:textColor">?android:textColorPrimary</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:lineSpacingExtra">1sp</item>
     </style>
 
     <style name="CardSummary">
         <item name="android:textAppearance">?textAppearanceBodyMedium</item>
         <item name="android:textColor">?android:textColorSecondary</item>
+        <item name="android:lineSpacingExtra">1sp</item>
     </style>
 
     <style name="CardSummary.Brief" parent="CardSummary">
@@ -78,8 +80,8 @@
         <item name="android:focusable">true</item>
         <item name="android:clipChildren">false</item>
         <item name="android:clipToPadding">false</item>
-        <item name="cardCornerRadius">28dp</item>
-        <item name="contentPadding">24dp</item>
+        <item name="cardCornerRadius">@dimen/card_corner_radius</item>
+        <item name="contentPadding">@dimen/card_content_padding</item>
         <item name="cardBackgroundColor">?colorSecondaryContainer</item>
     </style>
 

@@ -526,10 +526,6 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
         val recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState)
         val context = recyclerView.context
 
-        recyclerView.layoutTransition = android.animation.LayoutTransition().apply {
-            enableTransitionType(android.animation.LayoutTransition.CHANGING)
-            setDuration(300)
-        }
         recyclerView.setBackgroundColor(android.graphics.Color.TRANSPARENT)
         recyclerView.addItemDecoration(SettingsItemDecoration(context))
 
@@ -556,7 +552,7 @@ class SettingsFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedP
     private class SettingsItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
         private val cardPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
         private val dividerPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
-        private val cornerRadius = 28f * context.resources.displayMetrics.density
+        private val cornerRadius = context.resources.getDimension(R.dimen.card_corner_radius)
         private val dividerInset = 56f * context.resources.displayMetrics.density
         private val cardMargin = 16f * context.resources.displayMetrics.density
 

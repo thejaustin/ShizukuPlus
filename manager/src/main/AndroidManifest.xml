@@ -112,7 +112,7 @@
             android:label="@string/home_terminal_title" />
         <activity
             android:name=".settings.SettingsActivity"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/settings_title">
             <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES" />

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Larger corner radius for big-screen phones (S22 Ultra, Pixel 9 Pro XL, etc.)
+         to better match the pronounced display corner curvature on these devices. -->
+    <dimen name="card_corner_radius">40dp</dimen>
+    <dimen name="card_content_padding">28dp</dimen>
+</resources>
