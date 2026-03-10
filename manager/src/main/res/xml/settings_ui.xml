@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <moe.shizuku.manager.settings.IntegerSimpleMenuPreference
+        android:entries="@array/night_mode"
+        android:entryValues="@array/night_mode_value"
+        android:key="night_mode"
+        android:summary="%s"
+        android:title="@string/dark_theme" />
+
+    <SwitchPreferenceCompat
+        android:key="black_night_theme"
+        android:summary="@string/settings_black_night_theme_summary"
+        android:title="@string/settings_black_night_theme" />
+
+    <SwitchPreferenceCompat
+        android:key="use_system_color"
+        android:title="@string/settings_use_system_color" />
+
+    <rikka.preference.SimpleMenuPreference
+        android:defaultValue="SYSTEM"
+        android:key="language"
+        android:summary="%s"
+        android:title="@string/settings_language" />
+
+    <Preference
+        android:key="translation"
+        android:title="@string/settings_translation" />
+
+</PreferenceScreen>

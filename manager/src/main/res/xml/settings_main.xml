@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:key="nav_behavior"
+        android:title="@string/settings_behavior"
+        android:summary="@string/settings_nav_behavior_summary"
+        android:fragment="moe.shizuku.manager.settings.BehaviorSettingsFragment" />
+
+    <Preference
+        android:key="nav_shizuku_plus"
+        android:title="@string/settings_shizuku_plus_features"
+        android:summary="@string/settings_nav_shizuku_plus_summary"
+        android:fragment="moe.shizuku.manager.settings.ShizukuPlusSettingsFragment" />
+
+    <Preference
+        android:key="nav_ui"
+        android:title="@string/settings_user_interface"
+        android:summary="@string/settings_nav_ui_summary"
+        android:fragment="moe.shizuku.manager.settings.UISettingsFragment" />
+
+    <Preference
+        android:key="nav_app_management"
+        android:title="@string/settings_app_management"
+        android:summary="@string/settings_nav_app_management_summary"
+        android:fragment="moe.shizuku.manager.settings.AppManagementSettingsFragment" />
+
+    <Preference
+        android:key="nav_home_visibility"
+        android:title="@string/settings_home_visibility"
+        android:summary="@string/settings_nav_home_summary"
+        android:fragment="moe.shizuku.manager.settings.HomeVisibilitySettingsFragment" />
+
+    <Preference
+        android:key="nav_legacy_compat"
+        android:title="@string/settings_category_legacy_compatibility"
+        android:summary="@string/settings_nav_legacy_summary"
+        android:fragment="moe.shizuku.manager.settings.LegacyCompatSettingsFragment" />
+
+    <Preference
+        android:key="nav_advanced"
+        android:title="@string/settings_advanced"
+        android:summary="@string/settings_nav_advanced_summary"
+        android:fragment="moe.shizuku.manager.settings.AdvancedSettingsFragment" />
+
+</PreferenceScreen>

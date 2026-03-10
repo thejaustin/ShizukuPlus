@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreferenceCompat
+        android:key="start_on_boot"
+        android:title="@string/settings_start_on_boot" />
+
+    <SwitchPreferenceCompat
+        android:key="watchdog"
+        android:summary="@string/settings_watchdog_summary"
+        android:title="@string/settings_watchdog" />
+
+    <SwitchPreferenceCompat
+        android:key="tcp_mode"
+        android:title="@string/settings_tcp_mode"
+        android:defaultValue="true" />
+
+    <EditTextPreference
+        android:key="tcp_port"
+        android:title="@string/settings_tcp_port"
+        android:inputType="number" />
+
+    <SwitchPreferenceCompat
+        android:key="auto_disable_usb_debugging"
+        android:title="@string/settings_auto_disable_usb_debugging"
+        android:summary="@string/settings_auto_disable_usb_debugging_summary" />
+
+</PreferenceScreen>
