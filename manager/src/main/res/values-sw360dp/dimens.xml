@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Rounder corners for modern flagship phones (S22 Ultra, Pixel 9 Pro, etc.)
+         to match the pronounced display corner curvature. Padding unchanged. -->
+    <dimen name="card_corner_radius">40dp</dimen>
+</resources>
