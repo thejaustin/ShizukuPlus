@@ -17,6 +17,11 @@
         android:defaultValue="true" />
 
     <SwitchPreferenceCompat
+        android:key="show_start_adb_home"
+        android:title="@string/settings_show_start_adb_home"
+        android:defaultValue="false" />
+
+    <SwitchPreferenceCompat
         android:key="show_activity_log_home"
         android:title="@string/settings_show_activity_log_home"
         android:defaultValue="true" />

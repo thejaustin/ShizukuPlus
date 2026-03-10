@@ -62,8 +62,11 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
     ): RecyclerView {
         val recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState)
         val context = recyclerView.context
+        val cardMarginPx = (16 * context.resources.displayMetrics.density).toInt()
 
         recyclerView.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+        recyclerView.setPadding(cardMarginPx, 0, cardMarginPx, 0)
+        recyclerView.clipToPadding = false
         recyclerView.addItemDecoration(SettingsItemDecoration(context))
 
         ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { _, insets ->
@@ -185,7 +188,6 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         private val cardPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
         private val dividerPaint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
         private val cornerRadius = context.resources.getDimension(R.dimen.card_corner_radius)
-        private val dividerInset = 56f * context.resources.displayMetrics.density
         private val cardMargin = 16f * context.resources.displayMetrics.density
 
         init {
@@ -213,9 +215,9 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                     val next = parent.getChildAt(i + 1)
                     if (next.visibility == View.VISIBLE) {
                         c.drawLine(
-                            child.left + dividerInset,
+                            child.left.toFloat(),
                             child.bottom.toFloat(),
-                            child.right - cardMargin,
+                            child.right.toFloat(),
                             child.bottom.toFloat(),
                             dividerPaint
                         )
