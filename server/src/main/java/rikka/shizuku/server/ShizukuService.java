@@ -285,6 +285,34 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     @Override
     public IRemoteProcess newProcess(String[] cmd, String[] env, String dir) {
+        // Fake SU interception: strip su wrapper and run command directly via Shizuku privileges
+        if (isFeatureEnabled("fake_su") && cmd != null && cmd.length > 0) {
+            String base = cmd[0];
+            if (base.equals("su") || base.endsWith("/su")) {
+                // Parse: su [-c cmd args] | su [user] [-c cmd args] | su [user]
+                java.util.List<String> args = new java.util.ArrayList<>();
+                boolean inCommand = false;
+                for (int i = 1; i < cmd.length; i++) {
+                    if (inCommand) {
+                        args.add(cmd[i]);
+                    } else if (cmd[i].equals("-c") || cmd[i].equals("--command")) {
+                        inCommand = true;
+                    } else if (!cmd[i].startsWith("-") && args.isEmpty()) {
+                        // user/uid argument — skip it (e.g. "0", "root")
+                    } else {
+                        args.add(cmd[i]);
+                    }
+                }
+                if (!args.isEmpty()) {
+                    // Wrap in sh -c to handle compound commands
+                    cmd = new String[]{"sh", "-c", String.join(" ", args)};
+                } else {
+                    // Interactive su shell -> open sh
+                    cmd = new String[]{"sh"};
+                }
+                LOGGER.i("FakeSU: intercepted su call, running as sh");
+            }
+        }
         if (isFeatureEnabled("shell_interceptor") && cmd != null && cmd.length > 0) {
             String baseCmd = cmd[0];
             int callingUid = Binder.getCallingUid();

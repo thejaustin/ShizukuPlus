@@ -414,7 +414,7 @@ public class ShizukuSettings {
 
     public static boolean showStartAdbHome() {
         SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_SHOW_START_ADB_HOME, true);
+        return p != null && p.getBoolean(Keys.KEY_SHOW_START_ADB_HOME, false);
     }
 
     @Nullable
