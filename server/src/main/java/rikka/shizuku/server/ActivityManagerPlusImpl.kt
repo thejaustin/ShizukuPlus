@@ -1,5 +1,6 @@
 package rikka.shizuku.server
 
+import android.os.Process
 import moe.shizuku.server.IActivityManagerPlus
 import rikka.hidden.compat.ActivityManagerApis
 import rikka.shizuku.server.util.UserHandleCompat
@@ -8,7 +9,7 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
     override fun deepForceStop(packageName: String?): Boolean {
         if (packageName == null) return false
         try {
-            ActivityManagerApis.forceStopPackageNoThrow(packageName, UserHandleCompat.myUserId())
+            ActivityManagerApis.forceStopPackageNoThrow(packageName, UserHandleCompat.getUserId(Process.myUid()))
             return true
         } catch (e: Exception) {
             return false
@@ -35,11 +36,11 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
     }
 
     override fun killAllBackgroundProcesses(): Boolean {
-        try {
-            ActivityManagerApis.killAllBackgroundProcessesNoThrow()
-            return true
+        return try {
+            val process = Runtime.getRuntime().exec(arrayOf("am", "kill-all"))
+            process.waitFor() == 0
         } catch (e: Exception) {
-            return false
+            false
         }
     }
 }
