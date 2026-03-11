@@ -39,9 +39,13 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
         tcpPortPreference = findPreference(KEY_TCP_PORT)!!
 
         startOnBootPreference.apply {
+            val hasWriteSecureSettings = context.checkSelfPermission(
+                android.Manifest.permission.WRITE_SECURE_SETTINGS
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ||
                 EnvironmentUtils.isTelevision() ||
-                EnvironmentUtils.isRooted()
+                EnvironmentUtils.isRooted() ||
+                hasWriteSecureSettings
             ) {
                 isChecked = ShizukuSettings.getStartOnBoot(context)
                 setOnPreferenceChangeListener { _, newValue ->

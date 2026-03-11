@@ -42,14 +42,15 @@ object ShizukuReceiverStarter {
 
         if (ShizukuSettings.getLastLaunchMode() == LaunchMethod.ROOT) {
             rootStart(context)
-        } else if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || EnvironmentUtils.isTelevision() || EnvironmentUtils.getAdbTcpPort() > 0)
-            && ShizukuSettings.getLastLaunchMode() == LaunchMethod.ADB) {
-                if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
-                    AdbStartWorker.enqueue(context)
-                    updateNotification(context, WorkerState.AWAITING_WIFI)
-                } else {
-                    showPermissionErrorNotification(context)
-                }
+        } else if (ShizukuSettings.getLastLaunchMode() == LaunchMethod.ADB) {
+            if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
+                AdbStartWorker.enqueue(context)
+                val initialState = if (EnvironmentUtils.getAdbTcpPort() > 0 && !EnvironmentUtils.isWifiRequired())
+                    WorkerState.RUNNING else WorkerState.AWAITING_WIFI
+                updateNotification(context, initialState)
+            } else {
+                showPermissionErrorNotification(context)
+            }
         } else {
             Log.w(AppConstants.TAG, "Background start not supported")
         }

@@ -17,15 +17,11 @@ object RootCompatHelper {
         try {
             when (packageName) {
                 "org.adaway" -> {
-                    // AdAway uses a custom su path in its preferences
-                    executePrivileged("settings put global adaway_su_path $suPath")
-                    // Some versions might use XML prefs, we can use Shizuku to 'sed' them if needed,
-                    // but many modern ones have a hidden setting or check common paths.
+                    executePrivileged(arrayOf("settings", "put", "global", "adaway_su_path", suPath))
                     true
                 }
                 "dev.ukanth.ufirewall" -> {
-                    // AFWall+ su path
-                    executePrivileged("settings put global afwall_su_path $suPath")
+                    executePrivileged(arrayOf("settings", "put", "global", "afwall_su_path", suPath))
                     true
                 }
                 "eu.darken.sdm", "eu.darken.sdmse" -> {
@@ -39,10 +35,9 @@ object RootCompatHelper {
         }
     }
 
-    private fun executePrivileged(cmd: String) {
-        // Use the new Shizuku+ Shell optimization for native speed
+    private fun executePrivileged(cmd: Array<String>) {
         try {
-            val process = Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
+            val process = Shizuku.newProcess(cmd, null, null)
             process.waitFor()
         } catch (e: Exception) {
             e.printStackTrace()

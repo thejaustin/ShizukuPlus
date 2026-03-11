@@ -289,28 +289,42 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         if (isFeatureEnabled("su_bridge") && cmd != null && cmd.length > 0) {
             String base = cmd[0];
             if (base.equals("su") || base.endsWith("/su")) {
-                // Parse: su [-c cmd args] | su [user] [-c cmd args] | su [user]
                 java.util.List<String> args = new java.util.ArrayList<>();
                 boolean inCommand = false;
+                boolean skipNext = false;
                 for (int i = 1; i < cmd.length; i++) {
+                    if (skipNext) { skipNext = false; continue; }
                     if (inCommand) {
                         args.add(cmd[i]);
                     } else if (cmd[i].equals("-c") || cmd[i].equals("--command")) {
                         inCommand = true;
+                    } else if (cmd[i].equals("-s") || cmd[i].equals("--shell")) {
+                        // Skip the shell path argument that follows
+                        skipNext = true;
+                    } else if (cmd[i].equals("-l") || cmd[i].equals("--login") || cmd[i].equals("-")) {
+                        // Login flag — skip, we don't set up a login environment
+                    } else if (cmd[i].equals("-p") || cmd[i].equals("-m") || cmd[i].equals("--preserve-environment")) {
+                        // Environment preservation flags — skip
                     } else if (!cmd[i].startsWith("-") && args.isEmpty()) {
-                        // user/uid argument — skip it (e.g. "0", "root")
+                        // user/uid argument (e.g. "0", "root") — skip it
+                    } else if (cmd[i].startsWith("-")) {
+                        // Unknown flag — skip safely
                     } else {
                         args.add(cmd[i]);
                     }
                 }
                 if (!args.isEmpty()) {
-                    // Wrap in sh -c to handle compound commands
-                    cmd = new String[]{"sh", "-c", String.join(" ", args)};
+                    String joined = String.join(" ", args);
+                    if (joined.length() > 65536) {
+                        LOGGER.w("SUBridge: command too long (" + joined.length() + " chars), skipping interception");
+                    } else {
+                        cmd = new String[]{"sh", "-c", joined};
+                        LOGGER.i("SUBridge: intercepted su call, running as sh");
+                    }
                 } else {
-                    // Interactive su shell -> open sh
                     cmd = new String[]{"sh"};
+                    LOGGER.i("SUBridge: intercepted interactive su, opening sh");
                 }
-                LOGGER.i("SUBridge: intercepted su call, running as sh");
             }
         }
         if (isFeatureEnabled("shell_interceptor") && cmd != null && cmd.length > 0) {

@@ -9,13 +9,24 @@ data class AppEnhancement(
     val description: String
 )
 
+/** How well Shizuku+ (in ADB mode) can replace root for this app's core functionality. */
+enum class RootSupportLevel {
+    /** All core features work with Shizuku+ — no real root needed. */
+    FULL,
+    /** Most features work; some operations (e.g. /system writes, raw iptables) still need Shizuku with root. */
+    PARTIAL,
+    /** Core functionality needs Shizuku running with ROOT privileges (not just ADB mode). */
+    ROOT_REQUIRED
+}
+
 object AppContextManager {
-    
+
     data class AppMetadata(
         val description: String,
         val potentialEnhancements: List<AppEnhancement> = emptyList(),
         val isVerified: Boolean = false,
-        val suPathSettingNav: String? = null
+        val suPathSettingNav: String? = null,
+        val rootSupportLevel: RootSupportLevel = RootSupportLevel.FULL
     )
 
     private val ENH_SHELL = AppEnhancement("shell_interceptor", "Shell Acceleration", "Intercepts pm/am commands for native speed.")
@@ -30,20 +41,20 @@ object AppContextManager {
     private val staticDatabase = mutableMapOf<String, AppMetadata>().apply {
         // --- Legacy Root Apps ---
         put("org.adaway", AppMetadata("AdAway: Open-source ad blocker. Use 'Local DNS Proxy' in Shizuku+ for rootless blocking.", listOf(ENH_SHELL), true))
-        put("dev.ukanth.ufirewall", AppMetadata("AFWall+: IPTables firewall. Use 'Network Governor' in Shizuku+ for rootless control.", listOf(ENH_SHELL), true, "Menu > Preferences > SU path"))
+        put("dev.ukanth.ufirewall", AppMetadata("AFWall+: Firewall app. Network Governor enables DNS-based rules; raw iptables chains still need Shizuku with root.", listOf(ENH_SHELL), true, "Menu > Preferences > SU path", rootSupportLevel = RootSupportLevel.PARTIAL))
         put("com.samsung.android.hexinstall", AppMetadata("Hex Installer: Theming engine for Samsung. Shizuku+ provides the necessary Overlay Bridge for OneUI 8+.", listOf(ENH_WIN), true))
         put("com.samsung.android.themepark", AppMetadata("Theme Park: Official Samsung customization. Enhanced by Shizuku+ Overlay API.", listOf(ENH_WIN), true))
-        put("com.keramidas.TitaniumBackup", AppMetadata("Titanium Backup: The classic root backup tool.", emptyList(), true, "Menu > More > Preferences > su executable path"))
-        put("eu.darken.sdm", AppMetadata("SD Maid (Legacy): Powerful system cleaner.", emptyList(), true, "Settings > Root > Binary path"))
-        put("com.speedsoftware.explorer", AppMetadata("Root Explorer: Ultimate file manager for root users.", emptyList(), true, "Settings > Root > SU path"))
-        put("com.jrummy.root.browserfree", AppMetadata("Root Browser: File management with root access.", emptyList(), true))
+        put("com.keramidas.TitaniumBackup", AppMetadata("Titanium Backup: App data backup works via SU Bridge; system-level restores may still need Shizuku with root.", emptyList(), true, "Menu > More > Preferences > su executable path", rootSupportLevel = RootSupportLevel.PARTIAL))
+        put("eu.darken.sdm", AppMetadata("SD Maid (Legacy): Most cleaning works via SU Bridge; deep system paths need Shizuku with root.", emptyList(), true, "Settings > Root > Binary path", rootSupportLevel = RootSupportLevel.PARTIAL))
+        put("com.speedsoftware.explorer", AppMetadata("Root Explorer: File manager with elevated access. Basic browsing works via Storage Bridge; /system edits need Shizuku with root.", listOf(ENH_STORAGE), true, "Settings > Root > SU path", rootSupportLevel = RootSupportLevel.PARTIAL))
+        put("com.jrummy.root.browserfree", AppMetadata("Root Browser: File manager with elevated access. Storage Bridge handles most paths; /system edits need Shizuku with root.", listOf(ENH_STORAGE), true, rootSupportLevel = RootSupportLevel.PARTIAL))
         put("com.machiav3lli.neo_backup", AppMetadata("Neo Backup: Modern open-source backup solution.", listOf(ENH_STORAGE), true, "Preferences > Advanced > Custom shell"))
         put("projekt.substratum.lite", AppMetadata("Substratum Lite: Theming engine for Android.", listOf(ENH_WIN), true))
         put("com.oasisfeng.greenify", AppMetadata("Greenify: Maximize battery savings by hibernating apps.", listOf(ENH_SHELL), true))
         put("com.franco.doze", AppMetadata("Naptime: Aggressive Doze for better battery life.", listOf(ENH_SHELL), true))
         put("com.uzumapps.wakelockdetector", AppMetadata("Wakelock Detector: Find apps draining your battery.", listOf(ENH_SHELL), true))
         put("com.asksven.betterbatterystats", AppMetadata("BetterBatteryStats: Deep dive into battery drain.", listOf(ENH_SHELL), true))
-        put("com.jrummy.apps.build.prop.editor", AppMetadata("BuildProp Editor: Edit system properties.", emptyList(), true))
+        put("com.jrummy.apps.build.prop.editor", AppMetadata("BuildProp Editor: Edit system properties. Writing /system requires Shizuku with root.", emptyList(), true, rootSupportLevel = RootSupportLevel.ROOT_REQUIRED))
         put("org.swiftapps.swiftbackup", AppMetadata("Swift Backup: Fast and reliable backup tool.", listOf(ENH_STORAGE, ENH_SHELL), true))
 
         // --- thejaustin's Apps ---
@@ -168,10 +179,16 @@ object AppContextManager {
                         }
                     }
                 }
+                val rootLevel = when (obj.optString("root_support", "full").lowercase()) {
+                    "partial" -> RootSupportLevel.PARTIAL
+                    "required" -> RootSupportLevel.ROOT_REQUIRED
+                    else -> RootSupportLevel.FULL
+                }
                 dynamicDatabase[pkg] = AppMetadata(
                     description = obj.optString("description", ""),
                     potentialEnhancements = enhancements,
-                    isVerified = obj.optBoolean("verified", false)
+                    isVerified = obj.optBoolean("verified", false),
+                    rootSupportLevel = rootLevel
                 )
             }
         } catch (e: Exception) {

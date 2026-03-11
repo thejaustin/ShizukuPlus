@@ -22,6 +22,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import com.google.android.material.color.MaterialColors
+import moe.shizuku.manager.utils.RootSupportLevel
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
@@ -234,6 +236,24 @@ class RootCompatibilityActivity : AppBarActivity() {
                 holder.packageName.text = pkg
                 holder.description.text = metadata?.description ?: ""
                 holder.description.visibility = View.VISIBLE
+                // Root support badge: color and text vary by support level
+                when (metadata?.rootSupportLevel) {
+                    RootSupportLevel.ROOT_REQUIRED -> {
+                        holder.requiresRoot.visibility = View.VISIBLE
+                        holder.requiresRoot.setText(R.string.app_management_item_summary_requires_root)
+                        holder.requiresRoot.setTextColor(
+                            MaterialColors.getColor(holder.itemView, com.google.android.material.R.attr.colorError))
+                    }
+                    RootSupportLevel.PARTIAL -> {
+                        holder.requiresRoot.visibility = View.VISIBLE
+                        holder.requiresRoot.setText(R.string.app_management_item_summary_partial_root)
+                        holder.requiresRoot.setTextColor(
+                            MaterialColors.getColor(holder.itemView, com.google.android.material.R.attr.colorTertiary))
+                    }
+                    else -> holder.requiresRoot.visibility = View.GONE
+                }
+                // "Requires Plus" badge: shown when app has Plus enhancements that benefit it
+                holder.requiresPlus.visibility = if (metadata != null && metadata.potentialEnhancements.isNotEmpty()) View.VISIBLE else View.GONE
 
                 holder.itemView.findViewById<View>(R.id.switch_widget).visibility = View.GONE
                 holder.itemView.findViewById<View>(R.id.checkbox).visibility = View.GONE
@@ -325,6 +345,8 @@ class RootCompatibilityActivity : AppBarActivity() {
         val appName: TextView = view.findViewById(android.R.id.title)
         val packageName: TextView = view.findViewById(android.R.id.summary)
         val description: TextView = view.findViewById(R.id.app_context)
+        val requiresRoot: TextView = view.findViewById(R.id.requires_root)
+        val requiresPlus: TextView = view.findViewById(R.id.requires_plus)
         val suPathNav: TextView = view.findViewById(R.id.su_path_nav)
         val suCopyOpen: MaterialButton = view.findViewById(R.id.su_copy_open)
         val suMagicSetup: MaterialButton = view.findViewById(R.id.su_magic_setup)

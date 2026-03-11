@@ -131,6 +131,7 @@
     <string name="app_management_dialog_adb_is_limited_title">The permission of adb is limited</string>
     <string name="app_management_dialog_adb_is_limited_message"><![CDATA[It\'s highly possible that your device manufacturer limits the permission of adb.<p>There may be a solution for your system in <b><a href=\"%1$s\">this document</a></b>.]]></string>
     <string name="app_management_item_summary_requires_root">* requires Shizuku runs with root</string>
+    <string name="app_management_item_summary_partial_root">⚠ Partially supported — some functions still need Shizuku with root</string>
     <string name="app_management_item_summary_requires_plus">* requires Shizuku+ Enhanced API</string>
     <string name="app_management_item_context">About this app: %s</string>
     <string name="app_management_enhancements">Enhancements</string>
@@ -251,27 +252,35 @@
     <!-- Shizuku+ Features -->
     <string name="settings_shizuku_plus_features">Shizuku+ Features</string>
     <string name="settings_dhizuku_mode">Dhizuku Mode</string>
-    <string name="settings_dhizuku_mode_summary">Share Device Owner (DevicePolicyManager) permissions with other apps</string>
-    <string name="settings_enhanced_api">Plus API Features</string>
+    <string name="settings_dhizuku_mode_summary">Delegate Device Owner (DevicePolicyManager) privileges to apps that support Dhizuku.</string>
+    <string name="settings_enhanced_api">Shizuku+ Enhanced API</string>
     <string name="settings_enhanced_api_summary">Enable additional system interfaces exclusive to Shizuku+.</string>
-    <string name="settings_shell_interceptor">Transparent Shell Interceptor</string>
-    <string name="settings_shell_interceptor_summary">Accelerate standard apps by intercepting shell commands (pm, am, settings) and routing them through internal native bridges.</string>
+    <string name="settings_shell_interceptor">Shell Accelerator</string>
+    <string name="settings_shell_interceptor_summary">Intercept am, pm, and settings shell commands and route them through native APIs — faster and lower-overhead than spawning a shell.</string>
     <string name="settings_avf_manager">Virtual Machine Manager (AVF)</string>
     <string name="settings_avf_manager_summary">Manage isolated Linux and Microdroid environments. Requires compatible hardware and kernel.</string>
-    <string name="settings_storage_proxy">Storage Bridge (Privileged)</string>
+    <string name="settings_storage_proxy">Storage Bridge</string>
     <string name="settings_storage_proxy_summary">Bypass SAF restrictions for verified tools with authenticated access to restricted data paths.</string>
     <string name="settings_continuity_bridge">Multi-Device Continuity</string>
     <string name="settings_continuity_bridge_summary">Securely synchronize app states and hand off privileged tasks between ShizukuPlus devices.</string>
-    <string name="settings_ai_core_plus">Intelligence Bridge (AI)</string>
-    <string name="settings_ai_core_plus_summary">Expose privileged NPU scheduling and screen-aware contextual intelligence.</string>
-    <string name="settings_window_manager_plus">Advanced Window Tuner</string>
-    <string name="settings_window_manager_plus_summary">Force free-form resizing, manage the Bubble Bar, and persistent overlays.</string>
-    <string name="settings_overlay_manager_plus">System Theming Bridge</string>
-    <string name="settings_overlay_manager_plus_summary">Expose privileged overlay management for rootless theming (like Hex Installer).</string>
+    <string name="settings_ai_core_plus">Intelligence Bridge</string>
+    <string name="settings_ai_core_plus_summary">Prioritized NPU scheduling and screen-aware contextual APIs for on-device AI and assistant apps.</string>
+    <string name="settings_window_manager_plus">Window Tuner</string>
+    <string name="settings_window_manager_plus_summary">Force free-form windowing, always-on-top, and advanced Bubble Bar control for any app.</string>
+    <string name="settings_overlay_manager_plus">↳ System Theming Bridge</string>
+    <string name="settings_overlay_manager_plus_summary">Extends Window Tuner: lets rootless theming apps (e.g. Hex Installer, Substratum) enable and prioritize system RRO overlays.</string>
     <string name="settings_network_governor_plus">Network &amp; DNS Governor</string>
-    <string name="settings_network_governor_plus_summary">Manage Private DNS and iptables routing for rootless ad-blockers and firewalls.</string>
-    <string name="settings_activity_manager_plus">Deep Process Control</string>
-    <string name="settings_activity_manager_plus_summary">Allow advanced process managers to deeply kill apps and set standby buckets.</string>
+    <string name="settings_network_governor_plus_summary">Manage Private DNS profiles and expose privileged network routing for rootless ad-blockers and firewalls.</string>
+    <string name="settings_activity_manager_plus">↳ Deep Process Control</string>
+    <string name="settings_activity_manager_plus_summary">Extends Shell Accelerator: lets process managers force-stop apps and assign battery standby buckets natively.</string>
+
+    <!-- Plus settings category titles -->
+    <string name="settings_plus_category_framework">Framework</string>
+    <string name="settings_plus_category_performance">Performance &amp; Process Control</string>
+    <string name="settings_plus_category_files">Files &amp; Virtual Machines</string>
+    <string name="settings_plus_category_display">Display &amp; Theming</string>
+    <string name="settings_plus_category_network">Network &amp; Privacy</string>
+    <string name="settings_plus_category_intelligence">Intelligence &amp; Continuity</string>
 
     <!-- Legacy Compatibility -->
     <string name="settings_category_legacy_compatibility">Legacy App Compatibility</string>
@@ -304,6 +313,7 @@
     <string name="root_hub_magic_setup_all_summary">Shizuku+ configured %d apps for you!</string>
     <string name="root_hub_magic_setup_all_no_apps">No supported root apps found for automation.</string>
     <string name="root_hub_copy_open">Copy path &amp; open</string>
+    <string name="root_hub_no_export">No SU path set. Export Shizuku files first from the Home screen.</string>
 
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">First, please do the following:</string>
