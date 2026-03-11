@@ -28,7 +28,44 @@ public class AppsAdapter extends BaseRecyclerViewAdapter<ClassCreatorPool> {
         setHasStableIds(true);
     }
 
-    // ... existing selection methods ...
+    public boolean isSelectionMode() {
+        return selectionMode;
+    }
+
+    public void setSelectionMode(boolean selectionMode) {
+        this.selectionMode = selectionMode;
+        if (!selectionMode) {
+            selectedPackages.clear();
+        }
+        notifyDataSetChanged();
+    }
+
+    public Set<String> getSelectedPackages() {
+        return selectedPackages;
+    }
+
+    public void toggleSelection(String packageName) {
+        if (selectedPackages.contains(packageName)) {
+            selectedPackages.remove(packageName);
+        } else {
+            selectedPackages.add(packageName);
+        }
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        Object item = getItemAt(position);
+        if (item instanceof PackageInfo) {
+            return ((PackageInfo) item).packageName.hashCode();
+        }
+        return item.hashCode();
+    }
+
+    @Override
+    public ClassCreatorPool onCreateCreatorPool() {
+        return new ClassCreatorPool();
+    }
 
     public void updateData(List<PackageInfo> data) {
         final List<Object> newList = new ArrayList<>();

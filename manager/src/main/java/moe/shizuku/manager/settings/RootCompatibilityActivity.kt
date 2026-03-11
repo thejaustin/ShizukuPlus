@@ -242,13 +242,13 @@ class RootCompatibilityActivity : AppBarActivity() {
                         holder.requiresRoot.visibility = View.VISIBLE
                         holder.requiresRoot.setText(R.string.app_management_item_summary_requires_root)
                         holder.requiresRoot.setTextColor(
-                            MaterialColors.getColor(holder.itemView, com.google.android.material.R.attr.colorError))
+                            MaterialColors.getColor(holder.itemView, R.attr.colorError))
                     }
                     RootSupportLevel.PARTIAL -> {
                         holder.requiresRoot.visibility = View.VISIBLE
                         holder.requiresRoot.setText(R.string.app_management_item_summary_partial_root)
                         holder.requiresRoot.setTextColor(
-                            MaterialColors.getColor(holder.itemView, com.google.android.material.R.attr.colorTertiary))
+                            MaterialColors.getColor(holder.itemView, R.attr.colorTertiary))
                     }
                     else -> holder.requiresRoot.visibility = View.GONE
                 }
@@ -258,7 +258,7 @@ class RootCompatibilityActivity : AppBarActivity() {
                 holder.itemView.findViewById<View>(R.id.switch_widget).visibility = View.GONE
                 holder.itemView.findViewById<View>(R.id.checkbox).visibility = View.GONE
 
-                val navHint = metadata?.suPathSettingNav ?: context.getString(R.string.root_hub_default_nav_hint)
+                val navHint = metadata?.suPathSettingNav ?: this@RootCompatibilityActivity.getString(R.string.root_hub_default_nav_hint)
                 holder.suPathNav.text = navHint
                 holder.suPathNav.visibility = View.VISIBLE
                 
@@ -286,7 +286,7 @@ class RootCompatibilityActivity : AppBarActivity() {
                         lifecycleScope.launch {
                             val success = RootCompatHelper.autoSetup(this@RootCompatibilityActivity, pkg, path)
                             if (success) {
-                                Toast.makeText(this@RootCompatibilityActivity, getString(R.string.root_hub_magic_setup_success, holder.appName.text), Toast.LENGTH_LONG).show()
+                                Toast.makeText(this@RootCompatibilityActivity, this@RootCompatibilityActivity.getString(R.string.root_hub_magic_setup_success, holder.appName.text), Toast.LENGTH_LONG).show()
                                 launchOrStore(pkg)
                             } else {
                                 Toast.makeText(this@RootCompatibilityActivity, R.string.root_hub_magic_setup_fail, Toast.LENGTH_SHORT).show()

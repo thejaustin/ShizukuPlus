@@ -1,7 +1,6 @@
 package moe.shizuku.manager.home
 
 import android.os.Build
-import androidx.recyclerview.widget.DiffUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,7 +28,6 @@ class HomeAdapter(
         const val ID_LEARN_MORE = 6L
         const val ID_ADB_PERMISSION_LIMITED = 7L
         const val ID_AUTOMATION = 8L
-        const val ID_DOCTOR = 9L
 
         private val DEFAULT_ORDER = listOf(
             ID_TERMINAL, ID_START_ROOT, ID_START_WADB, ID_START_ADB, ID_AUTOMATION, ID_LEARN_MORE
@@ -70,59 +68,39 @@ class HomeAdapter(
             val rootRestart = running && status.uid == 0
             val hidden = ShizukuSettings.getHiddenHomeCards()
 
-            val oldItems = ArrayList(items)
-            val oldIds = (0 until oldItems.size).map { getItemId(it) }
+            withContext(Dispatchers.Main) {
+                clear()
 
-            // Build new list state
-            val newList = mutableListOf<Any>()
-            val newIds = mutableListOf<Long>()
-
-            fun addCard(id: Long, creator: Any, data: Any?) {
-                newList.add(IdBasedRecyclerViewAdapter.Item(creator as Creator<Any>, data, id))
-                newIds.add(id)
-            }
-
-            // Fixed cards
-            addCard(ID_STATUS, ServerStatusViewHolder.CREATOR, status)
-            if (adbPermission) {
-                addCard(ID_APPS, ManageAppsViewHolder.CREATOR, status to grantedCount)
-            }
-            if (running && !adbPermission) {
-                addCard(ID_ADB_PERMISSION_LIMITED, AdbPermissionLimitedViewHolder.CREATOR, status)
-            }
-
-            // Draggable cards
-            cardOrder.forEach { id ->
-                if (id.toString() in hidden) return@forEach
-                when (id) {
-                    ID_TERMINAL -> if (adbPermission && ShizukuSettings.showTerminalHome()) 
-                        addCard(id, TerminalViewHolder.CREATOR, status)
-                    ID_START_ROOT -> if (isPrimaryUser && EnvironmentUtils.isRooted()) 
-                        addCard(id, StartRootViewHolder.CREATOR, rootRestart)
-                    ID_START_WADB -> if (isPrimaryUser && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || EnvironmentUtils.getAdbTcpPort() > 0))
-                        addCard(id, StartWirelessAdbViewHolder.creator(scope), null)
-                    ID_START_ADB -> if (isPrimaryUser && ShizukuSettings.showStartAdbHome())
-                        addCard(id, StartAdbViewHolder.CREATOR, null)
-                    ID_AUTOMATION -> if (ShizukuSettings.showAutomationHome())
-                        addCard(id, AutomationViewHolder.CREATOR, null)
-                    ID_LEARN_MORE -> if (ShizukuSettings.showLearnMoreHome())
-                        addCard(id, LearnMoreViewHolder.CREATOR, null)
+                // Fixed cards
+                addItem(ServerStatusViewHolder.CREATOR, status, ID_STATUS)
+                if (adbPermission) {
+                    addItem(ManageAppsViewHolder.CREATOR, status to grantedCount, ID_APPS)
                 }
-            }
+                if (running && !adbPermission) {
+                    addItem(AdbPermissionLimitedViewHolder.CREATOR, status, ID_ADB_PERMISSION_LIMITED)
+                }
 
-            val diffResult = withContext(Dispatchers.Default) {
-                DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                    override fun getOldListSize() = oldIds.size
-                    override fun getNewListSize() = newIds.size
-                    override fun areItemsTheSame(o: Int, n: Int) = oldIds[o] == newIds[n]
-                    override fun areContentsTheSame(o: Int, n: Int) = 
-                        (oldItems[o] as? IdBasedRecyclerViewAdapter.Item<*>)?.data == (newList[n] as? IdBasedRecyclerViewAdapter.Item<*>)?.data
-                })
-            }
+                // Draggable cards
+                cardOrder.forEach { id ->
+                    if (id.toString() in hidden) return@forEach
+                    when (id) {
+                        ID_TERMINAL -> if (adbPermission && ShizukuSettings.showTerminalHome()) 
+                            addItem(TerminalViewHolder.CREATOR, status, id)
+                        ID_START_ROOT -> if (isPrimaryUser && EnvironmentUtils.isRooted()) 
+                            addItem(StartRootViewHolder.CREATOR, rootRestart, id)
+                        ID_START_WADB -> if (isPrimaryUser && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || EnvironmentUtils.getAdbTcpPort() > 0))
+                            addItem(StartWirelessAdbViewHolder.creator(scope), null, id)
+                        ID_START_ADB -> if (isPrimaryUser && ShizukuSettings.showStartAdbHome())
+                            addItem(StartAdbViewHolder.CREATOR, null, id)
+                        ID_AUTOMATION -> if (ShizukuSettings.showAutomationHome())
+                            addItem(AutomationViewHolder.CREATOR, null, id)
+                        ID_LEARN_MORE -> if (ShizukuSettings.showLearnMoreHome())
+                            addItem(LearnMoreViewHolder.CREATOR, null, id)
+                    }
+                }
 
-            items.clear()
-            items.addAll(newList)
-            diffResult.dispatchUpdatesTo(this@HomeAdapter)
+                notifyDataSetChanged()
+            }
         }
     }
 
