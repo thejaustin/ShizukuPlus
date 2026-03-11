@@ -13,3 +13,6 @@
 /signing.properties
 /.kotlin
 /sentry.properties
+/.gemini/
+/.mcp.json
+/.claude/settings.local.json
