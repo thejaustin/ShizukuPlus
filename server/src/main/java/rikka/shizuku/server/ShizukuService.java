@@ -296,16 +296,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         
         mainHandler.post(() -> {
             synchronized (clientManager) {
-                for (ClientRecord record : clientManager.getClients().values()) {
+                for (ClientRecord record : clientManager.getClientRecords()) {
                     if (record.packageName.equals("moe.shizuku.privileged.api")) {
                         try {
-                            // Find app label for the caller
-                            String appLabel = packageName;
-                            ApplicationInfo ai = PackageManagerApis.getApplicationInfoNoThrow(packageName, 0, UserHandleCompat.getUserId(Binder.getCallingUid()));
-                            if (ai != null) {
-                                // Since we are in server process, we might not have access to label easily
-                                // But we pass it to manager who can resolve it
-                            }
                             record.client.dispatchLog("", packageName, action);
                         } catch (Throwable ignored) {}
                     }
@@ -317,7 +310,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public IRemoteProcess newProcess(String[] cmd, String[] env, String dir) {
         int callingUid = Binder.getCallingUid();
-        String callingPkg = clientManager.getClient(callingUid).packageName;
+        int callingPid = Binder.getCallingPid();
+        ClientRecord caller = clientManager.findClient(callingUid, callingPid);
+        String callingPkg = (caller != null) ? caller.packageName : "unknown";
         
         // SU Bridge interception: strip su wrapper and run command directly via Shizuku privileges
         if (isFeatureEnabled("su_bridge") && cmd != null && cmd.length > 0) {
@@ -395,7 +390,6 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         }
         if (isFeatureEnabled("shell_interceptor") && cmd != null && cmd.length > 0) {
             String baseCmd = cmd[0];
-            int callingUid = Binder.getCallingUid();
             
             // Root Mocking: Fake common root environment checks
             if (isFeatureEnabled("su_bridge")) {
