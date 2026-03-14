@@ -293,9 +293,14 @@ class RootCompatibilityActivity : AppBarActivity() {
                 }
 
                 // Automation: Magic Setup for supported apps
-                val isMagicSupported = pkg in listOf("org.adaway", "dev.ukanth.ufirewall")
-                holder.suMagicSetup.isVisible = isMagicSupported
-                if (isMagicSupported) {
+                var isInstalled = false
+                try {
+                    pm.getPackageInfo(pkg, 0)
+                    isInstalled = true
+                } catch (ignored: Exception) {}
+
+                holder.suMagicSetup.isVisible = isInstalled
+                if (isInstalled) {
                     holder.suMagicSetup.setOnClickListener {
                         val path = resolvedSuPath
                         if (path == null) {

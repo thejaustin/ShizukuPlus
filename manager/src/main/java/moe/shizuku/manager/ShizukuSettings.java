@@ -413,6 +413,11 @@ public class ShizukuSettings {
         return p != null && p.getBoolean(Keys.KEY_ADB_PROXY_ENABLED, false);
     }
 
+    public static void setAdbProxyEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_ADB_PROXY_ENABLED, enable).apply();
+    }
+
     public static boolean isOnDeviceAdbTcpEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_ON_DEVICE_ADB_TCP, false);
@@ -433,9 +438,14 @@ public class ShizukuSettings {
         if (p != null) p.edit().putBoolean(Keys.KEY_FORCE_START_WADB, enable).apply();
     }
 
-    public static void setAdbProxyEnabled(boolean enable) {
+    public static boolean isVectorEnabled() {
         SharedPreferences p = getPreferences();
-        if (p != null) p.edit().putBoolean(Keys.KEY_ADB_PROXY_ENABLED, enable).apply();
+        return p != null && p.getBoolean(Keys.KEY_VECTOR_ENABLED, false);
+    }
+
+    public static void setVectorEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_VECTOR_ENABLED, enable).apply();
     }
 
     public static boolean isExperimentalRootCompatEnabled() {
@@ -466,11 +476,6 @@ public class ShizukuSettings {
     public static void setSpoofTarget(String target) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putString(Keys.KEY_SPOOF_TARGET, target).apply();
-    }
-
-    public static boolean isAdbProxyEnabled() {
-        SharedPreferences p = getPreferences();
-        return p != null && p.getBoolean(Keys.KEY_ADB_PROXY_ENABLED, false);
     }
 
     public static boolean isSuBridgeEnabled() {

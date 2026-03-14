@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.activity.result.ActivityResultLauncher
 import android.os.PowerManager
 import android.provider.Settings
+import moe.shizuku.manager.R
 import moe.shizuku.manager.utils.SettingsPage
 
 object SettingsHelper {

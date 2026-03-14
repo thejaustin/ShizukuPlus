@@ -36,34 +36,47 @@ object RootCompatHelper {
                 "org.swiftapps.swiftbackup" -> {
                     true
                 }
-                else -> false
+                else -> universalAutoSetup(packageName, suPath)
             }
         } catch (e: Exception) {
             false
         }
     }
 
+    /**
+     * Best-effort automatic setup for any app by searching and replacing su paths in shared_prefs.
+     */
+    private fun universalAutoSetup(packageName: String, suPath: String): Boolean {
+        return try {
+            val prefsDir = "/data/data/$packageName/shared_prefs"
+            // Use sh -c to execute sed via Shizuku's privileged shell
+            // We search for common patterns like /system/bin/su or /system/xbin/su and replace them
+            val script = "find $prefsDir -name \"*.xml\" -type f | xargs sed -i 's|/system/[^/ ]*/su|$suPath|g'"
+            executePrivileged(arrayOf("sh", "-c", script))
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     suspend fun autoSetupAll(context: Context, suPath: String): Int = withContext(Dispatchers.IO) {
-        val supported = listOf(
-            "org.adaway",
-            "dev.ukanth.ufirewall",
-            "com.machiav3lli.neo_backup",
-            "eu.darken.sdm",
-            "eu.darken.sdmse",
-            "org.swiftapps.swiftbackup",
-            "com.keramidas.TitaniumBackup",
-            "samolego.canta",
-            "com.aistra.hail"
-        )
-        var count = 0
         val pm = context.packageManager
-        supported.forEach { pkg ->
-            try {
-                pm.getPackageInfo(pkg, 0)
+        val installed = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
+        var count = 0
+        
+        installed.forEach { pkgInfo ->
+            val pkg = pkgInfo.packageName
+            if (pkg == context.packageName) return@forEach
+            
+            val usesRoot = pkgInfo.requestedPermissions?.any { 
+                it.contains("ROOT", true) || it.contains("SUPERUSER", true)
+            } == true
+            
+            if (usesRoot) {
                 if (autoSetup(context, pkg, suPath)) {
                     count++
                 }
-            } catch (ignored: Exception) {}
+            }
         }
         count
     }

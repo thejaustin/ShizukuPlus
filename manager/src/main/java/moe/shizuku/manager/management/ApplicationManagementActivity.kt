@@ -45,6 +45,7 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
     private val adapter = AppsAdapter()
     private lateinit var recyclerView: RecyclerView
     private var firstLoad = true
+    private var backCallback: androidx.activity.OnBackPressedCallback? = null
 
     private val stateListener: (ShizukuStateMachine.State) -> Unit = {
         if (ShizukuStateMachine.isDead() && !isFinishing) finish()
@@ -64,7 +65,7 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Predictive back support for selection mode
-        val backCallback = object : androidx.activity.OnBackPressedCallback(false) {
+        backCallback = object : androidx.activity.OnBackPressedCallback(false) {
             override fun handleOnBackPressed() {
                 if (adapter.isSelectionMode) {
                     adapter.isSelectionMode = false
@@ -74,7 +75,7 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
                 }
             }
         }
-        onBackPressedDispatcher.addCallback(this, backCallback)
+        onBackPressedDispatcher.addCallback(this, backCallback!!)
 
         // Search bar
         findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.search_edit_text)
@@ -208,7 +209,7 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
                 }
                 android.R.id.home -> {
                     adapter.isSelectionMode = false
-                    backCallback.isEnabled = false
+                    backCallback?.isEnabled = false
                     invalidateOptionsMenu()
                     supportActionBar?.title = getString(R.string.home_app_management_title)
                 }
