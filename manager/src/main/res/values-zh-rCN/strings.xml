@@ -6,6 +6,42 @@
     <string name="home_status_service_not_running">%1$s未运行</string>
     <string name="home_status_service_version">版本 %2$s，%1$s</string>
     <string name="home_status_service_version_update"><![CDATA[版本 %2$s，%1$s<br>再次启动来升级到版本 %3$s]]></string>
+    <string name="home_status_service_user_root">root</string>
+    <string name="home_status_service_user_adb">adb</string>
+    
+    <!-- Shizuku+ Strings -->
+    <string name="settings_shizuku_plus_features">Shizuku+ 功能</string>
+    <string name="settings_plus_category_performance">性能与加速</string>
+    <string name="settings_plus_category_network">网络与隐私</string>
+    <string name="settings_plus_category_intelligence">智能与连续性</string>
+    <string name="settings_plus_category_developer">开发者选项 (实验性)</string>
+    <string name="settings_vector">矢量加速</string>
+    <string name="settings_vector_summary">系统操作的实验性原生执行。</string>
+    <string name="settings_experimental_root">实验性 Root 兼容性</string>
+    <string name="settings_experimental_root_summary">setprop、mount 和 SELinux 的功能解决方法。</string>
+    <string name="settings_spoof_device">模拟设备身份</string>
+    <string name="settings_spoof_device_summary">为系统属性查询返回通用设备身份。</string>
+    <string name="settings_spoof_target">目标设备</string>
+    <string name="settings_on_device_adb_tcp">设备内 ADB over TCP</string>
+    <string name="settings_on_device_adb_tcp_summary">直接在设备上启用 ADB TCP 模式（端口 5555）。需要 root。</string>
+    <string name="settings_force_start_wadb">绕过 WADB 的 Wi-Fi 检查</string>
+    <string name="settings_force_start_wadb_summary">即使 Wi-Fi 断开也尝试启动 Shizuku。</string>
+    <string name="settings_version">版本</string>
+    <string name="settings_developer_options_revealed">开发者选项已开启！</string>
+    <string name="settings_developer_options_click_more">再点击 %d 次以开启开发者选项。</string>
+    <string name="settings_activity_log_clear">清除日志</string>
+    
+    <string name="root_hub_title">Root 兼容性中心</string>
+    <string name="root_hub_global_config_title">全局 SU 设置</string>
+    <string name="root_hub_global_config_desc">所有应用均使用此路径。自动设置将尝试为您配置支持的应用。</string>
+    <string name="root_hub_setup_all">全部设置</string>
+    <string name="root_hub_setup_all_success">已尝试对所有兼容应用进行自动设置。</string>
+    <string name="root_hub_device_identity_title">设备身份</string>
+    <string name="root_hub_device_identity_real">真实: %s</string>
+    <string name="root_hub_device_identity_spoofed">模拟: %s</string>
+    <string name="root_hub_device_identity_none">无 (显示真实设备)</string>
+    
+    <string name="doctor_check_secure_settings">安全设置: ^1</string>
     <!-- Home - Adb -->
     <string name="home_adb_title"><![CDATA[通过连接电脑启动（使用 adb）]]></string>
     <string name="home_adb_description"><![CDATA[对于没有 root 的设备需要借助 adb 来启动 Shizuku（需要连接电脑）。这个过程每次设备重新启动后需要重新进行。请<b><a href=\"%1$s\">阅读帮助</a></b>。]]></string>

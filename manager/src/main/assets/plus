@@ -27,6 +27,23 @@ case "$1" in
     "log")
         echo "Fetching Activity Log..."
         ;;
+    "spoof")
+        if [ "$2" = "" ]; then
+            echo "Device Spoofing Status:"
+            getprop ro.product.model
+            echo "Usage: plus spoof [target]"
+            echo "Targets: pixel9, pixel8, s24u, s23u, op12, nothing2"
+        else
+            echo "Setting identity to $2..."
+            # Placeholder: In a real environment, this would call 'cmd shizuku set-plus-setting'
+        fi
+        ;;
+    "su")
+        echo "Current SU Environment:"
+        which su
+        echo "Real Device Binary:"
+        getprop real.su_path 2>/dev/null || echo "Unknown"
+        ;;
     "doctor")
         echo "Running Service Doctor..."
         ;;

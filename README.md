@@ -23,8 +23,10 @@ Get the latest release from [GitHub Releases](https://github.com/thejaustin/Shiz
 *   **Dhizuku Mode**: Share the system `DevicePolicyManager` binder with any app that has Shizuku permissions.
 *   **Customizable Gestures**: Configure swipe left, swipe right, and long-press actions for any app in the management list.
 *   **Bulk Management**: Multi-select apps to grant/revoke permissions or hide them in one tap.
-*   **Activity Log**: Audit trail of which apps are using Shizuku and what actions they are performing.
-*   **Service Doctor**: In-app diagnostic tool to troubleshoot and fix service startup issues.
+*   **Activity Log**: Audit trail of API calls and `su` bridge commands, complete with app icons and real-time dispatch.
+*   **Root Compatibility Hub**: Dedicated dashboard to configure and manage legacy root apps.
+*   **Universal SU Automation**: One-tap 'Magic Setup' to configure all installed root apps to use the Shizuku+ SU Bridge.
+*   **Service Doctor**: In-app diagnostic tool to troubleshoot and fix service startup issues, now including Secure Settings checks.
 *   **Quick Settings Tile**: Conveniently view and toggle the service status from your notification panel.
 
 ## 🚀 Plus API Features
@@ -32,7 +34,8 @@ Get the latest release from [GitHub Releases](https://github.com/thejaustin/Shiz
 Shizuku+ provides exclusive system interfaces for advanced automation and tools:
 
 *   **AVF (Virtual Machine) Manager**: Manage isolated Linux/Microdroid VMs with VirtIO-GPU acceleration.
-*   **Privileged Storage Proxy**: Authenticated access to restricted paths like `/data/data/` for verified tools.
+*   **Privileged Storage Proxy**: Authenticated access to restricted paths like `/data/data/` or `/data/app/` for backups and file management.
+*   **Device Spoofing (Identity Bridge)**: Project hardware identities of modern flagships (Pixel 9 Pro XL, S24 Ultra, etc.) to bypass device-specific restrictions.
 *   **Intelligence Bridge (AI Core Plus)**: Privileged NPU scheduling and screen context intelligence.
 *   **Window Manager Plus**: Force free-form resizing, manage the system "Bubble Bar," and resilient overlays.
 *   **System Theming Bridge (Overlay Manager Plus)**: Expose privileged overlay management for rootless theming (like Hex Installer).

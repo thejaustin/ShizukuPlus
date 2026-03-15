@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "last_updated": "2026-02-28",
+  "last_updated": "2026-03-15",
   "apps": {
     "thejaustin.hexodus": {
       "description": "Hexodus: Spiritual successor to Hex Installer for OneUI 8.",
@@ -71,6 +71,16 @@
       "description": "Neo Backup: Modern open-source backup solution.",
       "verified": true,
       "enhancements": ["storage_proxy"]
+    },
+    "org.swiftapps.swiftbackup": {
+      "description": "Swift Backup: Comprehensive cloud backup. Shizuku+ provides functional storage access without root.",
+      "verified": true,
+      "enhancements": ["storage_proxy", "shell_interceptor"]
+    },
+    "eu.darken.sdmse": {
+      "description": "SD Maid SE: Modern system cleaner. Shizuku+ accelerates scanning via native shell APIs.",
+      "verified": true,
+      "enhancements": ["shell_interceptor", "storage_proxy"]
     }
   }
 }
