@@ -17,4 +17,9 @@
     <dimen name="card_corner_radius">32dp</dimen>
     <dimen name="card_content_padding">24dp</dimen>
 
+    <dimen name="m3e_spacing_small">8dp</dimen>
+    <dimen name="m3e_spacing_medium">16dp</dimen>
+    <dimen name="m3e_spacing_large">24dp</dimen>
+    <dimen name="m3e_spacing_extra_large">32dp</dimen>
+
 </resources>

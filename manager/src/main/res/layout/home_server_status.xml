@@ -19,7 +19,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/home_icon_padding"
+        android:layout_marginStart="@dimen/m3e_spacing_medium"
         android:duplicateParentState="true"
         app:layout_constraintStart_toEndOf="@android:id/icon"
         app:layout_constraintEnd_toEndOf="parent"

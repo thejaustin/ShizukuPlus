@@ -82,6 +82,32 @@ class RootCompatibilityActivity : AppBarActivity() {
             globalSetupCard.isVisible = false
         }
 
+        // Device Identity Card
+        val realDeviceText = findViewById<TextView>(R.id.device_identity_real)
+        val spoofedDeviceText = findViewById<TextView>(R.id.device_identity_spoofed)
+        
+        val realModel = android.os.Build.MODEL
+        val realManufacturer = android.os.Build.MANUFACTURER
+        realDeviceText.text = getString(R.string.root_hub_device_identity_real, "$realManufacturer $realModel")
+        
+        if (ShizukuSettings.isSpoofDeviceEnabled()) {
+            val target = ShizukuSettings.getSpoofTarget()
+            val targetFriendly = when (target) {
+                "pixel_9_pro_xl" -> "Pixel 9 Pro XL"
+                "pixel_8_pro" -> "Pixel 8 Pro"
+                "s24_ultra" -> "Galaxy S24 Ultra"
+                "s23_ultra" -> "Galaxy S23 Ultra"
+                "oneplus_12" -> "OnePlus 12"
+                "nothing_phone_2" -> "Nothing Phone (2)"
+                else -> target
+            }
+            spoofedDeviceText.text = getString(R.string.root_hub_device_identity_spoofed, targetFriendly)
+            spoofedDeviceText.setTextColor(MaterialColors.getColor(this, R.attr.colorPrimary, Color.BLUE))
+        } else {
+            spoofedDeviceText.text = getString(R.string.root_hub_device_identity_spoofed, getString(R.string.root_hub_device_identity_none))
+            spoofedDeviceText.setTextColor(MaterialColors.getColor(this, R.attr.colorOnSurfaceVariant, Color.GRAY))
+        }
+
         val scrollView = findViewById<View>(R.id.suggested_apps_list)?.parent?.parent as? View ?: rootView
         ViewCompat.setOnApplyWindowInsetsListener(scrollView) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

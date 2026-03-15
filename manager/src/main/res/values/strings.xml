@@ -313,6 +313,10 @@
     <string name="root_hub_global_config_desc">Use this path for all apps. Automatic setup will try to configure supported apps for you.</string>
     <string name="root_hub_setup_all">Setup All</string>
     <string name="root_hub_setup_all_success">Automatic setup attempted for all compatible apps.</string>
+    <string name="root_hub_device_identity_title">Device Identity</string>
+    <string name="root_hub_device_identity_real">Real: %s</string>
+    <string name="root_hub_device_identity_spoofed">Spoofed: %s</string>
+    <string name="root_hub_device_identity_none">None (Real device shown)</string>
     <string name="root_hub_how_to_use">How to use:</string>
     <string name="root_hub_step_1">1. Export Shizuku files from the Home screen.</string>
     <string name="root_hub_step_2">2. In your root app, look for "SU Path" or "Binary Path" in its settings.</string>
