@@ -45,6 +45,7 @@ androidx-preference-ktx = { group = "androidx.preference", name = "preference-kt
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
 androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version = "1.10.0" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version = "1.0.1" }
 
 rikkax-appcompat = { group = "dev.rikka.rikkax.appcompat", name = "appcompat", version.ref = "rikkax-appcompat" }
 rikkax-compatibility = { group = "dev.rikka.rikkax.compatibility", name = "compatibility", version = "2.0.0" }

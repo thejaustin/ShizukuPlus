@@ -30,30 +30,13 @@ object AppIconCache : CoroutineScope {
     private val lruCache: LruCache<Triple<String, Int, Int>, Bitmap>
     private val labelCache = LruCache<String, String>(500)
 
-    private val dispatcher: CoroutineDispatcher
+    private val scope = CoroutineScope(SupervisorJob() + dispatcher)
 
-    private var appIconLoaders = mutableMapOf<Int, AppIconLoader>()
-
-    init {
-        // Initialize app icon lru cache
-        val maxMemory = Runtime.getRuntime().maxMemory() / 1024
-        val availableCacheSize = (maxMemory / 4).toInt()
-        lruCache = AppIconLruCache(availableCacheSize)
-
-        // Initialize load icon scheduler
-        val availableProcessorsCount = try {
-            Runtime.getRuntime().availableProcessors()
-        } catch (ignored: Exception) {
-            1
-        }
-        val threadCount = 1.coerceAtLeast(availableProcessorsCount / 2)
-        val loadIconExecutor: Executor = Executors.newFixedThreadPool(threadCount)
-        dispatcher = loadIconExecutor.asCoroutineDispatcher()
-    }
-
-    fun dispatcher(): CoroutineDispatcher {
-        return dispatcher
-    }
+    @JvmStatic
+    fun loadIconBitmapAsync(context: Context,
+                            info: ApplicationInfo, userId: Int,
+                            view: ImageView): Job {
+        return scope.launch {
 
     private fun get(packageName: String, userId: Int, size: Int): Bitmap? {
         return lruCache[Triple(packageName, userId, size)]
@@ -98,7 +81,7 @@ object AppIconCache : CoroutineScope {
     fun loadIconBitmapAsync(context: Context,
                             info: ApplicationInfo, userId: Int,
                             view: ImageView): Job {
-        return launch {
+        return scope.launch {
             val size = view.measuredWidth.let { if (it > 0) it else context.resources.getDimensionPixelSize(R.dimen.default_app_icon_size) }
             val cachedBitmap = get(info.packageName, userId, size)
             if (cachedBitmap != null) {
