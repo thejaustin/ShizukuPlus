@@ -141,9 +141,12 @@ class AdbPairingService : Service() {
         adbMdns?.stop()
     }
 
+    private val serviceScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + Dispatchers.IO)
+
     override fun onDestroy() {
         super.onDestroy()
         stopSearch()
+        kotlinx.coroutines.cancel(serviceScope)
     }
 
     private fun onStart(): Notification {
@@ -152,7 +155,7 @@ class AdbPairingService : Service() {
     }
 
     private fun onInput(code: String, port: Int): Notification {
-        GlobalScope.launch(Dispatchers.IO) {
+        serviceScope.launch {
             val host = "127.0.0.1"
 
             val key = try {

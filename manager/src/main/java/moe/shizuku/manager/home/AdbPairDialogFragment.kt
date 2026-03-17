@@ -156,6 +156,8 @@ class AdbPairDialogFragment : DialogFragment() {
     }
 }
 
+import androidx.lifecycle.viewModelScope
+
 @SuppressLint("NewApi")
 class ViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -176,7 +178,7 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun run(port: Int, password: String) {
-        GlobalScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             val host = "127.0.0.1"
 
             val key = try {
