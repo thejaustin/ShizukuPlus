@@ -478,7 +478,6 @@
     <string name="settings_category_general">General</string>
     <string name="settings_category_dark_mode">Dark Mode</string>
     <string name="settings_category_automatic">Automatic</string>
-    <string name="doctor_button_fix">Fix</string>
 
     <!-- Settings navigation summaries -->
     <string name="settings_category_swipe">Swipe Actions</string>
