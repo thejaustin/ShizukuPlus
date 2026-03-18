@@ -33,30 +33,46 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _shouldShowBatteryOptimizationSnackbar = MutableLiveData<Boolean>(false)
     val shouldShowBatteryOptimizationSnackbar: LiveData<Boolean> = _shouldShowBatteryOptimizationSnackbar
 
+    init {
+        // Load initial status on ViewModel creation
+        reload()
+    }
 
     private fun load(): ServiceStatus {
-        if (!ShizukuStateMachine.isRunning()) {
+        try {
+            // First check if binder is available
+            if (!Shizuku.pingBinder()) {
+                LOGGER.d("Shizuku binder not available")
+                return ServiceStatus()
+            }
+
+            val uid = Shizuku.getUid()
+            val apiVersion = Shizuku.getVersion()
+            val patchVersion = Shizuku.getServerPatchVersion().let { if (it < 0) 0 else it }
+            val seContext = if (apiVersion >= 6) {
+                try {
+                    Shizuku.getSELinuxContext()
+                } catch (tr: Throwable) {
+                    LOGGER.w(tr, "getSELinuxContext")
+                    null
+                }
+            } else null
+            val permissionTest =
+                Shizuku.checkRemotePermission("android.permission.GRANT_RUNTIME_PERMISSIONS") == PackageManager.PERMISSION_GRANTED
+
+            // Before a526d6bb, server will not exit on uninstall, manager installed later will get not permission
+            // Run a random remote transaction here, report no permission as not running
+            try {
+                ShizukuSystemApis.checkPermission(Manifest.permission.API_V23, BuildConfig.APPLICATION_ID, 0)
+            } catch (e: Exception) {
+                LOGGER.w(e, "Permission check failed")
+                // Continue anyway - status will show but permission will be false
+            }
+            return ServiceStatus(uid, apiVersion, patchVersion, seContext, permissionTest)
+        } catch (e: Exception) {
+            LOGGER.e(e, "Failed to load Shizuku status")
             return ServiceStatus()
         }
-
-        val uid = Shizuku.getUid()
-        val apiVersion = Shizuku.getVersion()
-        val patchVersion = Shizuku.getServerPatchVersion().let { if (it < 0) 0 else it }
-        val seContext = if (apiVersion >= 6) {
-            try {
-                Shizuku.getSELinuxContext()
-            } catch (tr: Throwable) {
-                LOGGER.w(tr, "getSELinuxContext")
-                null
-            }
-        } else null
-        val permissionTest =
-            Shizuku.checkRemotePermission("android.permission.GRANT_RUNTIME_PERMISSIONS") == PackageManager.PERMISSION_GRANTED
-
-        // Before a526d6bb, server will not exit on uninstall, manager installed later will get not permission
-        // Run a random remote transaction here, report no permission as not running
-        ShizukuSystemApis.checkPermission(Manifest.permission.API_V23, BuildConfig.APPLICATION_ID, 0)
-        return ServiceStatus(uid, apiVersion, patchVersion, seContext, permissionTest)
     }
 
     fun reload() {

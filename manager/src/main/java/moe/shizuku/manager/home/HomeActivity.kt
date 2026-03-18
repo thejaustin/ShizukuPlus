@@ -53,13 +53,23 @@ abstract class HomeActivity : AppBarActivity() {
     private val adapter by unsafeLazy { HomeAdapter(homeModel, appsModel, lifecycleScope) }
     private var versionClickCount = 0
 
-    private val stateListener: (ShizukuStateMachine.State) -> Unit = {
-        if (ShizukuStateMachine.isRunning()) {
-            checkServerStatus()
-            appsModel.load()
-            ShizukuSettings.syncAllPlusFeaturesToServer()
-        } else if (ShizukuStateMachine.isDead()) {
-            checkServerStatus()
+    private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
+        when (state) {
+            ShizukuStateMachine.State.RUNNING -> {
+                // Shizuku started - refresh everything
+                checkServerStatus()
+                appsModel.load()
+                ShizukuSettings.syncAllPlusFeaturesToServer()
+            }
+            ShizukuStateMachine.State.STOPPED,
+            ShizukuStateMachine.State.CRASHED -> {
+                // Shizuku stopped or crashed - refresh status display
+                checkServerStatus()
+            }
+            else -> {
+                // Starting or stopping - optional refresh
+                checkServerStatus()
+            }
         }
     }
 
@@ -77,6 +87,9 @@ abstract class HomeActivity : AppBarActivity() {
         emptyStateView.setActionClickListener {
             startActivity(android.content.Intent(this, moe.shizuku.manager.settings.SettingsActivity::class.java))
         }
+
+        // Initial status load - MUST be called before observer
+        checkServerStatus()
 
         homeModel.serviceStatus.observe(this) {
             if (it.status == Status.SUCCESS) {
@@ -215,7 +228,9 @@ abstract class HomeActivity : AppBarActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Force refresh status on resume
         checkServerStatus()
+        // Also reload apps list
         appsModel.load()
     }
 
