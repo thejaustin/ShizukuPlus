@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.os.Build
+import android.util.Log
 import android.widget.ImageView
 import androidx.collection.LruCache
 import kotlinx.coroutines.*
@@ -14,10 +15,10 @@ import moe.shizuku.manager.R
 import rikka.core.util.BuildUtils
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
 object AppIconCache {
+
+    private const val TAG = "AppIconCache"
 
     private class AppIconLruCache constructor(maxSize: Int) : LruCache<Triple<String, Int, Int>, Bitmap>(maxSize) {
         override fun sizeOf(key: Triple<String, Int, Int>, bitmap: Bitmap): Int {
@@ -28,26 +29,18 @@ object AppIconCache {
     private val lruCache: LruCache<Triple<String, Int, Int>, Bitmap>
     private val labelCache = LruCache<String, String>(500)
 
-    // Initialize dispatcher directly, as objects don't have init blocks in the same way as classes.
     private val backgroundExecutor: Executor = Executors.newFixedThreadPool(1.coerceAtLeast(Runtime.getRuntime().availableProcessors() / 2))
     private val dispatcher: CoroutineDispatcher = backgroundExecutor.asCoroutineDispatcher()
 
-    // Use a dedicated scope for background tasks tied to the object's lifecycle.
-    // SupervisorJob allows child jobs to fail without cancelling siblings.
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
 
-    // Lazily initialize app icon loaders per size.
     private val appIconLoaders = mutableMapOf<Int, AppIconLoader>()
 
     init {
-        // Initialize app icon lru cache
         val maxMemory = Runtime.getRuntime().maxMemory() / 1024
         val availableCacheSize = (maxMemory / 4).toInt()
         lruCache = AppIconLruCache(availableCacheSize)
     }
-
-    // Expose the dispatcher if needed elsewhere, or keep internal. For now, keep it internal.
-    // fun dispatcher(): CoroutineDispatcher { return dispatcher }
 
     private fun get(packageName: String, userId: Int, size: Int): Bitmap? {
         return lruCache[Triple(packageName, userId, size)]
@@ -57,10 +50,6 @@ object AppIconCache {
         if (get(packageName, userId, size) == null) {
             lruCache.put(Triple(packageName, userId, size), bitmap)
         }
-    }
-
-    private fun remove(packageName: String, userId: Int, size: Int) {
-        lruCache.remove(Triple(packageName, userId, size))
     }
 
     fun getLabel(context: Context, info: ApplicationInfo): String {
@@ -79,23 +68,19 @@ object AppIconCache {
         }
         var loader = appIconLoaders[size]
         if (loader == null) {
-            // Use BuildUtils.atLeast30 to check API level for AdaptiveIconDrawable
             val shrinkNonAdaptiveIcons = BuildUtils.atLeast30 && context.applicationInfo.loadIcon(context.packageManager) is AdaptiveIconDrawable
             loader = AppIconLoader(size, shrinkNonAdaptiveIcons, context)
             appIconLoaders[size] = loader
         }
         val bitmap = try {
-            withContext(dispatcher) {
-                loader.loadIcon(info, false)
-            }
-        } catch (e: CancellationException) {
-            // do nothing if canceled
-            null
+            loader.loadIcon(info, false)
         } catch (e: Throwable) {
             Log.e(TAG, "Failed to load icon for ${info.packageName}", e)
             null
         }
-        put(info.packageName, userId, size, bitmap)
+        if (bitmap != null) {
+            put(info.packageName, userId, size, bitmap)
+        }
         return bitmap
     }
 
@@ -113,18 +98,17 @@ object AppIconCache {
                 return@launch
             }
             
-            if (Build.VERSION.SDK_INT >= 26) {
-                view.setImageResource(R.drawable.ic_default_app_icon)
-            } else {
-                view.setImageDrawable(null)
+            withContext(Dispatchers.Main) {
+                if (Build.VERSION.SDK_INT >= 26) {
+                    view.setImageResource(R.drawable.ic_default_app_icon)
+                } else {
+                    view.setImageDrawable(null)
+                }
             }
 
             val bitmap = try {
-                withContext(dispatcher) {
-                    getOrLoadBitmap(context, info, userId, size)
-                }
+                getOrLoadBitmap(context, info, userId, size)
             } catch (e: CancellationException) {
-                // do nothing if canceled
                 null
             } catch (e: Throwable) {
                 Log.e(TAG, "Failed to load icon for ${info.packageName}", e)
@@ -134,12 +118,6 @@ object AppIconCache {
             if (bitmap != null) {
                 withContext(Dispatchers.Main) {
                     view.setImageBitmap(bitmap)
-                }
-            } else {
-                if (Build.VERSION.SDK_INT >= 26) {
-                    view.setImageResource(R.drawable.ic_default_app_icon)
-                } else {
-                    view.setImageDrawable(null)
                 }
             }
         }
