@@ -21,7 +21,7 @@ interface ActivityLogDao {
      * @return The row ID of the inserted log entry.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(log: ActivityLogRoom): Long
+    fun insert(log: ActivityLogRoom): Long
 
     /**
      * Insert multiple activity log entries.
@@ -37,7 +37,7 @@ interface ActivityLogDao {
      * @return List of all activity logs sorted by timestamp descending.
      */
     @Query("SELECT * FROM activity_logs ORDER BY timestamp DESC")
-    suspend fun getAll(): List<ActivityLogRoom>
+    fun getAll(): List<ActivityLogRoom>
 
     /**
      * Get a limited number of activity log entries ordered by timestamp (newest first).
@@ -46,7 +46,7 @@ interface ActivityLogDao {
      * @return List of activity logs sorted by timestamp descending, limited to [limit] entries.
      */
     @Query("SELECT * FROM activity_logs ORDER BY timestamp DESC LIMIT :limit")
-    suspend fun getLimited(limit: Int): List<ActivityLogRoom>
+    fun getLimited(limit: Int): List<ActivityLogRoom>
 
     /**
      * Delete all activity log entries.
@@ -85,5 +85,5 @@ interface ActivityLogDao {
      * @return The oldest activity log or null if no logs exist.
      */
     @Query("SELECT * FROM activity_logs ORDER BY timestamp ASC LIMIT 1")
-    suspend fun getOldest(): ActivityLogRoom?
+    fun getOldest(): ActivityLogRoom?
 }
