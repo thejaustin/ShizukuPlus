@@ -23,6 +23,7 @@ dependencies {
     implementation project(":starter")
     implementation project(":rish")
     implementation project(":server-shared")
+    implementation libs.rikkax.core
     implementation libs.hidden.compat
     compileOnly libs.hidden.stub
 }
