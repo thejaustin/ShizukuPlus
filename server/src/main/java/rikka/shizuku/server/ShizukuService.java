@@ -691,7 +691,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
         PackageInfo pi = PackageManagerApis.getPackageInfoNoThrow(MANAGER_APPLICATION_ID, 0, userId);
         UserInfo userInfo = UserManagerApis.getUserInfo(userId);
-        boolean isWorkProfileUser = BuildUtils.atLeast30() ?
+        boolean isWorkProfileUser = BuildUtils.getAtLeast30() ?
                 "android.os.usertype.profile.MANAGED".equals(userInfo.userType) :
                 (userInfo.flags & UserInfo.FLAG_MANAGED_PROFILE) != 0;
         if (pi == null && !isWorkProfileUser) {
