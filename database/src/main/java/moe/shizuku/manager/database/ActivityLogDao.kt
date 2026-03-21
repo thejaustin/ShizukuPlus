@@ -29,7 +29,7 @@ interface ActivityLogDao {
      * @param logs List of activity logs to insert.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(logs: List<ActivityLogRoom>)
+    fun insertAll(logs: List<ActivityLogRoom>)
 
     /**
      * Get all activity log entries ordered by timestamp (newest first).
@@ -52,7 +52,7 @@ interface ActivityLogDao {
      * Delete all activity log entries.
      */
     @Query("DELETE FROM activity_logs")
-    suspend fun clear()
+    fun clear()
 
     /**
      * Delete activity logs older than the specified timestamp.
@@ -61,7 +61,7 @@ interface ActivityLogDao {
      * @return Number of rows deleted.
      */
     @Query("DELETE FROM activity_logs WHERE timestamp < :timestamp")
-    suspend fun deleteOlderThan(timestamp: Long): Int
+    fun deleteOlderThan(timestamp: Long): Int
 
     /**
      * Get the count of activity log entries.
@@ -69,7 +69,7 @@ interface ActivityLogDao {
      * @return Total number of activity logs in the database.
      */
     @Query("SELECT COUNT(*) FROM activity_logs")
-    suspend fun getCount(): Int
+    fun getCount(): Int
 
     /**
      * Delete a specific activity log entry.
@@ -77,7 +77,7 @@ interface ActivityLogDao {
      * @param log The activity log to delete.
      */
     @Delete
-    suspend fun delete(log: ActivityLogRoom)
+    fun delete(log: ActivityLogRoom)
 
     /**
      * Get the oldest log entry.

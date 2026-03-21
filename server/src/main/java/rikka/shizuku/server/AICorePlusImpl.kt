@@ -3,6 +3,7 @@ package rikka.shizuku.server
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
+import android.hardware.HardwareBuffer
 import android.hardware.display.DisplayManager
 import android.os.Bundle
 import android.os.IBinder
@@ -283,10 +284,11 @@ class AICorePlusImpl : IAICorePlus.Stub() {
             
             // Extract HardwareBuffer and convert to Bitmap
             val getHardwareBufferMethod = screenshotBuffer.javaClass.getMethod("getHardwareBuffer")
-            val hardwareBuffer = getHardwareBufferMethod.invoke(screenshotBuffer)
+            val hardwareBuffer = getHardwareBufferMethod.invoke(screenshotBuffer) as HardwareBuffer
 
             // Convert HardwareBuffer to Bitmap
-            val bitmap = android.graphics.HardwareBuffer.createAsBitmap(hardwareBuffer)
+            // On Android 11+ (API 30+), we can use Bitmap.wrapHardwareBuffer
+            val bitmap = Bitmap.wrapHardwareBuffer(hardwareBuffer, null)
             bitmap
         } catch (e: Exception) {
             Log.d(TAG, "ScreenCapture API failed", e)
