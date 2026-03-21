@@ -34,7 +34,7 @@ dependencyResolutionManagement {
     }
 }
 
-include ":server", ":starter", ":shell", ":manager", ":common"
+include ":server", ":starter", ":shell", ":manager", ":common", ":database"
 
 def root = "api"
 
