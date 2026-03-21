@@ -612,11 +612,11 @@ public class ShizukuSettings {
                             service.setPlusSetting("su_path", resolvedPath);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Log.e("ShizukuSettings", "failed to update su_path", e);
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e("ShizukuSettings", "failed to process document result", e);
             }
         }).start();
     }
