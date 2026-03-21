@@ -12,20 +12,15 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.google.android.material.appbar.AppBarLayout
 import moe.shizuku.manager.R
-import moe.shizuku.manager.databinding.AppbarActivityBinding
 import rikka.core.ktx.unsafeLazy
 
 abstract class AppBarActivity : AppActivity() {
 
-    private val binding by unsafeLazy {
-        AppbarActivityBinding.bind(findViewById(R.id.root))
-    }
+    protected val rootView: ViewGroup by unsafeLazy { findViewById(R.id.root) }
 
-    protected val rootView: ViewGroup get() = binding.root
+    protected val toolbarContainer: AppBarLayout by unsafeLazy { findViewById(R.id.toolbar_container) }
 
-    protected val toolbarContainer: AppBarLayout get() = binding.toolbarContainer
-
-    protected val toolbar: Toolbar get() = binding.toolbar
+    protected val toolbar: Toolbar by unsafeLazy { findViewById(R.id.toolbar) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

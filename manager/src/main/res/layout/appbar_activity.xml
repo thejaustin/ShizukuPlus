@@ -8,6 +8,8 @@
     android:layout_height="match_parent"
     app:edgeToEdge="true">
 
-    <include layout="@layout/appbar" />
+    <include
+        android:id="@+id/appbar"
+        layout="@layout/appbar" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
