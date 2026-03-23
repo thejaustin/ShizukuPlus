@@ -127,6 +127,7 @@
         </activity>
         <activity
             android:name=".starter.StarterActivity"
+            android:exported="true"
             android:label="@string/starter">
             <intent-filter>
                 <action android:name="moe.shizuku.manager.action.START_SERVICE" />
