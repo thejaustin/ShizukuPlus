@@ -1,5 +1,14 @@
 package moe.shizuku.manager.settings
 
+import moe.shizuku.manager.R
+import moe.shizuku.manager.app.AppBarActivity
+import moe.shizuku.manager.databinding.ActivityServiceDoctorBinding
+import moe.shizuku.manager.databinding.ItemDoctorCheckBinding
+import moe.shizuku.manager.utils.EnvironmentUtils
+import moe.shizuku.manager.utils.SettingsHelper
+import moe.shizuku.manager.utils.SettingsPage
+import moe.shizuku.manager.utils.ShizukuStateMachine
+import rikka.shizuku.Shizuku
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
