@@ -1,4 +1,5 @@
 package moe.shizuku.manager.settings
+import moe.shizuku.manager.app.AppBarActivity
 
 import moe.shizuku.manager.R
 import moe.shizuku.manager.app.AppBarActivity
@@ -272,4 +273,3 @@ class ServiceDoctorActivity : AppBarActivity() {
 
     private class CheckViewHolder(val binding: ItemDoctorCheckBinding) : RecyclerView.ViewHolder(binding.root)
 }
-import moe.shizuku.manager.app.AppBarActivity
