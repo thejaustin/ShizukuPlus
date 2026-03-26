@@ -272,3 +272,4 @@ class ServiceDoctorActivity : AppBarActivity() {
 
     private class CheckViewHolder(val binding: ItemDoctorCheckBinding) : RecyclerView.ViewHolder(binding.root)
 }
+import moe.shizuku.manager.app.AppBarActivity
