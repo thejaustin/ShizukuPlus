@@ -116,7 +116,7 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
                 context.getString(R.string.home_status_service_version, user, "${apiVersion}.${patchVersion}")
             }
         } else {
-            context.getString(R.string.home_status_service_not_running_summary)
+            context.getString(R.string.home_status_service_not_running, context.getString(R.string.app_name))
         }
         textView.text = title.toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
         summaryView.text = summary.toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)

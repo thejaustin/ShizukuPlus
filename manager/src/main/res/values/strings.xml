@@ -61,6 +61,7 @@
     <!-- Home - Status -->
     <string name="home_status_service_is_running">%1$s is running</string>
     <string name="home_status_service_not_running">%1$s is not running</string>
+    <string name="home_status_service_not_running_summary">%1$s is stopped</string>
     <string name="home_status_service_user_root">root</string>
     <string name="home_status_service_user_adb">adb</string>
     <string name="home_status_service_version">Version %2$s, %1$s</string>

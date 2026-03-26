@@ -21,11 +21,10 @@ lateinit var application: ShizukuApplication
 
 class ShizukuApplication : Application(), Configuration.Provider {
 
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder()
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
             .setMinimumLoggingLevel(if (BuildConfig.DEBUG) Log.DEBUG else Log.INFO)
             .build()
-    }
 
     companion object {
 
