@@ -101,11 +101,16 @@ jobs:
 
           # Get version name from gradle before building
           VERSION=$(./gradlew :manager:properties -q --console=plain | grep "^versionName:" | cut -d' ' -f2 | tr -d "'")
-          
+
           # Write version to file for release job (GitHub blocks version in outputs as "secret")
           echo "$VERSION" > version.txt
+
+          # Enable detailed logging for crash diagnosis
+          export GRADLE_OPTS="-Xmx4g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError"
           
-          eval $CMD
+          # Run build with full stacktrace for debugging
+          eval $CMD --stacktrace --info
+          
           FILE=$(ls "$APK_DIR"/*.apk)
 
           ARTIFACT_NAME="shizuku_plus.apk"
@@ -119,12 +124,27 @@ jobs:
 
           echo "artifactName=${ARTIFACT_NAME}" >> $GITHUB_OUTPUT
           echo "filePath=${RENAMED}" >> $GITHUB_OUTPUT
+          
+          # Upload build logs for debugging
+          cp -r ~/.gradle/caches/build-cache-1/ build-cache-logs/ 2>/dev/null || true
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v6
         with:
           name: ${{ steps.buildWithGradle.outputs.artifactName }}
           path: ${{ steps.buildWithGradle.outputs.filePath }}
+          retention-days: 30
+
+      - name: Upload Build Logs
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: build-logs
+          path: |
+            manager/build/outputs/logs/
+            build-cache-logs/
+            *.log
+          retention-days: 7
 
       - name: Upload Version File
         uses: actions/upload-artifact@v6

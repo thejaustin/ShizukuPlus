@@ -27,16 +27,26 @@ class ShizukuApplication : Application(), Configuration.Provider {
             .build()
 
     companion object {
+        private const val TAG = "ShizukuApplication"
 
         init {
             logd("ShizukuApplication", "init")
 
-            Shell.setDefaultBuilder(Shell.Builder.create().setFlags(Shell.FLAG_REDIRECT_STDERR))
-            if (Build.VERSION.SDK_INT >= 28) {
-                HiddenApiBypass.setHiddenApiExemptions("")
-            }
-            if (atLeast30) {
-                System.loadLibrary("adb")
+            try {
+                Shell.setDefaultBuilder(Shell.Builder.create().setFlags(Shell.FLAG_REDIRECT_STDERR))
+                if (Build.VERSION.SDK_INT >= 28) {
+                    HiddenApiBypass.setHiddenApiExemptions("")
+                }
+                if (atLeast30) {
+                    System.loadLibrary("adb")
+                    logd("ShizukuApplication", "Native library 'adb' loaded successfully")
+                }
+            } catch (e: UnsatisfiedLinkError) {
+                Log.e(TAG, "Failed to load native library", e)
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "Error in static initializer", e)
+                throw e
             }
         }
 
@@ -78,21 +88,47 @@ class ShizukuApplication : Application(), Configuration.Provider {
             )
         }
 
+        // Initialize settings and managers FIRST before Sentry
+        // This ensures all components are ready before any crash reporting
+        try {
+            init(this)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to initialize ShizukuApplication", e)
+            // Re-throw to ensure we don't continue in a broken state
+            throw e
+        }
+
+        // Initialize Sentry AFTER all components are ready
         if (BuildConfig.SENTRY_DSN.isNotEmpty()) {
-            SentryAndroid.init(this) { options ->
-                options.dsn = BuildConfig.SENTRY_DSN
-                // Enable rich crash/glitch reporting
-                options.isAttachScreenshot = true
-                options.isAttachViewHierarchy = true
-                options.isAnrEnabled = true
-                options.tracesSampleRate = 1.0
-                
-                options.release = "shizuku-plus@${BuildConfig.VERSION_NAME}"
-                options.environment = if (BuildConfig.DEBUG) "development" else "production"
+            try {
+                SentryAndroid.init(this) { options ->
+                    options.dsn = BuildConfig.SENTRY_DSN
+                    // Enable rich crash/glitch reporting
+                    options.isAttachScreenshot = true
+                    options.isAttachViewHierarchy = true
+                    options.isAnrEnabled = true
+                    options.tracesSampleRate = 1.0
+
+                    options.release = "shizuku-plus@${BuildConfig.VERSION_NAME}"
+                    options.environment = if (BuildConfig.DEBUG) "development" else "production"
+                    
+                    // Add breadcrumbs for better debugging
+                    options.isEnableAutoSessionTracking = true
+                    options.sessionTrackingIntervalMillis = 30000L
+                }
+                Log.d(TAG, "Sentry initialized successfully")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to initialize Sentry", e)
+                // Don't crash the app if Sentry fails
             }
         }
-        init(this)
-        ShizukuStateMachine.update()
+        
+        // Update state machine after everything is initialized
+        try {
+            ShizukuStateMachine.update()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to update ShizukuStateMachine", e)
+        }
     }
 
 }

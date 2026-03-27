@@ -81,7 +81,7 @@ object ActivityLogManager {
     /**
      * Initialize the ActivityLogManager with the application context.
      * This must be called before using any other methods.
-     * 
+     *
      * @param context Application context
      */
     fun initialize(context: Context) {
@@ -89,23 +89,25 @@ object ActivityLogManager {
             Log.w(TAG, "ActivityLogManager already initialized")
             return
         }
-        
+
         try {
             database = ActivityLogDatabase.getInstance(context)
             dao = database?.activityLogDao()
-            
+
             // Load retention setting
             retentionCount = ShizukuSettings.getActivityLogRetention()
-            
+
             // Load existing logs from database
             loadFromDatabase()
-            
+
             // Perform cleanup of old records
             cleanupOldRecords()
-            
+
             Log.d(TAG, "ActivityLogManager initialized with retention count: $retentionCount")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to initialize ActivityLogManager", e)
+            // Continue without database - logs will still work in memory
+            // This prevents app crash if database is corrupted
         }
     }
     

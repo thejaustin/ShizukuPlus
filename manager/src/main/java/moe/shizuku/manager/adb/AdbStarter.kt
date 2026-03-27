@@ -4,6 +4,7 @@ import android.Manifest.permission.WRITE_SECURE_SETTINGS
 import android.content.pm.PackageManager
 import android.content.Context
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import java.io.EOFException
 import java.net.SocketException
@@ -23,6 +24,7 @@ import moe.shizuku.manager.utils.ShizukuStateMachine
 import io.sentry.Sentry
 
 object AdbStarter {
+    private const val TAG = "AdbStarter"
     suspend fun startAdb(context: Context, port: Int, log: ((String) -> Unit)? = null) {
         suspend fun AdbClient.runCommand(cmd: String) {
             command(cmd) { log?.invoke(String(it)) }
@@ -31,7 +33,7 @@ object AdbStarter {
         try {
             ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
             log?.invoke("Starting with wireless adb...\n")
-        
+
             withContext(Dispatchers.IO) {
                 val key = runCatching { AdbKey(PreferenceAdbKeyStore(ShizukuSettings.getPreferences()), "shizuku") }
                     .getOrElse {
@@ -57,7 +59,7 @@ object AdbStarter {
                         }.onFailure { if (it !is EOFException && it !is SocketException) throw it } // Expected when ADB restarts in TCP mode
                     }
                 }
-        
+
                 log?.invoke("Connecting on port $activePort...")
 
                 AdbClient("127.0.0.1", activePort, key).use { client ->
@@ -69,7 +71,11 @@ object AdbStarter {
             }
         } catch (e: Exception) {
             if (e !is CancellationException) {
-                Sentry.captureException(e)
+                try {
+                    Sentry.captureException(e)
+                } catch (sentryError: Exception) {
+                    Log.e(TAG, "Failed to capture exception in Sentry", sentryError)
+                }
             }
             throw e
         } finally {
