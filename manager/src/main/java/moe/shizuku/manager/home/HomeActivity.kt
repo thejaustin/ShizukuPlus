@@ -54,6 +54,10 @@ abstract class HomeActivity : AppBarActivity() {
     private val adapter by unsafeLazy { HomeAdapter(homeModel, appsModel, lifecycleScope) }
     private var versionClickCount = 0
 
+    override fun getLayoutId(): Int {
+        return R.layout.home_activity
+    }
+
     private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
         when (state) {
             ShizukuStateMachine.State.RUNNING -> {
@@ -77,8 +81,8 @@ abstract class HomeActivity : AppBarActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = HomeActivityBinding.inflate(layoutInflater, rootView, false)
-        super.setContentView(binding.root)
+        // Bind to the rootView that was created by AppBarActivity.setContentView(getLayoutId())
+        val binding = HomeActivityBinding.bind(rootView)
 
         // Handle Shortcut Intent
         if (intent?.getStringExtra("shortcut_action") == "start_wireless_adb") {

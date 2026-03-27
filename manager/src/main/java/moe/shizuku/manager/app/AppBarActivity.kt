@@ -17,22 +17,37 @@ import rikka.core.ktx.unsafeLazy
 
 abstract class AppBarActivity : AppActivity() {
 
-    protected val rootView: ViewGroup by unsafeLazy { findViewById(R.id.coordinator_root) }
+    protected val rootView: ViewGroup by unsafeLazy { 
+        findViewById<View>(R.id.coordinator_root) as? ViewGroup 
+            ?: throw IllegalStateException("rootView not found - make sure layout contains coordinator_root")
+    }
 
-    protected val toolbarContainer: AppBarLayout by unsafeLazy { findViewById(R.id.toolbar_container) }
+    protected val toolbarContainer: AppBarLayout by unsafeLazy { 
+        findViewById<View>(R.id.toolbar_container) as? AppBarLayout 
+            ?: throw IllegalStateException("toolbarContainer not found - make sure layout contains toolbar_container")
+    }
 
-    protected val toolbar: Toolbar by unsafeLazy { findViewById(R.id.toolbar) }
+    protected val toolbar: Toolbar by unsafeLazy { 
+        findViewById<View>(R.id.toolbar) as? Toolbar 
+            ?: throw IllegalStateException("toolbar not found - make sure layout contains toolbar")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         super.setContentView(getLayoutId())
 
-        setSupportActionBar(toolbar)
-        
-        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(toolbarContainer) { v, insets ->
-            val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
-            v.setPadding(0, systemBars.top, 0, 0)
-            insets
+        // Ensure views are available before proceeding
+        try {
+            setSupportActionBar(toolbar)
+
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(toolbarContainer) { v, insets ->
+                val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+                v.setPadding(0, systemBars.top, 0, 0)
+                insets
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("AppBarActivity", "Failed to initialize toolbar", e)
+            throw e
         }
     }
 

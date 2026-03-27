@@ -1,6 +1,7 @@
 package moe.shizuku.manager.utils
 
 import android.Manifest.permission.WRITE_SECURE_SETTINGS
+import android.content.Context
 import android.content.pm.PackageManager
 import android.provider.Settings
 import android.util.Log
@@ -13,7 +14,14 @@ import moe.shizuku.manager.ShizukuApplication
 import moe.shizuku.manager.ShizukuSettings
 import rikka.shizuku.Shizuku
 
-private val appContext = ShizukuApplication.appContext
+private fun getAppContext(): Context {
+    return try {
+        ShizukuApplication.appContext
+    } catch (e: UninitializedPropertyAccessException) {
+        Log.e("ShizukuStateMachine", "appContext not initialized yet", e)
+        throw e
+    }
+}
 
 object ShizukuStateMachine {
 
@@ -42,9 +50,9 @@ object ShizukuStateMachine {
 
             // Broadcast state change for widgets and other receivers
             val intent = android.content.Intent("moe.shizuku.manager.action.STATE_CHANGED").apply {
-                setPackage(appContext.packageName)
+                setPackage(getAppContext().packageName)
             }
-            appContext.sendBroadcast(intent)
+            getAppContext().sendBroadcast(intent)
         }
     }
 
@@ -55,10 +63,11 @@ object ShizukuStateMachine {
             State.RUNNING -> State.CRASHED
             State.STOPPING -> {
                 try {
-                    val permissionGranted = appContext.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED
+                    val context = getAppContext()
+                    val permissionGranted = context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED
                     val shouldDisableUsbDebugging = permissionGranted && ShizukuSettings.getAutoDisableUsbDebugging()
                     if (shouldDisableUsbDebugging) {
-                        Settings.Global.putInt(appContext.contentResolver, Settings.Global.ADB_ENABLED, 0)
+                        Settings.Global.putInt(context.contentResolver, Settings.Global.ADB_ENABLED, 0)
                     }
                 } catch (e: Exception) {
                     Log.w("ShizukuStateMachine", "Failed to disable USB debugging", e)

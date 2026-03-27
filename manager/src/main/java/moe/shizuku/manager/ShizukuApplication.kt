@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.work.Configuration
 import com.topjohnwu.superuser.Shell
 import io.sentry.android.core.SentryAndroid
-import moe.shizuku.manager.ktx.logd
 import moe.shizuku.manager.service.WatchdogService
 import moe.shizuku.manager.utils.ActivityLogManager
 import moe.shizuku.manager.utils.ShizukuStateMachine
@@ -28,9 +27,11 @@ class ShizukuApplication : Application(), Configuration.Provider {
 
     companion object {
         private const val TAG = "ShizukuApplication"
+        lateinit var appContext: Context
+            private set
 
-        init {
-            logd("ShizukuApplication", "init")
+        fun initializeStatics() {
+            Log.d(TAG, "Initializing static components")
 
             try {
                 Shell.setDefaultBuilder(Shell.Builder.create().setFlags(Shell.FLAG_REDIRECT_STDERR))
@@ -39,7 +40,7 @@ class ShizukuApplication : Application(), Configuration.Provider {
                 }
                 if (atLeast30) {
                     System.loadLibrary("adb")
-                    logd("ShizukuApplication", "Native library 'adb' loaded successfully")
+                    Log.d(TAG, "Native library 'adb' loaded successfully")
                 }
             } catch (e: UnsatisfiedLinkError) {
                 Log.e(TAG, "Failed to load native library", e)
@@ -49,10 +50,6 @@ class ShizukuApplication : Application(), Configuration.Provider {
                 throw e
             }
         }
-
-        lateinit var appContext: Context
-            private set
-
     }
 
     private fun init(context: Context) {
@@ -88,7 +85,15 @@ class ShizukuApplication : Application(), Configuration.Provider {
             )
         }
 
-        // Initialize settings and managers FIRST before Sentry
+        // Initialize static components FIRST (native libraries, etc.)
+        try {
+            initializeStatics()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to initialize static components", e)
+            throw e
+        }
+
+        // Initialize settings and managers BEFORE Sentry
         // This ensures all components are ready before any crash reporting
         try {
             init(this)
