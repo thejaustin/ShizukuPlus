@@ -661,5 +661,6 @@
     <string name="update_permission_required_title">Permission Required</string>
     <string name="update_permission_required_message">To enable auto-install, please grant \"Install unknown apps\" permission in system settings.</string>
     <string name="update_checking">Checking for updates…</string>
+    <string name="ok">OK</string>
 
 </resources>
