@@ -7,7 +7,9 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.work.Configuration
 import com.topjohnwu.superuser.Shell
+import io.sentry.Sentry
 import io.sentry.android.core.SentryAndroid
+import io.sentry.Breadcrumb
 import moe.shizuku.manager.service.WatchdogService
 import moe.shizuku.manager.utils.ActivityLogManager
 import moe.shizuku.manager.utils.ShizukuStateMachine
@@ -16,78 +18,87 @@ import rikka.core.util.BuildUtils.atLeast30
 import rikka.material.app.LocaleDelegate
 import rikka.shizuku.Shizuku
 
-lateinit var application: ShizukuApplication
-
+/**
+ * Shizuku+ Application class
+ * 
+ * Initialization order:
+ * 1. Sentry (for crash reporting)
+ * 2. Static components (native libraries)
+ * 3. Settings and managers
+ * 4. State machine
+ */
 class ShizukuApplication : Application(), Configuration.Provider {
+
+    companion object {
+        private const val TAG = "ShizukuApplication"
+        
+        lateinit var appContext: Context
+            private set
+    }
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setMinimumLoggingLevel(if (BuildConfig.DEBUG) Log.DEBUG else Log.INFO)
             .build()
 
-    companion object {
-        private const val TAG = "ShizukuApplication"
-        lateinit var appContext: Context
-            private set
-
-        /**
-         * Initialize Sentry FIRST to catch all crashes
-         */
-        fun initializeSentryEarly(context: Context) {
-            try {
-                if (BuildConfig.SENTRY_DSN.isNotEmpty()) {
-                    SentryAndroid.init(context) { options ->
-                        options.dsn = BuildConfig.SENTRY_DSN
-                        options.isAttachScreenshot = true
-                        options.isAttachViewHierarchy = true
-                        options.isAnrEnabled = true
-                        options.tracesSampleRate = 1.0
-                        options.release = "shizuku-plus@${BuildConfig.VERSION_NAME}"
-                        options.environment = if (BuildConfig.DEBUG) "development" else "production"
-                        options.isEnableAutoSessionTracking = true
-                        options.sessionTrackingIntervalMillis = 30000L
-                    }
-                    Log.d(TAG, "Sentry initialized early")
-                } else {
-                    Log.w(TAG, "Sentry DSN is empty, skipping initialization")
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to initialize Sentry early", e)
-                // Don't throw - allow app to continue even if Sentry fails
-            }
+    /**
+     * Initialize Sentry FIRST to catch all crashes including early startup failures
+     */
+    private fun initializeSentryEarly() {
+        if (BuildConfig.SENTRY_DSN.isEmpty()) {
+            Log.w(TAG, "Sentry DSN is empty, skipping initialization")
+            return
         }
-
-        fun initializeStatics() {
-            Log.d(TAG, "Initializing static components")
-
-            try {
-                Shell.setDefaultBuilder(Shell.Builder.create().setFlags(Shell.FLAG_REDIRECT_STDERR))
-                if (Build.VERSION.SDK_INT >= 28) {
-                    HiddenApiBypass.setHiddenApiExemptions("")
-                }
-                if (atLeast30) {
-                    System.loadLibrary("adb")
-                    Log.d(TAG, "Native library 'adb' loaded successfully")
-                }
-            } catch (e: UnsatisfiedLinkError) {
-                Log.e(TAG, "Failed to load native library", e)
-                io.sentry.Sentry.captureException(e)
-                throw e
-            } catch (e: Exception) {
-                Log.e(TAG, "Error in static initializer", e)
-                io.sentry.Sentry.captureException(e)
-                throw e
+        
+        try {
+            SentryAndroid.init(this) { options ->
+                options.dsn = BuildConfig.SENTRY_DSN
+                options.isAttachScreenshot = true
+                options.isAttachViewHierarchy = true
+                options.isAnrEnabled = true
+                options.tracesSampleRate = 1.0
+                options.release = "shizuku-plus@${BuildConfig.VERSION_NAME}"
+                options.environment = if (BuildConfig.DEBUG) "development" else "production"
+                options.isEnableAutoSessionTracking = true
+                options.sessionTrackingIntervalMillis = 30000L
             }
+            Log.d(TAG, "Sentry initialized early")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to initialize Sentry early", e)
+            // Don't throw - allow app to continue even if Sentry fails
         }
     }
 
-    private fun init(context: Context) {
-        ShizukuSettings.initialize(context)
-        ActivityLogManager.initialize(context)
+    /**
+     * Initialize static components (native libraries, etc.)
+     */
+    private fun initializeStatics() {
+        Log.d(TAG, "Initializing static components")
+
+        Shell.setDefaultBuilder(Shell.Builder.create().setFlags(Shell.FLAG_REDIRECT_STDERR))
+        
+        if (Build.VERSION.SDK_INT >= 28) {
+            HiddenApiBypass.setHiddenApiExemptions("")
+        }
+        
+        if (atLeast30) {
+            System.loadLibrary("adb")
+            Log.d(TAG, "Native library 'adb' loaded successfully")
+        }
+    }
+
+    /**
+     * Initialize settings and managers
+     */
+    private fun initializeManagers() {
+        ShizukuSettings.initialize(this)
+        ActivityLogManager.initialize(this)
         LocaleDelegate.defaultLocale = ShizukuSettings.getLocale()
         AppCompatDelegate.setDefaultNightMode(ShizukuSettings.getNightMode())
 
-        if(ShizukuSettings.getWatchdog()) WatchdogService.start(context)
+        if (ShizukuSettings.getWatchdog()) {
+            WatchdogService.start(this)
+        }
 
         Shizuku.addLogListener { appName, packageName, action ->
             ActivityLogManager.log(appName, packageName, action)
@@ -96,17 +107,13 @@ class ShizukuApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        application = this
         appContext = applicationContext
 
-        // CRITICAL: Initialize Sentry FIRST before anything else
-        // This ensures we catch ALL crashes including early startup crashes
-        initializeSentryEarly(this)
+        // 1. CRITICAL: Initialize Sentry FIRST
+        initializeSentryEarly()
+        Sentry.addBreadcrumb(Breadcrumb("App started: ${BuildConfig.VERSION_NAME}"))
 
-        // Log app start for debugging
-        Log.d(TAG, "Shizuku+ ${BuildConfig.VERSION_NAME} starting...")
-        io.sentry.Sentry.addBreadcrumb(io.sentry.Breadcrumb("App started: ${BuildConfig.VERSION_NAME}"))
-
+        // 2. Strict mode for debugging (DEBUG only)
         if (BuildConfig.DEBUG) {
             android.os.StrictMode.setThreadPolicy(
                 android.os.StrictMode.ThreadPolicy.Builder()
@@ -122,35 +129,33 @@ class ShizukuApplication : Application(), Configuration.Provider {
             )
         }
 
-        // Initialize static components FIRST (native libraries, etc.)
+        // 3. Initialize static components
         try {
             initializeStatics()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to initialize static components", e)
-            io.sentry.Sentry.captureException(e)
+            Sentry.captureException(e)
             throw e
         }
 
-        // Initialize settings and managers
+        // 4. Initialize settings and managers
         try {
-            init(this)
+            initializeManagers()
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to initialize ShizukuApplication", e)
-            io.sentry.Sentry.captureException(e)
+            Log.e(TAG, "Failed to initialize managers", e)
+            Sentry.captureException(e)
             throw e
         }
 
-        // Sentry already initialized above, just log that we're ready
-        Log.d(TAG, "Shizuku+ initialization complete")
-        io.sentry.Sentry.addBreadcrumb("App initialization complete")
-
-        // Update state machine after everything is initialized
+        // 5. Update state machine
         try {
             ShizukuStateMachine.update()
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to update ShizukuStateMachine", e)
-            io.sentry.Sentry.captureException(e)
+            Log.e(TAG, "Failed to update state machine", e)
+            Sentry.captureException(e)
         }
-    }
 
+        Log.d(TAG, "Shizuku+ ${BuildConfig.VERSION_NAME} initialization complete")
+        Sentry.addBreadcrumb(Breadcrumb("App initialization complete"))
+    }
 }

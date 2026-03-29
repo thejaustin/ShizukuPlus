@@ -85,10 +85,6 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-
-                <!-- 2023.08.03: Google play enforces that apps with LEANBACK_LAUNCHER Activity must
-                be uploaded with App Bundle format, -->
-                <!-- and possibly additional review steps. To avoid problems, remove it temporarily. -->
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
 
@@ -96,8 +92,15 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
-        
-        <!-- Legacy MainActivity - kept for compatibility -->
+
+        <!-- Compose Settings Activity (M3E) -->
+        <activity
+            android:name=".ui.compose.activity.ComposeSettingsActivity"
+            android:exported="false"
+            android:label="@string/settings_title"
+            android:theme="@style/Theme.App" />
+
+        <!-- Legacy activities - kept for backward compatibility -->
         <activity
             android:name=".MainActivity"
             android:exported="false"
@@ -108,30 +111,32 @@
             android:label="@string/app_name" />
         <activity
             android:name=".management.ApplicationManagementActivity"
+            android:exported="false"
             android:label="@string/home_app_management_title" />
         <activity
             android:name=".settings.ActivityLogActivity"
+            android:exported="false"
             android:label="@string/settings_activity_log" />
         <activity
             android:name=".settings.RootCompatibilityActivity"
+            android:exported="false"
             android:label="@string/root_hub_title" />
         <activity
             android:name=".settings.ServiceDoctorActivity"
+            android:exported="false"
             android:label="@string/home_service_doctor_title" />
         <activity
             android:name=".adb.AdbPairingTutorialActivity"
+            android:exported="false"
             android:label="@string/adb_pairing" />
         <activity
             android:name=".shell.ShellTutorialActivity"
+            android:exported="false"
             android:label="@string/home_terminal_title" />
         <activity
             android:name=".settings.SettingsActivity"
-            android:exported="true"
-            android:label="@string/settings_title">
-            <intent-filter>
-                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
-            </intent-filter>
-        </activity>
+            android:exported="false"
+            android:label="@string/settings_title" />
         <activity
             android:name=".starter.StarterActivity"
             android:exported="true"
@@ -148,13 +153,6 @@
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:exported="false" />
-        
-        <!-- Compose-based Settings Activity (M3 Demo) -->
-        <activity
-            android:name=".ui.compose.activity.ComposeSettingsActivity"
-            android:exported="false"
-            android:label="@string/settings_title"
-            android:theme="@style/Theme.App" />
         
         <activity
             android:name=".authorization.RequestPermissionActivity"
