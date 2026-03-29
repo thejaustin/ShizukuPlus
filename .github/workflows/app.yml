@@ -210,7 +210,7 @@ jobs:
           path: files
 
       - name: Create Sentry Release with Commits
-        if: ${{ github.event_name == 'push' && secrets.SENTRY_AUTH_TOKEN != '' }}
+        if: ${{ github.event_name == 'push' }}
         continue-on-error: true
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -219,6 +219,12 @@ jobs:
           VERSION: ${{ env.VERSION }}
           GITHUB_TOKEN: ${{ github.token }}
         run: |
+          # Only run if SENTRY_AUTH_TOKEN is available
+          if [ -z "$SENTRY_AUTH_TOKEN" ]; then
+            echo "SENTRY_AUTH_TOKEN not configured, skipping Sentry release"
+            exit 0
+          fi
+          
           # Install sentry-cli
           curl -sL https://sentry.io/get-cli/ | bash
           
