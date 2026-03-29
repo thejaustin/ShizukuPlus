@@ -7,7 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import moe.shizuku.manager.ui.compose.activity.ComposeHomeActivity
+import moe.shizuku.manager.MainActivity
 import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuSettings
 
@@ -51,7 +51,7 @@ abstract class AuthenticatedReceiver : BroadcastReceiver() {
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         nm.createNotificationChannel(channel)
 
-        val launchIntent = Intent(this, ComposeHomeActivity::class.java).apply {
+        val launchIntent = Intent(this, MainActivity::class.java).apply {
             addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK or 
                 Intent.FLAG_ACTIVITY_CLEAR_TOP or

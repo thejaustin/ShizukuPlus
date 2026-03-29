@@ -15,7 +15,7 @@ import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import moe.shizuku.manager.R
-import moe.shizuku.manager.ui.compose.activity.ComposeHomeActivity
+import moe.shizuku.manager.MainActivity
 import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.receiver.ShizukuReceiverStarter
 import moe.shizuku.manager.utils.SettingsPage
@@ -78,7 +78,7 @@ class WatchdogService : Service() {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.createNotificationChannel(channel)
 
-        val launchIntent = Intent(this, ComposeHomeActivity::class.java).apply {
+        val launchIntent = Intent(this, MainActivity::class.java).apply {
             addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK or 
                 Intent.FLAG_ACTIVITY_CLEAR_TOP or

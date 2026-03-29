@@ -20,7 +20,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
 import moe.shizuku.manager.Helps
-import moe.shizuku.manager.ui.compose.activity.ComposeHomeActivity
+import moe.shizuku.manager.MainActivity
 import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.adb.AdbPairingTutorialActivity
@@ -35,7 +35,7 @@ import moe.shizuku.manager.home.AdbDialogFragment
 import moe.shizuku.manager.home.AdbPairDialogFragment
 import moe.shizuku.manager.home.WadbEnableUsbDebuggingDialogFragment
 import moe.shizuku.manager.home.WadbNotEnabledDialogFragment
-import moe.shizuku.manager.home.WadbStarter
+import moe.shizuku.manager.home.StartWirelessAdbViewHolder
 import moe.shizuku.manager.home.showAccessibilityDialog
 import moe.shizuku.manager.starter.Starter
 import moe.shizuku.manager.starter.StarterActivity
@@ -187,7 +187,7 @@ class OnboardingActivity : AppActivity() {
 
     private fun completeOnboarding() {
         ShizukuSettings.setOnboardingSeen()
-        startActivity(Intent(this, ComposeHomeActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
@@ -252,7 +252,7 @@ class OnboardingActivity : AppActivity() {
                     CustomTabsHelper.launchUrlOrCopy(this@OnboardingActivity, Helps.ADB_ANDROID11.get())
                 }
                 binding.btnWadbStart.setOnClickListener {
-                    WadbStarter.start(this@OnboardingActivity, lifecycleScope)
+                    StartWirelessAdbViewHolder.start(this@OnboardingActivity, lifecycleScope)
                 }
             }
 

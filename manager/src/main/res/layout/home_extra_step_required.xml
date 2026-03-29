@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Card.Large"
+    android:background="?colorErrorContainer">
+
+    <ImageView
+        android:id="@android:id/icon"
+        style="@style/CardIcon"
+        android:backgroundTint="?colorOnErrorContainer"
+        android:duplicateParentState="true"
+        android:importantForAccessibility="yes"
+        android:contentDescription="@string/accessibility_icon_warning"
+        android:src="@drawable/ic_warning_24"
+        android:tint="?colorErrorContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@android:id/title"
+        style="@style/CardTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/m3e_spacing_medium"
+        android:duplicateParentState="true"
+        android:text="@string/home_adb_is_limited_title"
+        android:textColor="?colorOnErrorContainer"
+        app:layout_constraintStart_toEndOf="@android:id/icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@android:id/icon"
+        app:layout_constraintBottom_toBottomOf="@android:id/icon" />
+
+    <TextView
+        android:id="@android:id/text1"
+        style="@style/CardSummary"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/home_adb_is_limited_description"
+        android:textColor="?colorOnErrorContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@android:id/icon" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@android:id/button1"
+        style="@style/CardButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/home_adb_button_view_help"
+        android:textColor="?colorOnError"
+        android:contentDescription="@string/accessibility_button_view_guide"
+        app:backgroundTint="?colorError"
+        app:icon="@drawable/ic_outline_open_in_new_24"
+        app:iconTint="?colorOnError"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@android:id/text1" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

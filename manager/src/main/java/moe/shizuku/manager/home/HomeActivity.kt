@@ -1,0 +1,550 @@
+package moe.shizuku.manager.home
+
+import android.app.NotificationManager
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.os.Build
+import android.os.Bundle
+import android.os.Process
+import android.text.method.LinkMovementMethod
+import android.util.Log
+import android.util.TypedValue
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import moe.shizuku.manager.R
+import moe.shizuku.manager.ShizukuSettings
+import moe.shizuku.manager.adb.AdbPairingService
+import moe.shizuku.manager.app.AppBarActivity
+import moe.shizuku.manager.app.SnackbarHelper
+import moe.shizuku.manager.databinding.AboutDialogBinding
+import moe.shizuku.manager.databinding.HomeActivityBinding
+import moe.shizuku.manager.home.showAccessibilityDialog
+import moe.shizuku.manager.ktx.toHtml
+import moe.shizuku.manager.management.AppsViewModel
+import moe.shizuku.manager.settings.SettingsActivity
+import moe.shizuku.manager.update.UpdateChecker
+import moe.shizuku.manager.update.UpdateManager
+import moe.shizuku.manager.utils.AppIconCache
+import moe.shizuku.manager.utils.EnvironmentUtils
+import moe.shizuku.manager.utils.SettingsHelper
+import moe.shizuku.manager.utils.SettingsPage
+import moe.shizuku.manager.utils.ShizukuStateMachine
+import rikka.core.content.asActivity
+import rikka.core.ktx.unsafeLazy
+import rikka.lifecycle.Status
+import rikka.recyclerview.addEdgeSpacing
+import rikka.recyclerview.addItemSpacing
+import rikka.recyclerview.fixEdgeEffect
+import rikka.shizuku.Shizuku
+
+abstract class HomeActivity : AppBarActivity() {
+
+    private val homeModel: HomeViewModel by viewModels()
+    private val appsModel: AppsViewModel by viewModels()
+    private val adapter by unsafeLazy { HomeAdapter(homeModel, appsModel, lifecycleScope) }
+    private var versionClickCount = 0
+
+    override fun getLayoutId(): Int {
+        return R.layout.home_activity
+    }
+
+    private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
+        when (state) {
+            ShizukuStateMachine.State.RUNNING -> {
+                // Shizuku started - refresh everything
+                checkServerStatus()
+                appsModel.load()
+                ShizukuSettings.syncAllPlusFeaturesToServer()
+            }
+            ShizukuStateMachine.State.STOPPED,
+            ShizukuStateMachine.State.CRASHED -> {
+                // Shizuku stopped or crashed - refresh status display
+                checkServerStatus()
+            }
+            else -> {
+                // Starting or stopping - optional refresh
+                checkServerStatus()
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Bind to the rootView that was created by AppBarActivity.setContentView(getLayoutId())
+        val binding = HomeActivityBinding.bind(rootView)
+
+        // Handle Shortcut Intent
+        if (intent?.getStringExtra("shortcut_action") == "start_wireless_adb") {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                AdbDialogFragment().show(supportFragmentManager)
+            }
+        }
+
+        // Empty state view for when all cards are hidden
+        val emptyStateView = binding.emptyStateView
+        emptyStateView.setIcon(R.drawable.ic_empty_home_24)
+        emptyStateView.setTitle(R.string.empty_state_title_no_home_cards)
+        emptyStateView.setDescription(R.string.empty_state_description_no_home_cards)
+        emptyStateView.setActionText(R.string.empty_state_action_restore_home_cards)
+        emptyStateView.setActionClickListener {
+            startActivity(android.content.Intent(this, moe.shizuku.manager.settings.SettingsActivity::class.java))
+        }
+
+        // Initial status load - MUST be called before observer
+        checkServerStatus()
+
+        homeModel.serviceStatus.observe(this) {
+            if (it.status == Status.SUCCESS) {
+                val status = it.data ?: return@observe
+                val wasRunning = adapter.itemCount > 0 && (adapter.getItemId(0) == HomeAdapter.ID_STATUS) && 
+                                (homeModel.serviceStatus.value?.data?.isRunning == true)
+                
+                adapter.updateData()
+                ShizukuSettings.setLastLaunchMode(if (status.uid == 0) ShizukuSettings.LaunchMethod.ROOT else ShizukuSettings.LaunchMethod.ADB)
+
+                // Expressive Ripple: If service just started, perform a circular reveal
+                if (status.isRunning && !wasRunning && ShizukuSettings.isExpressiveAnimationsEnabled()) {
+                    binding.list.post {
+                        val view = binding.list
+                        val cx = view.width / 2
+                        val cy = 100 // Approximate position of the status card
+                        val finalRadius = Math.hypot(cx.toDouble(), view.height.toDouble()).toFloat()
+                        
+                        android.view.ViewAnimationUtils.createCircularReveal(view, cx, cy, 0f, finalRadius).apply {
+                            duration = 800
+                            interpolator = android.view.animation.AccelerateDecelerateInterpolator()
+                            start()
+                        }
+                    }
+                }
+            }
+        }
+
+        homeModel.shouldShowBatteryOptimizationSnackbar.observe(this) {
+            if (it) {
+                SnackbarHelper.show(
+                    this,
+                    binding.root,
+                    msg = getString(R.string.snackbar_battery_optimization_home),
+                    duration = Snackbar.LENGTH_INDEFINITE,
+                    actionText = getString(R.string.snackbar_action_fix),
+                    action = { 
+                        if (EnvironmentUtils.isSamsung()) {
+                            SettingsPage.Samsung.DeviceCareBattery.launch(this)
+                        } else {
+                            SettingsHelper.requestIgnoreBatteryOptimizations(this, null) 
+                        }
+                    }
+                )
+            }
+        }
+        homeModel.checkBatteryOptimization()
+
+        // Samsung Auto Blocker check for One UI 7/8+
+        if (EnvironmentUtils.isSamsung() && EnvironmentUtils.getOneUiVersion() >= 6) {
+            homeModel.serviceStatus.observe(this) {
+                if (it.status == Status.SUCCESS && it.data?.isRunning == false) {
+                    SnackbarHelper.show(
+                        this,
+                        binding.root,
+                        msg = "Samsung Auto Blocker may block ADB on One UI 7/8. Check Security settings.",
+                        duration = Snackbar.LENGTH_LONG,
+                        actionText = "Check",
+                        action = {
+                            try {
+                                startActivity(Intent("android.settings.SECURITY_ADVANCED_SETTINGS"))
+                            } catch (e: Exception) {
+                                startActivity(Intent(android.provider.Settings.ACTION_SECURITY_SETTINGS))
+                            }
+                        }
+                    )
+                }
+            }
+        }
+
+        appsModel.grantedCount.observe(this) {
+            if (it.status == Status.SUCCESS) {
+                adapter.updateData()
+            }
+        }
+
+        // Check for updates on app startup (if enabled)
+        checkForUpdates()
+
+        val recyclerView = binding.list
+        
+        // Responsive Grid for Large Screens and DeX
+        val spanCount = if (resources.configuration.screenWidthDp >= 600 || resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) 2 else 1
+        val layoutManager = androidx.recyclerview.widget.GridLayoutManager(this, spanCount)
+        layoutManager.spanSizeLookup = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                // The status card (position 0) always takes full width for visibility
+                return if (position == 0) spanCount else 1
+            }
+        }
+        recyclerView.layoutManager = layoutManager
+
+        // Samsung DeX Specific: add 'sidebar' feel with larger horizontal margins
+        val isDeX = EnvironmentUtils.isSamsung() && EnvironmentUtils.isDeX(this)
+        val dexPadding = if (isDeX) (48 * resources.displayMetrics.density).toInt() else 0
+        
+        recyclerView.adapter = adapter
+        (recyclerView.itemAnimator as? androidx.recyclerview.widget.SimpleItemAnimator)?.supportsChangeAnimations = false
+        recyclerView.fixEdgeEffect()
+
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, insets ->
+            val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars() or androidx.core.view.WindowInsetsCompat.Type.displayCutout())
+            v.setPadding(
+                systemBars.left + dexPadding,
+                v.paddingTop,
+                systemBars.right + dexPadding,
+                systemBars.bottom
+            )
+            insets
+        }
+
+        // Listen for empty state changes
+        adapter.onEmptyStateChanged = { isEmpty ->
+            emptyStateView.visibility = if (isEmpty) View.VISIBLE else View.GONE
+            recyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
+        }
+
+        val cardSpacing = resources.getDimension(R.dimen.card_spacing)
+        val marginHorizontal = resources.getDimension(R.dimen.margin_horizontal)
+        val marginVertical = resources.getDimension(R.dimen.margin_vertical)
+
+        val itemSpacing = cardSpacing / 2f
+        val edgeSpacingH = marginHorizontal
+        val edgeSpacingV = marginVertical - itemSpacing
+
+        recyclerView.addItemSpacing(top = itemSpacing, bottom = itemSpacing)
+        recyclerView.addEdgeSpacing(top = edgeSpacingV, bottom = edgeSpacingV, left = edgeSpacingH, right = edgeSpacingH)
+
+        // Drag-to-reorder support
+        val dragCallback = object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0
+        ) {
+            override fun isLongPressDragEnabled() = false
+
+            override fun getMovementFlags(rv: RecyclerView, vh: RecyclerView.ViewHolder): Int {
+                return if (adapter.isDraggable(vh.adapterPosition))
+                    makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
+                else
+                    makeMovementFlags(0, 0)
+            }
+
+            override fun onMove(rv: RecyclerView, src: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                if (!adapter.isDraggable(target.adapterPosition)) return false
+                adapter.moveItem(src.adapterPosition, target.adapterPosition)
+                if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
+                    target.itemView.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP)
+                }
+                return true
+            }
+
+            override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+                super.onSelectedChanged(viewHolder, actionState)
+                if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+                    adapter.isDragging = true
+                    if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
+                        // Samsung S22U specific: Use high-end GESTURE_START if on newer SDK
+                        val haptic = if (Build.VERSION.SDK_INT >= 30) android.view.HapticFeedbackConstants.GESTURE_START else android.view.HapticFeedbackConstants.LONG_PRESS
+                        viewHolder?.itemView?.performHapticFeedback(haptic)
+                        viewHolder?.itemView?.animate()?.scaleX(1.05f)?.scaleY(1.05f)?.setDuration(150)?.start()
+                    }
+                } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
+                    adapter.isDragging = false
+                }
+            }
+
+            override fun onSwiped(vh: RecyclerView.ViewHolder, direction: Int) {}
+
+            override fun clearView(rv: RecyclerView, vh: RecyclerView.ViewHolder) {
+                super.clearView(rv, vh)
+                adapter.isDragging = false
+                if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
+                    vh.itemView.animate().scaleX(1f).scaleY(1f).setDuration(150).start()
+                }
+                adapter.persistCardOrder()
+                adapter.updateData()
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(dragCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+
+        HomeEditMode.startDragCallback = { vh -> itemTouchHelper.startDrag(vh) }
+        HomeEditMode.exit()
+
+        // Predictive back support for edit mode with expressive M3 scaling
+        val backCallback = object : androidx.activity.OnBackPressedCallback(HomeEditMode.isActive) {
+            override fun handleOnBackProgressed(backEvent: androidx.activity.BackEventCompat) {
+                if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
+                    val progress = backEvent.progress
+                    val scale = 1f - (0.1f * progress)
+                    recyclerView.scaleX = scale
+                    recyclerView.scaleY = scale
+                }
+            }
+            
+            override fun handleOnBackPressed() {
+                if (HomeEditMode.isActive) {
+                    HomeEditMode.exit()
+                    if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
+                        recyclerView.animate().scaleX(1f).scaleY(1f).setDuration(300).setInterpolator(android.view.animation.OvershootInterpolator()).start()
+                    }
+                }
+            }
+            
+            override fun handleOnBackCancelled() {
+                if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
+                    recyclerView.animate().scaleX(1f).scaleY(1f).setDuration(300).setInterpolator(android.view.animation.OvershootInterpolator()).start()
+                }
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, backCallback)
+
+        HomeEditMode.onChanged = {
+            lifecycleScope.launch {
+                delay(150)
+                adapter.updateData()
+                invalidateOptionsMenu()
+                backCallback.isEnabled = HomeEditMode.isActive
+                if (HomeEditMode.isActive) {
+                    supportActionBar?.setTitle(R.string.home_edit_mode_hint)
+                } else {
+                    supportActionBar?.setTitle(R.string.app_name)
+                }
+            }
+        }
+
+        ShizukuStateMachine.addListener(stateListener)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        intent.let {
+            val showDialog = it.getBooleanExtra(HomeActivity.EXTRA_SHOW_PAIRING_DIALOG, false)
+            if (showDialog) showAccessibilityDialog()
+
+            val startWadb = it.getBooleanExtra(HomeActivity.EXTRA_START_SERVICE_VIA_WADB, false)
+            if (startWadb) {
+                val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                nm.cancel(AdbPairingService.NOTIFICATION_ID)
+                StartWirelessAdbViewHolder.start(this, lifecycleScope)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Force refresh status on resume
+        checkServerStatus()
+        // Also reload apps list
+        appsModel.load()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        SnackbarHelper.dismiss()
+    }
+
+    private fun checkServerStatus() {
+        homeModel.reload()
+    }
+
+    override fun onDestroy() {
+        HomeEditMode.onChanged = null
+        HomeEditMode.startDragCallback = null
+        HomeEditMode.removeCardCallback = null
+        ShizukuStateMachine.removeListener(stateListener)
+        super.onDestroy()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        if (HomeEditMode.isActive) {
+            menu.findItem(R.id.action_stop)?.isVisible = false
+            menu.findItem(R.id.action_settings)?.isVisible = false
+            menu.findItem(R.id.action_about)?.isVisible = false
+        }
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_about -> {
+                val binding = AboutDialogBinding.inflate(LayoutInflater.from(this), null, false)
+                binding.sourceCode.movementMethod = LinkMovementMethod.getInstance()
+                binding.sourceCode.text = getString(
+                    R.string.about_view_source_code,
+                    "<b><a href=\"https://github.com/thejaustin/ShizukuPlus\">GitHub</a></b>"
+                ).toHtml()
+                binding.icon.setImageBitmap(
+                    AppIconCache.getOrLoadBitmap(
+                        this,
+                        applicationInfo,
+                        Process.myUid() / 100000,
+                        resources.getDimensionPixelOffset(R.dimen.default_app_icon_size)
+                    )
+                )
+                val versionName = try {
+                    packageManager.getPackageInfo(packageName, 0)?.versionName ?: "unknown"
+                } catch (e: Exception) {
+                    "unknown"
+                }
+                binding.versionName.text = versionName
+
+                // Add click listener to version name for developer options
+                binding.versionName.setOnClickListener {
+                    if (ShizukuSettings.isVectorEnabled()) {
+                        Toast.makeText(this, R.string.settings_developer_options_revealed, Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+
+                    versionClickCount++
+                    if (versionClickCount >= 7) {
+                        ShizukuSettings.setVectorEnabled(true)
+                        Toast.makeText(this, R.string.settings_developer_options_revealed, Toast.LENGTH_SHORT).show()
+                        versionClickCount = 0
+                    } else if (versionClickCount > 2) {
+                        Toast.makeText(this, getString(R.string.settings_developer_options_click_more, 7 - versionClickCount), Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                val dialog = MaterialAlertDialogBuilder(this)
+                    .setView(binding.root)
+                    .create()
+
+                binding.btnClose.setOnClickListener {
+                    dialog.dismiss()
+                }
+
+                dialog.show()
+                true
+            }
+            R.id.action_stop -> {
+                if (ShizukuStateMachine.isRunning()) {
+                    MaterialAlertDialogBuilder(this)
+                        .setMessage(R.string.dialog_stop_message)
+                        .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
+                            ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPING)
+                            runCatching { Shizuku.exit() }
+                        }
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show()
+                }
+                true
+            }
+            R.id.action_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    /**
+     * Check for updates on app startup and show popup dialog
+     */
+    private fun checkForUpdates() {
+        if (!ShizukuSettings.isAutoUpdateEnabled()) {
+            return
+        }
+
+        // Check if we've already checked today
+        val lastCheckTime = ShizukuSettings.getLastUpdateCheckTime()
+        val now = System.currentTimeMillis()
+        val oneDayInMillis = 24 * 60 * 60 * 1000L
+
+        if (now - lastCheckTime < oneDayInMillis) {
+            return
+        }
+
+        // Show checking dialog briefly
+        val checkingDialog = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.update_checking)
+            .setCancelable(false)
+            .show()
+
+        // Check for updates in background
+        lifecycleScope.launch {
+            try {
+                val updateInfo = UpdateChecker.checkForUpdate()
+                
+                // Dismiss checking dialog
+                if (checkingDialog.isShowing) {
+                    checkingDialog.dismiss()
+                }
+
+                if (updateInfo != null) {
+                    // Update available - show popup dialog immediately
+                    ShizukuSettings.setLastUpdateCheckTime(now)
+                    showUpdateAvailableDialog(updateInfo)
+                }
+            } catch (e: Exception) {
+                Log.e("HomeActivity", "Error checking for update", e)
+                // Dismiss checking dialog on error
+                if (checkingDialog.isShowing) {
+                    checkingDialog.dismiss()
+                }
+            }
+        }
+    }
+
+    /**
+     * Show update available popup dialog
+     */
+    private fun showUpdateAvailableDialog(updateInfo: UpdateChecker.UpdateInfo) {
+        // Inflate custom layout with release notes
+        val dialogView = layoutInflater.inflate(R.layout.dialog_update_available, null)
+        val versionNameText = dialogView.findViewById<TextView>(R.id.update_version_name)
+        val publishedDateText = dialogView.findViewById<TextView>(R.id.update_published_date)
+        val releaseNotesText = dialogView.findViewById<TextView>(R.id.update_release_notes)
+
+        // Set update info
+        versionNameText.text = "Version ${updateInfo.versionName}"
+        publishedDateText.text = "Published: ${UpdateChecker.formatPublishedDate(updateInfo.publishedAt)}"
+        releaseNotesText.text = updateInfo.releaseNotes
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.update_available_title)
+            .setView(dialogView)
+            .setPositiveButton(R.string.update_download) { _, _ ->
+                val updateManager = UpdateManager(this)
+                updateManager.downloadUpdate(updateInfo.downloadUrl, updateInfo.versionName)
+            }
+            .setNegativeButton(R.string.update_later, null)
+            .setNeutralButton(R.string.update_release_notes) { _, _ ->
+                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW,
+                    android.net.Uri.parse("https://github.com/thejaustin/ShizukuPlus/releases"))
+                intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+            }
+            .show()
+    }
+
+    companion object {
+        const val EXTRA_SHOW_PAIRING_DIALOG = "show_pairing_dialog"
+        const val EXTRA_START_SERVICE_VIA_WADB = "start_service_via_wadb"
+    }
+
+}

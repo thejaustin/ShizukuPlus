@@ -75,7 +75,7 @@
         <meta-data android:name="io.sentry.attach-screenshot" android:value="true" />
         <meta-data android:name="io.sentry.attach-view-hierarchy" android:value="true" />
 
-        <!-- Main launcher activity - Compose -->
+        <!-- Main launcher activity - Compose with M3E -->
         <activity
             android:name=".ui.compose.activity.ComposeHomeActivity"
             android:banner="@mipmap/banner"
@@ -93,11 +93,22 @@
                 android:resource="@xml/shortcuts" />
         </activity>
 
+        <!-- Compose Settings Activity (M3E) -->
         <activity
-            android:name=".settings.SettingsActivity"
+            android:name=".ui.compose.activity.ComposeSettingsActivity"
             android:exported="false"
             android:label="@string/settings_title"
             android:theme="@style/Theme" />
+
+        <!-- Legacy activities - kept for backward compatibility -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme" />
+        <activity
+            android:name=".onboarding.OnboardingActivity"
+            android:exported="false"
+            android:label="@string/app_name" />
         <activity
             android:name=".management.ApplicationManagementActivity"
             android:exported="false"
@@ -122,6 +133,10 @@
             android:name=".shell.ShellTutorialActivity"
             android:exported="false"
             android:label="@string/home_terminal_title" />
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:exported="false"
+            android:label="@string/settings_title" />
         <activity
             android:name=".starter.StarterActivity"
             android:exported="true"

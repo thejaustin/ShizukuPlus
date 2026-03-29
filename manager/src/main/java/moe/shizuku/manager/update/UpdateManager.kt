@@ -20,6 +20,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.FileProvider
 import io.sentry.Sentry
 import moe.shizuku.manager.R
+import moe.shizuku.manager.home.HomeActivity
 import java.io.File
 
 /**

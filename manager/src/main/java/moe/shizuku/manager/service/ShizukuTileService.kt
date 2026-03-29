@@ -7,7 +7,7 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
-import moe.shizuku.manager.ui.compose.activity.ComposeHomeActivity
+import moe.shizuku.manager.MainActivity
 import moe.shizuku.manager.R
 import moe.shizuku.manager.starter.StarterActivity
 import moe.shizuku.manager.utils.ShizukuStateMachine
@@ -33,7 +33,7 @@ class ShizukuTileService : TileService() {
     override fun onClick() {
         val state = ShizukuStateMachine.get()
         val intent = if (state == ShizukuStateMachine.State.RUNNING) {
-            Intent(this, ComposeHomeActivity::class.java)
+            Intent(this, MainActivity::class.java)
         } else {
             Intent(this, StarterActivity::class.java)
         }

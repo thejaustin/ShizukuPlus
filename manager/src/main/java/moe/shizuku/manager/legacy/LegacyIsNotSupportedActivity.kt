@@ -5,7 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import moe.shizuku.manager.ui.compose.activity.ComposeHomeActivity
+import moe.shizuku.manager.MainActivity
 import moe.shizuku.manager.R
 import moe.shizuku.manager.app.AppActivity
 import moe.shizuku.manager.ktx.toHtml
@@ -56,7 +56,7 @@ class LegacyIsNotSupportedActivity : AppActivity() {
                     .setMessage(getString(R.string.dialog_requesting_legacy_message, label).toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE))
                     .setPositiveButton(android.R.string.ok, null)
                     .setNeutralButton(R.string.dialog_requesting_legacy_button_open_shizuku) { _, _ ->
-                        startActivity(Intent(this, ComposeHomeActivity::class.java)
+                        startActivity(Intent(this, MainActivity::class.java)
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                     }
                     .setOnDismissListener {

@@ -1,107 +1,85 @@
 package moe.shizuku.manager.ui.compose.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.shape.GenericShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AdminPanelSettings
+import androidx.compose.material.icons.filled.Android
+import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Devices
+import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Memory
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Power
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Smartphone
+import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.Terminal
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Usb
+import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.RoundRect
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import moe.shizuku.manager.R
-import moe.shizuku.manager.ShizukuSettings
-import moe.shizuku.manager.utils.EnvironmentUtils
-
-// IDs matching HomeAdapter.java
-private const val ID_STATUS = 0L
-private const val ID_APPS = 1L
-private const val ID_TERMINAL = 2L
-private const val ID_START_ROOT = 3L
-private const val ID_START_WADB = 4L
-private const val ID_START_ADB = 5L
-private const val ID_LEARN_MORE = 6L
-private const val ID_ADB_PERMISSION_LIMITED = 7L
-private const val ID_AUTOMATION = 8L
+import moe.shizuku.manager.ui.compose.components.SettingsSectionHeader
+import moe.shizuku.manager.ui.compose.components.SettingsSpacer
 
 /**
- * Exact replica of shape_expressive_leaf_background.xml
+ * M3E Home Screen - Main dashboard for Shizuku+
+ * 
+ * Replaces the XML-based HomeActivity with Jetpack Compose
+ * Uses M3E shape tokens (12dp medium) and color palette
  */
-val LeafShape = GenericShape { size, _ ->
-    addRoundRect(
-        RoundRect(
-            rect = Rect(0f, 0f, size.width, size.height),
-            topLeft = CornerRadius(24.dp.toPx()),
-            topRight = CornerRadius(8.dp.toPx()),
-            bottomRight = CornerRadius(24.dp.toPx()),
-            bottomLeft = CornerRadius(8.dp.toPx())
-        )
-    )
-}
-
-/**
- * Exact replica of shape_droplet_background.xml
- */
-val DropletShape = GenericShape { size, _ ->
-    addRoundRect(
-        RoundRect(
-            rect = Rect(0f, 0f, size.width, size.height),
-            topLeft = CornerRadius(4.dp.toPx()),
-            topRight = CornerRadius(48.dp.toPx()),
-            bottomRight = CornerRadius(48.dp.toPx()),
-            bottomLeft = CornerRadius(48.dp.toPx())
-        )
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     isServiceRunning: Boolean,
     serviceVersion: String?,
     serviceMode: String?,
-    grantedCount: Int,
-    adbPermission: Boolean,
-    isPrimaryUser: Boolean,
-    isRooted: Boolean,
-    isWadbAvailable: Boolean,
-    cardOrder: List<Long>,
-    hiddenCards: Set<String>,
     onStartServiceClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onAppsClick: () -> Unit,
     onAdbClick: () -> Unit,
-    onPairClick: () -> Unit,
-    onGuideClick: () -> Unit,
     onTerminalClick: () -> Unit,
     onAutomationClick: () -> Unit,
     onLearnMoreClick: () -> Unit,
     onActivityLogClick: () -> Unit,
-    onRestoreHiddenCards: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val haptic = LocalHapticFeedback.current
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
         modifier = modifier
@@ -111,168 +89,148 @@ fun HomeScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 22.sp
-                        )
+                        text = "Shizuku+",
+                        style = MaterialTheme.typography.headlineSmall
                     )
                 },
                 actions = {
-                    IconButton(onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        onSettingsClick()
-                    }) {
+                    IconButton(onClick = onSettingsClick) {
                         Icon(
                             imageVector = Icons.Filled.Settings,
-                            contentDescription = "Settings"
+                            contentDescription = "Settings",
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
+                )
             )
         }
     ) { paddingValues ->
-        val screenWidth = LocalConfiguration.current.screenWidthDp
-        val columns = if (screenWidth >= 600) 2 else 1
-
-        val draggableCards = cardOrder.filter { id ->
-            if (id.toString() in hiddenCards) return@filter false
-            when (id) {
-                ID_TERMINAL -> adbPermission && ShizukuSettings.showTerminalHome()
-                ID_START_ROOT -> isPrimaryUser && isRooted
-                ID_START_WADB -> isPrimaryUser && isWadbAvailable
-                ID_START_ADB -> isPrimaryUser && ShizukuSettings.showStartAdbHome()
-                ID_AUTOMATION -> ShizukuSettings.showAutomationHome()
-                ID_LEARN_MORE -> ShizukuSettings.showLearnMoreHome()
-                else -> false
-            }
-        }
-        
-        val showEmptyState = draggableCards.isEmpty() && !adbPermission && (!isServiceRunning || adbPermission)
-
-        if (showEmptyState) {
-            EmptyStateView(
-                modifier = Modifier.padding(paddingValues),
-                onRestoreClick = onRestoreHiddenCards
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            HomeContent(
+                isServiceRunning = isServiceRunning,
+                serviceVersion = serviceVersion,
+                serviceMode = serviceMode,
+                onStartServiceClick = onStartServiceClick,
+                onAppsClick = onAppsClick,
+                onAdbClick = onAdbClick,
+                onTerminalClick = onTerminalClick,
+                onAutomationClick = onAutomationClick,
+                onLearnMoreClick = onLearnMoreClick,
+                onActivityLogClick = onActivityLogClick
             )
-        } else {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(columns),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentPadding = PaddingValues(
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 8.dp,
-                    bottom = 16.dp
-                ),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                // Status Card (ID_STATUS)
-                item(span = { GridItemSpan(columns) }) {
-                    StatusCard(
-                        isRunning = isServiceRunning,
-                        version = serviceVersion,
-                        mode = serviceMode,
-                        onActivityLogClick = onActivityLogClick
-                    )
-                }
+        }
+    }
+}
 
-                // Fixed: Manage Apps (ID_APPS)
-                if (adbPermission) {
-                    item {
-                        HomeCard(
-                            title = stringResource(R.string.home_app_management_title),
-                            summary = stringResource(R.string.home_app_management_summary, grantedCount),
-                            icon = painterResource(R.drawable.ic_server_ok_24dp),
-                            onClick = onAppsClick
-                        )
-                    }
-                }
+@Composable
+private fun HomeContent(
+    isServiceRunning: Boolean,
+    serviceVersion: String?,
+    serviceMode: String?,
+    onStartServiceClick: () -> Unit,
+    onAppsClick: () -> Unit,
+    onAdbClick: () -> Unit,
+    onTerminalClick: () -> Unit,
+    onAutomationClick: () -> Unit,
+    onLearnMoreClick: () -> Unit,
+    onActivityLogClick: () -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = 16.dp,
+            end = 16.dp,
+            top = 8.dp,
+            bottom = 16.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(12.dp) // M3E spacing
+    ) {
+        // Status Card
+        item {
+            StatusCard(
+                isRunning = isServiceRunning,
+                version = serviceVersion,
+                mode = serviceMode,
+                onStartClick = onStartServiceClick
+            )
+        }
 
-                // Fixed: ADB Permission Limited (ID_ADB_PERMISSION_LIMITED)
-                if (isServiceRunning && !adbPermission) {
-                    item {
-                        HomeCard(
-                            title = "Limited Permission",
-                            summary = "ADB permission is required for full functionality.",
-                            icon = painterResource(R.drawable.ic_server_error_24dp),
-                            containerColor = MaterialTheme.colorScheme.errorContainer,
-                            contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                            onClick = onAppsClick
-                        )
-                    }
-                }
+        // Quick Actions
+        item {
+            SettingsSectionHeader(title = "Quick Actions")
+        }
 
-                // Draggable cards
-                draggableCards.forEach { id ->
-                    when (id) {
-                        ID_TERMINAL -> {
-                            item {
-                                HomeCard(
-                                    title = stringResource(R.string.home_terminal_title),
-                                    summary = if (isServiceRunning) stringResource(R.string.home_terminal_description) else "Service not running",
-                                    icon = painterResource(R.drawable.ic_terminal_24),
-                                    enabled = isServiceRunning,
-                                    onClick = onTerminalClick
-                                )
-                            }
-                        }
-                        ID_START_ROOT -> {
-                            item {
-                                HomeCard(
-                                    title = "Start via Root",
-                                    summary = if (isServiceRunning && serviceMode == "Root") "Service is running via Root" else "Tap to start or restart with root access",
-                                    icon = painterResource(R.drawable.ic_server_ok_24dp),
-                                    onClick = onStartServiceClick
-                                )
-                            }
-                        }
-                        ID_START_WADB -> {
-                            item(span = { GridItemSpan(columns) }) {
-                                WirelessAdbCard(
-                                    onStartClick = onAdbClick,
-                                    onPairClick = onPairClick,
-                                    onGuideClick = onGuideClick
-                                )
-                            }
-                        }
-                        ID_START_ADB -> {
-                            item {
-                                HomeCard(
-                                    title = "Start via ADB",
-                                    summary = "Connect to a computer to start",
-                                    icon = painterResource(R.drawable.ic_terminal_24),
-                                    onClick = onAdbClick
-                                )
-                            }
-                        }
-                        ID_AUTOMATION -> {
-                            item {
-                                HomeCard(
-                                    title = "Automation",
-                                    summary = "Automate tasks and workflows",
-                                    icon = painterResource(R.drawable.ic_server_ok_24dp),
-                                    onClick = onAutomationClick
-                                )
-                            }
-                        }
-                        ID_LEARN_MORE -> {
-                            item {
-                                HomeCard(
-                                    title = stringResource(R.string.home_adb_button_view_help),
-                                    summary = "Documentation and guides",
-                                    icon = painterResource(R.drawable.ic_server_ok_24dp),
-                                    onClick = onLearnMoreClick
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+        item {
+            HomeActionCard(
+                title = "Applications",
+                subtitle = "Manage app permissions",
+                icon = Icons.Filled.Android,
+                onClick = onAppsClick
+            )
+        }
+
+        item {
+            HomeActionCard(
+                title = "Wireless ADB",
+                subtitle = "Start via wireless debugging",
+                icon = Icons.Filled.Wifi,
+                onClick = onAdbClick
+            )
+        }
+
+        item {
+            HomeActionCard(
+                title = "Terminal",
+                subtitle = "Shell access and commands",
+                icon = Icons.Filled.Terminal,
+                onClick = onTerminalClick
+            )
+        }
+
+        item {
+            HomeActionCard(
+                title = "Automation",
+                subtitle = "Automate tasks and workflows",
+                icon = Icons.Filled.Tune,
+                onClick = onAutomationClick
+            )
+        }
+
+        item {
+            SettingsSpacer()
+        }
+
+        // Learn More
+        item {
+            SettingsSectionHeader(title = "Resources")
+        }
+
+        item {
+            HomeActionCard(
+                title = "Learn More",
+                subtitle = "Documentation and guides",
+                icon = Icons.Filled.Help,
+                onClick = onLearnMoreClick
+            )
+        }
+
+        item {
+            HomeActionCard(
+                title = "Activity Log",
+                subtitle = "View API call history",
+                icon = Icons.Filled.BugReport,
+                onClick = onActivityLogClick
+            )
         }
     }
 }
@@ -282,84 +240,107 @@ private fun StatusCard(
     isRunning: Boolean,
     version: String?,
     mode: String?,
-    onActivityLogClick: () -> Unit
+    onStartClick: () -> Unit
 ) {
-    val containerColor = if (isRunning) {
-        MaterialTheme.colorScheme.primaryContainer
-    } else {
-        MaterialTheme.colorScheme.errorContainer
-    }
-    
-    val contentColor = if (isRunning) {
-        MaterialTheme.colorScheme.onPrimaryContainer
-    } else {
-        MaterialTheme.colorScheme.onErrorContainer
-    }
-
-    Surface(
+    Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(36.dp),
-        color = containerColor,
-        contentColor = contentColor
+        colors = CardDefaults.cardColors(
+            containerColor = if (isRunning) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.errorContainer
+            }
+        ),
+        shape = MaterialTheme.shapes.medium // 12dp M3E
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .padding(24.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .background(color = contentColor, shape = DropletShape)
-                    .padding(12.dp),
-                contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                Column {
+                    Text(
+                        text = if (isRunning) "Service Running" else "Service Stopped",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = if (isRunning) {
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.onErrorContainer
+                        }
+                    )
+                    
+                    Spacer(modifier = Modifier.height(4.dp))
+                    
+                    if (version != null) {
+                        Text(
+                            text = "Version: $version",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (isRunning) {
+                                MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                            } else {
+                                MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f)
+                            }
+                        )
+                    }
+                    
+                    if (mode != null) {
+                        Text(
+                            text = "Mode: $mode",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (isRunning) {
+                                MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                            } else {
+                                MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f)
+                            }
+                        )
+                    }
+                }
+                
                 Icon(
-                    painter = painterResource(
-                        if (isRunning) R.drawable.ic_server_ok_24dp 
-                        else R.drawable.ic_server_error_24dp
-                    ),
+                    imageVector = if (isRunning) Icons.Filled.Shield else Icons.Filled.Lock,
                     contentDescription = null,
-                    tint = containerColor,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(48.dp),
+                    tint = if (isRunning) {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    } else {
+                        MaterialTheme.colorScheme.onErrorContainer
+                    }
                 )
             }
-
-            Spacer(modifier = Modifier.width(24.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = if (isRunning) {
-                        stringResource(R.string.home_status_service_is_running, stringResource(R.string.app_name))
-                    } else {
-                        stringResource(R.string.home_status_service_not_running, stringResource(R.string.app_name))
-                    },
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                )
-                
-                if (version != null || mode != null) {
-                    Text(
-                        text = if (isRunning) "Version $version, $mode" else stringResource(R.string.home_status_service_stopped_tile_sublabel),
-                        style = MaterialTheme.typography.labelLarge,
-                        modifier = Modifier.padding(top = 4.dp),
-                        alpha = 0.8f
-                    )
-                }
-
-                if (isRunning && ShizukuSettings.showActivityLogHome()) {
-                    TextButton(
-                        onClick = onActivityLogClick,
-                        modifier = Modifier.padding(top = 8.dp),
-                        contentPadding = PaddingValues(0.dp)
+            
+            if (!isRunning) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onStartClick,
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Icon(
+                            imageVector = Icons.Filled.Power,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                        Spacer(modifier = Modifier.padding(start = 8.dp))
                         Text(
-                            text = stringResource(R.string.settings_activity_log),
-                            color = contentColor,
-                            fontWeight = FontWeight.Bold
+                            text = "Start Service",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
@@ -369,213 +350,63 @@ private fun StatusCard(
 }
 
 @Composable
-private fun WirelessAdbCard(
-    onStartClick: () -> Unit,
-    onPairClick: () -> Unit,
-    onGuideClick: () -> Unit
-) {
-    LargeHomeCard(
-        title = stringResource(R.string.home_wireless_adb_title),
-        summary = if (EnvironmentUtils.isTlsSupported()) {
-            stringResource(R.string.home_wireless_adb_description)
-        } else {
-            stringResource(R.string.home_wireless_adb_description_pre_11)
-        },
-        icon = painterResource(R.drawable.ic_wadb_24),
-        actions = {
-            if (EnvironmentUtils.isTlsSupported()) {
-                TextButton(
-                    onClick = onGuideClick,
-                    modifier = Modifier.padding(end = 8.dp)
-                ) {
-                    Icon(painterResource(R.drawable.ic_outline_open_in_new_24), null, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.home_wireless_adb_view_guide_button))
-                }
-                TextButton(
-                    onClick = onPairClick,
-                    modifier = Modifier.padding(end = 8.dp)
-                ) {
-                    Icon(painterResource(R.drawable.ic_baseline_link_24), null, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.adb_pairing))
-                }
-            }
-            TextButton(
-                onClick = onStartClick
-            ) {
-                Icon(painterResource(R.drawable.ic_server_start_24dp), null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.home_root_button_start))
-            }
-        }
-    )
-}
-
-@Composable
-private fun HomeCard(
+private fun HomeActionCard(
     title: String,
-    summary: String,
-    icon: Painter,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
-    contentColor: Color = MaterialTheme.colorScheme.onSurface,
-    enabled: Boolean = true,
+    subtitle: String,
+    icon: ImageVector,
     onClick: () -> Unit
 ) {
-    val haptic = LocalHapticFeedback.current
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = enabled) {
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                onClick()
-            },
-        shape = RoundedCornerShape(36.dp),
-        color = containerColor,
-        contentColor = contentColor,
-        alpha = if (enabled) 1f else 0.5f
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
+        shape = MaterialTheme.shapes.medium // 12dp M3E
     ) {
         Row(
-            modifier = Modifier.padding(24.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.tertiaryContainer,
-                        shape = LeafShape
-                    )
-                    .padding(12.dp),
-                contentAlignment = Alignment.Center
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    painter = icon,
+                    imageVector = icon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(32.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-            }
-
-            Spacer(modifier = Modifier.width(24.dp))
-
-            Column {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium
+                
+                Column {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
-                )
-                Text(
-                    text = summary,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = contentColor.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun LargeHomeCard(
-    title: String,
-    summary: String,
-    icon: Painter,
-    actions: @Composable RowScope.() -> Unit
-) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(36.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerLow
-    ) {
-        Column(modifier = Modifier.padding(24.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.tertiaryContainer,
-                            shape = LeafShape
-                        )
-                        .padding(12.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = icon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onTertiaryContainer,
-                        modifier = Modifier.size(24.dp)
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
-
-                Spacer(modifier = Modifier.width(24.dp))
-
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                )
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = summary,
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            
+            Icon(
+                imageVector = Icons.Outlined.ChevronRight,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                content = actions
-            ) {
-            }
-        }
-    }
-}
-
-@Composable
-private fun EmptyStateView(
-    modifier: Modifier = Modifier,
-    onRestoreClick: () -> Unit
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_empty_home_24),
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.empty_state_title_no_home_cards),
-            style = MaterialTheme.typography.titleLarge,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = stringResource(R.string.empty_state_description_no_home_cards),
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = onRestoreClick) {
-            Text(text = stringResource(R.string.empty_state_action_restore_home_cards))
         }
     }
 }

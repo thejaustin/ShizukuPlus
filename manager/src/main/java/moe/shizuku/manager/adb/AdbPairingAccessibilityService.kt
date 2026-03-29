@@ -17,11 +17,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import moe.shizuku.manager.R
-import moe.shizuku.manager.ui.compose.activity.ComposeHomeActivity
+import moe.shizuku.manager.MainActivity
 import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.adb.PreferenceAdbKeyStore
 import moe.shizuku.manager.adb.AdbKey
 import moe.shizuku.manager.adb.AdbPairingClient
+import moe.shizuku.manager.home.HomeActivity
 import moe.shizuku.manager.utils.EnvironmentUtils
 import java.net.ConnectException
 
@@ -47,13 +48,13 @@ class AdbPairingAccessibilityService : AccessibilityService() {
         // On Samsung, we don't necessarily want to jump to MainActivity immediately
         // as the user might be manually navigating Developer Options.
         if (isTv) {
-            val intent = Intent(this, ComposeHomeActivity::class.java).apply {
+            val intent = Intent(this, MainActivity::class.java).apply {
                 addFlags(
                     Intent.FLAG_ACTIVITY_NEW_TASK or 
                     Intent.FLAG_ACTIVITY_CLEAR_TOP or
                     Intent.FLAG_ACTIVITY_SINGLE_TOP
                 )
-                putExtra(ComposeHomeActivity.EXTRA_SHOW_PAIRING_DIALOG, true)
+                putExtra(HomeActivity.EXTRA_SHOW_PAIRING_DIALOG, true)
             }
             startActivity(intent)
         } else {
@@ -134,7 +135,7 @@ class AdbPairingAccessibilityService : AccessibilityService() {
                     if (it) {
                         toastMsg = "${getString(R.string.notification_adb_pairing_succeed_title)}. ${getString(R.string.notification_adb_pairing_succeed_text)}"
                    
-                        val intent = Intent(this@AdbPairingAccessibilityService, ComposeHomeActivity::class.java).apply {
+                        val intent = Intent(this@AdbPairingAccessibilityService, MainActivity::class.java).apply {
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
                         }
                         startActivity(intent)

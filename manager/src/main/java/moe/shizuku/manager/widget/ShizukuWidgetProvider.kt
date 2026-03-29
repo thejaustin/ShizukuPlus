@@ -9,7 +9,7 @@ import android.content.Intent
 import android.os.Build
 import android.view.View
 import android.widget.RemoteViews
-import moe.shizuku.manager.ui.compose.activity.ComposeHomeActivity
+import moe.shizuku.manager.MainActivity
 import moe.shizuku.manager.R
 import moe.shizuku.manager.starter.StarterActivity
 import moe.shizuku.manager.utils.ShizukuStateMachine
@@ -52,7 +52,7 @@ class ShizukuWidgetProvider : AppWidgetProvider() {
             }
 
             // Main Click: Open App
-            val mainIntent = Intent(context, ComposeHomeActivity::class.java)
+            val mainIntent = Intent(context, MainActivity::class.java)
             val mainPendingIntent = PendingIntent.getActivity(context, 0, mainIntent, PendingIntent.FLAG_IMMUTABLE)
             views.setOnClickPendingIntent(R.id.widget_root, mainPendingIntent)
 
