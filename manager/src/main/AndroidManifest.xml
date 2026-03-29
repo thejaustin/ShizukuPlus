@@ -46,13 +46,7 @@
         android:name="moe.shizuku.manager.permission.API_V23"
         tools:node="remove" />
 
-    <permission
-        android:name="${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-        android:protectionLevel="signature"
-        tools:node="merge" />
-    <uses-permission
-        android:name="${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-        tools:node="merge" />
+    <!-- DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION is provided by androidx.core 1.6+ -->
 
     <application
         android:name=".ShizukuApplication"
