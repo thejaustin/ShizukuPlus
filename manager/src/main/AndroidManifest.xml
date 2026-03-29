@@ -100,19 +100,10 @@
             android:label="@string/settings_title"
             android:theme="@style/Theme" />
 
-        <!-- Legacy/Compose activities - kept for backward compatibility -->
+        <!-- Legacy activities - kept for backward compatibility -->
         <activity
             android:name=".MainActivity"
             android:exported="false"
-            android:theme="@style/Theme" />
-        <activity
-            android:name=".ui.compose.activity.ComposeHomeActivity"
-            android:exported="false"
-            android:theme="@style/Theme" />
-        <activity
-            android:name=".ui.compose.activity.ComposeSettingsActivity"
-            android:exported="false"
-            android:label="@string/settings_title"
             android:theme="@style/Theme" />
         <activity
             android:name=".onboarding.OnboardingActivity"
