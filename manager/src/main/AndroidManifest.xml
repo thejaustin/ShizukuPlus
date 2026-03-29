@@ -45,8 +45,6 @@
     <uses-permission
         android:name="moe.shizuku.manager.permission.API_V23"
         tools:node="remove" />
-
-    <!-- DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION is provided by androidx.core 1.6+ -->
     <uses-permission
         android:name="${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         tools:node="remove" />
