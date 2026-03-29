@@ -5,6 +5,7 @@ import com.android.build.gradle.internal.tasks.CompileArtProfileTask
 plugins {
     id "com.android.application"
     id "org.jetbrains.kotlin.android"
+    id "org.jetbrains.kotlin.plugin.compose" version "2.2.20"
     id "dev.rikka.tools.refine"
     id "dev.rikka.tools.autoresconfig"
     id "dev.rikka.tools.materialthemebuilder"
@@ -56,6 +57,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = "21"
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
     packagingOptions {
         jniLibs {
