@@ -98,13 +98,13 @@
             android:name=".ui.compose.activity.ComposeSettingsActivity"
             android:exported="false"
             android:label="@string/settings_title"
-            android:theme="@style/Theme.App" />
+            android:theme="@style/Theme" />
 
         <!-- Legacy activities - kept for backward compatibility -->
         <activity
             android:name=".MainActivity"
             android:exported="false"
-            android:theme="@style/Theme.App" />
+            android:theme="@style/Theme" />
         <activity
             android:name=".onboarding.OnboardingActivity"
             android:exported="false"
