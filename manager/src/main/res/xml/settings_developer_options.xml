@@ -8,7 +8,7 @@
 
         <SwitchPreferenceCompat
             android:key="vector_enabled"
-            android:title="@string/settings_vector_title"
+            android:title="@string/settings_vector"
             android:summary="@string/settings_vector_summary"
             android:icon="@drawable/ic_server_24"
             android:defaultValue="false" />
@@ -22,7 +22,7 @@
 
         <SwitchPreferenceCompat
             android:key="experimental_root_compat"
-            android:title="@string/settings_experimental_root_title"
+            android:title="@string/settings_experimental_root"
             android:summary="@string/settings_experimental_root_summary"
             android:icon="@drawable/ic_shield_24"
             android:defaultValue="false" />
