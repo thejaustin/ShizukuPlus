@@ -634,10 +634,6 @@
     <string name="settings_developer_options_summary">Virtualization, device spoofing, and experimental features</string>
     <string name="settings_developer_category_virtualization">Virtualization</string>
     <string name="settings_developer_category_experimental">Experimental</string>
-    <string name="settings_vector_title">Vector Acceleration</string>
-    <string name="settings_vector_summary">Experimental native execution of vector-based system operations. Highly unstable.</string>
-    <string name="settings_experimental_root_title">Experimental Root Compatibility</string>
-    <string name="settings_experimental_root_summary">Functional workarounds for setprop, mount, and SELinux. Unstable.</string>
     <string name="settings_auto_update_title">Auto-check for updates</string>
     <string name="settings_auto_update_summary">Automatically check for new versions on app startup</string>
     <string name="settings_auto_install_title">Auto-install updates</string>
