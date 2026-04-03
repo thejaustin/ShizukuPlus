@@ -91,12 +91,6 @@ class StarterActivity : AppBarActivity() {
             hasStarted = true
             val port = intent.getIntExtra(EXTRA_PORT, 0)
             
-            // Validate port - must be in valid range (1-65535)
-            if (port !in 1..65535) {
-                log(error = IllegalArgumentException("Invalid port value: $port. Port must be between 1 and 65535."))
-                return
-            }
-            
             viewModel.start(
                 intent.getBooleanExtra(EXTRA_IS_ROOT, false),
                 port
@@ -128,6 +122,10 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
     private var started = false
 
     fun start(root: Boolean, port: Int) {
+        if (!root && port !in 1..65535) {
+            log(error = IllegalArgumentException("Invalid port value: $port. Port must be between 1 and 65535."))
+            return
+        }
         if (started) return
         started = true
 

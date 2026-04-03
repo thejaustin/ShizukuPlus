@@ -79,7 +79,7 @@ class ShizukuApplication : Application(), Configuration.Provider {
                 options.maxBreadcrumbs = 100
                 
                 // Send default PII (for device info, not user data)
-                options.sendDefaultPii = false
+                options.isSendDefaultPii = false
                 
                 // Enable NDK crash reporting
                 options.isEnableNdk = true
