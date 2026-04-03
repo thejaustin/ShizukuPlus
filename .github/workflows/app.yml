@@ -11,7 +11,6 @@ on:
         type: boolean
         required: false
         default: false
-
       prerelease:
         description: 'Prerelease'
         type: boolean
@@ -21,18 +20,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     env:
       ANDROID_HOME: "/usr/local/lib/android/sdk"
       KEYSTORE: ${{ secrets.KEYSTORE }}
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-      IS_DEBUG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug || false }}
-      IS_PRERELEASE: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && github.event.inputs.prerelease) }}
+      IS_DEBUG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug == true }}
+      IS_PRERELEASE: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && github.event.inputs.prerelease == true) }}
 
     outputs:
-      versionName: ${{ steps.buildWithGradle.outputs.versionName }}
       artifactName: ${{ steps.buildWithGradle.outputs.artifactName }}
+      versionName: ${{ steps.buildWithGradle.outputs.versionName }}
 
     steps:
       - name: Checkout
@@ -43,9 +42,7 @@ jobs:
 
       - name: Pre-Push Guard
         run: |
-          # Make script executable
           chmod +x pre-push-guard/scripts/pre_push_check.sh
-          # Run the validation suite
           bash pre-push-guard/scripts/pre_push_check.sh
 
       - name: Setup Java
@@ -53,12 +50,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-
-      - name: Validate Signing Config
-        run: |
-          if [ "$IS_DEBUG" = "false" ] && [ "$KEYSTORE" = "" ]; then
-            echo "::warning::Signing secrets not configured. Falling back to debug signing."
-          fi
 
       - name: Create signing.properties
         if: ${{ env.IS_DEBUG == 'false' && env.KEYSTORE != '' }}
@@ -94,20 +85,13 @@ jobs:
 
           [ "$IS_PRERELEASE" = "true" ] && CMD="$CMD -Pbeta"
 
-          # Get version name from gradle before building
           VERSION=$(./gradlew :manager:properties -q --console=plain | grep "^versionName:" | cut -d' ' -f2 | tr -d "'")
-
-          # Write version to file for release job (GitHub blocks version in outputs as "secret")
           echo "$VERSION" > version.txt
 
-          # Enable detailed logging for crash diagnosis
           export GRADLE_OPTS="-Xmx4g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError"
-          
-          # Run build with full stacktrace for debugging
           eval $CMD --stacktrace --info
           
           FILE=$(ls "$APK_DIR"/*.apk)
-
           ARTIFACT_NAME="shizuku_plus.apk"
           [ "$IS_DEBUG" = "true" ] && ARTIFACT_NAME="shizuku_plus-debug.apk"
 
@@ -120,27 +104,12 @@ jobs:
           echo "artifactName=${ARTIFACT_NAME}" >> $GITHUB_OUTPUT
           echo "versionName=${VERSION}" >> $GITHUB_OUTPUT
           echo "filePath=${RENAMED}" >> $GITHUB_OUTPUT
-          
-          # Upload build logs for debugging
-          cp -r ~/.gradle/caches/build-cache-1/ build-cache-logs/ 2>/dev/null || true
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.buildWithGradle.outputs.artifactName }}
           path: ${{ steps.buildWithGradle.outputs.filePath }}
-          retention-days: 30
-
-      - name: Upload Build Logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-logs
-          path: |
-            manager/build/outputs/logs/
-            build-cache-logs/
-            *.log
-          retention-days: 7
 
       - name: Upload Version File
         uses: actions/upload-artifact@v4
@@ -148,20 +117,15 @@ jobs:
           name: version-file
           path: version.txt
 
-      # - name: Attest Build Provenance
-      #   if: ${{ success() && !github.event.inputs.debug }}
-      #   uses: actions/attest-build-provenance@v2
-      #   with:
-      #     subject-path: manager/build/outputs/apk/release/*.apk
-
   release:
-    if: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && !github.event.inputs.debug) }}
+    if: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && github.event.inputs.debug != true) }}
     needs: [build]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     env:
-      ANDROID_HOME: "/usr/local/lib/android/sdk"
-      IS_PRERELEASE: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && github.event.inputs.prerelease) }}
+      IS_PRERELEASE: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && github.event.inputs.prerelease == true) }}
 
     steps:
       - name: Checkout
@@ -178,10 +142,6 @@ jobs:
         id: version
         run: |
           VERSION=$(cat version.txt)
-          if [ -z "$VERSION" ]; then
-            echo "::error::Version file is empty"
-            exit 1
-          fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Create Release Tag
@@ -190,7 +150,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
-            echo "Tag $TAG_NAME already exists. Deleting it..."
             git tag -d "$TAG_NAME"
             git push origin ":refs/tags/$TAG_NAME" || true
           fi
@@ -202,49 +161,6 @@ jobs:
         with:
           name: ${{ needs.build.outputs.artifactName }}
           path: files
-
-      - name: Create Sentry Release with Commits
-        if: ${{ github.event_name == 'push' }}
-        continue-on-error: true
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: af-developments
-          SENTRY_PROJECT: shizukuplus
-          VERSION: ${{ env.VERSION }}
-          GITHUB_TOKEN: ${{ github.token }}
-        run: |
-          # Only run if SENTRY_AUTH_TOKEN is available
-          if [ -z "$SENTRY_AUTH_TOKEN" ]; then
-            echo "SENTRY_AUTH_TOKEN not configured, skipping Sentry release"
-            exit 0
-          fi
-          
-          # Install sentry-cli
-          curl -sL https://sentry.io/get-cli/ | bash
-          
-          # Get the last release tag (or use HEAD~1 if no tags exist)
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "HEAD~1")
-          
-          # Create Sentry release with commit data
-          echo "Creating Sentry release $VERSION (from $LAST_TAG)..."
-          sentry-cli releases new "$VERSION" \
-            --org "$SENTRY_ORG" \
-            --project "$SENTRY_PROJECT" \
-            --url "https://github.com/${{ github.repository }}"
-          
-          # Associate commits with the release
-          sentry-cli releases set-commits "$VERSION" \
-            --org "$SENTRY_ORG" \
-            --project "$SENTRY_PROJECT" \
-            --auto \
-            --ignore-missing \
-            --local
-          
-          # Add deploy information
-          sentry-cli releases deploys "$VERSION" new \
-            --org "$SENTRY_ORG" \
-            --project "$SENTRY_PROJECT" \
-            --env production
 
       - name: Create Release
         env:
@@ -258,27 +174,4 @@ jobs:
             FLAGS="--draft"
           fi
 
-          # If release already exists, delete it first to allow re-release on same tag if needed
-          if gh release view "$TAG_NAME" >/dev/null 2>&1; then
-            echo "Release $TAG_NAME already exists. Deleting it..."
-            gh release delete "$TAG_NAME" --yes
-          fi
-
-          # Get commit count since last release for release notes
-          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          if [ -n "$LAST_TAG" ]; then
-            CHANGELOG=$(git log --pretty=format:"* %s (%h)" $LAST_TAG..HEAD 2>/dev/null | head -20)
-          else
-            CHANGELOG=$(git log --pretty=format:"* %s (%h)" -20 2>/dev/null)
-          fi
-          
-          # Create release with changelog
-          gh release create "$TAG_NAME" files/*.apk $FLAGS --title "Release $VERSION" --notes "## Changes in $VERSION
-
-$CHANGELOG
-
-## Installation
-Download and install the APK from the assets below.
-
-## Sentry Integration
-This release is tracked in Sentry at: https://af-developments.sentry.io/projects/shizukuplus/releases/$VERSION/"
+          gh release create "$TAG_NAME" files/*.apk $FLAGS --title "Release $VERSION" --notes "Release $VERSION"
