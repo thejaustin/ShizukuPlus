@@ -238,11 +238,7 @@ sentry {
     includeSourceContext = true
     
     // Track releases with git commit info
-    tracingEnabled = true
     ignoredBuildTypes = ["debug"]
-    
-    // Configure release naming to include git commit
-    autoUploadNativeSymbols = true
 }
 
 apply from: rootProject.file("signing.gradle")

@@ -165,8 +165,8 @@ else
 fi
 
 # 12. Check for printStackTrace leftovers
-echo -n "[12/12] Checking for  leftovers... "
-STACK_TRACE=$(grep -rn "" . | grep ".kt:\|.java:")
+echo -n "[12/12] Checking for printStackTrace leftovers... "
+STACK_TRACE=$(grep -rn "printStackTrace" . | grep ".kt:\|.java:")
 if [ ! -z "$STACK_TRACE" ]; then
     echo -e "${COLOR_YELLOW}WARN${COLOR_RESET} (Use loge or Log.e instead)"
     echo "$STACK_TRACE"
