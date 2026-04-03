@@ -225,17 +225,20 @@ dependencies {
 sentry {
     org = "af-developments"
     projectName = "shizukuplus"
-    authToken = System.getenv("SENTRY_AUTH_TOKEN") ?: project.findProperty("SENTRY_AUTH_TOKEN") ?: ""
+    def sentryToken = System.getenv("SENTRY_AUTH_TOKEN") ?: project.findProperty("SENTRY_AUTH_TOKEN")
+    authToken = sentryToken ?: ""
     
-    // Upload native symbols for better crash reports
-    uploadNativeSymbols = true
-    includeNativeSources = true
-    
-    // Auto-upload ProGuard mappings for release builds
-    autoUploadProguardMapping = provider { System.getenv("SENTRY_AUTH_TOKEN") != null || project.hasProperty("SENTRY_AUTH_TOKEN") }
-    
-    // Include source context for better stack traces
-    includeSourceContext = true
+    if (sentryToken == null || sentryToken.isEmpty()) {
+        uploadNativeSymbols = false
+        includeNativeSources = false
+        includeSourceContext = false
+        autoUploadProguardMapping = provider { false }
+    } else {
+        uploadNativeSymbols = true
+        includeNativeSources = true
+        includeSourceContext = true
+        autoUploadProguardMapping = provider { true }
+    }
     
     // Track releases with git commit info
     ignoredBuildTypes = ["debug"]
