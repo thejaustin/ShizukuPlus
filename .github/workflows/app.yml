@@ -31,8 +31,8 @@ jobs:
       KEYSTORE: ${{ secrets.KEYSTORE }}
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-      IS_DEBUG: ${{ github.event_name == 'workflow_dispatch' && inputs.debug || false }}
-      IS_PRERELEASE: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && inputs.prerelease) }}
+      IS_DEBUG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug || false }}
+      IS_PRERELEASE: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && github.event.inputs.prerelease) }}
 
     outputs:
       versionName: ${{ steps.buildWithGradle.outputs.versionName }}
@@ -153,13 +153,13 @@ jobs:
           path: version.txt
 
       - name: Attest Build Provenance
-        if: ${{ success() && !inputs.debug }}
+        if: ${{ success() && !github.event.inputs.debug }}
         uses: actions/attest-build-provenance@v3
         with:
           subject-path: manager/build/outputs/apk/release/*.apk
 
   release:
-    if: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && !inputs.debug) }}
+    if: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && !github.event.inputs.debug) }}
     needs: [build]
     runs-on: ubuntu-latest
     permissions:
@@ -167,7 +167,7 @@ jobs:
 
     env:
       ANDROID_HOME: "/usr/local/lib/android/sdk"
-      IS_PRERELEASE: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && inputs.prerelease) }}
+      IS_PRERELEASE: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && github.event.inputs.prerelease) }}
 
     steps:
       - name: Checkout
