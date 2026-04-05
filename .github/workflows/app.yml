@@ -89,7 +89,7 @@ jobs:
           echo "$VERSION" > version.txt
 
           export GRADLE_OPTS="-Xmx4g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError"
-          eval $CMD --stacktrace --info -x uploadSentryProguardMappingsRelease -x uploadSentryNativeSymbolsForRelease
+          eval $CMD --stacktrace --info -x uploadSentryProguardMappingsRelease -x uploadSentryNativeSymbolsForRelease -x sentryUploadSourceBundleRelease
           
           FILE=$(ls "$APK_DIR"/*.apk)
           ARTIFACT_NAME="shizuku_plus.apk"
