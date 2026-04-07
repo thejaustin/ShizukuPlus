@@ -386,4 +386,54 @@ class AICorePlusImpl : IAICorePlus.Stub() {
         
         return bundle
     }
+
+    override fun simulateTouch(x: Float, y: Float): Boolean {
+        return try {
+            val process = Runtime.getRuntime().exec(arrayOf("input", "tap", x.toString(), y.toString()))
+            process.waitFor() == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to simulate touch", e)
+            false
+        }
+    }
+
+    override fun simulateSwipe(x1: Float, y1: Float, x2: Float, y2: Float, duration: Int): Boolean {
+        return try {
+            val process = Runtime.getRuntime().exec(arrayOf("input", "swipe", x1.toString(), y1.toString(), x2.toString(), y2.toString(), duration.toString()))
+            process.waitFor() == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to simulate swipe", e)
+            false
+        }
+    }
+
+    override fun simulateText(text: String?): Boolean {
+        if (text == null) return false
+        return try {
+            val process = Runtime.getRuntime().exec(arrayOf("input", "text", text))
+            process.waitFor() == 0
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to simulate text", e)
+            false
+        }
+    }
+
+    override fun getWindowHierarchy(): String {
+        return try {
+            val tempFile = "/data/local/tmp/window_dump_${System.currentTimeMillis()}.xml"
+            val process = Runtime.getRuntime().exec(arrayOf("uiautomator", "dump", tempFile))
+            if (process.waitFor() == 0) {
+                val file = java.io.File(tempFile)
+                if (file.exists()) {
+                    val content = file.readText()
+                    file.delete()
+                    return content
+                }
+            }
+            ""
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get window hierarchy", e)
+            ""
+        }
+    }
 }
