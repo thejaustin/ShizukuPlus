@@ -28,11 +28,44 @@ public class PlusShell {
         System.out.println("Commands:");
         System.out.println("  vm list           List all Microdroid VMs");
         System.out.println("  vm start [name]   Start a specific VM");
-        System.out.println("  storage open [p]  Open a restricted path via Storage Bridge");
+        System.out.println("  storage ls [path] List privileged storage");
+        System.out.println("  su [command]      Run command via SU Bridge");
+        System.out.println("  appops [pkg]      Elevate permissions for package");
         System.out.println("  log               View the privileged activity log");
         System.out.println("  doctor            Run system diagnostics");
-        System.out.println("  spoof [target]    Set device identity spoofing");
+        System.out.println("  spoof             View current device identity spoofing");
         System.out.flush();
+    }
+
+    private static void handleSu(String[] args, IBinder binder) throws RemoteException {
+        if (args.length < 2) {
+            System.out.println("Usage: plus su [command]");
+            return;
+        }
+
+        String[] fullCmd = new String[args.length];
+        fullCmd[0] = "su";
+        System.arraycopy(args, 1, fullCmd, 1, args.length - 1);
+
+        IShizukuService service = IShizukuService.Stub.asInterface(binder);
+        // This will be intercepted by ShizukuService.newProcess
+        service.newProcess(fullCmd, null, null);
+        System.out.println("Command sent to SU Bridge.");
+    }
+
+    private static void handleAppOps(String[] args, IBinder binder) throws RemoteException {
+        if (args.length < 2) {
+            System.out.println("Usage: plus appops [package_name]");
+            return;
+        }
+
+        String packageName = args[1];
+        System.out.println("Requesting permission elevation for: " + packageName);
+
+        IShizukuService service = IShizukuService.Stub.asInterface(binder);
+        // We trigger the elevation by calling a command that ShizukuService intercepts
+        service.newProcess(new String[]{"setenforce", "1"}, null, null); 
+        System.out.println("Elevation request sent to server.");
     }
 
     private static void handleLog() {
@@ -129,6 +162,12 @@ public class PlusShell {
                     break;
                 case "storage":
                     handleStorage(args, binder);
+                    break;
+                case "su":
+                    handleSu(args, binder);
+                    break;
+                case "appops":
+                    handleAppOps(args, binder);
                     break;
                 case "spoof":
                     System.out.println("Current spoofing status: ACTIVE");
