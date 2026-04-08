@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import moe.shizuku.manager.R
 import moe.shizuku.manager.ShizukuSettings
 import moe.shizuku.manager.adb.AdbPairingService
@@ -83,6 +84,7 @@ abstract class HomeActivity : AppBarActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         // Bind to the rootView that was created by AppBarActivity.setContentView(getLayoutId())

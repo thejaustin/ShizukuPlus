@@ -16,13 +16,7 @@ class MainActivity : HomeActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        var splashInstalled = false
         try {
-            splashInstalled = true
-            installSplashScreen()
-            Log.d(TAG, "Splash screen installed")
-            Sentry.addBreadcrumb(Breadcrumb("Splash screen installed"))
-
             Log.d(TAG, "Calling super.onCreate")
             Sentry.addBreadcrumb(Breadcrumb("Calling super.onCreate"))
             super.onCreate(savedInstanceState)
@@ -41,16 +35,14 @@ class MainActivity : HomeActivity() {
             Log.d(TAG, "MainActivity onCreate complete")
             Sentry.addBreadcrumb(Breadcrumb("MainActivity onCreate complete"))
         } catch (e: Exception) {
-            Log.e(TAG, "Crash in MainActivity.onCreate (splashInstalled=$splashInstalled)", e)
+            Log.e(TAG, "Crash in MainActivity.onCreate", e)
             Sentry.captureException(e)
-            Sentry.addBreadcrumb(Breadcrumb("MainActivity crash: ${e.message}, splashInstalled=$splashInstalled"))
+            Sentry.addBreadcrumb(Breadcrumb("MainActivity crash: ${e.message}"))
             
             // Try to recover by starting HomeActivity directly
             try {
-                if (splashInstalled) {
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    finish()
-                }
+                startActivity(Intent(this, HomeActivity::class.java))
+                finish()
             } catch (e2: Exception) {
                 Log.e(TAG, "Recovery also failed", e2)
             }

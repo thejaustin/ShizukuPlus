@@ -10,7 +10,13 @@ import moe.shizuku.manager.ShizukuApplication
 import moe.shizuku.manager.ShizukuSettings
 import com.topjohnwu.superuser.Shell
 
-private val appContext = ShizukuApplication.appContext
+private val appContext: Context
+    get() = try {
+        ShizukuApplication.appContext
+    } catch (e: UninitializedPropertyAccessException) {
+        // Fallback for very early access if possible, or just rethrow with better message
+        throw IllegalStateException("EnvironmentUtils.appContext accessed before ShizukuApplication.appContext was initialized", e)
+    }
 
 object EnvironmentUtils {
 

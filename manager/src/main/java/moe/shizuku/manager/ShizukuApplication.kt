@@ -41,6 +41,13 @@ class ShizukuApplication : Application(), Configuration.Provider {
             .setMinimumLoggingLevel(if (BuildConfig.DEBUG) Log.DEBUG else Log.INFO)
             .build()
 
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        appContext = base
+        // Initialize ShizukuSettings as early as possible
+        ShizukuSettings.initialize(base)
+    }
+
     /**
      * Initialize Sentry FIRST to catch all crashes including early startup failures
      */
@@ -127,7 +134,6 @@ class ShizukuApplication : Application(), Configuration.Provider {
      * Initialize settings and managers
      */
     private fun initializeManagers() {
-        ShizukuSettings.initialize(this)
         ActivityLogManager.initialize(this)
         LocaleDelegate.defaultLocale = ShizukuSettings.getLocale()
         AppCompatDelegate.setDefaultNightMode(ShizukuSettings.getNightMode())
@@ -146,7 +152,6 @@ class ShizukuApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        appContext = applicationContext
 
         // 1. CRITICAL: Initialize Sentry FIRST
         initializeSentryEarly()
@@ -171,19 +176,19 @@ class ShizukuApplication : Application(), Configuration.Provider {
         // 3. Initialize static components
         try {
             initializeStatics()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e(TAG, "Failed to initialize static components", e)
             Sentry.captureException(e)
-            throw e
+            if (e is Error) throw e
         }
 
         // 4. Initialize settings and managers
         try {
             initializeManagers()
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e(TAG, "Failed to initialize managers", e)
             Sentry.captureException(e)
-            throw e
+            if (e is Error) throw e
         }
 
         // 5. Update state machine

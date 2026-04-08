@@ -14,15 +14,6 @@ import moe.shizuku.manager.ShizukuApplication
 import moe.shizuku.manager.ShizukuSettings
 import rikka.shizuku.Shizuku
 
-private fun getAppContext(): Context {
-    return try {
-        ShizukuApplication.appContext
-    } catch (e: UninitializedPropertyAccessException) {
-        Log.e("ShizukuStateMachine", "appContext not initialized yet", e)
-        throw e
-    }
-}
-
 object ShizukuStateMachine {
 
     enum class State { STARTING, RUNNING, STOPPING, STOPPED, CRASHED }
@@ -49,10 +40,15 @@ object ShizukuStateMachine {
             Log.d("ShizukuStateMachine", newState.toString())
 
             // Broadcast state change for widgets and other receivers
-            val intent = android.content.Intent("moe.shizuku.manager.action.STATE_CHANGED").apply {
-                setPackage(getAppContext().packageName)
+            try {
+                val context = ShizukuApplication.appContext
+                val intent = android.content.Intent("moe.shizuku.manager.action.STATE_CHANGED").apply {
+                    setPackage(context.packageName)
+                }
+                context.sendBroadcast(intent)
+            } catch (e: UninitializedPropertyAccessException) {
+                Log.w("ShizukuStateMachine", "Skipping broadcast: appContext not initialized yet")
             }
-            getAppContext().sendBroadcast(intent)
         }
     }
 
@@ -63,12 +59,14 @@ object ShizukuStateMachine {
             State.RUNNING -> State.CRASHED
             State.STOPPING -> {
                 try {
-                    val context = getAppContext()
+                    val context = ShizukuApplication.appContext
                     val permissionGranted = context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED
                     val shouldDisableUsbDebugging = permissionGranted && ShizukuSettings.getAutoDisableUsbDebugging()
                     if (shouldDisableUsbDebugging) {
                         Settings.Global.putInt(context.contentResolver, Settings.Global.ADB_ENABLED, 0)
                     }
+                } catch (e: UninitializedPropertyAccessException) {
+                    Log.w("ShizukuStateMachine", "Skipping USB debugging disable: appContext not initialized yet")
                 } catch (e: Exception) {
                     Log.w("ShizukuStateMachine", "Failed to disable USB debugging", e)
                 }
