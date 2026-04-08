@@ -157,7 +157,7 @@
             android:key="root_adaway_bridge_enabled"
             android:title="@string/settings_root_adaway_bridge"
             android:summary="@string/settings_root_adaway_bridge_summary"
-            android:icon="@drawable/ic_security_24"
+            android:icon="@drawable/ic_shield_24"
             android:defaultValue="false"
             app:infoTitle="@string/help_root_adaway_title"
             app:infoDetail="@string/help_root_adaway_detail" />
@@ -166,7 +166,7 @@
             android:key="root_magisk_mocking_enabled"
             android:title="@string/settings_root_magisk_mocking"
             android:summary="@string/settings_root_magisk_mocking_summary"
-            android:icon="@drawable/ic_build_24"
+            android:icon="@drawable/ic_settings_suggest_24dp"
             android:defaultValue="false"
             app:infoTitle="@string/help_root_magisk_title"
             app:infoDetail="@string/help_root_magisk_detail" />
@@ -175,7 +175,7 @@
             android:key="root_auto_grant_enabled"
             android:title="@string/settings_root_auto_grant"
             android:summary="@string/settings_root_auto_grant_summary"
-            android:icon="@drawable/ic_verified_user_24"
+            android:icon="@drawable/ic_admin_panel_settings_24dp"
             android:defaultValue="false"
             app:infoTitle="@string/help_root_auto_grant_title"
             app:infoDetail="@string/help_root_auto_grant_detail" />
@@ -184,7 +184,7 @@
             android:key="root_file_interceptor_enabled"
             android:title="@string/settings_root_file_interceptor"
             android:summary="@string/settings_root_file_interceptor_summary"
-            android:icon="@drawable/ic_folder_special_24"
+            android:icon="@drawable/ic_folder_24"
             android:defaultValue="false"
             app:infoTitle="@string/help_root_file_interceptor_title"
             app:infoDetail="@string/help_root_file_interceptor_detail" />
