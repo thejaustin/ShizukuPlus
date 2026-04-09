@@ -77,10 +77,10 @@
 ## 📋 Pre-Release Testing
 
 ### Manual Testing Checklist
-- [ ] App launches successfully (cold start)
-- [ ] Splash screen displays correctly
-- [ ] Home screen loads without crashes
-- [ ] Settings screen opens and displays all icons
+- [x] App launches successfully (cold start)
+- [x] Splash screen displays correctly
+- [x] Home screen loads without crashes
+- [x] Settings screen opens and displays all icons
 - [x] Wireless ADB card displays correctly
 - [x] Terminal card displays correctly (plus CLI bridge)
 - [x] Start via Root card displays correctly
@@ -102,11 +102,11 @@
 ## 📊 Monitoring & Analytics
 
 ### Sentry Dashboard
-- [ ] Release appears in Sentry dashboard
-- [ ] Commits are associated with release
-- [ ] Crash-free sessions tracking active
-- [ ] Performance monitoring data flowing
-- [ ] ANR reports appearing (if any)
+- [x] Release appears in Sentry dashboard
+- [x] Commits are associated with release
+- [x] Crash-free sessions tracking active
+- [x] Performance monitoring data flowing
+- [x] ANR reports appearing (if any)
 
 ### Key Metrics to Watch (Post-Release)
 - **Crash-free users**: Target > 99%
