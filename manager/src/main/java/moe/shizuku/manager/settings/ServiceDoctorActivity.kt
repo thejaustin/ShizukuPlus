@@ -250,11 +250,13 @@ class ServiceDoctorActivity : AppBarActivity() {
 
         override fun onBindViewHolder(holder: CheckViewHolder, position: Int) {
             val check = items[position]
+            val context = holder.itemView.context
             holder.binding.title.text = check.title
             holder.binding.status.text = check.status
             holder.binding.icon.setImageResource(if (check.ok) R.drawable.ic_server_ok_24dp else R.drawable.ic_server_error_24dp)
             holder.binding.icon.imageTintList = android.content.res.ColorStateList.valueOf(
-                if (check.ok) getColor(R.color.status_ok) else getColor(R.color.status_error)
+                if (check.ok) androidx.core.content.ContextCompat.getColor(context, R.color.status_ok) 
+                else androidx.core.content.ContextCompat.getColor(context, R.color.status_error)
             )
             
             if (check.onFix != null) {

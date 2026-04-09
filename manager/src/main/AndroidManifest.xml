@@ -264,7 +264,7 @@
 
         <receiver
             android:name=".receiver.BootCompleteReceiver"
-            android:enabled="false"
+            android:enabled="true"
             android:exported="true"
             android:directBootAware="true">
             <intent-filter>
@@ -297,6 +297,17 @@
         <receiver android:name=".receiver.NotifAttemptReceiver" />
         <receiver android:name=".receiver.NotifCancelReceiver" />
         <receiver android:name=".receiver.NotifRestoreReceiver" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <!-- This entry enables WorkManager to be initialized on startup -->
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup" />
+        </provider>
 
         <provider
             android:name=".ShizukuManagerProvider"

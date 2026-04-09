@@ -38,6 +38,8 @@ class StarterActivity : AppBarActivity() {
 
     private val viewModel: ViewModel by viewModels()
 
+    override fun getLayoutId() = R.layout.starter_activity
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

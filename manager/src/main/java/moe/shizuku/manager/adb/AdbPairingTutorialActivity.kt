@@ -27,6 +27,8 @@ class AdbPairingTutorialActivity : AppBarActivity() {
 
     private var notificationEnabled: Boolean = false
 
+    override fun getLayoutId() = R.layout.adb_pairing_tutorial_activity
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val context = this

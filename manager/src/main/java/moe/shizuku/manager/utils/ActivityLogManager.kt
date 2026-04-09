@@ -128,7 +128,7 @@ object ActivityLogManager {
                     synchronized(records) {
                         records.clear()
                         dbLogs.reversed().forEach { log ->
-                            records.addLast(
+                            records.add(
                                 ActivityLogRecord(
                                     timestamp = log.timestamp,
                                     appName = log.appName,

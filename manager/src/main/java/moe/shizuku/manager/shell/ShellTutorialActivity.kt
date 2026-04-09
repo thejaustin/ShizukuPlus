@@ -88,6 +88,8 @@ class ShellTutorialActivity : AppBarActivity() {
             ShizukuSettings.setExportDirUri(tree.toString())
         }
 
+    override fun getLayoutId() = R.layout.terminal_tutorial_activity
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

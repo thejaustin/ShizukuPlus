@@ -122,25 +122,31 @@ class UpdateSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun checkForUpdate() {
-        android.widget.Toast.makeText(requireContext(), R.string.update_checking, android.widget.Toast.LENGTH_SHORT).show()
+        val context = context ?: return
+        android.widget.Toast.makeText(context, R.string.update_checking, android.widget.Toast.LENGTH_SHORT).show()
         val channel = ShizukuSettings.getUpdateChannel()
         lifecycleScope.launch {
             try {
                 val info = UpdateChecker.checkForUpdate(channel)
-                ShizukuSettings.setLastUpdateCheckTime(System.currentTimeMillis())
-                updateLastCheckTime()
-                if (info != null) showUpdateAvailableDialog(info) else showUpToDateDialog()
+                if (isAdded) {
+                    ShizukuSettings.setLastUpdateCheckTime(System.currentTimeMillis())
+                    updateLastCheckTime()
+                    if (info != null) showUpdateAvailableDialog(info) else showUpToDateDialog()
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error checking for update", e)
-                Sentry.captureException(e)
-                showErrorDialog()
+                if (isAdded) {
+                    Sentry.captureException(e)
+                    showErrorDialog()
+                }
             }
         }
     }
 
     private fun showUpdateAvailableDialog(info: UpdateChecker.UpdateInfo) {
+        val context = context ?: return
         val devBadge = if (info.isPrerelease) " ⚠ Dev" else ""
-        MaterialAlertDialogBuilder(requireContext())
+        MaterialAlertDialogBuilder(context)
             .setTitle(getString(R.string.update_available_title) + devBadge)
             .setMessage(getString(R.string.update_available_message, info.versionName))
             .setPositiveButton(R.string.update_download) { _, _ ->
@@ -158,7 +164,8 @@ class UpdateSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun showUpToDateDialog() {
-        MaterialAlertDialogBuilder(requireContext())
+        val context = context ?: return
+        MaterialAlertDialogBuilder(context)
             .setTitle(R.string.update_up_to_date_title)
             .setMessage(getString(R.string.update_up_to_date_message, BuildConfig.VERSION_NAME))
             .setPositiveButton(R.string.ok, null)
@@ -166,7 +173,8 @@ class UpdateSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun showErrorDialog() {
-        MaterialAlertDialogBuilder(requireContext())
+        val context = context ?: return
+        MaterialAlertDialogBuilder(context)
             .setTitle(R.string.update_error_title)
             .setMessage(R.string.update_error_message)
             .setPositiveButton(R.string.ok, null)
@@ -174,7 +182,8 @@ class UpdateSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun showPermissionRequiredDialog() {
-        MaterialAlertDialogBuilder(requireContext())
+        val context = context ?: return
+        MaterialAlertDialogBuilder(context)
             .setTitle(R.string.update_permission_required_title)
             .setMessage(R.string.update_permission_required_message)
             .setPositiveButton(R.string.ok, null)

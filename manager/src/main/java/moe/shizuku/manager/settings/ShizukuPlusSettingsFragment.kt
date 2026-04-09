@@ -26,13 +26,15 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
         ShizukuSettings.syncAllPlusFeaturesToServer()
 
         // Setup menu for 'Learn more' icon
-        requireActivity().addMenuProvider(object : MenuProvider {
+        activity?.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                if (!isAdded) return
                 menu.clear()
                 menuInflater.inflate(R.menu.plus_settings_menu, menu)
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                if (!isAdded) return false
                 if (menuItem.itemId == R.id.action_plus_help) {
                     showGeneralHelpDialog()
                     return true
@@ -109,7 +111,8 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun showGeneralHelpDialog() {
-        MaterialAlertDialogBuilder(requireContext())
+        val context = context ?: return
+        MaterialAlertDialogBuilder(context)
             .setTitle(R.string.settings_shizuku_plus_features)
             .setMessage(R.string.help_general_plus_summary)
             .setPositiveButton(android.R.string.ok, null)
@@ -150,7 +153,7 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
             )
         )
 
-        val pm = requireContext().packageManager
+        val pm = (context ?: return).packageManager
         integrations.forEach { (prefKey, apps) ->
             val foundApp = apps.find { (pkg, _) ->
                 try {

@@ -68,11 +68,13 @@ class RequestPermissionActivity : AppActivity() {
         return runBlocking {
             try { 
                 withTimeout(5000) {
-                    ShizukuStateMachine.asFlow().first { it == ShizukuStateMachine.State.RUNNING }
+                    while (ShizukuStateMachine.get() != ShizukuStateMachine.State.RUNNING || !Shizuku.pingBinder()) {
+                        kotlinx.coroutines.delay(100)
+                    }
                 }
                 true
             } catch (e: TimeoutCancellationException) {
-                LOGGER.e(e, "Binder not received in 5s")
+                LOGGER.e(e, "Binder not received or ping failed in 5s")
                 false
             }
         }
