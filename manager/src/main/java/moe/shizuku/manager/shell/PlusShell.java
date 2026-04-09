@@ -16,11 +16,11 @@ import moe.shizuku.server.IShizukuService;
 import rikka.rish.RishConfig;
 import rikka.shizuku.Shizuku;
 import rikka.shizuku.ShizukuApiConstants;
-import moe.shizuku.common.util.Logger;
+import moe.shizuku.manager.utils.Logger;
 
 public class PlusShell {
 
-    private static final Logger.LOGGER LOGGER = new Logger.LOGGER("PlusShell");
+    private static final Logger LOGGER = new Logger("PlusShell");
 
     private static void printHelp() {
         System.out.println("ShizukuPlus CLI Helper (plus)");
