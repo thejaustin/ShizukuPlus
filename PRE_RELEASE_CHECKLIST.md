@@ -81,23 +81,23 @@
 - [ ] Splash screen displays correctly
 - [ ] Home screen loads without crashes
 - [ ] Settings screen opens and displays all icons
-- [ ] Wireless ADB card displays correctly
-- [ ] Terminal card displays correctly
-- [ ] Start via Root card displays correctly
-- [ ] All home card icons visible and properly tinted
-- [ ] Drag-to-reorder works on home screen
-- [ ] Settings navigation works
-- [ ] ADB pairing flow works
-- [ ] Service starts successfully via Root
-- [ ] Service starts successfully via ADB
-- [ ] Service starts successfully via Wireless ADB
+- [x] Wireless ADB card displays correctly
+- [x] Terminal card displays correctly (plus CLI bridge)
+- [x] Start via Root card displays correctly
+- [x] All home card icons visible and properly tinted
+- [x] Drag-to-reorder works on home screen
+- [x] Settings navigation works
+- [x] ADB pairing flow works
+- [x] Service starts successfully via Root
+- [x] Service starts successfully via ADB
+- [x] Service starts successfully via Wireless ADB
 
 ### Automated Testing
-- [ ] GitHub Actions build passes
-- [ ] Pre-push guard passes
-- [ ] No lint errors
-- [ ] No duplicate resource keys
-- [ ] No missing R imports
+- [x] GitHub Actions build passes
+- [x] Pre-push guard passes
+- [x] No lint errors
+- [x] No duplicate resource keys
+- [x] No missing R imports
 
 ## 📊 Monitoring & Analytics
 
@@ -146,34 +146,30 @@
 ## ShizukuPlus v{VERSION}
 
 ### 🐛 Bug Fixes
-- Fixed toolbarContainer crash affecting 494 users
-- Fixed MainActivity SuperNotCalledException (256 crashes)
-- Fixed ADB port validation (16 crashes)
-- Fixed RecyclerView LayoutTransition issue (4 crashes)
+- Fixed `plus log` not showing any activity logs due to process isolation
+- Fixed `plus appops` elevating the caller's UID instead of the target package
+- Fixed `plus storage` failing to list/read some privileged paths
+- Removed broken recovery code in `MainActivity` that caused crashes when recovering from a startup failure
+- Removed duplicate `busybox` handling in the SU Bridge interceptor
 
 ### 🔧 Improvements
-- **Granular Root Compatibility**: Added 5 new toggleable modules for legacy root apps: **AdAway Hosts Bridge**, **Magisk Environment Mocking**, **Auto-Approval Bridge**, **Smart File Interceptor**, and **BusyBox Simulation**.
-- **Advanced AI Intelligence**: Implemented `getWindowHierarchy` for XML-based UI parsing and physical input simulation APIs (`simulateTouch`, `simulateSwipe`, `simulateText`) for AI agents.
-- **Enhanced UI & App Integrations**: Intelligent detection for **MacroDroid**, **Tasker**, **Hex Installer**, and more, with feature-specific integration highlights.
-- **Integrated Feature Guides**: Added dedicated information icons and detailed "About" guides for every Shizuku+ feature.
-- **OneUI 8 Stability**: Transitioned to `OverlayManagerTransaction` for stable resource injection on Android 14+ / OneUI 8+.
-- **Functional CLI Bridge**: `plus vm` and `plus storage` commands now correctly call their respective Binder interfaces.
-- **Magic Setup (Neo Backup/SD Maid)**: Implemented `sed`-based auto-configuration to point root apps to the Shizuku+ SU Bridge.
-- **Network Governor Policy**: Upgraded to `POLICY_REJECT_ALL` (4) for complete app network blocking on Android 10+.
-- **Intelligence Bridge Capture**: Improved `SurfaceControl` capture using reflection on `WindowManagerGlobal`.
-- **S22 Ultra Identity**: Added dedicated hardware spoof target for Snapdragon and Exynos S22 Ultra models.
-- Enhanced Sentry integration with GitHub release tracking
-- Automatic commit association with crash reports
-- Performance monitoring enabled
-- Better crash context with screenshots and view hierarchy
+- **Enhanced CLI Bridge (`plus`)**: 
+  - Added `plus aicore` for AI automation: `touch`, `swipe`, `text` simulation, and XML window `dump`.
+  - Added `plus storage` support for `cat`, `rm`, `mkdir`, and `stat` commands.
+  - Added `plus vm` support for `status` and `delete` lifecycle operations.
+  - Added server-side log buffering (up to 50 entries) for `plus log` retrieval.
+  - Added full status diagnostics via `plus doctor`.
+  - Added actual spoof target status in `plus spoof`.
+- **Server Extensions**:
+  - Implemented `elevateApp` on the server for more reliable privilege granting.
+  - Added support for `mkdir` and directory listing in the `IStorageProxy` interface.
+  - Enhanced feature status querying via new AIDL methods.
 
 ### 📊 Sentry Integration
 - Each release now tracked in Sentry
 - Direct links between GitHub releases and Sentry
 - Automatic changelog from git commits
 - Deploy tracking for production releases
-
-**Total crashes fixed:** 770+
 
 **Sentry Release:** https://af-developments.sentry.io/projects/shizukuplus/releases/{VERSION}
 ```
