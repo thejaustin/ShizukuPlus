@@ -1,0 +1,39 @@
+name: Close Sentry Issues
+
+on:
+  workflow_dispatch:
+
+jobs:
+  close-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close issues
+        uses: actions/github-script@v7
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        with:
+          script: |
+            const issueIds = [
+              "7325309929", "7395071872", "7375583456"
+            ];
+            
+            const SENTRY_API = 'https://sentry.io/api/0';
+            const SENTRY_HEADERS = {
+              'Authorization': `Bearer ${process.env.SENTRY_AUTH_TOKEN}`,
+              'Content-Type': 'application/json',
+            };
+            
+            for (const issueId of issueIds) {
+              core.info(`Resolving Sentry issue ${issueId}...`);
+              const res = await fetch(`${SENTRY_API}/issues/${issueId}/`, {
+                method: 'PUT',
+                headers: SENTRY_HEADERS,
+                body: JSON.stringify({ status: 'resolved' })
+              });
+              if (!res.ok) {
+                const text = await res.text();
+                core.error(`Failed to resolve ${issueId}: ${res.status} ${text}`);
+              } else {
+                core.info(`Successfully resolved ${issueId}`);
+              }
+            }
