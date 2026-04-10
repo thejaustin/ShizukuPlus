@@ -17,7 +17,7 @@ import java.util.TimeZone
 object UpdateChecker {
 
     private const val TAG = "UpdateChecker"
-    private const val RELEASES_URL = "https://api.github.com/repos/thejaustin/Shizuku+/releases"
+    private const val RELEASES_URL = "https://api.github.com/repos/thejaustin/ShizukuPlus/releases"
     private const val LATEST_URL = "$RELEASES_URL/latest"
 
     data class UpdateInfo(

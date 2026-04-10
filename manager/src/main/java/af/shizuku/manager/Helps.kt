@@ -7,37 +7,37 @@ import af.shizuku.manager.utils.MultiLocaleEntity
 
 object Helps {
     val ADB = MultiLocaleEntity().apply {
-        put("zh-CN", "https://github.com/thejaustin/Shizuku+/wiki/Setup")
-        put("zh-TW", "https://github.com/thejaustin/Shizuku+/wiki/Setup")
-        put("en", "https://github.com/thejaustin/Shizuku+/wiki/Setup")
+        put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/wiki/Setup")
+        put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/wiki/Setup")
+        put("en", "https://github.com/thejaustin/ShizukuPlus/wiki/Setup")
     }
 
     val ADB_ANDROID11 = MultiLocaleEntity().apply {
-        put("zh-CN", "https://github.com/thejaustin/Shizuku+/wiki/Setup")
-        put("zh-TW", "https://github.com/thejaustin/Shizuku+/wiki/Setup")
-        put("en", "https://github.com/thejaustin/Shizuku+/wiki/Setup")
+        put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/wiki/Setup")
+        put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/wiki/Setup")
+        put("en", "https://github.com/thejaustin/ShizukuPlus/wiki/Setup")
     }
 
     val APPS = MultiLocaleEntity().apply {
-        put("zh-CN", "https://github.com/thejaustin/Shizuku+/wiki/Supported-apps")
-        put("zh-TW", "https://github.com/thejaustin/Shizuku+/wiki/Supported-apps")
-        put("en", "https://github.com/thejaustin/Shizuku+/wiki/Supported-apps")
+        put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/wiki/Supported-apps")
+        put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/wiki/Supported-apps")
+        put("en", "https://github.com/thejaustin/ShizukuPlus/wiki/Supported-apps")
     }
 
     val HOME = MultiLocaleEntity().apply {
-        put("en", "https://github.com/thejaustin/Shizuku+/tree/master/README.md#developer-guide")
+        put("en", "https://github.com/thejaustin/ShizukuPlus/tree/master/README.md#developer-guide")
     }
 
     val DOWNLOAD = MultiLocaleEntity().apply {
-        put("zh-CN", "https://github.com/thejaustin/Shizuku+/releases")
-        put("zh-TW", "https://github.com/thejaustin/Shizuku+/releases")
-        put("en", "https://github.com/thejaustin/Shizuku+/releases")
+        put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/releases")
+        put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/releases")
+        put("en", "https://github.com/thejaustin/ShizukuPlus/releases")
     }
 
     val ADB_PERMISSION = MultiLocaleEntity().apply {
-        put("zh-CN", "https://github.com/thejaustin/Shizuku+/wiki/Setup#troubleshooting")
-        put("zh-TW", "https://github.com/thejaustin/Shizuku+/wiki/Setup#troubleshooting")
-        put("en", "https://github.com/thejaustin/Shizuku+/wiki/Setup#troubleshooting")
+        put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/wiki/Setup#troubleshooting")
+        put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/wiki/Setup#troubleshooting")
+        put("en", "https://github.com/thejaustin/ShizukuPlus/wiki/Setup#troubleshooting")
     }
 
     val SUI = MultiLocaleEntity().apply {
@@ -45,14 +45,14 @@ object Helps {
     }
 
     val RISH = MultiLocaleEntity().apply {
-        put("en", "https://github.com/thejaustin/Shizuku+-API/tree/master/rish")
+        put("en", "https://github.com/thejaustin/ShizukuPlus-API/tree/master/rish")
     }
 
     /**
      * Get help URL for the given locale
      */
     fun getHelpUrl(locale: String?): String {
-        return HOME.get(locale) ?: HOME.get("en") ?: "https://github.com/thejaustin/Shizuku+/wiki"
+        return HOME.get(locale) ?: HOME.get("en") ?: "https://github.com/thejaustin/ShizukuPlus/wiki"
     }
 
     /**

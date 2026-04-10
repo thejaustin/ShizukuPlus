@@ -14,4 +14,4 @@ This release includes the full suite of Shizuku+ enhancements and stability fixe
 - **Dhizuku Mode**: Shared system Device Owner privileges for authorized applications.
 - **Service Doctor**: Real-time diagnostics for Wireless ADB and Samsung Auto Blocker troubleshooting.
 
-For documentation on integrating these features, see the [Shizuku+-API](https://github.com/thejaustin/Shizuku+-API) repository.
+For documentation on integrating these features, see the [Shizuku+-API](https://github.com/thejaustin/ShizukuPlus-API) repository.

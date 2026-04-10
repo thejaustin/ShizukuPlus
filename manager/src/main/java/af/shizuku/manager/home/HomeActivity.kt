@@ -520,7 +520,7 @@ abstract class HomeActivity : AppBarActivity() {
             .setNegativeButton(R.string.update_later, null)
             .setNeutralButton(R.string.update_release_notes) { _, _ ->
                 val intent = android.content.Intent(android.content.Intent.ACTION_VIEW,
-                    android.net.Uri.parse("https://github.com/thejaustin/Shizuku+/releases"))
+                    android.net.Uri.parse("https://github.com/thejaustin/ShizukuPlus/releases"))
                 intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
             }

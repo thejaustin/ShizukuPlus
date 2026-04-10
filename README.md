@@ -6,15 +6,15 @@ An enhanced version of [Shizuku](https://github.com/RikkaApps/Shizuku) with qual
 
 Shizuku lets normal apps use system-level APIs directly via a privileged process started with adb or root. Shizuku+ keeps full compatibility while adding features for power users and developers.
 
-[![Stars](https://img.shields.io/github/stars/thejaustin/Shizuku+?style=for-the-badge&color=bfb330&labelColor=807820)](https://github.com/thejaustin/Shizuku+/stargazers)
-[![Downloads](https://img.shields.io/github/downloads/thejaustin/Shizuku+/total?style=for-the-badge&color=bf7830&labelColor=805020)](https://github.com/thejaustin/Shizuku+/releases)
-[![Latest Release](https://img.shields.io/github/v/release/thejaustin/Shizuku+?style=for-the-badge&color=3060bf&labelColor=204080&label=Latest)](https://github.com/thejaustin/Shizuku+/releases/latest)
+[![Stars](https://img.shields.io/github/stars/thejaustin/ShizukuPlus?style=for-the-badge&color=bfb330&labelColor=807820)](https://github.com/thejaustin/ShizukuPlus/stargazers)
+[![Downloads](https://img.shields.io/github/downloads/thejaustin/ShizukuPlus/total?style=for-the-badge&color=bf7830&labelColor=805020)](https://github.com/thejaustin/ShizukuPlus/releases)
+[![Latest Release](https://img.shields.io/github/v/release/thejaustin/ShizukuPlus?style=for-the-badge&color=3060bf&labelColor=204080&label=Latest)](https://github.com/thejaustin/ShizukuPlus/releases/latest)
 
 </div>
 
 ## ⬇️ Download
 
-Get the latest release from [GitHub Releases](https://github.com/thejaustin/Shizuku+/releases).
+Get the latest release from [GitHub Releases](https://github.com/thejaustin/ShizukuPlus/releases).
 
 ## ✨ Shizuku+ Core Features
 
@@ -73,7 +73,7 @@ Everything in Shizuku+ is optional. Use the **Plus Features** category in Settin
 
 ## 📱 Developer Guide
 
-See the [Shizuku+-API](https://github.com/thejaustin/Shizuku+-API) repository for documentation on the exclusive Plus APIs.
+See the [Shizuku+-API](https://github.com/thejaustin/ShizukuPlus-API) repository for documentation on the exclusive Plus APIs.
 
 ## 📃 License
 

@@ -10,7 +10,7 @@
     <Preference
         android:key="source_code"
         android:title="@string/about_view_source_code_title"
-        android:summary="https://github.com/thejaustin/Shizuku+"
+        android:summary="https://github.com/thejaustin/ShizukuPlus"
         android:icon="@drawable/ic_baseline_link_24" />
 
     <Preference

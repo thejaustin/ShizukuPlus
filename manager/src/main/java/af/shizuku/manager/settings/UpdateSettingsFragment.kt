@@ -156,7 +156,7 @@ class UpdateSettingsFragment : BaseSettingsFragment() {
             .setNeutralButton(R.string.update_release_notes) { _, _ ->
                 startActivity(
                     Intent(Intent.ACTION_VIEW,
-                        Uri.parse("https://github.com/thejaustin/Shizuku+/releases"))
+                        Uri.parse("https://github.com/thejaustin/ShizukuPlus/releases"))
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 )
             }
