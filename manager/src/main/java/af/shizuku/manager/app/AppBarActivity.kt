@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.appbar.AppBarLayout
 import af.shizuku.manager.R
 import rikka.core.ktx.unsafeLazy
+import timber.log.Timber
 
 abstract class AppBarActivity : AppActivity() {
 
@@ -50,10 +51,10 @@ abstract class AppBarActivity : AppActivity() {
                 insets
             }
         } catch (e: IllegalStateException) {
-            android.util.Timber.tag("AppBarActivity").e(e, "Layout configuration error: ${e.message}")
+            Timber.tag("AppBarActivity").e(e, "Layout configuration error: ${e.message}")
             throw e
         } catch (e: Exception) {
-            android.util.Timber.tag("AppBarActivity").e(e, "Failed to initialize toolbar")
+            Timber.tag("AppBarActivity").e(e, "Failed to initialize toolbar")
             throw e
         }
     }

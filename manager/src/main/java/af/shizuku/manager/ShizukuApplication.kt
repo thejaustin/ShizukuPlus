@@ -3,7 +3,7 @@ package af.shizuku.manager
 import android.app.Application
 import android.content.Context
 import android.os.Build
-import timber.log.Timber
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.work.Configuration
 import com.topjohnwu.superuser.Shell
