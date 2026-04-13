@@ -68,9 +68,10 @@ class ShizukuApplication : Application(), Configuration.Provider {
                 options.isAttachScreenshot = true
                 options.isAttachViewHierarchy = true
                 
-                // ANR detection
+                // ANR detection — 10s threshold avoids false positives from privileged
+                // system calls (__epoll_pwait / __ioctl) in the event loop
                 options.isAnrEnabled = true
-                options.anrTimeoutIntervalMillis = 5000L
+                options.anrTimeoutIntervalMillis = 10000L
                 
                 // Performance monitoring (sampled)
                 options.tracesSampleRate = 0.2 // 20% sampling for production
@@ -96,6 +97,11 @@ class ShizukuApplication : Application(), Configuration.Provider {
                 
                 // Add context about the app
                 options.setBeforeSend { event, hint ->
+                    // Drop coroutine cancellations — JobCancellationException and all
+                    // CancellationException subclasses are expected lifecycle behaviour
+                    val throwable = event.throwable
+                    if (throwable is kotlinx.coroutines.CancellationException) return@setBeforeSend null
+
                     // Add build config info to events
                     event.setTag("version_name", BuildConfig.VERSION_NAME)
                     event.setTag("version_code", BuildConfig.VERSION_CODE.toString())
