@@ -133,6 +133,11 @@ class RequestPermissionActivity : AppActivity() {
                 .setOnDismissListener { finish() }
                 .create()
         dialog.setCanceledOnTouchOutside(false)
-        dialog.show()
+        try {
+            dialog.show()
+        } catch (ignored: Throwable) {
+            // Activity window may be gone by the time the coroutine resumes
+            finish()
+        }
     }
 }

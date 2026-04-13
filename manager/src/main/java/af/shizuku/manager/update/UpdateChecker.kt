@@ -94,13 +94,16 @@ object UpdateChecker {
             setRequestProperty("Accept", "application/vnd.github.v3+json")
             setRequestProperty("User-Agent", "Shizuku+/${BuildConfig.VERSION_NAME}")
         }
-        if (connection.responseCode != HttpURLConnection.HTTP_OK) {
-            Timber.tag(TAG).w("HTTP ${connection.responseCode} from $urlString")
-            return null
+        try {
+            if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+                Timber.tag(TAG).w("HTTP ${connection.responseCode} from $urlString")
+                return null
+            }
+            val body = connection.inputStream.bufferedReader().use { it.readText() }
+            return if (body.trimStart().startsWith("[")) JSONArray(body) else JSONObject(body)
+        } finally {
+            connection.disconnect()
         }
-        val body = connection.inputStream.bufferedReader().use { it.readText() }
-        connection.disconnect()
-        return if (body.trimStart().startsWith("[")) JSONArray(body) else JSONObject(body)
     }
 
     /** Extracts the build number from "13.6.0.r1488-shizukuplus" → 1488 */
