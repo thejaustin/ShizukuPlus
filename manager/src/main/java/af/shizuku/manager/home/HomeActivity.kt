@@ -476,11 +476,11 @@ abstract class HomeActivity : AppBarActivity() {
                 val updateInfo = UpdateChecker.checkForUpdate(ShizukuSettings.getUpdateChannel())
                 
                 // Dismiss checking dialog
-                if (checkingDialog.isShowing) {
+                if (checkingDialog.isShowing && !isFinishing && !isDestroyed) {
                     checkingDialog.dismiss()
                 }
 
-                if (updateInfo != null) {
+                if (updateInfo != null && !isFinishing && !isDestroyed) {
                     // Update available - show popup dialog immediately
                     ShizukuSettings.setLastUpdateCheckTime(now)
                     showUpdateAvailableDialog(updateInfo)
@@ -488,7 +488,7 @@ abstract class HomeActivity : AppBarActivity() {
             } catch (e: Exception) {
                 Timber.tag("HomeActivity").e(e, "Error checking for update")
                 // Dismiss checking dialog on error
-                if (checkingDialog.isShowing) {
+                if (checkingDialog.isShowing && !isFinishing && !isDestroyed) {
                     checkingDialog.dismiss()
                 }
             }

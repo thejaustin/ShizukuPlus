@@ -27,7 +27,7 @@ public class Logger {
 
     public void v(String fmt, Object... args) {
         if (isLoggable(TAG, Log.VERBOSE)) {
-            Timber.tag(TAG).v(String.format(Locale.ENGLISH, fmt));
+            Timber.tag(TAG).v(String.format(Locale.ENGLISH, fmt, (Object[])args));
         }
     }
 
@@ -45,7 +45,7 @@ public class Logger {
 
     public void d(String fmt, Object... args) {
         if (isLoggable(TAG, Log.DEBUG)) {
-            Timber.tag(TAG).d(String.format(Locale.ENGLISH, fmt));
+            Timber.tag(TAG).d(String.format(Locale.ENGLISH, fmt, (Object[])args));
         }
     }
 
@@ -63,7 +63,7 @@ public class Logger {
 
     public void i(String fmt, Object... args) {
         if (isLoggable(TAG, Log.INFO)) {
-            Timber.tag(TAG).i(String.format(Locale.ENGLISH, fmt));
+            Timber.tag(TAG).i(String.format(Locale.ENGLISH, fmt, (Object[])args));
         }
     }
 
@@ -81,13 +81,13 @@ public class Logger {
 
     public void w(String fmt, Object... args) {
         if (isLoggable(TAG, Log.WARN)) {
-            Timber.tag(TAG).w(String.format(Locale.ENGLISH, fmt));
+            Timber.tag(TAG).w(String.format(Locale.ENGLISH, fmt, (Object[])args));
         }
     }
 
     public void w(Throwable tr, String fmt, Object... args) {
         if (isLoggable(TAG, Log.WARN)) {
-            Timber.tag(TAG).w(tr, String.format(Locale.ENGLISH, fmt));
+            Timber.tag(TAG).w(tr, String.format(Locale.ENGLISH, fmt, (Object[])args));
         }
     }
 
@@ -105,7 +105,7 @@ public class Logger {
 
     public void e(String fmt, Object... args) {
         if (isLoggable(TAG, Log.ERROR)) {
-            Timber.tag(TAG).e(String.format(Locale.ENGLISH, fmt));
+            Timber.tag(TAG).e(String.format(Locale.ENGLISH, fmt, (Object[])args));
         }
     }
 
@@ -117,7 +117,7 @@ public class Logger {
 
     public void e(Throwable tr, String fmt, Object... args) {
         if (isLoggable(TAG, Log.ERROR)) {
-            Timber.tag(TAG).e(tr, String.format(Locale.ENGLISH, fmt));
+            Timber.tag(TAG).e(tr, String.format(Locale.ENGLISH, fmt, (Object[])args));
         }
     }
 }

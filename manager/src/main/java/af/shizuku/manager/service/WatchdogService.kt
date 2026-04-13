@@ -34,6 +34,11 @@ class WatchdogService : Service() {
     override fun onCreate() {
         super.onCreate()
         isRunning.set(true)
+        // Create notification channel before startForeground() to avoid InvalidForegroundServiceTypeException
+        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        nm.createNotificationChannel(
+            NotificationChannel(WATCHDOG_CHANNEL_ID, "Watchdog", NotificationManager.IMPORTANCE_LOW)
+        )
         ShizukuStateMachine.addListener(stateListener)
     }
 
@@ -67,17 +72,7 @@ class WatchdogService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun buildNotification(): Notification {
-        val channelId = "shizuku_watchdog"
-        val channelName = "Watchdog"
-
-        val channel = NotificationChannel(
-            channelId,
-            channelName,
-            NotificationManager.IMPORTANCE_LOW
-        )
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.createNotificationChannel(channel)
-
+        // Channel created in onCreate(); reference it by constant here
         val launchIntent = Intent(this, MainActivity::class.java).apply {
             addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK or 
@@ -96,7 +91,7 @@ class WatchdogService : Service() {
             this, 1, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        return NotificationCompat.Builder(this, channelId)
+        return NotificationCompat.Builder(this, WATCHDOG_CHANNEL_ID)
             .setContentTitle(getString(R.string.watchdog_running))
             .setSmallIcon(R.drawable.ic_system_icon)
             .setContentIntent(launchPendingIntent)
@@ -144,6 +139,7 @@ class WatchdogService : Service() {
         private const val TAG = "ShizukuWatchdog"
         private const val NOTIFICATION_ID_WATCHDOG = 1001
         private const val NOTIFICATION_ID_CRASH = 1002
+        const val WATCHDOG_CHANNEL_ID = "shizuku_watchdog"
         const val CRASH_CHANNEL_ID = "crash_reports"
 
         private val isRunning = AtomicBoolean(false)

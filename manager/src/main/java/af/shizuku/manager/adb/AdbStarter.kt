@@ -71,10 +71,14 @@ object AdbStarter {
             }
         } catch (e: Exception) {
             if (e !is CancellationException) {
-                try {
-                    Sentry.captureException(e)
-                } catch (sentryError: Exception) {
-                    Timber.tag(TAG).e(sentryError, "Failed to capture exception in Sentry")
+                val isExpectedConnectionError = e is EOFException || e is SocketException ||
+                    e is SocketTimeoutException || e is AdbKeyException
+                if (!isExpectedConnectionError) {
+                    try {
+                        Sentry.captureException(e)
+                    } catch (sentryError: Exception) {
+                        Timber.tag(TAG).e(sentryError, "Failed to capture exception in Sentry")
+                    }
                 }
             }
             throw e
@@ -106,7 +110,11 @@ object AdbStarter {
             }
         }.onFailure {
             if (it !is CancellationException) {
-                Sentry.captureException(it)
+                val isExpectedConnectionError = it is EOFException || it is SocketException ||
+                    it is SocketTimeoutException || it is AdbKeyException || it is IllegalStateException
+                if (!isExpectedConnectionError) {
+                    Sentry.captureException(it)
+                }
             }
             if (EnvironmentUtils.getAdbTcpPort() > 0) {
                 ShizukuStateMachine.update()

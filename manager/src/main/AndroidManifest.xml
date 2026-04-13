@@ -100,11 +100,6 @@
             </intent-filter>
         </activity>
 
-        <!-- HomeActivity is abstract; MainActivity is the concrete launcher -->
-        <activity
-            android:name=".home.HomeActivity"
-            android:exported="false"
-            android:theme="@style/Theme" />
         <activity
             android:name=".onboarding.OnboardingActivity"
             android:exported="false"
@@ -187,6 +182,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <!-- WorkManager's SystemForegroundService needs a declared foreground service type on Android 14+ -->
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="shortService"
+            tools:node="merge" />
 
         <service
             android:name=".adb.AdbPairingService"

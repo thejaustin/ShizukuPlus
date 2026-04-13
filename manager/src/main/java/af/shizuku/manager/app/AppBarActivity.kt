@@ -1,13 +1,9 @@
 package af.shizuku.manager.app
 
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.annotation.LayoutRes
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
@@ -23,26 +19,22 @@ abstract class AppBarActivity : AppActivity() {
             ?: throw IllegalStateException("rootView not found - make sure layout contains coordinator_root")
     }
 
-    protected val toolbarContainer: AppBarLayout by unsafeLazy {
-        findViewById<View>(R.id.toolbar_container) as? AppBarLayout
-            ?: throw IllegalStateException("toolbarContainer not found - make sure layout contains toolbar_container. Check that your activity layout includes @layout/appbar or has an AppBarLayout with id toolbar_container")
-    }
-
-    protected val toolbar: Toolbar by unsafeLazy {
-        findViewById<View>(R.id.toolbar) as? Toolbar
-            ?: throw IllegalStateException("toolbar not found - make sure layout contains toolbar. Check that your activity layout includes @layout/appbar or has a Toolbar with id toolbar")
-    }
+    protected lateinit var toolbarContainer: AppBarLayout
+    protected lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         super.setContentView(getLayoutId())
+    }
 
-        // Ensure views are available before proceeding
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
         try {
-            // Force lazy initialization to catch missing views early
-            toolbarContainer
-            toolbar
-            
+            toolbarContainer = findViewById<View>(R.id.toolbar_container) as? AppBarLayout
+                ?: throw IllegalStateException("toolbarContainer not found - make sure layout contains toolbar_container")
+            toolbar = findViewById<View>(R.id.toolbar) as? Toolbar
+                ?: throw IllegalStateException("toolbar not found - make sure layout contains toolbar")
+
             setSupportActionBar(toolbar)
 
             androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(toolbarContainer) { v, insets ->
@@ -79,12 +71,12 @@ abstract class AppBarActivity : AppActivity() {
         } else {
             CoordinatorLayout.LayoutParams(params ?: ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         }
-        
+
         // Ensure scrolling behavior is applied so content is placed below the AppBar
         if (p.behavior == null) {
             p.behavior = AppBarLayout.ScrollingViewBehavior()
         }
-        
+
         rootView.addView(view, p)
     }
 
@@ -107,5 +99,5 @@ abstract class AppBarFragmentActivity : AppBarActivity() {
                 .commit()
         }
     }
-    
+
 }

@@ -3,6 +3,11 @@ package af.shizuku.manager.update
 import timber.log.Timber
 import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
+import java.io.IOException
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
+import javax.net.ssl.SSLException
 import kotlinx.coroutines.withContext
 import af.shizuku.manager.BuildConfig
 import org.json.JSONArray
@@ -70,7 +75,12 @@ object UpdateChecker {
             }
         } catch (e: Exception) {
             Timber.tag(TAG).e(e, "Error checking for update (channel=$channel)")
-            Sentry.captureException(e)
+            // Don't report expected network errors to Sentry — these are environment issues, not bugs
+            val isExpectedNetworkError = e is UnknownHostException || e is SocketTimeoutException ||
+                e is ConnectException || e is SSLException || e is IOException
+            if (!isExpectedNetworkError) {
+                Sentry.captureException(e)
+            }
             null
         }
     }

@@ -21,6 +21,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
 
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        if (!isAdded) return
         setPreferencesFromResource(R.xml.settings_shizuku_plus, rootKey)
 
         ShizukuSettings.syncAllPlusFeaturesToServer()

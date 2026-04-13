@@ -7,11 +7,12 @@ import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import af.shizuku.manager.Helps
 import af.shizuku.manager.R
 import af.shizuku.manager.app.AppActivity
@@ -64,29 +65,8 @@ class RequestPermissionActivity : AppActivity() {
         return false
     }
 
-    private fun waitForBinder(): Boolean {
-        return runBlocking {
-            try { 
-                withTimeout(5000) {
-                    while (ShizukuStateMachine.get() != ShizukuStateMachine.State.RUNNING || !Shizuku.pingBinder()) {
-                        kotlinx.coroutines.delay(100)
-                    }
-                }
-                true
-            } catch (e: TimeoutCancellationException) {
-                LOGGER.e(e, "Binder not received or ping failed in 5s")
-                false
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (!waitForBinder()) {
-            finish()
-            return
-        }
 
         val uid = intent.getIntExtra("uid", -1)
         val pid = intent.getIntExtra("pid", -1)
@@ -96,6 +76,33 @@ class RequestPermissionActivity : AppActivity() {
             finish()
             return
         }
+
+        // Wait for binder asynchronously — runBlocking on the main thread causes ANR
+        lifecycleScope.launch {
+            val binderReady = try {
+                withTimeout(5000) {
+                    while (ShizukuStateMachine.get() != ShizukuStateMachine.State.RUNNING || !Shizuku.pingBinder()) {
+                        delay(100)
+                    }
+                }
+                true
+            } catch (e: TimeoutCancellationException) {
+                LOGGER.e(e, "Binder not received or ping failed in 5s")
+                false
+            }
+
+            if (isFinishing || isDestroyed) return@launch
+
+            if (!binderReady) {
+                finish()
+                return@launch
+            }
+
+            showPermissionDialog(uid, pid, requestCode, ai)
+        }
+    }
+
+    private fun showPermissionDialog(uid: Int, pid: Int, requestCode: Int, ai: ApplicationInfo) {
         if (!checkSelfPermission()) {
             setResult(uid, pid, requestCode, allowed = false, onetime = true)
             return
