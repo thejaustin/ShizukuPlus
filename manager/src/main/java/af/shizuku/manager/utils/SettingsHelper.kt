@@ -46,7 +46,12 @@ object SettingsHelper {
             setData(Uri.parse("package:" + context.packageName))
         }
         if (launcher != null) {
-            launcher.launch(intent)
+            try {
+                launcher.launch(intent)
+            } catch (e: IllegalStateException) {
+                // Launcher may be unregistered if the fragment was detached — fall back to startActivity
+                context.startActivity(intent)
+            }
         } else {
             context.startActivity(intent)
         }

@@ -132,8 +132,13 @@ class AdbClient(private val host: String, private val port: Int, private val key
     private fun write(command: Int, arg0: Int, arg1: Int, data: String) = write(AdbMessage(command, arg0, arg1, data))
 
     private fun write(message: AdbMessage) {
-        outputStream.write(message.toByteArray())
-        outputStream.flush()
+        val os = if (useTls) tlsOutputStream else plainOutputStream
+        if (os == null) {
+            Timber.tag(TAG).w("write called on closed/unconnected AdbClient - dropping ${message.toStringShort()}")
+            return
+        }
+        os.write(message.toByteArray())
+        os.flush()
         Timber.tag(TAG).d("write ${message.toStringShort()}")
     }
 

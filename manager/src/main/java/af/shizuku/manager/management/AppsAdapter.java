@@ -57,11 +57,12 @@ public class AppsAdapter extends BaseRecyclerViewAdapter<ClassCreatorPool> {
     public long getItemId(int position) {
         Object item = getItemAt(position);
         if (item instanceof PackageInfo) {
-            return ((PackageInfo) item).packageName.hashCode();
+            // Use unsigned 32-bit range to avoid collisions with sentinel values below
+            return ((PackageInfo) item).packageName.hashCode() & 0xFFFFFFFFL;
         } else if (item instanceof HeaderMarker) {
-            return 1L;
+            return Long.MAX_VALUE;       // outside int hash range, can never collide
         } else {
-            return 2L;
+            return Long.MAX_VALUE - 1L;  // ditto
         }
     }
 
