@@ -43,7 +43,7 @@ class WatchdogService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == "ACTION_STOP_SERVICE") {
+        if (intent?.action == ACTION_STOP_SERVICE) {
             stopSelf()
             return START_NOT_STICKY
         }
@@ -85,7 +85,7 @@ class WatchdogService : Service() {
         )
 
         val stopIntent = Intent(this, WatchdogService::class.java).apply {
-            action = "ACTION_STOP_SERVICE"
+            action = ACTION_STOP_SERVICE
         }
         val stopPendingIntent = PendingIntent.getService(
             this, 1, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
@@ -139,6 +139,7 @@ class WatchdogService : Service() {
         private const val TAG = "ShizukuWatchdog"
         private const val NOTIFICATION_ID_WATCHDOG = 1001
         private const val NOTIFICATION_ID_CRASH = 1002
+        private const val ACTION_STOP_SERVICE = "action.stop_service"
         const val WATCHDOG_CHANNEL_ID = "shizuku_watchdog"
         const val CRASH_CHANNEL_ID = "crash_reports"
 

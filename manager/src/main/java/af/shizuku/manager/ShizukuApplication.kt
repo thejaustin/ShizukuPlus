@@ -96,7 +96,7 @@ class ShizukuApplication : Application(), Configuration.Provider {
                 options.isEnableNdk = true
                 
                 // Add context about the app
-                options.setBeforeSend { event, hint ->
+                options.setBeforeSend { event, _ ->
                     // Drop coroutine cancellations — JobCancellationException and all
                     // CancellationException subclasses are expected lifecycle behaviour
                     val throwable = event.throwable

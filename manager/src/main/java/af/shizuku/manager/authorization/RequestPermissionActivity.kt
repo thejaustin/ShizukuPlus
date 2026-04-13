@@ -2,6 +2,7 @@ package af.shizuku.manager.authorization
 
 import android.app.Dialog
 import android.content.pm.ApplicationInfo
+import android.view.WindowManager
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -135,8 +136,8 @@ class RequestPermissionActivity : AppActivity() {
         dialog.setCanceledOnTouchOutside(false)
         try {
             dialog.show()
-        } catch (ignored: Throwable) {
-            // Activity window may be gone by the time the coroutine resumes
+        } catch (e: WindowManager.BadTokenException) {
+            // Activity window detached by the time the coroutine resumed
             finish()
         }
     }

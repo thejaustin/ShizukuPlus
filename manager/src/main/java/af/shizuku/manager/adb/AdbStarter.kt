@@ -25,6 +25,12 @@ import io.sentry.Sentry
 
 object AdbStarter {
     private const val TAG = "AdbStarter"
+
+    /** Returns true for transient connection errors that are not bugs and should not go to Sentry. */
+    private fun Throwable.isExpectedAdbError(includeIllegalState: Boolean = false) =
+        this is EOFException || this is SocketException || this is SocketTimeoutException ||
+        this is AdbKeyException || (includeIllegalState && this is IllegalStateException)
+
     suspend fun startAdb(context: Context, port: Int, log: ((String) -> Unit)? = null) {
         suspend fun AdbClient.runCommand(cmd: String) {
             command(cmd) { log?.invoke(String(it)) }
@@ -70,16 +76,8 @@ object AdbStarter {
                 }
             }
         } catch (e: Exception) {
-            if (e !is CancellationException) {
-                val isExpectedConnectionError = e is EOFException || e is SocketException ||
-                    e is SocketTimeoutException || e is AdbKeyException
-                if (!isExpectedConnectionError) {
-                    try {
-                        Sentry.captureException(e)
-                    } catch (sentryError: Exception) {
-                        Timber.tag(TAG).e(sentryError, "Failed to capture exception in Sentry")
-                    }
-                }
+            if (e !is CancellationException && !e.isExpectedAdbError()) {
+                Sentry.captureException(e)
             }
             throw e
         } finally {
@@ -109,12 +107,8 @@ object AdbStarter {
                 }
             }
         }.onFailure {
-            if (it !is CancellationException) {
-                val isExpectedConnectionError = it is EOFException || it is SocketException ||
-                    it is SocketTimeoutException || it is AdbKeyException || it is IllegalStateException
-                if (!isExpectedConnectionError) {
-                    Sentry.captureException(it)
-                }
+            if (it !is CancellationException && !it.isExpectedAdbError(includeIllegalState = true)) {
+                Sentry.captureException(it)
             }
             if (EnvironmentUtils.getAdbTcpPort() > 0) {
                 ShizukuStateMachine.update()

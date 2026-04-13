@@ -62,7 +62,7 @@ public class AppsAdapter extends BaseRecyclerViewAdapter<ClassCreatorPool> {
         } else if (item instanceof HeaderMarker) {
             return Long.MAX_VALUE;       // outside int hash range, can never collide
         } else {
-            return Long.MAX_VALUE - 1L;  // ditto
+            return Long.MAX_VALUE - 1L;  // same guarantee, distinct from HeaderMarker
         }
     }
 

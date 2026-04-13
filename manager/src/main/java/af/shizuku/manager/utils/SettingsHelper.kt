@@ -45,14 +45,10 @@ object SettingsHelper {
         val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
             setData(Uri.parse("package:" + context.packageName))
         }
-        if (launcher != null) {
-            try {
-                launcher.launch(intent)
-            } catch (e: IllegalStateException) {
-                // Launcher may be unregistered if the fragment was detached — fall back to startActivity
-                context.startActivity(intent)
-            }
-        } else {
+        try {
+            launcher?.launch(intent) ?: context.startActivity(intent)
+        } catch (e: IllegalStateException) {
+            // Launcher may be unregistered if the fragment was detached — fall back to startActivity
             context.startActivity(intent)
         }
     }
