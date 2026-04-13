@@ -2,7 +2,7 @@
 
 # Shizuku+
 
-An enhanced version of [Shizuku](https://github.com/RikkaApps/Shizuku) with quality-of-life improvements, backported optimizations, and exclusive Plus APIs.
+An enhanced version of [Shizuku](https://github.com/RikkaApps/Shizuku) built on top of [thedjchi/Shizuku](https://github.com/thedjchi/Shizuku), with quality-of-life improvements, backported optimizations, and exclusive Plus APIs.
 
 Shizuku lets normal apps use system-level APIs directly via a privileged process started with adb or root. Shizuku+ keeps full compatibility while adding features for power users and developers.
 
@@ -74,6 +74,13 @@ Everything in Shizuku+ is optional. Use the **Plus Features** category in Settin
 ## 📱 Developer Guide
 
 See the [Shizuku+-API](https://github.com/thejaustin/ShizukuPlus-API) repository for documentation on the exclusive Plus APIs.
+
+## 🙏 Credits & Attribution
+
+Shizuku+ is a fork of [thedjchi/Shizuku](https://github.com/thedjchi/Shizuku), which is itself a fork of the original [RikkaApps/Shizuku](https://github.com/RikkaApps/Shizuku) by Rikka. Features and enhancements from thedjchi's fork are included in this project.
+
+- **[thedjchi](https://github.com/thedjchi)** — Shizuku fork this project is directly based on
+- **[RikkaApps / Rikka](https://github.com/RikkaApps)** — Original Shizuku project
 
 ## 📃 License
 
