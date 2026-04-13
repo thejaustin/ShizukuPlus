@@ -457,7 +457,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         if (cmd[i].contains("/system/etc/hosts")) cmd[i] = "/data/adb/shizuku/hosts";
                     }
                     // Ensure the directory exists
-                    try { Runtime.getRuntime().exec(new String[]{"mkdir", "-p", "/data/adb/shizuku"}); } catch (Exception ignored) {}
+                    try { Runtime.getRuntime().exec(new String[]{"mkdir", "-p", "/data/adb/shizuku"}); } catch (Exception e) { LOGGER.w(e, "Failed to mkdir /data/adb/shizuku"); }
                     return newProcessInternal(cmd, env, dir);
                 } else if ((baseCmd.equals("cp") || baseCmd.equals("mv") || baseCmd.equals("tar")) && (String.join(" ", cmd).contains("/data/data") || String.join(" ", cmd).contains("/system"))) {
                     if (isFeatureEnabled("root_file_interceptor")) {
