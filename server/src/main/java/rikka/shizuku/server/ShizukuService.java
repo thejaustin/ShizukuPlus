@@ -456,8 +456,18 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     for (int i = 0; i < cmd.length; i++) {
                         if (cmd[i].contains("/system/etc/hosts")) cmd[i] = "/data/adb/shizuku/hosts";
                     }
-                    // Ensure the directory exists
-                    try { Runtime.getRuntime().exec(new String[]{"mkdir", "-p", "/data/adb/shizuku"}); } catch (Exception e) { LOGGER.w(e, "Failed to mkdir /data/adb/shizuku"); }
+                    // Ensure the directory exists before redirecting — if it can't be created
+                    // the redirected path won't exist and the cp/mv/tar will fail.
+                    try {
+                        int mkdirExit = Runtime.getRuntime().exec(new String[]{"mkdir", "-p", "/data/adb/shizuku"}).waitFor();
+                        if (mkdirExit != 0) {
+                            LOGGER.w("SUBridge: mkdir /data/adb/shizuku failed (exit %d), skipping hosts redirect", mkdirExit);
+                            return newProcessInternal(new String[]{"false"}, env, dir);
+                        }
+                    } catch (Exception e) {
+                        LOGGER.w(e, "SUBridge: mkdir /data/adb/shizuku threw, skipping hosts redirect");
+                        return newProcessInternal(new String[]{"false"}, env, dir);
+                    }
                     return newProcessInternal(cmd, env, dir);
                 } else if ((baseCmd.equals("cp") || baseCmd.equals("mv") || baseCmd.equals("tar")) && (String.join(" ", cmd).contains("/data/data") || String.join(" ", cmd).contains("/system"))) {
                     if (isFeatureEnabled("root_file_interceptor")) {
