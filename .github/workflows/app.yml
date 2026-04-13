@@ -188,4 +188,9 @@ jobs:
             FLAGS="--draft"
           fi
 
-          gh release create "$TAG_NAME" files/*.apk $FLAGS --title "Shizuku+ $VERSION" --notes-file release_notes.md
+          APK_FILE=$(find files -name "*.apk" -type f | head -1)
+          if [ -z "$APK_FILE" ]; then
+            echo "ERROR: No APK found under files/" && exit 1
+          fi
+          echo "Attaching APK: $APK_FILE"
+          gh release create "$TAG_NAME" "$APK_FILE" $FLAGS --title "Shizuku+ $VERSION" --notes-file release_notes.md
