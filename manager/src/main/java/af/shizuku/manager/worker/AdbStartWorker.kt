@@ -83,10 +83,17 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
                             applicationContext,
                             null
                         )
-                        val foregroundInfo = ForegroundInfo(
-                            ShizukuReceiverStarter.NOTIFICATION_ID,
-                            notification
-                        )
+                        // On Android 14+ (API 34), ForegroundInfo must declare a foreground
+                        // service type or the OS throws InvalidForegroundServiceTypeException
+                        val foregroundInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            ForegroundInfo(
+                                ShizukuReceiverStarter.NOTIFICATION_ID,
+                                notification,
+                                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE
+                            )
+                        } else {
+                            ForegroundInfo(ShizukuReceiverStarter.NOTIFICATION_ID, notification)
+                        }
                         setForegroundAsync(foregroundInfo)
 
                         val filter = IntentFilter(Intent.ACTION_USER_PRESENT)

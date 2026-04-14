@@ -7,8 +7,10 @@ import android.provider.Settings
 import timber.log.Timber
 import android.widget.Toast
 import java.io.EOFException
+import java.net.ConnectException
 import java.net.SocketException
 import java.net.SocketTimeoutException
+import javax.net.ssl.SSLException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -29,9 +31,14 @@ object AdbStarter {
     /** Returns true for transient connection errors that are not bugs and should not go to Sentry. */
     private fun Throwable.isExpectedAdbError(includeIllegalState: Boolean = false) =
         this is EOFException || this is SocketException || this is SocketTimeoutException ||
+        this is ConnectException || this is SSLException ||
         this is AdbKeyException || (includeIllegalState && this is IllegalStateException)
 
     suspend fun startAdb(context: Context, port: Int, log: ((String) -> Unit)? = null) {
+        if (port !in 1..65535) {
+            Timber.tag(TAG).w("startAdb called with invalid port $port — skipping")
+            return
+        }
         suspend fun AdbClient.runCommand(cmd: String) {
             command(cmd) { log?.invoke(String(it)) }
         }
@@ -51,18 +58,22 @@ object AdbStarter {
                 val tcpMode = ShizukuSettings.getTcpMode()
                 val tcpPort = ShizukuSettings.getTcpPort()
                 if (tcpMode && activePort != tcpPort) {
-                    log?.invoke("Connecting on port $activePort...")
+                    if (tcpPort !in 1..65535) {
+                        Timber.tag(TAG).w("TCP mode enabled but stored TCP port is invalid ($tcpPort) — skipping TCP redirect")
+                    } else {
+                        log?.invoke("Connecting on port $activePort...")
 
-                    AdbClient("127.0.0.1", activePort, key).use { client ->
-                        client.connect()
+                        AdbClient("127.0.0.1", activePort, key).use { client ->
+                            client.connect()
 
-                        log?.invoke("Successfully connected on port $activePort...")
-                        log?.invoke("\nRestarting in TCP mode port: $tcpPort")
+                            log?.invoke("Successfully connected on port $activePort...")
+                            log?.invoke("\nRestarting in TCP mode port: $tcpPort")
 
-                        activePort = tcpPort
-                        runCatching {
-                            client.command("tcpip:$activePort")
-                        }.onFailure { if (it !is EOFException && it !is SocketException) throw it } // Expected when ADB restarts in TCP mode
+                            activePort = tcpPort
+                            runCatching {
+                                client.command("tcpip:$activePort")
+                            }.onFailure { if (it !is EOFException && it !is SocketException) throw it } // Expected when ADB restarts in TCP mode
+                        }
                     }
                 }
 

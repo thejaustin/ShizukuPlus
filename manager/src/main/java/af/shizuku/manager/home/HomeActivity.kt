@@ -475,8 +475,13 @@ abstract class HomeActivity : AppBarActivity() {
             try {
                 val result = UpdateChecker.checkForUpdate(ShizukuSettings.getUpdateChannel())
 
-                if (checkingDialog.isShowing && !isFinishing && !isDestroyed) {
-                    checkingDialog.dismiss()
+                try {
+                    if (checkingDialog.isShowing && !isFinishing && !isDestroyed) {
+                        checkingDialog.dismiss()
+                    }
+                } catch (e: IllegalArgumentException) {
+                    // Window already detached by the time the coroutine resumed — safe to ignore
+                    Timber.tag("HomeActivity").w("checkingDialog dismiss failed: window already detached")
                 }
 
                 when (result) {
@@ -495,8 +500,12 @@ abstract class HomeActivity : AppBarActivity() {
                 }
             } catch (e: Exception) {
                 Timber.tag("HomeActivity").e(e, "Unexpected error checking for update")
-                if (checkingDialog.isShowing && !isFinishing && !isDestroyed) {
-                    checkingDialog.dismiss()
+                try {
+                    if (checkingDialog.isShowing && !isFinishing && !isDestroyed) {
+                        checkingDialog.dismiss()
+                    }
+                } catch (ex: IllegalArgumentException) {
+                    Timber.tag("HomeActivity").w("checkingDialog dismiss failed in catch: window already detached")
                 }
                 ShizukuSettings.setLastUpdateCheckFailed(true)
             }
