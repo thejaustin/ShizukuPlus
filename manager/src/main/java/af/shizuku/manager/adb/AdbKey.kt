@@ -187,6 +187,7 @@ class AdbKey(private val adbKeyStore: AdbKeyStore, name: String) {
                 val keyFactory = KeyFactory.getInstance("RSA")
                 privateKey = keyFactory.generatePrivate(PKCS8EncodedKeySpec(plaintext)) as RSAPrivateKey
             } catch (e: Exception) {
+                Timber.tag(TAG).w(e, "Failed to decrypt stored ADB key; generating a new key")
             }
         }
         if (privateKey == null) {

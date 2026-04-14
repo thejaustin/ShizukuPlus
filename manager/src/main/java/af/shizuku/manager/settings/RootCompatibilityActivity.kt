@@ -213,6 +213,7 @@ class RootCompatibilityActivity : AppBarActivity() {
                 }
             }
         } catch (e: Exception) {
+            Timber.tag(TAG).d(e, "Failed to resolve su path from URI: $uriStr")
             null
         }
     }
@@ -409,6 +410,7 @@ class RootCompatibilityActivity : AppBarActivity() {
                                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             })
                         } catch (ex: Exception) {
+                            Timber.tag(TAG).d(ex, "Primary URL intent failed for $pkg, falling back to Play Store")
                             try {
                                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$pkg")))
                             } catch (e2: Exception) {

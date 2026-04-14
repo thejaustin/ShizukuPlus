@@ -76,6 +76,7 @@ class ToggleAllViewHolder(private val binding: AppListToggleAllBinding) : BaseVi
                 try {
                     if (!AuthorizationManager.granted(pi.packageName, appInfo.uid)) return false
                 } catch (e: Exception) {
+                    Timber.tag(TAG).d(e, "Failed to check grant status for ${pi.packageName}")
                     return false
                 }
             }

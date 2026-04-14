@@ -61,7 +61,8 @@ class RequestPermissionActivity : AppActivity() {
         }
         try {
             dialog.show()
-        } catch (ignored: Throwable) {
+        } catch (e: Throwable) {
+            LOGGER.w("Failed to show permission dialog (window may be detached)", e)
         }
         return false
     }
