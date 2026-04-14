@@ -134,8 +134,15 @@ class ShizukuApplication : Application(), Configuration.Provider {
         }
         
         if (atLeast30) {
-            System.loadLibrary("adb")
-            Timber.d("Native library 'adb' loaded successfully")
+            try {
+                System.loadLibrary("adb")
+                Timber.d("Native library 'adb' loaded successfully")
+            } catch (e: UnsatisfiedLinkError) {
+                // Capture to Sentry before the process aborts so we have a trace.
+                // Common cause: JNI class path mismatch after a package rename.
+                Sentry.captureException(RuntimeException("libadb.so failed to load: ${e.message}", e))
+                throw e
+            }
         }
     }
 

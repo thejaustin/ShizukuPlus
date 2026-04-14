@@ -21,6 +21,7 @@ android {
         def sentryDsn = project.findProperty('SENTRY_DSN') ?: ''
         buildConfigField "String", "SENTRY_DSN", "\"${sentryDsn}\""
         manifestPlaceholders = [sentryDsn: sentryDsn]
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
                 arguments = ["-DANDROID_STL=none", "-DANDROID_LD=lld", "-Wl,-z,max-page-size=16384"]
@@ -230,6 +231,10 @@ dependencies {
 
     implementation libs.sentry.android.core
     implementation libs.sentry.android.fragment
+
+    androidTestImplementation "androidx.test.ext:junit:1.2.1"
+    androidTestImplementation "androidx.test:runner:1.6.2"
+    androidTestImplementation "androidx.test:rules:1.6.1"
 }
 
 sentry {

@@ -123,9 +123,78 @@ jobs:
           name: version-file
           path: version.txt
 
-  release:
-    if: ${{ (github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && github.event.inputs.debug != true) }}
+  # Instrumented JNI smoke tests — runs on an Android emulator to verify
+  # libadb.so loads correctly and RegisterNatives succeeds.
+  # Only runs on workflow_dispatch (manual/release builds) to avoid emulator
+  # spin-up cost on every push to master.
+  smoke-test:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Enable KVM hardware acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Create signing.properties (debug key)
+        run: |
+          cat <<'EOF' > signing.properties
+          KEYSTORE_PASSWORD=android
+          KEYSTORE_ALIAS=androiddebugkey
+          KEYSTORE_ALIAS_PASSWORD=android
+          KEYSTORE_FILE=../debug.jks
+          EOF
+          keytool -genkeypair -v -keystore debug.jks -storepass android \
+            -alias androiddebugkey -keypass android \
+            -keyalg RSA -keysize 2048 -validity 1 \
+            -dname "CN=Smoke Test, O=CI, C=US" 2>/dev/null
+
+      - name: Run JNI smoke tests on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
+          disable-animations: true
+          script: |
+            yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
+            echo 'org.gradle.caching=true' >> gradle.properties
+            ./gradlew :manager:connectedDebugAndroidTest \
+              -Pandroid.testInstrumentationRunnerArguments.class=af.shizuku.manager.JniSmokeTest \
+              --stacktrace 2>&1 | tee smoke-test.log
+            grep -E "PASSED|FAILED|ERROR" smoke-test.log || true
+
+      - name: Upload smoke test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-results
+          path: manager/build/outputs/androidTest-results/
+
+  release:
+    # smoke-test is skipped (not failed) on push — skipped deps don't block this job.
+    # On workflow_dispatch, smoke-test must pass before release proceeds.
+    needs: [build, smoke-test]
+    if: ${{ !failure() && !cancelled() && ((github.event_name == 'push' && github.ref_name == 'master') || (github.event_name == 'workflow_dispatch' && github.event.inputs.debug != true)) }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
