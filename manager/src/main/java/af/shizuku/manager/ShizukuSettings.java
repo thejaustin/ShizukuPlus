@@ -103,6 +103,9 @@ public class ShizukuSettings {
         public static final String KEY_SHAPE_STYLE = "shape_style";
         public static final String KEY_ANIMATION_INTENSITY = "animation_intensity";
 
+        // Migration (Shizuku+ additions)
+        public static final String KEY_MIGRATION_OFFERED = "migration_offered";
+
         // Auto Update (Shizuku+ additions)
         public static final String KEY_AUTO_UPDATE_ENABLED = "auto_update_enabled";
         public static final String KEY_AUTO_INSTALL_ENABLED = "auto_install_enabled";
@@ -386,6 +389,16 @@ public class ShizukuSettings {
     public static void setOnboardingSeen() {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putBoolean("onboarding_seen", true).apply();
+    }
+
+    public static boolean hasMigrationBeenOffered() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_MIGRATION_OFFERED, false);
+    }
+
+    public static void setMigrationOffered() {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_MIGRATION_OFFERED, true).apply();
     }
 
     public static Locale getLocale() {

@@ -742,6 +742,19 @@
     <string name="update_download_failed_title">Download failed</string>
     <string name="update_download_failed_message">Failed to download the update. Please try again.</string>
 
+    <!-- Migration Dialog -->
+<string name="migration_dialog_title">Important: Reinstall Required</string>
+    <string name="migration_dialog_message">Shizuku+ changed its package ID from moe.shizuku.privileged.api to af.shizuku.plus.api. Your old version and this version are treated as separate apps, so a direct update was not possible.\n\nYou can migrate your settings from the old version and then uninstall it.</string>
+    <string name="migration_dialog_message_root">Shizuku+ changed its package ID from moe.shizuku.privileged.api to af.shizuku.plus.api. Your old version and this version are treated as separate apps, so a direct update was not possible.\n\nRoot access is available — tap Migrate Settings to copy your settings from the old version, then uninstall it.</string>
+    <string name="migration_migrate_settings">Migrate Settings</string>
+    <string name="migration_uninstall_old">Uninstall Old Version</string>
+    <string name="migration_dismiss">Dismiss</string>
+    <string name="migration_success_title">Settings Migrated</string>
+    <string name="migration_success_message">Your settings have been copied from the old version. You can now safely uninstall moe.shizuku.privileged.api.</string>
+    <string name="migration_failure_title">Migration Failed</string>
+    <string name="migration_failure_message">Could not read settings from the old version. You may need to reconfigure your preferences manually.\n\nYou can still uninstall the old version safely.</string>
+    <string name="migration_no_root_message">Root access is not available, so settings cannot be migrated automatically. You will need to reconfigure your preferences manually.\n\nYou can uninstall the old version when ready.</string>
+
     <!-- Update Dialogs -->
     <string name="update_available_title">Update Available</string>
     <string name="update_available_message">A new version %1$s is available for download.</string>
