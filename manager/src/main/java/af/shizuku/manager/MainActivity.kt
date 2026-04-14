@@ -12,6 +12,7 @@ import io.sentry.Sentry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import af.shizuku.manager.R
 import af.shizuku.manager.home.HomeActivity
 import af.shizuku.manager.migration.MigrationHelper
 import af.shizuku.manager.onboarding.OnboardingActivity
