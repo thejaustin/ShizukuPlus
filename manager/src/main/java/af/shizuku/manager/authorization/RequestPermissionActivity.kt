@@ -10,9 +10,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import af.shizuku.manager.Helps
 import af.shizuku.manager.R
@@ -31,7 +33,10 @@ class RequestPermissionActivity : AppActivity() {
 
     private lateinit var dialog: Dialog
 
-    private fun setResult(requestUid: Int, requestPid: Int, requestCode: Int, allowed: Boolean, onetime: Boolean) {
+    // Dispatches the result to the requesting app via Binder.
+    // Must be called from Dispatchers.IO — dispatchPermissionConfirmationResult is a
+    // synchronous Binder call; running it on Main causes ANR (SHIZUKUPLUS-21).
+    private fun dispatchResult(requestUid: Int, requestPid: Int, requestCode: Int, allowed: Boolean, onetime: Boolean) {
         val data = Bundle()
         data.putBoolean(REQUEST_PERMISSION_REPLY_ALLOWED, allowed)
         data.putBoolean(REQUEST_PERMISSION_REPLY_IS_ONETIME, onetime)
@@ -40,31 +45,6 @@ class RequestPermissionActivity : AppActivity() {
         } catch (e: Throwable) {
             LOGGER.e("dispatchPermissionConfirmationResult")
         }
-    }
-
-    private fun checkSelfPermission(): Boolean {
-        val permission = Shizuku.checkRemotePermission("android.permission.GRANT_RUNTIME_PERMISSIONS") == PackageManager.PERMISSION_GRANTED
-        if (permission) return true
-
-        val icon = getDrawable(R.drawable.ic_system_icon)
-        icon?.setTint(theme.resolveColor(android.R.attr.colorAccent))
-
-        val dialog = MaterialAlertDialogBuilder(this)
-                .setIcon(icon)
-                .setTitle("Shizuku: ${getString(R.string.app_management_dialog_adb_is_limited_title)}")
-                .setMessage(getString(R.string.app_management_dialog_adb_is_limited_message, Helps.ADB.get()).toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE))
-                .setPositiveButton(android.R.string.ok, null)
-                .setOnDismissListener { finish() }
-                .create()
-        dialog.setOnShowListener {
-            (it as AlertDialog).findViewById<TextView>(android.R.id.message)?.movementMethod = LinkMovementMethod.getInstance()
-        }
-        try {
-            dialog.show()
-        } catch (e: Throwable) {
-            LOGGER.w("Failed to show permission dialog (window may be detached)", e)
-        }
-        return false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,11 +59,17 @@ class RequestPermissionActivity : AppActivity() {
             return
         }
 
-        // Wait for binder asynchronously — runBlocking on the main thread causes ANR
         lifecycleScope.launch {
+            // pingBinder() is a synchronous Binder call — run on IO so the main thread
+            // stays free. withTimeout only cancels at suspension points, so moving the
+            // blocking call to IO is the only safe way to prevent ANR here.
             val binderReady = try {
                 withTimeout(5000) {
-                    while (ShizukuStateMachine.get() != ShizukuStateMachine.State.RUNNING || !Shizuku.pingBinder()) {
+                    while (true) {
+                        if (ShizukuStateMachine.get() == ShizukuStateMachine.State.RUNNING) {
+                            val alive = withContext(Dispatchers.IO) { Shizuku.pingBinder() }
+                            if (alive) break
+                        }
                         delay(100)
                     }
                 }
@@ -100,13 +86,28 @@ class RequestPermissionActivity : AppActivity() {
                 return@launch
             }
 
-            showPermissionDialog(uid, pid, requestCode, ai)
+            // checkRemotePermission is a synchronous Binder call — run on IO
+            val hasSelfPermission = withContext(Dispatchers.IO) {
+                try {
+                    Shizuku.checkRemotePermission("android.permission.GRANT_RUNTIME_PERMISSIONS") == PackageManager.PERMISSION_GRANTED
+                } catch (e: Exception) {
+                    LOGGER.w(e, "checkRemotePermission failed, denying by default")
+                    false
+                }
+            }
+
+            if (isFinishing || isDestroyed) return@launch
+            showPermissionDialog(uid, pid, requestCode, ai, hasSelfPermission)
         }
     }
 
-    private fun showPermissionDialog(uid: Int, pid: Int, requestCode: Int, ai: ApplicationInfo) {
-        if (!checkSelfPermission()) {
-            setResult(uid, pid, requestCode, allowed = false, onetime = true)
+    private fun showPermissionDialog(uid: Int, pid: Int, requestCode: Int, ai: ApplicationInfo, hasSelfPermission: Boolean) {
+        if (!hasSelfPermission) {
+            // Can't grant — dispatch denial and show informational dialog
+            lifecycleScope.launch(Dispatchers.IO) {
+                dispatchResult(uid, pid, requestCode, allowed = false, onetime = true)
+            }
+            showSelfPermissionMissingDialog()
             return
         }
 
@@ -118,28 +119,63 @@ class RequestPermissionActivity : AppActivity() {
 
         val binding = ConfirmationDialogBinding.inflate(layoutInflater).apply {
             button1.setOnClickListener {
-                setResult(uid, pid, requestCode, allowed = true, onetime = false)
-                dialog.dismiss()
+                // Dispatch result on IO then dismiss — keeps UI responsive while
+                // the Binder call completes without blocking the main thread
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        dispatchResult(uid, pid, requestCode, allowed = true, onetime = false)
+                    }
+                    if (!isFinishing && !isDestroyed) dialog.dismiss()
+                }
             }
             button3.setOnClickListener {
-                setResult(uid, pid, requestCode, allowed = false, onetime = true)
-                dialog.dismiss()
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        dispatchResult(uid, pid, requestCode, allowed = false, onetime = true)
+                    }
+                    if (!isFinishing && !isDestroyed) dialog.dismiss()
+                }
             }
-            title.text = HtmlCompat.fromHtml(getString(R.string.permission_warning_template,
-                    label, getString(R.string.permission_group_description)))
+            title.text = HtmlCompat.fromHtml(
+                getString(R.string.permission_warning_template, label, getString(R.string.permission_group_description))
+            )
         }
 
         dialog = MaterialAlertDialogBuilder(this)
-                .setView(binding.root)
-                .setCancelable(false)
-                .setOnDismissListener { finish() }
-                .create()
+            .setView(binding.root)
+            .setCancelable(false)
+            .setOnDismissListener { finish() }
+            .create()
         dialog.setCanceledOnTouchOutside(false)
         try {
             dialog.show()
         } catch (e: WindowManager.BadTokenException) {
             // Activity window detached by the time the coroutine resumed
             finish()
+        }
+    }
+
+    private fun showSelfPermissionMissingDialog() {
+        val icon = getDrawable(R.drawable.ic_system_icon)
+        icon?.setTint(theme.resolveColor(android.R.attr.colorAccent))
+
+        val d = MaterialAlertDialogBuilder(this)
+            .setIcon(icon)
+            .setTitle("Shizuku: ${getString(R.string.app_management_dialog_adb_is_limited_title)}")
+            .setMessage(
+                getString(R.string.app_management_dialog_adb_is_limited_message, Helps.ADB.get())
+                    .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
+            )
+            .setPositiveButton(android.R.string.ok, null)
+            .setOnDismissListener { finish() }
+            .create()
+        d.setOnShowListener {
+            (it as AlertDialog).findViewById<TextView>(android.R.id.message)?.movementMethod = LinkMovementMethod.getInstance()
+        }
+        try {
+            d.show()
+        } catch (e: Throwable) {
+            LOGGER.w("Failed to show permission dialog (window may be detached)", e)
         }
     }
 }
