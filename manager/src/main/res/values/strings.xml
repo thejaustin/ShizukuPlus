@@ -751,7 +751,10 @@
     <string name="update_up_to_date_title">Up to Date</string>
     <string name="update_up_to_date_message">You\'re already using the latest version (%1$s).</string>
     <string name="update_error_title">Check Failed</string>
-    <string name="update_error_message">Unable to check for updates. Please check your internet connection and try again.</string>
+    <string name="update_error_message">Unable to check for updates. Please check your internet connection and try again.\n\nYou can also update manually from GitHub Releases.</string>
+    <string name="update_last_check_failed">Check failed — update manually if needed</string>
+    <string name="update_available_manual_message">Version %1$s is available. Automatic download is unavailable — tap below to open GitHub Releases.</string>
+    <string name="update_view_on_github">View on GitHub</string>
     <string name="update_permission_required_title">Permission Required</string>
     <string name="update_permission_required_message">To enable auto-install, please grant \"Install unknown apps\" permission in system settings.</string>
     <string name="update_checking">Checking for updates…</string>

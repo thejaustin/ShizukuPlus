@@ -107,6 +107,7 @@ public class ShizukuSettings {
         public static final String KEY_AUTO_UPDATE_ENABLED = "auto_update_enabled";
         public static final String KEY_AUTO_INSTALL_ENABLED = "auto_install_enabled";
         public static final String KEY_LAST_UPDATE_CHECK = "last_update_check_time";
+        public static final String KEY_LAST_CHECK_FAILED = "last_check_failed";
         public static final String KEY_UPDATE_CHANNEL = "update_channel"; // "stable" or "dev"
     }
 
@@ -713,6 +714,14 @@ public class ShizukuSettings {
 
     public static void setLastUpdateCheckTime(long time) {
         getPreferences().edit().putLong(Keys.KEY_LAST_UPDATE_CHECK, time).apply();
+    }
+
+    public static boolean wasLastUpdateCheckFailed() {
+        return getPreferences().getBoolean(Keys.KEY_LAST_CHECK_FAILED, false);
+    }
+
+    public static void setLastUpdateCheckFailed(boolean failed) {
+        getPreferences().edit().putBoolean(Keys.KEY_LAST_CHECK_FAILED, failed).apply();
     }
 
     /** "stable" (default) or "dev" */

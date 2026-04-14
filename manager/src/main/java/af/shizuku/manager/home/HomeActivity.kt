@@ -473,24 +473,32 @@ abstract class HomeActivity : AppBarActivity() {
         // Check for updates in background
         lifecycleScope.launch {
             try {
-                val updateInfo = UpdateChecker.checkForUpdate(ShizukuSettings.getUpdateChannel())
-                
-                // Dismiss checking dialog
+                val result = UpdateChecker.checkForUpdate(ShizukuSettings.getUpdateChannel())
+
                 if (checkingDialog.isShowing && !isFinishing && !isDestroyed) {
                     checkingDialog.dismiss()
                 }
 
-                if (updateInfo != null && !isFinishing && !isDestroyed) {
-                    // Update available - show popup dialog immediately
-                    ShizukuSettings.setLastUpdateCheckTime(now)
-                    showUpdateAvailableDialog(updateInfo)
+                when (result) {
+                    is UpdateChecker.CheckResult.UpdateAvailable -> {
+                        ShizukuSettings.setLastUpdateCheckTime(now)
+                        ShizukuSettings.setLastUpdateCheckFailed(false)
+                        if (!isFinishing && !isDestroyed) showUpdateAvailableDialog(result.info)
+                    }
+                    is UpdateChecker.CheckResult.UpToDate -> {
+                        ShizukuSettings.setLastUpdateCheckTime(now)
+                        ShizukuSettings.setLastUpdateCheckFailed(false)
+                    }
+                    is UpdateChecker.CheckResult.NetworkError -> {
+                        ShizukuSettings.setLastUpdateCheckFailed(true)
+                    }
                 }
             } catch (e: Exception) {
-                Timber.tag("HomeActivity").e(e, "Error checking for update")
-                // Dismiss checking dialog on error
+                Timber.tag("HomeActivity").e(e, "Unexpected error checking for update")
                 if (checkingDialog.isShowing && !isFinishing && !isDestroyed) {
                     checkingDialog.dismiss()
                 }
+                ShizukuSettings.setLastUpdateCheckFailed(true)
             }
         }
     }
@@ -499,32 +507,37 @@ abstract class HomeActivity : AppBarActivity() {
      * Show update available popup dialog
      */
     private fun showUpdateAvailableDialog(updateInfo: UpdateChecker.UpdateInfo) {
-        // Inflate custom layout with release notes
         val dialogView = layoutInflater.inflate(R.layout.dialog_update_available, null)
-        val versionNameText = dialogView.findViewById<TextView>(R.id.update_version_name)
-        val publishedDateText = dialogView.findViewById<TextView>(R.id.update_published_date)
-        val releaseNotesText = dialogView.findViewById<TextView>(R.id.update_release_notes)
+        dialogView.findViewById<TextView>(R.id.update_version_name).text = "Version ${updateInfo.versionName}"
+        dialogView.findViewById<TextView>(R.id.update_published_date).text =
+            if (updateInfo.publishedAt.isNotEmpty())
+                "Published: ${UpdateChecker.formatPublishedDate(updateInfo.publishedAt)}"
+            else ""
+        dialogView.findViewById<TextView>(R.id.update_release_notes).text = updateInfo.releaseNotes
 
-        // Set update info
-        versionNameText.text = "Version ${updateInfo.versionName}"
-        publishedDateText.text = "Published: ${UpdateChecker.formatPublishedDate(updateInfo.publishedAt)}"
-        releaseNotesText.text = updateInfo.releaseNotes
+        val openReleases = {
+            startActivity(
+                android.content.Intent(android.content.Intent.ACTION_VIEW,
+                    android.net.Uri.parse("https://github.com/thejaustin/ShizukuPlus/releases"))
+                    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        }
 
-        MaterialAlertDialogBuilder(this)
+        val builder = MaterialAlertDialogBuilder(this)
             .setTitle(R.string.update_available_title)
             .setView(dialogView)
-            .setPositiveButton(R.string.update_download) { _, _ ->
-                val updateManager = UpdateManager(this)
-                updateManager.downloadUpdate(updateInfo.downloadUrl, updateInfo.versionName)
-            }
             .setNegativeButton(R.string.update_later, null)
-            .setNeutralButton(R.string.update_release_notes) { _, _ ->
-                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW,
-                    android.net.Uri.parse("https://github.com/thejaustin/ShizukuPlus/releases"))
-                intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
+            .setNeutralButton(R.string.update_release_notes) { _, _ -> openReleases() }
+
+        if (updateInfo.requiresManualDownload) {
+            builder.setPositiveButton(R.string.update_view_on_github) { _, _ -> openReleases() }
+        } else {
+            builder.setPositiveButton(R.string.update_download) { _, _ ->
+                UpdateManager(this).downloadUpdate(updateInfo.downloadUrl, updateInfo.versionName)
             }
-            .show()
+        }
+
+        builder.show()
     }
 
     companion object {

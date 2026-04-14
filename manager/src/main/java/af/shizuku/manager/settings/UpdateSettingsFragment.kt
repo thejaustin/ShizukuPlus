@@ -9,7 +9,6 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import io.sentry.Sentry
 import kotlinx.coroutines.launch
 import af.shizuku.manager.BuildConfig
 import af.shizuku.manager.R
@@ -28,6 +27,7 @@ class UpdateSettingsFragment : BaseSettingsFragment() {
         private const val KEY_CHECK_FOR_UPDATE = "check_for_update"
         private const val KEY_CURRENT_VERSION = "current_version"
         private const val KEY_LAST_CHECK = "last_check_time"
+        private const val RELEASES_URL = "https://github.com/thejaustin/ShizukuPlus/releases"
     }
 
     private val updateManager: UpdateManager by inject()
@@ -40,7 +40,7 @@ class UpdateSettingsFragment : BaseSettingsFragment() {
         setupChannelPreference()
         setupCheckForUpdatePreference()
         setupCurrentVersionPreference()
-        updateLastCheckTime()
+        updateLastCheckSummary()
     }
 
     private fun setupAutoUpdatePreference() {
@@ -79,7 +79,6 @@ class UpdateSettingsFragment : BaseSettingsFragment() {
         pref.setOnPreferenceChangeListener { _, newValue ->
             val channel = newValue as String
             if (channel == "dev") {
-                // Show warning before committing to dev channel
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(R.string.update_channel_dev_warning_title)
                     .setMessage(R.string.update_channel_dev_warning_message)
@@ -89,7 +88,7 @@ class UpdateSettingsFragment : BaseSettingsFragment() {
                     }
                     .setNegativeButton(android.R.string.cancel, null)
                     .show()
-                false // Don't apply yet — dialog will apply if confirmed
+                false
             } else {
                 ShizukuSettings.setUpdateChannel("stable")
                 true
@@ -108,16 +107,26 @@ class UpdateSettingsFragment : BaseSettingsFragment() {
         findPreference<Preference>(KEY_CURRENT_VERSION)?.summary = BuildConfig.VERSION_NAME
     }
 
-    private fun updateLastCheckTime() {
+    private fun updateLastCheckSummary() {
         val pref = findPreference<Preference>(KEY_LAST_CHECK) ?: return
         val lastCheck = ShizukuSettings.getLastUpdateCheckTime()
-        pref.summary = if (lastCheck > 0) {
-            UpdateChecker.formatPublishedDate(
-                java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
-                    .format(java.util.Date(lastCheck))
-            )
-        } else {
-            getString(R.string.update_never_checked)
+        pref.summary = when {
+            ShizukuSettings.wasLastUpdateCheckFailed() && lastCheck > 0 -> {
+                val date = UpdateChecker.formatPublishedDate(
+                    java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
+                        .format(java.util.Date(lastCheck))
+                )
+                "$date · ${getString(R.string.update_last_check_failed)}"
+            }
+            ShizukuSettings.wasLastUpdateCheckFailed() ->
+                getString(R.string.update_last_check_failed)
+            lastCheck > 0 ->
+                UpdateChecker.formatPublishedDate(
+                    java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
+                        .format(java.util.Date(lastCheck))
+                )
+            else ->
+                getString(R.string.update_never_checked)
         }
     }
 
@@ -127,16 +136,36 @@ class UpdateSettingsFragment : BaseSettingsFragment() {
         val channel = ShizukuSettings.getUpdateChannel()
         lifecycleScope.launch {
             try {
-                val info = UpdateChecker.checkForUpdate(channel)
-                if (isAdded) {
-                    ShizukuSettings.setLastUpdateCheckTime(System.currentTimeMillis())
-                    updateLastCheckTime()
-                    if (info != null) showUpdateAvailableDialog(info) else showUpToDateDialog()
+                when (val result = UpdateChecker.checkForUpdate(channel)) {
+                    is UpdateChecker.CheckResult.UpdateAvailable -> {
+                        if (isAdded) {
+                            ShizukuSettings.setLastUpdateCheckTime(System.currentTimeMillis())
+                            ShizukuSettings.setLastUpdateCheckFailed(false)
+                            updateLastCheckSummary()
+                            showUpdateAvailableDialog(result.info)
+                        }
+                    }
+                    is UpdateChecker.CheckResult.UpToDate -> {
+                        if (isAdded) {
+                            ShizukuSettings.setLastUpdateCheckTime(System.currentTimeMillis())
+                            ShizukuSettings.setLastUpdateCheckFailed(false)
+                            updateLastCheckSummary()
+                            showUpToDateDialog()
+                        }
+                    }
+                    is UpdateChecker.CheckResult.NetworkError -> {
+                        if (isAdded) {
+                            ShizukuSettings.setLastUpdateCheckFailed(true)
+                            updateLastCheckSummary()
+                            showErrorDialog()
+                        }
+                    }
                 }
             } catch (e: Exception) {
-                Timber.tag(TAG).e(e, "Error checking for update")
+                Timber.tag(TAG).e(e, "Unexpected error checking for update")
                 if (isAdded) {
-                    Sentry.captureException(e)
+                    ShizukuSettings.setLastUpdateCheckFailed(true)
+                    updateLastCheckSummary()
                     showErrorDialog()
                 }
             }
@@ -146,21 +175,26 @@ class UpdateSettingsFragment : BaseSettingsFragment() {
     private fun showUpdateAvailableDialog(info: UpdateChecker.UpdateInfo) {
         val context = context ?: return
         val devBadge = if (info.isPrerelease) " ⚠ Dev" else ""
-        MaterialAlertDialogBuilder(context)
+        val builder = MaterialAlertDialogBuilder(context)
             .setTitle(getString(R.string.update_available_title) + devBadge)
-            .setMessage(getString(R.string.update_available_message, info.versionName))
-            .setPositiveButton(R.string.update_download) { _, _ ->
-                updateManager.downloadUpdate(info.downloadUrl, info.versionName)
-            }
             .setNegativeButton(R.string.update_later, null)
             .setNeutralButton(R.string.update_release_notes) { _, _ ->
-                startActivity(
-                    Intent(Intent.ACTION_VIEW,
-                        Uri.parse("https://github.com/thejaustin/ShizukuPlus/releases"))
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
+                openReleasesPage()
             }
-            .show()
+
+        if (info.requiresManualDownload) {
+            builder
+                .setMessage(getString(R.string.update_available_manual_message, info.versionName))
+                .setPositiveButton(R.string.update_view_on_github) { _, _ -> openReleasesPage() }
+        } else {
+            builder
+                .setMessage(getString(R.string.update_available_message, info.versionName))
+                .setPositiveButton(R.string.update_download) { _, _ ->
+                    updateManager.downloadUpdate(info.downloadUrl, info.versionName)
+                }
+        }
+
+        builder.show()
     }
 
     private fun showUpToDateDialog() {
@@ -178,6 +212,7 @@ class UpdateSettingsFragment : BaseSettingsFragment() {
             .setTitle(R.string.update_error_title)
             .setMessage(R.string.update_error_message)
             .setPositiveButton(R.string.ok, null)
+            .setNeutralButton(R.string.update_view_on_github) { _, _ -> openReleasesPage() }
             .show()
     }
 
@@ -188,6 +223,13 @@ class UpdateSettingsFragment : BaseSettingsFragment() {
             .setMessage(R.string.update_permission_required_message)
             .setPositiveButton(R.string.ok, null)
             .show()
+    }
+
+    private fun openReleasesPage() {
+        startActivity(
+            Intent(Intent.ACTION_VIEW, Uri.parse(RELEASES_URL))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
     }
 
     fun triggerUpdateCheck() = checkForUpdate()
