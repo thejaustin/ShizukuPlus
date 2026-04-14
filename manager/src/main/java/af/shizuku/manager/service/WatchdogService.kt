@@ -24,10 +24,18 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class WatchdogService : Service() {
 
+    private var lastRestartMs = 0L
+
     private val stateListener: (ShizukuStateMachine.State) -> Unit = {
         if (it == ShizukuStateMachine.State.CRASHED) {
-            showCrashNotification()
-            ShizukuReceiverStarter.start(applicationContext)
+            val now = System.currentTimeMillis()
+            if (now - lastRestartMs > RESTART_COOLDOWN_MS) {
+                lastRestartMs = now
+                showCrashNotification()
+                ShizukuReceiverStarter.start(applicationContext)
+            } else {
+                Timber.tag(TAG).d("Watchdog: restart suppressed (cooldown active, ${now - lastRestartMs}ms since last)")
+            }
         }
     }
 
@@ -143,6 +151,7 @@ class WatchdogService : Service() {
         const val WATCHDOG_CHANNEL_ID = "shizuku_watchdog"
         const val CRASH_CHANNEL_ID = "crash_reports"
 
+        private const val RESTART_COOLDOWN_MS = 5_000L
         private val isRunning = AtomicBoolean(false)
 
         @JvmStatic

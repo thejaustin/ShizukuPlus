@@ -237,10 +237,19 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
         val windowManagerPlusEnabled = ShizukuSettings.isWindowManagerPlusEnabled() && customApiEnabled
         updatePreferenceDependency("overlay_manager_plus_enabled", windowManagerPlusEnabled, hideDisabled)
         
-        // Fix scrolling: Force RecyclerView to recalculate layout after hiding/showing items
-        listView?.post {
-            listView?.requestLayout()
-            listView?.invalidate()
+        // Force RecyclerView to recalculate layout after hiding/showing items.
+        // Guard: PreferenceFragmentCompat.getListView() throws (not returns null) before
+        // onCreateView completes, so the safe-call (?.) does NOT protect us — use
+        // Fragment.getView() which correctly returns null when the view isn't ready.
+        view?.post {
+            if (isAdded && view != null) {
+                try {
+                    listView.requestLayout()
+                    listView.invalidate()
+                } catch (e: IllegalStateException) {
+                    // Fragment view was destroyed between post() scheduling and execution
+                }
+            }
         }
     }
 
