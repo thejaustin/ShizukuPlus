@@ -72,7 +72,7 @@ class ShizukuApplication : Application(), Configuration.Provider {
                 // User interaction and lifecycle tracing
                 options.isEnableUserInteractionTracing = true
                 options.isEnableUserInteractionBreadcrumbs = true
-                options.isEnableFragmentLifecycleBreadcrumbs = true
+                options.isEnableAutoFragmentLifecycleBreadcrumbs = true
                 options.isEnableAutoActivityLifecycleTracing = true
                 
                 // ANR detection — 10s threshold avoids false positives from privileged
@@ -116,7 +116,7 @@ class ShizukuApplication : Application(), Configuration.Provider {
                     
                     // Add system state at time of crash
                     try {
-                        event.setTag("shizuku_state", Shizuku.getServiceState().toString())
+                        event.setTag("shizuku_state", if (Shizuku.pingBinder()) "connected" else "disconnected")
                         event.setTag("is_rooted", Shell.isAppGrantedRoot().toString())
                     } catch (e: Exception) {
                         // Ignore errors during state collection
@@ -131,7 +131,11 @@ class ShizukuApplication : Application(), Configuration.Provider {
             Sentry.setTag("app_variant", BuildConfig.VERSION_NAME)
             
             // Plant Sentry Timber tree to automatically capture logs as breadcrumbs
-            Timber.plant(SentryTimberTree())
+            // Sentry 8.x requires explicit levels: minEventLevel, minBreadcrumbLevel
+            Timber.plant(io.sentry.android.timber.SentryTimberTree(
+                io.sentry.SentryLevel.ERROR,
+                io.sentry.SentryLevel.INFO
+            ))
             
             Timber.d("Sentry initialized with release tracking and advanced monitoring")
         } catch (e: Exception) {
