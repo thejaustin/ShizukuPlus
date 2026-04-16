@@ -17,18 +17,16 @@ object InputValidationUtils {
         "hostname"
     )
 
-    // Valid spoof target device identifiers
+    // Valid spoof target device identifiers (must match cases in ShizukuService.java)
     private val VALID_SPOOF_TARGETS = listOf(
+        "auto",
         "pixel_9_pro_xl",
         "pixel_8_pro",
-        "pixel_7_pro",
-        "galaxy_s24_ultra",
-        "galaxy_s23_ultra",
-        "galaxy_s22_ultra",
+        "s24_ultra",
+        "s23_ultra",
+        "s22_ultra",
         "oneplus_12",
-        "nothing_phone_2",
-        "pixel_tablet",
-        "pixel_fold"
+        "nothing_phone_2"
     )
 
     /**
