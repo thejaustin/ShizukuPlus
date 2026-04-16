@@ -13,6 +13,7 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.core.content.ContextCompat
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.asFlow
 import androidx.work.*
@@ -106,7 +107,12 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
                                 }
                             }
                         }
-                        applicationContext.registerReceiver(unlockReceiver, filter)
+                        ContextCompat.registerReceiver(
+                            applicationContext,
+                            unlockReceiver,
+                            filter,
+                            ContextCompat.RECEIVER_NOT_EXPORTED
+                        )
                     } else awaitingAuth = true
                     timeoutJob?.cancel()
                     adbMdns.stop()

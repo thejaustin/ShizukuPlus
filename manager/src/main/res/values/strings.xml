@@ -107,6 +107,7 @@
     <string name="doctor_tips_title">Troubleshooting Tips</string>
     <string name="doctor_status_manual_check">Needs Manual Check</string>
     <string name="doctor_status_detected">Detected</string>
+    <string name="doctor_status_review">Review required</string>
     <string name="doctor_tip_samsung_autoblocker">**Samsung Auto Blocker**: Ensure it is turned **OFF** or that \'Maximum Restrictions\' is disabled. It silently blocks ADB commands on One UI 7/8+.</string>
     <string name="doctor_tip_oneui_connectivity">**One UI 7/8 Connectivity**: If Wireless Pairing fails, try using **Split Screen mode** with Shizuku and Developer Options open simultaneously.</string>
     <string name="doctor_tip_s22_ultra">**S22 Ultra Tip**: For consistent ADB, dial `*#0808#` and select `MTP + ADB` if you encounter connection drops.</string>
