@@ -98,6 +98,44 @@
     <string name="dialog_usb_debugging_not_enabled">USB debugging is not enabled.\nPlease enable it in \"Developer Options\".</string>
     <string name="dialog_adb_pairing_message">Please start pairing by performing the following steps:\n- Navigate to \"Developer Options\"\n- Enable \"USB debugging\" and \"Wireless debugging\"\n- Tap the left side of \"Wireless debugging\"\n- Tap \"Pair device with pairing code\"\n- Input the pairing code in the notification</string>
     <string name="dialog_adb_pairing_accessibility_permission">On Android 14, installing/updating Shizuku with the Package Installer revokes the ^1 permission, which is required to enable the accessibility service for pairing.\n\nTo grant it, run the following ADB command:\n\n^2\n\nAfter running the command, you may continue with the pairing process.\n\nNote: you can bypass this by installing/updating Shizuku with ADB.</string>
+
+    <!-- Service Doctor -->
+    <string name="doctor_check_samsung_autoblocker">Samsung Auto Blocker</string>
+    <string name="doctor_check_samsung_battery_protection">Samsung Battery Protection</string>
+    <string name="doctor_check_secondary_user">Secondary User / Secure Folder</string>
+    <string name="doctor_check_phantom_process">Phantom Process Killer</string>
+    <string name="doctor_tips_title">Troubleshooting Tips</string>
+    <string name="doctor_status_manual_check">Needs Manual Check</string>
+    <string name="doctor_status_detected">Detected</string>
+    <string name="doctor_tip_samsung_autoblocker">**Samsung Auto Blocker**: Ensure it is turned **OFF** or that \'Maximum Restrictions\' is disabled. It silently blocks ADB commands on One UI 7/8+.</string>
+    <string name="doctor_tip_oneui_connectivity">**One UI 7/8 Connectivity**: If Wireless Pairing fails, try using **Split Screen mode** with Shizuku and Developer Options open simultaneously.</string>
+    <string name="doctor_tip_s22_ultra">**S22 Ultra Tip**: For consistent ADB, dial `*#0808#` and select `MTP + ADB` if you encounter connection drops.</string>
+    <string name="doctor_tip_secure_folder">**Secure Folder Detected**: Shizuku works best in the Main User (Owner). Running inside Secure Folder or a Work Profile may require starting the server from the Main User first.</string>
+    <string name="doctor_tip_phantom_process">**Phantom Process Killer**: Android 12-15+ may kill Shizuku if too many commands are run. The \'Fix\' button attempts to disable this limit.</string>
+    <string name="doctor_tip_samsung_optimization">**Samsung Auto-Optimization**: Disable \'Auto Restart\' in Device Care to prevent Shizuku from being killed at night.</string>
+    <string name="doctor_tip_samsung_sleeping">**Samsung Sleeping Apps**: Ensure Shizuku+ is added to the **\'Never sleeping apps\'** list in *Device Care > Battery > Background usage limits* to prevent background service termination.</string>
+    <string name="doctor_tip_s22_ultra_exynos">**S22 Ultra (Exynos)**: If service response is sluggish, try disabling **\'RAM Plus\'** in Device Care > Memory.</string>
+    <string name="doctor_tip_s22_ultra_snapdragon">**S22 Ultra (Snapdragon)**: Ensure \'Enhanced Processing\' is enabled in Quick Settings for maximum command throughput.</string>
+    <string name="doctor_system_well_configured">Your system seems well-configured for Shizuku+.</string>
+
+    <!-- Root Compatibility -->
+    <string name="su_bridge_other_detected_apps">Other Detected Root Apps</string>
+    <string name="su_bridge_installed_root_app">Installed Root App</string>
+    <string name="su_bridge_suggested_root_app">Suggested Root App</string>
+
+    <!-- Shell Tutorial -->
+    <string name="terminal_tutorial_export_summary">Export the files (%1$s, %2$s, %3$s, and %4$s) to a new folder.</string>
+    <string name="terminal_tutorial_copy_command">cp /sdcard/chosen-folder/* /data/data/terminal.package.name/files</string>
+    <string name="terminal_tutorial_copy_summary">This copies the exported files to your terminal app\'s private storage. You can also add aliases for %1$s, %2$s, and %3$s in your &lt;font face=\"monospace\"&gt;.bashrc&lt;/font&gt; or &lt;font face=\"monospace\"&gt;.zshrc&lt;/font&gt;.</string>
+    <string name="terminal_tutorial_run_command">sh /path/to/%1$s</string>
+
+    <!-- Adb Pairing Dialog -->
+    <string name="adb_pairing_searching">Searching for pairing service…</string>
+    <string name="adb_pairing_status_pairing">Pairing with device…</string>
+    <string name="adb_pairing_status_failed">Pairing failed.</string>
+
+    <!-- App Management -->
+    <string name="app_management_badge_format">&lt;b&gt;&lt;font color=\"%1$s\"&gt;[%2$s]&lt;/font&gt;&lt;/b&gt; %3$s</string>
     <string name="dialog_adb_pairing_accessibility_enable">Please enable the accessibility service to start the pairing process. This allows Shizuku to detect the pairing code.\n\nThe accessibility service will be turned off when the code is found or after 1 minute to save energy.</string>
     <string name="dialog_adb_pairing_accessibility_navigate">Please start pairing by performing the following steps:\n- Navigate to \"Developer Options\"\n- Enable \"USB debugging\" and \"Wireless debugging\"\n- Tap the left side of \"Wireless debugging\"\n- Tap \"Pair device with pairing code.\" Shizuku will automatically detect the pairing code.</string>
     <string name="adb_pairing_requires_multi_window">Please enter split-screen (multi-window) mode first.</string>

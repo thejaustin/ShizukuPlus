@@ -288,7 +288,7 @@ class AppViewHolder(private val binding: AppListItemBinding) :
             val badge = if (enabledAny) context.getString(R.string.app_management_badge_enhanced) else context.getString(R.string.app_management_badge_upgrade)
             val color = if (enabledAny) "#4CAF50" else "#FF9800"
 
-            appContextView.text = "<b><font color=\"$color\">[$badge]</font></b> ${metadata.description}".toHtml()
+            appContextView.text = context.getString(R.string.app_management_badge_format, color, badge, metadata.description).toHtml()
             appContextView.setOnClickListener { showEnhancementSettings(context, metadata) }
         } else {
             appContextView.visibility = View.GONE

@@ -143,35 +143,35 @@ class ServiceDoctorActivity : AppBarActivity() {
         if (EnvironmentUtils.isSamsung()) {
             val oneUi = EnvironmentUtils.getOneUiVersion()
             checks.add(DoctorCheck(
-                "Samsung Auto Blocker",
-                if (oneUi >= 6) "Needs Manual Check" else getString(R.string.doctor_status_ok),
+                getString(R.string.doctor_check_samsung_autoblocker),
+                if (oneUi >= 6) getString(R.string.doctor_status_manual_check) else getString(R.string.doctor_status_ok),
                 oneUi < 6,
                 onFix = if (oneUi >= 6) { { SettingsPage.Samsung.AutoBlocker.launch(this) } } else null
             ))
 
             // Samsung Device Care / Always sleeping apps
             checks.add(DoctorCheck(
-                "Samsung Battery Protection",
-                "Review",
+                getString(R.string.doctor_check_samsung_battery_protection),
+                getString(R.string.doctor_status_review),
                 true,
                 onFix = { SettingsPage.Samsung.DeviceCareBattery.launch(this) }
             ))
 
             if (oneUi >= 6) {
-                tips.add("• **Samsung Auto Blocker**: Ensure it is turned **OFF** or that 'Maximum Restrictions' is disabled. It silently blocks ADB commands on One UI 7/8+.")
-                tips.add("• **One UI 7/8 Connectivity**: If Wireless Pairing fails, try using **Split Screen mode** with Shizuku and Developer Options open simultaneously.")
-                tips.add("• **S22 Ultra Tip**: For consistent ADB, dial `*#0808#` and select `MTP + ADB` if you encounter connection drops.")
+                tips.add("• " + getString(R.string.doctor_tip_samsung_autoblocker))
+                tips.add("• " + getString(R.string.doctor_tip_oneui_connectivity))
+                tips.add("• " + getString(R.string.doctor_tip_s22_ultra))
             }
         }
 
         // 8. Secure Folder / Secondary User detection
         if (EnvironmentUtils.isSecondaryUser()) {
             checks.add(DoctorCheck(
-                "Secondary User / Secure Folder",
-                "Detected",
+                getString(R.string.doctor_check_secondary_user),
+                getString(R.string.doctor_status_detected),
                 false
             ))
-            tips.add("• **Secure Folder Detected**: Shizuku works best in the Main User (Owner). Running inside Secure Folder or a Work Profile may require starting the server from the Main User first.")
+            tips.add("• " + getString(R.string.doctor_tip_secure_folder))
         }
 
         // 9. Background Limits (Android 14+)
@@ -186,8 +186,8 @@ class ServiceDoctorActivity : AppBarActivity() {
         // 10. Phantom Process Killer (Android 12+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             checks.add(DoctorCheck(
-                "Phantom Process Killer",
-                "Needs Manual Check",
+                getString(R.string.doctor_check_phantom_process),
+                getString(R.string.doctor_status_manual_check),
                 true,
                 onFix = {
                     serviceScope.launch {
@@ -205,25 +205,25 @@ class ServiceDoctorActivity : AppBarActivity() {
                     }
                 }
             ))
-            tips.add("• **Phantom Process Killer**: Android 12-15+ may kill Shizuku if too many commands are run. The 'Fix' button attempts to disable this limit.")
+            tips.add("• " + getString(R.string.doctor_tip_phantom_process))
         }
 
         // 11. Samsung Auto Restart & Sleeping Apps
         if (EnvironmentUtils.isSamsung()) {
-            tips.add("• **Samsung Auto-Optimization**: Disable 'Auto Restart' in Device Care to prevent Shizuku from being killed at night.")
-            tips.add("• **Samsung Sleeping Apps**: Ensure Shizuku+ is added to the **'Never sleeping apps'** list in *Device Care > Battery > Background usage limits* to prevent background service termination.")
+            tips.add("• " + getString(R.string.doctor_tip_samsung_optimization))
+            tips.add("• " + getString(R.string.doctor_tip_samsung_sleeping))
             
             val board = Build.HARDWARE.lowercase()
             if (board.contains("exynos")) {
-                tips.add("• **S22 Ultra (Exynos)**: If service response is sluggish, try disabling **'RAM Plus'** in Device Care > Memory.")
+                tips.add("• " + getString(R.string.doctor_tip_s22_ultra_exynos))
             } else if (board.contains("qcom") || board.contains("snapdragon")) {
-                tips.add("• **S22 Ultra (Snapdragon)**: Ensure 'Enhanced Processing' is enabled in Quick Settings for maximum command throughput.")
+                tips.add("• " + getString(R.string.doctor_tip_s22_ultra_snapdragon))
             }
         }
 
         checkListAdapter.submitList(checks)
         tipsTextView.text = if (tips.isEmpty()) {
-            "Your system seems well-configured for Shizuku+."
+            getString(R.string.doctor_system_well_configured)
         } else {
             tips.joinToString("\n\n")
         }

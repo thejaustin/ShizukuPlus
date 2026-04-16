@@ -133,7 +133,7 @@ class ShizukuApplication : Application(), Configuration.Provider {
             // Sentry 8.x requires: (scopes, minEventLevel, minBreadcrumbLevel)
             try {
                 Timber.plant(io.sentry.android.timber.SentryTimberTree(
-                    io.sentry.HubAdapter.getInstance(),
+                    io.sentry.ScopesAdapter.getInstance(),
                     io.sentry.SentryLevel.ERROR,
                     io.sentry.SentryLevel.INFO
                 ))

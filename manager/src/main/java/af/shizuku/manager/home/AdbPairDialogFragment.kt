@@ -99,7 +99,7 @@ class AdbPairDialogFragment : DialogFragment() {
                 binding.pairingCode.isVisible = false
                 binding.progress.isVisible = true
                 binding.status.isVisible = true
-                binding.status.text = "Searching for pairing service..."
+                binding.status.text = getString(R.string.adb_pairing_searching)
                 portEditText?.setText(portValue.toString())
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).isVisible = false
                 dialog.getButton(AlertDialog.BUTTON_NEUTRAL).isVisible = true
@@ -136,7 +136,7 @@ class AdbPairDialogFragment : DialogFragment() {
             binding.progress.isVisible = isPairing
             binding.status.isVisible = isPairing
             if (isPairing) {
-                binding.status.text = "Pairing with device..."
+                binding.status.text = getString(R.string.adb_pairing_status_pairing)
                 binding.pairingCode.isEnabled = false
                 getDialog()?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled = false
             } else {
@@ -151,7 +151,7 @@ class AdbPairDialogFragment : DialogFragment() {
             } else {
                 binding.progress.isVisible = false
                 binding.status.isVisible = true
-                binding.status.text = "Pairing failed."
+                binding.status.text = getString(R.string.adb_pairing_status_failed)
                 when (it) {
                     is ConnectException -> {
                         binding.port.error = context.getString(R.string.cannot_connect_port)

@@ -131,16 +131,16 @@ class ShellTutorialActivity : AppBarActivity() {
                 .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
 
             text1.text = getString(R.string.terminal_tutorial_1)
-            summary1.text = "Export the files ($shName, $dexName, $plusName, and $suName) to a new folder."
+            summary1.text = getString(R.string.terminal_tutorial_export_summary, shName, dexName, plusName, suName)
                 .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
 
             text2.text = getString(R.string.terminal_tutorial_2, shName).toHtml()
-            command2.text = "cp /sdcard/chosen-folder/* /data/data/terminal.package.name/files"
-            summary2.text = "This copies the exported files to your terminal app\'s private storage. You can also add aliases for $shName, $plusName, and $suName in your <font face=\"monospace\">.bashrc</font> or <font face=\"monospace\">.zshrc</font>."
+            command2.text = getString(R.string.terminal_tutorial_copy_command)
+            summary2.text = getString(R.string.terminal_tutorial_copy_summary, shName, plusName, suName)
                 .toHtml()
 
             text3.text = getString(R.string.terminal_tutorial_3)
-            command3.text = "sh /path/to/$SH_NAME"
+            command3.text = getString(R.string.terminal_tutorial_run_command, SH_NAME)
 
             button1.setOnClickListener {
                 try {

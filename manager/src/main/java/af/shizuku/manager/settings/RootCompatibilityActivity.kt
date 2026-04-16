@@ -171,7 +171,7 @@ class RootCompatibilityActivity : AppBarActivity() {
         }
         
         if (detected.isNotEmpty()) {
-            items.add("Other Detected Root Apps")
+            items.add(getString(R.string.su_bridge_other_detected_apps))
             items.addAll(detected)
         }
         
@@ -366,7 +366,7 @@ class RootCompatibilityActivity : AppBarActivity() {
                     holder.itemView.alpha = 1.0f
                     
                     if (metadata == null) {
-                        holder.binding.appContext.text = "Installed Root App"
+                        holder.binding.appContext.text = getString(R.string.su_bridge_installed_root_app)
                         holder.binding.appContext.visibility = View.VISIBLE
                     }
 
@@ -390,7 +390,7 @@ class RootCompatibilityActivity : AppBarActivity() {
                     holder.itemView.alpha = 0.5f
                     
                     if (metadata == null) {
-                        holder.binding.appContext.text = "Suggested Root App"
+                        holder.binding.appContext.text = getString(R.string.su_bridge_suggested_root_app)
                         holder.binding.appContext.visibility = View.VISIBLE
                     }
 
