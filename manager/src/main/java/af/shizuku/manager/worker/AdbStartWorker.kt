@@ -166,23 +166,25 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
             if (ShizukuStateMachine.update() == ShizukuStateMachine.State.RUNNING) {
                 return Result.success()
             } else {
-                updateNotification(
-                    applicationContext,
-                    WorkerState.AWAITING_RETRY
-                )
+                // Show a more informative message when mDNS discovery timed out so users
+                // aren't left wondering why the "waiting for WiFi" message appears on WiFi.
+                val retryState = if (e is TimeoutException) WorkerState.AWAITING_DISCOVERY else WorkerState.AWAITING_RETRY
+                updateNotification(applicationContext, retryState)
                 return Result.retry()
             }
         }
     }
 
     private fun showErrorNotification(context: Context, e: Exception) {
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            context.getString(R.string.wadb_notification_title),
-            NotificationManager.IMPORTANCE_LOW
-        )
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.createNotificationChannel(channel)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                context.getString(R.string.wadb_notification_title),
+                NotificationManager.IMPORTANCE_LOW
+            )
+            nm.createNotificationChannel(channel)
+        }
 
         val nb = NotificationCompat.Builder(context, CHANNEL_ID)
 
@@ -210,6 +212,13 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
 
     companion object {
         fun enqueue(context: Context) {
+            // WorkManager uses credential-encrypted storage which is unavailable during direct boot.
+            // Skip enqueueing until the user has unlocked their device.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                val um = context.getSystemService(android.os.UserManager::class.java)
+                if (um != null && !um.isUserUnlocked) return
+            }
+
             val cb = Constraints.Builder()
             if (EnvironmentUtils.isWifiRequired() && !ShizukuSettings.isForceStartWadbEnabled())
                 cb.setRequiredNetworkType(NetworkType.UNMETERED)

@@ -231,6 +231,8 @@ dependencies {
 
     implementation libs.sentry.android.core
     implementation libs.sentry.android.fragment
+    implementation libs.sentry.android.timber
+    implementation libs.sentry.android.okhttp
 
     androidTestImplementation "androidx.test.ext:junit:1.2.1"
     androidTestImplementation "androidx.test:runner:1.6.2"

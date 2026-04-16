@@ -1,0 +1,36 @@
+name: Issue Auto-Label
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Auto-label based on Component dropdown
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body;
+            if (!body) return;
+            
+            const labels = [];
+            
+            if (body.includes('Manager App (UI/Settings)')) labels.push('module: manager-app');
+            if (body.includes('Server/Service')) labels.push('module: server');
+            if (body.includes('API/AIDL')) labels.push('module: api');
+            if (body.includes('Rish (Command Line)')) labels.push('module: rish-cli');
+            if (body.includes('Translation/Localization')) labels.push('module: translation');
+            
+            if (labels.length > 0) {
+              core.info(`Adding labels: ${labels.join(', ')}`);
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.issue.number,
+                labels: labels
+              });
+            }

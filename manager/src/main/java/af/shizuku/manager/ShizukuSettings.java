@@ -686,7 +686,9 @@ public class ShizukuSettings {
                             resolvedPath = "/storage/emulated/0/" + (relative.isEmpty() ? "" : relative + "/") + "su";
                         } else if (docId.contains(":")) {
                             String[] parts = docId.split(":");
-                            resolvedPath = "/storage/" + parts[0] + "/" + parts[1] + "/su";
+                            if (parts.length > 1) {
+                                resolvedPath = "/storage/" + parts[0] + "/" + parts[1] + "/su";
+                            }
                         } else if (docId.startsWith("Download") || docId.startsWith("Documents") || docId.startsWith("Movies")) {
                             resolvedPath = "/storage/emulated/0/" + docId + "/su";
                         }

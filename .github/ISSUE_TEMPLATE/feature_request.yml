@@ -9,6 +9,20 @@ body:
       options:
         - label: I searched through all [open/closed issues](https://github.com/thejaustin/ShizukuPlus/issues) and confirmed that this is a new feature request
           required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which part of Shizuku+ does this relate to?
+      options:
+        - "Manager App (UI/Settings)"
+        - "Server/Service"
+        - "API/AIDL"
+        - "Rish (Command Line)"
+        - "Translation/Localization"
+        - "Other / I don't know"
+    validations:
+      required: true
   - type: textarea
     id: feature_description
     attributes:

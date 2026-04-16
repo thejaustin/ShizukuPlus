@@ -56,36 +56,47 @@ class ShellTutorialActivity : AppBarActivity() {
                 }
             }
 
-            fun writeToDocument(name: String) {
+            fun writeToDocument(name: String): Boolean {
                 val documentUri = DocumentsContract.createDocument(contentResolver, doc, "application/octet-stream", name)
                 if (documentUri == null) {
                     Timber.tag(TAG).e("Failed to create document for $name")
-                    return
+                    return false
                 }
 
-                try {
+                return try {
                     cr.openOutputStream(documentUri)?.use { outputStream ->
                         assets.open(name).use { inputStream ->
                             inputStream.copyTo(outputStream)
                         }
                     }
+                    true
                 } catch (e: Exception) {
                     Timber.tag(TAG).e(e, "Failed to write $name to document")
-                    // Clean up the document if writing failed
                     try {
                         DocumentsContract.deleteDocument(contentResolver, documentUri)
                     } catch (deleteEx: Exception) {
                         Timber.tag(TAG).e(deleteEx, "Failed to delete incomplete document for $name")
                     }
+                    false
                 }
             }
 
-            writeToDocument(SH_NAME)
-            writeToDocument(DEX_NAME)
-            writeToDocument(PLUS_NAME)
-            writeToDocument(SU_NAME)
+            val results = listOf(SH_NAME, DEX_NAME, PLUS_NAME, SU_NAME).map { writeToDocument(it) }
+            val successCount = results.count { it }
+            val totalCount = results.size
 
             ShizukuSettings.setExportDirUri(tree.toString())
+
+            val toastMsg = if (successCount == totalCount) {
+                getString(R.string.shell_export_success)
+            } else if (successCount == 0) {
+                getString(R.string.shell_export_failed)
+            } else {
+                getString(R.string.shell_export_partial, successCount, totalCount)
+            }
+            android.widget.Toast.makeText(this@ShellTutorialActivity, toastMsg,
+                if (successCount == totalCount) android.widget.Toast.LENGTH_SHORT else android.widget.Toast.LENGTH_LONG
+            ).show()
         }
 
     override fun getLayoutId() = R.layout.terminal_tutorial_activity
@@ -131,7 +142,14 @@ class ShellTutorialActivity : AppBarActivity() {
             text3.text = getString(R.string.terminal_tutorial_3)
             command3.text = "sh /path/to/$SH_NAME"
 
-            button1.setOnClickListener { openDocumentsTree.launch(null) }
+            button1.setOnClickListener {
+                try {
+                    openDocumentsTree.launch(null)
+                } catch (e: android.content.ActivityNotFoundException) {
+                    Timber.tag(TAG).w("No file picker available on this device: ${e.message}")
+                    android.widget.Toast.makeText(this@ShellTutorialActivity, R.string.no_file_picker, android.widget.Toast.LENGTH_LONG).show()
+                }
+            }
             button2.setOnClickListener { v: View -> CustomTabsHelper.launchUrlOrCopy(v.context, Helps.RISH.get()) }
         }
     }

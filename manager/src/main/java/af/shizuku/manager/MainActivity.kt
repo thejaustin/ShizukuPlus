@@ -36,9 +36,10 @@ class MainActivity : HomeActivity() {
                 return
             }
 
-            // One-time migration dialog for users coming from moe.shizuku.privileged.api
-            if (!ShizukuSettings.hasMigrationBeenOffered() &&
-                MigrationHelper.isOldPackageInstalled(this)) {
+            // Show migration dialog whenever the old package is still installed.
+            // We re-check on every launch so users who dismissed without uninstalling are
+            // reminded. Once they uninstall the old app, this branch is never taken again.
+            if (MigrationHelper.isOldPackageInstalled(this)) {
                 showMigrationDialog()
             }
 
@@ -46,8 +47,8 @@ class MainActivity : HomeActivity() {
             Sentry.addBreadcrumb(Breadcrumb("MainActivity onCreate complete"))
         } catch (e: Exception) {
             Timber.e(e, "Crash in MainActivity.onCreate")
-            Sentry.captureException(e)
             Sentry.addBreadcrumb(Breadcrumb("MainActivity crash: ${e.message}"))
+            Sentry.captureException(e)
             throw e
         }
     }
@@ -79,28 +80,24 @@ class MainActivity : HomeActivity() {
             val builder = MaterialAlertDialogBuilder(this@MainActivity)
                 .setTitle(R.string.migration_dialog_title)
                 .setMessage(message)
-                .setCancelable(false)
-                .setNeutralButton(R.string.migration_dismiss) { _, _ ->
-                    ShizukuSettings.setMigrationOffered()
-                }
+                .setCancelable(true)
 
             if (hasRoot) {
                 builder.setPositiveButton(R.string.migration_migrate_settings) { _, _ ->
-                    ShizukuSettings.setMigrationOffered()
                     performMigration()
                 }
             }
 
             builder.setNegativeButton(R.string.migration_uninstall_old) { _, _ ->
-                ShizukuSettings.setMigrationOffered()
                 launchUninstall(MigrationHelper.OLD_PACKAGE)
             }
+
+            builder.setNeutralButton(R.string.migration_dismiss, null)
 
             try {
                 builder.show()
             } catch (e: Exception) {
                 Timber.e(e, "Failed to show migration dialog")
-                ShizukuSettings.setMigrationOffered()
             }
         }
     }

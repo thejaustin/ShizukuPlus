@@ -19,7 +19,7 @@
             android:title="@string/settings_shizuku_plus_features"
             android:summary="@string/settings_nav_shizuku_plus_summary"
             android:icon="@drawable/ic_bolt_24dp"
-            android:fragment="af.shizuku.manager.settings.Shizuku+SettingsFragment" />
+            android:fragment="af.shizuku.manager.settings.ShizukuPlusSettingsFragment" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 

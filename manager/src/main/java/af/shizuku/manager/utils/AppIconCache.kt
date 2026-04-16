@@ -13,6 +13,7 @@ import kotlinx.coroutines.*
 import me.zhanghai.android.appiconloader.AppIconLoader
 import af.shizuku.manager.R
 import rikka.core.util.BuildUtils
+import java.lang.ref.WeakReference
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
@@ -74,6 +75,11 @@ object AppIconCache {
         }
         val bitmap = try {
             loader.loadIcon(info, false)
+        } catch (e: SecurityException) {
+            // Expected on some devices when loading icons for work-profile or cross-user apps.
+            // UserManager.getProfileType() requires INTERACT_ACROSS_USERS which we don't hold.
+            Timber.tag(TAG).w("Skipping badged icon for ${info.packageName}: ${e.message}")
+            null
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e, "Failed to load icon for ${info.packageName}")
             null
@@ -88,27 +94,35 @@ object AppIconCache {
     fun loadIconBitmapAsync(context: Context,
                             info: ApplicationInfo, userId: Int,
                             view: ImageView): Job {
+        // Capture size and a weak reference on the calling (main) thread before entering the
+        // coroutine. WeakReference prevents the lambda from keeping the view — and therefore its
+        // Activity/Fragment — alive after cancellation.
+        val size = view.measuredWidth.let { if (it > 0) it else context.resources.getDimensionPixelSize(R.dimen.default_app_icon_size) }
+        val weakView = WeakReference(view)
         return scope.launch {
-            val size = view.measuredWidth.let { if (it > 0) it else context.resources.getDimensionPixelSize(R.dimen.default_app_icon_size) }
             val cachedBitmap = get(info.packageName, userId, size)
             if (cachedBitmap != null) {
                 withContext(Dispatchers.Main) {
-                    view.setImageBitmap(cachedBitmap)
+                    weakView.get()?.setImageBitmap(cachedBitmap)
                 }
                 return@launch
             }
-            
+
             withContext(Dispatchers.Main) {
+                val v = weakView.get() ?: return@withContext
                 if (Build.VERSION.SDK_INT >= 26) {
-                    view.setImageResource(R.drawable.ic_default_app_icon)
+                    v.setImageResource(R.drawable.ic_default_app_icon)
                 } else {
-                    view.setImageDrawable(null)
+                    v.setImageDrawable(null)
                 }
             }
 
             val bitmap = try {
                 getOrLoadBitmap(context, info, userId, size)
             } catch (e: CancellationException) {
+                null
+            } catch (e: SecurityException) {
+                Timber.tag(TAG).w("Skipping badged icon for ${info.packageName}: ${e.message}")
                 null
             } catch (e: Throwable) {
                 Timber.tag(TAG).e(e, "Failed to load icon for ${info.packageName}")
@@ -117,7 +131,7 @@ object AppIconCache {
 
             if (bitmap != null) {
                 withContext(Dispatchers.Main) {
-                    view.setImageBitmap(bitmap)
+                    weakView.get()?.setImageBitmap(bitmap)
                 }
             }
         }

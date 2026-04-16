@@ -9,6 +9,7 @@ import androidx.work.Configuration
 import com.topjohnwu.superuser.Shell
 import io.sentry.Sentry
 import io.sentry.android.core.SentryAndroid
+import io.sentry.android.timber.SentryTimberTree
 import io.sentry.Breadcrumb
 import af.shizuku.manager.service.WatchdogService
 import af.shizuku.manager.utils.ActivityLogManager
@@ -68,6 +69,12 @@ class ShizukuApplication : Application(), Configuration.Provider {
                 options.isAttachScreenshot = true
                 options.isAttachViewHierarchy = true
                 
+                // User interaction and lifecycle tracing
+                options.isEnableUserInteractionTracing = true
+                options.isEnableUserInteractionBreadcrumbs = true
+                options.isEnableFragmentLifecycleBreadcrumbs = true
+                options.isEnableAutoActivityLifecycleTracing = true
+                
                 // ANR detection — 10s threshold avoids false positives from privileged
                 // system calls (__epoll_pwait / __ioctl) in the event loop
                 options.isAnrEnabled = true
@@ -106,6 +113,15 @@ class ShizukuApplication : Application(), Configuration.Provider {
                     event.setTag("version_name", BuildConfig.VERSION_NAME)
                     event.setTag("version_code", BuildConfig.VERSION_CODE.toString())
                     event.setTag("build_type", if (BuildConfig.DEBUG) "debug" else "release")
+                    
+                    // Add system state at time of crash
+                    try {
+                        event.setTag("shizuku_state", Shizuku.getServiceState().toString())
+                        event.setTag("is_rooted", Shell.isAppGrantedRoot().toString())
+                    } catch (e: Exception) {
+                        // Ignore errors during state collection
+                    }
+                    
                     event
                 }
             }
@@ -114,7 +130,10 @@ class ShizukuApplication : Application(), Configuration.Provider {
             Sentry.setUser(null) // Anonymous user
             Sentry.setTag("app_variant", BuildConfig.VERSION_NAME)
             
-            Timber.d("Sentry initialized with release tracking")
+            // Plant Sentry Timber tree to automatically capture logs as breadcrumbs
+            Timber.plant(SentryTimberTree())
+            
+            Timber.d("Sentry initialized with release tracking and advanced monitoring")
         } catch (e: Exception) {
             Timber.e(e, "Failed to initialize Sentry early")
             // Don't throw - allow app to continue even if Sentry fails

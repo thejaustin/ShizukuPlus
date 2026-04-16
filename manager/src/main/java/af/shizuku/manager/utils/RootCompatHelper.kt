@@ -8,6 +8,7 @@ import kotlinx.coroutines.withContext
 import af.shizuku.manager.ktx.loge
 import af.shizuku.manager.R
 import rikka.shizuku.Shizuku
+import timber.log.Timber
 
 object RootCompatHelper {
 
@@ -88,9 +89,20 @@ object RootCompatHelper {
     }
 
     private fun executePrivileged(cmd: Array<String>) {
+        if (!Shizuku.pingBinder()) {
+            Timber.w("RootCompatHelper: Shizuku binder not available, skipping command")
+            return
+        }
         try {
             val process = Shizuku.newProcess(cmd, null, null)
             process.waitFor()
+            // Drain and close all streams to avoid fd leaks on the privileged process.
+            process.inputStream.close()
+            process.errorStream.close()
+            process.outputStream.close()
+        } catch (e: IllegalStateException) {
+            // Binder lost between ping and call — not a bug, just timing.
+            Timber.w("RootCompatHelper: binder lost during privileged command: ${e.message}")
         } catch (e: Exception) {
             loge("execute privileged command failed", e)
         }

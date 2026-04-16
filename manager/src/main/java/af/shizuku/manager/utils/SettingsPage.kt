@@ -50,7 +50,7 @@ sealed class SettingsPage(
                 }.recoverCatching {
                     HighlightWirelessDebugging.launch(context)
                 }.onFailure { e ->
-                    Timber.tag("SettingsUtils").e(e, "Failed to start Settings activity")
+                    Timber.tag("SettingsUtils").w("Failed to start Settings activity (${e.javaClass.simpleName}): ${e.message}")
                 }
             }
         }
@@ -115,7 +115,10 @@ sealed class SettingsPage(
         runCatching {
             context.startActivity(buildIntent(context))
         }.onFailure { e ->
-            Timber.tag("SettingsUtils").e(e, "Failed to start Settings activity")
+            // ActivityNotFoundException is expected on devices that don't have this settings page
+            // (e.g. SECURITY_ADVANCED_SETTINGS on non-Samsung, or TV devices). Use w() not e()
+            // so it doesn't get reported to Sentry as a crash.
+            Timber.tag("SettingsUtils").w("Failed to start Settings activity (${e.javaClass.simpleName}): ${e.message}")
         }
     }
 

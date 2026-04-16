@@ -772,5 +772,10 @@
     <string name="update_permission_required_message">To enable auto-install, please grant \"Install unknown apps\" permission in system settings.</string>
     <string name="update_checking">Checking for updates…</string>
     <string name="ok">OK</string>
+    <string name="no_file_picker">No file picker app found on this device</string>
+    <string name="wadb_notification_discovery_timeout">ADB port discovery timed out — retrying…</string>
+    <string name="shell_export_success">Files exported successfully</string>
+    <string name="shell_export_failed">Export failed — no files could be written</string>
+    <string name="shell_export_partial">%1$d of %2$d files exported (some failed)</string>
 
 </resources>

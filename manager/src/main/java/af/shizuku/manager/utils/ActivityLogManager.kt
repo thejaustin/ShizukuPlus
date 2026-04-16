@@ -91,6 +91,11 @@ object ActivityLogManager {
         }
 
         try {
+            // Ensure the databases directory exists before Room tries to open it.
+            // On a fresh install the directory may not yet exist, causing SQLiteCantOpenDatabaseException.
+            val dbFile = context.getDatabasePath("shizuku_activity_logs.db")
+            dbFile.parentFile?.mkdirs()
+
             database = ActivityLogDatabase.getInstance(context)
             dao = database?.activityLogDao()
 
@@ -209,40 +214,15 @@ object ActivityLogManager {
                         action = record.action
                     )
                     dao!!.insert(roomLog)
-                    
-                    // Enforce retention limit in database
-                    enforceRetentionInDatabase()
+                    // Retention enforcement is handled by cleanupOldRecords(), called from log()
+                    // immediately after saveToDatabase(). Do not call it here — it acquires
+                    // isCleaningUp and dbLock independently, which would conflict with this scope.
                 } finally {
                     dbLock.release()
                 }
             } catch (e: Exception) {
                 Timber.tag(TAG).e(e, "Error saving log to database")
             }
-        }
-    }
-    
-    /**
-     * Enforce the retention limit in the database.
-     */
-    private suspend fun enforceRetentionInDatabase() {
-        if (isCleaningUp.getAndSet(true)) return
-        
-        try {
-            val count = dao!!.getCount()
-            if (count > retentionCount) {
-                val excessCount = count - retentionCount
-                // Get the timestamp of the record to keep
-                val logs = dao!!.getAll()
-                if (logs.size > retentionCount) {
-                    val cutoffTimestamp = logs[retentionCount - 1].timestamp
-                    val deleted = dao!!.deleteOlderThan(cutoffTimestamp)
-                    Timber.tag(TAG).d("Cleaned up $deleted old records from database")
-                }
-            }
-        } catch (e: Exception) {
-            Timber.tag(TAG).e(e, "Error enforcing retention")
-        } finally {
-            isCleaningUp.set(false)
         }
     }
     

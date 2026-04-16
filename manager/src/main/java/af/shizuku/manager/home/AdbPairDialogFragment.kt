@@ -97,6 +97,9 @@ class AdbPairDialogFragment : DialogFragment() {
                 dialog.setTitle(R.string.dialog_adb_pairing_discovery)
                 binding.text1.isVisible = true
                 binding.pairingCode.isVisible = false
+                binding.progress.isVisible = true
+                binding.status.isVisible = true
+                binding.status.text = "Searching for pairing service..."
                 portEditText?.setText(portValue.toString())
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).isVisible = false
                 dialog.getButton(AlertDialog.BUTTON_NEUTRAL).isVisible = true
@@ -104,6 +107,8 @@ class AdbPairDialogFragment : DialogFragment() {
                 dialog.setTitle(R.string.dialog_adb_pairing_title)
                 binding.text1.isVisible = false
                 binding.pairingCode.isVisible = true
+                binding.progress.isVisible = false
+                binding.status.isVisible = false
                 portEditText?.setText(portValue.toString())
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).isVisible = true
                 dialog.getButton(AlertDialog.BUTTON_NEUTRAL).isVisible = false
@@ -127,10 +132,26 @@ class AdbPairDialogFragment : DialogFragment() {
             dialog?.setTitle(R.string.dialog_adb_pairing_title)
         }
 
+        viewModel.isPairing.observe(this) { isPairing ->
+            binding.progress.isVisible = isPairing
+            binding.status.isVisible = isPairing
+            if (isPairing) {
+                binding.status.text = "Pairing with device..."
+                binding.pairingCode.isEnabled = false
+                getDialog()?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled = false
+            } else {
+                binding.pairingCode.isEnabled = true
+                getDialog()?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled = true
+            }
+        }
+
         viewModel.result.observe(this) {
             if (it == null) {
                 dismissAllowingStateLoss()
             } else {
+                binding.progress.isVisible = false
+                binding.status.isVisible = true
+                binding.status.text = "Pairing failed."
                 when (it) {
                     is ConnectException -> {
                         binding.port.error = context.getString(R.string.cannot_connect_port)
@@ -168,6 +189,9 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
     private val _port = MutableLiveData<Int>()
     val port = _port as LiveData<Int>
 
+    private val _isPairing = MutableLiveData<Boolean>(false)
+    val isPairing = _isPairing as LiveData<Boolean>
+
     private val adbMdns: AdbMdns = AdbMdns(appContext, AdbMdns.TLS_PAIRING) {
         _port.postValue(it)
     }
@@ -177,6 +201,7 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun run(port: Int, password: String) {
+        _isPairing.value = true
         viewModelScope.launch(Dispatchers.IO) {
             val host = "127.0.0.1"
 
@@ -184,6 +209,7 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
                 AdbKey(PreferenceAdbKeyStore(ShizukuSettings.getPreferences()), "shizuku")
             } catch (e: Throwable) {
                 loge("failed to load or create AdbKey", e)
+                _isPairing.postValue(false)
                 _result.postValue(AdbKeyException(e))
                 return@launch
             }
@@ -191,9 +217,11 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
             AdbPairingClient(host, port, password, key).runCatching {
                 start()
             }.onFailure {
+                _isPairing.postValue(false)
                 _result.postValue(it)
                 loge("adb pairing failed", it)
             }.onSuccess {
+                _isPairing.postValue(false)
                 if (it) {
                     _result.postValue(null)
                 }

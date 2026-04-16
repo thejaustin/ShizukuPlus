@@ -7,7 +7,7 @@
         android:summary="@string/home_service_doctor_summary"
         android:icon="@drawable/ic_medical_services_24dp" />
 
-    <androidx.preference.TwoStatePreference
+    <SwitchPreferenceCompat
         android:key="enable_activity_log"
         android:title="@string/settings_enable_activity_log"
         android:summary="@string/settings_enable_activity_log_summary"
@@ -20,7 +20,7 @@
         android:icon="@drawable/ic_history_24dp"
         android:dependency="enable_activity_log" />
 
-    <androidx.preference.TwoStatePreference
+    <SwitchPreferenceCompat
         android:key="legacy_pairing"
         android:summary="@string/settings_legacy_pairing_summary"
         android:title="@string/settings_legacy_pairing"

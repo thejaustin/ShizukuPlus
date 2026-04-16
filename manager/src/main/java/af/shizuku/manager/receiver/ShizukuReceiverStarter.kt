@@ -14,6 +14,8 @@ import android.provider.Settings
 import timber.log.Timber
 import androidx.core.app.NotificationCompat
 import com.topjohnwu.superuser.Shell
+import io.sentry.Sentry
+import io.sentry.Breadcrumb
 import af.shizuku.manager.R
 import af.shizuku.manager.AppConstants
 import af.shizuku.manager.ShizukuSettings
@@ -33,6 +35,7 @@ object ShizukuReceiverStarter {
     enum class WorkerState {
         AWAITING_WIFI,
         AWAITING_RETRY,
+        AWAITING_DISCOVERY,
         RUNNING,
         STOPPED
     }
@@ -57,13 +60,15 @@ object ShizukuReceiverStarter {
     }
 
     fun buildNotification(context: Context, msg: String? = null): Notification {
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            context.getString(R.string.wadb_notification_title),
-            NotificationManager.IMPORTANCE_LOW
-        )
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.createNotificationChannel(channel)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                context.getString(R.string.wadb_notification_title),
+                NotificationManager.IMPORTANCE_LOW
+            )
+            nm.createNotificationChannel(channel)
+        }
 
         val cancelIntent = Intent(context, NotifCancelReceiver::class.java)
         val cancelPendingIntent = PendingIntent.getBroadcast(
@@ -106,6 +111,7 @@ object ShizukuReceiverStarter {
         val msgId = when (state) {
             WorkerState.AWAITING_WIFI -> R.string.wadb_notification_wifi_required
             WorkerState.AWAITING_RETRY -> R.string.wadb_notification_retry
+            WorkerState.AWAITING_DISCOVERY -> R.string.wadb_notification_discovery_timeout
             else -> null
         }
         val msg = if (msgId != null) context.getString(msgId) else null
@@ -114,7 +120,12 @@ object ShizukuReceiverStarter {
     }
 
     private fun rootStart(context: Context) {
+        Sentry.addBreadcrumb(Breadcrumb("Background Root start initiated").apply { category = "shizuku.starter" })
         if (!Shell.getShell().isRoot) {
+            Sentry.addBreadcrumb(Breadcrumb("Background Root start failed - no root").apply { 
+                category = "shizuku.starter"
+                level = io.sentry.SentryLevel.WARNING
+            })
             //NotificationHelper.notify(context, AppConstants.NOTIFICATION_ID_STATUS, AppConstants.NOTIFICATION_CHANNEL_STATUS, R.string.notification_service_start_no_root)
             Shell.getCachedShell()?.close()
             return
@@ -124,24 +135,29 @@ object ShizukuReceiverStarter {
             ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
             Shell.cmd(Starter.internalCommand).exec()
         } catch (e: Exception) {
+            Sentry.addBreadcrumb(Breadcrumb("Background Root start failed: ${e.message}").apply { 
+                category = "shizuku.starter"
+                level = io.sentry.SentryLevel.ERROR
+            })
             Timber.tag(AppConstants.TAG).e(e, "Failed to start Shizuku with root")
             ShizukuStateMachine.update()
         }
     }
 
     private fun showPermissionErrorNotification(context: Context) {
-
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            context.getString(R.string.wadb_notification_title),
-            NotificationManager.IMPORTANCE_LOW
-        )
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.createNotificationChannel(channel)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                context.getString(R.string.wadb_notification_title),
+                NotificationManager.IMPORTANCE_LOW
+            )
+            nm.createNotificationChannel(channel)
+        }
 
         val webpageIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thejaustin/ShizukuPlus/wiki#shizuku-isnt-starting-on-boot-for-me"))
         val pendingWebpageIntent = PendingIntent.getActivity(
-            context, 0, webpageIntent, PendingIntent.FLAG_IMMUTABLE
+            context, 0, webpageIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val msg = context.getString(R.string.wadb_permission_error_notification_content)

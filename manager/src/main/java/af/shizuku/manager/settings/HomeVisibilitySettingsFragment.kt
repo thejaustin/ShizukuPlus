@@ -22,12 +22,16 @@ class HomeVisibilitySettingsFragment : BaseSettingsFragment() {
         findPreference<Preference>("update_app_database")?.setOnPreferenceClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
-                    val url = java.net.URL("https://raw.githubusercontent.com/thejaustin/Shizuku+/master/database/apps.json")
+                    val url = java.net.URL("https://raw.githubusercontent.com/thejaustin/Shizuku%2B/master/database/apps.json")
                     val connection = url.openConnection() as java.net.HttpURLConnection
-                    connection.requestMethod = "GET"
-                    connection.connectTimeout = 10_000
-                    connection.readTimeout = 10_000
-                    val content = connection.inputStream.bufferedReader().readText()
+                    val content = try {
+                        connection.requestMethod = "GET"
+                        connection.connectTimeout = 10_000
+                        connection.readTimeout = 10_000
+                        connection.inputStream.use { it.bufferedReader().readText() }
+                    } finally {
+                        connection.disconnect()
+                    }
                     withContext(Dispatchers.Main) {
                         AppContextManager.updateDatabase(content)
                         Toast.makeText(context, R.string.settings_update_app_database_success, Toast.LENGTH_SHORT).show()

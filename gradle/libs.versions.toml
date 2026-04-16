@@ -88,6 +88,8 @@ bouncycastle-bcpkix = { group = "org.bouncycastle", name = "bcpkix-jdk18on", ver
 appiconloader = { group = "me.zhanghai.android.appiconloader", name = "appiconloader", version.ref = "appiconloader" }
 sentry-android-core = { group = "io.sentry", name = "sentry-android-core", version.ref = "sentry" }
 sentry-android-fragment = { group = "io.sentry", name = "sentry-android-fragment", version.ref = "sentry" }
+sentry-android-timber = { group = "io.sentry", name = "sentry-android-timber", version.ref = "sentry" }
+sentry-android-okhttp = { group = "io.sentry", name = "sentry-android-okhttp", version.ref = "sentry" }
 boringssl = { group = "io.github.vvb2060.ndk", name = "boringssl", version.ref = "boringssl" }
 libcxx = { group = "org.lsposed.libcxx", name = "libcxx", version.ref = "libcxx" }
 

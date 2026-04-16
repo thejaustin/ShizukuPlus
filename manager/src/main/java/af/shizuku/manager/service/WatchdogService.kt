@@ -43,10 +43,12 @@ class WatchdogService : Service() {
         super.onCreate()
         isRunning.set(true)
         // Create notification channel before startForeground() to avoid InvalidForegroundServiceTypeException
-        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.createNotificationChannel(
-            NotificationChannel(WATCHDOG_CHANNEL_ID, "Watchdog", NotificationManager.IMPORTANCE_LOW)
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            nm.createNotificationChannel(
+                NotificationChannel(WATCHDOG_CHANNEL_ID, "Watchdog", NotificationManager.IMPORTANCE_LOW)
+            )
+        }
         ShizukuStateMachine.addListener(stateListener)
     }
 
@@ -117,12 +119,14 @@ class WatchdogService : Service() {
         val channelName = "Crash Reports"
 
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channel = NotificationChannel(
-            channelId,
-            channelName,
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
-        nm.createNotificationChannel(channel)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                channelName,
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            nm.createNotificationChannel(channel)
+        }
 
         val learnMoreIntent = Intent(Intent.ACTION_VIEW).apply {
                                     setData(Uri.parse("https://github.com/thejaustin/ShizukuPlus/wiki#shizuku-keeps-stopping-randomly"))        }
@@ -157,7 +161,12 @@ class WatchdogService : Service() {
         @JvmStatic
         fun start(context: Context) {
             try {
-                context.startForegroundService(Intent(context, WatchdogService::class.java))
+                val intent = Intent(context, WatchdogService::class.java)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent)
+                } else {
+                    context.startService(intent)
+                }
             } catch (e: Exception) {
                 Timber.tag("ShizukuApplication").e("Failed to start WatchdogService: ${e.message}" )
             }
