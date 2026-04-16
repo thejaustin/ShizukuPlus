@@ -200,7 +200,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     @Override
     public void attachUserService(IBinder binder, Bundle options) {
-        enforceManagerPermission("func");
+        enforceManagerPermission("attachUserService");
 
         super.attachUserService(binder, options);
     }
@@ -739,9 +739,20 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         if (op.equals("set")) {
                             String value = cmd[4];
                             int intOp = (int) service.getClass().getMethod("strOpToOp", String.class).invoke(service, modeOrOp);
-                            int intMode = value.equals("allow") ? 0 : value.equals("ignore") ? 1 : 2; // simplified
-                            service.getClass().getMethod("setMode", int.class, int.class, String.class, int.class).invoke(service, intOp, callingUid, pkg, intMode);
-                            return newProcessInternal(new String[]{"true"}, env, dir);
+                            int intMode = value.equals("allow") ? 0 : (value.equals("ignore") || value.equals("deny")) ? 1 : 2; 
+                            
+                            int targetUid = -1;
+                            try {
+                                targetUid = Integer.parseInt(pkg);
+                            } catch (NumberFormatException e) {
+                                ApplicationInfo ai = PackageManagerApis.getApplicationInfoNoThrow(pkg, 0, userId);
+                                if (ai != null) targetUid = ai.uid;
+                            }
+                            
+                            if (targetUid != -1) {
+                                service.getClass().getMethod("setMode", int.class, int.class, String.class, int.class).invoke(service, intOp, targetUid, pkg, intMode);
+                                return newProcessInternal(new String[]{"true"}, env, dir);
+                            }
                         }
                     }
                 } catch (Throwable tr) {

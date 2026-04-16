@@ -58,7 +58,8 @@ object RootCompatHelper {
             val prefsDir = "/data/data/$packageName/shared_prefs"
             // Use sh -c to execute sed via Shizuku's privileged shell
             // We search for common patterns like /system/bin/su or /system/xbin/su and replace them
-            val script = "find $prefsDir -name \"*.xml\" -type f | xargs sed -i 's|/system/[^/ ]*/su|$suPath|g'"
+            // Use -r with xargs to avoid running sed if find returns nothing
+            val script = "find $prefsDir -name \"*.xml\" -type f 2>/dev/null | xargs -r sed -i 's|/system/[^/ ]*/su|$suPath|g'"
             executePrivileged(arrayOf("sh", "-c", script))
             true
         } catch (e: Exception) {
@@ -71,15 +72,24 @@ object RootCompatHelper {
         val installed = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
         var count = 0
         
+        val knownRootPackages = setOf(
+            "org.adaway", "dev.ukanth.ufirewall", "com.machiav3lli.neo_backup",
+            "eu.darken.sdm", "eu.darken.sdmse", "org.swiftapps.swiftbackup",
+            "com.keramidas.TitaniumBackup", "com.noshufou.android.su",
+            "com.zacharee.tweaker", "com.franco.doze", "com.oasisfeng.greenify"
+        )
+
         for (pkgInfo in installed) {
             val pkg = pkgInfo.packageName
             if (pkg == context.packageName) continue
             
-            val usesRoot = pkgInfo.requestedPermissions?.any { 
+            val requestsRootPerm = pkgInfo.requestedPermissions?.any { 
                 it.contains("ROOT", true) || it.contains("SUPERUSER", true)
             } == true
             
-            if (usesRoot) {
+            val isKnownRootApp = knownRootPackages.contains(pkg)
+            
+            if (requestsRootPerm || isKnownRootApp) {
                 if (autoSetup(context, pkg, suPath)) {
                     count++
                 }
@@ -95,8 +105,18 @@ object RootCompatHelper {
         }
         try {
             val process = Shizuku.newProcess(cmd, null, null)
+            
+            // Start threads to drain output/error streams to prevent buffer-fill hangs
+            val outDrainer = Thread { try { process.inputStream.bufferedReader().use { it.readText() } } catch (e: Exception) {} }
+            val errDrainer = Thread { try { process.errorStream.bufferedReader().use { it.readText() } } catch (e: Exception) {} }
+            outDrainer.start()
+            errDrainer.start()
+
             process.waitFor()
-            // Drain and close all streams to avoid fd leaks on the privileged process.
+            outDrainer.join(500)
+            errDrainer.join(500)
+
+            // Close all streams
             process.inputStream.close()
             process.errorStream.close()
             process.outputStream.close()

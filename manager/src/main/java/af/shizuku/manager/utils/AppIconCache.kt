@@ -94,26 +94,33 @@ object AppIconCache {
     fun loadIconBitmapAsync(context: Context,
                             info: ApplicationInfo, userId: Int,
                             view: ImageView): Job {
-        // Capture size and a weak reference on the calling (main) thread before entering the
-        // coroutine. WeakReference prevents the lambda from keeping the view — and therefore its
-        // Activity/Fragment — alive after cancellation.
+        val packageName = info.packageName
         val size = view.measuredWidth.let { if (it > 0) it else context.resources.getDimensionPixelSize(R.dimen.default_app_icon_size) }
+        
+        // Tag the view with the current package being loaded to handle recycling
+        view.setTag(R.id.tag_app_icon_package, packageName)
+        
         val weakView = WeakReference(view)
         return scope.launch {
-            val cachedBitmap = get(info.packageName, userId, size)
+            val cachedBitmap = get(packageName, userId, size)
             if (cachedBitmap != null) {
                 withContext(Dispatchers.Main) {
-                    weakView.get()?.setImageBitmap(cachedBitmap)
+                    val v = weakView.get() ?: return@withContext
+                    if (v.getTag(R.id.tag_app_icon_package) == packageName) {
+                        v.setImageBitmap(cachedBitmap)
+                    }
                 }
                 return@launch
             }
 
             withContext(Dispatchers.Main) {
                 val v = weakView.get() ?: return@withContext
-                if (Build.VERSION.SDK_INT >= 26) {
-                    v.setImageResource(R.drawable.ic_default_app_icon)
-                } else {
-                    v.setImageDrawable(null)
+                if (v.getTag(R.id.tag_app_icon_package) == packageName) {
+                    if (Build.VERSION.SDK_INT >= 26) {
+                        v.setImageResource(R.drawable.ic_default_app_icon)
+                    } else {
+                        v.setImageDrawable(null)
+                    }
                 }
             }
 
@@ -122,16 +129,19 @@ object AppIconCache {
             } catch (e: CancellationException) {
                 null
             } catch (e: SecurityException) {
-                Timber.tag(TAG).w("Skipping badged icon for ${info.packageName}: ${e.message}")
+                Timber.tag(TAG).w("Skipping badged icon for $packageName: ${e.message}")
                 null
             } catch (e: Throwable) {
-                Timber.tag(TAG).e(e, "Failed to load icon for ${info.packageName}")
+                Timber.tag(TAG).e(e, "Failed to load icon for $packageName")
                 null
             }
 
             if (bitmap != null) {
                 withContext(Dispatchers.Main) {
-                    weakView.get()?.setImageBitmap(bitmap)
+                    val v = weakView.get() ?: return@withContext
+                    if (v.getTag(R.id.tag_app_icon_package) == packageName) {
+                        v.setImageBitmap(bitmap)
+                    }
                 }
             }
         }
