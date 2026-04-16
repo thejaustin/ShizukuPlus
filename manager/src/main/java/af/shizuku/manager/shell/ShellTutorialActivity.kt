@@ -104,7 +104,7 @@ class ShellTutorialActivity : AppBarActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = TerminalTutorialActivityBinding.inflate(layoutInflater, rootView, true)
+        val binding = TerminalTutorialActivityBinding.bind(rootView)
 
         binding.content.apply {
             setInitialPadding(

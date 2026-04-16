@@ -34,7 +34,7 @@ class AdbPairingTutorialActivity : AppBarActivity() {
         super.onCreate(savedInstanceState)
         val context = this
 
-        binding = AdbPairingTutorialActivityBinding.inflate(layoutInflater, rootView, true)
+        binding = AdbPairingTutorialActivityBinding.bind(rootView)
         
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
