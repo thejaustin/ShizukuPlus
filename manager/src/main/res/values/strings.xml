@@ -129,6 +129,7 @@
     <string name="terminal_tutorial_copy_command">cp /sdcard/chosen-folder/* /data/data/terminal.package.name/files</string>
     <string name="terminal_tutorial_copy_summary">This copies the exported files to your terminal app\'s private storage. You can also add aliases for %1$s, %2$s, and %3$s in your &lt;font face=\"monospace\"&gt;.bashrc&lt;/font&gt; or &lt;font face=\"monospace\"&gt;.zshrc&lt;/font&gt;.</string>
     <string name="terminal_tutorial_run_command">sh /path/to/%1$s</string>
+    <string name="terminal_tutorial_run_plus_command">sh /path/to/plus [command]</string>
 
     <!-- Adb Pairing Dialog -->
     <string name="adb_pairing_searching">Searching for pairing service…</string>
@@ -249,7 +250,7 @@
     <string name="terminal_export_files">Export files</string>
     <string name="terminal_tutorial_2">Use your terminal app to copy the files to its private files directory.</string>
     <string name="terminal_tutorial_2_description">Tip: If your terminal app\'s home directory (~) is in the private files directory, placing the files there will allow you to run %1$s without writing the path.\n\nOtherwise, you can create an alias for %2$s in your terminal app\'s %3$s configuration file.</string>
-    <string name="terminal_tutorial_3">Open a shell with the following command:</string>
+    <string name="terminal_tutorial_3">Open a shell or run a Shizuku+ command:</string>
     <string name="rish_description"><![CDATA[With %1$s, you can run shell commands in any terminal app.<p>Tap to learn more about how to use it.]]></string>
 
     <!-- Settings — swipe customisation -->
@@ -534,13 +535,13 @@
     <string name="home_service_doctor_title">Service Doctor</string>
     <string name="home_service_doctor_summary">Having trouble starting Shizuku? Tap to run a diagnostic check.</string>
     <string name="doctor_dialog_title">System Diagnostics</string>
-    <string name="doctor_check_battery">Battery optimization: ^1</string>
-    <string name="doctor_check_adb">Wireless debugging: ^1</string>
-    <string name="doctor_check_root">Root access: ^1</string>
-    <string name="doctor_check_secure_settings">Secure Settings: ^1</string>
-    <string name="doctor_check_permission">ADB permission: ^1</string>
-    <string name="doctor_check_server">Shizuku server: ^1</string>
-    <string name="doctor_check_background">Background limits: ^1</string>
+    <string name="doctor_check_battery">Battery optimization: %1$s</string>
+    <string name="doctor_check_adb">Wireless debugging: %1$s</string>
+    <string name="doctor_check_root">Root access: %1$s</string>
+    <string name="doctor_check_secure_settings">Secure Settings: %1$s</string>
+    <string name="doctor_check_permission">ADB permission: %1$s</string>
+    <string name="doctor_check_server">Shizuku server: %1$s</string>
+    <string name="doctor_check_background">Background limits: %1$s</string>
     <string name="doctor_status_ok">OK</string>
     <string name="doctor_status_running">Running</string>
     <string name="doctor_status_stopped">Stopped</string>

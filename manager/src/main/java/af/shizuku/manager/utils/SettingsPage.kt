@@ -95,6 +95,20 @@ sealed class SettingsPage(
                 }
             }
         }
+        object BackgroundUsageLimits : SettingsPage("com.samsung.android.sm.ACTION_BACKGROUND_USAGE_LIMITS") {
+            override fun launch(context: Context) {
+                runCatching {
+                    val intent = Intent("com.samsung.android.sm.ACTION_BACKGROUND_USAGE_LIMITS").apply {
+                        setComponent(ComponentName("com.samsung.android.lool", "com.samsung.android.sm.ui.battery.BackgroundUsageLimitsActivity"))
+                        flags = defaultFlags
+                    }
+                    context.startActivity(intent)
+                }.onFailure {
+                    // Fallback to general battery page
+                    DeviceCareBattery.launch(context)
+                }
+            }
+        }
     }
 
     protected val defaultFlags =

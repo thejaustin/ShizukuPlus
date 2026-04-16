@@ -44,6 +44,10 @@ class AdbProxyService : Service() {
 
         /** Configures adbd TCP mode via Shizuku. Requires Shizuku with root. */
         fun enableAdbTcp(port: Int = 5555): Boolean {
+            if (!Shizuku.pingBinder()) {
+                Timber.tag(TAG).w("Shizuku service is not running - cannot enable adbd TCP mode")
+                return false
+            }
             return try {
                 // Step 1: Set the TCP port property
                 Shizuku.newProcess(
@@ -93,6 +97,10 @@ class AdbProxyService : Service() {
 
         /** Disables adbd TCP mode, reverting to USB only. */
         fun disableAdbTcp(): Boolean {
+            if (!Shizuku.pingBinder()) {
+                Timber.tag(TAG).w("Shizuku service is not running - cannot disable adbd TCP mode")
+                return false
+            }
             return try {
                 // Set port to -1 (disabled) and restart adbd
                 Shizuku.newProcess(

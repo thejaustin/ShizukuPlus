@@ -122,10 +122,19 @@ class ServiceDoctorActivity : AppBarActivity() {
         // 5. Secure Settings (WRITE_SECURE_SETTINGS)
         val hasSecureSettings = SettingsHelper.hasWriteSecureSettings(this)
         checks.add(DoctorCheck(
-            getString(R.string.doctor_check_secure_settings),
+            getString(R.string.doctor_check_secure_settings, ""),
             if (hasSecureSettings) getString(R.string.doctor_status_ok) else getString(R.string.doctor_status_not_enabled),
             hasSecureSettings,
             onFix = if (!hasSecureSettings) { { SettingsHelper.promptWriteSecureSettings(this) } } else null
+        ))
+
+        // 5b. Accessibility (for AI automation features)
+        val isAccessibilityEnabled = SettingsHelper.isAccessibilityServiceEnabled(this, AdbPairingAccessibilityService::class.java)
+        checks.add(DoctorCheck(
+            "Accessibility Service",
+            if (isAccessibilityEnabled) getString(R.string.doctor_status_ok) else getString(R.string.doctor_status_not_enabled),
+            isAccessibilityEnabled,
+            onFix = if (!isAccessibilityEnabled) { { SettingsPage.Accessibility.launch(this) } } else null
         ))
 
         // 6. Xiaomi Restricted ADB
@@ -152,9 +161,9 @@ class ServiceDoctorActivity : AppBarActivity() {
             // Samsung Device Care / Always sleeping apps
             checks.add(DoctorCheck(
                 getString(R.string.doctor_check_samsung_battery_protection),
-                getString(R.string.doctor_status_review),
+                getString(R.string.doctor_status_review) + " (Check Sleeping Apps)",
                 true,
-                onFix = { SettingsPage.Samsung.DeviceCareBattery.launch(this) }
+                onFix = { SettingsPage.Samsung.BackgroundUsageLimits.launch(this) }
             ))
 
             if (oneUi >= 6) {

@@ -140,7 +140,9 @@ class ShellTutorialActivity : AppBarActivity() {
                 .toHtml()
 
             text3.text = getString(R.string.terminal_tutorial_3)
-            command3.text = getString(R.string.terminal_tutorial_run_command, SH_NAME)
+            val rishCmd = getString(R.string.terminal_tutorial_run_command, SH_NAME)
+            val plusCmd = getString(R.string.terminal_tutorial_run_plus_command)
+            command3.text = "$rishCmd\n\n$plusCmd"
 
             button1.setOnClickListener {
                 try {

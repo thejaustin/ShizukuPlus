@@ -63,12 +63,10 @@ class AdbPairingTutorialActivity : AppBarActivity() {
 
     private fun syncNotificationEnabled() {
         binding.apply {
-            step1.isVisible = notificationEnabled
-            step2.isVisible = notificationEnabled
-            step3.isVisible = notificationEnabled
-            network.isVisible = notificationEnabled
-            notification.isVisible = notificationEnabled
+            // Keep steps visible so user can prepare, but show warning
             notificationDisabled.isGone = notificationEnabled
+            // notification is the "success" card, only show if enabled
+            notification.isVisible = notificationEnabled
         }
     }
 

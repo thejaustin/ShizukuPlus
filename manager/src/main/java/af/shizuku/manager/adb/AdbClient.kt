@@ -38,11 +38,12 @@ class AdbClient(private val host: String, private val port: Int, private val key
     private var tlsInputStream: DataInputStream? = null
     private var tlsOutputStream: DataOutputStream? = null
 
-    private val inputStream get() = if (useTls) tlsInputStream!! else plainInputStream!!
-    private val outputStream get() = if (useTls) tlsOutputStream!! else plainOutputStream!!
+    private val inputStream get() = (if (useTls) tlsInputStream else plainInputStream) ?: throw IllegalStateException("inputStream is null - AdbClient not connected or closed")
+    private val outputStream get() = (if (useTls) tlsOutputStream else plainOutputStream) ?: throw IllegalStateException("outputStream is null - AdbClient not connected or closed")
 
     fun connect() {
         require(port in 1..65535) { "port out of range: $port" }
+        useTls = false // Reset TLS state for each connection attempt
         val s = Socket()
         socket = s
         val address = InetSocketAddress(host, port)

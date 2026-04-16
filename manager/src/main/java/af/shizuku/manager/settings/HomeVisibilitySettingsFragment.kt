@@ -22,7 +22,7 @@ class HomeVisibilitySettingsFragment : BaseSettingsFragment() {
         findPreference<Preference>("update_app_database")?.setOnPreferenceClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
-                    val url = java.net.URL("https://raw.githubusercontent.com/thejaustin/Shizuku%2B/master/database/apps.json")
+                    val url = java.net.URL("https://raw.githubusercontent.com/thejaustin/ShizukuPlus/master/database/apps.json")
                     val connection = url.openConnection() as java.net.HttpURLConnection
                     val content = try {
                         connection.requestMethod = "GET"
