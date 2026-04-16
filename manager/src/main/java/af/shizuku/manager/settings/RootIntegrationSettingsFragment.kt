@@ -38,6 +38,7 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
 
         findPreference<TwoStatePreference>("on_device_adb_tcp")?.setOnPreferenceChangeListener { _, newValue ->
             if (newValue is Boolean) {
+                preferenceManager.sharedPreferences?.edit()?.putBoolean("on_device_adb_tcp", newValue)?.apply()
                 lifecycleScope.launch(Dispatchers.IO) {
                     if (newValue) {
                         af.shizuku.manager.service.AdbProxyService.enableAdbTcp()
@@ -49,13 +50,17 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        findPreference<TwoStatePreference>("force_start_wadb")?.setOnPreferenceChangeListener { _, _ ->
-            ShizukuSettings.syncAllPlusFeaturesToServer()
+        findPreference<TwoStatePreference>("force_start_wadb")?.setOnPreferenceChangeListener { _, newValue ->
+            if (newValue is Boolean) {
+                preferenceManager.sharedPreferences?.edit()?.putBoolean("force_start_wadb", newValue)?.apply()
+                ShizukuSettings.syncAllPlusFeaturesToServer()
+            }
             true
         }
 
         findPreference<TwoStatePreference>("su_bridge_enabled")?.setOnPreferenceChangeListener { _, newValue ->
             if (newValue is Boolean) {
+                preferenceManager.sharedPreferences?.edit()?.putBoolean("su_bridge_enabled", newValue)?.apply()
                 ShizukuSettings.syncAllPlusFeaturesToServer()
             }
             true

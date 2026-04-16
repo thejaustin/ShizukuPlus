@@ -82,10 +82,10 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : SwitchPrefe
                         marginStart = margin
                     }
                     layoutParams = params
-                    setOnClickListener { showHelp() }
                 }
                 container.addView(infoIcon)
             }
+            infoIcon.setOnClickListener { showHelp() }
             infoIcon.visibility = View.VISIBLE
         }
 
@@ -100,10 +100,10 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : SwitchPrefe
                         marginStart = margin
                     }
                     layoutParams = params
-                    setOnClickListener { launchIntegration() }
                 }
                 container.addView(setupIcon)
             }
+            setupIcon.setOnClickListener { launchIntegration() }
             setupIcon.visibility = View.VISIBLE
         }
         

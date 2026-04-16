@@ -112,16 +112,24 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                 val enabled = newValue as? Boolean ?: false
                 if (enabled && experimentalKeys.contains(prefKey)) {
                     showExperimentalWarning(prefKey) {
+                        preferenceManager.sharedPreferences?.edit()?.putBoolean(prefKey, true)?.apply()
                         ShizukuSettings.syncAllPlusFeaturesToServer()
                         updatePlusFeatureDependency(prefKey, true)
                     }
                     false // Handle manually after dialog
                 } else {
+                    preferenceManager.sharedPreferences?.edit()?.putBoolean(prefKey, enabled)?.apply()
                     ShizukuSettings.syncAllPlusFeaturesToServer()
                     updatePlusFeatureDependency(prefKey, enabled)
                     true
                 }
             }
+        }
+
+        findPreference<Preference>("spoof_target")?.setOnPreferenceChangeListener { _, newValue ->
+            preferenceManager.sharedPreferences?.edit()?.putString("spoof_target", newValue as String)?.apply()
+            ShizukuSettings.syncAllPlusFeaturesToServer()
+            true
         }
 
         // Initialize all preference dependencies
