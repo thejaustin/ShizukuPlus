@@ -89,7 +89,7 @@ appiconloader = { group = "me.zhanghai.android.appiconloader", name = "appiconlo
 sentry-android-core = { group = "io.sentry", name = "sentry-android-core", version.ref = "sentry" }
 sentry-android-fragment = { group = "io.sentry", name = "sentry-android-fragment", version.ref = "sentry" }
 sentry-android-timber = { group = "io.sentry", name = "sentry-android-timber", version.ref = "sentry" }
-sentry-android-okhttp = { group = "io.sentry", name = "sentry-android-okhttp", version.ref = "sentry" }
+sentry-android-okhttp = { group = "io.sentry", name = "sentry-okhttp", version.ref = "sentry" }
 boringssl = { group = "io.github.vvb2060.ndk", name = "boringssl", version.ref = "boringssl" }
 libcxx = { group = "org.lsposed.libcxx", name = "libcxx", version.ref = "libcxx" }
 
