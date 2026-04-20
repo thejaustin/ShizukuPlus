@@ -26,6 +26,17 @@ Shizuku+ is built on the shoulders of many excellent open-source projects. Full 
 
 ---
 
+## Inspiration (No Code Taken)
+
+### aShell You
+- **Author**: Muntashir Akon / Shashank
+- **Repository**: https://github.com/MuntashirAkon/aShell
+- **License**: GPL-3.0 (no code incorporated — inspiration only)
+- **Usage**: Terminal and shell automation UX patterns that influenced Shizuku+ design.
+  No source code from aShell You is present in this project.
+
+---
+
 ## Android Jetpack (AndroidX)
 
 All AndroidX libraries are Copyright © The Android Open Source Project, licensed under the **Apache License 2.0**.

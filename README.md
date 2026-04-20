@@ -79,6 +79,13 @@ See the [Shizuku+-API](https://github.com/thejaustin/ShizukuPlus-API) repository
 
 Shizuku+ is a community-driven enhancement and fork of [thedjchi/Shizuku](https://github.com/thedjchi/Shizuku), which is itself a fork of the original [RikkaApps/Shizuku](https://github.com/RikkaApps/Shizuku). This project is not affiliated with the original RikkaApps team.
 
+We are deeply grateful to the following upstream contributors and projects whose work makes Shizuku+ possible:
+
+- **[RikkaApps / Rikka](https://github.com/RikkaApps)** — For the foundational Shizuku project and its elegant API design.
+- **[thedjchi](https://github.com/thedjchi)** — For the intermediate fork and initial quality-of-life improvements.
+- **[Muntashir Akon](https://github.com/MuntashirAkon)** — For the aShell You codebase, which inspired our terminal and shell automation features.
+- **[iamr0s](https://github.com/iamr0s)** — For Dhizuku, enabling the unified Device Owner privilege mode.
+
 ### Upstream Projects
 
 | Project | Author | License | Role |
