@@ -1,76 +1,112 @@
 package af.shizuku.manager.settings
 
+import android.app.Activity
+import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import androidx.lifecycle.lifecycleScope
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.ShizukuSettings.Keys.*
+import af.shizuku.manager.utils.SettingsBackupManager
 
-/**
- * Developer Options Settings
- * 
- * Contains experimental and developer-focused features:
- * - AVF/Vector (virtual machine support)
- * - Experimental Root Compatibility
- * - Device Identity Spoofing
- * 
- * These are separated from main Shizuku+ Features as they are
- * intended for developers and power users.
- */
 class DeveloperOptionsFragment : BaseSettingsFragment() {
+
+    private val exportLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri: Uri? ->
+        if (uri == null) return@registerForActivityResult
+        lifecycleScope.launch(Dispatchers.IO) {
+            val ctx = context ?: return@launch
+            try {
+                val json = SettingsBackupManager.export(ctx)
+                ctx.contentResolver.openOutputStream(uri)?.use { it.write(json.toByteArray()) }
+                launch(Dispatchers.Main) {
+                    Toast.makeText(ctx, R.string.settings_export_success, Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                launch(Dispatchers.Main) {
+                    Toast.makeText(ctx, R.string.settings_export_failed, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private val importLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
+        if (uri == null) return@registerForActivityResult
+        lifecycleScope.launch(Dispatchers.IO) {
+            val ctx = context ?: return@launch
+            try {
+                val json = ctx.contentResolver.openInputStream(uri)?.bufferedReader()?.readText() ?: ""
+                val ok = SettingsBackupManager.import(ctx, json)
+                launch(Dispatchers.Main) {
+                    if (ok) {
+                        Toast.makeText(ctx, R.string.settings_import_success, Toast.LENGTH_LONG).show()
+                        ShizukuSettings.syncAllPlusFeaturesToServer()
+                    } else {
+                        Toast.makeText(ctx, R.string.settings_import_failed, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                launch(Dispatchers.Main) {
+                    Toast.makeText(ctx, R.string.settings_import_failed, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_developer_options, rootKey)
 
         // Vector / AVF Manager
-        val vectorPref = findPreference<TwoStatePreference>(KEY_VECTOR_ENABLED)
-        vectorPref?.isChecked = ShizukuSettings.isVectorEnabled()
-        vectorPref?.setOnPreferenceChangeListener { _, newValue ->
-            if (newValue is Boolean) {
-                ShizukuSettings.setVectorEnabled(newValue)
+        findPreference<TwoStatePreference>(KEY_VECTOR_ENABLED)?.apply {
+            isChecked = ShizukuSettings.isVectorEnabled()
+            setOnPreferenceChangeListener { _, v ->
+                ShizukuSettings.setVectorEnabled(v as Boolean)
                 ShizukuSettings.syncAllPlusFeaturesToServer()
+                true
             }
-            true
         }
 
         // Experimental Root Compatibility
-        val experimentalRootPref = findPreference<TwoStatePreference>(KEY_EXPERIMENTAL_ROOT_COMPAT)
-        experimentalRootPref?.isChecked = ShizukuSettings.isExperimentalRootCompatEnabled()
-        experimentalRootPref?.setOnPreferenceChangeListener { _, newValue ->
-            if (newValue is Boolean) {
-                ShizukuSettings.setExperimentalRootCompatEnabled(newValue)
+        findPreference<TwoStatePreference>(KEY_EXPERIMENTAL_ROOT_COMPAT)?.apply {
+            isChecked = ShizukuSettings.isExperimentalRootCompatEnabled()
+            setOnPreferenceChangeListener { _, v ->
+                ShizukuSettings.setExperimentalRootCompatEnabled(v as Boolean)
                 ShizukuSettings.syncAllPlusFeaturesToServer()
+                true
             }
-            true
         }
 
         // Device Identity Spoofing
-        val spoofDevicePref = findPreference<TwoStatePreference>(KEY_SPOOF_DEVICE_ENABLED)
-        spoofDevicePref?.isChecked = ShizukuSettings.isSpoofDeviceEnabled()
-        spoofDevicePref?.setOnPreferenceChangeListener { _, newValue ->
-            if (newValue is Boolean) {
-                ShizukuSettings.setSpoofDeviceEnabled(newValue)
+        findPreference<TwoStatePreference>(KEY_SPOOF_DEVICE_ENABLED)?.apply {
+            isChecked = ShizukuSettings.isSpoofDeviceEnabled()
+            setOnPreferenceChangeListener { _, v ->
+                ShizukuSettings.setSpoofDeviceEnabled(v as Boolean)
                 ShizukuSettings.syncAllPlusFeaturesToServer()
+                true
             }
-            true
         }
 
         // Spoof Target
-        val spoofTargetPref = findPreference<rikka.preference.SimpleMenuPreference>(KEY_SPOOF_TARGET)
-        spoofTargetPref?.setOnPreferenceChangeListener { _, newValue ->
-            if (newValue == "auto") {
-                // When auto is selected, we detect the current device and map it to the closest supported target if possible,
-                // or just pass through the real device info to the server.
-                val actualModel = android.os.Build.MODEL.lowercase().replace(" ", "_")
-                val actualManuf = android.os.Build.MANUFACTURER.lowercase()
-                
-                // If the real device is already in our supported list, we can just use that specific target.
-                // Otherwise, 'auto' tells the server to use real system properties.
-                ShizukuSettings.setSpoofTarget("auto")
-            } else if (newValue is String) {
-                ShizukuSettings.setSpoofTarget(newValue)
-            }
+        findPreference<rikka.preference.SimpleMenuPreference>(KEY_SPOOF_TARGET)?.setOnPreferenceChangeListener { _, v ->
+            ShizukuSettings.setSpoofTarget(if (v == "auto") "auto" else v as String)
             ShizukuSettings.syncAllPlusFeaturesToServer()
+            true
+        }
+
+        // Export Settings
+        findPreference<Preference>("export_settings")?.setOnPreferenceClickListener {
+            exportLauncher.launch("shizuku_plus_settings.json")
+            true
+        }
+
+        // Import Settings
+        findPreference<Preference>("import_settings")?.setOnPreferenceClickListener {
+            importLauncher.launch(arrayOf("application/json", "text/plain"))
             true
         }
     }

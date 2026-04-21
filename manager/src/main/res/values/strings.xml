@@ -822,4 +822,15 @@
     <string name="shell_export_failed">Export failed — no files could be written</string>
     <string name="shell_export_partial">%1$d of %2$d files exported (some failed)</string>
 
+    <!-- Settings backup/restore -->
+    <string name="settings_backup_category">Backup &amp; Restore</string>
+    <string name="settings_export_title">Export Settings</string>
+    <string name="settings_export_summary">Save all Shizuku+ settings to a JSON file</string>
+    <string name="settings_import_title">Import Settings</string>
+    <string name="settings_import_summary">Restore settings from a previously exported JSON file</string>
+    <string name="settings_export_success">Settings exported successfully</string>
+    <string name="settings_export_failed">Export failed</string>
+    <string name="settings_import_success">Settings imported — restart the app to apply all changes</string>
+    <string name="settings_import_failed">Import failed: invalid or incompatible file</string>
+
 </resources>

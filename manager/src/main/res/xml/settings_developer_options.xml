@@ -48,4 +48,24 @@
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
+    <!-- Backup & Restore -->
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_backup"
+        android:title="@string/settings_backup_category"
+        android:defaultValue="false">
+
+        <Preference
+            android:key="export_settings"
+            android:title="@string/settings_export_title"
+            android:summary="@string/settings_export_summary"
+            android:icon="@drawable/ic_outline_arrow_upward_24" />
+
+        <Preference
+            android:key="import_settings"
+            android:title="@string/settings_import_title"
+            android:summary="@string/settings_import_summary"
+            android:icon="@drawable/ic_outline_arrow_downward_24" />
+
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
 </PreferenceScreen>
