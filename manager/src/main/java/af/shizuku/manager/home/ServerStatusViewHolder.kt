@@ -16,6 +16,8 @@ import rikka.recyclerview.BaseViewHolder.Creator
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuApiConstants
 
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
+
 class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root: View) :
     BaseViewHolder<ServiceStatus>(root) {
 
@@ -27,6 +29,10 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
             val inner = HomeServerStatusBinding.inflate(inflater, outer.cardContent, true)
             ServerStatusViewHolder(inner, outer.root)
         }
+    }
+
+    init {
+        cardView.applySpringTouch()
     }
 
     private inline val textView get() = binding.text1
@@ -83,9 +89,14 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
         }
 
         logButton.visibility = if (ok && af.shizuku.manager.ShizukuSettings.showActivityLogHome()) View.VISIBLE else View.GONE
-        // Text color is set later after resolving theme colors
         logButton.setOnClickListener {
-            context.startActivity(android.content.Intent(context, af.shizuku.manager.settings.ActivityLogActivity::class.java))
+            val activity = context as? android.app.Activity ?: return@setOnClickListener
+            val intent = android.content.Intent(context, af.shizuku.manager.settings.ActivityLogActivity::class.java)
+            val options = android.app.ActivityOptions.makeSceneTransitionAnimation(
+                activity,
+                android.util.Pair.create(iconView, "icon_server_status")
+            )
+            activity.startActivity(intent, options.toBundle())
         }
 
         val typedValue = android.util.TypedValue()
@@ -143,5 +154,18 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
         textView.text = title.toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
         summaryView.text = summary.toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
         summaryView.visibility = if (TextUtils.isEmpty(summaryView.text)) View.GONE else View.VISIBLE
+
+        // M3E Pulse Animation for STARTING state
+        if (rikka.shizuku.Shizuku.isPreV11() || af.shizuku.manager.utils.ShizukuStateMachine.get() == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING) {
+            val pulseAnim = android.view.animation.AlphaAnimation(0.6f, 1.0f).apply {
+                duration = 800
+                repeatMode = android.view.animation.Animation.REVERSE
+                repeatCount = android.view.animation.Animation.INFINITE
+                interpolator = android.view.animation.AccelerateDecelerateInterpolator()
+            }
+            iconView.startAnimation(pulseAnim)
+        } else {
+            iconView.clearAnimation()
+        }
     }
 }

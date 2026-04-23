@@ -1,23 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipToPadding="false"
-    app:fitsSystemWindowsInsets="bottom|start|end"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@android:id/text1"
+    <include
+        android:id="@+id/header"
+        layout="@layout/header_card" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/margin_horizontal"
-        android:paddingVertical="@dimen/margin_vertical"
-        android:fontFamily="monospace"
-        android:textColor="?android:textColorPrimary"
-        android:textIsSelectable="true"
-        android:textSize="12sp" />
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        app:fitsSystemWindowsInsets="bottom|start|end"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-</androidx.core.widget.NestedScrollView>
+        <TextView
+            android:id="@android:id/text1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/margin_horizontal"
+            android:paddingVertical="@dimen/margin_vertical"
+            android:fontFamily="monospace"
+            android:textColor="?android:textColorPrimary"
+            android:textIsSelectable="true"
+            android:textSize="12sp" />
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

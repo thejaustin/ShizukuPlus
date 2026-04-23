@@ -90,7 +90,9 @@ object RootCompatHelper {
             "com.uzumapps.wakelockdetector", "com.asksven.betterbatterystats",
             "com.jrummy.apps.build.prop.editor", "com.paget96.chargemonitor",
             "com.zacharee.tweaker", "com.samsung.android.themepark",
-            "com.samsung.android.hexinstall", "bin.mt.plus"
+            "com.samsung.android.hexinstall", "bin.mt.plus",
+            "net.dinglisch.android.taskerm", "pl.solidexplorer2",
+            "com.mixplorer", "com.mixplorer.silver", "nextapp.fx"
         )
 
         for (pkgInfo in installed) {

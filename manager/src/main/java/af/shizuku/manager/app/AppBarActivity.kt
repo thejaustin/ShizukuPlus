@@ -12,6 +12,9 @@ import af.shizuku.manager.R
 import rikka.core.ktx.unsafeLazy
 import timber.log.Timber
 
+import android.view.Window
+import com.google.android.material.transition.platform.MaterialSharedAxis
+
 abstract class AppBarActivity : AppActivity() {
 
     protected val rootView: ViewGroup by unsafeLazy {
@@ -23,6 +26,14 @@ abstract class AppBarActivity : AppActivity() {
     protected lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+        
+        val axis = MaterialSharedAxis.X
+        window.enterTransition = MaterialSharedAxis(axis, true)
+        window.exitTransition = MaterialSharedAxis(axis, false)
+        window.reenterTransition = MaterialSharedAxis(axis, false)
+        window.returnTransition = MaterialSharedAxis(axis, true)
+        
         super.onCreate(savedInstanceState)
         super.setContentView(getLayoutId())
     }

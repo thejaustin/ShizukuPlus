@@ -73,8 +73,22 @@ class MainActivity : HomeActivity() {
     private fun showMigrationDialog() {
         lifecycleScope.launch {
             val hasRoot = withContext(Dispatchers.IO) { MigrationHelper.isRootAvailable() }
-// ... (rest of the method) ...
+            if (isFinishing || isDestroyed) return@launch
             try {
+                val builder = if (hasRoot) {
+                    MaterialAlertDialogBuilder(this@MainActivity)
+                        .setTitle(R.string.migration_dialog_title)
+                        .setMessage(R.string.migration_dialog_message_root)
+                        .setPositiveButton(R.string.migration_migrate_settings) { _, _ -> performMigration() }
+                        .setNeutralButton(R.string.migration_uninstall_old) { _, _ -> launchUninstall(MigrationHelper.OLD_PACKAGE) }
+                        .setNegativeButton(R.string.migration_dismiss, null)
+                } else {
+                    MaterialAlertDialogBuilder(this@MainActivity)
+                        .setTitle(R.string.migration_dialog_title)
+                        .setMessage(R.string.migration_no_root_message)
+                        .setPositiveButton(R.string.migration_uninstall_old) { _, _ -> launchUninstall(MigrationHelper.OLD_PACKAGE) }
+                        .setNegativeButton(R.string.migration_dismiss, null)
+                }
                 builder.show()
             } catch (e: Exception) {
                 Timber.e(e, "Failed to show migration dialog")
@@ -103,10 +117,7 @@ class MainActivity : HomeActivity() {
                         af.shizuku.manager.utils.CrashReporter.shareAsFile(this)
                         af.shizuku.manager.utils.CrashHandler.clearLastCrash(this)
                     }
-                    .setNegativeButton("Clear saved crash") { _, _ ->
-                        af.shizuku.manager.utils.CrashHandler.clearLastCrash(this)
-                    }
-                    .setNeutralButton(android.R.string.cancel, null)
+                    .setNegativeButton(android.R.string.cancel, null)
                     .show()
             }
             .setNegativeButton("Ignore") { _, _ ->

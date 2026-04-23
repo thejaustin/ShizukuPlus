@@ -210,6 +210,9 @@ dependencies {
     implementation libs.androidx.work.runtime.ktx
     implementation libs.androidx.activity.ktx
     implementation libs.androidx.core.splashscreen
+    implementation libs.androidx.transition
+    implementation libs.androidx.dynamicanimation
+    implementation libs.androidx.interpolator
 
     implementation libs.timber
     implementation libs.coil

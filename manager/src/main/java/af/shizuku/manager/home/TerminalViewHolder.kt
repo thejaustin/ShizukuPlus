@@ -14,6 +14,8 @@ import af.shizuku.manager.shell.ShellTutorialActivity
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
 
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
+
 class TerminalViewHolder(
     private val binding: HomeTerminalBinding,
     private val containerBinding: HomeItemContainerBinding
@@ -30,6 +32,7 @@ class TerminalViewHolder(
 
     init {
         containerBinding.root.setOnClickListener(this)
+        containerBinding.root.applySpringTouch()
         containerBinding.dragHandle.apply {
             visibility = View.VISIBLE
             setOnTouchListener { _, event ->
@@ -62,6 +65,12 @@ class TerminalViewHolder(
     }
 
     override fun onClick(v: View) {
-        v.context.startActivity(Intent(v.context, ShellTutorialActivity::class.java))
+        val activity = v.context as? android.app.Activity ?: return
+        val intent = Intent(v.context, ShellTutorialActivity::class.java)
+        val options = android.app.ActivityOptions.makeSceneTransitionAnimation(
+            activity,
+            android.util.Pair.create(binding.icon, "icon_terminal")
+        )
+        activity.startActivity(intent, options.toBundle())
     }
 }

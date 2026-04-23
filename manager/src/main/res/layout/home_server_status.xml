@@ -11,6 +11,7 @@
         android:duplicateParentState="true"
         android:importantForAccessibility="yes"
         android:contentDescription="@string/accessibility_icon_server_status"
+        android:transitionName="icon_server_status"
         android:src="@drawable/ic_server_error_24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

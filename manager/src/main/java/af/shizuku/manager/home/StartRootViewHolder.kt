@@ -18,6 +18,8 @@ import rikka.html.text.HtmlCompat
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
 
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
+
 class StartRootViewHolder(
     private val binding: HomeStartRootBinding,
     private val containerBinding: HomeItemContainerBinding,
@@ -37,6 +39,7 @@ class StartRootViewHolder(
     private var alertDialog: AlertDialog? = null
 
     init {
+        containerBinding.root.applySpringTouch()
         val listener = View.OnClickListener { v: View -> onStartClicked(v) }
         start.setOnClickListener(listener)
         restart.setOnClickListener(listener)
@@ -56,10 +59,15 @@ class StartRootViewHolder(
 
     private fun onStartClicked(v: View) {
         val context = v.context
+        val activity = context as? android.app.Activity ?: return
         val intent = Intent(context, StarterActivity::class.java).apply {
             putExtra(StarterActivity.EXTRA_IS_ROOT, true)
         }
-        context.startActivity(intent)
+        val options = android.app.ActivityOptions.makeSceneTransitionAnimation(
+            activity,
+            android.util.Pair.create(binding.icon, "icon_root")
+        )
+        activity.startActivity(intent, options.toBundle())
     }
 
     override fun onBind() {

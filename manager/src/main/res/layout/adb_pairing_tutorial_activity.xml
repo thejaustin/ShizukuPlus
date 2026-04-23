@@ -13,11 +13,20 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/margin_horizontal"
-        android:paddingVertical="@dimen/margin_vertical"
-        android:showDividers="middle"
-        android:divider="@drawable/spacing_list_item_vertical"
         android:orientation="vertical">
+
+        <include
+            android:id="@+id/header"
+            layout="@layout/header_card" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/margin_horizontal"
+            android:paddingVertical="@dimen/margin_vertical"
+            android:showDividers="middle"
+            android:divider="@drawable/spacing_list_item_vertical"
+            android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"

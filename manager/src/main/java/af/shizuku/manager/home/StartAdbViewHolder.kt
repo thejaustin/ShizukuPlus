@@ -20,6 +20,8 @@ import rikka.html.text.HtmlCompat
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
 
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
+
 class StartAdbViewHolder(
     binding: HomeStartAdbBinding,
     private val containerBinding: HomeItemContainerBinding,
@@ -34,6 +36,7 @@ class StartAdbViewHolder(
     }
 
     init {
+        containerBinding.root.applySpringTouch()
         binding.button1.setOnClickListener { v: View ->
             val context = v.context
             MaterialAlertDialogBuilder(context)

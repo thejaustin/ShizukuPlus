@@ -37,6 +37,7 @@ import rikka.core.content.asActivity
 import rikka.html.text.HtmlCompat
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 
 class StartWirelessAdbViewHolder(
     binding: HomeStartWirelessAdbBinding,
@@ -52,8 +53,10 @@ class StartWirelessAdbViewHolder(
                 StartWirelessAdbViewHolder(inner, outer, scope)
             }
         }
-
-        fun start (context: Context, scope: CoroutineScope) {
+...
+    init {
+        containerBinding.root.applySpringTouch()
+        binding.button1.setOnClickListener { v: View ->
             if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
                 Toast.makeText(context, context.getString(R.string.toast_shizuku_already_starting), Toast.LENGTH_SHORT).show()
                 return
@@ -96,7 +99,17 @@ class StartWirelessAdbViewHolder(
                 val intent = Intent(context, StarterActivity::class.java).apply {
                     putExtra(StarterActivity.EXTRA_PORT, validTcpPort)
                 }
-                context.startActivity(intent)
+                
+                val activity = context as? android.app.Activity
+                if (activity != null) {
+                    val options = android.app.ActivityOptions.makeSceneTransitionAnimation(
+                        activity,
+                        android.util.Pair.create(binding.icon, "icon_wireless_adb")
+                    )
+                    activity.startActivity(intent, options.toBundle())
+                } else {
+                    context.startActivity(intent)
+                }
             }
         }
     }
@@ -150,7 +163,13 @@ class StartWirelessAdbViewHolder(
             // Input from notification is harder to use under this situation.
             AdbPairDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
         } else {
-            context.startActivity(Intent(context, AdbPairingTutorialActivity::class.java))
+            val activity = context as? android.app.Activity ?: return
+            val intent = Intent(context, AdbPairingTutorialActivity::class.java)
+            val options = android.app.ActivityOptions.makeSceneTransitionAnimation(
+                activity,
+                android.util.Pair.create(binding.icon, "icon_wireless_adb")
+            )
+            activity.startActivity(intent, options.toBundle())
         }
     }
 }

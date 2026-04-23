@@ -17,6 +17,7 @@
             android:duplicateParentState="true"
             android:importantForAccessibility="yes"
             android:contentDescription="@string/accessibility_icon_root"
+            android:transitionName="icon_root"
             android:src="@drawable/ic_root_24dp" />
 
         <TextView

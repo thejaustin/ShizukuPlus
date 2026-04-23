@@ -47,6 +47,13 @@ class StarterActivity : AppBarActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close_24)
 
         val binding = StarterActivityBinding.inflate(layoutInflater, rootView, true)
+        
+        val isRoot = intent.getBooleanExtra(EXTRA_IS_ROOT, false)
+        binding.header.apply {
+            headerIcon.setImageResource(if (isRoot) R.drawable.ic_root_24dp else R.drawable.ic_adb_24dp)
+            headerIcon.transitionName = if (isRoot) "icon_root" else "icon_adb"
+            headerTitle.setText(if (isRoot) R.string.home_root_title else R.string.home_adb_title)
+        }
 
         viewModel.output.observe(this) { result ->
             val output = result.data?.trim() ?: return@observe

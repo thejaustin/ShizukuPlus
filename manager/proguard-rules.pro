@@ -60,6 +60,13 @@
     public *** d(...);
 }
 
+# Mavericks: companion-object factories discovered via Kotlin reflection;
+# -repackageclasses breaks this without explicit keeps.
+-keep class * implements com.airbnb.mvrx.MavericksViewModelFactory { *; }
+-keepclassmembers class * extends com.airbnb.mvrx.MavericksViewModel {
+    public static ** Companion;
+}
+
 -allowaccessmodification
 -repackageclasses rikka.shizuku
 -keepattributes SourceFile,LineNumberTable

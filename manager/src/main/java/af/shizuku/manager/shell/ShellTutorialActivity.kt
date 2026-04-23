@@ -106,6 +106,12 @@ class ShellTutorialActivity : AppBarActivity() {
 
         val binding = TerminalTutorialActivityBinding.bind(rootView)
 
+        binding.header.apply {
+            headerIcon.setImageResource(R.drawable.ic_terminal_24)
+            headerIcon.transitionName = "icon_terminal"
+            headerTitle.setText(R.string.home_terminal_title)
+        }
+
         binding.content.apply {
             setInitialPadding(
                 initialPaddingLeft,

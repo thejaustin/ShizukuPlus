@@ -39,6 +39,12 @@ class ActivityLogActivity : AppBarActivity() {
         
         val appsBinding = AppsActivityBinding.inflate(layoutInflater, rootView, true)
         
+        appsBinding.header.apply {
+            headerIcon.setImageResource(R.drawable.ic_server_ok_24dp)
+            headerIcon.transitionName = "icon_server_status"
+            headerTitle.setText(R.string.settings_activity_log)
+        }
+        
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setTitle(R.string.settings_activity_log)
 

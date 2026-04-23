@@ -16,6 +16,8 @@ import rikka.html.text.HtmlCompat
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
 
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
+
 class ManageAppsViewHolder(private val binding: HomeManageAppsItemBinding, root: View) :
     BaseViewHolder<Pair<ServiceStatus, Int>>(root), View.OnClickListener {
 
@@ -29,6 +31,7 @@ class ManageAppsViewHolder(private val binding: HomeManageAppsItemBinding, root:
 
     init {
         root.setOnClickListener(this)
+        root.applySpringTouch()
     }
 
     private inline val title get() = binding.text1
@@ -58,6 +61,12 @@ class ManageAppsViewHolder(private val binding: HomeManageAppsItemBinding, root:
     }
 
     override fun onClick(v: View) {
-        v.context.startActivity(Intent(v.context, ApplicationManagementActivity::class.java))
+        val activity = v.context as? android.app.Activity ?: return
+        val intent = Intent(v.context, ApplicationManagementActivity::class.java)
+        val options = android.app.ActivityOptions.makeSceneTransitionAnimation(
+            activity,
+            android.util.Pair.create(iconView, "icon_manage_apps")
+        )
+        activity.startActivity(intent, options.toBundle())
     }
 }

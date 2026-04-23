@@ -139,6 +139,22 @@ class HomeAdapter(
         }
     }
 
+    override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
+        super.onBindViewHolder(holder, position)
+        
+        // M3E Entrance Animation: Subtle slide and fade
+        val view = holder.itemView
+        view.alpha = 0f
+        view.translationY = 24f
+        view.animate()
+            .alpha(1f)
+            .translationY(0f)
+            .setDuration(400)
+            .setStartDelay(position * 50L)
+            .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+            .start()
+    }
+
     fun moveItem(fromPos: Int, toPos: Int) {
         val fromId = getItemId(fromPos)
         val toId = getItemId(toPos)

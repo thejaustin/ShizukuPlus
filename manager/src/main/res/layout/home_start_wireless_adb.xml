@@ -17,6 +17,7 @@
             android:duplicateParentState="true"
             android:importantForAccessibility="yes"
             android:contentDescription="@string/accessibility_icon_wireless_adb"
+            android:transitionName="icon_wireless_adb"
             android:src="@drawable/ic_wadb_24" />
 
         <TextView

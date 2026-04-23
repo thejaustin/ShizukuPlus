@@ -36,6 +36,12 @@ class AdbPairingTutorialActivity : AppBarActivity() {
 
         binding = AdbPairingTutorialActivityBinding.inflate(layoutInflater, rootView, true)
         
+        binding.header.apply {
+            headerIcon.setImageResource(R.drawable.ic_wadb_24)
+            headerIcon.transitionName = "icon_wireless_adb"
+            headerTitle.setText(R.string.home_wireless_adb_title)
+        }
+        
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         notificationEnabled = isNotificationEnabled()
