@@ -18,7 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import com.airbnb.mvrx.MavericksView
-import com.airbnb.mvrx.mavericksViewModel
+import com.airbnb.mvrx.viewModel
 import com.airbnb.mvrx.withState
 import com.airbnb.mvrx.Success
 import androidx.fragment.app.FragmentActivity
@@ -59,7 +59,7 @@ import rikka.shizuku.Shizuku
 
 abstract class HomeActivity : AppBarActivity(), MavericksView {
 
-    private val homeModel: HomeViewModel by mavericksViewModel()
+    private val homeModel: HomeViewModel by viewModel()
     private val appsModel: AppsViewModel by viewModels()
     private val adapter by unsafeLazy { HomeAdapter(homeModel, appsModel, lifecycleScope) }
     private var versionClickCount = 0
