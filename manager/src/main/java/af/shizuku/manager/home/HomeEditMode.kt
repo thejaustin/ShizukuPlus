@@ -1,7 +1,7 @@
 package af.shizuku.manager.home
 
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
+import androidx.core.view.updatePaddingRelative
 import androidx.recyclerview.widget.RecyclerView
 import af.shizuku.manager.R
 import af.shizuku.manager.databinding.HomeItemContainerBinding
@@ -41,6 +41,6 @@ object HomeEditMode {
         val base = res.getDimensionPixelSize(R.dimen.card_content_padding)
         val handleClearance = if (isActive)
             (40 * res.displayMetrics.density).toInt() else 0
-        binding.cardContent.updatePadding(end = base + handleClearance)
+        binding.cardContent.updatePaddingRelative(end = base + handleClearance)
     }
 }
