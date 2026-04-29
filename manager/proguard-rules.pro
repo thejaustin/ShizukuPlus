@@ -63,6 +63,8 @@
 # Mavericks: companion-object factories discovered via Kotlin reflection;
 # -repackageclasses breaks this if the ViewModel is moved but the Factory isn't.
 # We must keep both the ViewModel and its Factory/Companion to maintain their relationship.
+-keep class af.shizuku.manager.**ViewModel { *; }
+-keep class af.shizuku.manager.**ViewModel$* { *; }
 -keep class * implements com.airbnb.mvrx.MavericksViewModelFactory { *; }
 -keep class * extends com.airbnb.mvrx.MavericksViewModel { *; }
 -keepclassmembers class * extends com.airbnb.mvrx.MavericksViewModel {

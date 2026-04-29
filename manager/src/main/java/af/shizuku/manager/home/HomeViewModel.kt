@@ -18,8 +18,10 @@ import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.Logger.LOGGER
 import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.ShizukuSystemApis
+import androidx.annotation.Keep
 import rikka.shizuku.Shizuku
 
+@Keep
 class HomeViewModel(
     initialState: HomeState,
     private val appContext: Context
@@ -86,6 +88,7 @@ class HomeViewModel(
         setState { copy(grantedAppCount = count) }
     }
 
+    @Keep
     companion object : com.airbnb.mvrx.MavericksViewModelFactory<HomeViewModel, HomeState> {
         override fun create(viewModelContext: com.airbnb.mvrx.ViewModelContext, state: HomeState): HomeViewModel {
             return HomeViewModel(state, viewModelContext.app())
