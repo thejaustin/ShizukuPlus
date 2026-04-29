@@ -38,6 +38,7 @@ import af.shizuku.manager.databinding.ListSectionHeaderBinding
 import af.shizuku.manager.ktx.loge
 import af.shizuku.manager.utils.AppContextManager
 import af.shizuku.manager.utils.RootCompatHelper
+import rikka.shizuku.Shizuku
 import af.shizuku.manager.utils.RootSupportLevel
 
 class RootCompatibilityActivity : AppBarActivity() {

@@ -871,6 +871,8 @@
     <string name="settings_import_success">Settings imported — restart the app to apply all changes</string>
     <string name="settings_import_failed">Import failed: invalid or incompatible file</string>
     <string name="adb_native_unavailable">ADB pairing is not available on this device</string>
+    <string name="shizuku_not_available">Shizuku service is not available</string>
+    <string name="su_bridge_magic_setup_success_global_setting">Magic Setup completed! System global setting configured.</string>
 
     <string name="changelog_title">What\'s New</string>
     <string name="changelog_close">Close</string>

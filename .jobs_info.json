@@ -1,0 +1,327 @@
+{
+  "total_count": 4,
+  "jobs": [
+    {
+      "id": 73496030522,
+      "run_id": 25084234391,
+      "workflow_name": "Build App",
+      "head_branch": "master",
+      "run_url": "https://api.github.com/repos/thejaustin/ShizukuPlus/actions/runs/25084234391",
+      "run_attempt": 1,
+      "node_id": "CR_kwDORXXoVM8AAAARHLRtOg",
+      "head_sha": "4bcec41dce52e470c0e24c12452ebd2e265e1a0d",
+      "url": "https://api.github.com/repos/thejaustin/ShizukuPlus/actions/jobs/73496030522",
+      "html_url": "https://github.com/thejaustin/ShizukuPlus/actions/runs/25084234391/job/73496030522",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-04-29T00:09:52Z",
+      "started_at": "2026-04-29T00:09:55Z",
+      "completed_at": "2026-04-29T00:11:47Z",
+      "name": "build",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-04-29T00:09:56Z",
+          "completed_at": "2026-04-29T00:09:59Z"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-04-29T00:09:59Z",
+          "completed_at": "2026-04-29T00:10:02Z"
+        },
+        {
+          "name": "Cache Android SDK",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-04-29T00:10:02Z",
+          "completed_at": "2026-04-29T00:10:02Z"
+        },
+        {
+          "name": "Pre-Push Guard",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-04-29T00:10:02Z",
+          "completed_at": "2026-04-29T00:10:02Z"
+        },
+        {
+          "name": "Setup Java",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-04-29T00:10:02Z",
+          "completed_at": "2026-04-29T00:10:02Z"
+        },
+        {
+          "name": "Create signing.properties",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-04-29T00:10:02Z",
+          "completed_at": "2026-04-29T00:10:02Z"
+        },
+        {
+          "name": "Setup Gradle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-04-29T00:10:02Z",
+          "completed_at": "2026-04-29T00:10:13Z"
+        },
+        {
+          "name": "Build with Gradle",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 8,
+          "started_at": "2026-04-29T00:10:13Z",
+          "completed_at": "2026-04-29T00:11:36Z"
+        },
+        {
+          "name": "Upload Sentry Debug Symbols",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9,
+          "started_at": "2026-04-29T00:11:36Z",
+          "completed_at": "2026-04-29T00:11:36Z"
+        },
+        {
+          "name": "Upload Artifact",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10,
+          "started_at": "2026-04-29T00:11:36Z",
+          "completed_at": "2026-04-29T00:11:36Z"
+        },
+        {
+          "name": "Upload Version File",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11,
+          "started_at": "2026-04-29T00:11:36Z",
+          "completed_at": "2026-04-29T00:11:36Z"
+        },
+        {
+          "name": "Post Setup Gradle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-04-29T00:11:36Z",
+          "completed_at": "2026-04-29T00:11:44Z"
+        },
+        {
+          "name": "Post Setup Java",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-04-29T00:11:44Z",
+          "completed_at": "2026-04-29T00:11:44Z"
+        },
+        {
+          "name": "Post Cache Android SDK",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21,
+          "started_at": "2026-04-29T00:11:44Z",
+          "completed_at": "2026-04-29T00:11:44Z"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-04-29T00:11:44Z",
+          "completed_at": "2026-04-29T00:11:44Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-04-29T00:11:45Z",
+          "completed_at": "2026-04-29T00:11:45Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/thejaustin/ShizukuPlus/check-runs/73496030522",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000008274,
+      "runner_name": "GitHub Actions 1000008274",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 73496030523,
+      "run_id": 25084234391,
+      "workflow_name": "Build App",
+      "head_branch": "master",
+      "run_url": "https://api.github.com/repos/thejaustin/ShizukuPlus/actions/runs/25084234391",
+      "run_attempt": 1,
+      "node_id": "CR_kwDORXXoVM8AAAARHLRtOw",
+      "head_sha": "4bcec41dce52e470c0e24c12452ebd2e265e1a0d",
+      "url": "https://api.github.com/repos/thejaustin/ShizukuPlus/actions/jobs/73496030523",
+      "html_url": "https://github.com/thejaustin/ShizukuPlus/actions/runs/25084234391/job/73496030523",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-04-29T00:09:52Z",
+      "started_at": "2026-04-29T00:09:56Z",
+      "completed_at": "2026-04-29T00:11:17Z",
+      "name": "lint",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-04-29T00:09:57Z",
+          "completed_at": "2026-04-29T00:10:00Z"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-04-29T00:10:00Z",
+          "completed_at": "2026-04-29T00:10:02Z"
+        },
+        {
+          "name": "Setup Java",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-04-29T00:10:02Z",
+          "completed_at": "2026-04-29T00:10:02Z"
+        },
+        {
+          "name": "Setup Gradle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-04-29T00:10:02Z",
+          "completed_at": "2026-04-29T00:10:15Z"
+        },
+        {
+          "name": "Accept SDK Licenses",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-04-29T00:10:15Z",
+          "completed_at": "2026-04-29T00:10:22Z"
+        },
+        {
+          "name": "Run Lint",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 6,
+          "started_at": "2026-04-29T00:10:22Z",
+          "completed_at": "2026-04-29T00:11:05Z"
+        },
+        {
+          "name": "Post Setup Gradle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-04-29T00:11:05Z",
+          "completed_at": "2026-04-29T00:11:14Z"
+        },
+        {
+          "name": "Post Setup Java",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-04-29T00:11:14Z",
+          "completed_at": "2026-04-29T00:11:14Z"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-04-29T00:11:14Z",
+          "completed_at": "2026-04-29T00:11:14Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-04-29T00:11:14Z",
+          "completed_at": "2026-04-29T00:11:14Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/thejaustin/ShizukuPlus/check-runs/73496030523",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000008273,
+      "runner_name": "GitHub Actions 1000008273",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 73496217019,
+      "run_id": 25084234391,
+      "workflow_name": "Build App",
+      "head_branch": "master",
+      "run_url": "https://api.github.com/repos/thejaustin/ShizukuPlus/actions/runs/25084234391",
+      "run_attempt": 1,
+      "node_id": "CR_kwDORXXoVM8AAAARHLdFuw",
+      "head_sha": "4bcec41dce52e470c0e24c12452ebd2e265e1a0d",
+      "url": "https://api.github.com/repos/thejaustin/ShizukuPlus/actions/jobs/73496217019",
+      "html_url": "https://github.com/thejaustin/ShizukuPlus/actions/runs/25084234391/job/73496217019",
+      "status": "completed",
+      "conclusion": "skipped",
+      "created_at": "2026-04-29T00:11:47Z",
+      "started_at": "2026-04-29T00:11:47Z",
+      "completed_at": "2026-04-29T00:11:47Z",
+      "name": "release",
+      "steps": [
+
+      ],
+      "check_run_url": "https://api.github.com/repos/thejaustin/ShizukuPlus/check-runs/73496217019",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null
+    },
+    {
+      "id": 73496217077,
+      "run_id": 25084234391,
+      "workflow_name": "Build App",
+      "head_branch": "master",
+      "run_url": "https://api.github.com/repos/thejaustin/ShizukuPlus/actions/runs/25084234391",
+      "run_attempt": 1,
+      "node_id": "CR_kwDORXXoVM8AAAARHLdF9Q",
+      "head_sha": "4bcec41dce52e470c0e24c12452ebd2e265e1a0d",
+      "url": "https://api.github.com/repos/thejaustin/ShizukuPlus/actions/jobs/73496217077",
+      "html_url": "https://github.com/thejaustin/ShizukuPlus/actions/runs/25084234391/job/73496217077",
+      "status": "completed",
+      "conclusion": "skipped",
+      "created_at": "2026-04-29T00:11:47Z",
+      "started_at": "2026-04-29T00:11:47Z",
+      "completed_at": "2026-04-29T00:11:47Z",
+      "name": "smoke-test",
+      "steps": [
+
+      ],
+      "check_run_url": "https://api.github.com/repos/thejaustin/ShizukuPlus/check-runs/73496217077",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null
+    }
+  ]
+}
