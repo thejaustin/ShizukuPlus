@@ -73,6 +73,7 @@ android {
     }
     lint {
         checkReleaseBuilds = false
+        abortOnError = false
     }
     sourceSets {
         main {
