@@ -89,6 +89,33 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-05-01 — Claude (Sonnet 4.6)
+**Commits:** `a1858c0a` (api submodule fix), `71adc664` (enhancements)
+
+**Done:**
+- **api submodule build fix** — `Parcel.readInterfaceToken()` is a hidden API absent from
+  public SDK stubs; replaced with `readInterfaceTokenCompat()` reflection helper in
+  `api/server-shared/Service.java`. Both lint and build jobs now unblocked.
+- **Crash fix (#201)** — `showCrashReportDialog()` was called before `super.onCreate()` in
+  `MainActivity`, causing a `WindowManager$BadTokenException` crash on Android 16 / One UI 8.
+  Moved to after `super.onCreate()`.
+- **Sentry re-enabled** — Removed the expired April 2026 quota suppression block. Added
+  unconditional `setSentryLimitReached(false)` reset on startup. Closed issues #190 and #191.
+- **AdbMdns TLS_CONNECT wiring** — `HomeViewModel` now starts an `AdbMdns` TLS_CONNECT
+  discovery on API 30+ and updates `HomeState.discoveredAdbPort`. `StartWirelessAdbViewHolder`
+  uses this as a fallback when `service.adb.tcp.port` is unset (common in TLS wireless debug
+  mode). Stops in `onCleared()`.
+- **RootCompatHelper expansion** — Added 6 more apps with root-level shared_prefs editing
+  (TitaniumBackup, Root Explorer, Solid Explorer, Total Commander, ES File Explorer) gated
+  behind `isShizukuRoot()`. Added 2 more global-settings apps. `autoSetupAll` now iterates
+  root-prefs apps when UID 0 is available.
+
+**Notes:**
+- `AdbMdns` was already wired for pairing (TLS_PAIRING) in `AdbPairingService` — no change
+  needed there.
+- Mavericks ProGuard rules and SQLite try-catch from Gemini session confirmed in code.
+  Issue #200 awaits on-device ADB logcat verification.
+
 ### 2026-04-28 — Claude (Sonnet 4.6)
 **Commits:** (this session)
 
