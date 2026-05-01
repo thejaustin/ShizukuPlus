@@ -145,7 +145,7 @@ class AdbPairingTutorialActivity : AppBarActivity() {
                 }
                 
                 if (mode == AppOpsManager.MODE_ERRORED) {
-                    Toast.makeText(this, "OP_START_FOREGROUND is denied. What are you doing?", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, R.string.adb_foreground_op_denied, Toast.LENGTH_LONG).show()
                 }
                 startService(intent)
             }

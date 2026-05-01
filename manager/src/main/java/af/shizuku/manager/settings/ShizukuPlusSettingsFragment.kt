@@ -1,6 +1,11 @@
 package af.shizuku.manager.settings
 
+import android.app.admin.DevicePolicyManager
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
@@ -46,6 +51,15 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
 
         val dhizukuPref = requireNotNull(findPreference<TwoStatePreference>(KEY_DHIZUKU_MODE))
         dhizukuPref.isChecked = ShizukuSettings.isDhizukuModeEnabled()
+        updateDhizukuDeviceOwnerStatus(dhizukuPref)
+        dhizukuPref.setOnPreferenceClickListener {
+            val ctx = context ?: return@setOnPreferenceClickListener true
+            if (!isDeviceOwnerActive(ctx)) {
+                showDhizukuSetupDialog(ctx)
+                return@setOnPreferenceClickListener true
+            }
+            false // let the normal toggle happen
+        }
         dhizukuPref.setOnPreferenceChangeListener { _, newValue ->
             if (newValue is Boolean) {
                 maybePromptRestart(KEY_DHIZUKU_MODE, newValue) {
@@ -137,6 +151,43 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
         
         // Check for integrated apps and update summaries
         checkAppIntegrations()
+    }
+
+    private fun isDeviceOwnerActive(ctx: Context): Boolean {
+        return try {
+            val dpm = ctx.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+            dpm.isDeviceOwnerApp(ctx.packageName)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    private fun updateDhizukuDeviceOwnerStatus(pref: TwoStatePreference) {
+        val ctx = context ?: return
+        val active = isDeviceOwnerActive(ctx)
+        val statusLine = if (active)
+            getString(R.string.dhizuku_status_active)
+        else
+            getString(R.string.dhizuku_status_not_set)
+        val baseSummary = getString(R.string.settings_dhizuku_mode_summary)
+        pref.summary = "$statusLine\n\n$baseSummary"
+    }
+
+    private fun showDhizukuSetupDialog(ctx: Context) {
+        // applicationId (af.shizuku.plus.api) differs from namespace (af.shizuku.manager),
+        // so the full class name must be explicit rather than using the shorthand dot notation.
+        val command = "adb shell dpm set-device-owner " +
+            "${ctx.packageName}/af.shizuku.manager.admin.DhizukuAdminReceiver"
+        MaterialAlertDialogBuilder(ctx)
+            .setTitle(R.string.dhizuku_setup_title)
+            .setMessage(getString(R.string.dhizuku_setup_message, command))
+            .setPositiveButton(R.string.dhizuku_setup_copy) { _, _ ->
+                val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                clipboard.setPrimaryClip(ClipData.newPlainText("dpm command", command))
+                Toast.makeText(ctx, R.string.dhizuku_setup_copied, Toast.LENGTH_SHORT).show()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun showGeneralHelpDialog() {

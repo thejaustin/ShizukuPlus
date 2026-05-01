@@ -58,7 +58,7 @@ class AdbPairingAccessibilityService : AccessibilityService() {
             }
             startActivity(intent)
         } else {
-            Toast.makeText(this, "Shizuku+ Accessibility active: Monitoring for Pairing Code...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.accessibility_service_monitoring, Toast.LENGTH_SHORT).show()
         }
 
         // Auto-disable after 60 seconds to prevent lingering background usage

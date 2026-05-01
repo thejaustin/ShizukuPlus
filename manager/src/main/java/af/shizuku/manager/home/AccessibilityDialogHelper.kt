@@ -50,7 +50,7 @@ private fun Context.showPermissionDialog() {
                 permissionName,
                 styledPermissionCommand,
             ),
-        ).setPositiveButton("Continue") { _, _ -> showEnableDialog() }
+        ).setPositiveButton(R.string.action_continue) { _, _ -> showEnableDialog() }
         .setNegativeButton(android.R.string.cancel, null)
         .show()
 }

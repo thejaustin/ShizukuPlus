@@ -47,7 +47,7 @@ class BugReportDialog : DialogFragment() {
         return MaterialAlertDialogBuilder(context)
             .setTitle(R.string.settings_report_bug)
             .setView(binding.root)
-            .setPositiveButton("GitHub") { _, _ ->
+            .setPositiveButton(R.string.action_open_github) { _, _ ->
                 CustomTabsHelper.launchUrlOrCopy(context, "https://github.com/thejaustin/ShizukuPlus/issues/new")
             }
             .setNegativeButton(R.string.bug_report_dialog_button_email) { _, _ ->

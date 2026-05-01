@@ -78,9 +78,9 @@ Things discussed or sketched that we never formally decided to build.
   of `749d72a6`) due to instability. If Compose is reconsidered, start with a single isolated
   screen (e.g. Service Doctor) rather than a full home screen migration.
 
-- **Dynamic remote DB versioning** — `AppContextManager` fetches `database/apps.json` but has no
-  version/ETag caching. Could add `If-None-Match` header + local cache timestamp to reduce
-  redundant fetches.
+- **Dynamic remote DB ETag caching** — `RemoteDbSyncWorker` now fetches the remote DB but
+  doesn't send `If-None-Match`. Could add ETag/Last-Modified header caching to skip the
+  download when content hasn't changed (saves bandwidth on unchanged data).
 
 - **Onboarding step for Root Compat Hub** — Users don't know the Root Hub exists. An optional
   onboarding card after first Shizuku connection could walk through what toggles are available.
@@ -90,7 +90,7 @@ Things discussed or sketched that we never formally decided to build.
 ## Session History (newest first)
 
 ### 2026-05-01 — Claude (Sonnet 4.6)
-**Commits:** `a1858c0a` (api submodule fix), `71adc664` (enhancements)
+**Commits:** `a1858c0a` (api submodule fix), `71adc664` (enhancements), (this session)
 
 **Done:**
 - **api submodule build fix** — `Parcel.readInterfaceToken()` is a hidden API absent from
@@ -109,12 +109,34 @@ Things discussed or sketched that we never formally decided to build.
   (TitaniumBackup, Root Explorer, Solid Explorer, Total Commander, ES File Explorer) gated
   behind `isShizukuRoot()`. Added 2 more global-settings apps. `autoSetupAll` now iterates
   root-prefs apps when UID 0 is available.
+- **RemoteDbSyncWorker** — Created `worker/RemoteDbSyncWorker.kt`; periodic WorkManager job
+  (every 24h, CONNECTED network, 5-min initial delay) that fetches
+  `raw.githubusercontent.com/thejaustin/ShizukuPlus/master/app-context-db.json` and calls
+  `AppContextManager.updateDatabase(json)`. Skips fetch if cache < 20h old.
+  Scheduled in `ShizukuApplication.initializeManagers()`. Dynamic DB is now actually populated.
+- **Dhizuku Device Owner UI** — `ShizukuPlusSettingsFragment` now checks DPM device owner
+  status on load and shows "Device Owner: Active" or "Device Owner not set — tap for setup"
+  in the Dhizuku Mode preference summary. Tapping when not active shows a dialog with the
+  exact `adb shell dpm set-device-owner` command and a "Copy Command" button. Full class name
+  used (`af.shizuku.manager.admin.DhizukuAdminReceiver`) because applicationId ≠ namespace.
+
+- **Localization / hardcoded string sweep** — Replaced all remaining hardcoded user-visible
+  strings across 6 files: `ServiceDoctorActivity` (3 Toast strings), `AdbPairingTutorialActivity`
+  (dev debug Toast leaked to prod), `UpdateChecker` (2 fallback strings moved to empty + caller
+  uses `R.string.update_no_release_notes`), `AdbPairingAccessibilityService` (status Toast),
+  `AccessibilityDialogHelper` ("Continue" button), `ServerStatusViewHolder` ("View Issues" button),
+  `BugReportDialog` ("GitHub" button). All strings now in `strings.xml`.
 
 **Notes:**
 - `AdbMdns` was already wired for pairing (TLS_PAIRING) in `AdbPairingService` — no change
   needed there.
 - Mavericks ProGuard rules and SQLite try-catch from Gemini session confirmed in code.
   Issue #200 awaits on-device ADB logcat verification.
+- `remote_db_sync_channel_name` string in strings.xml is defined but unused — `RemoteDbSyncWorker`
+  is a silent background worker with no notification. Harmless; can be removed if desired.
+- **Remaining gaps (not yet implemented):** AICore 5 advanced method stubs (getPixelColor,
+  scheduleNPULoad, captureLayer, getSystemContext, getWindowHierarchy), Issue #199 planned
+  features (Binder Firewall, AIDL logging, Shadow Binder, Local ADB Proxy).
 
 ### 2026-04-28 — Claude (Sonnet 4.6)
 **Commits:** (this session)

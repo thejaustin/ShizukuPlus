@@ -220,12 +220,12 @@ class ServiceDoctorActivity : AppBarActivity() {
                             // Try to disable it via Shizuku if running
                             if (ShizukuStateMachine.isRunning()) {
                                 Shizuku.newProcess(arrayOf("device_config", "put", "activity_manager", "max_phantom_processes", "2147483647"), null, null).waitFor()
-                                withContext(Dispatchers.Main) { Toast.makeText(this@ServiceDoctorActivity, "Attempted to disable Phantom Killer", Toast.LENGTH_SHORT).show() }
+                                withContext(Dispatchers.Main) { Toast.makeText(this@ServiceDoctorActivity, R.string.service_doctor_fix_phantom_attempted, Toast.LENGTH_SHORT).show() }
                             } else {
-                                withContext(Dispatchers.Main) { Toast.makeText(this@ServiceDoctorActivity, "Service must be running to auto-fix", Toast.LENGTH_SHORT).show() }
+                                withContext(Dispatchers.Main) { Toast.makeText(this@ServiceDoctorActivity, R.string.service_doctor_fix_requires_service, Toast.LENGTH_SHORT).show() }
                             }
                         } catch (e: Exception) {
-                            withContext(Dispatchers.Main) { Toast.makeText(this@ServiceDoctorActivity, "Fix failed: ${e.message}", Toast.LENGTH_LONG).show() }
+                            withContext(Dispatchers.Main) { Toast.makeText(this@ServiceDoctorActivity, getString(R.string.service_doctor_fix_failed, e.message), Toast.LENGTH_LONG).show() }
                         }
                     }
                 }

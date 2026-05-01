@@ -114,7 +114,7 @@ object UpdateChecker {
         val tagName = json.getString("tag_name")
         val versionName = tagName.removePrefix("v")
         val isPrerelease = json.getBoolean("prerelease")
-        val releaseNotes = json.optString("body", "No release notes available")
+        val releaseNotes = json.optString("body", "")
         val publishedAt = json.getString("published_at")
 
         val assets = json.getJSONArray("assets")
@@ -171,7 +171,7 @@ object UpdateChecker {
                             return UpdateInfo(
                                 versionName = versionName,
                                 versionCode = versionCode,
-                                releaseNotes = "Download manually from GitHub Releases.",
+                                releaseNotes = "",
                                 downloadUrl = "",
                                 publishedAt = "",
                                 isPrerelease = versionName.contains("beta", ignoreCase = true)

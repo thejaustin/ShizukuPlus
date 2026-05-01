@@ -554,7 +554,8 @@ abstract class HomeActivity : AppBarActivity(), MavericksView {
             if (updateInfo.publishedAt.isNotEmpty())
                 "Published: ${UpdateChecker.formatPublishedDate(updateInfo.publishedAt)}"
             else ""
-        dialogView.findViewById<TextView>(R.id.update_release_notes).text = updateInfo.releaseNotes
+        dialogView.findViewById<TextView>(R.id.update_release_notes).text =
+            updateInfo.releaseNotes.ifEmpty { getString(R.string.update_no_release_notes) }
 
         val openReleases = {
             startActivity(

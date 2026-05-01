@@ -20,6 +20,7 @@ import rikka.material.app.LocaleDelegate
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 import af.shizuku.manager.di.appModule
+import af.shizuku.manager.worker.RemoteDbSyncWorker
 import com.airbnb.mvrx.Mavericks
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -217,6 +218,8 @@ class ShizukuApplication : Application(), Configuration.Provider {
         Shizuku.addLogListener { appName, packageName, action ->
             ActivityLogManager.log(appName, packageName, action)
         }
+
+        RemoteDbSyncWorker.schedule(this)
     }
 
     override fun onCreate() {
