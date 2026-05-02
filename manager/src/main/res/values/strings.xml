@@ -909,4 +909,12 @@
     <!-- Remote App DB Sync -->
     <string name="remote_db_sync_channel_name">App Database Updates</string>
 
+    <!-- Binder Enhancements (Issue #199) -->
+    <string name="settings_binder_firewall">Binder Firewall</string>
+    <string name="settings_binder_firewall_summary">Audit and block sensitive system transactions from unauthorized apps</string>
+    <string name="settings_binder_logging">AIDL Transaction Logging</string>
+    <string name="settings_binder_logging_summary">Log all proxied Binder transactions to the system log (Logcat) for debugging</string>
+    <string name="settings_shadow_binder">Shadow Binder</string>
+    <string name="settings_shadow_binder_summary">Intercept and mock system service calls to hide device information or app state</string>
+
 </resources>

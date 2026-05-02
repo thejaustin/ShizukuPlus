@@ -18,6 +18,11 @@ The previous releases (`r1637` through `r1690`) had the following critical issue
   4. Auto-imports your settings upon the next launch.
 
 ### 📋 Full Changelog since last stable release (v13.6.0.r1636-shizukuplus)
+- feat: advanced AICore+ method stubs and physical input simulation (touch, swipe, text)
+- feat: Binder Firewall (Issue #199) - block sensitive system transactions (e.g. reboot)
+- feat: AIDL Transaction Logging (Issue #199) - audit proxied Binder calls in Logcat
+- feat: Shadow Binder hook (Issue #199) - architecture for system service mocking
+- feat: settings UI toggles and server-sync for new Binder enhancements
 - fix(coexistence): remove conflicting original Shizuku permission and update autoResConfig (9ce8f1a2)
 - enhancement(update): auto-grant critical permissions post-install for seamless auto-update (9503daf2)
 - feat(update): implement auto-backup and force update via Shizuku/Root on signature mismatch (458a483f)

@@ -282,6 +282,45 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     }
 
     @Override
+    public boolean checkPlusFeatureEnabled(String key) {
+        return isFeatureEnabled(key);
+    }
+
+    @Override
+    protected boolean isBinderCallBlocked(int uid, String descriptor, int code) {
+        if (!isFeatureEnabled("binder_firewall")) return false;
+
+        // Block sensitive system settings modification for non-manager apps if locked
+        if ("android.os.IPowerManager".equals(descriptor) && code == 17 /* reboot */) {
+            if (UserHandleCompat.getAppId(uid) != managerAppId) return true;
+        }
+        
+        // Dynamic policy from settings
+        String blockedDescriptors = plusSettingsMap.get("firewall_blocked_descriptors");
+        if (blockedDescriptors != null && blockedDescriptors.contains(descriptor)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    protected boolean handleShadowBinderTransaction(IBinder target, int code, Parcel data, Parcel reply, int flags) {
+        if (!isFeatureEnabled("shadow_binder")) return false;
+
+        try {
+            String descriptor = target.getInterfaceDescriptor();
+            // Shadowing IPackageManager to hide specific apps
+            if ("android.content.pm.IPackageManager".equals(descriptor)) {
+                // If the call is 'getApplicationInfo', we can mock it
+                // This is a complex area, for now we just provide the hook
+            }
+        } catch (RemoteException ignored) {}
+
+        return false;
+    }
+
+    @Override
     public void updatePlusFeatureEnabled(String key, boolean enabled) {
         enforceManagerPermission("updatePlusFeatureEnabled");
         LOGGER.i("Plus Feature Update: " + key + " -> " + enabled);

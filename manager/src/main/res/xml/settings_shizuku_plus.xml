@@ -23,6 +23,27 @@
             android:icon="@drawable/ic_code_24dp"
             android:defaultValue="true" />
 
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="binder_firewall_enabled"
+            android:title="@string/settings_binder_firewall"
+            android:summary="@string/settings_binder_firewall_summary"
+            android:icon="@drawable/ic_security_24"
+            android:defaultValue="false" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="binder_logging_enabled"
+            android:title="@string/settings_binder_logging"
+            android:summary="@string/settings_binder_logging_summary"
+            android:icon="@drawable/ic_history_24"
+            android:defaultValue="false" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="shadow_binder_enabled"
+            android:title="@string/settings_shadow_binder"
+            android:summary="@string/settings_shadow_binder_summary"
+            android:icon="@drawable/ic_science_24dp"
+            android:defaultValue="false" />
+
         <SwitchPreferenceCompat
             android:key="hide_disabled_plus_features"
             android:title="@string/settings_hide_disabled_plus_features"

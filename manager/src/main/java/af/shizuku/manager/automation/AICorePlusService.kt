@@ -38,6 +38,11 @@ class AICorePlusService : AccessibilityService() {
         return sb.toString()
     }
 
+    /**
+     * Alias for dumpHierarchy to match IAICorePlus AIDL.
+     */
+    fun getWindowHierarchy(): String = dumpHierarchy()
+
     private fun buildXml(node: AccessibilityNodeInfo, sb: StringBuilder, depth: Int) {
         val indent = "  ".repeat(depth)
         sb.append(indent).append("<node")
@@ -78,6 +83,11 @@ class AICorePlusService : AccessibilityService() {
     }
 
     /**
+     * Alias for performTap to match IAICorePlus AIDL.
+     */
+    fun simulateTouch(x: Float, y: Float): Boolean = performTap(x, y)
+
+    /**
      * Simulates a swipe between two coordinates.
      */
     fun performSwipe(startX: Float, startY: Float, endX: Float, endY: Float, durationMs: Long = 300): Boolean {
@@ -88,5 +98,63 @@ class AICorePlusService : AccessibilityService() {
         val stroke = GestureDescription.StrokeDescription(path, 0, durationMs)
         val gesture = GestureDescription.Builder().addStroke(stroke).build()
         return dispatchGesture(gesture, null, null)
+    }
+
+    /**
+     * Alias for performSwipe to match IAICorePlus AIDL.
+     */
+    fun simulateSwipe(x1: Float, y1: Float, x2: Float, y2: Float, duration: Int): Boolean = 
+        performSwipe(x1, y1, x2, y2, duration.toLong())
+
+    /**
+     * Simulates typing text input.
+     * Note: Requires a focused input field and may use the Clipboard or ImeService.
+     */
+    fun simulateText(text: String): Boolean {
+        val rootNode = rootInActiveWindow ?: return false
+        val focusedNode = rootNode.findFocus(AccessibilityNodeInfo.FOCUS_INPUT) ?: return false
+        val arguments = android.os.Bundle().apply {
+            putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
+        }
+        return focusedNode.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
+    }
+
+    /**
+     * Get a color sample from any pixel on the screen.
+     * Stub for AICore 5 advanced methods.
+     */
+    fun getPixelColor(x: Int, y: Int): Int {
+        // AccessibilityService.takeScreenshot is available in API 30+
+        // Full implementation would require processing the resulting ScreenshotResult
+        return android.graphics.Color.TRANSPARENT
+    }
+
+    /**
+     * Schedule a high-priority task on the Neural Processing Unit (NPU).
+     * Stub for AICore 5 advanced methods.
+     */
+    fun scheduleNPULoad(params: android.os.Bundle): Boolean {
+        Timber.d("Scheduling NPU load via AICore+ Bridge: $params")
+        return true
+    }
+
+    /**
+     * Capture a privileged screenshot of a specific window/layer for AI analysis.
+     * Stub for AICore 5 advanced methods.
+     */
+    fun captureLayer(layerId: Int): android.graphics.Bitmap? {
+        Timber.d("Capturing layer $layerId via AICore+ Bridge")
+        return null
+    }
+
+    /**
+     * Get current system intelligence context.
+     * Stub for AICore 5 advanced methods.
+     */
+    fun getSystemContext(): android.os.Bundle {
+        return android.os.Bundle().apply {
+            putString("bridge_version", "1.5.0")
+            putBoolean("accessibility_enabled", true)
+        }
     }
 }

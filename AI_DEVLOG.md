@@ -93,6 +93,11 @@ Things discussed or sketched that we never formally decided to build.
 **Commits:** `a1858c0a` (api submodule fix), `71adc664` (enhancements), (this session)
 
 **Done:**
+- **AICore 5 advanced method stubs** — Added `getPixelColor`, `scheduleNPULoad`, `captureLayer`, `getSystemContext`, `getWindowHierarchy`, `simulateTouch`, `simulateSwipe`, and `simulateText` to `AICorePlusService.kt`. AccessibilityService APIs used for hierarchy and text input; others provided as documented stubs.
+- **Binder Firewall (Issue #199)** — Implemented `isBinderCallBlocked` in `Service.java` and `ShizukuService.java`. Added policy to block `IPowerManager.reboot` from non-manager apps and support for dynamic descriptor-based blocking.
+- **AIDL Transaction Logging (Issue #199)** — Added `binder_logging` feature to `Service.transactRemote` to log all proxied transactions with UID, package name, descriptor, and code.
+- **Shadow Binder (Issue #199)** — Added `handleShadowBinderTransaction` interception hook to the server architecture to allow mocking system binder responses.
+- **Settings UI & Sync** — Added toggles for Binder Firewall, Logging, and Shadow Binder to `settings_shizuku_plus.xml`. Wired keys and sync logic in `ShizukuSettings.java`.
 - **api submodule build fix** — `Parcel.readInterfaceToken()` is a hidden API absent from
   public SDK stubs; replaced with `readInterfaceTokenCompat()` reflection helper in
   `api/server-shared/Service.java`. Both lint and build jobs now unblocked.
@@ -134,9 +139,7 @@ Things discussed or sketched that we never formally decided to build.
   Issue #200 awaits on-device ADB logcat verification.
 - `remote_db_sync_channel_name` string in strings.xml is defined but unused — `RemoteDbSyncWorker`
   is a silent background worker with no notification. Harmless; can be removed if desired.
-- **Remaining gaps (not yet implemented):** AICore 5 advanced method stubs (getPixelColor,
-  scheduleNPULoad, captureLayer, getSystemContext, getWindowHierarchy), Issue #199 planned
-  features (Binder Firewall, AIDL logging, Shadow Binder, Local ADB Proxy).
+- **Remaining gaps (not yet implemented):** AICore 5 advanced method implementations (beyond stubs), Issue #199 deep implementation of Shadow Binder for specific system services (e.g. IPackageManager, IActivityManager).
 
 ### 2026-04-28 — Claude (Sonnet 4.6)
 **Commits:** (this session)

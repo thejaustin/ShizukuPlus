@@ -77,6 +77,9 @@ public class ShizukuSettings {
 
         // Legacy Compatibility (Shizuku+ additions)
         public static final String KEY_ADB_PROXY_ENABLED = "adb_proxy_enabled";
+        public static final String KEY_BINDER_FIREWALL_ENABLED = "binder_firewall_enabled";
+        public static final String KEY_BINDER_LOGGING_ENABLED = "binder_logging_enabled";
+        public static final String KEY_SHADOW_BINDER_ENABLED = "shadow_binder_enabled";
         public static final String KEY_ON_DEVICE_ADB_TCP = "on_device_adb_tcp";
         public static final String KEY_FORCE_START_WADB = "force_start_wadb";
         public static final String KEY_SU_BRIDGE_ENABLED = "su_bridge_enabled";
@@ -497,6 +500,21 @@ public class ShizukuSettings {
         return p != null && p.getBoolean(Keys.KEY_ADB_PROXY_ENABLED, false);
     }
 
+    public static boolean isBinderFirewallEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_BINDER_FIREWALL_ENABLED, false);
+    }
+
+    public static boolean isBinderLoggingEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_BINDER_LOGGING_ENABLED, false);
+    }
+
+    public static boolean isShadowBinderEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_SHADOW_BINDER_ENABLED, false);
+    }
+
     public static void setAdbProxyEnabled(boolean enable) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putBoolean(Keys.KEY_ADB_PROXY_ENABLED, enable).apply();
@@ -693,6 +711,9 @@ public class ShizukuSettings {
                 service.updatePlusFeatureEnabled("on_device_adb_tcp", isOnDeviceAdbTcpEnabled());
                 service.updatePlusFeatureEnabled("force_start_wadb", isForceStartWadbEnabled());
                 service.updatePlusFeatureEnabled("enable_activity_log", isActivityLogEnabled());
+                service.updatePlusFeatureEnabled("binder_firewall", isBinderFirewallEnabled());
+                service.updatePlusFeatureEnabled("binder_logging", isBinderLoggingEnabled());
+                service.updatePlusFeatureEnabled("shadow_binder", isShadowBinderEnabled());
                 
                 String suPathUri = getExportDirUri();
                 if (suPathUri != null) {
