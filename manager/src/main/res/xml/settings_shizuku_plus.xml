@@ -48,7 +48,7 @@
             android:key="shadow_binder_hidden_packages"
             android:title="@string/settings_shadow_binder_hidden_packages"
             android:summary="@string/settings_shadow_binder_hidden_packages_summary"
-            android:icon="@drawable/ic_visibility_off_24"
+            android:icon="@drawable/ic_visibility_24"
             android:dependency="shadow_binder_enabled" />
 
         <SwitchPreferenceCompat
