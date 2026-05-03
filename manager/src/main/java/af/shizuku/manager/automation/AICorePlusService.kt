@@ -128,8 +128,8 @@ class AICorePlusService : AccessibilityService() {
             val latch = java.util.concurrent.CountDownLatch(1)
             var resultColor = android.graphics.Color.TRANSPARENT
             
-            takeScreenshot(android.view.Display.DEFAULT_DISPLAY, mainExecutor, object : ScreenshotResultCallback {
-                override fun onSuccess(screenshot: ScreenshotResult) {
+            takeScreenshot(android.view.Display.DEFAULT_DISPLAY, mainExecutor, object : AccessibilityService.TakeScreenshotCallback {
+                override fun onSuccess(screenshot: AccessibilityService.ScreenshotResult) {
                     try {
                         val hardwareBuffer = screenshot.hardwareBuffer
                         val bitmap = android.graphics.Bitmap.wrapHardwareBuffer(hardwareBuffer, screenshot.colorSpace)
@@ -172,8 +172,8 @@ class AICorePlusService : AccessibilityService() {
             val latch = java.util.concurrent.CountDownLatch(1)
             var resultBitmap: android.graphics.Bitmap? = null
             
-            takeScreenshot(android.view.Display.DEFAULT_DISPLAY, mainExecutor, object : ScreenshotResultCallback {
-                override fun onSuccess(screenshot: ScreenshotResult) {
+            takeScreenshot(android.view.Display.DEFAULT_DISPLAY, mainExecutor, object : AccessibilityService.TakeScreenshotCallback {
+                override fun onSuccess(screenshot: AccessibilityService.ScreenshotResult) {
                     try {
                         val hardwareBuffer = screenshot.hardwareBuffer
                         // Convert to software bitmap so it can be returned/processed

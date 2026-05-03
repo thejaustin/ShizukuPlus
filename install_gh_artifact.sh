@@ -18,18 +18,18 @@ gh run download "$RUN_ID" -D gh_artifact_tmp
 APK_PATH=$(find gh_artifact_tmp -name "*.apk" | head -n 1)
 
 if [ -n "$APK_PATH" ]; then
-    echo "Installing $APK_PATH to device 192.168.12.202:35399..."
-    adb -s 192.168.12.202:35399 uninstall af.shizuku.plus.api || true
-    adb -s 192.168.12.202:35399 install -r -d "$APK_PATH"
+    echo "Installing $APK_PATH to device 192.168.12.202:42525..."
+    adb -s 192.168.12.202:42525 uninstall af.shizuku.plus.api || true
+    adb -s 192.168.12.202:42525 install -r -d "$APK_PATH"
     
     # Auto-grant permissions just in case
-    adb -s 192.168.12.202:35399 shell pm grant af.shizuku.plus.api android.permission.POST_NOTIFICATIONS || true
-    adb -s 192.168.12.202:35399 shell pm grant af.shizuku.plus.api android.permission.WRITE_SECURE_SETTINGS || true
-    adb -s 192.168.12.202:35399 shell appops set af.shizuku.plus.api SYSTEM_ALERT_WINDOW allow || true
-    adb -s 192.168.12.202:35399 shell appops set af.shizuku.plus.api GET_USAGE_STATS allow || true
+    adb -s 192.168.12.202:42525 shell pm grant af.shizuku.plus.api android.permission.POST_NOTIFICATIONS || true
+    adb -s 192.168.12.202:42525 shell pm grant af.shizuku.plus.api android.permission.WRITE_SECURE_SETTINGS || true
+    adb -s 192.168.12.202:42525 shell appops set af.shizuku.plus.api SYSTEM_ALERT_WINDOW allow || true
+    adb -s 192.168.12.202:42525 shell appops set af.shizuku.plus.api GET_USAGE_STATS allow || true
     
     echo "Starting MainActivity..."
-    adb -s 192.168.12.202:35399 shell am start -n af.shizuku.plus.api/af.shizuku.manager.MainActivity
+    adb -s 192.168.12.202:42525 shell am start -n af.shizuku.plus.api/af.shizuku.manager.MainActivity
     echo "All done!"
 else
     echo "Error: No APK found in artifact."
