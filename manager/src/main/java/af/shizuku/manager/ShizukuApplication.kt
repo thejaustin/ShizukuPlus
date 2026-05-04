@@ -115,10 +115,25 @@ class ShizukuApplication : Application(), Configuration.Provider {
                 
                 // Add context about the app
                 options.setBeforeSend { event, _ ->
-                    // Drop coroutine cancellations — JobCancellationException and all
-                    // CancellationException subclasses are expected lifecycle behaviour
+                    // 1. Drop coroutine cancellations
                     val throwable = event.throwable
                     if (throwable is kotlinx.coroutines.CancellationException) return@setBeforeSend null
+
+                    // 2. Drop expected ADB connection failures (transient or user-induced)
+                    if (throwable is java.io.EOFException || 
+                        throwable is java.net.SocketException || 
+                        throwable is java.net.SocketTimeoutException ||
+                        throwable is java.net.ConnectException || 
+                        throwable is javax.net.ssl.SSLException ||
+                        throwable?.javaClass?.simpleName == "AdbKeyException") {
+                        return@setBeforeSend null
+                    }
+
+                    // 3. Drop "Not an attached client" SecurityExceptions
+                    // (Common when apps call Shizuku immediately before the binder is received)
+                    if (throwable is SecurityException && throwable.message?.contains("is not an attached client") == true) {
+                        return@setBeforeSend null
+                    }
 
                     // Add build config info to events
                     event.setTag("version_name", BuildConfig.VERSION_NAME)
@@ -214,6 +229,7 @@ class ShizukuApplication : Application(), Configuration.Provider {
 
         if (ShizukuSettings.getWatchdog()) {
             WatchdogService.start(this)
+            af.shizuku.manager.worker.WatchdogWorker.schedule(this)
         }
 
         Shizuku.addLogListener { appName, packageName, action ->

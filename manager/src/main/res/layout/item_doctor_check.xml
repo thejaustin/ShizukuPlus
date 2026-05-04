@@ -16,7 +16,7 @@
         android:contentDescription="@null"
         android:importantForAccessibility="no"
         android:tint="?colorPrimary"
-        tools:src="@drawable/ic_server_ok_24dp" />
+        tools:src="@drawable/ic_server_ok_24" />
 
     <LinearLayout
         android:layout_width="0dp"

@@ -152,15 +152,21 @@ public class ShizukuConfigManager extends ConfigManager {
             for (PackageInfo pi : PackageManagerApis.getInstalledPackagesNoThrow(PackageManager.GET_PERMISSIONS, userId)) {
                 if (pi == null
                         || pi.applicationInfo == null
-                        || pi.requestedPermissions == null
-                        || !ArraysKt.contains(pi.requestedPermissions, PERMISSION)) {
+                        || pi.requestedPermissions == null) {
                     continue;
                 }
+
+                String activePerm = null;
+                if (ArraysKt.contains(pi.requestedPermissions, PERMISSION)) activePerm = PERMISSION;
+                else if (ArraysKt.contains(pi.requestedPermissions, ServerConstants.PERMISSION_LEGACY)) activePerm = ServerConstants.PERMISSION_LEGACY;
+                else if (ArraysKt.contains(pi.requestedPermissions, ServerConstants.PERMISSION_ORIGINAL)) activePerm = ServerConstants.PERMISSION_ORIGINAL;
+
+                if (activePerm == null) continue;
 
                 int uid = pi.applicationInfo.uid;
                 boolean allowed;
                 try {
-                    allowed = PermissionManagerApis.checkPermission(PERMISSION, uid) == PackageManager.PERMISSION_GRANTED;
+                    allowed = PermissionManagerApis.checkPermission(activePerm, uid) == PackageManager.PERMISSION_GRANTED;
                 } catch (Throwable e) {
                     LOGGER.w("checkPermission");
                     continue;

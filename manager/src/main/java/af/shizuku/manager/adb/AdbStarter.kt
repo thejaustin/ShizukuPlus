@@ -24,11 +24,23 @@ import af.shizuku.manager.starter.Starter
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.ShizukuStateMachine
 import io.sentry.Sentry
+import android.app.Activity
+import android.content.ContextWrapper
+import android.view.ContextThemeWrapper
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import af.shizuku.manager.utils.SettingsPage
 
 object AdbStarter {
     private const val TAG = "AdbStarter"
+
+    private fun Context.getActivity(): Activity? {
+        var context = this
+        while (context is ContextWrapper) {
+            if (context is Activity) return context
+            context = context.baseContext
+        }
+        return null
+    }
 
     /** Returns true for transient connection errors that are not bugs and should not go to Sentry. */
     private fun Throwable.isExpectedAdbError(includeIllegalState: Boolean = false) =
@@ -91,14 +103,21 @@ object AdbStarter {
         } catch (e: Exception) {
             if (e is SSLException && (e.message?.contains("protocol version") == true || e is javax.net.ssl.SSLProtocolException)) {
                 withContext(Dispatchers.Main) {
-                    MaterialAlertDialogBuilder(context)
-                        .setTitle(R.string.adb_error_ssl_title)
-                        .setMessage(R.string.adb_error_ssl_message)
-                        .setPositiveButton(R.string.adb_error_ssl_button_reset) { _, _ ->
-                            SettingsPage.Developer.Options.launch(context)
-                        }
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .show()
+                    val activity = context.getActivity()
+                    if (activity != null && !activity.isFinishing) {
+                        MaterialAlertDialogBuilder(activity)
+                            .setTitle(R.string.adb_error_ssl_title)
+                            .setMessage(R.string.adb_error_ssl_message)
+                            .setPositiveButton(R.string.adb_error_ssl_button_reset) { _, _ ->
+                                SettingsPage.Developer.Options.launch(activity)
+                            }
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .show()
+                    } else {
+                        // Fallback for non-activity context
+                        val themedContext = ContextThemeWrapper(context, R.style.AppTheme)
+                        Toast.makeText(themedContext, R.string.adb_error_ssl_message, Toast.LENGTH_LONG).show()
+                    }
                 }
             }
             if (e !is CancellationException && !e.isExpectedAdbError()) {
@@ -106,7 +125,7 @@ object AdbStarter {
             }
             throw e
         } finally {
-            if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED)
+            if (ShizukuSettings.getAutoDisableUsbDebugging() && context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED)
                 Settings.Global.putInt(context.contentResolver, "adb_wifi_enabled", 0)
         }
     }

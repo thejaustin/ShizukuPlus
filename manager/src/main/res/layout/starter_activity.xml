@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:clipToPadding="false"
+    app:fitsSystemWindowsInsets="bottom|start|end"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <include
-        android:id="@+id/header"
-        layout="@layout/header_card" />
-
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/scrollView"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        app:fitsSystemWindowsInsets="bottom|start|end"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/header"
+            layout="@layout/header_card" />
 
         <TextView
             android:id="@android:id/text1"
@@ -29,6 +30,6 @@
             android:textIsSelectable="true"
             android:textSize="12sp" />
 
-    </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
 
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>

@@ -308,6 +308,29 @@ class WindowManagerPlusImpl : IWindowManagerPlus.Stub() {
         }
     }
 
+    override fun setImmersiveMode(enabled: Boolean) {
+        try {
+            val value = if (enabled) "full" else "none"
+            // Use 'policy' command if available, otherwise fallback to settings
+            Runtime.getRuntime().exec(arrayOf("settings", "put", "global", "policy_control", "immersive.full=*=$value")).waitFor()
+        } catch (e: Exception) {
+            // Ignore
+        }
+    }
+
+    override fun setDexHighRefreshRate(enabled: Boolean) {
+        try {
+            // Samsung DeX often locks to 60Hz. Bypassing SemRefreshRateManager via settings.
+            val value = if (enabled) "1" else "0"
+            Runtime.getRuntime().exec(arrayOf("settings", "put", "system", "min_refresh_rate", if (enabled) "120.0" else "60.0")).waitFor()
+            Runtime.getRuntime().exec(arrayOf("settings", "put", "system", "peak_refresh_rate", if (enabled) "120.0" else "60.0")).waitFor()
+            // Samsung specific DeX flag
+            Runtime.getRuntime().exec(arrayOf("settings", "put", "global", "dex_force_high_refresh_rate", value)).waitFor()
+        } catch (e: Exception) {
+            // Ignore
+        }
+    }
+
     /**
      * Get IActivityTaskManager instance via ServiceManager.
      * 

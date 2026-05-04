@@ -105,6 +105,11 @@ public class AppsAdapter extends BaseRecyclerViewAdapter<ClassCreatorPool> {
 
             @Override
             public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                Object oldItem = oldList.get(oldItemPosition);
+                Object newItem = newList.get(newItemPosition);
+                if (oldItem instanceof PackageInfo && newItem instanceof PackageInfo) {
+                    return false; // Force re-bind to update switch state
+                }
                 return areItemsTheSame(oldItemPosition, newItemPosition);
             }
         });

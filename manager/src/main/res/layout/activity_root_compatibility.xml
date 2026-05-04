@@ -274,7 +274,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="@string/su_bridge_magic_setup_all"
-                        app:icon="@drawable/ic_server_ok_24dp"
+                        app:icon="@drawable/ic_server_ok_24"
                         app:iconPadding="8dp" />
 
                 </LinearLayout>

@@ -61,7 +61,7 @@
         style="@style/CardButton"
         android:text="@string/home_root_button_start"
         android:contentDescription="@string/accessibility_button_start"
-        app:icon="@drawable/ic_server_start_24dp" />
+        app:icon="@drawable/ic_server_start_24" />
         
     </LinearLayout>
 

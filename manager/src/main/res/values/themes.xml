@@ -25,6 +25,9 @@
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowActivityTransitions">true</item>
+        
+        <!-- M3E 2026: Enhanced Corner Radii -->
+        <item name="cornerRadiusExtraLarge">@dimen/m3e_spacing_extra_large</item>
     </style>
 
     <style name="Theme.Light" parent="Base.AppTheme.Light" />
@@ -53,6 +56,9 @@
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowActivityTransitions">true</item>
+        
+        <!-- M3E 2026: Enhanced Corner Radii -->
+        <item name="cornerRadiusExtraLarge">@dimen/m3e_spacing_extra_large</item>
     </style>
 
     <style name="Theme" parent="Base.AppTheme" />
@@ -60,10 +66,17 @@
     <style name="AppTheme.PreferenceThemeOverlay" parent="@style/PreferenceThemeOverlay.Rikka.Material3">
         <item name="switchPreferenceCompatStyle">@style/Preference.SwitchPreferenceCompat.M3Expressive</item>
         <item name="switchPreferenceStyle">@style/Preference.SwitchPreferenceCompat.M3Expressive</item>
+        <item name="preferenceCategoryStyle">@style/Preference.Category.M3Expressive</item>
     </style>
 
     <style name="Preference.SwitchPreferenceCompat.M3Expressive" parent="@style/Preference.SwitchPreferenceCompat.Material">
         <item name="android:widgetLayout">@layout/preference_widget_material_switch</item>
+    </style>
+    
+    <style name="Preference.Category.M3Expressive" parent="@style/Preference.Category.Material3">
+        <item name="allowDividerAbove">true</item>
+        <item name="allowDividerBelow">false</item>
+        <item name="android:layout">@layout/collapsible_preference_category_card</item>
     </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">

@@ -35,7 +35,7 @@
             android:key="update_channel"
             android:title="@string/settings_update_channel_title"
             android:summary="%s"
-            android:icon="@drawable/ic_science_24dp"
+            android:icon="@drawable/ic_science_24"
             android:entries="@array/update_channel_entries"
             android:entryValues="@array/update_channel_values"
             android:defaultValue="stable"

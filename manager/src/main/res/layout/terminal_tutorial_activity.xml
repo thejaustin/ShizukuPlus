@@ -45,7 +45,7 @@
                 android:layout_marginStart="-8dp"
                 android:layout_marginTop="4dp"
                 android:importantForAccessibility="no"
-                android:src="@drawable/ic_help_outline_24dp"
+                android:src="@drawable/ic_help_outline_24"
                 android:tint="?colorOnSecondaryContainer"
                 android:tintMode="src_in" />
 

@@ -37,7 +37,7 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : SwitchPrefe
             val iconRes = if (integrationPackage != null)
                 R.drawable.ic_outline_open_in_new_24
             else
-                R.drawable.ic_help_outline_24dp
+                R.drawable.ic_help_outline_24
 
             val drawable = context.getDrawable(iconRes)
             val iconSize = (18 * context.resources.displayMetrics.density).toInt()

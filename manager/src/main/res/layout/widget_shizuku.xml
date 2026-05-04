@@ -16,7 +16,7 @@
         android:background="@drawable/shape_droplet_background"
         android:backgroundTint="?colorPrimaryContainer"
         android:padding="10dp"
-        android:src="@drawable/ic_server_ok_24dp"
+        android:src="@drawable/ic_server_ok_24"
         android:tint="?colorOnPrimaryContainer" />
 
     <LinearLayout
@@ -57,7 +57,7 @@
         android:background="@drawable/shape_droplet_background"
         android:backgroundTint="?colorSecondaryContainer"
         android:padding="10dp"
-        android:src="@drawable/ic_server_start_24dp"
+        android:src="@drawable/ic_server_start_24"
         android:contentDescription="@string/accessibility_button_start"
         android:tint="?colorOnSecondaryContainer" />
 

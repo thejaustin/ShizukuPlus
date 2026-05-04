@@ -91,7 +91,9 @@ class AppsViewModel(application: Application) : AndroidViewModel(application) {
                     if (AuthorizationManager.granted(pi.packageName, appInfo.uid)) granted++
                 }
                 
-                if (!onlyCount) applyFiltersAndSort()
+                if (!onlyCount || filterState != FilterState.ALL) {
+                    applyFiltersAndSort()
+                }
                 _grantedCount.postValue(Resource.success(granted))
                 _hiddenCount.postValue(hiddenPackages.size)
             } catch (e: CancellationException) {

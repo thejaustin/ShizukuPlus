@@ -10,7 +10,7 @@
         android:importantForAccessibility="yes"
         android:contentDescription="@string/accessibility_icon_app_management"
         android:transitionName="icon_manage_apps"
-        android:src="@drawable/ic_admin_panel_settings_24dp" />
+        android:src="@drawable/ic_admin_panel_settings_24" />
 
     <LinearLayout
         android:layout_width="match_parent"

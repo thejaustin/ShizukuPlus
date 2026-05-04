@@ -289,12 +289,14 @@ class VirtualMachineManagerImpl : IVirtualMachineManager.Stub() {
      */
     private fun getVirtualMachineManager(): Any? {
         return try {
-            // Check AVF support
-            if (android.os.Build.VERSION.SDK_INT < 34) { // Android 14 = API 34
+            // Check AVF support - Requires Android 14+ (API 34+)
+            if (android.os.Build.VERSION.SDK_INT < 34) {
                 Log.d(TAG, "AVF requires Android 14+ (current: ${android.os.Build.VERSION.SDK_INT})")
                 return null
             }
 
+            // Note: On Android 16+ (OneUI 8+), AVF service name or stub location might change.
+            // We maintain compatibility with current official service name.
             val binder = ServiceManager.getService(VIRTUAL_MACHINE_SERVICE_NAME)
             if (binder != null) {
                 val stubClass = Class.forName("android.system.virtualmachine.VirtualMachineManager\$Stub")

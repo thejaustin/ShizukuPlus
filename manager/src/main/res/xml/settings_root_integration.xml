@@ -13,7 +13,7 @@
         android:key="on_device_adb_tcp"
         android:title="@string/settings_on_device_adb_tcp"
         android:summary="@string/settings_on_device_adb_tcp_summary"
-        android:icon="@drawable/ic_adb_24dp"
+        android:icon="@drawable/ic_adb_24"
         android:defaultValue="false" />
 
     <SwitchPreferenceCompat
@@ -27,14 +27,14 @@
         android:key="su_bridge_enabled"
         android:title="@string/settings_fake_su"
         android:summary="@string/settings_fake_su_summary"
-        android:icon="@drawable/ic_root_24dp"
+        android:icon="@drawable/ic_root_24"
         android:defaultValue="false" />
 
     <Preference
         android:key="root_compatibility_hub"
         android:title="@string/settings_root_integration_hub"
         android:summary="@string/settings_root_integration_hub_summary"
-        android:icon="@drawable/ic_admin_panel_settings_24dp" />
+        android:icon="@drawable/ic_admin_panel_settings_24" />
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_root_modules"
@@ -54,7 +54,7 @@
             android:key="root_magisk_mocking_enabled"
             android:title="@string/settings_root_magisk_mocking"
             android:summary="@string/settings_root_magisk_mocking_summary"
-            android:icon="@drawable/ic_settings_suggest_24dp"
+            android:icon="@drawable/ic_settings_suggest_24"
             android:defaultValue="false"
             app:infoTitle="@string/help_root_magisk_title"
             app:infoDetail="@string/help_root_magisk_detail" />
@@ -63,7 +63,7 @@
             android:key="root_auto_grant_enabled"
             android:title="@string/settings_root_auto_grant"
             android:summary="@string/settings_root_auto_grant_summary"
-            android:icon="@drawable/ic_admin_panel_settings_24dp"
+            android:icon="@drawable/ic_admin_panel_settings_24"
             android:defaultValue="false"
             app:infoTitle="@string/help_root_auto_grant_title"
             app:infoDetail="@string/help_root_auto_grant_detail" />

@@ -31,7 +31,10 @@ public class PlusShell {
         System.out.println("  vm [start|stop|delete|status] [name]   Manage a specific VM");
         System.out.println("  aicore [touch|swipe|text|dump|pixel]   AI Automation & Intelligence");
         System.out.println("  storage [ls|cat|rm|mkdir|stat] [path]  Manage privileged storage");
+        System.out.println("  am [freeze|unfreeze|stop|clear|kill-all] [pkg]  Manage app state");
+        System.out.println("  wm [immersive|dex-high-refresh] [on|off]  Manage display and windows");
         System.out.println("  su [command]              Run command via SU Bridge");
+        System.out.println("  reboot [recovery|download] Reboot to specialized modes");
         System.out.println("  appops [pkg]              Elevate permissions for package");
         System.out.println("  log                       View the privileged activity log (server-side)");
         System.out.println("  doctor                    Run system diagnostics");
@@ -68,6 +71,17 @@ public class PlusShell {
         IShizukuService service = IShizukuService.Stub.asInterface(binder);
         service.elevateApp(packageName);
         System.out.println("Elevation request sent to server.");
+    }
+
+    private static void handleReboot(String[] args) {
+        String mode = args.length > 1 ? args[1] : "";
+        try {
+            String[] cmd = mode.isEmpty() ? new String[]{"reboot"} : new String[]{"reboot", mode};
+            System.out.println("Rebooting to " + (mode.isEmpty() ? "system" : mode) + "...");
+            Runtime.getRuntime().exec(cmd).waitFor();
+        } catch (Exception e) {
+            System.err.println("Reboot failed: " + e.getMessage());
+        }
     }
 
     private static void handleLog(IBinder binder) throws RemoteException {
@@ -142,6 +156,92 @@ public class PlusShell {
                 System.out.println("Unknown VM command: " + command);
                 System.out.println("Usage: plus vm [list|start|stop|delete|status]");
         }
+    }
+
+    private static void handleAm(String[] args, IBinder binder) throws RemoteException {
+        if (args.length < 2) {
+            System.out.println("Usage: plus am [freeze|unfreeze|stop|kill-all] [package_name]");
+            return;
+        }
+
+        IShizukuService service = IShizukuService.Stub.asInterface(binder);
+        af.shizuku.server.IActivityManagerPlus am = service.getActivityManagerPlus();
+        if (am == null) {
+            System.out.println("Error: Activity Manager Plus feature is disabled in Shizuku+ settings.");
+            return;
+        }
+
+        String command = args[1];
+        String packageName = args.length > 2 ? args[2] : null;
+
+        switch (command) {
+            case "freeze":
+                if (packageName == null) System.out.println("Usage: plus am freeze [package]");
+                else {
+                    if (am.freezeApp(packageName)) System.out.println("App frozen: " + packageName);
+                    else System.out.println("Failed to freeze app.");
+                }
+                break;
+            case "unfreeze":
+                if (packageName == null) System.out.println("Usage: plus am unfreeze [package]");
+                else {
+                    if (am.unfreezeApp(packageName)) System.out.println("App unfrozen: " + packageName);
+                    else System.out.println("Failed to unfreeze app.");
+                }
+                break;
+            case "stop":
+                if (packageName == null) System.out.println("Usage: plus am stop [package]");
+                else {
+                    if (am.deepForceStop(packageName)) System.out.println("App force-stopped: " + packageName);
+                    else System.out.println("Failed to stop app.");
+                }
+                break;
+            case "clear":
+                if (packageName == null) System.out.println("Usage: plus am clear [package]");
+                else {
+                    if (am.clearAppData(packageName)) System.out.println("App data cleared: " + packageName);
+                    else System.out.println("Failed to clear app data.");
+                }
+                break;
+            case "kill-all":
+                if (am.killAllBackgroundProcesses()) System.out.println("All background processes killed.");
+                else System.out.println("Failed to kill processes.");
+                break;
+            default:
+                System.out.println("Unknown am command: " + command);
+        }
+        System.out.flush();
+    }
+
+    private static void handleWm(String[] args, IBinder binder) throws RemoteException {
+        if (args.length < 3) {
+            System.out.println("Usage: plus wm [immersive|dex-high-refresh] [on|off]");
+            return;
+        }
+
+        IShizukuService service = IShizukuService.Stub.asInterface(binder);
+        af.shizuku.server.IWindowManagerPlus wm = service.getWindowManagerPlus();
+        if (wm == null) {
+            System.out.println("Error: Window Manager Plus feature is disabled.");
+            return;
+        }
+
+        String command = args[1];
+        boolean enabled = "on".equalsIgnoreCase(args[2]);
+
+        switch (command) {
+            case "immersive":
+                wm.setImmersiveMode(enabled);
+                System.out.println("Immersive mode: " + (enabled ? "ON" : "OFF"));
+                break;
+            case "dex-high-refresh":
+                wm.setDexHighRefreshRate(enabled);
+                System.out.println("DeX High Refresh Rate (120Hz): " + (enabled ? "ON" : "OFF"));
+                break;
+            default:
+                System.out.println("Unknown wm command: " + command);
+        }
+        System.out.flush();
     }
 
     private static void handleAiCore(String[] args, IBinder binder) throws RemoteException {
@@ -341,6 +441,12 @@ public class PlusShell {
                 case "vm":
                     handleVm(args, binder);
                     break;
+                case "am":
+                    handleAm(args, binder);
+                    break;
+                case "wm":
+                    handleWm(args, binder);
+                    break;
                 case "aicore":
                     handleAiCore(args, binder);
                     break;
@@ -349,6 +455,9 @@ public class PlusShell {
                     break;
                 case "su":
                     handleSu(args, binder);
+                    break;
+                case "reboot":
+                    handleReboot(args);
                     break;
                 case "appops":
                     handleAppOps(args, binder);

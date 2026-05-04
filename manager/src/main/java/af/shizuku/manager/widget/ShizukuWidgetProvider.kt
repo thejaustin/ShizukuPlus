@@ -43,11 +43,11 @@ class ShizukuWidgetProvider : AppWidgetProvider() {
             // Set Colors and Icons based on state
             if (isRunning) {
                 views.setInt(R.id.widget_icon, "setBackgroundResource", R.drawable.shape_droplet_background)
-                views.setImageViewResource(R.id.widget_icon, R.drawable.ic_server_ok_24dp)
+                views.setImageViewResource(R.id.widget_icon, R.drawable.ic_server_ok_24)
                 views.setViewVisibility(R.id.widget_button, View.GONE)
             } else {
                 views.setInt(R.id.widget_icon, "setBackgroundResource", R.drawable.shape_circle_icon_background)
-                views.setImageViewResource(R.id.widget_icon, R.drawable.ic_server_error_24dp)
+                views.setImageViewResource(R.id.widget_icon, R.drawable.ic_server_error_24)
                 views.setViewVisibility(R.id.widget_button, View.VISIBLE)
             }
 

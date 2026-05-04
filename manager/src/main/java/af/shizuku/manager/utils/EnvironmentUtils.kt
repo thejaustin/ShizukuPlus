@@ -74,8 +74,15 @@ object EnvironmentUtils {
             val field = Build.VERSION::class.java.getDeclaredField("SEM_PLATFORM_INT")
             return (field.get(null) as Int - 90000) / 10000
         } catch (e: Exception) {
+            // Fallback for newer versions if SEM_PLATFORM_INT changes
+            if (Build.VERSION.SDK_INT >= 36) return 8 
             return -1
         }
+    }
+
+    @JvmStatic
+    fun isOneUi8(): Boolean {
+        return isSamsung() && getOneUiVersion() >= 8
     }
 
     @JvmStatic

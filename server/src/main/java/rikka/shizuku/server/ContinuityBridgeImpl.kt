@@ -7,13 +7,13 @@ import android.util.Log
 import af.shizuku.server.IContinuityBridge
 
 /**
- * Implementation of ContinuityBridge using Android 17+ Handoff APIs.
+ * Implementation of ContinuityBridge using Android 15+ Handoff APIs.
  * 
  * This class provides cross-device continuity features using the official
- * Android Handoff framework when available (Android 17+), with fallback
+ * Android Handoff framework when available (Android 15+ / API 35+), with fallback
  * mechanisms for older versions.
  * 
- * @see <a href="https://developer.android.com/about/versions/17/features">Android 17 Features</a>
+ * @see <a href="https://developer.android.com/about/versions/15/features">Android 15 Features</a>
  */
 class ContinuityBridgeImpl : IContinuityBridge.Stub() {
     companion object {
@@ -24,7 +24,7 @@ class ContinuityBridgeImpl : IContinuityBridge.Stub() {
     /**
      * Sync data to another device using Android's Continuity framework.
      * 
-     * Implementation uses reflection to access hidden Handoff APIs on Android 17+.
+     * Implementation uses reflection to access hidden Handoff APIs on Android 15+.
      * For older versions, this method returns false as continuity is not supported.
      * 
      * @param targetDeviceId The ID of the target device to sync data to
@@ -38,8 +38,8 @@ class ContinuityBridgeImpl : IContinuityBridge.Stub() {
             return false
         }
 
-        // Check Android version - Handoff API requires Android 17+
-        if (android.os.Build.VERSION.SDK_INT < 35) { // Android 17 = API 35
+        // Check Android version - Handoff API requires Android 15+ (API 35+)
+        if (android.os.Build.VERSION.SDK_INT < 35) { 
             Log.w(TAG, "Handoff API not available on Android ${android.os.Build.VERSION.SDK_INT}")
             return false
         }

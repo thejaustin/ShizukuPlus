@@ -158,6 +158,32 @@ class AppViewHolder(private val binding: AppListItemBinding) :
                     (context as? Callbacks)?.onHideApp(packageName)
                 })
             }
+            
+            // Shizuku+ Power Tool: Freeze/Unfreeze
+            if (ShizukuSettings.isCustomApiEnabled()) {
+                val shizukuService = rikka.shizuku.Shizuku.getService()
+                if (shizukuService != null) {
+                    val amPlus = af.shizuku.server.IShizukuService.Stub.asInterface(shizukuService).activityManagerPlus
+                    if (amPlus != null) {
+                        val isFrozen = try { amPlus.isAppFrozen(packageName) } catch (e: Exception) { false }
+                        val label = if (isFrozen) "Unfreeze App (Enable)" else "Freeze App (Disable)"
+                        add(LpAction(label) {
+                            try {
+                                val success = if (isFrozen) amPlus.unfreezeApp(packageName) else amPlus.freezeApp(packageName)
+                                if (success) {
+                                    Toast.makeText(context, if (isFrozen) "App unfrozen" else "App frozen", Toast.LENGTH_SHORT).show()
+                                    ActivityLogManager.log(appLabel, packageName, "Long-press: ${if (isFrozen) "unfreeze" else "freeze"}")
+                                    adapter.notifyItemChanged(adapterPosition)
+                                } else {
+                                    Toast.makeText(context, "Operation failed", Toast.LENGTH_SHORT).show()
+                                }
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                    }
+                }
+            }
         }
     }
 

@@ -41,7 +41,7 @@ class ActivityLogActivity : AppBarActivity() {
         val appsBinding = AppsActivityBinding.inflate(layoutInflater, rootView, true)
         
         appsBinding.header.apply {
-            headerIcon.setImageResource(R.drawable.ic_server_ok_24dp)
+            headerIcon.setImageResource(R.drawable.ic_server_ok_24)
             headerIcon.transitionName = "icon_server_status"
             headerTitle.setText(R.string.settings_activity_log)
         }
@@ -80,7 +80,7 @@ class ActivityLogActivity : AppBarActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menu.add(0, 1, 0, R.string.settings_activity_log_clear).apply {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-            setIcon(R.drawable.ic_delete_24dp)
+            setIcon(R.drawable.ic_delete_24)
         }
         return true
     }

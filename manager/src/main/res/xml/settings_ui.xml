@@ -54,7 +54,7 @@
             android:entries="@array/shape_styles"
             android:entryValues="@array/shape_styles_value"
             android:dependency="expressive_shapes"
-            android:icon="@drawable/ic_settings_suggest_24dp" />
+            android:icon="@drawable/ic_settings_suggest_24" />
 
         <rikka.preference.SimpleMenuPreference
             android:key="icon_style"
@@ -80,7 +80,7 @@
             android:entries="@array/animation_intensities"
             android:entryValues="@array/animation_intensities_value"
             android:dependency="expressive_animations"
-            android:icon="@drawable/ic_bolt_24dp" />
+            android:icon="@drawable/ic_bolt_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 

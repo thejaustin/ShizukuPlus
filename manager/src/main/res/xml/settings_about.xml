@@ -17,7 +17,7 @@
         android:key="open_source_licenses"
         android:title="@string/settings_open_source_licenses"
         android:summary="@string/settings_open_source_licenses_summary"
-        android:icon="@drawable/ic_article_24dp" />
+        android:icon="@drawable/ic_article_24" />
 
     <PreferenceCategory
         android:key="category_support"
@@ -27,7 +27,7 @@
             android:key="manual_report"
             android:title="@string/manual_report_title"
             android:summary="@string/manual_report_summary"
-            android:icon="@drawable/ic_server_error_24dp" />
+            android:icon="@drawable/ic_server_error_24" />
 
     </PreferenceCategory>
 

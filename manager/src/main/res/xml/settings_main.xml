@@ -4,22 +4,43 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_plus"
-        android:title="Shizuku+ Customization"
+        android:title="Shizuku+ Power Tools"
         android:defaultValue="true">
 
         <Preference
             android:key="nav_shizuku_plus"
-            android:title="@string/settings_shizuku_plus_features"
-            android:summary="@string/settings_nav_shizuku_plus_summary"
-            android:icon="@drawable/ic_bolt_24dp"
+            android:title="Feature Hub"
+            android:summary="Manage exclusive Plus capabilities"
+            android:icon="@drawable/ic_bolt_24"
             android:fragment="af.shizuku.manager.settings.ShizukuPlusSettingsFragment" />
 
         <Preference
+            android:key="nav_root_integration"
+            android:title="Compatibility &amp; Root"
+            android:summary="SU bridge and rootless integration"
+            android:icon="@drawable/ic_shield_24"
+            android:fragment="af.shizuku.manager.settings.RootIntegrationSettingsFragment" />
+
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_personalization"
+        android:title="Personalization"
+        android:defaultValue="true">
+
+        <Preference
             android:key="nav_ui"
-            android:title="@string/settings_user_interface"
-            android:summary="@string/settings_nav_ui_summary"
+            android:title="Appearance"
+            android:summary="Theme, icons, and animations"
             android:icon="@drawable/ic_palette_24"
             android:fragment="af.shizuku.manager.settings.UISettingsFragment" />
+
+        <Preference
+            android:key="nav_home_visibility"
+            android:title="Home Layout"
+            android:summary="Customize visible cards and shortcuts"
+            android:icon="@drawable/ic_window_24"
+            android:fragment="af.shizuku.manager.settings.HomeVisibilitySettingsFragment" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
@@ -30,50 +51,29 @@
 
         <Preference
             android:key="nav_app_management"
-            android:title="@string/settings_app_management"
-            android:summary="@string/settings_nav_app_management_summary"
+            android:title="App Permissions"
+            android:summary="Manage authorized applications"
             android:icon="@drawable/ic_devices_24"
             android:fragment="af.shizuku.manager.settings.AppManagementSettingsFragment" />
-
-        <Preference
-            android:key="nav_home_visibility"
-            android:title="@string/settings_home_visibility"
-            android:summary="@string/settings_nav_home_summary"
-            android:icon="@drawable/ic_window_24"
-            android:fragment="af.shizuku.manager.settings.HomeVisibilitySettingsFragment" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_system"
-        android:title="System &amp; Integration"
+        android:title="System"
         android:defaultValue="true">
 
         <Preference
             android:key="nav_behavior"
-            android:title="@string/settings_behavior"
-            android:summary="@string/settings_nav_behavior_summary"
-            android:icon="@drawable/ic_settings_suggest_24dp"
+            android:title="Behavior"
+            android:summary="Start on boot and background stability"
+            android:icon="@drawable/ic_settings_suggest_24"
             android:fragment="af.shizuku.manager.settings.BehaviorSettingsFragment" />
 
         <Preference
-            android:key="nav_root_integration"
-            android:title="@string/settings_category_root_integration"
-            android:summary="@string/settings_nav_root_integration_summary"
-            android:icon="@drawable/ic_shield_24"
-            android:fragment="af.shizuku.manager.settings.RootIntegrationSettingsFragment" />
-
-        <Preference
-            android:key="nav_developer"
-            android:title="@string/settings_developer_options"
-            android:summary="@string/settings_developer_options_summary"
-            android:icon="@drawable/ic_code_24dp"
-            android:fragment="af.shizuku.manager.settings.DeveloperOptionsFragment" />
-
-        <Preference
             android:key="nav_advanced"
-            android:title="@string/settings_advanced"
-            android:summary="@string/settings_nav_advanced_summary"
+            android:title="Advanced"
+            android:summary="Diagnostics, logs, and troubleshooting"
             android:icon="@drawable/ic_terminal_24"
             android:fragment="af.shizuku.manager.settings.AdvancedSettingsFragment" />
 

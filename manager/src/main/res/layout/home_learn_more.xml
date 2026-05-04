@@ -9,7 +9,7 @@
         android:duplicateParentState="true"
         android:importantForAccessibility="yes"
         android:contentDescription="@string/accessibility_icon_learn_more"
-        android:src="@drawable/ic_learn_more_24dp" />
+        android:src="@drawable/ic_learn_more_24" />
 
     <LinearLayout
         android:layout_width="match_parent"

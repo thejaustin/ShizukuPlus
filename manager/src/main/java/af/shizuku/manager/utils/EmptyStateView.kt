@@ -35,7 +35,7 @@ class EmptyStateView @JvmOverloads constructor(
             0, 0
         ).apply {
             try {
-                val iconRes = getResourceId(R.styleable.EmptyStateView_emptyIcon, R.drawable.ic_help_outline_24dp)
+                val iconRes = getResourceId(R.styleable.EmptyStateView_emptyIcon, R.drawable.ic_help_outline_24)
                 val titleRes = getResourceId(R.styleable.EmptyStateView_emptyTitle, R.string.empty_state_title_no_results)
                 val descriptionRes = getResourceId(R.styleable.EmptyStateView_emptyDescription, R.string.empty_state_description_no_results)
                 val actionTextRes = getResourceId(R.styleable.EmptyStateView_emptyActionText, 0)

@@ -13,7 +13,7 @@
         android:layout_width="96dp"
         android:layout_height="96dp"
         android:importantForAccessibility="no"
-        android:src="@drawable/ic_help_outline_24dp"
+        android:src="@drawable/ic_help_outline_24"
         android:tint="?attr/colorTertiary"
         android:tintMode="src_in"
         android:contentDescription="@null" />

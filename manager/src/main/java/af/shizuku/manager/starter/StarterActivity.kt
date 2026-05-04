@@ -50,7 +50,7 @@ class StarterActivity : AppBarActivity() {
         
         val isRoot = intent.getBooleanExtra(EXTRA_IS_ROOT, false)
         binding.header.apply {
-            headerIcon.setImageResource(if (isRoot) R.drawable.ic_root_24dp else R.drawable.ic_adb_24dp)
+            headerIcon.setImageResource(if (isRoot) R.drawable.ic_root_24 else R.drawable.ic_adb_24)
             headerIcon.transitionName = if (isRoot) "icon_root" else "icon_adb"
             headerTitle.setText(if (isRoot) R.string.home_root_title else R.string.home_adb_title)
         }
@@ -84,7 +84,8 @@ class StarterActivity : AppBarActivity() {
                 if (message != 0) {
                     MaterialAlertDialogBuilder(this)
                         .setMessage(message)
-                        .setPositiveButton(android.R.string.ok, null)
+                        .setPositiveButton(android.R.string.ok) { _, _ -> finish() }
+                        .setOnDismissListener { finish() }
                         .show()
                 }
             }

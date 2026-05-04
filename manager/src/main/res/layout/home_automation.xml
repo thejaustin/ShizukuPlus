@@ -51,6 +51,6 @@
         android:layout_height="wrap_content"
         android:text="@string/home_automation_button_view_intents"
         android:contentDescription="@string/accessibility_button_view_intents"
-        app:icon="@drawable/ic_code_24dp" />
+        app:icon="@drawable/ic_code_24" />
 
 </LinearLayout>

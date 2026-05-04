@@ -27,7 +27,7 @@
         <SwitchPreferenceCompat
             android:key="show_start_adb_home"
             android:title="@string/settings_show_start_adb_home"
-            android:icon="@drawable/ic_adb_24dp"
+            android:icon="@drawable/ic_adb_24"
             android:defaultValue="false" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
@@ -40,7 +40,7 @@
         <SwitchPreferenceCompat
             android:key="show_activity_log_home"
             android:title="@string/settings_show_activity_log_home"
-            android:icon="@drawable/ic_article_24dp"
+            android:icon="@drawable/ic_article_24"
             android:defaultValue="true" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>

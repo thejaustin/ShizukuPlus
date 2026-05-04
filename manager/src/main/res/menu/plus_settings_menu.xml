@@ -4,6 +4,6 @@
     <item
         android:id="@+id/action_plus_help"
         android:title="@string/settings_plus_learn_more"
-        android:icon="@drawable/ic_help_outline_24dp"
+        android:icon="@drawable/ic_help_outline_24"
         app:showAsAction="ifRoom" />
 </menu>

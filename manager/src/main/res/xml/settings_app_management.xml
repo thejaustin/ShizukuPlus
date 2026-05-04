@@ -13,7 +13,7 @@
             android:entryValues="@array/swipe_actions_values"
             android:defaultValue="open_app"
             android:summary="%s"
-            android:icon="@drawable/ic_swipe_24dp" />
+            android:icon="@drawable/ic_swipe_24" />
 
         <rikka.preference.SimpleMenuPreference
             android:key="swipe_left_action"
@@ -22,7 +22,7 @@
             android:entryValues="@array/swipe_actions_values"
             android:defaultValue="app_info"
             android:summary="%s"
-            android:icon="@drawable/ic_swipe_24dp" />
+            android:icon="@drawable/ic_swipe_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 

@@ -71,19 +71,25 @@
             <TextView
                 android:id="@+id/requires_root"
                 android:layout_width="wrap_content"
-                android:textAppearance="?textAppearanceBodySmall"
+                android:textAppearance="?textAppearanceLabelSmall"
                 android:layout_height="wrap_content"
                 android:textColor="?colorError"
                 android:visibility="gone"
+                android:drawableStart="@drawable/ic_root_24"
+                android:drawablePadding="4dp"
+                android:drawableTint="?colorError"
                 android:text="@string/app_management_item_summary_requires_root" />
 
             <TextView
                 android:id="@+id/requires_plus"
                 android:layout_width="wrap_content"
-                android:textAppearance="?textAppearanceBodySmall"
+                android:textAppearance="?textAppearanceLabelSmall"
                 android:layout_height="wrap_content"
                 android:textColor="?colorError"
                 android:visibility="gone"
+                android:drawableStart="@drawable/ic_bolt_24"
+                android:drawablePadding="4dp"
+                android:drawableTint="?colorError"
                 android:text="@string/app_management_item_summary_requires_plus" />
 
             <TextView
@@ -128,7 +134,7 @@
                     android:textAppearance="?textAppearanceLabelMedium"
                     android:text="@string/su_bridge_magic_setup"
                     android:visibility="gone"
-                    app:icon="@drawable/ic_settings_suggest_24dp"
+                    app:icon="@drawable/ic_settings_suggest_24"
                     app:iconPadding="4dp"
                     app:iconSize="14dp"
                     tools:visibility="visible" />

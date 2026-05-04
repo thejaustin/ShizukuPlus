@@ -41,7 +41,7 @@ class NetworkGovernorPlusImpl : INetworkGovernorPlus.Stub() {
         
         val userId = UserHandleCompat.getUserId(Process.myUid())
         try {
-            val provider = ActivityManagerApis.getContentProviderExternal("settings", userId, null, "settings")
+            val provider = ActivityManagerApis.getContentProviderExternal("settings", userId, null, "com.android.shell")
             if (provider != null) {
                 if (mode != null) {
                     val extras = Bundle().apply { putString("value", mode) }

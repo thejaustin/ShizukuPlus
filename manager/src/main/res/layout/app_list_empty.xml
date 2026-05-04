@@ -15,7 +15,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:importantForAccessibility="no"
-        android:src="@drawable/ic_help_outline_24dp"
+        android:src="@drawable/ic_help_outline_24"
         android:tint="?colorOnSurface"
         android:tintMode="src_in" />
 

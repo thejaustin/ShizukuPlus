@@ -46,7 +46,7 @@
             <ImageView
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/ic_server_ok_24dp"
+                android:src="@drawable/ic_server_ok_24"
                 android:contentDescription="@null"
                 app:tint="?colorPrimary" />
 
@@ -172,7 +172,7 @@
                     <ImageView
                         android:layout_width="28dp"
                         android:layout_height="28dp"
-                        android:src="@drawable/ic_root_24dp"
+                        android:src="@drawable/ic_root_24"
                         android:contentDescription="@null"
                         app:tint="?colorPrimary" />
 
@@ -231,7 +231,7 @@
                     <ImageView
                         android:layout_width="28dp"
                         android:layout_height="28dp"
-                        android:src="@drawable/ic_adb_24dp"
+                        android:src="@drawable/ic_adb_24"
                         android:contentDescription="@null"
                         app:tint="?colorPrimary" />
 

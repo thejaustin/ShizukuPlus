@@ -99,7 +99,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     //private final Context systemContext = HiddenApiBridge.getSystemContext();
     private final ShizukuClientManager clientManager;
     private static final List<String> serverLogs = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
-    private static final int MAX_SERVER_LOGS = 50;
+    private static final int MAX_SERVER_LOGS = 100;
     private final ShizukuConfigManager configManager;
     private final int managerAppId;
     private final VirtualMachineManagerImpl virtualMachineManager = new VirtualMachineManagerImpl();
@@ -171,9 +171,15 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     private int checkCallingPermission() {
         try {
-            return ActivityManagerApis.checkPermission(ServerConstants.PERMISSION,
-                    Binder.getCallingPid(),
-                    Binder.getCallingUid());
+            int pid = Binder.getCallingPid();
+            int uid = Binder.getCallingUid();
+            if (ActivityManagerApis.checkPermission(ServerConstants.PERMISSION, pid, uid) == PackageManager.PERMISSION_GRANTED)
+                return PackageManager.PERMISSION_GRANTED;
+            if (ActivityManagerApis.checkPermission(ServerConstants.PERMISSION_LEGACY, pid, uid) == PackageManager.PERMISSION_GRANTED)
+                return PackageManager.PERMISSION_GRANTED;
+            if (ActivityManagerApis.checkPermission(ServerConstants.PERMISSION_ORIGINAL, pid, uid) == PackageManager.PERMISSION_GRANTED)
+                return PackageManager.PERMISSION_GRANTED;
+            return PackageManager.PERMISSION_DENIED;
         } catch (Throwable tr) {
             LOGGER.w(tr, "checkCallingPermission");
             return PackageManager.PERMISSION_DENIED;
@@ -290,15 +296,24 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     protected boolean isBinderCallBlocked(int uid, String descriptor, int code) {
         if (!isFeatureEnabled("binder_firewall")) return false;
 
-        // Block sensitive system settings modification for non-manager apps if locked
-        if ("android.os.IPowerManager".equals(descriptor) && code == 17 /* reboot */) {
-            if (UserHandleCompat.getAppId(uid) != managerAppId) return true;
+        // The manager app (the owner of this service) is always allowed
+        if (UserHandleCompat.getAppId(uid) == managerAppId) return false;
+
+        // Block sensitive system operations for all other apps if firewall is active
+        if ("android.os.IPowerManager".equals(descriptor)) {
+            // 17 = reboot, 18 = shutdown
+            if (code == 17 || code == 18) return true;
+        } else if ("android.app.IActivityManager".equals(descriptor)) {
+            // 61 = clearApplicationUserData
+            if (code == 61) return true;
         }
         
         // Dynamic policy from settings
         String blockedDescriptors = plusSettingsMap.get("firewall_blocked_descriptors");
-        if (blockedDescriptors != null && blockedDescriptors.contains(descriptor)) {
-            return true;
+        if (blockedDescriptors != null && !blockedDescriptors.isEmpty()) {
+            for (String blocked : blockedDescriptors.split(",")) {
+                if (descriptor.equals(blocked.trim())) return true;
+            }
         }
 
         return false;
@@ -797,7 +812,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 int userId = UserHandleCompat.getUserId(callingUid);
                 LOGGER.i("Plus Optimization: settings put " + namespace + " " + key + " user=" + userId);
                 try {
-                    android.content.IContentProvider provider = ActivityManagerApis.getContentProviderExternal("settings", userId, null, "settings");
+                    android.content.IContentProvider provider = ActivityManagerApis.getContentProviderExternal("settings", userId, null, "com.android.shell");
                     if (provider != null) {
                         android.os.Bundle extras = new android.os.Bundle();
                         extras.putString("value", value);
@@ -974,12 +989,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             int userId = UserHandleCompat.getUserId(uid);
             for (String packageName : PackageManagerApis.getPackagesForUidNoThrow(uid)) {
                 PackageInfo pi = PackageManagerApis.getPackageInfoNoThrow(packageName, PackageManager.GET_PERMISSIONS, userId);
-                if (pi == null || pi.requestedPermissions == null || !ArraysKt.contains(pi.requestedPermissions, PERMISSION)) {
+                if (pi == null || pi.requestedPermissions == null) {
                     continue;
                 }
 
                 try {
-                    if (PermissionManagerApis.checkPermission(PERMISSION, uid) == PackageManager.PERMISSION_GRANTED) {
+                    if (PermissionManagerApis.checkPermission(PERMISSION, uid) == PackageManager.PERMISSION_GRANTED ||
+                        PermissionManagerApis.checkPermission(ServerConstants.PERMISSION_LEGACY, uid) == PackageManager.PERMISSION_GRANTED ||
+                        PermissionManagerApis.checkPermission(ServerConstants.PERMISSION_ORIGINAL, uid) == PackageManager.PERMISSION_GRANTED) {
                         return ConfigManager.FLAG_ALLOWED;
                     }
                 } catch (Throwable e) {
@@ -1077,10 +1094,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
                 if (flags != 0) {
                     list.add(pi);
+                } else if (pi.requestedPermissions != null && (
+                        ArraysKt.contains(pi.requestedPermissions, PERMISSION) ||
+                        ArraysKt.contains(pi.requestedPermissions, ServerConstants.PERMISSION_LEGACY) ||
+                        ArraysKt.contains(pi.requestedPermissions, ServerConstants.PERMISSION_ORIGINAL)
+                )) {
+                    list.add(pi);
                 } else if (pi.applicationInfo.metaData != null
-                        && pi.applicationInfo.metaData.getBoolean("af.shizuku.client.V3_SUPPORT", false)
-                        && pi.requestedPermissions != null
-                        && ArraysKt.contains(pi.requestedPermissions, PERMISSION)) {
+                        && pi.applicationInfo.metaData.getBoolean("af.shizuku.client.V3_SUPPORT", false)) {
                     list.add(pi);
                 }
             }
@@ -1206,7 +1227,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         IBinder token = null;
 
         try {
-            provider = ActivityManagerApis.getContentProviderExternal(name, userId, token, name);
+            provider = ActivityManagerApis.getContentProviderExternal(name, userId, token, "com.android.shell");
             if (provider == null) {
                 LOGGER.e("provider is null %s %d", name, userId);
                 return false;
@@ -1217,9 +1238,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             }
 
             Bundle extra = new Bundle();
-            BinderContainer container = new BinderContainer(binder);
-            extra.putParcelable("af.shizuku.plus.api.intent.extra.BINDER", container);
-            extra.putParcelable("rikka.shizuku.intent.extra.BINDER", container);
+            extra.putParcelable("af.shizuku.plus.api.intent.extra.BINDER", new af.shizuku.api.BinderContainer(binder));
+            extra.putParcelable("rikka.shizuku.intent.extra.BINDER", new moe.shizuku.api.BinderContainer(binder));
 
             Bundle reply = IContentProviderUtils.callCompat(provider, null, name, "sendBinder", null, extra);
             if (reply != null) {
@@ -1324,9 +1344,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     .getMethod("asInterface", IBinder.class).invoke(null, binder);
                 java.lang.reflect.Method setMode = service.getClass().getMethod("setMode", int.class, int.class, String.class, int.class);
                 // 24 = OP_SYSTEM_ALERT_WINDOW, 43 = OP_GET_USAGE_STATS, 63 = OP_WRITE_SETTINGS,
-                // 65 = OP_SYSTEM_ALERT_WINDOW (fallback), 100 = OP_MANAGE_EXTERNAL_STORAGE,
-                // 103 = OP_ACCESS_RESTRICTED_SETTINGS, 121 = OP_SCHEDULE_EXACT_ALARM (privileged)
-                int[] opsToElevate = {24, 43, 63, 65, 100, 103, 121};
+                // 65 = OP_SYSTEM_ALERT_WINDOW (fallback), 66 = OP_REQUEST_INSTALL_PACKAGES,
+                // 100 = OP_MANAGE_EXTERNAL_STORAGE, 103 = OP_ACCESS_RESTRICTED_SETTINGS, 
+                // 121 = OP_SCHEDULE_EXACT_ALARM (privileged)
+                int[] opsToElevate = {24, 43, 63, 65, 66, 100, 103, 121};
                 for (int op : opsToElevate) {
                     try {
                         setMode.invoke(service, op, uid, null, 0);
@@ -1360,12 +1381,21 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public boolean isPlusFeatureEnabled(String key) {
         enforceCallingPermission("isPlusFeatureEnabled");
-        return isFeatureEnabled(key);
+        return checkPlusFeatureEnabled(key);
     }
 
     @Override
     public void dispatchPackageChanged(Intent intent) throws RemoteException {
-
+        String action = intent.getAction();
+        if (Intent.ACTION_PACKAGE_REMOVED.equals(action) || Intent.ACTION_PACKAGE_REPLACED.equals(action)) {
+            android.net.Uri data = intent.getData();
+            if (data != null) {
+                String packageName = data.getSchemeSpecificPart();
+                if (packageName != null) {
+                    clientManager.remove(packageName);
+                }
+            }
+        }
     }
 
     @Override

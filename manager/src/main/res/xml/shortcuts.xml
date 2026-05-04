@@ -16,7 +16,7 @@
     <shortcut
         android:shortcutId="manage_apps"
         android:enabled="true"
-        android:icon="@drawable/ic_settings_outline_24dp"
+        android:icon="@drawable/ic_settings_outline_24"
         android:shortcutShortLabel="@string/home_app_management_title"
         android:shortcutLongLabel="@string/home_app_management_title">
         <intent

@@ -5,7 +5,7 @@
         android:key="service_doctor"
         android:title="@string/home_service_doctor_title"
         android:summary="@string/home_service_doctor_summary"
-        android:icon="@drawable/ic_medical_services_24dp" />
+        android:icon="@drawable/ic_medical_services_24" />
 
     <SwitchPreferenceCompat
         android:key="enable_activity_log"
@@ -17,7 +17,7 @@
     <Preference
         android:key="activity_log"
         android:title="@string/settings_activity_log"
-        android:icon="@drawable/ic_history_24dp"
+        android:icon="@drawable/ic_history_24"
         android:dependency="enable_activity_log" />
 
     <SwitchPreferenceCompat
@@ -35,7 +35,7 @@
     <Preference
         android:key="help"
         android:title="@string/settings_help"
-        android:icon="@drawable/ic_help_outline_24dp" />
+        android:icon="@drawable/ic_help_outline_24" />
 
     <Preference
         android:key="report_bug"

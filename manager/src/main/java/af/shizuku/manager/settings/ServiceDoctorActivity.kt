@@ -174,6 +174,16 @@ class ServiceDoctorActivity : AppBarActivity() {
                 onFix = if (oneUi >= 6) { { SettingsPage.Samsung.AutoBlocker.launch(this) } } else null
             ))
 
+            // OneUI 8+ specific check for "Maximum Restrictions"
+            if (oneUi >= 8) {
+                checks.add(DoctorCheck(
+                    "Maximum Restrictions (One UI 8)",
+                    getString(R.string.doctor_status_manual_check) + " (Must be OFF)",
+                    false,
+                    onFix = { SettingsPage.Samsung.AutoBlocker.launch(this) }
+                ))
+            }
+
             // Samsung Device Care / Always sleeping apps
             checks.add(DoctorCheck(
                 getString(R.string.doctor_check_samsung_battery_protection),
@@ -184,6 +194,9 @@ class ServiceDoctorActivity : AppBarActivity() {
 
             if (oneUi >= 6) {
                 tips.add("• " + getString(R.string.doctor_tip_samsung_autoblocker))
+                if (oneUi >= 8) {
+                    tips.add("• One UI 8: 'Maximum Restrictions' in Auto Blocker disables ADB. Turn it off to use Shizuku.")
+                }
                 tips.add("• " + getString(R.string.doctor_tip_oneui_connectivity))
                 tips.add("• " + getString(R.string.doctor_tip_s22_ultra))
             }
@@ -279,7 +292,7 @@ class ServiceDoctorActivity : AppBarActivity() {
             val context = holder.itemView.context
             holder.binding.title.text = check.title
             holder.binding.status.text = check.status
-            holder.binding.icon.setImageResource(if (check.ok) R.drawable.ic_server_ok_24dp else R.drawable.ic_server_error_24dp)
+            holder.binding.icon.setImageResource(if (check.ok) R.drawable.ic_server_ok_24 else R.drawable.ic_server_error_24)
             val colorAttr = if (check.ok) com.google.android.material.R.attr.colorTertiary else android.R.attr.colorError
             holder.binding.icon.imageTintList = android.content.res.ColorStateList.valueOf(context.themeColor(colorAttr))
             

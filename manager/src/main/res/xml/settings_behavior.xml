@@ -10,7 +10,7 @@
             android:key="start_on_boot"
             android:title="@string/settings_start_on_boot"
             android:summary="@string/settings_start_on_boot_summary"
-            android:icon="@drawable/ic_power_settings_new_24dp" />
+            android:icon="@drawable/ic_power_settings_new_24" />
 
         <SwitchPreferenceCompat
             android:key="watchdog"
@@ -28,13 +28,13 @@
         <SwitchPreferenceCompat
             android:key="tcp_mode"
             android:title="@string/settings_tcp_mode"
-            android:icon="@drawable/ic_adb_24dp"
+            android:icon="@drawable/ic_adb_24"
             android:defaultValue="true" />
 
         <EditTextPreference
             android:key="tcp_port"
             android:title="@string/settings_tcp_port"
-            android:icon="@drawable/ic_lan_24dp"
+            android:icon="@drawable/ic_lan_24"
             android:inputType="number" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>

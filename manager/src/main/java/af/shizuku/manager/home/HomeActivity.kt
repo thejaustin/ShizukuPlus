@@ -148,10 +148,20 @@ abstract class HomeActivity : AppBarActivity(), MavericksView {
                         val cy = statusCard?.let { it.top + it.height / 2 } ?: 100
                         val finalRadius = Math.hypot(view.width.toDouble(), view.height.toDouble()).toFloat()
                         
+                        // OneUI 8+ uses more "elastic" easing (0.22, 1, 0.36, 1)
+                        val interpolator = if (EnvironmentUtils.isOneUi8()) 
+                            androidx.core.view.animation.PathInterpolatorCompat.create(0.22f, 1f, 0.36f, 1f)
+                        else 
+                            androidx.core.view.animation.PathInterpolatorCompat.create(0.2f, 0f, 0f, 1f)
+
                         android.view.ViewAnimationUtils.createCircularReveal(view, cx, cy, 0f, finalRadius).apply {
-                            duration = 600
-                            interpolator = androidx.core.view.animation.PathInterpolatorCompat.create(0.2f, 0f, 0f, 1f)
+                            duration = if (EnvironmentUtils.isOneUi8()) 800 else 600
+                            this.interpolator = interpolator
                             start()
+                        }
+                        
+                        if (EnvironmentUtils.isOneUi8()) {
+                            HapticUtils.success(view)
                         }
                     }
                 }

@@ -18,7 +18,7 @@
             android:importantForAccessibility="yes"
             android:contentDescription="@string/accessibility_icon_root"
             android:transitionName="icon_root"
-            android:src="@drawable/ic_root_24dp" />
+            android:src="@drawable/ic_root_24" />
 
         <TextView
             android:id="@android:id/title"
@@ -48,7 +48,7 @@
             android:enabled="false"
             android:text="@string/home_root_button_start"
             android:contentDescription="@string/accessibility_button_start"
-            app:icon="@drawable/ic_server_start_24dp" />
+            app:icon="@drawable/ic_server_start_24" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/lottie_start"

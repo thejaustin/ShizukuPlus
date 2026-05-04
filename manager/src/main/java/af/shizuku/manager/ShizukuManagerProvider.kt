@@ -39,27 +39,20 @@ class ShizukuManagerProvider : ShizukuProvider() {
                 val token = extras.getString(USER_SERVICE_ARG_TOKEN) ?: return null
                 val binder = extras.getParcelable<BinderContainer>(EXTRA_BINDER)?.binder ?: return null
 
-                return runBlocking {
-                    try {
-                        withTimeout(5000) {
-                            ShizukuStateMachine.asFlow().first { it == ShizukuStateMachine.State.RUNNING }
-                            withContext(workerHandler.asCoroutineDispatcher()) {
-                                try {
-                                    Shizuku.attachUserService(binder, bundleOf(USER_SERVICE_ARG_TOKEN to token))
-                                    val serviceBinder = Shizuku.getBinder() ?: return@withContext null
-                                    val reply = Bundle()
-                                    reply.putParcelable(EXTRA_BINDER, BinderContainer(serviceBinder))
-                                    reply
-                                } catch (e: Throwable) {
-                                    LOGGER.e(e, "attachUserService $token")
-                                    null
-                                }
-                            }
-                        }
-                    } catch (e: TimeoutCancellationException) {
-                        LOGGER.e(e, "Binder not received in 5s")
-                        null
-                    }
+                if (!ShizukuStateMachine.isRunning()) {
+                    LOGGER.w("sendUserService called when not running")
+                    return null
+                }
+
+                try {
+                    Shizuku.attachUserService(binder, bundleOf(USER_SERVICE_ARG_TOKEN to token))
+                    val serviceBinder = Shizuku.getBinder() ?: return null
+                    val reply = Bundle()
+                    reply.putParcelable(EXTRA_BINDER, BinderContainer(serviceBinder))
+                    reply
+                } catch (e: Throwable) {
+                    LOGGER.e(e, "attachUserService $token")
+                    null
                 }
             } catch (e: Throwable) {
                 LOGGER.e(e, "sendUserService")
