@@ -134,7 +134,7 @@ jobs:
           [ "$IS_PRERELEASE" = "true" ] && CMD="$CMD -Pbeta"
 
           export GRADLE_OPTS="-Xmx4g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError"
-          eval $CMD --stacktrace --info -x uploadSentryProguardMappingsRelease -x sentryUploadSourceBundleRelease -x :manager:lint
+          eval $CMD --stacktrace --info -x :manager:lint
           
           FILE=$(find "$APK_DIR" -name "*.apk" -type f | head -1)
           RENAMED="$(dirname "$FILE")/$ARTIFACT_NAME"
@@ -147,7 +147,7 @@ jobs:
         if: ${{ env.SENTRY_AUTH_TOKEN != '' && env.IS_DEBUG == 'false' }}
         continue-on-error: true
         run: |
-          ./gradlew :manager:uploadSentryProguardMappingsRelease
+          echo "Sentry is disabled for this build. Skipping."
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
