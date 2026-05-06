@@ -30,9 +30,10 @@ class HomeAdapter(
         const val ID_LEARN_MORE = 6L
         const val ID_ADB_PERMISSION_LIMITED = 7L
         const val ID_AUTOMATION = 8L
+        const val ID_COMPANION = 9L
 
         private val DEFAULT_ORDER = listOf(
-            ID_TERMINAL, ID_START_ROOT, ID_START_WADB, ID_START_ADB, ID_AUTOMATION, ID_LEARN_MORE
+            ID_TERMINAL, ID_START_ROOT, ID_START_WADB, ID_START_ADB, ID_AUTOMATION, ID_LEARN_MORE, ID_COMPANION
         )
     }
 
@@ -80,9 +81,10 @@ class HomeAdapter(
         lastUpdateDataTime = now
         isUpdating = true
         scope.launch {
-            val (status, grantedCount, isEditMode) = withState(homeModel) { 
+            val (status, grantedCount, isEditMode) = withState(homeModel) {
                 Triple(it.serviceStatus.invoke(), it.grantedAppCount, it.isEditMode)
             }
+            val companionInstalled = withState(homeModel) { it.companionInstalled }
 
             if (status == null) {
                 isUpdating = false
@@ -128,6 +130,8 @@ class HomeAdapter(
                             addItem(AutomationViewHolder.CREATOR, null, id)
                         ID_LEARN_MORE -> if (ShizukuSettings.showLearnMoreHome())
                             addItem(LearnMoreViewHolder.CREATOR, null, id)
+                        ID_COMPANION -> if (ShizukuSettings.isCompanionModeEnabled())
+                            addItem(ShizukuCompanionViewHolder.CREATOR, companionInstalled, id)
                     }
                 }
 

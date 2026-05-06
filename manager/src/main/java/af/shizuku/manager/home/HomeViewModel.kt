@@ -24,6 +24,7 @@ import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.Logger.LOGGER
 import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.ShizukuSystemApis
+import af.shizuku.manager.utils.StockShizukuCompat
 import rikka.shizuku.Shizuku
 
 @Keep
@@ -62,7 +63,8 @@ class HomeViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val status = loadStatus()
-                setState { copy(serviceStatus = Success(status)) }
+                val companionInstalled = StockShizukuCompat.isInstalled(appContext)
+                setState { copy(serviceStatus = Success(status), companionInstalled = companionInstalled) }
             } catch (e: Exception) {
                 LOGGER.e(e, "Failed to load Shizuku status")
                 setState { copy(serviceStatus = Fail(e)) }

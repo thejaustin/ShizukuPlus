@@ -159,6 +159,25 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
                 false
             }
         }
+
+        setupCompanionPreferences()
+    }
+
+    private fun setupCompanionPreferences() {
+        findPreference<TwoStatePreference>(KEY_COMPANION_MODE)?.apply {
+            isChecked = ShizukuSettings.isCompanionModeEnabled()
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) ShizukuSettings.setCompanionModeEnabled(newValue)
+                true
+            }
+        }
+        findPreference<TwoStatePreference>(KEY_COMPANION_FALLBACK)?.apply {
+            isChecked = ShizukuSettings.isCompanionFallbackEnabled()
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) ShizukuSettings.setCompanionFallbackEnabled(newValue)
+                true
+            }
+        }
     }
 
     private fun syncTcpPortVisibility() {

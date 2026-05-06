@@ -52,4 +52,23 @@
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_companion"
+        android:title="@string/settings_category_companion"
+        android:defaultValue="false">
+
+        <SwitchPreferenceCompat
+            android:key="companion_mode"
+            android:title="@string/settings_companion_mode"
+            android:summary="@string/settings_companion_mode_summary"
+            android:icon="@drawable/ic_baseline_link_24" />
+
+        <SwitchPreferenceCompat
+            android:key="companion_fallback"
+            android:title="@string/settings_companion_fallback"
+            android:summary="@string/settings_companion_fallback_summary"
+            android:icon="@drawable/ic_warning_24" />
+
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
 </PreferenceScreen>

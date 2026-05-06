@@ -119,6 +119,10 @@ public class ShizukuSettings {
         public static final String KEY_LAST_CHECK_FAILED = "last_check_failed";
         public static final String KEY_UPDATE_CHANNEL = "update_channel"; // "stable" or "dev"
         public static final String KEY_LAST_SEEN_VERSION = "last_seen_version";
+
+        // Companion Mode (Shizuku+ additions)
+        public static final String KEY_COMPANION_MODE = "companion_mode";
+        public static final String KEY_COMPANION_FALLBACK = "companion_fallback";
     }
 
     private static SharedPreferences sPreferences;
@@ -807,5 +811,25 @@ public class ShizukuSettings {
 
     public static void setUpdateChannel(String channel) {
         getPreferences().edit().putString(Keys.KEY_UPDATE_CHANNEL, channel).apply();
+    }
+
+    public static boolean isCompanionModeEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_COMPANION_MODE, false);
+    }
+
+    public static void setCompanionModeEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_COMPANION_MODE, enable).apply();
+    }
+
+    public static boolean isCompanionFallbackEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_COMPANION_FALLBACK, false);
+    }
+
+    public static void setCompanionFallbackEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_COMPANION_FALLBACK, enable).apply();
     }
 }

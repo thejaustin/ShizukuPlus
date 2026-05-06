@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Card.Large">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@android:id/icon"
+            style="@style/CardIcon.Droplet"
+            android:duplicateParentState="true"
+            android:importantForAccessibility="yes"
+            android:contentDescription="@string/home_companion_title"
+            android:src="@drawable/ic_baseline_link_24" />
+
+        <TextView
+            android:id="@android:id/title"
+            style="@style/CardTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/m3e_spacing_large"
+            android:layout_weight="1"
+            android:text="@string/home_companion_title" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@android:id/text1"
+        style="@style/CardSummary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/home_companion_description" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@android:id/button1"
+        style="@style/CardButton"
+        android:text="@string/home_companion_open"
+        app:icon="@drawable/ic_baseline_link_24" />
+
+</LinearLayout>

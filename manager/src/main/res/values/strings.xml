@@ -922,4 +922,17 @@
     <string name="settings_shadow_binder_summary">Intercept and mock system service calls to hide device information or app state</string>
     <string name="settings_shadow_binder_hidden_packages">Hidden Packages</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Comma-separated list of package names to hide from other apps</string>
+
+    <!-- Companion Mode -->
+    <string name="settings_category_companion">Companion Mode</string>
+    <string name="settings_companion_mode">Show Companion Card</string>
+    <string name="settings_companion_mode_summary">Show a home screen card for quickly switching to stock Shizuku</string>
+    <string name="settings_companion_fallback">Crash Fallback</string>
+    <string name="settings_companion_fallback_summary">After 3 consecutive crashes, show an option to open stock Shizuku in the crash notification</string>
+    <string name="home_companion_title">Stock Shizuku</string>
+    <string name="home_companion_description">Stock Shizuku is installed. Use it as a fallback if Shizuku+ has issues.</string>
+    <string name="home_companion_not_installed">Stock Shizuku is not installed. Install it from GitHub to use as a fallback.</string>
+    <string name="home_companion_open">Open</string>
+    <string name="home_companion_install">Install</string>
+    <string name="watchdog_open_stock_shizuku">Open Stock Shizuku</string>
     </resources>

@@ -21,6 +21,7 @@ import af.shizuku.manager.receiver.ShizukuReceiverStarter
 import af.shizuku.manager.utils.ActivityLogManager
 import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuStateMachine
+import af.shizuku.manager.utils.StockShizukuCompat
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
 import java.util.concurrent.atomic.AtomicBoolean
@@ -154,7 +155,7 @@ class WatchdogService : Service() {
         val reportIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thejaustin/ShizukuPlus/issues/new"))
         val reportPendingIntent = PendingIntent.getActivity(this, 0, reportIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
-        val notification = NotificationCompat.Builder(this, channelId)
+        val builder = NotificationCompat.Builder(this, channelId)
             .setContentTitle(getString(R.string.watchdog_shizuku_crashed_title))
             .setContentText(getString(R.string.watchdog_shizuku_crashed_text))
             .setSmallIcon(R.drawable.ic_system_icon)
@@ -162,7 +163,24 @@ class WatchdogService : Service() {
             .setAutoCancel(true)
             .addAction(0, getString(R.string.watchdog_shizuku_crashed_action_report_manually), reportPendingIntent)
             .addAction(0, getString(R.string.watchdog_shizuku_crashed_action_turn_off_alerts), disablePendingIntent)
-            .build()
+
+        if (consecutiveCrashes >= 3
+            && ShizukuSettings.isCompanionFallbackEnabled()
+            && StockShizukuCompat.isInstalled(applicationContext)
+        ) {
+            val companionIntent = applicationContext.packageManager
+                .getLaunchIntentForPackage(StockShizukuCompat.PACKAGE)
+                ?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            if (companionIntent != null) {
+                val companionPendingIntent = PendingIntent.getActivity(
+                    this, 3, companionIntent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                )
+                builder.addAction(0, getString(R.string.watchdog_open_stock_shizuku), companionPendingIntent)
+            }
+        }
+
+        val notification = builder.build()
 
         nm.notify(NOTIFICATION_ID_CRASH, notification)
     }
