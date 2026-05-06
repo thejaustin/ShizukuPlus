@@ -137,6 +137,7 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
     private var started = false
     private var lastRoot = false
     private var lastPort = 0
+    private var lastLineWasCountdown = false
 
     fun start(root: Boolean, port: Int) {
         lastRoot = root
@@ -157,14 +158,24 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
 
     fun retry() {
         started = false
+        lastLineWasCountdown = false
         sb.clear()
         _output.postValue(Resource.success(sb))
         start(lastRoot, lastPort)
     }
 
     private fun log(line: String? = null, error: Throwable? = null) {
-        line?.let { sb.appendLine(it) }
+        line?.let {
+            val isCountdown = it.matches(Regex("^\\d+s…$"))
+            if (isCountdown && lastLineWasCountdown && sb.length >= 2 && sb.last() == '\n') {
+                val prevNl = sb.lastIndexOf('\n', sb.length - 2)
+                if (prevNl >= 0) sb.delete(prevNl + 1, sb.length) else sb.clear()
+            }
+            lastLineWasCountdown = isCountdown
+            sb.appendLine(it)
+        }
         error?.let {
+            lastLineWasCountdown = false
             if (it !is TimeoutException) {
                 sb.appendLine().appendLine(Log.getStackTraceString(it))
             }

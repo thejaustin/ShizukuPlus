@@ -18,6 +18,7 @@ import af.shizuku.manager.R
 import af.shizuku.manager.MainActivity
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.receiver.ShizukuReceiverStarter
+import af.shizuku.manager.utils.ActivityLogManager
 import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuStateMachine
 import kotlinx.coroutines.*
@@ -51,6 +52,7 @@ class WatchdogService : Service() {
                         consecutiveCrashes++
                         lastRestartMs = now
                         showCrashNotification()
+                        ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: restarting after crash #$consecutiveCrashes")
                         ShizukuReceiverStarter.start(applicationContext)
                         Timber.tag(TAG).d("Watchdog: restart #$consecutiveCrashes (cooldown was ${cooldown}ms)")
                     } else {

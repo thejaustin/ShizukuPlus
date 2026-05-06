@@ -32,6 +32,7 @@ import kotlinx.coroutines.withTimeout
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.adb.AdbMdns
+import af.shizuku.manager.utils.ActivityLogManager
 import af.shizuku.manager.adb.AdbStarter
 import af.shizuku.manager.receiver.ShizukuReceiverStarter
 import af.shizuku.manager.receiver.ShizukuReceiverStarter.WorkerState
@@ -59,7 +60,12 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
                 AdbStarter.stopTcp(applicationContext, tcpPort)
             }
 
-            val port = tcpPort.takeIf { it > 0 && (!EnvironmentUtils.isWifiRequired() || ShizukuSettings.isForceStartWadbEnabled()) } ?: callbackFlow {
+            val savedPort = ShizukuSettings.getLastPort()
+            val isWifiOk = !EnvironmentUtils.isWifiRequired() || ShizukuSettings.isForceStartWadbEnabled()
+            val port = when {
+                tcpPort > 0 && isWifiOk -> tcpPort
+                savedPort > 0 && isWifiOk -> savedPort
+                else -> callbackFlow {
                 val adbMdns = AdbMdns(applicationContext, AdbMdns.TLS_CONNECT) { p ->
                     if (p > 0) trySend(p)
                 }
@@ -140,9 +146,11 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
                     unlockReceiver?.let { applicationContext.unregisterReceiver(it) }
                 }
             }.first()
-            
+            }
+
             AdbStarter.startAdb(applicationContext, port)
             Starter.waitForBinder()
+            ActivityLogManager.log("Shizuku", applicationContext.packageName, "Service started via background ADB worker on port $port")
 
             val nm = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             nm.cancel(ShizukuReceiverStarter.NOTIFICATION_ID)
