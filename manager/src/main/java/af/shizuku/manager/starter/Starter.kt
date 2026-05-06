@@ -53,6 +53,7 @@ object Starter {
             if (attempt == 1) log?.invoke(getContext().getString(R.string.starter_retrying))
             try {
                 log?.invoke("\n" + getContext().getString(R.string.starter_waiting))
+                val t0 = System.currentTimeMillis()
                 withTimeout(15_000) {
                     launch {
                         for (remaining in 14 downTo 1) {
@@ -63,6 +64,8 @@ object Starter {
                     ShizukuStateMachine.asFlow()
                         .first { it == ShizukuStateMachine.State.RUNNING }
                 }
+                val elapsed = (System.currentTimeMillis() - t0) / 1000.0
+                log?.invoke("Connected in ${String.format("%.1f", elapsed)}s")
                 log?.invoke(serviceStartedMessage)
                 return
             } catch (e: TimeoutCancellationException) {

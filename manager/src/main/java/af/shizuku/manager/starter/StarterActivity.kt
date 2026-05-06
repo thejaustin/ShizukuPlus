@@ -32,6 +32,7 @@ import af.shizuku.manager.R
 import af.shizuku.manager.adb.AdbKeyException
 import af.shizuku.manager.adb.AdbStarter
 import af.shizuku.manager.app.AppBarActivity
+import af.shizuku.manager.utils.ActivityLogManager
 import af.shizuku.manager.utils.ShizukuStateMachine
 import af.shizuku.manager.databinding.StarterActivityBinding
 import rikka.lifecycle.Resource
@@ -80,19 +81,19 @@ class StarterActivity : AppBarActivity() {
                     is SSLProtocolException -> message = R.string.adb_pair_required
                     is TimeoutException -> message = R.string.adb_error_timeout
                 }
-                if (message != 0) {
-                    MaterialAlertDialogBuilder(this)
-                        .setMessage(message)
-                        .setPositiveButton(android.R.string.ok) { _, _ -> finish() }
-                        .setNegativeButton(R.string.starter_retry) { _, _ ->
-                            binding.progressIndicator.visibility = View.VISIBLE
-                            binding.cancelButton.visibility = View.VISIBLE
-                            viewModel.retry()
-                        }
-                        .show()
-                }
+                val dialogMessage = if (message != 0) message else R.string.adb_error_generic
+                MaterialAlertDialogBuilder(this)
+                    .setMessage(dialogMessage)
+                    .setPositiveButton(android.R.string.ok) { _, _ -> finish() }
+                    .setNegativeButton(R.string.starter_retry) { _, _ ->
+                        binding.progressIndicator.visibility = View.VISIBLE
+                        binding.cancelButton.visibility = View.VISIBLE
+                        viewModel.retry()
+                    }
+                    .show()
             }
             binding.text1.text = output
+            binding.scrollView.post { binding.scrollView.scrollTo(0, Int.MAX_VALUE) }
         }
     }
 
@@ -157,6 +158,7 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
     fun retry() {
         started = false
         sb.clear()
+        _output.postValue(Resource.success(sb))
         start(lastRoot, lastPort)
     }
 
@@ -195,6 +197,7 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
                     .submit {
                         if (it.isSuccess) {
                             ShizukuStateMachine.update()
+                            ActivityLogManager.log("Shizuku", appContext.packageName, "Service started via root")
                             cont.resume(Unit)
                         } else {
                             cont.resumeWithException(Exception("Failed to start with root"))

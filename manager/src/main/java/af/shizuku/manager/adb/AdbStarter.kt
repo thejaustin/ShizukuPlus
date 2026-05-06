@@ -17,6 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.utils.ActivityLogManager
 import af.shizuku.manager.adb.AdbClient
 import af.shizuku.manager.adb.AdbKey
 import af.shizuku.manager.adb.PreferenceAdbKeyStore
@@ -98,6 +99,7 @@ object AdbStarter {
                     log?.invoke("Successfully connected on port $activePort...\n")
                     client.runCommand("shell:${Starter.internalCommand}")
                     ShizukuSettings.setLastPort(activePort)
+                    ActivityLogManager.log("Shizuku", context.packageName, "Service started via ADB on port $activePort")
                     ShizukuStateMachine.update()
                 }
             }

@@ -522,7 +522,7 @@
     <string name="su_bridge_default_nav_hint">Set custom SU path in app settings</string>
     <string name="su_bridge_path_copied">SU path copied to clipboard</string>
     <string name="su_bridge_device_identity_title">Device Identity</string>
-    <string name="starter_service_started">Service started, this window will be automatically closed in 3 seconds</string>
+    <string name="starter_service_started">Service started.</string>
     <string name="su_bridge_device_identity_real">Real: %s</string>
     <string name="su_bridge_device_identity_spoofed">Spoofed: %s</string>
     <string name="su_bridge_device_identity_none">None (Real device shown)</string>
@@ -669,6 +669,7 @@
     <string name="starter_countdown" translatable="false">%1$ds…</string>
     <string name="starter_retry">Retry</string>
     <string name="adb_error_timeout">Service did not start in time. Please ensure Wireless Debugging is enabled and try again.</string>
+    <string name="adb_error_generic">An unexpected error occurred. Please try again.</string>
 
     <!-- WADB Starter -->
     <string name="wadb_notification_title">Starting Shizuku…</string>
