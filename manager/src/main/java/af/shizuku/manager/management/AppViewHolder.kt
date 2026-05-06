@@ -331,7 +331,17 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         plus.visibility = if (isPlusMissing) View.VISIBLE else View.GONE
 
         itemView.isEnabled = !isPlusMissing
-        itemView.alpha = if (isPlusMissing) 0.5f else 1.0f
+        // Cancel any running entrance animation before setting the disabled alpha so
+        // the animator doesn't override it and settle at 1.0f on Plus-missing items.
+        val targetAlpha = if (isPlusMissing) 0.5f else 1.0f
+        itemView.animate().cancel()
+        itemView.animate()
+            .alpha(targetAlpha)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(500)
+            .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+            .start()
         switchWidget.isEnabled = !isPlusMissing
 
         loadIconJob = AppIconCache.loadIconBitmapAsync(context, appInfo, appInfo.uid / 100000, icon)

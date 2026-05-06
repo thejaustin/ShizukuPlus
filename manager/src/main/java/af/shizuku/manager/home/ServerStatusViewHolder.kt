@@ -48,22 +48,6 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
         val status = data
         val ok = status.isRunning
         
-        // Expressive tap: subtle spring scale effect
-        itemView.setOnClickListener {
-            itemView.animate()
-                .scaleX(0.97f)
-                .scaleY(0.97f)
-                .setDuration(100)
-                .withEndAction {
-                    itemView.animate().scaleX(1f).scaleY(1f).setDuration(150).start()
-                }
-                .start()
-            
-            // Trigger status check/restart logic
-            val activity = context.asActivity<android.app.Activity>() ?: return@setOnClickListener
-            // Implementation logic here
-        }
-        
         // Show Sentry offline button only if limit is reached (flag set via remote update or manual toggle)
         sentryButton.visibility = if (af.shizuku.manager.ShizukuSettings.isSentryLimitReached()) View.VISIBLE else View.GONE
         sentryButton.setOnClickListener {

@@ -47,7 +47,7 @@ object ShizukuStateMachine {
 
     private fun transition(transform: (State) -> State) {
         val oldState = state.getAndUpdate(transform)
-        val newState = transform(oldState)
+        val newState = state.get()
         if(oldState != newState) {
             listeners.forEach { it(newState) }
             Timber.tag("ShizukuStateMachine").d(newState.toString())

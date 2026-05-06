@@ -103,21 +103,22 @@ class HomeAdapter(
                 clear()
 
                 // Fixed cards
-                addItem(ServerStatusViewHolder.CREATOR, status, ID_STATUS)
+                var fixedCardCount = 0
+                addItem(ServerStatusViewHolder.CREATOR, status, ID_STATUS); fixedCardCount++
                 if (adbPermission) {
-                    addItem(ManageAppsViewHolder.CREATOR, status to grantedCount, ID_APPS)
+                    addItem(ManageAppsViewHolder.CREATOR, status to grantedCount, ID_APPS); fixedCardCount++
                 }
                 if (running && !adbPermission) {
-                    addItem(AdbPermissionLimitedViewHolder.CREATOR, status, ID_ADB_PERMISSION_LIMITED)
+                    addItem(AdbPermissionLimitedViewHolder.CREATOR, status, ID_ADB_PERMISSION_LIMITED); fixedCardCount++
                 }
 
                 // Draggable cards
                 cardOrder.forEach { id ->
                     if (id.toString() in hidden) return@forEach
                     when (id) {
-                        ID_TERMINAL -> if (adbPermission && ShizukuSettings.showTerminalHome()) 
+                        ID_TERMINAL -> if (adbPermission && ShizukuSettings.showTerminalHome())
                             addItem(TerminalViewHolder.CREATOR, status, id)
-                        ID_START_ROOT -> if (isPrimaryUser && EnvironmentUtils.isRooted()) 
+                        ID_START_ROOT -> if (isPrimaryUser && EnvironmentUtils.isRooted())
                             addItem(StartRootViewHolder.CREATOR, rootRestart, id)
                         ID_START_WADB -> if (isPrimaryUser && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || EnvironmentUtils.getAdbTcpPort() > 0))
                             addItem(startWadbCreator, null, id)
@@ -131,9 +132,8 @@ class HomeAdapter(
                 }
 
                 notifyDataSetChanged()
-                
-                // Notify about empty state (only count draggable cards, not fixed status/apps cards)
-                val hasVisibleCards = itemCount > 2 // Status card + Apps card (if permission granted)
+
+                val hasVisibleCards = itemCount > fixedCardCount
                 onEmptyStateChanged?.invoke(!hasVisibleCards)
                 
                 isUpdating = false
