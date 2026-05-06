@@ -59,9 +59,7 @@ class StarterActivity : AppBarActivity() {
         viewModel.output.observe(this) { result ->
             val output = result.data?.trim() ?: return@observe
             if (output.endsWith(Starter.serviceStartedMessage)) {
-                window?.decorView?.postDelayed({
-                    if (!isFinishing) finish()
-                }, 600)
+                if (!isFinishing) finish()
             } else if (result.status == Status.ERROR) {
                 var message = 0
                 when (result.error) {
