@@ -22,7 +22,6 @@
             android:layout_marginHorizontal="8dp"
             android:layout_gravity="bottom"
             android:elevation="0dp"
-            android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar"
             android:focusable="true"
             android:descendantFocusability="afterDescendants"
             app:layout_fitsSystemWindowsInsets="top|start|end"

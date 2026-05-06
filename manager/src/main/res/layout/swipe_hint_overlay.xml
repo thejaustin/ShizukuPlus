@@ -40,7 +40,6 @@
                 android:layout_height="32dp"
                 android:src="@drawable/ic_outline_play_arrow_24"
                 android:background="@drawable/hint_icon_bg_green"
-                android:backgroundTint="?colorPrimaryContainer"
                 android:tint="?colorOnPrimaryContainer"
                 android:padding="4dp"
                 android:contentDescription="@null" />
@@ -69,7 +68,6 @@
                 android:layout_height="32dp"
                 android:src="@drawable/ic_outline_info_24"
                 android:background="@drawable/hint_icon_bg_blue"
-                android:backgroundTint="?colorSecondaryContainer"
                 android:tint="?colorOnSecondaryContainer"
                 android:padding="4dp"
                 android:contentDescription="@null" />

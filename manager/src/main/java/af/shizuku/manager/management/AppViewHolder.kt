@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.net.Uri
+import android.util.TypedValue
 import android.provider.Settings
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -300,7 +301,10 @@ class AppViewHolder(private val binding: AppListItemBinding) :
             appContextView.visibility = View.VISIBLE
             val enabledAny = metadata.potentialEnhancements.any { ShizukuSettings.isAppEnhancementEnabled(packageName, it.key) }
             val badge = if (enabledAny) context.getString(R.string.app_management_badge_enhanced) else context.getString(R.string.app_management_badge_upgrade)
-            val color = if (enabledAny) "#4CAF50" else "#FF9800"
+            val colorAttr = if (enabledAny) com.google.android.material.R.attr.colorTertiary else com.google.android.material.R.attr.colorSecondary
+            val tv = TypedValue()
+            context.theme.resolveAttribute(colorAttr, tv, true)
+            val color = String.format("#%06X", tv.data and 0xFFFFFF)
 
             appContextView.text = context.getString(R.string.app_management_badge_format, color, badge, metadata.description).toHtml()
             appContextView.setOnClickListener { showEnhancementSettings(context, metadata) }
