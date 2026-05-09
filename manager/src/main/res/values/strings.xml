@@ -885,6 +885,7 @@
     <string name="aicore_plus_description">Required for Shizuku+ AICore+ features. Provides privileged UI hierarchy dumping and physical input simulation for AI-driven automation. Does not observe passwords or personal data.</string>
 
     <!-- Common action labels -->
+    <string name="action_clear_all">Clear All</string>
     <string name="action_continue">Continue</string>
     <string name="action_open_github">GitHub</string>
 
@@ -922,6 +923,11 @@
     <string name="settings_shadow_binder_summary">Intercept and mock system service calls to hide device information or app state</string>
     <string name="settings_shadow_binder_hidden_packages">Hidden Packages</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Comma-separated list of package names to hide from other apps</string>
+
+    <plurals name="settings_shadow_binder_hidden_packages_count">
+        <item quantity="one">%d app selected</item>
+        <item quantity="other">%d apps selected</item>
+    </plurals>
 
     <!-- Companion Mode -->
     <string name="settings_category_companion">Companion Mode</string>

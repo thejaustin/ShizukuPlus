@@ -30,7 +30,7 @@
             android:icon="@drawable/ic_science_24"
             android:defaultValue="false" />
 
-        <EditTextPreference
+        <af.shizuku.manager.settings.AppPickerPreference
             android:key="shadow_binder_hidden_packages"
             android:title="@string/settings_shadow_binder_hidden_packages"
             android:summary="@string/settings_shadow_binder_hidden_packages_summary"

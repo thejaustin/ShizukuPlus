@@ -111,7 +111,10 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
             "root_busybox_mocking_enabled" to "root_busybox_mocking",
             "vector_enabled" to "vector",
             "experimental_root_compat" to "experimental_root",
-            "spoof_device_enabled" to "spoof_device"
+            "spoof_device_enabled" to "spoof_device",
+            "shadow_binder_enabled" to "shadow_binder",
+            "binder_firewall_enabled" to "binder_firewall",
+            "binder_logging_enabled" to "binder_logging"
         )
         val experimentalKeys = setOf(
             "avf_manager_enabled",
@@ -142,6 +145,11 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
 
         findPreference<Preference>("spoof_target")?.setOnPreferenceChangeListener { _, newValue ->
             preferenceManager.sharedPreferences?.edit()?.putString("spoof_target", newValue as String)?.apply()
+            ShizukuSettings.syncAllPlusFeaturesToServer()
+            true
+        }
+
+        findPreference<Preference>(KEY_SHADOW_BINDER_HIDDEN_PACKAGES)?.setOnPreferenceChangeListener { _, _ ->
             ShizukuSettings.syncAllPlusFeaturesToServer()
             true
         }
