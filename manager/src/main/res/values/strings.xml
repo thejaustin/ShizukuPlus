@@ -949,4 +949,31 @@
     <string name="app_management_empty">No apps found</string>
     <string name="app_management_search_hint">Search apps</string>
 
+    <!-- Root Compatibility Hub -->
+    <string name="root_hub_title">Root Compatibility Hub</string>
+    <string name="root_hub_global_config_title">Global SU Path</string>
+    <string name="root_hub_global_config_desc">All apps use this path. Auto Setup will attempt to configure supported apps for you.</string>
+    <string name="root_hub_setup_all">Setup All</string>
+    <string name="root_hub_setup_all_success">Attempted auto setup for all compatible apps.</string>
+    <string name="root_hub_magic_setup_all_summary">Shizuku+ configured %d apps for you!</string>
+    <string name="root_hub_magic_setup_all_no_apps">No root apps found that support automated setup.</string>
+    <string name="root_hub_magic_setup_success">Magic Setup complete! Shizuku+ configured %s for you.</string>
+    <string name="root_hub_magic_setup_fail">Magic Setup failed. Please try copying the path manually.</string>
+    <string name="root_hub_path_copied">SU path copied to clipboard</string>
+    <string name="root_hub_no_export">SU path not set. Please export the Shizuku files from the home screen first.</string>
+    <string name="root_hub_device_identity_title">Device Identity</string>
+    <string name="root_hub_device_identity_none">None (show real device)</string>
+    <string name="root_hub_device_identity_real">Real: %s</string>
+    <string name="root_hub_device_identity_spoofed">Spoofed: %s</string>
+
+    <!-- Home Automation dialog labels -->
+    <string name="home_automation_dialog_label_action">Action</string>
+    <string name="home_automation_dialog_label_class">Class</string>
+    <string name="home_automation_dialog_label_package">Package</string>
+    <string name="home_automation_dialog_label_target">Target</string>
+
+    <!-- Misc -->
+    <string name="action_start">Start</string>
+    <string name="settings_tcp_learn_more">Learn more about using automation tools to control Shizuku</string>
+
 </resources>
