@@ -58,8 +58,7 @@
             android:key="launch_stock_shizuku"
             android:title="@string/home_companion_open"
             android:summary="@string/home_companion_description"
-            android:icon="@drawable/ic_baseline_link_24"
-            android:dependency="companion_mode" />
+            android:icon="@drawable/ic_baseline_link_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 

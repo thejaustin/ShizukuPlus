@@ -72,6 +72,17 @@ class HomeAdapter(
         }
     }
 
+    /**
+     * Restores a card by removing it from the hidden list.
+     */
+    fun restoreCard(cardId: Long) {
+        val hidden = ShizukuSettings.getHiddenHomeCards().toMutableSet()
+        if (hidden.remove(cardId.toString())) {
+            ShizukuSettings.setHiddenHomeCards(hidden)
+            updateData()
+        }
+    }
+
     override fun onCreateCreatorPool(): IndexCreatorPool = IndexCreatorPool()
 
     fun updateData() {
