@@ -27,3 +27,12 @@ dependencies {
     implementation libs.hidden.compat
     compileOnly libs.hidden.stub
 }
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'io.mockk:mockk:1.13.8'
+}
+android {
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
