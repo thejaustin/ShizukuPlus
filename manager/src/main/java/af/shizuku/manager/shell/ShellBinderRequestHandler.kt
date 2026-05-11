@@ -8,11 +8,21 @@ import af.shizuku.manager.ktx.loge
 import af.shizuku.manager.utils.Logger.LOGGER
 import rikka.shizuku.Shizuku
 
+import af.shizuku.manager.ShizukuSettings
+
 object ShellBinderRequestHandler {
 
-    fun handleRequest(context: Context, intent: Intent): Boolean {
+    fun handleRequest(context: Context, intent: Intent, requireAuth: Boolean = false): Boolean {
         if (intent.action != "rikka.shizuku.intent.action.REQUEST_BINDER") {
             return false
+        }
+
+        if (requireAuth) {
+            val authToken = intent.getStringExtra("auth")
+            val expectedToken = ShizukuSettings.getAuthToken()
+            if (authToken != expectedToken) {
+                return false
+            }
         }
 
         val binder = intent.getBundleExtra("data")?.getBinder("binder") ?: return false
