@@ -20,7 +20,6 @@ import org.junit.runner.RunWith
  */
 @RunWith(AndroidJUnit4::class)
 class JniSmokeTest {
-
     /**
      * Loads libadb.so, triggering JNI_OnLoad which calls RegisterNatives for
      * PairingContext. If the class path is wrong, the process aborts with SIGABRT
@@ -37,42 +36,48 @@ class JniSmokeTest {
      * the method signature or class path didn't match.
      */
     @Test
-    fun PairingContext_nativeConstructor_is_linked() {
+    fun pairingContextNativeConstructorIsLinked() {
         System.loadLibrary("adb")
 
         try {
             val outerClass = Class.forName("af.shizuku.manager.adb.AdbPairingClient")
-            val pairingContextClass = outerClass.declaredClasses
-                .firstOrNull { it.simpleName == "PairingContext" }
+            val pairingContextClass =
+                outerClass.declaredClasses
+                    .firstOrNull { it.simpleName == "PairingContext" }
             assertNotNull(
                 "PairingContext inner class not found — check AdbPairingClient structure",
-                pairingContextClass
+                pairingContextClass,
             )
 
             // Find nativeConstructor in PairingContext.Companion
-            val companionClass = pairingContextClass!!.declaredClasses
-                .firstOrNull { it.simpleName == "Companion" }
+            val companionClass =
+                pairingContextClass!!
+                    .declaredClasses
+                    .firstOrNull { it.simpleName == "Companion" }
             assertNotNull("PairingContext.Companion not found", companionClass)
 
-            val nativeMethod = companionClass!!.declaredMethods
-                .firstOrNull { it.name == "nativeConstructor" }
+            val nativeMethod =
+                companionClass!!
+                    .declaredMethods
+                    .firstOrNull { it.name == "nativeConstructor" }
             assertNotNull(
                 "nativeConstructor not found in PairingContext.Companion — " +
-                "JNI method table may be mismatched",
-                nativeMethod
+                    "JNI method table may be mismatched",
+                nativeMethod,
             )
 
             // Actually invoke the native method. If RegisterNatives mapped it to the
             // wrong JNI function, this will throw UnsatisfiedLinkError or crash.
             nativeMethod!!.isAccessible = true
-            val companionField = pairingContextClass.getDeclaredField("Companion")
-                .also { it.isAccessible = true }
+            val companionField =
+                pairingContextClass
+                    .getDeclaredField("Companion")
+                    .also { it.isAccessible = true }
             val companionInstance = companionField.get(null)
 
             // Returns a native pointer (>0) on success, 0 on alloc failure.
             // Either way, reaching this line means the JNI call worked.
             nativeMethod.invoke(companionInstance, true, "smoketest".toByteArray())
-
         } catch (e: UnsatisfiedLinkError) {
             fail("nativeConstructor is not linked — RegisterNatives may have failed: ${e.message}")
         }
