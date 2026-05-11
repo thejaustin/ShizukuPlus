@@ -29,12 +29,12 @@ class ShizukuGlanceWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
-            Content()
+            content()
         }
     }
 
     @Composable
-    private fun Content() {
+    private fun content() {
         val isRunning = ShizukuStateMachine.get() == ShizukuStateMachine.State.RUNNING
 
         Row(

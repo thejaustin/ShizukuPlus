@@ -1,6 +1,5 @@
 package af.shizuku.manager.adb
 
-import timber.log.Timber
 import af.shizuku.manager.adb.AdbProtocol.ADB_AUTH_RSAPUBLICKEY
 import af.shizuku.manager.adb.AdbProtocol.ADB_AUTH_SIGNATURE
 import af.shizuku.manager.adb.AdbProtocol.ADB_AUTH_TOKEN
@@ -15,19 +14,23 @@ import af.shizuku.manager.adb.AdbProtocol.A_STLS_VERSION
 import af.shizuku.manager.adb.AdbProtocol.A_VERSION
 import af.shizuku.manager.adb.AdbProtocol.A_WRTE
 import rikka.core.util.BuildUtils
+import timber.log.Timber
 import java.io.Closeable
 import java.io.DataInputStream
 import java.io.DataOutputStream
+import java.net.InetSocketAddress
 import java.net.Socket
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.net.InetSocketAddress
 import javax.net.ssl.SSLSocket
 
 private const val TAG = "AdbClient"
 
-class AdbClient(private val host: String, private val port: Int, private val key: AdbKey) : Closeable {
-
+class AdbClient(
+    private val host: String,
+    private val port: Int,
+    private val key: AdbKey,
+) : Closeable {
     private var socket: Socket? = null
     private var plainInputStream: DataInputStream? = null
     private var plainOutputStream: DataOutputStream? = null
@@ -38,8 +41,12 @@ class AdbClient(private val host: String, private val port: Int, private val key
     private var tlsInputStream: DataInputStream? = null
     private var tlsOutputStream: DataOutputStream? = null
 
-    private val inputStream get() = (if (useTls) tlsInputStream else plainInputStream) ?: throw IllegalStateException("inputStream is null - AdbClient not connected or closed")
-    private val outputStream get() = (if (useTls) tlsOutputStream else plainOutputStream) ?: throw IllegalStateException("outputStream is null - AdbClient not connected or closed")
+    private val inputStream get() =
+        (if (useTls) tlsInputStream else plainInputStream)
+            ?: throw IllegalStateException("inputStream is null - AdbClient not connected or closed")
+    private val outputStream get() =
+        (if (useTls) tlsOutputStream else plainOutputStream)
+            ?: throw IllegalStateException("outputStream is null - AdbClient not connected or closed")
 
     fun connect() {
         require(port in 1..65535) { "port out of range: $port" }
@@ -47,13 +54,13 @@ class AdbClient(private val host: String, private val port: Int, private val key
         val s = Socket()
         socket = s
         val address = InetSocketAddress(host, port)
-        
+
         try {
             s.connect(address, 5000)
             s.tcpNoDelay = true
             s.soTimeout = 15000 // 15 seconds read timeout to prevent infinite hangs
             s.keepAlive = true
-            
+
             val pin = DataInputStream(s.getInputStream())
             plainInputStream = pin
             val pout = DataOutputStream(s.getOutputStream())
@@ -97,7 +104,10 @@ class AdbClient(private val host: String, private val port: Int, private val key
         }
     }
 
-    fun command(cmd: String, listener: ((ByteArray) -> Unit)? = null) {
+    fun command(
+        cmd: String,
+        listener: ((ByteArray) -> Unit)? = null,
+    ) {
         val localId = 1
         write(A_OPEN, localId, 0, cmd)
 
@@ -128,9 +138,19 @@ class AdbClient(private val host: String, private val port: Int, private val key
         }
     }
 
-    private fun write(command: Int, arg0: Int, arg1: Int, data: ByteArray? = null) = write(AdbMessage(command, arg0, arg1, data))
+    private fun write(
+        command: Int,
+        arg0: Int,
+        arg1: Int,
+        data: ByteArray? = null,
+    ) = write(AdbMessage(command, arg0, arg1, data))
 
-    private fun write(command: Int, arg0: Int, arg1: Int, data: String) = write(AdbMessage(command, arg0, arg1, data))
+    private fun write(
+        command: Int,
+        arg0: Int,
+        arg1: Int,
+        data: String,
+    ) = write(AdbMessage(command, arg0, arg1, data))
 
     private fun write(message: AdbMessage) {
         val os = if (useTls) tlsOutputStream else plainOutputStream

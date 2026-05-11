@@ -243,6 +243,8 @@ class AICorePlusImpl : IAICorePlus.Stub() {
     /**
      * Capture layer using ScreenCapture API (Android 11+).
      */
+@android.annotation.TargetApi(30)
+@android.annotation.SuppressLint("NewApi")
     private fun captureLayerViaScreenCapture(layerId: Int): Bitmap? {
         return try {
             // Get the SurfaceControl for the layer
@@ -329,6 +331,8 @@ class AICorePlusImpl : IAICorePlus.Stub() {
     /**
      * Get SurfaceControl for a specific layer/window ID.
      */
+@android.annotation.TargetApi(29)
+@android.annotation.SuppressLint("NewApi")
     private fun getSurfaceControlForLayer(layerId: Int): android.view.SurfaceControl? {
         return try {
             // Attempt to access WindowManagerGlobal to find the SurfaceControl
