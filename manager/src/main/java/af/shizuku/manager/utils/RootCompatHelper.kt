@@ -131,8 +131,8 @@ object RootCompatHelper {
             val process = Shizuku.newProcess(cmd, null, null)
             
             // Start threads to drain output/error streams to prevent buffer-fill hangs
-            val outDrainer = Thread { try { process.inputStream.bufferedReader().use { it.readText() } } catch (e: Exception) {} }
-            val errDrainer = Thread { try { process.errorStream.bufferedReader().use { it.readText() } } catch (e: Exception) {} }
+            val outDrainer = Thread { try { process.inputStream.bufferedReader().use { it.readText() } } catch (e: Exception) { Timber.w(e, "RootCompatHelper: Error draining output stream") } }
+            val errDrainer = Thread { try { process.errorStream.bufferedReader().use { it.readText() } } catch (e: Exception) { Timber.w(e, "RootCompatHelper: Error draining error stream") } }
             outDrainer.start()
             errDrainer.start()
 
