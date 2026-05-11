@@ -265,6 +265,9 @@ dependencies {
     implementation libs.sentry.android.okhttp
 
     testImplementation libs.kotestJunit5
+    testImplementation "com.airbnb.android:mavericks-testing:3.0.9"
+    testImplementation "io.mockk:mockk:1.13.10"
+    testImplementation "junit:junit:4.13.2"
     androidTestImplementation "androidx.test.ext:junit:1.2.1"
     androidTestImplementation "androidx.test:runner:1.6.2"
     androidTestImplementation "androidx.test:rules:1.6.1"
