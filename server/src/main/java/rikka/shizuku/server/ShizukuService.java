@@ -1178,8 +1178,42 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     }
 
     private static void sendBinderToManager(Binder binder) {
+        java.util.List<Integer> failedUserIds = new java.util.ArrayList<>();
         for (int userId : UserManagerApis.getUserIdsNoThrow()) {
-            sendBinderToManager(binder, userId);
+            boolean success = sendBinderToUserApp(binder, MANAGER_APPLICATION_ID, userId);
+            if (!success) {
+                failedUserIds.add(userId);
+            }
+        }
+        if (!failedUserIds.isEmpty()) {
+            // For unknown reason, sometimes this could happen
+            // Kill Shizuku app and try again could work
+            for (int userId : failedUserIds) {
+                try {
+                    LOGGER.e("kill %s in user %d and try again", MANAGER_APPLICATION_ID, userId);
+                    ActivityManagerApis.forceStopPackageNoThrow(MANAGER_APPLICATION_ID, userId);
+                } catch (Throwable tr) {
+                    LOGGER.e(tr, "failed to kill package");
+                }
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                LOGGER.w(e, "Interrupted while sleeping before retry");
+                Thread.currentThread().interrupt();
+            }
+            for (int userId : failedUserIds) {
+                try {
+                    boolean success = sendBinderToUserApp(binder, MANAGER_APPLICATION_ID, userId);
+                    if (success) {
+                        LOGGER.e("retry succeeded for user %d", userId);
+                    } else {
+                        LOGGER.e("retry failed for user %d", userId);
+                    }
+                } catch (Throwable tr) {
+                    LOGGER.e(tr, "retry failed");
+                }
+            }
         }
     }
 
