@@ -250,14 +250,9 @@ object ActivityLogManager {
         
         scope.launch {
             try {
-                val count = dao?.getCount() ?: 0
-                if (count > retentionCount) {
-                    val logs = dao!!.getAll().first()
-                    if (logs.size > retentionCount) {
-                        val cutoffTimestamp = logs[retentionCount - 1].timestamp
-                        val deleted = dao!!.deleteOlderThan(cutoffTimestamp)
-                        Timber.tag(TAG).d("Cleaned up $deleted old records")
-                    }
+                val deleted = dao?.deleteExcess(retentionCount) ?: 0
+                if (deleted > 0) {
+                    Timber.tag(TAG).d("Cleaned up $deleted old records")
                 }
             } catch (e: Exception) {
                 Timber.tag(TAG).e(e, "Error cleaning up old records")

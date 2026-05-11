@@ -59,6 +59,15 @@ interface ActivityLogDao {
     suspend fun clear()
 
     /**
+     * Delete activity logs except for the most recent ones.
+     *
+     * @param limit The number of most recent records to keep.
+     * @return Number of rows deleted.
+     */
+    @Query("DELETE FROM activity_logs WHERE id NOT IN (SELECT id FROM (SELECT id FROM activity_logs ORDER BY timestamp DESC, id DESC LIMIT :limit))")
+    suspend fun deleteExcess(limit: Int): Int
+
+    /**
      * Delete activity logs older than the specified timestamp.
      *
      * @param timestamp Unix timestamp in milliseconds. Logs with timestamp less than this value will be deleted.
