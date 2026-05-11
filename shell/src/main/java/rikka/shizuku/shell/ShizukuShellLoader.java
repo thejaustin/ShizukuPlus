@@ -17,12 +17,16 @@ import android.text.TextUtils;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import dalvik.system.BaseDexClassLoader;
 import rikka.hidden.compat.PackageManagerApis;
 import stub.dalvik.system.VMRuntimeHidden;
 
 public class ShizukuShellLoader {
+
+    private static final Logger LOGGER = Logger.getLogger(ShizukuShellLoader.class.getName());
 
     private static String[] args;
     private static String callingPackage;
@@ -39,8 +43,7 @@ public class ShizukuShellLoader {
                 if (binder != null) {
                     handler.post(() -> onBinderReceived(binder, sourceDir));
                 } else {
-                    System.err.println("Server is not running");
-                    System.err.flush();
+                    LOGGER.severe("Server is not running");
                     System.exit(1);
                 }
                 return true;
@@ -80,8 +83,7 @@ public class ShizukuShellLoader {
                 throw e;
             }
 
-            System.err.println("broadcastIntent fails on Android 8.0 or 8.1, fallback to startActivity");
-            System.err.flush();
+            LOGGER.warning("broadcastIntent fails on Android 8.0 or 8.1, fallback to startActivity");
 
             Intent activityIntent = Intent.createChooser(
                     new Intent("rikka.shizuku.intent.action.REQUEST_BINDER")
@@ -113,13 +115,10 @@ public class ShizukuShellLoader {
             cls.getDeclaredMethod("main", String[].class, String.class, IBinder.class, Handler.class)
                     .invoke(null, args, callingPackage, binder, handler);
         } catch (ClassNotFoundException tr) {
-            System.err.println("Class not found");
-            System.err.println("Make sure you have Shizuku v12.0.0 or above installed");
-            System.err.flush();
+            LOGGER.severe("Class not found\nMake sure you have Shizuku v12.0.0 or above installed");
             System.exit(1);
         } catch (Throwable tr) {
-            tr.printStackTrace(System.err);
-            System.err.flush();
+            LOGGER.log(Level.SEVERE, "Error starting shell", tr);
             System.exit(1);
         }
     }
@@ -150,8 +149,7 @@ public class ShizukuShellLoader {
         try {
             requestForBinder();
         } catch (Throwable tr) {
-            tr.printStackTrace(System.err);
-            System.err.flush();
+            LOGGER.log(Level.SEVERE, "Failed to request binder", tr);
             System.exit(1);
         }
 
@@ -167,8 +165,7 @@ public class ShizukuShellLoader {
     }
 
     private static void abort(String message) {
-        System.err.println(message);
-        System.err.flush();
+        LOGGER.severe(message);
         System.exit(1);
     }
 }
