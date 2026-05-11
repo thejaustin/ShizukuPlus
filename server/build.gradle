@@ -27,3 +27,20 @@ dependencies {
     implementation libs.hidden.compat
     compileOnly libs.hidden.stub
 }
+dependencies {
+    testImplementation libs.kotestJunit5
+    testImplementation "org.jetbrains.kotlin:kotlin-test:2.2.20"
+    testImplementation "io.mockk:mockk:1.13.13"
+}
+android {
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+        }
+    }
+}
+android {
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
