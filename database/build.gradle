@@ -28,6 +28,15 @@ android {
     kotlinOptions {
         jvmTarget = "21"
     }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+        unitTests.all {
+            useJUnitPlatform()
+        }
+    }
 }
 
 dependencies {
@@ -36,4 +45,10 @@ dependencies {
     ksp libs.room.compiler
 
     implementation libs.androidx.core.ktx
+
+    testImplementation libs.kotestJunit5
+    testImplementation libs.robolectric
+    testImplementation libs.kotlinx.coroutines.test
+    testImplementation libs.androidx.test.core
+    testImplementation libs.room.testing
 }
