@@ -12,6 +12,7 @@ recyclerview = "1.4.0"
 preference = "1.2.1"
 browser = "1.8.0"
 work = "2.10.4"
+work-testing = "2.10.4"
 transition = "1.5.1"
 dynamicanimation = "1.1.0-alpha03"
 interpolator = "1.0.0"
@@ -43,6 +44,9 @@ lottie = "6.6.2"
 mavericks = "3.0.9"
 spotless = "6.25.0"
 kotestJunit5 = "5.9.1"
+mockk = "1.13.13"
+robolectric = "4.14.1"
+coroutines-test = "1.10.2"
 aboutlibraries = "11.6.3"
 leakcanary = "2.14"
 glance = "1.1.1"
@@ -64,6 +68,7 @@ androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview"
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
+androidx-work-testing = { group = "androidx.work", name = "work-testing", version.ref = "work-testing" }
 androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version = "1.10.0" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version = "1.0.1" }
 androidx-transition = { group = "androidx.transition", name = "transition-ktx", version.ref = "transition" }
@@ -76,6 +81,10 @@ androidx-core-remoteviews = { group = "androidx.core", name = "core-remoteviews"
 
 mavericks = { group = "com.airbnb.android", name = "mavericks", version.ref = "mavericks" }
 kotestJunit5 = { group = "io.kotest", name = "kotest-runner-junit5", version.ref = "kotestJunit5" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-test" }
+
 aboutlibraries-core = { group = "com.mikepenz", name = "aboutlibraries-core", version.ref = "aboutlibraries" }
 aboutlibraries-ui = { group = "com.mikepenz", name = "aboutlibraries-compose-m3", version.ref = "aboutlibraries" }
 
