@@ -68,6 +68,15 @@ interface ActivityLogDao {
     suspend fun deleteOlderThan(timestamp: Long): Int
 
     /**
+     * Delete excess activity logs to keep only the specified number of newest logs.
+     *
+     * @param retentionCount Maximum number of logs to retain.
+     * @return Number of rows deleted.
+     */
+    @Query("DELETE FROM activity_logs WHERE id NOT IN (SELECT id FROM activity_logs ORDER BY timestamp DESC, id DESC LIMIT :retentionCount)")
+    suspend fun deleteExcessLogs(retentionCount: Int): Int
+
+    /**
      * Get the count of activity log entries.
      *
      * @return Total number of activity logs in the database.
