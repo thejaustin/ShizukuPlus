@@ -53,10 +53,15 @@ public class ShizukuShellLoader {
         Bundle data = new Bundle();
         data.putBinder("binder", receiverBinder);
 
+        String token = System.getenv("SHIZUKU_TOKEN");
         Intent intent = new Intent("rikka.shizuku.intent.action.REQUEST_BINDER")
                 .setPackage("af.shizuku.plus.api")
                 .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
                 .putExtra("data", data);
+
+        if (!TextUtils.isEmpty(token)) {
+            intent.putExtra("auth", token);
+        }
 
         IBinder amBinder = ServiceManager.getService("activity");
         IActivityManager am;
@@ -83,14 +88,17 @@ public class ShizukuShellLoader {
             System.err.println("broadcastIntent fails on Android 8.0 or 8.1, fallback to startActivity");
             System.err.flush();
 
-            Intent activityIntent = Intent.createChooser(
-                    new Intent("rikka.shizuku.intent.action.REQUEST_BINDER")
+            Intent requestIntent = new Intent("rikka.shizuku.intent.action.REQUEST_BINDER")
                             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
-                            .putExtra("data", data),
-                    "Request binder from Shizuku"
-            );
+                            .putExtra("data", data);
+
+            if (!TextUtils.isEmpty(token)) {
+                requestIntent.putExtra("auth", token);
+            }
+
+            Intent activityIntent = Intent.createChooser(requestIntent, "Request binder from Shizuku");
 
             am.startActivityAsUser(null, callingPackage, activityIntent, null, null, null, 0, 0, null, null, Os.getuid() / 100000);
         }

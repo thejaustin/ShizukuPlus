@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import android.os.Parcel
+import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.ktx.loge
 import af.shizuku.manager.utils.Logger.LOGGER
 import rikka.shizuku.Shizuku
@@ -12,6 +13,14 @@ object ShellBinderRequestHandler {
 
     fun handleRequest(context: Context, intent: Intent): Boolean {
         if (intent.action != "rikka.shizuku.intent.action.REQUEST_BINDER") {
+            return false
+        }
+
+        val authToken = intent.getStringExtra("auth")
+        val expectedToken = ShizukuSettings.getAuthToken()
+
+        if (authToken.isNullOrEmpty() || authToken != expectedToken) {
+            LOGGER.w("Unauthorized binder request: invalid or missing auth token")
             return false
         }
 
