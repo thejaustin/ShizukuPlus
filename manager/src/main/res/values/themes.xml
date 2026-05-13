@@ -73,7 +73,6 @@
         <item name="android:widgetLayout">@layout/preference_widget_material_switch</item>
     </style>
     
-    <style name="Preference.Category.M3Expressive" parent="@style/Preference.Category">
     <style name="Preference.Category.M3Expressive" parent="@style/Preference.Category.Material">
         <item name="allowDividerAbove">true</item>
         <item name="allowDividerBelow">false</item>

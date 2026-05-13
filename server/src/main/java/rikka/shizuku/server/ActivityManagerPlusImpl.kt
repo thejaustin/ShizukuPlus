@@ -77,15 +77,15 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
         }
     }
 
-    override fun setAppProcessLimit(packageName: String?, limit: Int): Boolean {
-        return try {
+    override fun setAppProcessLimit(limit: Int) {
+        try {
             // This setting is internal to ActivityManagerService but can be set via 'am' on some builds
             // Fallback to global setting if command fails
             val process = Runtime.getRuntime().exec(arrayOf("settings", "put", "global", "max_phantom_processes", limit.toString()))
             process.waitFor()
-            Runtime.getRuntime().exec(arrayOf("am", "set-process-limit", limit.toString())).waitFor() == 0
+            Runtime.getRuntime().exec(arrayOf("am", "set-process-limit", limit.toString())).waitFor()
         } catch (e: Exception) {
-            false
+            // Log warning or ignore
         }
     }
 

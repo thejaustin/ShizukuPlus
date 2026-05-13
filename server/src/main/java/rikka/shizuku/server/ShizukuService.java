@@ -167,7 +167,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         });
 
         mainHandler.post(() -> {
-            List<Integer> userIds = UserManagerApis.getUserIdsNoThrow();
+            List<Integer> userIds = new ArrayList<>(UserManagerApis.getUserIdsNoThrow());
             sendBinderToClient(userIds);
             sendBinderToManager(userIds);
         });
@@ -1168,7 +1168,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     }
 
     void sendBinderToClient() {
-        sendBinderToClient(UserManagerApis.getUserIdsNoThrow());
+        sendBinderToClient(new ArrayList<>(UserManagerApis.getUserIdsNoThrow()));
     }
 
     void sendBinderToClient(List<Integer> userIds) {
@@ -1202,7 +1202,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     }
 
     void sendBinderToManager() {
-        sendBinderToManager(UserManagerApis.getUserIdsNoThrow());
+        sendBinderToManager(new ArrayList<>(UserManagerApis.getUserIdsNoThrow()));
     }
 
     void sendBinderToManager(List<Integer> userIds) {
