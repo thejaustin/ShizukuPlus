@@ -7,11 +7,19 @@ import android.os.Parcel
 import af.shizuku.manager.ktx.loge
 import af.shizuku.manager.utils.Logger.LOGGER
 import rikka.shizuku.Shizuku
+import af.shizuku.manager.ShizukuSettings
 
 object ShellBinderRequestHandler {
 
     fun handleRequest(context: Context, intent: Intent): Boolean {
         if (intent.action != "rikka.shizuku.intent.action.REQUEST_BINDER") {
+            return false
+        }
+
+        val authToken = intent.getStringExtra("auth")
+        val expectedToken = ShizukuSettings.getAuthToken()
+        if (authToken.isNullOrEmpty() || authToken != expectedToken) {
+            LOGGER.w("Invalid or missing auth token in REQUEST_BINDER intent")
             return false
         }
 

@@ -187,7 +187,7 @@ object ActivityLogManager {
         
         // Push to Samsung Live Activity status bar if enabled
         appContext?.let { ctx ->
-            if (ShizukuSettings.isLiveActivityEnabled()) {
+            if (ShizukuSettings.getWatchdog()) {
                 LiveActivityNotificationManager.show(ctx, "$appName: $action")
             }
         }

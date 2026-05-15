@@ -347,7 +347,7 @@ class ShizukuApplication : Application(), Configuration.Provider {
         // 5. Initialize settings and managers
         try {
             initializeManagers()
-            if (ShizukuSettings.isLiveActivityEnabled()) {
+            if (ShizukuSettings.getWatchdog()) {
                 startService(Intent(this, af.shizuku.manager.service.ShizukuLiveService::class.java))
             }
         } catch (e: Throwable) {

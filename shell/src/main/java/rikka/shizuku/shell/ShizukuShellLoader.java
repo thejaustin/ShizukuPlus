@@ -56,7 +56,8 @@ public class ShizukuShellLoader {
         Intent intent = new Intent("rikka.shizuku.intent.action.REQUEST_BINDER")
                 .setPackage("af.shizuku.plus.api")
                 .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
-                .putExtra("data", data);
+                .putExtra("data", data)
+                .putExtra("auth", System.getenv("SHIZUKU_TOKEN"));
 
         IBinder amBinder = ServiceManager.getService("activity");
         IActivityManager am;
@@ -88,7 +89,8 @@ public class ShizukuShellLoader {
                             .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
-                            .putExtra("data", data),
+                            .putExtra("data", data)
+                            .putExtra("auth", System.getenv("SHIZUKU_TOKEN")),
                     "Request binder from Shizuku"
             );
 
