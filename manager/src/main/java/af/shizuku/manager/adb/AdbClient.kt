@@ -70,6 +70,7 @@ class AdbClient(private val host: String, private val port: Int, private val key
 
                 val sslContext = key.sslContext
                 val ts = sslContext.socketFactory.createSocket(s, host, port, true) as SSLSocket
+                ts.soTimeout = 15000 // Ensure TLS socket also has a timeout
                 tlsSocket = ts
                 ts.startHandshake()
                 Timber.tag(TAG).d("Handshake succeeded.")

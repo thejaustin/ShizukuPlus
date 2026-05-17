@@ -80,6 +80,20 @@ Everything in Shizuku+ is optional. Use the **Plus Features** category in Settin
 
 See the [Shizuku+-API](https://github.com/thejaustin/ShizukuPlus-API) repository for documentation on the exclusive Plus APIs.
 
+## 🔨 Building from Source
+
+To build Shizuku+ locally, ensure your environment meets the following requirements:
+*   **JDK 21** (or compatible up to Java 24; Gradle 8.14 does not support Java 25 yet).
+*   **Android SDK** with CMake `3.31.0` installed via SDK Manager.
+
+Clone the repository and initialize the submodules before building:
+```bash
+git clone https://github.com/thejaustin/ShizukuPlus.git
+cd ShizukuPlus
+git submodule update --init --recursive
+./gradlew :manager:assembleDebug
+```
+
 ## 🙏 Acknowledgements & Licenses
 
 Shizuku+ is a community-driven enhancement and fork of [thedjchi/Shizuku](https://github.com/thedjchi/Shizuku), which is itself a fork of the original [RikkaApps/Shizuku](https://github.com/RikkaApps/Shizuku). This project is not affiliated with the original RikkaApps team.

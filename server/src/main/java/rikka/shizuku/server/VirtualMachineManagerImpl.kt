@@ -325,21 +325,38 @@ class VirtualMachineManagerImpl : IVirtualMachineManager.Stub() {
             val configClass = Class.forName("android.system.virtualmachine.VirtualMachineConfig")
             val builderClass = Class.forName("android.system.virtualmachine.VirtualMachineConfig\$Builder")
 
+            // Get system context from ActivityThread
+            val activityThreadClass = Class.forName("android.app.ActivityThread")
+            val systemMainMethod = activityThreadClass.getMethod("systemMain")
+            val activityThread = systemMainMethod.invoke(null)
+            val getSystemContextMethod = activityThreadClass.getMethod("getSystemContext")
+            val context = getSystemContextMethod.invoke(activityThread) as Context
+
             // Get Builder constructor - requires Context
-            // Since we're in the server process, we need to work around this
-            // For now, we'll use a simplified approach
+            val builderConstructor = builderClass.getConstructor(Context::class.java)
+            val builder = builderConstructor.newInstance(context)
 
             val protectedVm = config?.getBoolean("protected_vm", false) ?: false
             val memoryBytes = config?.getLong("memory_bytes", 512 * 1024 * 1024) ?: (512 * 1024 * 1024)
             val cpuCount = config?.getInt("cpu_count", 2) ?: 2
-            val storageBytes = config?.getLong("storage_bytes", 100 * 1024 * 1024) ?: (100 * 1024 * 1024)
             val debuggable = config?.getBoolean("debuggable", false) ?: false
+            val payloadBinary = config?.getString("payload_binary")
 
-            Log.d(TAG, "Building VM config: protected=$protectedVm, memory=$memoryBytes, cpus=$cpuCount, storage=$storageBytes")
+            Log.d(TAG, "Building VM config: protected=$protectedVm, memory=$memoryBytes, cpus=$cpuCount, debuggable=$debuggable")
 
-            // Note: Full implementation requires Context for Builder
-            // This is a simplified version that may need adjustment based on actual AVF API
-            null
+            // Configure builder using reflection
+            builderClass.getMethod("setProtectedVm", Boolean::class.java).invoke(builder, protectedVm)
+            builderClass.getMethod("setMemoryBytes", Long::class.java).invoke(builder, memoryBytes)
+            builderClass.getMethod("setCpuCount", Int::class.java).invoke(builder, cpuCount)
+            builderClass.getMethod("setDebuggable", Boolean::class.java).invoke(builder, debuggable)
+            
+            if (payloadBinary != null) {
+                builderClass.getMethod("setPayloadBinaryName", String::class.java).invoke(builder, payloadBinary)
+            }
+
+            // Build the config
+            val buildMethod = builderClass.getMethod("build")
+            buildMethod.invoke(builder)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to build VM config", e)
             null

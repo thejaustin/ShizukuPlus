@@ -334,7 +334,8 @@
             android:directBootAware="true"
             android:enabled="true"
             android:exported="true"
-            android:multiprocess="false" />
+            android:multiprocess="false"
+            android:permission="af.shizuku.plus.permission.MANAGER" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

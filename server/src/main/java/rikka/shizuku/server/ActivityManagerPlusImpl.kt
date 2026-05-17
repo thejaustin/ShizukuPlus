@@ -85,7 +85,7 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
             process.waitFor()
             Runtime.getRuntime().exec(arrayOf("am", "set-process-limit", limit.toString())).waitFor()
         } catch (e: Exception) {
-            // Ignore
+            // Log warning or ignore
         }
     }
 
