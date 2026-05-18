@@ -1214,20 +1214,33 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             try {
                 LOGGER.e("kill %s in user %d and try again", MANAGER_APPLICATION_ID, userId);
                 ActivityManagerApis.forceStopPackageNoThrow(MANAGER_APPLICATION_ID, userId);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    LOGGER.w(e, "Interrupted while sleeping before retry");
-                    Thread.currentThread().interrupt();
-                }
-                success = sendBinderToUserApp(binder, MANAGER_APPLICATION_ID, userId);
-                if (success) {
-                    LOGGER.e("retry succeeded");
+
+                Runnable retryAction = () -> {
+                    try {
+                        boolean retrySuccess = sendBinderToUserApp(binder, MANAGER_APPLICATION_ID, userId);
+                        if (retrySuccess) {
+                            LOGGER.e("retry succeeded");
+                        } else {
+                            LOGGER.e("retry failed");
+                        }
+                    } catch (Throwable tr) {
+                        LOGGER.e(tr, "retry failed");
+                    }
+                };
+
+                if (Looper.myLooper() == Looper.getMainLooper()) {
+                    HandlerUtil.getMainHandler().postDelayed(retryAction, 1000);
                 } else {
-                    LOGGER.e("retry failed");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        LOGGER.w(e, "Interrupted while sleeping before retry");
+                        Thread.currentThread().interrupt();
+                    }
+                    retryAction.run();
                 }
             } catch (Throwable tr) {
-                LOGGER.e(tr, "retry failed");
+                LOGGER.e(tr, "kill failed");
             }
         }
     }
