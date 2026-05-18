@@ -20,7 +20,7 @@ class HomeViewModelTest {
 
     @Test
     fun `initial state is Loading and then Success or Fail`() {
-        val viewModel = HomeViewModel(HomeState(), context)
+        val viewModel = HomeViewModel(HomeState())
         
         withState(viewModel) { state ->
             // In a real test we'd mock Shizuku.pingBinder() etc.
@@ -31,7 +31,7 @@ class HomeViewModelTest {
 
     @Test
     fun `setEditMode updates state`() {
-        val viewModel = HomeViewModel(HomeState(), context)
+        val viewModel = HomeViewModel(HomeState())
         
         viewModel.setEditMode(true)
         
