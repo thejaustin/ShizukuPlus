@@ -19,6 +19,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -110,13 +112,30 @@ public class ShizukuConfigManager extends ConfigManager {
             changed = true;
         }
 
+        Map<Integer, List<String>> packagesByUid = new HashMap<>();
+        List<PackageInfo> allPackages = new ArrayList<>();
+
+        for (int userId : UserManagerApis.getUserIdsNoThrow()) {
+            for (PackageInfo pi : PackageManagerApis.getInstalledPackagesNoThrow(PackageManager.GET_PERMISSIONS, userId)) {
+                if (pi == null || pi.applicationInfo == null) continue;
+                allPackages.add(pi);
+
+                List<String> list = packagesByUid.get(pi.applicationInfo.uid);
+                if (list == null) {
+                    list = new ArrayList<>();
+                    packagesByUid.put(pi.applicationInfo.uid, list);
+                }
+                list.add(pi.packageName);
+            }
+        }
+
         for (ShizukuConfig.PackageEntry entry : new ArrayList<>(config.packages)) {
             if (entry.packages == null) {
                 entry.packages = new ArrayList<>();
             }
 
-            List<String> packages = PackageManagerApis.getPackagesForUidNoThrow(entry.uid);
-            if (packages.isEmpty()) {
+            List<String> packages = packagesByUid.get(entry.uid);
+            if (packages == null || packages.isEmpty()) {
                 LOGGER.i("remove config for uid %d since it has gone", entry.uid);
                 config.packages.remove(entry);
                 changed = true;
@@ -148,13 +167,10 @@ public class ShizukuConfigManager extends ConfigManager {
             }
         }
 
-        for (int userId : UserManagerApis.getUserIdsNoThrow()) {
-            for (PackageInfo pi : PackageManagerApis.getInstalledPackagesNoThrow(PackageManager.GET_PERMISSIONS, userId)) {
-                if (pi == null
-                        || pi.applicationInfo == null
-                        || pi.requestedPermissions == null) {
-                    continue;
-                }
+        for (PackageInfo pi : allPackages) {
+            if (pi.requestedPermissions == null) {
+                continue;
+            }
 
                 String activePerm = null;
                 if (ArraysKt.contains(pi.requestedPermissions, PERMISSION)) activePerm = PERMISSION;
@@ -177,7 +193,6 @@ public class ShizukuConfigManager extends ConfigManager {
 
                 updateLocked(uid, packages, ConfigManager.MASK_PERMISSION, allowed ? ConfigManager.FLAG_ALLOWED : 0);
                 changed = true;
-            }
         }
 
         if (changed) {
