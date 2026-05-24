@@ -34,11 +34,6 @@ class ActivityLogFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = af.shizuku.core.ui.databinding.AppsActivityBinding.inflate(inflater, container, false)
         
-        binding.header.apply {
-            headerIcon.setImageResource(R.drawable.ic_server_ok_24)
-            headerTitle.setText(R.string.settings_activity_log)
-        }
-        
         emptyStateView = binding.emptyStateView
         emptyStateView.setIcon(R.drawable.ic_empty_log_24)
         emptyStateView.setTitle(R.string.empty_state_title_activity_log_empty)
@@ -80,7 +75,7 @@ class ActivityLogFragment : Fragment() {
         }
     }
 
-    private class LogViewHolder(private val binding: ItemActivityLogBinding) : RecyclerView.ViewHolder(binding.root) {
+    internal class LogViewHolder(private val binding: ItemActivityLogBinding) : RecyclerView.ViewHolder(binding.root) {
         companion object {
             private val dateFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
             fun create(parent: ViewGroup) = LogViewHolder(ItemActivityLogBinding.inflate(LayoutInflater.from(parent.context), parent, false))

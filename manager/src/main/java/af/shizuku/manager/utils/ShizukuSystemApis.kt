@@ -24,16 +24,16 @@ object ShizukuSystemApis {
 
     private fun getUsers(): List<UserInfoCompat> {
         return if (!ShizukuStateMachine.isRunning()) {
-            arrayListOf(UserInfoCompat(UserHandleCompat.myUserId(), "Owner"))
+            arrayListOf(UserInfoCompat(UserHandleCompat.myUserId(), "Owner", 0))
         } else try {
             val list = UserManagerApis.getUsers(true, true, true)
             val users: MutableList<UserInfoCompat> = ArrayList<UserInfoCompat>()
             for (ui in list) {
-                users.add(UserInfoCompat(ui.id, ui.name))
+                users.add(UserInfoCompat(ui.id, ui.name, 0))
             }
             return users
         } catch (tr: Throwable) {
-            arrayListOf(UserInfoCompat(UserHandleCompat.myUserId(), "Owner"))
+            arrayListOf(UserInfoCompat(UserHandleCompat.myUserId(), "Owner", 0))
         }
     }
 
@@ -50,7 +50,8 @@ object ShizukuSystemApis {
     fun getUserInfo(userId: Int): UserInfoCompat {
         return getUsers(useCache = true).firstOrNull { it.id == userId } ?: UserInfoCompat(
             UserHandleCompat.myUserId(),
-            "Unknown"
+            "Unknown",
+            0
         )
     }
 

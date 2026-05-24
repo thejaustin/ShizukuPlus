@@ -14,7 +14,6 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import kotlinx.coroutines.*
 import af.shizuku.manager.MainActivity
-import af.shizuku.core.ui.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.home.HomeActivity
 import af.shizuku.common.ktx.loge

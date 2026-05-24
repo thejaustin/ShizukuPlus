@@ -12,7 +12,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.Settings
-import timber.log.Timber
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
