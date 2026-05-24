@@ -70,7 +70,6 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/btn_activity_log"
-                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/settings_activity_log"
@@ -80,7 +79,6 @@
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/btn_diagnostics"
-                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Diagnostics"
@@ -92,7 +90,6 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_sentry_offline"
-            style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
