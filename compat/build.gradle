@@ -1,0 +1,23 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'moe.shizuku.privileged.api'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "moe.shizuku.privileged.api"
+        minSdk 21
+        targetSdk 34
+        versionCode 1000000
+        versionName "13.0.0-compat"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}

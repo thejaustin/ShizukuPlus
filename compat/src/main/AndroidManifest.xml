@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="moe.shizuku.privileged.api">
+
+    <permission-group
+        android:name="moe.shizuku.manager.permission-group.API"
+        android:description="@string/permission_group_description"
+        android:icon="@android:drawable/ic_secure"
+        android:label="@string/permission_group_label" />
+
+    <permission
+        android:name="moe.shizuku.manager.permission.API_V23"
+        android:description="@string/permission_description"
+        android:icon="@android:drawable/ic_secure"
+        android:label="@string/permission_label"
+        android:permissionGroup="moe.shizuku.manager.permission-group.API"
+        android:protectionLevel="dangerous" />
+
+    <!-- This app exists solely to spoof the package name so apps like SwiftBackup pass their isInstalled checks. -->
+    <application
+        android:label="Shizuku (Compat Hub)"
+        android:hasCode="false"
+        android:icon="@android:drawable/ic_secure">
+    </application>
+
+</manifest>

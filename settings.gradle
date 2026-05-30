@@ -36,7 +36,7 @@ dependencyResolutionManagement {
     }
 }
 
-include ":server", ":starter", ":shell", ":manager", ":common", ":database"
+include ":server", ":starter", ":shell", ":manager", ":common", ":database", ":compat"
 include ":core:ui"
 project(":core:ui").projectDir = file("core/ui")
 
