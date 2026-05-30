@@ -923,6 +923,8 @@
     <string name="dhizuku_clear_owner_success">Device Owner status removed. You can now uninstall or downgrade Shizuku+.</string>
     <string name="dhizuku_clear_owner_failure">Failed to remove Device Owner status. The service may need to be running first.</string>
 
+    <!-- Pairing fallback (Issue #204) -->
+    <string name="toast_pair_notifications_required">Notifications are blocked — using manual pairing. Go to Developer Options → Wireless debugging → Pair device with pairing code to get your code, then enter it here.</string>
     <!-- Remote App DB Sync -->
     <string name="remote_db_sync_channel_name">App Database Updates</string>
 

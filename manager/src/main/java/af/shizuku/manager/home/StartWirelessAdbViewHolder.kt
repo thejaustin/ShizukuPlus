@@ -171,7 +171,36 @@ class StartWirelessAdbViewHolder(
     private fun onPairClicked(context: Context) {
         if (EnvironmentUtils.isTelevision()) {
             context.showAccessibilityDialog()
-        } else if ((context.display?.displayId ?: -1) > 0 || ShizukuSettings.getLegacyPairing()) {
+            return
+        }
+
+        // Check if notifications are enabled — the pairing service posts the pairing code
+        // as a notification. If notifications are blocked, the Pair button appears to do
+        // nothing because the notification never shows (issue #204).
+        val nm = context.getSystemService(android.app.NotificationManager::class.java)
+        val notificationsEnabled = nm.areNotificationsEnabled()
+        val channel = nm.getNotificationChannel(af.shizuku.manager.adb.AdbPairingService.NOTIFICATION_CHANNEL)
+        val channelEnabled = channel == null || channel.importance != android.app.NotificationManager.IMPORTANCE_NONE
+
+        if (!notificationsEnabled || !channelEnabled) {
+            // Notifications blocked: skip the tutorial and use the in-app manual pairing
+            // dialog as an immediate fallback. Users can enter IP/port/code shown in
+            // Developer Options → Wireless debugging → Pair device with pairing code.
+            Toast.makeText(
+                context,
+                context.getString(R.string.toast_pair_notifications_required),
+                Toast.LENGTH_LONG
+            ).show()
+            val activity = context.asActivity<FragmentActivity>()
+            if (activity != null) {
+                AdbPairDialogFragment().show(activity.supportFragmentManager)
+            }
+            return
+        }
+
+        // Notifications available: use the preferred pairing path.
+        if ((context.display?.displayId ?: -1) > 0 || ShizukuSettings.getLegacyPairing()) {
+            // Secondary display or legacy mode: show in-app pairing dialog directly
             val activity = context.asActivity<FragmentActivity>()
             if (activity != null) {
                 AdbPairDialogFragment().show(activity.supportFragmentManager)
@@ -179,6 +208,7 @@ class StartWirelessAdbViewHolder(
                 Timber.e("onPairClicked: could not find FragmentActivity in context $context")
             }
         } else {
+            // Primary display: open the pairing tutorial (notification-based pairing code)
             val activity = context.asActivity<android.app.Activity>() ?: return
             activity.startWithSceneTransition(
                 Intent(activity, AdbPairingTutorialActivity::class.java),
