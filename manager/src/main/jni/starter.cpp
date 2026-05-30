@@ -33,7 +33,7 @@
 #define EXIT_FATAL_BINDER_BLOCKED_BY_SELINUX 10
 
 #define PACKAGE_NAME "af.shizuku.plus.api"
-#define SERVER_NAME "shizuku_server"
+#define SERVER_NAME "shizuku_plus_server"
 #define SERVER_CLASS_PATH "rikka.shizuku.server.ShizukuService"
 
 #if defined(__arm__)
