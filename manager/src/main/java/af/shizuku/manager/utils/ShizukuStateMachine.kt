@@ -52,6 +52,18 @@ object ShizukuStateMachine {
             listeners.forEach { it(newState) }
             Timber.tag("ShizukuStateMachine").d(newState.toString())
 
+            if (newState == State.RUNNING || newState == State.STOPPED || newState == State.CRASHED) {
+                try {
+                    val context = ShizukuApplication.appContext
+                    af.shizuku.manager.automation.AutomationEngine.dispatchEvent(
+                        af.shizuku.manager.automation.ShizukuStateEvent(newState == State.RUNNING),
+                        context
+                    )
+                } catch (e: Exception) {
+                    Timber.tag("ShizukuStateMachine").w(e, "Failed to dispatch automation event")
+                }
+            }
+
             // Broadcast state change for widgets and other receivers
             try {
                 val context = ShizukuApplication.appContext

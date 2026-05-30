@@ -238,6 +238,13 @@ class ShizukuApplication : Application(), Configuration.Provider {
             WatchdogService.start(this)
             af.shizuku.manager.worker.WatchdogWorker.schedule(this)
         }
+        
+        try {
+            af.shizuku.manager.automation.registerDefaultRules()
+            Intent(this, af.shizuku.manager.automation.AutomationService::class.java).also { startService(it) }
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to start AutomationService")
+        }
 
         Shizuku.addLogListener { appName, packageName, action ->
             ActivityLogManager.log(appName, packageName, action)
