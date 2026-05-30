@@ -933,4 +933,7 @@ public class ShizukuSettings {
         SharedPreferences p = getPreferences();
         return p == null || p.getBoolean(Keys.KEY_LIVE_ACTIVITY_ENABLED, true);
     }
+    public static boolean isLiveActivityEnabled() {
+        return getPreferences() != null && getPreferences().getBoolean(Keys.KEY_LIVE_ACTIVITY_ENABLED, false);
+    }
 }
