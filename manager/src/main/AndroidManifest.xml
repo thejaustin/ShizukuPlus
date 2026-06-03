@@ -92,6 +92,27 @@
                 android:resource="@xml/shortcuts" />
         </activity>
 
+        <!-- Activity Aliases to fix broken shortcuts / task stack restoration -->
+        <activity-alias
+            android:name="af.shizuku.manager.home.HomeActivity"
+            android:targetActivity=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name="af.shizuku.manager.ApplicationManagementActivity"
+            android:targetActivity=".management.ApplicationManagementActivity"
+            android:exported="true" />
+        <activity-alias
+            android:name="moe.shizuku.manager.ApplicationManagementActivity"
+            android:targetActivity=".management.ApplicationManagementActivity"
+            android:exported="true" />
+
         <!-- Settings Activity -->
         <activity
             android:name=".settings.SettingsActivity"
