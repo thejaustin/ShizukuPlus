@@ -37,6 +37,19 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : SwitchPrefe
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
         
+        val titleView = holder.findViewById(android.R.id.title) as? TextView
+        val summaryView = holder.findViewById(android.R.id.summary) as? TextView
+        
+        titleView?.apply {
+            isSingleLine = false
+            maxLines = 4
+        }
+        
+        summaryView?.apply {
+            isSingleLine = false
+            maxLines = 15
+        }
+        
         holder.itemView.setOnLongClickListener {
             if (integrationPackage != null) launchIntegration() else showHelp()
             true
