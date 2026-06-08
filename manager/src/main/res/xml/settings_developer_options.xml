@@ -45,4 +45,27 @@
 
 
 
+
+
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_dangerous_experimental"
+        android:title="Dangerous &amp; Experimental Settings"
+        android:defaultValue="false">
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="bootloader_flash_ota_enabled"
+            android:title="[DANGEROUS] Systemless OTA Flashing"
+            android:summary="Use android.os.UpdateEngine via Shizuku shell to seamlessly install zip payloads to the inactive slot without custom recovery. DANGER: Flashing incompatible payloads WILL result in a hard brick or bootloop."
+            android:icon="@drawable/ic_update_24"
+            android:defaultValue="false" />
+            
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="bootloader_fastbootd_reboot_enabled"
+            android:title="[Experimental] Fastbootd &amp; Recovery Bridging"
+            android:summary="Allow root apps to physically trigger bootloader, fastbootd, and recovery reboots natively using Android's RecoverySystem APIs."
+            android:icon="@drawable/ic_server_restart"
+            android:defaultValue="false" />
+
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
 </PreferenceScreen>

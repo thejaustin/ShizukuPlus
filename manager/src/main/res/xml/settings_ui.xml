@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <af.shizuku.manager.settings.UiSettingsHeaderPreference
-        android:key="ui_settings_header" />
-
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_dark_mode"
         android:title="@string/settings_category_dark_mode"

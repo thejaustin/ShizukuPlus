@@ -3,8 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Section 1: Visual Design Preview -->
-    <af.shizuku.manager.settings.UiSettingsHeaderPreference
-        android:key="ui_settings_header" />
 
     <!-- Section 2: Appearance & Theme -->
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory

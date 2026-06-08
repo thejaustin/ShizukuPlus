@@ -30,9 +30,6 @@
         android:icon="@drawable/ic_root_24"
         android:defaultValue="false" />
 
-    <af.shizuku.manager.settings.SUBridgeDiagramPreference
-        android:key="su_bridge_diagram" />
-
     <EditTextPreference
         android:key="custom_su_path"
         android:title="Custom SU Path"
