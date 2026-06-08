@@ -35,19 +35,16 @@
     <!-- Remove button: shown in edit mode, top-right corner -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/remove_btn"
-        
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        style="@style/Widget.Material3.Button.IconButton.FilledTonal"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="top|end"
-        android:layout_margin="6dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:padding="4dp"
+        android:layout_margin="4dp"
         app:icon="@drawable/ic_close_24"
-        app:iconSize="20dp"
+        app:iconSize="24dp"
         app:iconTint="?attr/colorError"
         android:contentDescription="@string/accessibility_icon_remove"
-        android:elevation="2dp"
+        android:elevation="4dp"
         android:visibility="gone" />
 
 </com.google.android.material.card.MaterialCardView>

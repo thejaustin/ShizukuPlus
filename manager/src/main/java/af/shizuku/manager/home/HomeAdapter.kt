@@ -10,6 +10,7 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.management.AppsViewModel
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.common.util.UserHandleCompat
+import af.shizuku.manager.R
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.IdBasedRecyclerViewAdapter
 import rikka.recyclerview.IndexCreatorPool
@@ -172,6 +173,11 @@ class HomeAdapter(
         val id = getItemId(position)
         val hidden = ShizukuSettings.getHiddenHomeCards()
         holder.itemView.tag = id.toString() in hidden
+
+        val removeBtn = holder.itemView.findViewById<android.view.View>(R.id.remove_btn)
+        removeBtn?.setOnClickListener {
+            HomeEditMode.removeCardCallback?.invoke(id)
+        }
 
         super.onBindViewHolder(holder, position)
 

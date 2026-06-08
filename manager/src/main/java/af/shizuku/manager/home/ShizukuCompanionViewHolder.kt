@@ -38,9 +38,7 @@ class ShizukuCompanionViewHolder(
             }
             setOnLongClickListener { HomeEditMode.enter(); true }
         }
-        containerBinding.removeBtn.setOnClickListener {
-            HomeEditMode.removeCardCallback?.invoke(HomeAdapter.ID_COMPANION)
-        }
+
         binding.button1.setOnClickListener { v ->
             val cmd = "pm disable-user --user 0 ${StockShizukuCompat.PACKAGE}"
             if (Shizuku.pingBinder()) {

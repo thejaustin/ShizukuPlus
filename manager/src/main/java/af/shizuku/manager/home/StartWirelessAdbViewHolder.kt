@@ -141,9 +141,7 @@ class StartWirelessAdbViewHolder(
             }
             setOnLongClickListener { HomeEditMode.enter(); true }
         }
-        containerBinding.removeBtn.setOnClickListener {
-            HomeEditMode.removeCardCallback?.invoke(HomeAdapter.ID_START_WADB)
-        }
+
 
         if (EnvironmentUtils.isTlsSupported()) {
             binding.button3.setOnClickListener { v: View ->

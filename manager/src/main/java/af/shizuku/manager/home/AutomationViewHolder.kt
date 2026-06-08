@@ -53,9 +53,6 @@ class AutomationViewHolder(
             }
             setOnLongClickListener { HomeEditMode.enter(); true }
         }
-        containerBinding.removeBtn.setOnClickListener {
-            HomeEditMode.removeCardCallback?.invoke(HomeAdapter.ID_AUTOMATION)
-        }
         binding.button1.setOnClickListener { v ->
             val context = v.context
             val authToken = af.shizuku.manager.ShizukuSettings.getAuthToken()

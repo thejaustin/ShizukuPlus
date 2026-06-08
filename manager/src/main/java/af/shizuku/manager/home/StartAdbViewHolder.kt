@@ -85,9 +85,7 @@ class StartAdbViewHolder(
             }
             setOnLongClickListener { HomeEditMode.enter(); true }
         }
-        containerBinding.removeBtn.setOnClickListener {
-            HomeEditMode.removeCardCallback?.invoke(HomeAdapter.ID_START_ADB)
-        }
+
     }
 
     override fun onBind() {

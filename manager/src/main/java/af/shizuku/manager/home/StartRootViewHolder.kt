@@ -53,9 +53,7 @@ class StartRootViewHolder(
             }
             setOnLongClickListener { HomeEditMode.enter(); true }
         }
-        containerBinding.removeBtn.setOnClickListener {
-            HomeEditMode.removeCardCallback?.invoke(HomeAdapter.ID_START_ROOT)
-        }
+
     }
 
     private fun onStartClicked(v: View) {

@@ -36,9 +36,7 @@ class LearnMoreViewHolder(
             }
             setOnLongClickListener { HomeEditMode.enter(); true }
         }
-        containerBinding.removeBtn.setOnClickListener {
-            HomeEditMode.removeCardCallback?.invoke(HomeAdapter.ID_LEARN_MORE)
-        }
+
     }
 
     override fun onBind() {

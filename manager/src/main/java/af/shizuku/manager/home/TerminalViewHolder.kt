@@ -45,9 +45,7 @@ class TerminalViewHolder(
             }
             setOnLongClickListener { HomeEditMode.enter(); true }
         }
-        containerBinding.removeBtn.setOnClickListener {
-            HomeEditMode.removeCardCallback?.invoke(HomeAdapter.ID_TERMINAL)
-        }
+
     }
 
     private inline val summary get() = binding.text2
