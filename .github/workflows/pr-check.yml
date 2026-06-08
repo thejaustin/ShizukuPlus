@@ -1,0 +1,50 @@
+name: PR Check
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          fetch-depth: 0
+
+      - name: Cache Android SDK
+        uses: actions/cache@v4
+        with:
+          path: |
+            /usr/local/lib/android/sdk/build-tools
+            /usr/local/lib/android/sdk/platforms
+            /usr/local/lib/android/sdk/platform-tools
+          key: android-sdk-${{ runner.os }}-${{ hashFiles('manager/build.gradle', 'gradle/libs.versions.toml') }}
+          restore-keys: |
+            android-sdk-${{ runner.os }}-
+
+      - name: Pre-Push Guard
+        run: |
+          chmod +x pre-push-guard/scripts/pre_push_check.sh
+          bash pre-push-guard/scripts/pre_push_check.sh
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Accept SDK Licenses
+        run: yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
+
+      - name: Run Lint
+        run: ./gradlew :manager:lint
+
+      - name: Build Debug APK
+        run: ./gradlew :manager:assembleDebug
