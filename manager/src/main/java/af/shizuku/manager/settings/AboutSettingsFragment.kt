@@ -249,11 +249,17 @@ class AboutSettingsFragment : BaseSettingsFragment() {
 
     private fun showPermissionRequiredDialog() {
         val context = context ?: return
-        MaterialAlertDialogBuilder(context)
-            .setTitle(R.string.update_permission_required_title)
-            .setMessage(R.string.update_permission_required_message)
-            .setPositiveButton(R.string.ok, null)
-            .show()
+        try {
+            val intent = Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+                .setData(Uri.parse("package:${context.packageName}"))
+            startActivity(intent)
+        } catch (e: Exception) {
+            MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.update_permission_required_title)
+                .setMessage(R.string.update_permission_required_message)
+                .setPositiveButton(R.string.ok, null)
+                .show()
+        }
     }
 
     private fun openReleasesPage() {
