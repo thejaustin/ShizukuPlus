@@ -41,20 +41,20 @@ fun HomeScreen(
                     if (!isEditMode) {
                         IconButton(onClick = onStopClick) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_stop_24),
-                                contentDescription = stringResource(R.string.action_stop)
+                                painter = painterResource(id = R.drawable.ic_close_24),
+                                contentDescription = stringResource(id = R.string.action_stop)
                             )
                         }
                         IconButton(onClick = onSettingsClick) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_settings_24),
-                                contentDescription = stringResource(R.string.action_settings)
+                                painter = painterResource(id = R.drawable.ic_settings_outline_24),
+                                contentDescription = stringResource(id = R.string.action_settings)
                             )
                         }
                         IconButton(onClick = onHelpClick) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_help_24),
-                                contentDescription = "Help"
+                                painter = painterResource(id = R.drawable.ic_help_outline_24),
+                                contentDescription = stringResource(id = R.string.settings_plus_learn_more)
                             )
                         }
                     }

@@ -94,7 +94,7 @@ fun SettingsScreen(
                         }
                     }) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_arrow_back_24),
+                            painter = painterResource(R.drawable.ic_back_24),
                             contentDescription = "Back"
                         )
                     }
@@ -113,7 +113,7 @@ fun SettingsScreen(
                             onSearchQueryChanged("")
                         }) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_clear_24),
+                                painter = painterResource(R.drawable.ic_close_24),
                                 contentDescription = "Clear"
                             )
                         }

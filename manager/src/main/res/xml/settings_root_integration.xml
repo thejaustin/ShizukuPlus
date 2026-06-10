@@ -160,7 +160,7 @@
             android:key="bootloader_flash_ota_enabled"
             android:title="Systemless OTA Flashing"
             android:summary="Flash OTA payloads to inactive slot without root or custom recovery"
-            android:icon="@drawable/ic_system_update_24"
+            android:icon="@drawable/ic_update_24"
             android:defaultValue="false" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference

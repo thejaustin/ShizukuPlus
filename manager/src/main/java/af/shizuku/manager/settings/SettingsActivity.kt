@@ -1,6 +1,7 @@
 package af.shizuku.manager.settings
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.*

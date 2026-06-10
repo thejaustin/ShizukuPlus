@@ -35,7 +35,7 @@ fun SystemHubScreen(
                 title = { Text("System Hub") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(painterResource(id = R.drawable.ic_arrow_back_24), contentDescription = "Back")
+                        Icon(painterResource(id = R.drawable.ic_back_24), contentDescription = "Back")
                     }
                 }
             )
