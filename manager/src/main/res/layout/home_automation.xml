@@ -44,7 +44,7 @@
         android:visibility="gone"
         tools:text="@string/home_automation_description_2" />
 
-    <com.google.android.material.button.MaterialButton
+    <af.shizuku.core.ui.compose.ComposeButtonView
         android:id="@android:id/button1"
         style="@style/CardButton"
         android:layout_width="wrap_content"

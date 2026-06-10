@@ -48,7 +48,7 @@
         tools:text="@string/about_view_source_code" />
 
     <!-- Close button -->
-    <com.google.android.material.button.MaterialButton
+    <af.shizuku.core.ui.compose.ComposeButtonView
         android:id="@+id/btnClose"
         
         android:layout_width="wrap_content"

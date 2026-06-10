@@ -115,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <com.google.android.material.button.MaterialButton
+                    <af.shizuku.core.ui.compose.ComposeButtonView
                         android:id="@+id/btn_wadb_guide"
                         
                         android:layout_width="wrap_content"
@@ -123,7 +123,7 @@
                         android:layout_marginEnd="8dp"
                         android:text="@string/home_wireless_adb_view_guide_button" />
 
-                    <com.google.android.material.button.MaterialButton
+                    <af.shizuku.core.ui.compose.ComposeButtonView
                         android:id="@+id/btn_wadb_pair"
                         
                         android:layout_width="wrap_content"
@@ -132,7 +132,7 @@
                         android:text="@string/adb_pairing"
                         android:visibility="gone" />
 
-                    <com.google.android.material.button.MaterialButton
+                    <af.shizuku.core.ui.compose.ComposeButtonView
                         android:id="@+id/btn_wadb_start"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -194,7 +194,7 @@
                     android:textColor="?colorOnSurfaceVariant"
                     android:layout_marginBottom="20dp" />
 
-                <com.google.android.material.button.MaterialButton
+                <af.shizuku.core.ui.compose.ComposeButtonView
                     android:id="@+id/btn_root_start"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -253,7 +253,7 @@
                     android:textColor="?colorOnSurfaceVariant"
                     android:layout_marginBottom="20dp" />
 
-                <com.google.android.material.button.MaterialButton
+                <af.shizuku.core.ui.compose.ComposeButtonView
                     android:id="@+id/btn_adb_command"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -263,7 +263,7 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.button.MaterialButton
+        <af.shizuku.core.ui.compose.ComposeButtonView
             android:id="@+id/btn_setup_later"
             
             android:layout_width="wrap_content"

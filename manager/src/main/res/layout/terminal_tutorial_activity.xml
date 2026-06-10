@@ -152,7 +152,7 @@
                     android:text="@string/terminal_tutorial_1_description"
                     android:textColor="?android:textColorSecondary" />
 
-                <com.google.android.material.button.MaterialButton
+                <af.shizuku.core.ui.compose.ComposeButtonView
                     android:id="@android:id/button1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

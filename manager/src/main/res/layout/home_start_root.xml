@@ -42,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.button.MaterialButton
+        <af.shizuku.core.ui.compose.ComposeButtonView
             android:id="@android:id/button1"
             style="@style/CardButton"
             android:enabled="false"
@@ -60,7 +60,7 @@
             app:lottie_autoPlay="false"
             app:lottie_loop="true" />
 
-        <com.google.android.material.button.MaterialButton
+        <af.shizuku.core.ui.compose.ComposeButtonView
             android:id="@android:id/button2"
             style="@style/CardButton"
             android:enabled="false"
