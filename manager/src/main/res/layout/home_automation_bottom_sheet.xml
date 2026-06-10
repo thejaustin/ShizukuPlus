@@ -34,14 +34,14 @@
                 style="?attr/materialButtonOutlinedStyle"
                 android:id="@+id/buttonStart"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:text="@string/start" />
 
             <com.google.android.material.button.MaterialButton
                 style="?attr/materialButtonOutlinedStyle"
                 android:id="@+id/buttonStop"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:text="@string/stop" />
 
         </com.google.android.material.button.MaterialButtonToggleGroup>

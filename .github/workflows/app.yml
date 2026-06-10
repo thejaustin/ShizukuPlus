@@ -75,10 +75,7 @@ jobs:
           restore-keys: |
             android-sdk-${{ runner.os }}-
 
-      - name: Pre-Push Guard
-        run: |
-          chmod +x pre-push-guard/scripts/pre_push_check.sh
-          bash pre-push-guard/scripts/pre_push_check.sh
+
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -101,6 +98,12 @@ jobs:
           build-scan-publish: true
           build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
           build-scan-terms-of-use-agree: "yes"
+
+      - name: Pre-Push Guard
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
+          chmod +x pre-push-guard/scripts/pre_push_check.sh
+          bash pre-push-guard/scripts/pre_push_check.sh
 
       - name: Build with Gradle
         id: buildWithGradle
