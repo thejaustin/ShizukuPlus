@@ -4,7 +4,6 @@ import com.android.build.gradle.internal.tasks.CompileArtProfileTask
 
 plugins {
     id "com.android.application"
-    id "org.jetbrains.kotlin.android"
     id "org.jetbrains.kotlin.plugin.compose" version "2.2.20"
     id "dev.rikka.tools.refine"
     id "dev.rikka.tools.autoresconfig"
@@ -64,9 +63,7 @@ android {
             version = "3.22.1"
         }
     }
-    kotlinOptions {
-        jvmTarget = "21"
-    }
+
     packagingOptions {
         jniLibs {
             useLegacyPackaging = true
@@ -160,29 +157,7 @@ afterEvaluate {
     tasks.findByName("preDebugBuild")?.dependsOn(":shell:assembleDebug")
 }
 
-android.applicationVariants.configureEach { variant ->
-    variant.outputs.configureEach {
-        outputFileName = "shizuku-${variant.versionName}-${variant.name}.apk"
 
-        variant.assembleProvider.get().doLast {
-            def outDir = new File(rootDir, "out")
-            def mappingDir = new File(outDir, "mapping").absolutePath
-            def apkDir = new File(outDir, "apk").absolutePath
-
-            if (variant.getBuildType().isMinifyEnabled()) {
-                copy {
-                    from variant.mappingFileProvider.get()
-                    into mappingDir
-                    rename { String fileName -> "mapping-${variant.versionName}.txt" }
-                }
-                copy {
-                    from outputFile
-                    into apkDir
-                }
-            }
-        }
-    }
-}
 
 tasks.withType(CompileArtProfileTask.class).configureEach {
     enabled = false

@@ -8,10 +8,9 @@ pluginManagement {
         }
     }
     plugins {
-        id "com.android.application" version "8.11.1"
-        id "com.android.library" version "8.11.1"
-        id "org.jetbrains.kotlin.android" version "2.2.20"
-        id "com.google.devtools.ksp" version "2.2.20-2.0.2"
+        id "com.android.application" version "9.0.0"
+        id "com.android.library" version "9.0.0"
+        id "com.google.devtools.ksp" version "2.3.6"
         id "dev.rikka.tools.autoresconfig" version "1.2.2"
         id "dev.rikka.tools.materialthemebuilder" version "1.5.1"
         id "dev.rikka.tools.refine" version "4.4.0"

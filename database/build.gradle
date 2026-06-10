@@ -1,6 +1,5 @@
 plugins {
     id "com.android.library"
-    id "org.jetbrains.kotlin.android"
     id "com.google.devtools.ksp"
     id "org.jetbrains.kotlin.plugin.serialization" version "2.2.20"
 }
@@ -26,9 +25,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 
-    kotlinOptions {
-        jvmTarget = "21"
-    }
 
     testOptions {
         unitTests {

@@ -1,7 +1,5 @@
 plugins {
     id "com.android.library"
-    id "org.jetbrains.kotlin.android"
-}
 
 android {
     namespace = "af.shizuku.core.ui"
@@ -15,9 +13,6 @@ android {
         viewBinding = true
     }
 
-    kotlinOptions {
-        jvmTarget = "21"
-    }
 }
 
 dependencies {
