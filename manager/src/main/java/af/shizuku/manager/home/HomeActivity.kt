@@ -221,7 +221,7 @@ abstract class HomeActivity : AppActivity(), MavericksView {
             if (it) {
                 SnackbarHelper.show(
                     this,
-                    recyclerView,
+                    findViewById(android.R.id.content) ?: window.decorView,
                     msg = getString(R.string.snackbar_battery_optimization_home),
                     duration = Snackbar.LENGTH_INDEFINITE,
                     actionText = getString(R.string.snackbar_action_fix),
@@ -243,7 +243,7 @@ abstract class HomeActivity : AppActivity(), MavericksView {
                 if (it is Success && it.invoke().isRunning == false) {
                     SnackbarHelper.show(
                         this,
-                        recyclerView,
+                        findViewById(android.R.id.content) ?: window.decorView,
                         msg = "Samsung Auto Blocker may block ADB on One UI 7/8. Check Security settings.",
                         duration = Snackbar.LENGTH_LONG,
                         actionText = "Check",
