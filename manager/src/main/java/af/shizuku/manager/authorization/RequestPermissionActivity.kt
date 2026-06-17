@@ -67,7 +67,9 @@ class RequestPermissionActivity : AppActivity() {
                 withTimeout(5000) {
                     while (true) {
                         if (ShizukuStateMachine.get() == ShizukuStateMachine.State.RUNNING) {
-                            val alive = withContext(Dispatchers.IO) { Shizuku.pingBinder() }
+                            val alive = withContext(Dispatchers.IO) {
+                    try { Shizuku.pingBinder() } catch (e: Exception) { false }
+                }
                             if (alive) break
                         }
                         delay(100)

@@ -26,7 +26,12 @@ object ShellBinderRequestHandler {
         }
 
         val binder = intent.getBundleExtra("data")?.getBinder("binder") ?: return false
-        val shizukuBinder = Shizuku.getBinder()
+        val shizukuBinder = try {
+            Shizuku.getBinder()
+        } catch (e: Exception) {
+            LOGGER.e(e, "getBinder failed")
+            return false
+        }
         if (shizukuBinder == null) {
             LOGGER.e("shizuku binder is null")
             return false

@@ -37,15 +37,14 @@ class AICorePlusService : AccessibilityService() {
     }
 
     private fun registerBridge() {
-        if (Shizuku.pingBinder()) {
-            try {
-                val binder = Shizuku.getBinder()
-                val service = moe.shizuku.server.IShizukuService.Stub.asInterface(binder)
-                service.registerAIAutomationBridge(bridge)
-                Timber.d("Successfully registered AIAutomationBridge to server")
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to register AIAutomationBridge")
-            }
+        try {
+            if (!Shizuku.pingBinder()) return
+            val binder = Shizuku.getBinder()
+            val service = moe.shizuku.server.IShizukuService.Stub.asInterface(binder)
+            service.registerAIAutomationBridge(bridge)
+            Timber.d("Successfully registered AIAutomationBridge to server")
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to register AIAutomationBridge")
         }
     }
 
