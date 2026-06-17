@@ -18,7 +18,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import af.shizuku.manager.Helps
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
@@ -62,7 +66,6 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         itemView.filterTouchesWhenObscured = true
         itemView.setOnClickListener(this)
         itemView.setOnLongClickListener(this)
-        // Tap the package name to copy it
         pkg.setOnClickListener { v ->
             if ((adapter as AppsAdapter).isSelectionMode()) {
                 onClick(itemView)
@@ -79,6 +82,7 @@ class AppViewHolder(private val binding: AppListItemBinding) :
     private inline val uid get() = ai?.uid ?: 0
 
     private var loadIconJob: Job? = null
+    private var grantedLoadJob: Job? = null
 
     // ----- Long-press: reads Settings to decide menu vs. direct action -----
 
@@ -93,40 +97,55 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         }
         val context = v.context
         val appInfo = ai ?: return true
+        // Capture values before entering coroutine — the ViewHolder may be rebound
+        val capturedPackage = packageName
+        val capturedUid = uid
         val appLabel = AppIconCache.getLabel(context, appInfo)
-        val isGranted = runCatching { AuthorizationManager.granted(packageName, appInfo.uid) }.getOrDefault(false)
 
-        val enabled = buildEnabledActions(context, isGranted)
-
-        when {
-            enabled.isEmpty() -> { /* all actions disabled — consume silently */ }
-            enabled.size == 1 -> enabled[0].run()
-            else -> MaterialAlertDialogBuilder(context)
-                .setTitle(appLabel)
-                .setItems(enabled.map { it.label }.toTypedArray()) { _, i -> enabled[i].run() }
-                .show()
+        CoroutineScope(Dispatchers.IO).launch {
+            val isGranted = runCatching {
+                AuthorizationManager.granted(capturedPackage, appInfo.uid)
+            }.getOrDefault(false)
+            val enabled = buildEnabledActions(context, capturedPackage, capturedUid, appLabel, appInfo, isGranted)
+            withContext(Dispatchers.Main) {
+                when {
+                    enabled.isEmpty() -> { /* consume silently */ }
+                    enabled.size == 1 -> enabled[0].run()
+                    else -> MaterialAlertDialogBuilder(context)
+                        .setTitle(appLabel)
+                        .setItems(enabled.map { it.label }.toTypedArray()) { _, i -> enabled[i].run() }
+                        .show()
+                }
+            }
         }
         return true
     }
 
-    private fun buildEnabledActions(context: Context, isGranted: Boolean): List<LpAction> {
-        val appLabel = ai?.let { AppIconCache.getLabel(context, it) } ?: packageName
+    // Called from IO thread (inside onLongClick coroutine), so binder calls here are safe.
+    private fun buildEnabledActions(
+        context: Context,
+        capturedPackage: String,
+        capturedUid: Int,
+        appLabel: String,
+        appInfo: android.content.pm.ApplicationInfo,
+        isGranted: Boolean
+    ): List<LpAction> {
         val pm = context.packageManager
         return buildList {
             if (ShizukuSettings.getLongPressOpenApp()) {
                 add(LpAction(context.getString(R.string.app_management_context_open_app)) {
-                    ActivityLogManager.log(appLabel, packageName, "Long-press: open_app")
-                    val intent = pm.getLaunchIntentForPackage(packageName)
+                    ActivityLogManager.log(appLabel, capturedPackage, "Long-press: open_app")
+                    val intent = pm.getLaunchIntentForPackage(capturedPackage)
                     if (intent != null) launchActivity(context, intent)
                     else Toast.makeText(context, R.string.app_management_no_launcher, Toast.LENGTH_SHORT).show()
                 })
             }
             if (ShizukuSettings.getLongPressAppInfo()) {
                 add(LpAction(context.getString(R.string.app_management_context_app_info)) {
-                    ActivityLogManager.log(appLabel, packageName, "Long-press: app_info")
+                    ActivityLogManager.log(appLabel, capturedPackage, "Long-press: app_info")
                     launchActivity(context, Intent(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.fromParts("package", packageName, null)
+                        Uri.fromParts("package", capturedPackage, null)
                     ))
                 })
             }
@@ -136,54 +155,67 @@ class AppViewHolder(private val binding: AppListItemBinding) :
                 else
                     context.getString(R.string.app_management_context_grant)
                 add(LpAction(label) {
-                    try {
-                        if (isGranted) {
-                            AuthorizationManager.revoke(packageName, uid)
-                            ActivityLogManager.log(appLabel, packageName, "Long-press: revoke_permission")
-                        } else {
-                            AuthorizationManager.grant(packageName, uid)
-                            ActivityLogManager.log(appLabel, packageName, "Long-press: grant_permission")
-                        }
-                        val pos = adapterPosition
-                        if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
-                            adapter.notifyItemChanged(pos, Any())
-                            adapter.notifyItemChanged(0)
-                        }
-                    } catch (e: SecurityException) {
-                        if (runCatching { Shizuku.getUid() }.getOrDefault(-1) != 0) {
-                            showAdbLimitedDialog(context)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            if (isGranted) {
+                                AuthorizationManager.revoke(capturedPackage, capturedUid)
+                                ActivityLogManager.log(appLabel, capturedPackage, "Long-press: revoke_permission")
+                            } else {
+                                AuthorizationManager.grant(capturedPackage, capturedUid)
+                                ActivityLogManager.log(appLabel, capturedPackage, "Long-press: grant_permission")
+                            }
+                            withContext(Dispatchers.Main) {
+                                val pos = adapterPosition
+                                if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
+                                    adapter.notifyItemChanged(pos, Any())
+                                    adapter.notifyItemChanged(0)
+                                }
+                            }
+                        } catch (e: SecurityException) {
+                            val uidCheck = runCatching { Shizuku.getUid() }.getOrDefault(-1)
+                            withContext(Dispatchers.Main) {
+                                if (uidCheck != 0) showAdbLimitedDialog(context)
+                            }
                         }
                     }
                 })
             }
             if (ShizukuSettings.getLongPressHideFromList()) {
                 add(LpAction(context.getString(R.string.app_management_context_hide)) {
-                    ActivityLogManager.log(appLabel, packageName, "Long-press: hide_app")
-                    (context as? Callbacks)?.onHideApp(packageName)
+                    ActivityLogManager.log(appLabel, capturedPackage, "Long-press: hide_app")
+                    (context as? Callbacks)?.onHideApp(capturedPackage)
                 })
             }
 
-            // Shizuku+ Power Tool: Freeze/Unfreeze
+            // Freeze/Unfreeze — binder calls are safe here since buildEnabledActions runs on IO
             if (ShizukuSettings.isCustomApiEnabled()) {
-                val shizukuService = rikka.shizuku.Shizuku.getBinder()
+                val shizukuService = try { Shizuku.getBinder() } catch (e: Exception) { null }
                 if (shizukuService != null) {
-                    val amPlus = moe.shizuku.server.IShizukuService.Stub.asInterface(shizukuService).activityManagerPlus
+                    val amPlus = try {
+                        moe.shizuku.server.IShizukuService.Stub.asInterface(shizukuService).activityManagerPlus
+                    } catch (e: Exception) { null }
                     if (amPlus != null) {
-                        val isFrozen = try { amPlus.isAppFrozen(packageName) } catch (e: Exception) { false }
-                        val label = if (isFrozen) "Unfreeze App (Enable)" else "Freeze App (Disable)"
-                        add(LpAction(label) {
-                            try {
-                                val success = if (isFrozen) amPlus.unfreezeApp(packageName) else amPlus.freezeApp(packageName)
-                                if (success) {
-                                    Toast.makeText(context, if (isFrozen) "App unfrozen" else "App frozen", Toast.LENGTH_SHORT).show()
-                                    ActivityLogManager.log(appLabel, packageName, "Long-press: ${if (isFrozen) "unfreeze" else "freeze"}")
-                                    val pos = adapterPosition
-                                    if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) adapter.notifyItemChanged(pos)
-                                } else {
-                                    Toast.makeText(context, "Operation failed", Toast.LENGTH_SHORT).show()
+                        val isFrozen = try { amPlus.isAppFrozen(capturedPackage) } catch (e: Exception) { false }
+                        val freezeLabel = if (isFrozen) "Unfreeze App (Enable)" else "Freeze App (Disable)"
+                        add(LpAction(freezeLabel) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                try {
+                                    val success = if (isFrozen) amPlus.unfreezeApp(capturedPackage) else amPlus.freezeApp(capturedPackage)
+                                    withContext(Dispatchers.Main) {
+                                        if (success) {
+                                            Toast.makeText(context, if (isFrozen) "App unfrozen" else "App frozen", Toast.LENGTH_SHORT).show()
+                                            ActivityLogManager.log(appLabel, capturedPackage, "Long-press: ${if (isFrozen) "unfreeze" else "freeze"}")
+                                            val pos = adapterPosition
+                                            if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) adapter.notifyItemChanged(pos)
+                                        } else {
+                                            Toast.makeText(context, "Operation failed", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    withContext(Dispatchers.Main) {
+                                        Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
-                            } catch (e: Exception) {
-                                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                             }
                         })
                     }
@@ -202,24 +234,32 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         }
         val context = v.context
         val appInfo = ai ?: return
+        val capturedPackage = packageName
         val appLabel = AppIconCache.getLabel(context, appInfo)
-        try {
-            if (AuthorizationManager.granted(packageName, appInfo.uid)) {
-                AuthorizationManager.revoke(packageName, appInfo.uid)
-                ActivityLogManager.log(appLabel, packageName, context.getString(R.string.app_management_log_permission_toggle, context.getString(R.string.app_management_context_revoke)))
-            } else {
-                AuthorizationManager.grant(packageName, appInfo.uid)
-                ActivityLogManager.log(appLabel, packageName, context.getString(R.string.app_management_log_permission_toggle, context.getString(R.string.app_management_context_grant)))
+        val revokeLabel = context.getString(R.string.app_management_log_permission_toggle, context.getString(R.string.app_management_context_revoke))
+        val grantLabel = context.getString(R.string.app_management_log_permission_toggle, context.getString(R.string.app_management_context_grant))
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                if (AuthorizationManager.granted(capturedPackage, appInfo.uid)) {
+                    AuthorizationManager.revoke(capturedPackage, appInfo.uid)
+                    ActivityLogManager.log(appLabel, capturedPackage, revokeLabel)
+                } else {
+                    AuthorizationManager.grant(capturedPackage, appInfo.uid)
+                    ActivityLogManager.log(appLabel, capturedPackage, grantLabel)
+                }
+                withContext(Dispatchers.Main) {
+                    val pos = adapterPosition
+                    if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
+                        adapter.notifyItemChanged(pos, Any())
+                        adapter.notifyItemChanged(0)
+                    }
+                }
+            } catch (e: SecurityException) {
+                val uidCheck = runCatching { Shizuku.getUid() }.getOrDefault(-1)
+                withContext(Dispatchers.Main) {
+                    if (uidCheck != 0) showAdbLimitedDialog(context)
+                }
             }
-        } catch (e: SecurityException) {
-            val uid = runCatching { Shizuku.getUid() }.getOrDefault(-1)
-            if (uid != 0) showAdbLimitedDialog(context)
-            return
-        }
-        val pos = adapterPosition
-        if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
-            adapter.notifyItemChanged(pos, Any())
-            adapter.notifyItemChanged(0)
         }
     }
 
@@ -282,6 +322,8 @@ class AppViewHolder(private val binding: AppListItemBinding) :
     override fun onBind() {
         val appInfo = ai ?: return
         val context = itemView.context
+        val capturedPackage = packageName
+        val capturedData = data
 
         val userId = UserHandleCompat.getUserId(appInfo.uid)
         val appLabel = AppIconCache.getLabel(context, appInfo)
@@ -296,20 +338,33 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         val appsAdapter = adapter as AppsAdapter
         if (appsAdapter.isSelectionMode()) {
             checkbox.visibility = View.VISIBLE
-            checkbox.isChecked = appsAdapter.selectedPackages.contains(packageName)
+            checkbox.isChecked = appsAdapter.selectedPackages.contains(capturedPackage)
             switchWidget.visibility = View.GONE
         } else {
             checkbox.visibility = View.GONE
             switchWidget.visibility = View.VISIBLE
-            switchWidget.isChecked = AuthorizationManager.granted(packageName, appInfo.uid)
+            // Load granted state off the main thread to avoid blocking during scrolling
+            switchWidget.isEnabled = false
+            grantedLoadJob?.cancel()
+            grantedLoadJob = CoroutineScope(Dispatchers.IO).launch {
+                val granted = AuthorizationManager.granted(capturedPackage, appInfo.uid)
+                val isPlusMissing = AuthorizationManager.isPlusApiSupported(capturedData) &&
+                        !ShizukuSettings.isCustomApiEnabled()
+                withContext(Dispatchers.Main) {
+                    if (adapterPosition != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
+                        switchWidget.isChecked = granted
+                        if (!isPlusMissing) switchWidget.isEnabled = true
+                    }
+                }
+            }
         }
 
         pkg.text = appInfo.packageName
 
-        val metadata = AppContextManager.getMetadata(packageName)
+        val metadata = AppContextManager.getMetadata(capturedPackage)
         if (metadata != null) {
             appContextView.visibility = View.VISIBLE
-            val enabledAny = metadata.potentialEnhancements.any { ShizukuSettings.isAppEnhancementEnabled(packageName, it.key) }
+            val enabledAny = metadata.potentialEnhancements.any { ShizukuSettings.isAppEnhancementEnabled(capturedPackage, it.key) }
             val badge = if (enabledAny) context.getString(R.string.app_management_badge_enhanced) else context.getString(R.string.app_management_badge_upgrade)
             val colorAttr = if (enabledAny) com.google.android.material.R.attr.colorTertiary else com.google.android.material.R.attr.colorSecondary
             val tv = TypedValue()
@@ -326,7 +381,7 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         root.visibility = if (appInfo.metaData != null && appInfo.metaData.getBoolean("af.shizuku.client.V3_REQUIRES_ROOT"))
             View.VISIBLE else View.GONE
 
-        val isPlusRequired = AuthorizationManager.isPlusApiSupported(data)
+        val isPlusRequired = AuthorizationManager.isPlusApiSupported(capturedData)
         val isPlusEnabled = ShizukuSettings.isCustomApiEnabled()
         val isPlusMissing = isPlusRequired && !isPlusEnabled
 
@@ -334,17 +389,26 @@ class AppViewHolder(private val binding: AppListItemBinding) :
 
         itemView.isEnabled = !isPlusMissing
         itemView.alpha = if (isPlusMissing) 0.5f else 1.0f
-        switchWidget.isEnabled = !isPlusMissing
 
         loadIconJob = AppIconCache.loadIconBitmapAsync(context, appInfo, appInfo.uid / 100000, icon)
     }
 
     override fun onBind(payloads: List<Any>) {
         val appInfo = ai ?: return
-        switchWidget.isChecked = AuthorizationManager.granted(packageName, appInfo.uid)
+        val capturedPackage = packageName
+        grantedLoadJob?.cancel()
+        grantedLoadJob = CoroutineScope(Dispatchers.IO).launch {
+            val granted = AuthorizationManager.granted(capturedPackage, appInfo.uid)
+            withContext(Dispatchers.Main) {
+                if (adapterPosition != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
+                    switchWidget.isChecked = granted
+                }
+            }
+        }
     }
 
     override fun onRecycle() {
         loadIconJob?.cancel()
+        grantedLoadJob?.cancel()
     }
 }
