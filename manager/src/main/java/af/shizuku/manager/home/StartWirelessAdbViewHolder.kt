@@ -24,7 +24,6 @@ import kotlinx.coroutines.CoroutineScope
 import af.shizuku.manager.Helps
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.R
-import af.shizuku.manager.adb.AdbPairingTutorialActivity
 import af.shizuku.manager.adb.AdbStarter
 import af.shizuku.manager.databinding.HomeItemContainerBinding
 import af.shizuku.manager.databinding.HomeStartWirelessAdbBinding
@@ -73,6 +72,7 @@ class StartWirelessAdbViewHolder(
             if (validTcpPort > 0 && ShizukuSettings.getTcpMode()) {
                 val intent = android.content.Intent(context, StarterActivity::class.java).apply {
                     putExtra(StarterActivity.EXTRA_PORT, validTcpPort)
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
                 context.startActivity(intent)
             } else {

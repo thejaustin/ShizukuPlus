@@ -449,22 +449,30 @@ abstract class HomeActivity : AppActivity(), MavericksView {
         }
 
         ShizukuStateMachine.addListener(stateListener)
+
+        // Handle cold-start launch from the ADB pairing success notification.
+        // onNewIntent() is only called when the activity already exists; when the app
+        // is not running the system calls onCreate() with the launch intent instead.
+        if (intent?.getBooleanExtra(HomeActivity.EXTRA_START_SERVICE_VIA_WADB, false) == true) {
+            handleStartViaMdnsNotification()
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        intent.let {
-            val showDialog = it.getBooleanExtra(HomeActivity.EXTRA_SHOW_PAIRING_DIALOG, false)
-            if (showDialog) showAccessibilityDialog()
+        val showDialog = intent.getBooleanExtra(HomeActivity.EXTRA_SHOW_PAIRING_DIALOG, false)
+        if (showDialog) showAccessibilityDialog()
 
-            val startWadb = it.getBooleanExtra(HomeActivity.EXTRA_START_SERVICE_VIA_WADB, false)
-            if (startWadb) {
-                val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                nm.cancel(AdbPairingService.NOTIFICATION_ID)
-                val discoveredPort = withState(homeModel) { s -> s.discoveredAdbPort }
-                StartWirelessAdbViewHolder.start(this, lifecycleScope, discoveredPort)
-            }
+        if (intent.getBooleanExtra(HomeActivity.EXTRA_START_SERVICE_VIA_WADB, false)) {
+            handleStartViaMdnsNotification()
         }
+    }
+
+    private fun handleStartViaMdnsNotification() {
+        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        nm.cancel(AdbPairingService.NOTIFICATION_ID)
+        val discoveredPort = withState(homeModel) { s -> s.discoveredAdbPort }
+        StartWirelessAdbViewHolder.start(this, lifecycleScope, discoveredPort)
     }
 
     override fun onResume() {
