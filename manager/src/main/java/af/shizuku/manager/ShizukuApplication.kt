@@ -327,8 +327,13 @@ class ShizukuApplication : Application(), Configuration.Provider {
             // Optionally: crash or notify user
         }
 
-        // Sentry quota was suppressed through April 2026; ensure it is cleared on upgrade.
-        ShizukuSettings.setSentryLimitReached(false)
+        // Clear the Sentry quota flag only when the app version advances, not on every cold start.
+        // Resetting unconditionally would silently re-enable Sentry for a user who hit the quota.
+        val currentCode = try { packageManager.getPackageInfo(packageName, 0).versionCode } catch (e: Exception) { 0 }
+        if (currentCode > ShizukuSettings.getLastSeenVersion()) {
+            ShizukuSettings.setSentryLimitReached(false)
+            ShizukuSettings.setLastSeenVersion(currentCode)
+        }
 
         // 2. Initialize Sentry FIRST to catch all crashes including early startup failures
         initializeSentryEarly()
