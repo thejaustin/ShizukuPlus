@@ -11,15 +11,33 @@ if (ksFile.canRead()) {
     }
 } else {
     // Fall back to the Android SDK debug keystore when no signing.properties is present.
-    // Guard against the file not existing: on fresh CI runners ANDROID_USER_HOME may point
-    // to a non-standard path (e.g. ~/.config/.android/) where the keystore hasn't been
-    // generated yet.  Leaving storeFile = null produces an unsigned build, which is fine
-    // for lint runs and local development.
+    // On CI runners, ANDROID_USER_HOME may point to a non-standard path
+    // (e.g. ~/.config/.android/) where the keystore hasn't been generated yet.
+    // If the default debug keystore is missing, create a temporary one so that
+    // packageDebug doesn't fail with "missing required property storeFile".
     def debugStore = android.signingConfigs.debug.storeFile
-    if (debugStore != null && debugStore.exists()) {
-        android.signingConfigs.sign.storeFile = debugStore
-        android.signingConfigs.sign.storePassword = android.signingConfigs.debug.storePassword
-        android.signingConfigs.sign.keyAlias = android.signingConfigs.debug.keyAlias
-        android.signingConfigs.sign.keyPassword = android.signingConfigs.debug.keyPassword
+    if (debugStore == null || !debugStore.exists()) {
+        def tmpStore = new File(rootProject.buildDir, "tmp_debug.keystore")
+        if (!tmpStore.exists()) {
+            tmpStore.parentFile.mkdirs()
+            def keytoolCmd = [
+                'keytool', '-genkeypair', '-noprompt',
+                '-keystore', tmpStore.absolutePath,
+                '-storepass', 'android',
+                '-alias', 'androiddebugkey',
+                '-keypass', 'android',
+                '-keyalg', 'RSA', '-keysize', '2048', '-validity', '30',
+                '-dname', 'CN=Android Debug, O=Android, C=US'
+            ]
+            def proc = keytoolCmd.execute()
+            def sb = new StringBuffer()
+            proc.consumeProcessOutput(sb, sb)
+            proc.waitFor()
+        }
+        debugStore = tmpStore
     }
+    android.signingConfigs.sign.storeFile = debugStore
+    android.signingConfigs.sign.storePassword = 'android'
+    android.signingConfigs.sign.keyAlias = 'androiddebugkey'
+    android.signingConfigs.sign.keyPassword = 'android'
 }
