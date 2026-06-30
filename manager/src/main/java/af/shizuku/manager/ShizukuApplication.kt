@@ -381,7 +381,7 @@ class ShizukuApplication : Application(), Configuration.Provider {
         // 5. Initialize settings and managers
         try {
             initializeManagers()
-            if (ShizukuSettings.getWatchdog()) {
+            if (ShizukuSettings.getWatchdog() && ShizukuSettings.isLiveActivityEnabled()) {
                 try {
                     // startForegroundService() is required on API 26+ to start from background;
                     // plain startService() throws BackgroundServiceStartNotAllowedException on API 31+.
