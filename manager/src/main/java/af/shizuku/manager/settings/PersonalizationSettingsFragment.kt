@@ -20,6 +20,7 @@ import java.util.Locale
 
 class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
+    private var colorThemeCategory: CollapsiblePreferenceCategory? = null
     private lateinit var nightModePreference: IntegerSimpleMenuPreference
     private lateinit var blackNightThemePreference: TwoStatePreference
     private lateinit var useSystemColorPreference: TwoStatePreference
@@ -37,6 +38,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         val context = requireContext()
 
         // 1. Theme and Color Controls
+        colorThemeCategory = findPreference("category_color_theme")
         nightModePreference = requireNotNull(findPreference(KEY_NIGHT_MODE))
         blackNightThemePreference = requireNotNull(findPreference(KEY_BLACK_NIGHT_THEME))
         useSystemColorPreference = requireNotNull(findPreference(KEY_USE_SYSTEM_COLOR))
@@ -56,9 +58,10 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             }
         }
 
+        val blackNightAvailable = ShizukuSettings.getNightMode() != AppCompatDelegate.MODE_NIGHT_NO
+        setChildAvailable(blackNightThemePreference, blackNightAvailable)
         blackNightThemePreference.apply {
-            isVisible = ShizukuSettings.getNightMode() != AppCompatDelegate.MODE_NIGHT_NO
-            if (isVisible) {
+            if (blackNightAvailable) {
                 isChecked = ThemeHelper.isBlackNightTheme(context)
                 setOnPreferenceChangeListener { _, _ ->
                     if (ResourceUtils.isNightMode(context.resources.configuration))
@@ -68,9 +71,10 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             }
         }
 
+        val systemColorAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        setChildAvailable(useSystemColorPreference, systemColorAvailable)
         useSystemColorPreference.apply {
-            isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-            if (isVisible) {
+            if (systemColorAvailable) {
                 isChecked = ThemeHelper.isUsingSystemColor()
                 setOnPreferenceChangeListener { _, value ->
                     if (value is Boolean) {
@@ -191,7 +195,25 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun syncDependentVisibility() {
-        blackNightThemePreference.isVisible = ShizukuSettings.getNightMode() != AppCompatDelegate.MODE_NIGHT_NO
+        setChildAvailable(
+            blackNightThemePreference,
+            ShizukuSettings.getNightMode() != AppCompatDelegate.MODE_NIGHT_NO
+        )
+    }
+
+    /**
+     * Toggle a child's availability through its collapsible category when possible, so the
+     * category's expand/collapse toggle doesn't override the condition. Falls back to a plain
+     * visibility change if the child isn't inside a [CollapsiblePreferenceCategory].
+     */
+    private fun setChildAvailable(pref: Preference, available: Boolean) {
+        val category = colorThemeCategory
+        val key = pref.key
+        if (category != null && key != null) {
+            category.setChildAvailable(key, available)
+        } else {
+            pref.isVisible = available
+        }
     }
 
     private fun setupLocalePreference(languagePreference: ListPreference) {

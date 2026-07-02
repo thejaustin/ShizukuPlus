@@ -296,16 +296,18 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                 if (enabled && experimentalKeys.contains(prefKey)) {
                     showExperimentalWarning(prefKey) {
                         preferenceManager.sharedPreferences?.edit()?.putBoolean(prefKey, true)?.apply()
-                        ShizukuSettings.syncAllPlusFeaturesToServer()
+                        // Cascade child state BEFORE syncing so the server sees a consistent
+                        // parent+child snapshot (disabling a parent force-unchecks children).
                         updatePlusFeatureDependency(prefKey, true)
+                        ShizukuSettings.syncAllPlusFeaturesToServer()
                         notifyDiagramForKey(prefKey)
                         findPreference<Preference>("plus_status_dashboard")?.let { it.isVisible = false; it.isVisible = true }
                     }
                     false // Handle manually after dialog
                 } else {
                     preferenceManager.sharedPreferences?.edit()?.putBoolean(prefKey, enabled)?.apply()
-                    ShizukuSettings.syncAllPlusFeaturesToServer()
                     updatePlusFeatureDependency(prefKey, enabled)
+                    ShizukuSettings.syncAllPlusFeaturesToServer()
                     notifyDiagramForKey(prefKey)
                     findPreference<Preference>("plus_status_dashboard")?.let { it.isVisible = false; it.isVisible = true }
                     true
@@ -344,8 +346,11 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
             }
             // fallback / standard or disabling
             preferenceManager.sharedPreferences?.edit()?.putBoolean("ai_core_plus_enabled", enabled)?.apply()
-            ShizukuSettings.syncAllPlusFeaturesToServer()
+            // Cascade child state BEFORE syncing: disabling ai_core_plus force-unchecks the
+            // AI sub-features, and the server gates NPU/window/automation on those child flags
+            // (not on ai_core_plus), so they must be false in prefs before the sync runs.
             updatePlusFeatureDependency("ai_core_plus_enabled", enabled)
+            ShizukuSettings.syncAllPlusFeaturesToServer()
             notifyDiagramForKey("ai_core_plus_enabled")
             findPreference<Preference>("plus_status_dashboard")?.let { it.isVisible = false; it.isVisible = true }
             true

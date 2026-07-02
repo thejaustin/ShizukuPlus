@@ -18,6 +18,11 @@ class CollapsiblePreferenceCategory @JvmOverloads constructor(
 
     private var defaultExpanded = false
 
+    // Keys of children that are conditionally unavailable (e.g. hidden by an OWNER fragment
+    // based on OS version or another setting). Such children must stay hidden even when the
+    // category is expanded, and the collapse toggle must not resurrect them.
+    private val unavailableChildKeys = mutableSetOf<String>()
+
     init {
         layoutResource = R.layout.collapsible_preference_category_card
         isSelectable = true
@@ -64,9 +69,21 @@ class CollapsiblePreferenceCategory @JvmOverloads constructor(
         }
     }
 
+    /**
+     * Declare whether a child should participate in the expand/collapse cycle. A child marked
+     * unavailable stays hidden regardless of the expanded state. Owners should call this instead
+     * of setting the child's [Preference.isVisible] directly, so the collapse toggle does not
+     * override the condition.
+     */
+    fun setChildAvailable(key: String, available: Boolean) {
+        val changed = if (available) unavailableChildKeys.remove(key) else unavailableChildKeys.add(key)
+        if (changed) updateChildren()
+    }
+
     private fun updateChildren() {
         for (i in 0 until preferenceCount) {
-            getPreference(i).isVisible = expanded
+            val child = getPreference(i)
+            child.isVisible = expanded && !unavailableChildKeys.contains(child.key)
         }
     }
 
@@ -82,7 +99,7 @@ class CollapsiblePreferenceCategory @JvmOverloads constructor(
     override fun addPreference(preference: Preference): Boolean {
         val result = super.addPreference(preference)
         if (result) {
-            preference.isVisible = expanded
+            preference.isVisible = expanded && !unavailableChildKeys.contains(preference.key)
         }
         return result
     }

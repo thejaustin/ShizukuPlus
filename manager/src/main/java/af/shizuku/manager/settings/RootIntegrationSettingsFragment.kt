@@ -153,7 +153,10 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                         // Let the default EditTextDialog handle custom text entry
                         (this@RootIntegrationSettingsFragment).onDisplayPreferenceDialog(suPathPref)
                     } else {
+                        // Setting .text programmatically does NOT fire the change listener,
+                        // so push the new path to the server explicitly.
                         suPathPref.text = chosen
+                        ShizukuSettings.syncAllPlusFeaturesToServer()
                         Toast.makeText(context, "SU path preset applied: ${presets[which]}", Toast.LENGTH_SHORT).show()
                     }
                 }
