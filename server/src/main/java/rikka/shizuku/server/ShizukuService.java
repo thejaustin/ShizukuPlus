@@ -1678,6 +1678,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             reply.writeNoException();
             reply.writeStrongBinder(dpm);
             return true;
+        } else if (code == ServerConstants.BINDER_TRANSACTION_getServerPatchVersion) {
+            data.enforceInterface(ShizukuApiConstants.BINDER_DESCRIPTOR);
+            reply.writeNoException();
+            reply.writeInt(ShizukuApiConstants.SERVER_PATCH_VERSION);
+            return true;
         }
         return super.onTransact(code, data, reply, flags);
     }

@@ -56,6 +56,7 @@ class HomeAdapter(
     var isDragging = false
     private var isUpdating = false
     private var lastUpdateDataTime = 0L
+    private var pendingUpdate = false
     private val animatedIds = HashSet<Long>()
 
     /**
@@ -94,9 +95,22 @@ class HomeAdapter(
     override fun onCreateCreatorPool(): IndexCreatorPool = IndexCreatorPool()
 
     fun updateData() {
-        if (isUpdating) return
         val now = System.currentTimeMillis()
-        if (now - lastUpdateDataTime < 100) return
+        // On start the state changes in a rapid burst (Loading -> Success, plus state-listener and
+        // onResume reloads). Dropping throttled/in-flight requests loses the final "running" render,
+        // leaving a stale "not running" card until the user re-enters the screen. Instead of
+        // dropping, coalesce into a single trailing update so the latest state is always rendered.
+        if (isUpdating || now - lastUpdateDataTime < 100) {
+            if (!pendingUpdate) {
+                pendingUpdate = true
+                scope.launch {
+                    kotlinx.coroutines.delay(120)
+                    pendingUpdate = false
+                    updateData()
+                }
+            }
+            return
+        }
         lastUpdateDataTime = now
         isUpdating = true
         scope.launch {

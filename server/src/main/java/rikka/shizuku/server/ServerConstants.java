@@ -13,4 +13,8 @@ public class ServerConstants {
     public static final int BINDER_TRANSACTION_getApplications = 10001;
     public static final int BINDER_TRANSACTION_isCustomApiEnabled = 10002;
     public static final int BINDER_TRANSACTION_getDhizukuBinder = 10003;
+    // Direct getter for the running server's patch version. The patch version is otherwise only
+    // delivered via the oneway bindApplication callback, which the manager's own client doesn't
+    // reliably receive; this lets it (and any client) read it directly, like getVersion()/getUid().
+    public static final int BINDER_TRANSACTION_getServerPatchVersion = 10004;
 }

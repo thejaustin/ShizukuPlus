@@ -2,6 +2,7 @@ package af.shizuku.manager.home
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Parcel
 import android.os.Build
 import androidx.annotation.Keep
 import androidx.annotation.RequiresApi
@@ -26,6 +27,7 @@ import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.ShizukuSystemApis
 import af.shizuku.manager.utils.StockShizukuCompat
 import rikka.shizuku.Shizuku
+import rikka.shizuku.server.ServerConstants
 
 @Keep
 class HomeViewModel(
@@ -87,7 +89,12 @@ class HomeViewModel(
 
         val uid = Shizuku.getUid()
         val apiVersion = Shizuku.getVersion()
-        val patchVersion = Shizuku.getServerPatchVersion().let { if (it < 0) 0 else it }
+        // getServerPatchVersion() only reads the bindApplication cache; unlike getVersion()/getUid()
+        // it has no direct-binder fallback. The manager's own client doesn't reliably receive that
+        // oneway callback, so fall back to a direct binder call to read the running server's patch.
+        val cachedPatch = Shizuku.getServerPatchVersion()
+        val patchVersion = (if (cachedPatch >= 0) cachedPatch else queryServerPatchVersion())
+            .let { if (it < 0) 0 else it }
         val seContext = if (apiVersion >= 6) {
             try {
                 Shizuku.getSELinuxContext()
@@ -97,7 +104,16 @@ class HomeViewModel(
             }
         } else null
 
-        val permissionTest = Shizuku.checkRemotePermission("android.permission.GRANT_RUNTIME_PERMISSIONS") == PackageManager.PERMISSION_GRANTED
+        // checkRemotePermission enforceCallingPermission-gates on the caller being an attached
+        // client; right after start the manager may not be attached yet, and an unguarded throw
+        // here aborts the whole status load (reload() -> Fail -> shown as "not running") even though
+        // pingBinder already confirmed the service is up. Treat a failure as "not granted".
+        val permissionTest = try {
+            Shizuku.checkRemotePermission("android.permission.GRANT_RUNTIME_PERMISSIONS") == PackageManager.PERMISSION_GRANTED
+        } catch (e: Throwable) {
+            LOGGER.w(e, "checkRemotePermission")
+            false
+        }
 
         try {
             ShizukuSystemApis.checkPermission(Manifest.permission.API_V23, BuildConfig.APPLICATION_ID, 0)
@@ -105,7 +121,32 @@ class HomeViewModel(
             LOGGER.w(e, "Permission check failed")
         }
 
-        return ServiceStatus(uid, apiVersion, patchVersion, seContext, permissionTest)
+        // pingBinder() above already succeeded, so the service is reachable and running regardless
+        // of whether the attach-gated getUid()/getVersion() calls returned valid values.
+        return ServiceStatus(uid, apiVersion, patchVersion, seContext, permissionTest, running = true)
+    }
+
+    /**
+     * Direct binder call for the running server's patch version, mirroring how Shizuku.getVersion()
+     * falls back to requireService().getVersion(). Returns -1 if unavailable (e.g. a stock Shizuku
+     * server that does not implement this transaction).
+     */
+    private fun queryServerPatchVersion(): Int {
+        val data = Parcel.obtain()
+        val reply = Parcel.obtain()
+        return try {
+            data.writeInterfaceToken("moe.shizuku.server.IShizukuService")
+            val binder = Shizuku.getBinder() ?: return -1
+            binder.transact(ServerConstants.BINDER_TRANSACTION_getServerPatchVersion, data, reply, 0)
+            reply.readException()
+            reply.readInt()
+        } catch (e: Throwable) {
+            LOGGER.w(e, "queryServerPatchVersion failed")
+            -1
+        } finally {
+            reply.recycle()
+            data.recycle()
+        }
     }
 
     fun checkBatteryOptimization() {
