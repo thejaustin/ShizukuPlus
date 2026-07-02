@@ -178,10 +178,10 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
             context.getString(R.string.home_status_service_not_running, context.getString(R.string.app_name))
         }
         val summary = if (ok) {
-            // patchVersion is 0 when the server's bindApplication reply hasn't populated it yet
-            // (it can arrive slightly after the binder becomes pingable). Don't claim the server is
-            // outdated based on an unknown patch, or the "restart to update" prompt shows spuriously.
-            val patchKnown = patchVersion > 0
+            // patchVersion is -1 when unknown (not yet delivered / not supported by the server);
+            // 0 is a legitimate patch value. Don't claim the server is outdated based on an unknown
+            // patch, or the "restart to update" prompt shows spuriously.
+            val patchKnown = patchVersion >= 0
             val versionText = if (patchKnown) "${apiVersion}.${patchVersion}" else "$apiVersion"
             if (apiVersion != Shizuku.getLatestServiceVersion() || (patchKnown && patchVersion != ShizukuApiConstants.SERVER_PATCH_VERSION)) {
                 context.getString(

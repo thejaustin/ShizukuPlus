@@ -92,9 +92,10 @@ class HomeViewModel(
         // getServerPatchVersion() only reads the bindApplication cache; unlike getVersion()/getUid()
         // it has no direct-binder fallback. The manager's own client doesn't reliably receive that
         // oneway callback, so fall back to a direct binder call to read the running server's patch.
+        // Keep unknown as -1 (patch 0 is a legitimate value); the display layer decides how to
+        // render "unknown".
         val cachedPatch = Shizuku.getServerPatchVersion()
-        val patchVersion = (if (cachedPatch >= 0) cachedPatch else queryServerPatchVersion())
-            .let { if (it < 0) 0 else it }
+        val patchVersion = if (cachedPatch >= 0) cachedPatch else queryServerPatchVersion()
         val seContext = if (apiVersion >= 6) {
             try {
                 Shizuku.getSELinuxContext()
@@ -137,7 +138,12 @@ class HomeViewModel(
         return try {
             data.writeInterfaceToken("moe.shizuku.server.IShizukuService")
             val binder = Shizuku.getBinder() ?: return -1
-            binder.transact(ServerConstants.BINDER_TRANSACTION_getServerPatchVersion, data, reply, 0)
+            // transact() returns false when the server doesn't implement this code (e.g. a stock
+            // Shizuku server). Treat that as "unknown" rather than calling readException(), which
+            // would throw and log noise for an expected outcome.
+            if (!binder.transact(ServerConstants.BINDER_TRANSACTION_getServerPatchVersion, data, reply, 0)) {
+                return -1
+            }
             reply.readException()
             reply.readInt()
         } catch (e: Throwable) {
