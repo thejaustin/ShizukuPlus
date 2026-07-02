@@ -384,7 +384,7 @@
     <string name="settings_overlay_manager_plus">↳ System Theming Bridge</string>
     <string name="settings_overlay_manager_plus_summary">Manage system RRO overlays. Required for Hex Installer and Substratum themes to function without root.</string>
     <string name="settings_network_governor_plus">Network &amp; DNS Governor</string>
-    <string name="settings_network_governor_plus_summary">Privileged network control. Used by AdAway and AFWall+ for robust system-wide filtering.</string>
+    <string name="settings_network_governor_plus_summary">Privileged network control. Used by AFWall+ for robust system-wide filtering.</string>
     <string name="settings_activity_manager_plus">↳ Deep Process Control</string>
     <string name="settings_activity_manager_plus_summary">Native process control. Allows MacroDroid, Tasker, and Naptime to deeply force-stop apps and set standby buckets.</string>
     <string name="settings_plus_app_found">Integrated app detected: %1$s. Tap for setup.</string>

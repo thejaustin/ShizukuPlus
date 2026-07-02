@@ -351,7 +351,7 @@
     <string name="settings_overlay_manager_plus">↳ System Theming Bridge</string>
     <string name="settings_overlay_manager_plus_summary">Manage system RRO overlays. Required for Hex Installer and Substratum themes to function without root.</string>
     <string name="settings_network_governor_plus">Network &amp; DNS Governor</string>
-    <string name="settings_network_governor_plus_summary">Privileged network control. Used by AdAway and AFWall+ for robust system-wide filtering.</string>
+    <string name="settings_network_governor_plus_summary">Privileged network control. Used by AFWall+ for robust system-wide filtering.</string>
     <string name="settings_activity_manager_plus">↳ Deep Process Control</string>
     <string name="settings_activity_manager_plus_summary">Native process control. Allows MacroDroid, Tasker, and Naptime to deeply force-stop apps and set standby buckets.</string>
     <string name="settings_plus_app_found">Integrated app detected: %1$s. Tap for setup.</string>
@@ -389,8 +389,6 @@
     <string name="settings_plus_category_intelligence">Intelligence &amp; Continuity</string>
     <string name="settings_plus_category_developer">Developer Options (Experimental)</string>
     <string name="settings_plus_category_root_compat">Root Compatibility Modules</string>
-    <string name="settings_root_adaway_bridge">AdAway Hosts Bridge</string>
-    <string name="settings_root_adaway_bridge_summary">Redirect /system/etc/hosts to a writable path. Allows AdAway to function without a rooted system partition.</string>
     <string name="settings_root_magisk_mocking">Magisk Environment Mocking</string>
     <string name="settings_root_magisk_mocking_summary">Fakes Magisk binaries, properties, and internal folders to fool root-detecting applications.</string>
     <string name="settings_root_auto_grant">Auto-Approval Bridge</string>
@@ -399,8 +397,6 @@
     <string name="settings_root_file_interceptor_summary">Automatically injects permission-preservation flags into file operations targeting sensitive system paths.</string>
     <string name="settings_root_busybox_mocking">BusyBox Simulation</string>
     <string name="settings_root_busybox_mocking_summary">Returns a fake version string for the \'busybox\' command to satisfy legacy script requirements.</string>
-    <string name="help_root_adaway_title">About AdAway Bridge</string>
-    <string name="help_root_adaway_detail">Modern Android devices have read-only system partitions. This bridge intercepts AdAway\'s attempts to write to /system/etc/hosts and redirects them to a Shizuku-managed path in /data/adb, faking a successful mount operation.</string>
     <string name="help_root_magisk_title">About Magisk Mocking</string>
     <string name="help_root_magisk_detail">Many apps check for root by looking for Magisk-specific properties or the /sbin/.magisk folder. This module simulates these elements, allowing you to use root-only features in apps that refuse to start without detecting a Magisk environment.</string>
     <string name="help_root_auto_grant_title">About Auto-Approval</string>

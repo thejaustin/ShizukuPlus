@@ -403,7 +403,6 @@ class RootCompatibilityActivity : AppBarActivity() {
 
                     holder.itemView.setOnClickListener {
                         val url = when (pkg) {
-                            "org.adaway" -> "https://f-droid.org/packages/org.adaway/"
                             "dev.ukanth.ufirewall" -> "https://f-droid.org/packages/dev.ukanth.ufirewall/"
                             "com.machiav3lli.neo_backup" -> "https://f-droid.org/packages/com.machiav3lli.neo_backup/"
                             "samolego.canta" -> "https://f-droid.org/packages/samolego.canta/"

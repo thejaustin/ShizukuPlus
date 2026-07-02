@@ -471,7 +471,6 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                 "tk.wasdennnoch.substratumlite" to "Substratum Lite"
             ),
             "network_governor_plus_enabled" to listOf(
-                "org.adaway" to "AdAway",
                 "dev.ukanth.ufirewall" to "AFWall+"
             ),
             "storage_proxy_enabled" to listOf(

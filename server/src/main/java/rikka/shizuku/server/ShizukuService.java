@@ -920,16 +920,6 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                             }
                         }
                     }
-                } else if (baseCmd.equals("cat") && cmd.length > 1 && cmd[1].equals("/proc/mounts")) {
-                    if (isFeatureEnabled("root_adaway_bridge")) {
-                        LOGGER.i("SUBridge: mocking /proc/mounts");
-                        String fakeMounts = "/dev/block/bootdevice/by-name/system /system ext4 ro,relatime 0 0\n" +
-                                           "/dev/block/bootdevice/by-name/userdata /data f2fs rw,nosuid,nodev,noatime 0 0\n" +
-                                           "tmpfs /sbin tmpfs rw,seclabel,relatime,size=1930644k,mode=755 0 0\n" +
-                                           "/data/adb/shizuku/hosts /system/etc/hosts text rw,relatime 0 0\n" +
-                                           "magisk /sbin tmpfs rw,seclabel,relatime,size=1930644k,mode=755 0 0\n";
-                        return newProcessInternal(new String[]{"echo", fakeMounts}, env, dir);
-                    }
                 } else if (baseCmd.equals("cat") && cmd.length > 1 && (cmd[1].equals("/sys/fs/selinux/enforce") || cmd[1].contains("/selinux/enforce"))) {
                     if (isFeatureEnabled("root_magisk_mocking")) {
                         LOGGER.i("SUBridge: mocking cat /sys/fs/selinux/enforce -> Permissive");
