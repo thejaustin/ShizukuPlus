@@ -1,4 +1,3 @@
-import rikka.html.text.toHtml
 package af.shizuku.manager.settings
 
 import android.app.admin.DevicePolicyManager
@@ -13,6 +12,7 @@ import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import rikka.html.text.toHtml
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.security.BiometricLock
