@@ -1,3 +1,4 @@
+import rikka.html.text.toHtml
 package af.shizuku.manager.settings
 
 import android.app.admin.DevicePolicyManager
