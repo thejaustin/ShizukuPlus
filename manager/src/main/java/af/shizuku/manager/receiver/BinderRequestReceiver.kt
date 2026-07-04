@@ -7,7 +7,8 @@ import af.shizuku.manager.shell.ShellBinderRequestHandler
 class BinderRequestReceiver : AuthenticatedReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action != "rikka.shizuku.intent.action.REQUEST_BINDER") {
+        if (intent.action != "rikka.shizuku.intent.action.REQUEST_BINDER" &&
+            intent.action != "${context.packageName}.intent.action.REQUEST_BINDER") {
             return
         }
 

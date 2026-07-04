@@ -12,7 +12,8 @@ import af.shizuku.manager.ShizukuSettings
 object ShellBinderRequestHandler {
 
     fun handleRequest(context: Context, intent: Intent, requireAuth: Boolean = false): Boolean {
-        if (intent.action != "rikka.shizuku.intent.action.REQUEST_BINDER") {
+        if (intent.action != "rikka.shizuku.intent.action.REQUEST_BINDER" &&
+            intent.action != "${context.packageName}.intent.action.REQUEST_BINDER") {
             return false
         }
 

@@ -76,12 +76,14 @@ class CrashHandler(private val context: Context, private val defaultHandler: Thr
                     parent.delete()
                 }
                 if (!parent.exists()) {
-                    parent.mkdirs()
+                    if (!parent.mkdirs()) {
+                        return
+                    }
                 }
             }
-            if (parent == null || parent.isDirectory) {
-                file.writeText(report.toString())
-            }
+            if (parent == null) return
+
+            file.writeText(report.toString())
         } catch (e: Exception) {
             android.util.Log.w("CrashHandler", "Error writing crash file: ${e.message}")
         }

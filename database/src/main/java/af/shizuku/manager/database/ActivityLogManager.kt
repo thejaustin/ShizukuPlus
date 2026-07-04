@@ -86,9 +86,14 @@ object ActivityLogManager {
                     context
                 }
                 val dbFile = storageContext.getDatabasePath("shizuku_activity_logs.db")
-                if (dbFile.parentFile?.exists() != true) {
-                    dbFile.parentFile?.mkdirs()
-                    delay(50)
+                try {
+                    dbFile.parentFile?.let { parent ->
+                        if (!parent.exists()) {
+                            parent.mkdirs()
+                        }
+                    }
+                } catch (e: Exception) {
+                    Timber.tag(TAG).e(e, "Failed to create database directory")
                 }
 
                 try {
@@ -313,8 +318,14 @@ object ActivityLogManager {
                     }
                 }
                 
-                if (dbFile.parentFile?.exists() != true) {
-                    dbFile.parentFile?.mkdirs()
+                try {
+                    dbFile.parentFile?.let { parent ->
+                        if (!parent.exists()) {
+                            parent.mkdirs()
+                        }
+                    }
+                } catch (e: Exception) {
+                    Timber.tag(TAG).e(e, "Failed to create database directory")
                 }
 
                 // Attempt Programmatic SQLite .recover
