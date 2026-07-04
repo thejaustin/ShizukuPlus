@@ -86,6 +86,114 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-07-04 — Claude Code (Sonnet 5) [PRoot ShizukuPlus, d66b3105]
+
+**Commits:** `0a1e7737`, `27667aeb`, `4febe299`
+
+**Done:**
+- **Settings search crash on Android 16** (`0a1e7737`, #309 / Sentry SHIZUKUPLUS-72) — search-result `Card` used `Modifier.clickable`, which reads `LocalIndication`; on Compose Foundation 1.7+ that throws when a legacy `Indication` is in scope. Switched to Material3's `Card(onClick = ...)` overload.
+- **AutomationService foreground-service crash cluster** (`27667aeb`) — service ran as `dataSync` FGS, which Android 15+ time-limits/validates strictly, producing SHIZUKUPLUS-6H/6G/6M/6E/6V. Switched to `specialUse` (matches WatchdogService/ShizukuLiveService pattern), guarded every `startForeground()` call with try/catch → `stopSelf()`, made `ConnectivityManager` nullable.
+- **Fixed a broken master build** (`4febe299`) — the prior session's `f7f46de0` (pushed from the Termux clone) put `import rikka.html.text.toHtml` above the `package` declaration in `ShizukuPlusSettingsFragment.kt`, a Kotlin syntax error that cascaded into ~30 "Unresolved reference" errors across the settings package and failed CI run 28692928435. Moved the import into place; verified CI green again (lint/build/release all success).
+- **Sentry audit continued** — resolved 51 of 66 previously-unresolved issues this pass (see the 2026-06-28→07-04 entry below for the bulk of it); reviewed the four commits pushed from the Termux clone (`03d3c5e6`, `3a510dd7`, `9611676c`, plus the build-breaking `f7f46de0`) for correctness — all sound except the import-order slip.
+- **GitHub comments** posted on #309, #311, #312, #306, #303 tying each to the specific commit/root-cause fix and requesting a re-test/logcat on the next build.
+- Reviewed (did not merge — pending maintainer/external-dependency review) two open Claude-authored PRs: #307 (binder delivery to stock clients, blocked on `ShizukuPlus-API#16`) and #308 (manager "not running"/stale-version race fixes).
+- **Memory gotcha saved:** `versionCode`/`versionName` are derived from `git rev-list --count HEAD`, but the repo's history appears to have been rewritten at least once — local HEAD count and live Sentry release tags (`r2082`) were inconsistent with a stable history. Don't trust dist/release numbers to judge whether an old crash is fixed; read the current source at the crash site instead.
+
+### 2026-07-03 21:43–21:57 — Claude Code (Sonnet 4.6) [Termux ShizukuPlus, d66b3105]
+
+**Note:** These 4 commits are in the Termux clone (`~/ShizukuPlus`) but NOT yet in the sdcard clone. Run `git pull` in `/sdcard/Documents/ShizukuPlus` to sync.
+
+**Commits:** `03d3c5e6`, `3a510dd7`, `9611676c`, `f7f46de0`
+
+**Done:**
+- **Sentry crashes** (`03d3c5e6`) — NPEs, BinderRequest receiver, file system errors, ADB startup crashes
+- **ShizukuPlus UI bugs** (`3a510dd7`, #266, #267, #270)
+- **Settings search AndroidView hidden when active** (`9611676c`, #269)
+- **Missing import for toHtml extension** (`f7f46de0`)
+
+### 2026-06-28 → 2026-07-04 — Claude Code (Sonnet 4.6) [Termux session, d66b3105]
+
+**Session note:** Ran from Termux environment (not PRoot). Session was invisible from PRoot `/resume` until 2026-07-04 sync.
+
+**Done:**
+- **Sentry audit** — 51 issues resolved (from 66 unresolved → 22 remaining); remaining are external (keystore hardware, disk-full/I/O, ANRs, server-client timing races)
+- **WorkManager ProGuard crash** — verified try-catch fix already in place (Jun 23 commit); pre-fix events in Sentry
+- **ActivityLogActivity missing from manifest** (5Z) — declared; verified
+- **Parcelable CREATOR strip** (6S) — covered by existing keep rule; verified
+- **AutomationService FGS background start** (5X) — guarded + `specialUse` type; verified
+- **`startActivityAndCollapse` QS tile** (8) — try-catch with API-level branching verified correct
+- **FileProvider authority** (6P) — `${context.packageName}.fileprovider` matches manifest; `.morphe.` authority gone
+- **`Unknown permission moe.shizuku.manager.permission.API_V23`** (6F/63/61, ~103 events) — `grantRuntimePermission` already wrapped in `try/catch(Throwable)`; exception can't cross binder
+- **SystemHubActivity action-bar crash** (56, 3 events/1 user) — deferred; too risky vs. impact
+- **GitHub comments** posted on #309 (settings search), #306 (binder-handshake build green)
+- **Memory files saved** — 5 rich ShizukuPlus memory entries synced to device
+
+**Open (22 Sentry issues):** keystore hardware failures, disk-full I/O errors, ANRs, server↔client timing races, single-user races — all external to app code
+
+### 2026-06-15 → 2026-07-04 — Claude Code (Sonnet 4.6) [multi-compact session]
+
+**Commits:** `17d04617` through `27667aeb` (49 commits)
+
+**Done:**
+
+*Crash / Sentry fixes (Jun 15–19):*
+- **4 high-volume Sentry crashes** (`17d04617`) — SecurityException (`ACCESS_WIFI_STATE` missing), WorkManager direct-boot crash, DownloadManager `local_filename` column crash, `startActivityAndCollapse` UnsupportedOperationException on Android 14+
+- **Binder-not-received crash in AdbProxyService** (`4f71348a`) — `Shizuku.pingBinder()` called outside try-catch; moved inside
+- **Reset icon invisible on light backgrounds** (`e03bbeec`, #247) — `fillColor` was `white`; changed to `black` (M3 convention)
+- **BackgroundServiceStartNotAllowedException** (`8a7bc3b7`) — `ShizukuLiveService` started with plain `startService()` from `Application.onCreate()` on Android 12+; switched to `startForegroundService()` + `startForeground()` in `onStartCommand()`
+- **In-app notification permission dialog** (`4607edd0`) — replaced "go to Settings" redirect with in-app rationale popup
+- **DeadObjectException** (`ec8714f5`, 15 Sentry events) — `Shizuku.pingBinder()` unguarded in `AuthorizationManager`, `RequestPermissionActivity`, `AICorePlusService`, `AppViewHolder`; all wrapped
+- **ANR: Shizuku binder calls on main thread** (`6a9ecddb`) — all `AppViewHolder` binder calls moved to coroutines
+- **Multiple Sentry crash sources batch 1** (`b1b73793`) — SQLiteCantOpenDatabaseException fallback chain (device-protected → app storage → in-memory), `FileNotFoundException: last_crash.txt` downgraded to `Timber.w`, `AutomationService` foreground type
+- **Multiple Sentry crash sources batch 2** (`0eb607b6`) — `RootCompatibilityActivity` column crash, `IllegalArgumentException` column fix
+- **api submodule AIDL-stub rewrite** (`cae6a62a`) — rebased against remote to resolve merge conflict
+
+*Deep audit and product flavor work (Jun 23):*
+- **Five bugs from deep audit** (`ed9983b5`) — ADB pairing duplicate key, PendingIntent collision, null cast NPE, Sentry quota reset on every cold start, broken string interpolation in logs
+- **Product flavors** (`c4151cb6`, `d4a1566d`) — 3 APKs per release: `shizukuplus.apk` (af.shizuku.plus.api), `shizuku-dropin.apk` (moe.shizuku.privileged.api), `shizuku-compat.apk` (thin stub)
+- **Final audit findings** (`6faf1095`) — memory leak, node recycle, timing side-channel, scope leak, broken log
+- **Cold-start from ADB pairing notification** (`7e4f3f9b`, #280) — `EXTRA_START_SERVICE_VIA_WADB` only read in `onNewIntent()`; now also handled in `onCreate()`
+
+*Root-mode and CI fixes (Jun 24–26):*
+- **Root-mode connectivity** (`e3b2f7f2`) — `BIND_APPLICATION_PERMISSION_GRANTED=true` for apps using original Shizuku library; suppress auth spam; expand permission filter
+- **CI: flavor-specific Sentry task names** (`1ec97640`) — ambiguous task names after flavor split caused CI failure
+- **attachApplication race/NPE + compat build wiring** (`70431294`)
+- **AdbPairingTutorialActivity missing from manifest** (`658ecb7c`) — registered; pairing flow restored; CI signing fixed
+- **Debug keystore auto-generation** (`889ae1e9`) — `signing.gradle` generates a keystore when none found on CI
+
+*Settings refactor and features (Jun 29–30):*
+- **CollapsiblePreferenceCategory rollout** (`8658e500`, `ae2bd209`) — all settings screens upgraded; dead UISettings cluster removed
+- **ShizukuLiveService gate** (`2948eeb3`, `61d25316`) — startup gated on `live_activity_enabled`; semantics and defaults corrected
+- **live_activity and auto_reconnect_mdns** (`a6f0b04b`) — settings toggled prefs but didn't wire actual behavior
+- **VirusTotal + Pithus APK verification** (`cbec7bb5`) — API calls implemented
+- **Stealth mode** (`1985b5ec`) — hide launcher icon via toggleable activity-alias in Developer Options
+- **AppManagement settings** (`b59c27c7`) — `AppManagementSettingsFragment` wired, PLUS badges added, settings reorganized
+- **Dhizuku diagnostic tap** (`19310e87`) — now shows ADB setup dialog instead of doing nothing
+- **Sync all root/ghost/bootloader features to server** (`fa23aed6`) — 6 features were silently not synced due to key suffix mismatch
+- **Remove dead developer options** (`8c046ffd`) — duplicate and unused prefs removed
+- **Compat APK bundling, dev options gate, theme recreation** (`1956f594`)
+- **4 crash/rendering bugs** (`0f265f6b`, #293, #267)
+
+*Code quality and more bug fixes (Jul 2–3):*
+- **binder-send crash** (`374edbe3`, #298) — Parcelable `CREATOR` stripped by R8; keep rule added
+- **All BinderContainer variants hardened** (`dd8e47a1`) — R8 keep rules expanded
+- **AdAway integration removed** (`6669f494`) — vestigial, never worked
+- **binder_logging toggle** (`fecd41c5`) — was fully dead; wired to actual behavior
+- **6 ghosting/bootloader server features** (`fe28618e`) — key suffix mismatch; server never honored them
+- **AI Core sub-features UI** (`b2c7fcba`) — toggles wired; legacy pairing dialog added
+- **Accessibility service declarations** (`857c562f`, #305) — dropped by refactor; restored
+- **Surface compat hub card by default** (`0d47d93c`, #249) — third-party detection now discoverable
+- **Docs: third-party compat layer** (`c782dc0f`) — stale AdAway reference removed
+- **Animation Intensity setting** (`09abb841`) — had no effect; wired
+- **Settings search crash on Android 16** (`0a1e7737`, #309)
+- **AutomationService foreground hardening** (`27667aeb`) — `startForeground()` moved to `onCreate()`, type `dataSync` → `specialUse`
+
+**Open:**
+- Issue #200 (Mavericks factory + SQLite race) still needs on-device ADB verification
+- Issue #199 (Shadow Binder hidden packages) still needs testing
+- `shizuku-compat.apk` not appearing in CI release artifacts — compat module build wiring incomplete
+- `gh auth` / GitHub MCP need `workflow` scope on PAT to push `.github/workflows/` changes
+
 ### 2026-06-26 — Claude Code (Sonnet 4.6)
 **Done:**
 - Recovered lost `CLAUDE.md` from `AI_DEVLOG.md` after device reset — all 14 crash rules and key files map restored.
