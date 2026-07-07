@@ -20,32 +20,48 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/card_content_padding" />
 
-    <!-- Drag handle: shown for draggable cards, semi-transparent grip on right edge -->
-    <ImageView
-        android:id="@+id/drag_handle"
-        android:layout_width="40dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical|end"
-        android:padding="8dp"
-        android:src="@drawable/ic_drag_handle"
-        android:contentDescription="@string/accessibility_icon_drag_handle"
-        android:alpha="0.30"
-        android:visibility="gone" />
-
-    <!-- Remove/add button: shown in edit mode, top-end corner (same edge as the drag
-         handle below it, so a single end-padding reservation in HomeEditMode clears both
-         instead of the button overlapping card icon/title on the start edge). -->
-    <ImageButton
-        android:id="@+id/remove_btn"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+    <!-- Edit-mode controls: a single top-end row so the drag handle and remove button
+         never stack/overlap each other regardless of card height (a full-height drag
+         strip previously sat directly behind the top-corner remove button). Each gets a
+         rounded surface chip for a clearer, more comfortable tap target than a bare glyph. -->
+    <LinearLayout
+        android:id="@+id/edit_controls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="top|end"
         android:layout_margin="4dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_close_24"
-        app:tint="?attr/colorError"
-        android:contentDescription="@string/accessibility_icon_remove"
-        android:elevation="4dp"
-        android:visibility="gone" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/drag_handle"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/shape_edit_control_background"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_drag_handle"
+            android:contentDescription="@string/accessibility_icon_drag_handle"
+            android:alpha="0.85"
+            android:visibility="gone" />
+
+        <Space
+            android:layout_width="4dp"
+            android:layout_height="1dp" />
+
+        <ImageButton
+            android:id="@+id/remove_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/shape_edit_control_background"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:padding="8dp"
+            android:src="@drawable/ic_close_24"
+            app:tint="?attr/colorError"
+            android:contentDescription="@string/accessibility_icon_remove"
+            android:elevation="4dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

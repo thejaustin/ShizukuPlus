@@ -44,13 +44,13 @@ object HomeEditMode {
 
         if (isActive && isHidden) {
             binding.cardContent.alpha = 0.45f
-            binding.dragHandle.alpha = 0.15f // Fade drag handle even more
+            binding.dragHandle.alpha = 0.35f // Fade drag handle even more
             binding.removeBtn.setImageResource(R.drawable.ic_add_24)
             val activeColor = binding.root.context.getColor(R.color.system_accent1_600)
             binding.removeBtn.imageTintList = android.content.res.ColorStateList.valueOf(activeColor)
         } else {
             binding.cardContent.alpha = 1.0f
-            binding.dragHandle.alpha = 0.30f // Restore original drag handle alpha
+            binding.dragHandle.alpha = 0.85f // Restore original drag handle alpha
             binding.removeBtn.setImageResource(R.drawable.ic_close_24)
             val errorTint = android.util.TypedValue()
             binding.root.context.theme.resolveAttribute(android.R.attr.colorError, errorTint, true)
@@ -59,11 +59,11 @@ object HomeEditMode {
 
         val res = binding.cardContent.resources
         val base = res.getDimensionPixelSize(R.dimen.card_content_padding)
-        // remove_btn (48dp + 4dp margin either side = 56dp) and drag_handle (40dp) now both
-        // sit on the end edge; reserve clearance for the wider of the two so content never
-        // sits under either.
+        // drag_handle and remove_btn now sit side-by-side in a single top-end row (40dp each +
+        // 4dp gap + 4dp row margin) instead of stacked/overlapping on the same corner; reserve
+        // clearance for the whole row so content never sits under either control.
         val overlayClearance = if (isActive)
-            (56 * res.displayMetrics.density).toInt() else 0
+            (92 * res.displayMetrics.density).toInt() else 0
         binding.cardContent.updatePaddingRelative(end = base + overlayClearance)
     }
 }
