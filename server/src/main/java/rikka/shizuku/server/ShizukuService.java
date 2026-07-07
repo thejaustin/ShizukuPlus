@@ -326,28 +326,15 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 LOGGER.w(e, "grant WRITE_SECURE_SETTINGS");
             }
         }
+        // bindApplication is a oneway callback: a wrong-descriptor call fails silently on the client
+        // and never throws here, so the previous try/catch legacy fallback never actually ran.
+        // Dispatch via BOTH the af and moe descriptors (AppBinderCompat) so stock Shizuku clients
+        // (e.g. Obtainium) receive it. AppBinderCompat catches per-descriptor failures internally;
+        // wrap defensively so nothing can propagate out of this Binder entrypoint.
         try {
-            // First try using the current descriptor (af.shizuku.server.IShizukuApplication)
-            application.bindApplication(reply);
+            AppBinderCompat.bindApplication(application, reply);
         } catch (Throwable e) {
-            // If it fails (likely due to interface descriptor mismatch on the client side),
-            // try using the legacy descriptor (moe.shizuku.server.IShizukuApplication)
-            LOGGER.w("attachApplication via current descriptor failed, trying legacy descriptor for " + requestPackageName);
-            try {
-                Parcel data = Parcel.obtain();
-                try {
-                    data.writeInterfaceToken("moe.shizuku.server.IShizukuApplication");
-                    // 1 = bindApplication(Bundle)
-                    data.writeInt(1);
-                    reply.writeToParcel(data, 0);
-                    application.asBinder().transact(1, data, null, IBinder.FLAG_ONEWAY);
-                    LOGGER.i("Successfully sent bindApplication via legacy descriptor to " + requestPackageName);
-                } finally {
-                    data.recycle();
-                }
-            } catch (Throwable e2) {
-                LOGGER.e(e2, "attachApplication legacy also failed for " + requestPackageName);
-            }
+            LOGGER.w(e, "bindApplication dispatch failed for " + requestPackageName);
         }
     }
 
