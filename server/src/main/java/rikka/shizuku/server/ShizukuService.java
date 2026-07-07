@@ -175,6 +175,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     try {
                         JSONObject json = new JSONObject();
                         json.put("priority", priority);
+                        // The manager reads a "level" string (see ShizukuApplication's
+                        // addSentryEventListener) to set the Sentry event's severity; without
+                        // this every forwarded event silently fell back to "error" regardless
+                        // of whether it was actually just a warning.
+                        json.put("level", priority >= Log.ASSERT ? "FATAL" : priority >= Log.ERROR ? "ERROR" : "WARN");
                         json.put("tag", tag);
                         json.put("message", message);
                         if (throwable != null) {

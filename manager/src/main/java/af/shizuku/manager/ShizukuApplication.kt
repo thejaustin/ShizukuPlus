@@ -84,23 +84,37 @@ class ShizukuApplication : Application(), Configuration.Provider {
             SentryAndroid.init(this) { options ->
                 options.dsn = BuildConfig.SENTRY_DSN
 
-                // Attach visual context for better debugging
-                options.isAttachScreenshot = true
-                options.isAttachViewHierarchy = true
+                // Screenshot/view-hierarchy attachments are billed against a separate (much
+                // smaller) attachment quota and bloat every event's payload size. This project
+                // is free-tier only (no budget for a paid plan), and per the class doc above
+                // Sentry here is "for crash reporting" - not full debugging context capture -
+                // so these stay off to conserve quota. Re-enable only if actively debugging a
+                // specific hard-to-diagnose UI issue, then turn back off.
+                options.isAttachScreenshot = false
+                options.isAttachViewHierarchy = false
 
-                // User interaction and lifecycle tracing
-                options.isEnableUserInteractionTracing = true
+                // Breadcrumbs are bundled into the event itself (not separately billed), so
+                // keep them for context. isEnableUserInteractionTracing and
+                // isEnableAutoActivityLifecycleTracing generate performance "transaction"
+                // events on their own quota, unrelated to actual crashes - since this project
+                // only needs crash reporting (not APM), those stay off entirely.
+                options.isEnableUserInteractionTracing = false
                 options.isEnableUserInteractionBreadcrumbs = true
-                options.isEnableAutoActivityLifecycleTracing = true
+                options.isEnableAutoActivityLifecycleTracing = false
 
                 // ANR detection — 10s threshold avoids false positives from privileged
                 // system calls (__epoll_pwait / __ioctl) in the event loop
                 options.isAnrEnabled = true
                 options.anrTimeoutIntervalMillis = 10000L
 
-                // Performance monitoring (sampled)
-                options.tracesSampleRate = 0.2 // 20% sampling for production
-                options.profilesSampleRate = 0.1 // 10% profiling
+                // Performance monitoring / profiling off entirely - this is the single
+                // largest quota drain relative to actual crash-reporting value: at any sample
+                // rate > 0 it generates a transaction (and, with profilesSampleRate > 0, a
+                // profile) for every sampled activity lifecycle across every user's session,
+                // continuously, whether or not anything is actually wrong. None of that is
+                // needed for "did the app crash and why" - only error events are.
+                options.tracesSampleRate = 0.0
+                options.profilesSampleRate = 0.0
 
                 // Release tracking with GitHub integration
                 options.release = "shizuku-plus@${BuildConfig.VERSION_NAME}"
@@ -272,9 +286,16 @@ class ShizukuApplication : Application(), Configuration.Provider {
                 val message = jsonObject.optString("message", "")
                 val stackTrace = jsonObject.optString("stackTrace", "")
 
+                // Guard against a single device's hot-looping error from draining the shared
+                // quota by itself: skip re-sending the exact same tag+message within the
+                // dedup window instead of forwarding every single repeated occurrence.
+                if (!af.shizuku.manager.utils.SentryEventDeduper.shouldSend(tag, message)) {
+                    return@addSentryEventListener
+                }
+
                 val sentryLevel = when (levelStr.uppercase()) {
                     "INFO" -> io.sentry.SentryLevel.INFO
-                    "WARN" -> io.sentry.SentryLevel.WARNING
+                    "WARN", "WARNING" -> io.sentry.SentryLevel.WARNING
                     "ERROR" -> io.sentry.SentryLevel.ERROR
                     "FATAL" -> io.sentry.SentryLevel.FATAL
                     "DEBUG" -> io.sentry.SentryLevel.DEBUG
