@@ -11,11 +11,22 @@ import android.widget.Toast
 import af.shizuku.manager.MainActivity
 import af.shizuku.manager.utils.ShizukuStateMachine
 
+import androidx.work.WorkManager
+
 class ShizukuTileService : TileService() {
+
+    private val stateListener: (ShizukuStateMachine.State) -> Unit = {
+        updateTile()
+    }
 
     override fun onStartListening() {
         super.onStartListening()
-        updateTile()
+        ShizukuStateMachine.addListener(stateListener)
+    }
+
+    override fun onStopListening() {
+        super.onStopListening()
+        ShizukuStateMachine.removeListener(stateListener)
     }
 
     private fun updateTile() {
@@ -45,14 +56,21 @@ class ShizukuTileService : TileService() {
     override fun onClick() {
         val state = ShizukuStateMachine.get()
         val isRunning = state == ShizukuStateMachine.State.RUNNING
+        val isStarting = state == ShizukuStateMachine.State.STARTING
 
         try {
-            if (isRunning) {
-                // Stop Shizuku
+            if (isRunning || isStarting) {
+                // Stop Shizuku / cancel WADB worker
                 ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPING)
                 updateTile()
+
+                // Cancel worker
+                WorkManager.getInstance(this).cancelUniqueWork("adb_start_worker")
+
+                // Stop server if running
                 kotlin.runCatching { rikka.shizuku.Shizuku.exit() }
-                ShizukuStateMachine.update()
+
+                ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
                 updateTile()
             } else {
                 // Attempt to start silently if root is available
@@ -65,25 +83,14 @@ class ShizukuTileService : TileService() {
                             updateTile()
                         }
                 } else {
-                    // Fallback to UI for ADB pairing/start.
-                    // Android 14+ removed startActivityAndCollapse(Intent); must use PendingIntent.
-                    val intent = Intent(this, MainActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                    }
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                        val pending = PendingIntent.getActivity(
-                            this, 0, intent,
-                            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                        )
-                        startActivityAndCollapse(pending)
-                    } else {
-                        @Suppress("DEPRECATION")
-                        startActivityAndCollapse(intent)
-                    }
+                    // Attempt to start WADB via Worker
+                    ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
+                    updateTile()
+                    af.shizuku.manager.worker.AdbStartWorker.enqueue(this)
                 }
             }
         } catch (e: Exception) {
-            Toast.makeText(this, "Failed to launch Shizuku: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Failed to update Shizuku state: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
         }
     }
 }
