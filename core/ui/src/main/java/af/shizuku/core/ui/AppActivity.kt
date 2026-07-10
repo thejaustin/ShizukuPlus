@@ -17,6 +17,7 @@ abstract class AppActivity : MaterialActivity() {
         // the only thing that actually skips content transitions on relaunch. Protected (not
         // private) because AppBarActivity sets its own MaterialSharedAxis transitions and must
         // honor the same suppression - see AppBarActivity.onCreate().
+        @JvmStatic
         protected var suppressTransitionOnCreate = false
     }
 

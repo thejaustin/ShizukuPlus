@@ -25,7 +25,9 @@ private fun androidColorScheme(context: Context, darkTheme: Boolean): ColorSchem
     fun color(attr: Int, fallbackColor: Color) =
         Color(MaterialColors.getColor(context, attr, fallbackColor.toArgb()))
 
-    val primary = color(MaterialR.attr.colorPrimary, fallback.primary)
+    // colorPrimary and colorError are declared by appcompat, not material - with non-transitive
+    // R classes they only exist in appcompat's R.
+    val primary = color(androidx.appcompat.R.attr.colorPrimary, fallback.primary)
     val onPrimary = color(MaterialR.attr.colorOnPrimary, fallback.onPrimary)
     val primaryContainer = color(MaterialR.attr.colorPrimaryContainer, fallback.primaryContainer)
     val onPrimaryContainer = color(MaterialR.attr.colorOnPrimaryContainer, fallback.onPrimaryContainer)
@@ -37,7 +39,7 @@ private fun androidColorScheme(context: Context, darkTheme: Boolean): ColorSchem
     val onTertiary = color(MaterialR.attr.colorOnTertiary, fallback.onTertiary)
     val tertiaryContainer = color(MaterialR.attr.colorTertiaryContainer, fallback.tertiaryContainer)
     val onTertiaryContainer = color(MaterialR.attr.colorOnTertiaryContainer, fallback.onTertiaryContainer)
-    val error = color(MaterialR.attr.colorError, fallback.error)
+    val error = color(androidx.appcompat.R.attr.colorError, fallback.error)
     val onError = color(MaterialR.attr.colorOnError, fallback.onError)
     val errorContainer = color(MaterialR.attr.colorErrorContainer, fallback.errorContainer)
     val onErrorContainer = color(MaterialR.attr.colorOnErrorContainer, fallback.onErrorContainer)
