@@ -115,7 +115,13 @@ class ShizukuCompanionViewHolder(
 
                 setBusy(v.context, R.string.compat_hub_installing)
                 scope.launch {
-                    val success = runPrivilegedCommand("pm install -r ${tmpApk.absolutePath}")
+                    val tmpPath = "/data/local/tmp/compat.apk"
+                    val success = runPrivilegedCommand("cp '${tmpApk.absolutePath}' '$tmpPath' && chmod 644 '$tmpPath' && pm install -r '$tmpPath' && rm '$tmpPath'")
+                    try {
+                        tmpApk.delete()
+                    } catch (e: Exception) {
+                        // ignore
+                    }
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             v.context,

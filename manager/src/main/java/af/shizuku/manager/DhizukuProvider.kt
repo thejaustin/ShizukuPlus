@@ -65,17 +65,22 @@ class DhizukuProvider : ContentProvider() {
                 return targetBinder.transact(targetCode, data, reply, targetFlags)
             }
 
-            if (code == FIRST_CALL_TRANSACTION + 0 || code == FIRST_CALL_TRANSACTION + 1 || code == FIRST_CALL_TRANSACTION + 2) {
+            if (code >= FIRST_CALL_TRANSACTION + 0 && code <= FIRST_CALL_TRANSACTION + 3) {
                 data.enforceInterface("com.rosan.dhizuku.aidl.IDhizuku")
                 when (code) {
-                    FIRST_CALL_TRANSACTION + 0 -> { // getVersionCode
+                    FIRST_CALL_TRANSACTION + 0 -> { // getVersion
                         reply?.writeNoException()
                         reply?.writeInt(5) // V5
                         return true
                     }
-                    FIRST_CALL_TRANSACTION + 1 -> { // getVersionName
+                    FIRST_CALL_TRANSACTION + 1 -> { // getBinder
                         reply?.writeNoException()
-                        reply?.writeString("3.0")
+                        val binder = try {
+                            ServiceManager.getService(Context.DEVICE_POLICY_SERVICE)
+                        } catch (e: Exception) {
+                            null
+                        }
+                        reply?.writeStrongBinder(binder)
                         return true
                     }
                     FIRST_CALL_TRANSACTION + 2 -> { // isPermissionGranted
@@ -86,6 +91,11 @@ class DhizukuProvider : ContentProvider() {
                             af.shizuku.manager.authorization.AuthorizationManager.granted(pkgName, callingUid)
                         }
                         reply?.writeInt(if (granted) 1 else 0)
+                        return true
+                    }
+                    FIRST_CALL_TRANSACTION + 3 -> { // transact
+                        reply?.writeNoException()
+                        reply?.writeBundle(Bundle())
                         return true
                     }
                 }
