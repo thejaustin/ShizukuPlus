@@ -11,6 +11,7 @@ import af.shizuku.manager.databinding.HomeItemContainerBinding
 import af.shizuku.manager.databinding.HomeLearnMoreBinding
 import af.shizuku.manager.utils.CustomTabsHelper
 import af.shizuku.manager.utils.IconStyleHelper
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
 
@@ -30,6 +31,7 @@ class LearnMoreViewHolder(
     private val originalIcon = binding.icon.drawable
 
     init {
+        containerBinding.root.applySpringTouch()
         containerBinding.root.setOnClickListener { v: View -> CustomTabsHelper.launchUrlOrCopy(v.context, Helps.HOME.get()) }
         containerBinding.root.setOnLongClickListener { HomeEditMode.enter(); true }
         containerBinding.dragHandle.apply {

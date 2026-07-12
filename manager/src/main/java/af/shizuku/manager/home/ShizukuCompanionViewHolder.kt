@@ -79,6 +79,7 @@ class ShizukuCompanionViewHolder(
         }
 
         binding.button1.setOnClickListener { v ->
+            af.shizuku.manager.utils.HapticUtils.tap(v)
             val companionInstalled = data?.first ?: false
             if (companionInstalled) {
                 setBusy(v.context, R.string.companion_action_disabling)
@@ -127,6 +128,7 @@ class ShizukuCompanionViewHolder(
             }
         }
         binding.button2.setOnClickListener { v ->
+            af.shizuku.manager.utils.HapticUtils.tap(v)
             val intent = Intent(Intent.ACTION_DELETE)
             intent.data = Uri.parse("package:${StockShizukuCompat.PACKAGE}")
             v.context.startActivity(intent)
