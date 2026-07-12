@@ -14,39 +14,47 @@ object CryptoUtils {
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
     private const val TRANSFORMATION = "${KeyProperties.KEY_ALGORITHM_AES}/${KeyProperties.BLOCK_MODE_GCM}/${KeyProperties.ENCRYPTION_PADDING_NONE}"
 
-    fun getOrCreateSecretKey(): SecretKey {
+    fun getOrCreateSecretKey(userAuthRequired: Boolean): SecretKey {
         val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
         keyStore.load(null)
 
-        if (keyStore.containsAlias(KEY_ALIAS)) {
-            return keyStore.getKey(KEY_ALIAS, null) as SecretKey
+        val alias = if (userAuthRequired) KEY_ALIAS else "${KEY_ALIAS}_no_auth"
+
+        try {
+            if (keyStore.containsAlias(alias)) {
+                val key = keyStore.getKey(alias, null) as? SecretKey
+                if (key != null) return key
+            }
+        } catch (e: Exception) {
+            try { keyStore.deleteEntry(alias) } catch (ignored: Exception) {}
         }
 
         val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE)
-        val keyGenParameterSpec = KeyGenParameterSpec.Builder(
-            KEY_ALIAS,
+        val builder = KeyGenParameterSpec.Builder(
+            alias,
             KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
         )
             .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
             .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-            .setUserAuthenticationRequired(true) // Requires biometrics/device unlock
-            // On older devices setUserAuthenticationValidityDurationSeconds might be needed, but we will use CryptoObject for per-operation auth
-            .build()
+            
+        if (userAuthRequired) {
+            builder.setUserAuthenticationRequired(true)
+        }
 
-        keyGenerator.init(keyGenParameterSpec)
+        keyGenerator.init(builder.build())
         return keyGenerator.generateKey()
     }
 
-    fun getCipherForEncryption(): Cipher {
+    fun getCipherForEncryption(userAuthRequired: Boolean): Cipher {
         val cipher = Cipher.getInstance(TRANSFORMATION)
-        cipher.init(Cipher.ENCRYPT_MODE, getOrCreateSecretKey())
+        cipher.init(Cipher.ENCRYPT_MODE, getOrCreateSecretKey(userAuthRequired))
         return cipher
     }
 
-    fun getCipherForDecryption(iv: ByteArray): Cipher {
+    fun getCipherForDecryption(iv: ByteArray, userAuthRequired: Boolean): Cipher {
         val cipher = Cipher.getInstance(TRANSFORMATION)
         val spec = GCMParameterSpec(128, iv)
-        cipher.init(Cipher.DECRYPT_MODE, getOrCreateSecretKey(), spec)
+        cipher.init(Cipher.DECRYPT_MODE, getOrCreateSecretKey(userAuthRequired), spec)
         return cipher
     }
 }

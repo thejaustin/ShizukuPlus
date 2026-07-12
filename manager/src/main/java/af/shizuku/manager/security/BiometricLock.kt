@@ -35,18 +35,19 @@ class BiometricLock(private val activity: FragmentActivity) {
         // (the "Use PIN/Pattern" button just canceled with an error, and its label was wrong for
         // password-locked devices anyway). The system now prompts for whatever credential type
         // is actually configured (password, PIN, or pattern) with the correct label.
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+        val promptInfoBuilder = BiometricPrompt.PromptInfo.Builder()
             .setTitle("Unlock Shizuku+")
             .setSubtitle("Authenticate to access sensitive settings")
-            .setAllowedAuthenticators(allowedAuthenticators)
-            .build()
 
-        // The backup key requires per-operation authentication (no validity duration set), so a
-        // Cipher created after the prompt succeeds is never actually authorized — doFinal() then
-        // throws UserNotAuthenticatedException (with a null message). The cipher must be init'd
-        // and wrapped in a CryptoObject *before* authenticating; the platform then binds this
-        // exact operation to the authentication and hands back the now-usable cipher via
-        // result.cryptoObject.
+        if (crypto != null && Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            // CryptoObject is not supported with DEVICE_CREDENTIAL on older API levels
+            promptInfoBuilder.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+            promptInfoBuilder.setNegativeButtonText(activity.getString(android.R.string.cancel))
+        } else {
+            promptInfoBuilder.setAllowedAuthenticators(allowedAuthenticators)
+        }
+        val promptInfo = promptInfoBuilder.build()
+
         if (crypto != null) {
             biometricPrompt.authenticate(promptInfo, crypto)
         } else {

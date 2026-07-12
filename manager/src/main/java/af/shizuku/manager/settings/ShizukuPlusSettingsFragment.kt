@@ -40,10 +40,24 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
         if (uri == null) return@registerForActivityResult
         val ctx = requireContext()
         val lock = BiometricLock(requireActivity())
+        val useAuth = lock.canAuthenticate(ctx)
+
+        if (!useAuth) {
+            try {
+                val cipher = CryptoUtils.getCipherForEncryption(userAuthRequired = false)
+                val payload = BackupRestoreManager.createBackupPayload(ctx, cipher)
+                ctx.contentResolver.openOutputStream(uri)?.use { os ->
+                    OutputStreamWriter(os, Charsets.UTF_8).use { it.write(payload) }
+                }
+                Toast.makeText(ctx, "Backup exported successfully", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(ctx, "Backup failed: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+            return@registerForActivityResult
+        }
+
         try {
-            // Must be init'd and wrapped in a CryptoObject *before* authenticating — see
-            // BiometricLock.authenticate for why a cipher created after the prompt never works.
-            val cipher = CryptoUtils.getCipherForEncryption()
+            val cipher = CryptoUtils.getCipherForEncryption(userAuthRequired = true)
             lock.authenticate(onSuccess = { crypto ->
                 try {
                     val payload = BackupRestoreManager.createBackupPayload(ctx, crypto?.cipher ?: cipher)
@@ -66,14 +80,27 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
         if (uri == null) return@registerForActivityResult
         val ctx = requireContext()
         val lock = BiometricLock(requireActivity())
+        val useAuth = lock.canAuthenticate(ctx)
+
         try {
             val payload = ctx.contentResolver.openInputStream(uri)?.use { `is` ->
                 InputStreamReader(`is`, Charsets.UTF_8).readText()
             } ?: return@registerForActivityResult
-            // The decrypt cipher needs the backup's IV, so it must be built (and authenticated)
-            // up front, same reasoning as the encrypt path above.
+
             val iv = BackupRestoreManager.extractIv(payload)
-            val cipher = CryptoUtils.getCipherForDecryption(iv)
+
+            if (!useAuth) {
+                try {
+                    val cipher = CryptoUtils.getCipherForDecryption(iv, userAuthRequired = false)
+                    BackupRestoreManager.restoreFromPayload(ctx, payload, cipher)
+                    Toast.makeText(ctx, "Backup restored successfully. Please restart the app.", Toast.LENGTH_LONG).show()
+                } catch (e: Exception) {
+                    Toast.makeText(ctx, "Restore failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+                return@registerForActivityResult
+            }
+
+            val cipher = CryptoUtils.getCipherForDecryption(iv, userAuthRequired = true)
             lock.authenticate(onSuccess = { crypto ->
                 try {
                     BackupRestoreManager.restoreFromPayload(ctx, payload, crypto?.cipher ?: cipher)

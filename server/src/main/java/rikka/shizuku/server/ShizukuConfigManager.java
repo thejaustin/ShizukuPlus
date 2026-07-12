@@ -41,8 +41,22 @@ public class ShizukuConfigManager extends ConfigManager {
 
     private static final long WRITE_DELAY = 10 * 1000;
 
-    private static final File FILE = new File("/data/user_de/0/com.android.shell/shizuku.json");
+    private static final File FILE = getConfigFile();
     private static final AtomicFile ATOMIC_FILE = new AtomicFile(FILE);
+
+    private static File getConfigFile() {
+        File shellFile = new File("/data/user_de/0/com.android.shell/shizuku.json");
+        if (shellFile.exists()) {
+            return shellFile;
+        }
+        try {
+            File parent = shellFile.getParentFile();
+            if (parent != null && parent.exists() && parent.canWrite()) {
+                return shellFile;
+            }
+        } catch (Throwable ignored) {}
+        return new File("/data/local/tmp/shizuku.json");
+    }
 
     public static ShizukuConfig load() {
         FileInputStream stream;
@@ -84,7 +98,14 @@ public class ShizukuConfigManager extends ConfigManager {
                 stream.write(json.getBytes());
 
                 ATOMIC_FILE.finishWrite(stream);
-                LOGGER.v("config saved");
+
+                // Ensure permissions allow both root and shell to read/write
+                File file = ATOMIC_FILE.getBaseFile();
+                if (file.exists()) {
+                    file.setReadable(true, false);
+                    file.setWritable(true, false);
+                }
+                LOGGER.v("config saved to " + file.getAbsolutePath());
             } catch (Throwable tr) {
                 LOGGER.e(tr, "can't save %s, restoring backup.", ATOMIC_FILE.getBaseFile());
                 ATOMIC_FILE.failWrite(stream);
