@@ -20,6 +20,8 @@ import java.util.Locale
 
 class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
+    override fun getTitle(): CharSequence? = "Appearance"
+
     private var colorThemeCategory: CollapsiblePreferenceCategory? = null
     private lateinit var nightModePreference: IntegerSimpleMenuPreference
     private lateinit var blackNightThemePreference: TwoStatePreference

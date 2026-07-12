@@ -64,8 +64,16 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         return super.onPreferenceTreeClick(preference)
     }
 
+    open fun getTitle(): CharSequence? = null
+
     override fun onResume() {
         super.onResume()
+
+        val title = getTitle()
+        if (title != null) {
+            (activity as? SettingsActivity)?.updateTitle(title.toString())
+        }
+
         val highlightKey = arguments?.getString("highlight_key")
         if (!highlightKey.isNullOrEmpty()) {
             listView?.post {

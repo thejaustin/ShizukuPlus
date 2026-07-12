@@ -34,6 +34,8 @@ import java.io.OutputStreamWriter
 
 class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
 
+    override fun getTitle(): CharSequence? = "Feature Hub"
+
     private val createBackupLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
         if (uri == null) return@registerForActivityResult
         val ctx = requireContext()

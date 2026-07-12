@@ -13,6 +13,8 @@ import af.shizuku.manager.ShizukuSettings
 
 class AppManagementSettingsFragment : BaseSettingsFragment() {
 
+    override fun getTitle(): CharSequence? = "App Interactions"
+
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_app_management, rootKey)
 

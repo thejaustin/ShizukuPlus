@@ -24,6 +24,8 @@ import rikka.shizuku.Shizuku
  */
 class RootIntegrationSettingsFragment : BaseSettingsFragment() {
 
+    override fun getTitle(): CharSequence? = "Root & Compatibility"
+
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_root_integration, rootKey)
         val context = requireContext()

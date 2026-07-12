@@ -25,6 +25,8 @@ import androidx.preference.TwoStatePreference
 
 class AdvancedSettingsFragment : BaseSettingsFragment() {
 
+    override fun getTitle(): CharSequence? = "Advanced & Diagnostics"
+
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_advanced, rootKey)
         val context = requireContext()

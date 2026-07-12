@@ -24,15 +24,6 @@ class SettingsActivity : AppActivity(), PreferenceFragmentCompat.OnPreferenceSta
 
         currentTitle = getString(R.string.settings_title)
 
-        supportFragmentManager.addOnBackStackChangedListener {
-            if (supportFragmentManager.backStackEntryCount == 0) {
-                currentTitle = getString(R.string.settings_title)
-            } else {
-                // To support nested titles correctly without a complex backstack map, 
-                // we'll update the title when navigation happens.
-            }
-        }
-
         setContent {
             af.shizuku.core.ui.compose.AppTheme(
                 isBlackNightTheme = af.shizuku.manager.app.ThemeHelper.isBlackNightTheme(this)
@@ -93,6 +84,10 @@ class SettingsActivity : AppActivity(), PreferenceFragmentCompat.OnPreferenceSta
 
         currentTitle = pref.title?.toString() ?: currentTitle
         return true
+    }
+
+    fun updateTitle(title: String) {
+        currentTitle = title
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -19,6 +19,8 @@ import af.shizuku.manager.utils.ShizukuStateMachine
 
 class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
+    override fun getTitle(): CharSequence? = "Startup & Behavior"
+
     private lateinit var startOnBootPreference: TwoStatePreference
     private lateinit var watchdogPreference: TwoStatePreference
     private lateinit var tcpModePreference: TwoStatePreference

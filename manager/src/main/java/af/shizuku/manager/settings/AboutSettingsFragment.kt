@@ -34,6 +34,8 @@ class AboutSettingsFragment : BaseSettingsFragment() {
         private const val RELEASES_URL = "https://github.com/thejaustin/ShizukuPlus/releases"
     }
 
+    override fun getTitle(): CharSequence? = getString(R.string.settings_about)
+
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_about, rootKey)
         val context = requireContext()

@@ -16,6 +16,8 @@ import af.shizuku.manager.utils.CustomTabsHelper
 
 class DeveloperOptionsFragment : BaseSettingsFragment() {
 
+    override fun getTitle(): CharSequence? = getString(R.string.settings_developer_options)
+
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_developer_options, rootKey)
 
