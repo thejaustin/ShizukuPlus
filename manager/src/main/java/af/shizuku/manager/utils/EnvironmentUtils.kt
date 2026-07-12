@@ -32,26 +32,35 @@ object EnvironmentUtils {
         return (getAdbTcpPort() <= 0 || !ShizukuSettings.getTcpMode())
     }
 
+    // Warm up the root check eagerly on a daemon background thread the moment this
+    // class is first accessed. By the time any UI code calls isRooted() the result
+    // is almost always already available. If it isn't, we return false immediately
+    // rather than blocking — an ANR-free false-negative is far better than a 500 ms
+    // main-thread stall (the old Future.get() approach that caused SHIZUKUPLUS-45).
     @Volatile
     private var isRootedCached: Boolean? = null
 
-    fun isRooted(): Boolean {
-        val cached = isRootedCached
-        if (cached != null) return cached
-
-        // Fallback synchronous check with strict short circuit to prevent ANRs on hung filesystems
-        // If it hangs, we just return false immediately
-        return try {
-            val future = java.util.concurrent.Executors.newSingleThreadExecutor().submit(java.util.concurrent.Callable {
-                checkSuExists()
-            })
-            val result = future.get(500, java.util.concurrent.TimeUnit.MILLISECONDS)
-            isRootedCached = result
-            result
-        } catch (e: Exception) {
-            false
-        }
+    init {
+        startRootCheck()
     }
+
+    /** Kick off an early root-availability check. Safe to call multiple times. */
+    fun prewarmAsync() {
+        if (isRootedCached == null) startRootCheck()
+    }
+
+    private fun startRootCheck() {
+        val t = Thread({
+            val result = try { checkSuExists() } catch (_: Exception) { false }
+            isRootedCached = result
+        }, "root-check")
+        t.isDaemon = true
+        t.start()
+    }
+
+    /** Returns the cached root-check result, or false if not yet computed.
+     *  Never blocks the calling thread. */
+    fun isRooted(): Boolean = isRootedCached ?: false
 
     private fun checkSuExists(): Boolean {
         val paths = System.getenv("PATH")?.split(":") ?: return false
