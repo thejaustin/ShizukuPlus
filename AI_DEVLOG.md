@@ -19,6 +19,12 @@ Items carried forward from previous sessions that have not yet been committed.
 
 ### CI / Infrastructure
 
+- [ ] **Broken `api` submodule pointer blocks all CI builds (found 2026-07-13)** — `master`'s `api`
+  submodule is pinned to commit `8657364fdc7ebf58072d690a978c7cc3c9bd4271`, which the
+  `ShizukuPlus-API` remote rejects (`upload-pack: not our ref`) during checkout. Every push since
+  at least `b66d2c99` has failed "Build App" for this reason, unrelated to what each of those
+  pushes actually changed. Needs the submodule pointer repinned to a commit that's actually been
+  pushed to the API repo's remote.
 - [x] **CI Speed Optimization** — Parallelized lint/build jobs and added SDK caching (~50% time cut). Done 2026-04-27.
 - [x] **Room Stability** — Downgraded to 2.6.1 (Stable) to avoid alpha-branch risks. Done 2026-04-27.
 - [x] **KSP Migration** — Fully removed KAPT from Room build path for modern/fast processing. Done 2026-04-27.
@@ -37,6 +43,23 @@ Items carried forward from previous sessions that have not yet been committed.
 - [x] **libadb.so crash fix** — `initializeStatics()` no longer rethrows `UnsatisfiedLinkError`; ADB
   pairing degrades gracefully on devices where the native lib can't load (TCL, Oppo ColorOS).
   `ShizukuApplication.isAdbNativeAvailable` flag gates entry to `AdbPairingTutorialActivity`.
+
+### Design / Theming (from 2026-07-13 theming audit — fixed items landed, rest needs visual call)
+
+- [ ] **`cornerRadiusExtraLarge` (32dp) vs. `ShapeAppearance.*.Corner.ExtraLarge` (28dp) mismatch** —
+  the base-theme corner attr never gets folded into the `ThemeOverlay.Shape.*` (shape_style)
+  system and contradicts the project's own documented M3 XL=28dp standard. Needs confirmation of
+  what actually consumes it before changing.
+- [ ] **Corner-radius literals inconsistent across flat cards** (16dp/24dp/28dp scattered as raw
+  values instead of shape-appearance tokens) — some may be intentional (compact banners vs.
+  primary cards), needs a visual pass, not a blind homogenization.
+- [ ] **Dead theming resources**: `card_corner_radius_large` dimen (32dp, zero references),
+  `textColorOnSurfaceHighEmphasis`/`textColorOnSurfaceMediumEmphasis` attrs (declared + assigned
+  in both base themes, zero usages anywhere) — safe to delete, just not done this session to keep
+  the diff focused on visual fixes.
+- [ ] **`shape_edit_control_background.xml` uses `colorSurfaceContainerHighest`**, which
+  `ThemeOverlay.Black` (AMOLED) doesn't remap (only `Low`/`High` are, since those are the only
+  tokens real cards use) — minor, only visible on the home-card edit-mode drag/remove chip.
 
 ### Crash Fixes (from Gemini ADB session 2026-04-27 — fixes applied, not yet on-device verified)
 
@@ -85,6 +108,27 @@ Things discussed or sketched that we never formally decided to build.
 ---
 
 ## Session History (newest first)
+
+### 2026-07-13 — Claude Code (Sonnet 5) [PRoot ShizukuPlus]
+
+**Commits:** `f29188e0`, `e8979dd1`
+
+**Done (user request: "fix every design issue in the app by reviewing how we theme everything"):**
+- **Audited** `values/{colors,themes,themes_overlay,styles,dimens,attrs}.xml`, `values-night/*`, and all 12 layout files using `cardElevation`/`cardBackgroundColor`, against the project's own documented tonal-ladder rule (material3-xml-theming skill: flat cards need `colorSurfaceContainerHigh`+, `Low` is the *Elevated Card* token).
+- **Fixed flat-card token bug** (`f29188e0`) — 7 card instances across `activity_service_doctor.xml`, `activity_root_compatibility.xml` (x2), and the shared `DialogCard` style (used by 6 tutorial-dialog cards in `adb_pairing_tutorial_activity.xml`/`terminal_tutorial_activity.xml`) plus 3 more in `page_onboarding_setup.xml` were wired to `colorSurfaceContainerLow` on 0dp-elevation/0dp-stroke cards, causing them to visually blend into the page background. Sibling flat cards (`home_item_container.xml`, `swipe_hint_overlay.xml`, `layout_settings_search_header.xml`) already used the correct `High` token — standardized all of them.
+- **Fixed onboarding hardcoded-color drift** (`e8979dd1`) — `page_onboarding_gestures.xml` had `backgroundTint="#FF9800"`/`"#E53935"` instead of referencing the existing `@color/status_starting` (identical value) / `@color/status_error` (`#F44336` — a near-miss of the `#E53935` used here) tokens.
+- **Deliberately deferred** (lower confidence / needs visual verification, not fixed this session):
+  - `cornerRadiusExtraLarge` theme attr is hardcoded to 32dp (`m3e_spacing_extra_large`) at the base theme level and never gets folded into the `ThemeOverlay.Shape.*` (Modern/Classic/Squircle) system — the shape_style setting's own comment documents the M3 standard as XL=28dp, and `ShapeAppearance.Modern.Corner.ExtraLarge` is 28dp, so there's an internal 32dp-vs-28dp mismatch. Also appears unused in Kotlin (only consumed by whatever framework/library reads it via XML attr resolution) — needs confirmation of what actually renders with it before changing.
+  - Corner radius literals are inconsistent across flat cards (16dp/24dp/28dp scattered as raw values instead of shape-appearance tokens) — some may be intentional (compact info banners vs. primary content cards), needs visual call.
+  - `card_corner_radius_large` (32dp dimen) is defined but has zero references anywhere — dead resource.
+  - `textColorOnSurfaceHighEmphasis`/`textColorOnSurfaceMediumEmphasis` custom attrs are declared and assigned hardcoded ARGB literals in both base themes but have zero usages anywhere in res/ or java/ — dead theming plumbing, duplicates M3's own `colorOnSurface`/`colorOnSurfaceVariant`.
+  - `shape_edit_control_background.xml` (home-card edit-mode drag handle/remove button chip) uses `colorSurfaceContainerHighest`, which `ThemeOverlay.Black` (AMOLED) does not remap (only `Low`/`High` are remapped, since those are the only tokens actually used by real cards) — minor, only visible in edit mode.
+- **Verified**: all 21 `pre-push-guard` static checks pass (XML well-formed, implicit style parents resolve, no unresolved colorPrimary, etc.); no local Android SDK available to compile, so pushed to let CI verify.
+- **Pre-existing, unrelated CI break found while checking the push**: "Build App" has been failing on `master` for at least 3 pushes before this session's (`b66d2c99`, the haptics commit, and this one) — the `api` submodule pointer is pinned to commit `8657364fdc7ebf58072d690a978c7cc3c9bd4271`, which the `ShizukuPlus-API` remote rejects with `upload-pack: not our ref` during CI checkout. Not caused by this session; flagged for the user, not fixed (out of scope for a theming pass, needs the submodule pointer corrected to a commit that's actually pushed to the API repo).
+
+**Left open:** shape-scale/corner-radius audit (needs visual/on-device confirmation), dead theme-attr cleanup, broken `api` submodule pointer blocking all CI builds.
+
+---
 
 ### 2026-07-04 (cont'd 3) — Claude Code (Sonnet 5) [PRoot ShizukuPlus, d66b3105]
 
