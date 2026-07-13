@@ -45,7 +45,7 @@
                 android:layout_height="48dp"
                 android:src="@drawable/ic_server_ok_24"
                 android:background="@drawable/hint_icon_bg_green"
-                android:backgroundTint="#FF9800"
+                android:backgroundTint="@color/status_starting"
                 android:padding="10dp"
                 android:contentDescription="@null" />
 
@@ -71,7 +71,7 @@
                 android:layout_height="48dp"
                 android:src="@drawable/ic_close_24"
                 android:background="@drawable/hint_icon_bg_green"
-                android:backgroundTint="#E53935"
+                android:backgroundTint="@color/status_error"
                 android:padding="10dp"
                 android:contentDescription="@null" />
 
