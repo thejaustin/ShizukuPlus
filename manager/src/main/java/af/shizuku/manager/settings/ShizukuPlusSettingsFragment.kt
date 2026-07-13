@@ -326,14 +326,12 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                         // parent+child snapshot (disabling a parent force-unchecks children).
                         updatePlusFeatureDependency(prefKey, true)
                         ShizukuSettings.syncAllPlusFeaturesToServer()
-                        findPreference<Preference>("plus_status_dashboard")?.let { it.isVisible = false; it.isVisible = true }
                     }
                     false // Handle manually after dialog
                 } else {
                     preferenceManager.sharedPreferences?.edit()?.putBoolean(prefKey, enabled)?.apply()
                     updatePlusFeatureDependency(prefKey, enabled)
                     ShizukuSettings.syncAllPlusFeaturesToServer()
-                    findPreference<Preference>("plus_status_dashboard")?.let { it.isVisible = false; it.isVisible = true }
                     true
                 }
             }
@@ -361,7 +359,6 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                         activity?.runOnUiThread {
                             findPreference<TwoStatePreference>("ai_core_plus_enabled")?.isChecked = true
                             updatePlusFeatureDependency("ai_core_plus_enabled", true)
-                            findPreference<Preference>("plus_status_dashboard")?.let { it.isVisible = false; it.isVisible = true }
                         }
                     }, { _ -> /* Ignore or show toast */ })
                     return@setOnPreferenceChangeListener false
@@ -374,7 +371,6 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
             // (not on ai_core_plus), so they must be false in prefs before the sync runs.
             updatePlusFeatureDependency("ai_core_plus_enabled", enabled)
             ShizukuSettings.syncAllPlusFeaturesToServer()
-            findPreference<Preference>("plus_status_dashboard")?.let { it.isVisible = false; it.isVisible = true }
             true
         }
 

@@ -2,9 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <af.shizuku.manager.settings.PlusStatusDashboardPreference
-        android:key="plus_status_dashboard" />
-
     <af.shizuku.manager.settings.DiagnosticsDashboardPreference
         android:key="diagnostics_dashboard" />
 
