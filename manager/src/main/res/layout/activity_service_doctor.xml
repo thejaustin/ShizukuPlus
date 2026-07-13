@@ -28,7 +28,7 @@
             app:cardCornerRadius="28dp"
             app:strokeWidth="0dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="?colorSurfaceContainerLow">
+            app:cardBackgroundColor="?colorSurfaceContainerHigh">
 
             <LinearLayout
                 android:layout_width="match_parent"

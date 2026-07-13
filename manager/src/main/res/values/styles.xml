@@ -92,7 +92,7 @@
         <item name="android:clipToPadding">false</item>
         <item name="cardCornerRadius">@dimen/m3e_spacing_large</item>
         <item name="contentPadding">@dimen/card_content_padding</item>
-        <item name="cardBackgroundColor">?colorSurfaceContainerLow</item>
+        <item name="cardBackgroundColor">?colorSurfaceContainerHigh</item>
         <item name="cardElevation">0dp</item>
     </style>
 
