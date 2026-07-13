@@ -19,12 +19,15 @@ Items carried forward from previous sessions that have not yet been committed.
 
 ### CI / Infrastructure
 
-- [ ] **Broken `api` submodule pointer blocks all CI builds (found 2026-07-13)** — `master`'s `api`
-  submodule is pinned to commit `8657364fdc7ebf58072d690a978c7cc3c9bd4271`, which the
-  `ShizukuPlus-API` remote rejects (`upload-pack: not our ref`) during checkout. Every push since
-  at least `b66d2c99` has failed "Build App" for this reason, unrelated to what each of those
-  pushes actually changed. Needs the submodule pointer repinned to a commit that's actually been
-  pushed to the API repo's remote.
+- [x] **Broken `api` submodule pointer blocked all CI builds (found 2026-07-13)** — `master`'s `api`
+  submodule was pinned to commit `8657364fdc7ebf58072d690a978c7cc3c9bd4271`, which the
+  `ShizukuPlus-API` remote rejected (`upload-pack: not our ref`) during checkout. Repinned to
+  `d40bc88c` (actual `origin/master` HEAD). Done 2026-07-13, `f20d8c8a`.
+- [x] **Missing `android.os.Build` import broke release/debug compile (found 2026-07-13)** —
+  surfaced only once the submodule fix above let CI reach actual compilation.
+  `BiometricLock.kt:42` (added by `e25440f2`, pre-existing before this session) referenced
+  `Build.VERSION.SDK_INT`/`Build.VERSION_CODES.R` with no import. Fixed 2026-07-13, `17b0a727`.
+  **`Build App` confirmed green on master afterward** (run `29276207625`).
 - [x] **CI Speed Optimization** — Parallelized lint/build jobs and added SDK caching (~50% time cut). Done 2026-04-27.
 - [x] **Room Stability** — Downgraded to 2.6.1 (Stable) to avoid alpha-branch risks. Done 2026-04-27.
 - [x] **KSP Migration** — Fully removed KAPT from Room build path for modern/fast processing. Done 2026-04-27.
@@ -44,22 +47,29 @@ Items carried forward from previous sessions that have not yet been committed.
   pairing degrades gracefully on devices where the native lib can't load (TCL, Oppo ColorOS).
   `ShizukuApplication.isAdbNativeAvailable` flag gates entry to `AdbPairingTutorialActivity`.
 
-### Design / Theming (from 2026-07-13 theming audit — fixed items landed, rest needs visual call)
+### Design / Theming (from 2026-07-13 theming audit)
 
-- [ ] **`cornerRadiusExtraLarge` (32dp) vs. `ShapeAppearance.*.Corner.ExtraLarge` (28dp) mismatch** —
-  the base-theme corner attr never gets folded into the `ThemeOverlay.Shape.*` (shape_style)
-  system and contradicts the project's own documented M3 XL=28dp standard. Needs confirmation of
-  what actually consumes it before changing.
-- [ ] **Corner-radius literals inconsistent across flat cards** (16dp/24dp/28dp scattered as raw
-  values instead of shape-appearance tokens) — some may be intentional (compact banners vs.
-  primary cards), needs a visual pass, not a blind homogenization.
-- [ ] **Dead theming resources**: `card_corner_radius_large` dimen (32dp, zero references),
-  `textColorOnSurfaceHighEmphasis`/`textColorOnSurfaceMediumEmphasis` attrs (declared + assigned
-  in both base themes, zero usages anywhere) — safe to delete, just not done this session to keep
-  the diff focused on visual fixes.
-- [ ] **`shape_edit_control_background.xml` uses `colorSurfaceContainerHighest`**, which
-  `ThemeOverlay.Black` (AMOLED) doesn't remap (only `Low`/`High` are, since those are the only
-  tokens real cards use) — minor, only visible on the home-card edit-mode drag/remove chip.
+- [x] **Dead theming resources removed** (`0ffc9b34`, 2026-07-13): `cornerRadiusExtraLarge` custom
+  attr (was a red herring vs. the real `ShapeAppearance.*.Corner.ExtraLarge` tokens - it was never
+  consumed anywhere, not the same attr, so there was no actual 32-vs-28dp conflict once traced
+  through), `textColorOnSurfaceHighEmphasis`/`textColorOnSurfaceMediumEmphasis`,
+  `card_corner_radius_large` dimen.
+- [ ] **Every card in the app hardcodes `app:cardCornerRadius` (16/24/28dp)** instead of
+  `app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"` etc. - `cardCornerRadius`
+  unconditionally overrides `shapeAppearanceOverlay` on `MaterialCardView`, so the user-facing
+  Modern/Classic/Squircle shape_style setting currently does nothing for any card in the app,
+  including the home screen. Investigated 2026-07-13: correct fix in principle, but the base
+  `Theme.Material3Expressive.*.Shizuku` theme lives in an external AAR I can't inspect, and I
+  can't confirm it defines a default for `shapeAppearanceCornerExtraLarge` - an unresolved theme
+  attr on `shapeAppearanceOverlay` risks an inflate-time crash, not just a wrong color, across the
+  app's most-used screens. **Needs on-device confirmation of the base theme's default corner
+  values before attempting**, or a build-capable session that can just try it and look.
+- [x] **`shape_edit_control_background.xml`'s `colorSurfaceContainerHighest` AMOLED remap** —
+  investigated 2026-07-13, decided against it: `ThemeOverlay.Black` already remaps
+  `colorSurfaceContainerHigh → ?colorSurfaceContainer`, so mapping
+  `colorSurfaceContainerHighest → ?colorSurfaceContainerHigh` would resolve through that same
+  override and collapse both tokens to the same color, making the home-card edit-mode drag/remove
+  chip invisible against its own card. Left unmapped on purpose.
 
 ### Crash Fixes (from Gemini ADB session 2026-04-27 — fixes applied, not yet on-device verified)
 
@@ -126,7 +136,22 @@ Things discussed or sketched that we never formally decided to build.
 - **Verified**: all 21 `pre-push-guard` static checks pass (XML well-formed, implicit style parents resolve, no unresolved colorPrimary, etc.); no local Android SDK available to compile, so pushed to let CI verify.
 - **Pre-existing, unrelated CI break found while checking the push**: "Build App" has been failing on `master` for at least 3 pushes before this session's (`b66d2c99`, the haptics commit, and this one) — the `api` submodule pointer is pinned to commit `8657364fdc7ebf58072d690a978c7cc3c9bd4271`, which the `ShizukuPlus-API` remote rejects with `upload-pack: not our ref` during CI checkout. Not caused by this session; flagged for the user, not fixed (out of scope for a theming pass, needs the submodule pointer corrected to a commit that's actually pushed to the API repo).
 
-**Left open:** shape-scale/corner-radius audit (needs visual/on-device confirmation), dead theme-attr cleanup, broken `api` submodule pointer blocking all CI builds.
+**Left open:** shape-scale/corner-radius audit (needs visual/on-device confirmation).
+
+---
+
+### 2026-07-13 (cont'd) — Claude Code (Sonnet 5) [PRoot ShizukuPlus]
+
+**Commits:** `f20d8c8a`, `0ffc9b34`, `ff14b386`, `17b0a727`
+
+**Done (user: "fix all the things mentioned now" + "also remove Active Enhancements Dashboard visual from Feature Hub settings"):**
+- **Fixed the broken `api` submodule CI pointer** (`f20d8c8a`) — repinned from the unreachable `8657364f...` to `d40bc88c`, the API repo's actual `origin/master` HEAD. Confirmed via `git ls-remote`/`git fetch` in the submodule directly (the broken SHA isn't fetchable from anywhere, not even by hash).
+- **Removed dead theming resources** (`0ffc9b34`) — `cornerRadiusExtraLarge` custom attr (declared + assigned in both base themes + its own `declare-styleable`, zero consumers anywhere in the repo, not just `manager`), `textColorOnSurfaceHighEmphasis`/`textColorOnSurfaceMediumEmphasis` (same story, duplicated M3's own `colorOnSurface`/`colorOnSurfaceVariant` without ever being read), `card_corner_radius_large` dimen (defined, zero references).
+- **Investigated completing the AMOLED remap for `colorSurfaceContainerHighest`** (used by `shape_edit_control_background.xml`, the home-card edit-mode drag/remove chip) — attempted `colorSurfaceContainerHighest → ?colorSurfaceContainerHigh`, then caught before committing that `?colorSurfaceContainerHigh` resolves through `ThemeOverlay.Black`'s *own* override (already remapped to `?colorSurfaceContainer` a few lines up), so Highest and High would collapse to the same color — the edit-mode chip would become invisible against its own card. Reverted; left unmapped. Worth remembering generally: theme-attr overlay chaining resolves against the fully merged theme, not against sibling items' pre-overlay values.
+- **Investigated wiring the dead `shape_style` setting up for cards** — every card in the app sets a literal `app:cardCornerRadius` (16/24/28dp) instead of `app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"` etc., and `cardCornerRadius` unconditionally overrides/ignores `shapeAppearanceOverlay` on `MaterialCardView` — meaning the user-facing Modern/Classic/Squircle shape_style setting (in `ThemeOverlay.Shape.*`) currently does nothing for any card in the app, including the home screen. Correct fix in principle, but the base `Theme.Material3Expressive.*.Shizuku` theme lives in an external AAR (not in this repo, generated by `dev.rikka.tools.materialthemebuilder` + `rikkax.material`) and I can't confirm it actually defines a default for `shapeAppearanceCornerExtraLarge` — an unresolved theme attr on `shapeAppearanceOverlay` risks an inflate-time crash (not just a wrong color) across the app's most-used screens. Given the AMOLED near-miss above, didn't risk it blind. **Needs on-device confirmation of the base theme's default corner values before attempting.**
+- **Removed "Active Enhancements Dashboard" from Feature Hub settings** (`ff14b386`, user request) — deleted `PlusStatusDashboardPreference.kt`, `layout_plus_status_dashboard.xml`, its `settings_shizuku_plus.xml` entry, and the 4 dead `findPreference("plus_status_dashboard")` visibility-toggle refresh calls in `ShizukuPlusSettingsFragment.kt` that existed solely to force it to rebind. Left `shape_node_active`/`shape_node_inactive`/`shape_status_indicator` drawables in place — still shared with `HomeLayoutSimulatorPreference`. This was one of the two "status/diagnostics dashboards" explicitly kept during the 2026-07-04 flowchart-preference cleanup (`8d3dbe69`); user has now decided to remove it too.
+- **Found and fixed a second pre-existing CI break** (`17b0a727`) — once the submodule fix let CI get past checkout and into actual compilation, `BiometricLock.kt:42` failed with "Unresolved reference 'Build'" in both debug and release Kotlin compile tasks. `e25440f2` (pushed before this session, part of the upstream commits rebased onto earlier today) added a `Build.VERSION.SDK_INT < Build.VERSION_CODES.R` guard without `import android.os.Build`. Pre-existing, not introduced by any change in this session; fixed with the one-line import.
+- **Verified: `Build App` CI is green on master** (run `29276207625`, 9m22s) — first successful build in at least 4 pushes. Confirmed via a polling loop rather than guessing from local static checks alone.
 
 ---
 
