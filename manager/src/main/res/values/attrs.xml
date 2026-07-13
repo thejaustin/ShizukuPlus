@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <attr name="appColorPrimary" format="reference" />
-    <attr name="textColorOnSurfaceHighEmphasis" format="color|reference" />
-    <attr name="textColorOnSurfaceMediumEmphasis" format="color|reference" />
-    <attr name="cornerRadiusExtraLarge" format="reference|dimension" />
 
     <!-- EmptyStateView custom attributes -->
     <attr name="emptyIcon" format="reference" />
     <attr name="emptyTitle" format="reference" />
     <attr name="emptyDescription" format="reference" />
     <attr name="emptyActionText" format="reference" />
-
-    <declare-styleable name="AppTheme">
-        <attr name="cornerRadiusExtraLarge" />
-    </declare-styleable>
 
     <declare-styleable name="EmptyStateView">
         <attr name="emptyIcon" />

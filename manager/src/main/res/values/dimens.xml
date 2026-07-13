@@ -15,7 +15,6 @@
     <dimen name="home_icon_padding">16dp</dimen>
 
     <dimen name="card_corner_radius">28dp</dimen>
-    <dimen name="card_corner_radius_large">32dp</dimen>
     <dimen name="card_content_padding">16dp</dimen>
 
     <dimen name="m3e_spacing_small">8dp</dimen>
