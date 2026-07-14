@@ -13,6 +13,15 @@
              M3ECardItemDecoration) - dial it down one tone step so AMOLED cards stay close to
              true black instead of inheriting the base theme's full-contrast High tone. -->
         <item name="colorSurfaceContainerHigh">?colorSurfaceContainer</item>
+        <!-- shape_edit_control_background.xml (home-card edit-mode drag/remove chip) uses
+             Highest - same one-step-down treatment. This resolves through the High remap above
+             (Android's ?attr resolution is against the fully merged theme, not each item's
+             pre-overlay value), so Highest ties with High/Container here, same as Low already
+             ties with Lowest above. That's fine for this chip specifically: both icons inside it
+             (ic_drag_handle, ic_close_24) are tinted independently via colorControlNormal/
+             colorError, not derived from this background, so they stay visible even if the
+             chip's own background blends into the card behind it. -->
+        <item name="colorSurfaceContainerHighest">?colorSurfaceContainerHigh</item>
     </style>
 
     <style name="ThemeOverlay.DynamicColors.Light" parent="ThemeOverlay.Material3.DynamicColors.Light.Shizuku"/>
