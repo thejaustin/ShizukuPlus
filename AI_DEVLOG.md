@@ -62,14 +62,18 @@ Items carried forward from previous sessions that have not yet been committed.
   `Theme.Material3Expressive.*.Shizuku` theme lives in an external AAR I can't inspect, and I
   can't confirm it defines a default for `shapeAppearanceCornerExtraLarge` - an unresolved theme
   attr on `shapeAppearanceOverlay` risks an inflate-time crash, not just a wrong color, across the
-  app's most-used screens. **Needs on-device confirmation of the base theme's default corner
-  values before attempting**, or a build-capable session that can just try it and look.
-- [x] **`shape_edit_control_background.xml`'s `colorSurfaceContainerHighest` AMOLED remap** —
-  investigated 2026-07-13, decided against it: `ThemeOverlay.Black` already remaps
-  `colorSurfaceContainerHigh → ?colorSurfaceContainer`, so mapping
-  `colorSurfaceContainerHighest → ?colorSurfaceContainerHigh` would resolve through that same
-  override and collapse both tokens to the same color, making the home-card edit-mode drag/remove
-  chip invisible against its own card. Left unmapped on purpose.
+  app's most-used screens. **Needs on-device/build-capable confirmation before attempting** -
+  filed as [issue #333](https://github.com/thejaustin/ShizukuPlus/issues/333) rather than guessed
+  at blind.
+- [x] **`shape_edit_control_background.xml`'s `colorSurfaceContainerHighest` AMOLED remap** — done
+  2026-07-13 (`1a637ece`). First pass wrongly assumed chaining `Highest → ?colorSurfaceContainerHigh`
+  would make the edit-mode chip invisible against its own card (both resolve to the same color
+  under `ThemeOverlay.Black`, since `?attr` resolution is against the fully merged theme, not each
+  item's pre-overlay value). On closer look this is fine and consistent with the existing pattern
+  (Low already ties with Lowest the same way): the two icons actually inside that chip
+  (`ic_drag_handle`, `ic_close_24`) are tinted independently via `colorControlNormal`/`colorError`,
+  not derived from the chip's own background, so they stay visible regardless of whether the
+  chip's background ties with its parent card's tone. Completed the remap.
 
 ### Crash Fixes (from Gemini ADB session 2026-04-27 — fixes applied, not yet on-device verified)
 
@@ -137,6 +141,16 @@ Things discussed or sketched that we never formally decided to build.
 - **Pre-existing, unrelated CI break found while checking the push**: "Build App" has been failing on `master` for at least 3 pushes before this session's (`b66d2c99`, the haptics commit, and this one) — the `api` submodule pointer is pinned to commit `8657364fdc7ebf58072d690a978c7cc3c9bd4271`, which the `ShizukuPlus-API` remote rejects with `upload-pack: not our ref` during CI checkout. Not caused by this session; flagged for the user, not fixed (out of scope for a theming pass, needs the submodule pointer corrected to a commit that's actually pushed to the API repo).
 
 **Left open:** shape-scale/corner-radius audit (needs visual/on-device confirmation).
+
+---
+
+### 2026-07-13 (cont'd 2) — Claude Code (Sonnet 5) [PRoot ShizukuPlus]
+
+**Commits:** `1a637ece`
+
+**Done (user: "finish the amoled remap. consider shape style setup later by creating a gh issue for it"):**
+- **Completed the `colorSurfaceContainerHighest` AMOLED remap** (`1a637ece`) — reversed the earlier decision to leave it unmapped. Re-examined `shape_edit_control_background.xml`'s actual consumers (`home_item_container.xml`'s drag-handle/remove-button chip): both icons inside it are tinted independently (`colorControlNormal`, `colorError`), not derived from the chip's own background color, so the "chip background ties with parent card" collision I was worried about doesn't actually make anything invisible - it's cosmetically identical to the Low/Lowest tie the codebase already has and accepts. Completed the remap.
+- **Filed [issue #333](https://github.com/thejaustin/ShizukuPlus/issues/333)** for the dead `shape_style` setting (every card hardcodes `cardCornerRadius`, overriding `shapeAppearanceOverlay`, so Modern/Classic/Squircle does nothing) instead of guessing at the fix blind - labeled `module: theme`, `module: design`, `type: technical-debt`, with the full root-cause writeup and a suggested verification-first approach for a build-capable session.
 
 ---
 
