@@ -54,6 +54,15 @@ class DhizukuProvider : ContentProvider() {
     private inner class DhizukuV2Binder : Binder() {
         override fun getInterfaceDescriptor(): String = "com.rosan.dhizuku.aidl.IDhizuku"
 
+        // Mirrors DhizukuV1Binder's authorization gate above - the caller must either be
+        // this app itself or a package the user has explicitly granted via AuthorizationManager.
+        private fun isCallerAuthorized(): Boolean {
+            val callingUid = Binder.getCallingUid()
+            if (callingUid == android.os.Process.myUid()) return true
+            val pkgName = context?.packageManager?.getPackagesForUid(callingUid)?.firstOrNull() ?: ""
+            return af.shizuku.manager.authorization.AuthorizationManager.granted(pkgName, callingUid)
+        }
+
         override fun onTransact(code: Int, data: android.os.Parcel, reply: android.os.Parcel?, flags: Int): Boolean {
             if (!ShizukuSettings.isDhizukuModeEnabled()) return false
 
@@ -75,22 +84,19 @@ class DhizukuProvider : ContentProvider() {
                     }
                     FIRST_CALL_TRANSACTION + 1 -> { // getBinder
                         reply?.writeNoException()
-                        val binder = try {
-                            ServiceManager.getService(Context.DEVICE_POLICY_SERVICE)
-                        } catch (e: Exception) {
-                            null
-                        }
+                        val binder = if (isCallerAuthorized() && ShizukuStateMachine.isRunning()) {
+                            try {
+                                ServiceManager.getService(Context.DEVICE_POLICY_SERVICE)
+                            } catch (e: Exception) {
+                                null
+                            }
+                        } else null
                         reply?.writeStrongBinder(binder)
                         return true
                     }
                     FIRST_CALL_TRANSACTION + 2 -> { // isPermissionGranted
                         reply?.writeNoException()
-                        val callingUid = Binder.getCallingUid()
-                        val granted = if (callingUid == android.os.Process.myUid()) true else {
-                            val pkgName = context?.packageManager?.getPackagesForUid(callingUid)?.firstOrNull() ?: ""
-                            af.shizuku.manager.authorization.AuthorizationManager.granted(pkgName, callingUid)
-                        }
-                        reply?.writeInt(if (granted) 1 else 0)
+                        reply?.writeInt(if (isCallerAuthorized()) 1 else 0)
                         return true
                     }
                     FIRST_CALL_TRANSACTION + 3 -> { // transact
