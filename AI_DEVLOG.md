@@ -123,6 +123,44 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-07-14/15 — Claude Code (Sonnet 5) [session run in parallel with a review pass, devlog not updated at the time]
+
+**Commits:** `234f0be3`, `6394bac1`
+
+**Done:**
+- **Dhizuku V1/V2 binder authorization gap** (`234f0be3`, issue #326-adjacent) — `b66d2c99` had
+  fixed `DhizukuV2Binder.getBinder()` to return the real `DEVICE_POLICY_SERVICE` binder instead of
+  a version string, which made the transaction live for the first time — and exposed that V2's
+  `getBinder()` never had the `AuthorizationManager.granted()` check that `DhizukuV1Binder.getBinder()`
+  has always had. Since `DhizukuProvider` is `android:exported="true"` with no manifest permission
+  and Dhizuku mode is a single global toggle (not per-app), any installed app could get the raw
+  DevicePolicyManager binder without authorization once Dhizuku mode was on. Fixed by mirroring
+  V1's gate onto V2. **No shared interface enforces parity between the two hand-implemented binder
+  classes — worth periodically re-auditing.**
+- **Compat Hub self-overwrite + permission-group collision** (`6394bac1`) — audited every
+  open/closed issue mentioning Compat Hub (#334, #316, #314, #327, #326, #249, #206, #243, #242,
+  #209) and found two real bugs sharing a root cause: the `dropin` flavor's own applicationId IS
+  `moe.shizuku.privileged.api`, same as the `compat/` module's shim. (1)
+  `StockShizukuCompat.isCompatAppInstalled()` had no self-exclusion check (unlike
+  `isInstalled()`/`isOriginalRunning()` in the same file), so a dropin build inspected its own
+  version, reported the hub "not installed," and its "Install Compat Hub" card's `pm install -r`
+  would silently overwrite the running dropin app with the 2-class forwarding stub — matches
+  HyperCriSiS's live report on #334. Fixed with self-exclusion plus a hard-stop guard in the
+  install click handler. (2) `<permission-group>` was a hardcoded literal shared by both flavors'
+  manifests, so installing Plus + Dropin side by side failed with error -126 (#316) — scoped to
+  `${applicationId}`. Left `af.shizuku.plus.permission.API_V23` itself un-scoped since it's
+  hardcoded into the client-facing `ShizukuProvider.PERMISSION` constant third-party apps compile
+  against.
+- **CI verified green on both pushes** (`29382328766`, `29388259054`).
+
+**Left open:** issues #326, #334, #316 are fixed in code but still open on GitHub — need a
+comment + close pass. A parallel Sentry/Linear audit (separate session, same window) found several
+other unresolved Sentry crash clusters that look plausibly fixed by already-landed code (stale
+clients, not live bugs) but weren't verified deeply enough to resolve — see that session's notes
+before assuming any of them are safe to close.
+
+---
+
 ### 2026-07-13 — Claude Code (Sonnet 5) [PRoot ShizukuPlus]
 
 **Commits:** `f29188e0`, `e8979dd1`
