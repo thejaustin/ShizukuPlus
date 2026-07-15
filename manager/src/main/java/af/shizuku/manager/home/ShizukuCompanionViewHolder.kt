@@ -94,6 +94,14 @@ class ShizukuCompanionViewHolder(
                         homeModel.reload()
                     }
                 }
+            } else if (v.context.packageName == StockShizukuCompat.PACKAGE) {
+                // The dropin flavor's own applicationId IS StockShizukuCompat.PACKAGE, and the compat
+                // shim APK targets that same package with the same signing key — installing it here
+                // would silently pm-install the shim stub over this running app (#334). HomeAdapter
+                // shouldn't route dropin builds into this branch (isCompatAppInstalled() now treats
+                // self as already occupying the role), but this is the hard stop that actually
+                // prevents the destructive install regardless of how this click was reached.
+                Toast.makeText(v.context, R.string.compat_hub_install_fail, Toast.LENGTH_SHORT).show()
             } else {
                 // Must be on external storage, not the app's private cache/files dir: `pm install`
                 // runs via a shell process spawned by Shizuku.newProcess (UID 2000) or root, neither

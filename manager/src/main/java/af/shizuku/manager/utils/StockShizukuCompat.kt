@@ -24,6 +24,12 @@ object StockShizukuCompat {
     }
 
     fun isCompatAppInstalled(context: Context): Boolean {
+        // Same self-detection problem as isInstalled(): the dropin flavor's own applicationId IS
+        // PACKAGE, so without this check we'd inspect our own versionName (never "compat") and
+        // report the hub as "not installed" on a dropin build. That surfaced an "Install Compat
+        // Hub" card whose action pm-installs the shim stub directly over this running app - same
+        // package + same signing key means a silent overwrite of the working Drop-In install (#334).
+        if (context.packageName == PACKAGE) return true
         return try {
             val info = context.packageManager.getPackageInfo(PACKAGE, 0)
             info.versionName?.contains("compat") == true

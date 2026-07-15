@@ -30,8 +30,13 @@
         android:name="android.hardware.touchscreen"
         android:required="false" />
 
+    <!-- ${applicationId}-scoped: Plus and Dropin flavors share this manifest but have different
+         applicationIds, and a permission-group name is not allowed to be redeclared by a second
+         package - installing both side by side used to fail with error -126 ("attempting to
+         redeclare permission group... already owned by...") (#316). Unlike the permission below,
+         nothing outside this manifest references the group name by string, so scoping it is safe. -->
     <permission-group
-        android:name="af.shizuku.plus.permission-group.API"
+        android:name="${applicationId}.permission-group.API"
         android:description="@string/permission_group_description"
         android:icon="@drawable/ic_system_icon"
         android:label="@string/permission_group_label" />
@@ -41,12 +46,15 @@
         android:protectionLevel="signature" />
     <uses-permission android:name="af.shizuku.plus.permission.MANAGER" />
 
+    <!-- NOT flavor-scoped: this permission name is baked in as a literal constant in the
+         client-facing api/provider library (ShizukuProvider.PERMISSION) that third-party apps
+         compile against, so it must stay stable across flavors. -->
     <permission
         android:name="af.shizuku.plus.permission.API_V23"
         android:description="@string/permission_description"
         android:icon="@drawable/ic_system_icon"
         android:label="@string/permission_label"
-        android:permissionGroup="af.shizuku.plus.permission-group.API"
+        android:permissionGroup="${applicationId}.permission-group.API"
         android:protectionLevel="dangerous" />
     
     <permission
