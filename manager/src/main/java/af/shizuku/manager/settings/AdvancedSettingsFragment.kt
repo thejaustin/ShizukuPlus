@@ -111,7 +111,11 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        val launcherAlias = ComponentName(context, "${context.packageName}.LauncherAlias")
+        // The manifest's namespace (af.shizuku.manager) differs from the per-flavor applicationId
+        // (context.packageName), so ".LauncherAlias" must resolve against the namespace, not the
+        // package name, or ComponentName construction throws "Component class ... does not exist"
+        // (SHIZUKUPLUS-7R).
+        val launcherAlias = ComponentName(context, "af.shizuku.manager.LauncherAlias")
         findPreference<TwoStatePreference>("stealth_mode")?.apply {
             isChecked = ShizukuSettings.isStealthModeEnabled()
             setOnPreferenceChangeListener { pref, newValue ->
@@ -123,7 +127,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                             "The app icon will be removed from your launcher.\n\n" +
                             "You can still open the app from the Shizuku notification. " +
                             "Disable stealth mode via ADB to restore the icon:\n\n" +
-                            "adb shell pm enable ${context.packageName}/.LauncherAlias"
+                            "adb shell pm enable ${context.packageName}/af.shizuku.manager.LauncherAlias"
                         )
                         .setPositiveButton("Enable") { _, _ ->
                             context.packageManager.setComponentEnabled(launcherAlias, false)
