@@ -39,8 +39,14 @@ fun ServerMetricsScreen() {
                     val binder = Shizuku.getBinder()
                     val shizukuService = moe.shizuku.server.IShizukuService.Stub.asInterface(binder)
                     val ai = shizukuService.aiCorePlus
+                    if (ai == null) {
+                        // Null when connected to a stock/mismatched server that doesn't implement
+                        // the Plus AICore extension (SHIZUKUPLUS-6J) - not an error, just unavailable.
+                        delay(1000)
+                        continue
+                    }
                     val stats = ai.serverStats
-                    
+
                     val uptimeMs = stats.getLong("uptime_ms")
                     val seconds = (uptimeMs / 1000) % 60
                     val minutes = (uptimeMs / (1000 * 60)) % 60
