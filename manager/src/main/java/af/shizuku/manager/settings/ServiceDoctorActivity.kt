@@ -233,9 +233,14 @@ class ServiceDoctorActivity : AppBarActivity() {
                         try {
                             // Try to disable it via Shizuku if running
                             if (ShizukuStateMachine.isRunning()) {
-                                val p = Shizuku.newProcess(arrayOf("device_config", "put", "activity_manager", "max_phantom_processes", "2147483647"), null, null)
-                                p.waitFor()
-                                p.destroy()
+                                // serviceScope defaults to Dispatchers.Main - newProcess()/waitFor()
+                                // is a blocking IPC round-trip, so it must run off Main or it ANRs
+                                // (SHIZUKUPLUS-7H/7P).
+                                withContext(Dispatchers.IO) {
+                                    val p = Shizuku.newProcess(arrayOf("device_config", "put", "activity_manager", "max_phantom_processes", "2147483647"), null, null)
+                                    p.waitFor()
+                                    p.destroy()
+                                }
                                 withContext(Dispatchers.Main) { Toast.makeText(this@ServiceDoctorActivity, R.string.service_doctor_fix_phantom_attempted, Toast.LENGTH_SHORT).show() }
                             } else {
                                 withContext(Dispatchers.Main) { Toast.makeText(this@ServiceDoctorActivity, R.string.service_doctor_fix_requires_service, Toast.LENGTH_SHORT).show() }

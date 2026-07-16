@@ -45,8 +45,11 @@ class ShizukuCompanionViewHolder(
      * Runs [cmd] via Shizuku if available, falling back to root. Returns true on success.
      * Centralizes the Shizuku-then-root fallback so install/disable don't duplicate it.
      */
-    private suspend fun runPrivilegedCommand(cmd: String): Boolean {
-        return if (Shizuku.pingBinder()) {
+    private suspend fun runPrivilegedCommand(cmd: String): Boolean = withContext(Dispatchers.IO) {
+        // Callers launch via HomeActivity's Main-dispatched coroutine scope - process.waitFor()
+        // and Shell.exec() are both blocking IPC/subprocess waits, so without this dispatch
+        // they'd block the main thread for the duration of the command (ANR - SHIZUKUPLUS-7H/7P).
+        if (Shizuku.pingBinder()) {
             try {
                 val process = Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
                 val success = process.waitFor() == 0

@@ -187,22 +187,25 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
         log("Attempting Samsung System UID Escalation via FOTA agent...\n\n")
 
         withContext(Dispatchers.IO) {
-            val intent = android.content.Intent().apply {
-                setClassName("com.sdet.fotaagent", "com.sdet.fotaagent.Main")
-                addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            appContext.startActivity(intent)
-
-            val mIntent = android.content.Intent("com.sdet.fotaagent.intent.CP_FILE")
-            mIntent.putExtra("CP_FILE", "/data")
-            mIntent.putExtra("CP_LOC", "; " + appContext.applicationInfo.nativeLibraryDir
-                    + "/libshizuku.so" + "; am force-stop com.sdet.fotaagent")
             try {
+                val intent = android.content.Intent().apply {
+                    setClassName("com.sdet.fotaagent", "com.sdet.fotaagent.Main")
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                appContext.startActivity(intent)
+
+                val mIntent = android.content.Intent("com.sdet.fotaagent.intent.CP_FILE")
+                mIntent.putExtra("CP_FILE", "/data")
+                mIntent.putExtra("CP_LOC", "; " + appContext.applicationInfo.nativeLibraryDir
+                        + "/libshizuku.so" + "; am force-stop com.sdet.fotaagent")
                 kotlinx.coroutines.delay(1000)
                 appContext.sendBroadcast(mIntent)
                 log("FOTA command broadcast sent!\n\n")
                 log("info: shizuku_starter exit with 0")
             } catch (e: Exception) {
+                // com.sdet.fotaagent is a Samsung-specific system package this trick depends on -
+                // startActivity throws ActivityNotFoundException uncaught on devices/ROMs that
+                // don't ship it (SHIZUKUPLUS-73), even though this path is opt-in/experimental.
                 log(error = e)
                 log("Samsung System UID Escalation failed!\n")
             }
