@@ -5,7 +5,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.util.Log;
 import java.io.IOException;
-import af.shizuku.server.IRemoteProcess;
+import moe.shizuku.server.IRemoteProcess;
 
 public class ProxyRemoteProcess extends IRemoteProcess.Stub {
     private static final String TAG = "ProxyRemoteProcess";

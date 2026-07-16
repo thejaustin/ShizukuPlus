@@ -45,7 +45,7 @@ import kotlin.collections.ArraysKt;
 import af.shizuku.api.BinderContainer;
 import rikka.core.util.BuildUtils;
 import af.shizuku.common.util.OsUtils;
-import af.shizuku.server.IRemoteProcess;
+import moe.shizuku.server.IRemoteProcess;
 import af.shizuku.server.IShizukuApplication;
 import af.shizuku.server.IVirtualMachineManager;
 import af.shizuku.server.IStorageProxy;
