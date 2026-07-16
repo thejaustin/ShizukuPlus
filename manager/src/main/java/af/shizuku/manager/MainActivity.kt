@@ -55,6 +55,9 @@ class MainActivity : HomeActivity() {
             super.onStart()
             // Update state machine on app start
             ShizukuStateMachine.update()
+            // Self-heal the AICore+ accessibility service if an OEM power manager disabled it
+            // while the app was backgrounded but the user still has the feature on (#320).
+            af.shizuku.manager.automation.AICoreAccessibilityHealer.reenableIfNeeded(this)
         } catch (e: Exception) {
             Timber.e(e, "Error in onStart")
             Sentry.captureException(e)
