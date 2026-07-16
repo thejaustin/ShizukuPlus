@@ -116,6 +116,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private static final int MAX_SERVER_LOGS = 100;
     private final ShizukuConfigManager configManager;
     private final int managerAppId;
+    // uid of the OTHER manager flavor (Plus vs Drop-In), if it's also installed; -1 if not. See
+    // isManagerAppId() - both flavors are the same signed codebase, so trusting either is safe.
+    private int secondaryManagerAppId;
     private final VirtualMachineManagerImpl virtualMachineManager = new VirtualMachineManagerImpl();
     private final StorageProxyImpl storageProxy = new StorageProxyImpl();
     private final AICorePlusImpl aiCorePlus;
@@ -154,6 +157,17 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
         assert ai != null;
         managerAppId = ai.uid;
+
+        // Plus and Drop-In are the same manager codebase under two applicationIds, and a user can
+        // legitimately have both installed side by side (#316). getManagerApplicationInfo() only
+        // ever picks ONE as MANAGER_APPLICATION_ID, so if the other flavor is also installed, its
+        // clients would otherwise fail every checkCallerManagerPermission() check with "is not
+        // manager" (SHIZUKUPLUS-7C) even though it's the developer's own signed app, not a third
+        // party. Track its uid too so isManagerAppId() can trust either.
+        String otherApplicationId = ServerConstants.DROPIN_APPLICATION_ID.equals(ServerConstants.MANAGER_APPLICATION_ID)
+                ? ServerConstants.PLUS_APPLICATION_ID : ServerConstants.DROPIN_APPLICATION_ID;
+        ApplicationInfo secondaryAi = PackageManagerApis.getApplicationInfoNoThrow(otherApplicationId, 0, 0);
+        secondaryManagerAppId = secondaryAi != null ? secondaryAi.uid : -1;
 
         configManager = getConfigManager();
         clientManager = getClientManager();
@@ -215,7 +229,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     @Override
     public boolean checkCallerManagerPermission(String func, int callingUid, int callingPid) {
-        return UserHandleCompat.getAppId(callingUid) == managerAppId;
+        return isManagerAppId(UserHandleCompat.getAppId(callingUid));
+    }
+
+    private boolean isManagerAppId(int appId) {
+        return appId == managerAppId || (secondaryManagerAppId != -1 && appId == secondaryManagerAppId);
     }
 
     private int checkCallingPermission() {
@@ -237,7 +255,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     @Override
     public boolean checkCallerPermission(String func, int callingUid, int callingPid, @Nullable ClientRecord clientRecord) {
-        if (UserHandleCompat.getAppId(callingUid) == managerAppId) {
+        if (isManagerAppId(UserHandleCompat.getAppId(callingUid))) {
             return true;
         }
         if (clientRecord == null && checkCallingPermission() == PackageManager.PERMISSION_GRANTED) {
@@ -283,7 +301,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             throw new SecurityException("Request package " + requestPackageName + "does not belong to uid " + callingUid);
         }
 
-        isManager = MANAGER_APPLICATION_ID.equals(requestPackageName);
+        // Accept either manager flavor's applicationId - see secondaryManagerAppId's declaration.
+        isManager = MANAGER_APPLICATION_ID.equals(requestPackageName)
+                || ServerConstants.DROPIN_APPLICATION_ID.equals(requestPackageName)
+                || ServerConstants.PLUS_APPLICATION_ID.equals(requestPackageName);
 
         synchronized (this) {
             ClientRecord existing = clientManager.findClient(callingUid, callingPid);
@@ -383,7 +404,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         if (!isFeatureEnabled("binder_firewall")) return false;
 
         // The manager app (the owner of this service) is always allowed
-        if (UserHandleCompat.getAppId(uid) == managerAppId) return false;
+        if (isManagerAppId(UserHandleCompat.getAppId(uid))) return false;
 
         boolean isBlocked = false;
 
@@ -1445,7 +1466,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     @Override
     public void dispatchPermissionConfirmationResult(int requestUid, int requestPid, int requestCode, Bundle data) throws RemoteException {
-        if (UserHandleCompat.getAppId(Binder.getCallingUid()) != managerAppId) {
+        if (!isManagerAppId(UserHandleCompat.getAppId(Binder.getCallingUid()))) {
             LOGGER.w("dispatchPermissionConfirmationResult called not from the manager package");
             return;
         }
@@ -1548,7 +1569,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     @Override
     public int getFlagsForUid(int uid, int mask) {
-        if (UserHandleCompat.getAppId(Binder.getCallingUid()) != managerAppId) {
+        if (!isManagerAppId(UserHandleCompat.getAppId(Binder.getCallingUid()))) {
             LOGGER.w("updateFlagsForUid is allowed to be called only from the manager");
             return 0;
         }
@@ -1557,7 +1578,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     @Override
     public void updateFlagsForUid(int uid, int mask, int value) throws RemoteException {
-        if (UserHandleCompat.getAppId(Binder.getCallingUid()) != managerAppId) {
+        if (!isManagerAppId(UserHandleCompat.getAppId(Binder.getCallingUid()))) {
             LOGGER.w("updateFlagsForUid is allowed to be called only from the manager");
             return;
         }

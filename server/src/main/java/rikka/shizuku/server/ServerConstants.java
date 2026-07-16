@@ -14,6 +14,7 @@ public class ServerConstants {
     // install would otherwise never find "the manager app" and exit(MANAGER_APP_NOT_FOUND)
     // immediately. Not final so that correction can take effect everywhere this is read.
     public static String MANAGER_APPLICATION_ID = "af.shizuku.plus.api";
+    public static final String PLUS_APPLICATION_ID = "af.shizuku.plus.api";
     public static final String DROPIN_APPLICATION_ID = "moe.shizuku.privileged.api";
 
     // Computed on demand (rather than a constant) because it derives from MANAGER_APPLICATION_ID,
