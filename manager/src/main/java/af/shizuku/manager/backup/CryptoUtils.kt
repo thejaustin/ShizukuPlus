@@ -1,5 +1,6 @@
 package af.shizuku.manager.backup
 
+import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
@@ -11,11 +12,19 @@ import javax.crypto.spec.GCMParameterSpec
 
 object CryptoUtils {
 
-    private const val KEY_ALIAS = "ShizukuPlusBackupKey"
+    // The auth-required alias is versioned (_v2): keys created before the device-credential fix
+    // (#332/#315) were biometric-only, so a password/PIN-locked device could pass canAuthenticate,
+    // authenticate with its credential, yet the credential couldn't unlock the biometric-only key -
+    // surfacing as IllegalBlockSizeException("Key user not authenticated") at doFinal. Those old
+    // keys can't be "upgraded" in place, so v2 forces a fresh, device-credential-capable key for
+    // everyone. Cost: auth-protected backups made before this fix can't be restored (re-create
+    // them); acceptable since that path was largely broken on non-biometric devices anyway.
+    private const val KEY_ALIAS_AUTH = "ShizukuPlusBackupKey_v2"
+    private const val KEY_ALIAS_NO_AUTH = "ShizukuPlusBackupKey_no_auth"
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
     private const val TRANSFORMATION = "${KeyProperties.KEY_ALGORITHM_AES}/${KeyProperties.BLOCK_MODE_GCM}/${KeyProperties.ENCRYPTION_PADDING_NONE}"
 
-    private fun keyAlias(userAuthRequired: Boolean) = if (userAuthRequired) KEY_ALIAS else "${KEY_ALIAS}_no_auth"
+    private fun keyAlias(userAuthRequired: Boolean) = if (userAuthRequired) KEY_ALIAS_AUTH else KEY_ALIAS_NO_AUTH
 
     fun getOrCreateSecretKey(userAuthRequired: Boolean): SecretKey {
         val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE)
@@ -42,6 +51,18 @@ object CryptoUtils {
             
         if (userAuthRequired) {
             builder.setUserAuthenticationRequired(true)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // Accept EITHER a biometric or the device credential (PIN/pattern/password), matching
+                // what BiometricLock allows. Without this the key defaults to biometric-only, so a
+                // password-locked device with no biometric enrolled can never unlock it (#315/#332).
+                // Timeout 0 = authenticate per use, keeping the existing CryptoObject flow intact.
+                builder.setUserAuthenticationParameters(
+                    0,
+                    KeyProperties.AUTH_BIOMETRIC_STRONG or KeyProperties.AUTH_DEVICE_CREDENTIAL
+                )
+            }
+            // Pre-R keeps the legacy biometric-only CryptoObject binding (BiometricLock already
+            // forces BIOMETRIC_STRONG when a CryptoObject is passed below API 30).
         }
 
         keyGenerator.init(builder.build())
