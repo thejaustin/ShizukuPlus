@@ -29,12 +29,26 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.activity.result.contract.ActivityResultContracts
 import af.shizuku.manager.backup.BackupRestoreManager
 import af.shizuku.manager.backup.CryptoUtils
+import android.security.keystore.KeyPermanentlyInvalidatedException
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
 class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
 
     override fun getTitle(): CharSequence? = "Feature Hub"
+
+    // e.message is often null for keystore/cipher exceptions (#315's "Backup failed: null"), and
+    // KeyPermanentlyInvalidatedException needs a message explaining it's unrecoverable rather
+    // than a raw exception string (#332) - encryption self-heals from this in CryptoUtils, but
+    // decryption of an existing backup genuinely can't.
+    private fun backupErrorMessage(prefix: String, e: Exception): String = when (e) {
+        is KeyPermanentlyInvalidatedException ->
+            "$prefix: your device's screen lock or biometrics changed since this backup's " +
+                "encryption key was created, which permanently invalidates it by design. " +
+                if (prefix == "Restore failed") "This backup can no longer be decrypted."
+                else "Please try again to generate a new key."
+        else -> "$prefix: ${e.message ?: e.javaClass.simpleName}"
+    }
 
     private val createBackupLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
         if (uri == null) return@registerForActivityResult
@@ -51,7 +65,7 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                 }
                 Toast.makeText(ctx, "Backup exported successfully", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
-                Toast.makeText(ctx, "Backup failed: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(ctx, backupErrorMessage("Backup failed", e), Toast.LENGTH_LONG).show()
             }
             return@registerForActivityResult
         }
@@ -66,7 +80,7 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                     }
                     Toast.makeText(ctx, "Backup exported successfully", Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
-                    Toast.makeText(ctx, "Backup failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, backupErrorMessage("Backup failed", e), Toast.LENGTH_LONG).show()
                 }
             }, onError = { errCode ->
                 Toast.makeText(ctx, "Authentication failed ($errCode)", Toast.LENGTH_SHORT).show()
@@ -95,7 +109,7 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                     BackupRestoreManager.restoreFromPayload(ctx, payload, cipher)
                     Toast.makeText(ctx, "Backup restored successfully. Please restart the app.", Toast.LENGTH_LONG).show()
                 } catch (e: Exception) {
-                    Toast.makeText(ctx, "Restore failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, backupErrorMessage("Restore failed", e), Toast.LENGTH_LONG).show()
                 }
                 return@registerForActivityResult
             }
@@ -106,7 +120,7 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                     BackupRestoreManager.restoreFromPayload(ctx, payload, crypto?.cipher ?: cipher)
                     Toast.makeText(ctx, "Backup restored successfully. Please restart the app.", Toast.LENGTH_LONG).show()
                 } catch (e: Exception) {
-                    Toast.makeText(ctx, "Restore failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, backupErrorMessage("Restore failed", e), Toast.LENGTH_LONG).show()
                 }
             }, onError = { errCode ->
                 Toast.makeText(ctx, "Authentication failed ($errCode)", Toast.LENGTH_SHORT).show()
