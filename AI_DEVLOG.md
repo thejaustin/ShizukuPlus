@@ -123,7 +123,48 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
-### 2026-07-16 — Claude Code (Sonnet 5) [PRoot ShizukuPlus, Sentry/GitHub audit pass 2]
+### 2026-07-16 (pass 3) — Claude Code (Fable 5) [PRoot ShizukuPlus, deep-review of "still occurring" issue comments]
+
+**Commits:** `2deed39d`, `a42edcac`
+
+**Done (user request: "continue work on issues, deep review comments mentioning problems still occurring"):**
+- **AICore+ accessibility service disabled after random interval** (`2deed39d`, #320, CI-green) — two
+  root causes on Samsung/OneUI: (1) `accessibility_service_automation.xml` subscribed to
+  `typeWindowContentChanged` (highest-frequency accessibility event, device-wide) but
+  `AICorePlusService.onAccessibilityEvent` is empty and nothing (manager or server) ever consumes
+  events — it only reads `rootInActiveWindow` on demand via the binder bridge. That constant
+  cross-app wakeup is exactly the background-activity signal Samsung's watchdog uses to sleep the
+  app and disable its accessibility service. Dropped to `typeWindowStateChanged` only. (2) Added
+  `AICoreAccessibilityHealer` (called from `MainActivity.onStart`): if AICore+ is toggled on and the
+  manager holds WRITE_SECURE_SETTINGS but the service isn't in `ENABLED_ACCESSIBILITY_SERVICES`,
+  re-enable it via `Settings.Secure` (opportunistic on foreground, no background watchdog, never
+  fights a deliberate disable). Needs on-device confirmation the OEM doesn't block the re-enable.
+- **Apps not registering / "Shizuku not detected" / null service binder** (`a42edcac`, #319, CI-green)
+  — deep-reviewed the whole binder-registration path and found a THIRD distinct root cause
+  (independent of the compat-hub detection layer and the R8/CREATOR crash layer): `BinderSender`'s
+  process/uid observers recorded a pid/uid as "handled" *before* calling `sendBinder()` and ignored
+  its result. `sendBinderToUserApp()` returns false when the app's `ShizukuProvider` isn't published
+  yet (routine on the first foreground event of a launch — a startup race), and that failed push was
+  cached for the whole process lifetime, leaving the app permanently unregistered until relaunched.
+  `sendBinder()` now returns whether the pid/uid can be remembered; observers drop it on a failed
+  delivery so a later event retries (event-driven, bounded, idempotent; manager delivery unchanged,
+  keeps its own retry). See [[shizukuplus-binder-detection]].
+- **Diagnostic comments** (couldn't fix blind, asked the disambiguating questions): #319, #317
+  (Android 17 canary, apps-in-authorized-list), #335 (InstallerX `null.asBinder()` — connected to the
+  registration fixes; ruled out firewall/shadow_binder since both default off and a blocked firewall
+  call throws SecurityException, not null). #325 (AShell) already answered — third-party's own stack.
+
+**Latent bug flagged, NOT changed blind:** the Binder Firewall (`ShizukuService.isBinderCallBlocked`)
+blocks `IPackageManager` transaction codes 13/26 as "installPackage/deletePackage" via hardcoded
+heuristics the code itself admits "vary by API version." On modern Android those codes map to other
+methods (and real installs use `IPackageInstaller`, not `IPackageManager.installPackage`), so the
+firewall's package-block is both wrong and ineffective — but it's opt-in (default off), so it's not
+the cause of #335. Should resolve real codes via reflection (like the shadow-binder static block
+already does) rather than hardcode; deferred — needs a device to confirm the actual codes.
+
+---
+
+### 2026-07-16 (pass 2) — Claude Code (Sonnet 5) [PRoot ShizukuPlus, Sentry/GitHub audit pass 2]
 
 **Commits:** `b6be301c`, `44ff1bda`, `de56f144`
 
