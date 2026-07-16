@@ -51,7 +51,15 @@ public class BinderSender {
                 PID_LIST.add(pid);
             }
 
-            sendBinder(uid, pid);
+            if (!sendBinder(uid, pid)) {
+                // Delivery to a Shizuku client failed - most often because the app's ContentProvider
+                // wasn't published yet when this foreground event fired (a startup race). Drop the pid
+                // so a later foreground/state-change event retries, instead of caching the failure for
+                // the whole process lifetime and leaving the app permanently "not registered" (#319).
+                synchronized (PID_LIST) {
+                    PID_LIST.remove(Integer.valueOf(pid));
+                }
+            }
         }
 
         @Override
@@ -77,7 +85,12 @@ public class BinderSender {
                 PID_LIST.add(pid);
             }
 
-            sendBinder(uid, pid);
+            if (!sendBinder(uid, pid)) {
+                // See onForegroundActivitiesChanged: don't cache a failed delivery forever (#319).
+                synchronized (PID_LIST) {
+                    PID_LIST.remove(Integer.valueOf(pid));
+                }
+            }
         }
     }
 
@@ -126,7 +139,12 @@ public class BinderSender {
                 LOGGER.v("Uid %d starts", uid);
             }
 
-            sendBinder(uid, -1);
+            if (!sendBinder(uid, -1)) {
+                // Don't cache a failed delivery forever - let a later uid event retry (#319).
+                synchronized (UID_LIST) {
+                    UID_LIST.remove(Integer.valueOf(uid));
+                }
+            }
         }
 
         private void uidGone(int uid) {
@@ -140,10 +158,15 @@ public class BinderSender {
         }
     }
 
-    private static void sendBinder(int uid, int pid) throws RemoteException {
+    /**
+     * @return {@code true} if this uid/pid can be remembered as handled (either it's not a Shizuku
+     * client, or a binder was successfully delivered); {@code false} only when a Shizuku client was
+     * found but delivery failed, so the caller should let a later observer event retry (#319).
+     */
+    private static boolean sendBinder(int uid, int pid) throws RemoteException {
         List<String> packages = PackageManagerApis.getPackagesForUidNoThrow(uid);
         if (packages.isEmpty())
-            return;
+            return true;
 
         LOGGER.d("sendBinder to uid %d: packages=%s", uid, TextUtils.join(", ", packages));
 
@@ -165,16 +188,17 @@ public class BinderSender {
                 }
 
                 if (granted) {
+                    // sendBinderToManager has its own kill-and-retry path, so treat it as handled.
                     ShizukuService.sendBinderToManager(sShizukuService, userId);
-                    return;
+                    return true;
                 }
-            } else if (ArraysKt.contains(pi.requestedPermissions, PERMISSION) || 
+            } else if (ArraysKt.contains(pi.requestedPermissions, PERMISSION) ||
                        ArraysKt.contains(pi.requestedPermissions, PERMISSION_LEGACY) ||
                        ArraysKt.contains(pi.requestedPermissions, PERMISSION_ORIGINAL)) {
-                ShizukuService.sendBinderToUserApp(sShizukuService, packageName, userId);
-                return;
+                return ShizukuService.sendBinderToUserApp(sShizukuService, packageName, userId);
             }
         }
+        return true;
     }
 
     public static void register(ShizukuService shizukuService) {
