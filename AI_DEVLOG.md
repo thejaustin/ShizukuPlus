@@ -123,6 +123,50 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-07-16 (pass 4) — Claude Code (Fable 5) [PRoot ShizukuPlus, third-party app-plugin compatibility]
+
+**Commits:** main `17ad35c6`, `24bb109c`; api-submodule `beb20c5`, `2ea3ab2` (both CI-green)
+
+**Focus (user request): make apps that support Shizuku work well; reviewed thedjchi's fork for ideas.**
+Found and fixed two core binder **descriptor-mismatch** bugs, both caused by the `af.shizuku.server`
+namespace migration renaming client-facing AIDL interfaces (a rikka `dev.rikka.shizuku:api` client
+enforces the `moe.shizuku.server` descriptor; if the server's object uses `af.shizuku.server`, every
+cross-boundary call throws `SecurityException: Binder invocation to an incorrect interface`):
+
+1. **`IRemoteProcess`** (`17ad35c6` / api `beb20c5`, #325) — returned by `newProcess()`. Third-party
+   shell apps (AShell etc.) got the SecurityException on `getInputStream()`/`waitFor()`. Moved the
+   AIDL back to `moe.shizuku.server.IRemoteProcess` (methods/codes identical to upstream; only the
+   descriptor changed) and repointed all 6 importers + ShizukuPlus's own `api/api` client.
+2. **`IShizukuApplication`** (`24bb109c` / api `2ea3ab2`) — the callback interface for the server to
+   push to apps. `dispatchRequestPermissionResult` (code 2, the "permission granted" notification)
+   had the same `af.shizuku.server` mismatch with no fallback (unlike `bindApplication`, which had a
+   hand-rolled one in `attachApplication`), so grants were silently dropped for third-party apps and
+   their `addRequestPermissionResultListener` never fired → a likely contributor to the whole
+   "granted apps don't work" family. Moved to `moe.shizuku.server.IShizukuApplication`; the
+   Plus-only methods (`dispatchLog`/`dispatchSentryEvent`/`showPermissionConfirmation`) are
+   manager-client-only so no collision. See [[shizukuplus-binder-detection]] for the full "layer 3"
+   writeup + the rule (any AIDL a stock rikka client touches MUST keep its moe/rikka descriptor;
+   only genuinely Plus-exclusive interfaces are safe under `af.shizuku.server`).
+
+Verified the rest of the client-facing surface is already correct: `IShizukuService` and
+`IShizukuServiceConnection` are `moe.shizuku.server`; the Plus interfaces correctly stay
+`af.shizuku.server`. Both fixes span the `api` git submodule + main repo (committed to the
+`ShizukuPlus-API` remote first, then pointer-bumped — CI-green, no "not our ref").
+
+**thedjchi fork review (github.com/thedjchi/Shizuku, v13.7.0, since paused):** their Android 17 work
+= (a) route `getInstalledPackages` through a compat layer so authorized apps appear — ShizukuPlus
+already does this via `ShizukuSystemApis.getInstalledPackages` → privileged `PackageManagerApis`;
+(b) ADB pairing fix: use the mDNS-resolved host instead of hardcoded loopback + request
+`ACCESS_LOCAL_NETWORK`. **Deferred (b) — needs an Android 17 device:** `AdbMdns`/`AdbPairingService`
+hardcode `127.0.0.1`; `ACCESS_LOCAL_NETWORK` is opt-in on Android 16 and loopback-exempt, so a blind
+rewrite is the wrong risk profile without a device to confirm. Backlog item for a device session.
+
+Commented on #325 with the fix; commented on #332 (backup key fix). Also, earlier passes this
+session: dual-flavor server trust (`b6be301c`), binder delivery-retry (`a42edcac`), AICore+
+accessibility self-heal (`2deed39d`), backup device-credential key (`ab922e48`).
+
+---
+
 ### 2026-07-16 (pass 3) — Claude Code (Fable 5) [PRoot ShizukuPlus, deep-review of "still occurring" issue comments]
 
 **Commits:** `2deed39d`, `a42edcac`
