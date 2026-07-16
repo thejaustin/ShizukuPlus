@@ -46,7 +46,7 @@ import af.shizuku.api.BinderContainer;
 import rikka.core.util.BuildUtils;
 import af.shizuku.common.util.OsUtils;
 import moe.shizuku.server.IRemoteProcess;
-import af.shizuku.server.IShizukuApplication;
+import moe.shizuku.server.IShizukuApplication;
 import af.shizuku.server.IVirtualMachineManager;
 import af.shizuku.server.IStorageProxy;
 import af.shizuku.server.IAICorePlus;
@@ -353,11 +353,13 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             }
         }
         try {
-            // First try using the current descriptor (af.shizuku.server.IShizukuApplication)
+            // Normal path: IShizukuApplication is now moe.shizuku.server.IShizukuApplication, matching
+            // what rikka clients implement, so this transacts under the descriptor they expect.
             application.bindApplication(reply);
         } catch (Throwable e) {
-            // If it fails (likely due to interface descriptor mismatch on the client side),
-            // try using the legacy descriptor (moe.shizuku.server.IShizukuApplication)
+            // Belt-and-suspenders fallback, kept from when this interface lived under af.shizuku.server
+            // and the descriptor mismatched: re-send bindApplication by hand-writing the moe token.
+            // Should no longer be reached for descriptor reasons now that the AIDL package matches.
             LOGGER.w("attachApplication via current descriptor failed, trying legacy descriptor for " + requestPackageName);
             try {
                 Parcel data = Parcel.obtain();
