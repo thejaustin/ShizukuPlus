@@ -123,6 +123,61 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-07-16 — Claude Code (Sonnet 5) [PRoot ShizukuPlus, Sentry/GitHub audit pass 2]
+
+**Commits:** `b6be301c`, `44ff1bda`, `de56f144`
+
+**Done (continuation of the 2026-07-14/15 audit, user request: "continue with this"):**
+- **Dual manager-flavor recognition gap** (`b6be301c`, Sentry SHIZUKUPLUS-7C) — `ShizukuService`
+  resolves exactly one flavor (Plus preferred, Drop-In fallback) as `MANAGER_APPLICATION_ID`/
+  `managerAppId` at server startup (issue #319's earlier fix). Users with **both** flavors
+  installed side by side (supported per #316) had every manager-only check
+  (`checkCallerManagerPermission`, `isBinderCallBlocked`, `dispatchPermissionConfirmationResult`,
+  `getFlagsForUid`/`updateFlagsForUid`, `attachApplication`'s `isManager` flag) reject the
+  non-primary flavor's app as an untrusted third-party client — breaking Plus-feature settings
+  sync and silently no-oping permission grant/revoke. Added `isManagerAppId()` helper that trusts
+  either flavor's uid when both are installed (safe: same signed codebase, not a real trust
+  boundary). Directly explains a live "r2117, apps still not registering" follow-up on #319.
+- **Two main-thread Shizuku IPC ANRs + uncaught FOTA crash** (`44ff1bda`, SHIZUKUPLUS-7H/7P/7Q/73)
+  — `ShizukuCompanionViewHolder.runPrivilegedCommand()` (via `HomeActivity`'s `lifecycleScope`)
+  and `ServiceDoctorActivity`'s phantom-process fix (`serviceScope` = `Dispatchers.Main`) both
+  called `Shizuku.newProcess(...).waitFor()` — a blocking IPC round-trip — directly on a
+  Main-dispatched scope, violating this project's own "off main thread" rule. Wrapped both in
+  `withContext(Dispatchers.IO)`. Also fixed `StarterActivity`'s Samsung FOTA-agent
+  UID-escalation trick: `startActivity()` was outside the existing try/catch, so devices without
+  `com.sdet.fotaagent` got an uncaught `ActivityNotFoundException` instead of the graceful
+  failure log (highest-volume issue in this sweep).
+- **Backup encryption key invalidation UX** (`de56f144`, #332/#315) — `CryptoUtils` let
+  `KeyPermanentlyInvalidatedException` (Android's by-design key invalidation on biometric/lock
+  change) propagate uncaught, surfacing as a raw exception message or literal "null" (many
+  keystore exceptions have no `.message`). Encryption now self-heals by regenerating the key
+  (safe — a brand-new backup has no prior ciphertext to preserve compatibility with); decryption
+  intentionally does NOT auto-regenerate (old ciphertext is genuinely unrecoverable under a new
+  key) — all 5 Toast call sites now go through a shared `backupErrorMessage()` helper for an
+  honest, specific message instead of "null".
+- **Full Sentry sweep**: resolved/ignored the remaining ~20 low-volume unresolved issues from the
+  2026-07-14/15 audit's backlog (74, 7N, 77, 76, 7K, 7E, 7R, 3W, 3Q\*, 6Q, 71, 7G, 7F\*\*, 7H, 7Q,
+  7P, 73, 13, 7C). \*3Q was already resolved by a prior session. \*\*7F left genuinely open — a
+  play.google.com `ActivityNotFoundException` whose already-guarded source location doesn't
+  reconcile with the build's `SourceFile:167`; documented honestly rather than guessed at. New
+  R8-obfuscation and ANR-correlation triage techniques captured in the `shizukuplus-sentry-audit-
+  workflow` memory (single-letter exception classes can only be project-defined types; obfuscated
+  package names in culprit strings aren't reliable; same-timestamp ANR pairs are one incident).
+- **GitHub issue sweep**: closed #300 (pc name fix, verified still in source) and #309 (settings
+  search crash fix, verified still in source); commented with fix pointers on #319, #298, #332,
+  #315; diagnosed #325 (AShell third-party binder mismatch — entirely inside AShell's own
+  obfuscated stack, no ShizukuPlus frames, needs the reporter's logcat to pin down further, left
+  open).
+- **CI verified green on all three pushes.**
+
+**Left open:** #200/#199/#333 remain blocked — no ADB device reachable in this PRoot session and
+no local Android SDK to inspect the base theme's default corner values (#333). Sentry
+SHIZUKUPLUS-3Q (the exact Mavericks-factory crash #200's ProGuard keeps address) shows zero
+recurrence since version_code 1668 though — decent indirect evidence the fix is holding, not a
+substitute for real on-device verification.
+
+---
+
 ### 2026-07-14/15 — Claude Code (Sonnet 5) [session run in parallel with a review pass, devlog not updated at the time]
 
 **Commits:** `234f0be3`, `6394bac1`
