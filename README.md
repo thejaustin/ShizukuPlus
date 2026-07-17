@@ -97,7 +97,9 @@ Shizuku+ is a community-driven enhancement and fork of [thedjchi/Shizuku](https:
 Thanks to the following upstream contributors and projects whose work makes Shizuku+ possible:
 
 - **[RikkaApps / Rikka](https://github.com/RikkaApps)** — For the foundational Shizuku project and its elegant API design.
-- **[thedjchi](https://github.com/thedjchi)** — For the intermediate fork and quality-of-life improvements, and for the field-verified **Android 17 (SDK 37) compatibility** approach — the hidden-API `deviceId` reflection and Local Network Protection handling — that Shizuku+'s A17 support is adapted from.
+- **[thedjchi](https://github.com/thedjchi)** — For the intermediate fork and quality-of-life improvements, and for carrying the **Android 17 (SDK 37) compatibility** work that Shizuku+'s A17 support is adapted from.
+- **[kerneldroid / Nightzuku](https://github.com/kerneldroid/Nightzuku)** — Origin of the Android 17 hidden-API `deviceId` compatibility approach (the `Android17Compat` / `InstalledPackagesCompat` reflection layer) and Local Network Protection handling that this fork's A17 support descends from.
+- **[LandonMoran](https://github.com/LandonMoran)** — For porting Nightzuku's Android 17 support into the thedjchi fork and **verifying it end-to-end on a physical Android 17 device** (pairing, service start, and the authorized-apps list), which is the field validation Shizuku+'s port builds on.
 - **[Muntashir Akon](https://github.com/MuntashirAkon)** — For the aShell You codebase, which inspired the terminal and shell automation features.
 - **[iamr0s](https://github.com/iamr0s)** — For Dhizuku, enabling the unified Device Owner privilege mode, and AndroidAppProcess for standalone Java process execution.
 - **[pascua28](https://github.com/pascua28)** — For native Samsung System UID 1000 escalation integration.
@@ -107,7 +109,8 @@ Thanks to the following upstream contributors and projects whose work makes Shiz
 | Project | Author | License | Role |
 |---------|--------|---------|------|
 | [Shizuku](https://github.com/RikkaApps/Shizuku) | RikkaApps / Rikka | Apache 2.0 | Foundational privileged-process architecture |
-| [Shizuku (fork)](https://github.com/thedjchi/Shizuku) | thedjchi | Apache 2.0 | Intermediate fork with QoL improvements; reference for Android 17 hidden-API + Local Network Protection compat |
+| [Shizuku (fork)](https://github.com/thedjchi/Shizuku) | thedjchi | Apache 2.0 | Intermediate fork with QoL improvements; carried the Android 17 compat work Shizuku+ adapted |
+| [Nightzuku](https://github.com/kerneldroid/Nightzuku) | kerneldroid | Apache 2.0 | Origin of the Android 17 hidden-API `deviceId` + Local Network Protection compatibility approach |
 | [Shizuku (fork)](https://github.com/pascua28/Shizuku) | pascua28 | Apache 2.0 | Samsung UID 1000 system execution exploit |
 | [Dhizuku](https://github.com/iamr0s/Dhizuku) | iamr0s | Apache 2.0 | Device Owner binder sharing (Dhizuku Mode) |
 | [AndroidAppProcess](https://github.com/iamr0s/AndroidAppProcess) | iamr0s | LGPL-3.0 | Standalone high-privileged Java process wrapper |
