@@ -116,10 +116,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private static final List<String> serverLogs = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
     private static final int MAX_SERVER_LOGS = 100;
     private final ShizukuConfigManager configManager;
-    private final int managerAppId;
+    private volatile int managerAppId;
     // uid of the OTHER manager flavor (Plus vs Drop-In), if it's also installed; -1 if not. See
     // isManagerAppId() - both flavors are the same signed codebase, so trusting either is safe.
-    private int secondaryManagerAppId;
+    private volatile int secondaryManagerAppId;
+    // uptimeMillis of the last on-demand manager-appId re-resolve (throttle; see checkCallerManagerPermission).
+    private volatile long lastManagerAppIdRefresh;
     private final VirtualMachineManagerImpl virtualMachineManager = new VirtualMachineManagerImpl();
     private final StorageProxyImpl storageProxy = new StorageProxyImpl();
     private final AICorePlusImpl aiCorePlus;
@@ -230,11 +232,48 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     @Override
     public boolean checkCallerManagerPermission(String func, int callingUid, int callingPid) {
-        return isManagerAppId(UserHandleCompat.getAppId(callingUid));
+        int appId = UserHandleCompat.getAppId(callingUid);
+        if (isManagerAppId(appId)) {
+            return true;
+        }
+        // managerAppId is resolved once at server start. If that resolve was stale or failed - the
+        // manager was reinstalled and got a new uid, or the initial lookup raced the package manager
+        // / hit an Android-17 hidden-API miss before r2129 - the real manager is rejected as "is not
+        // manager" and, e.g., plus-feature sync fails forever (SHIZUKUPLUS-6A). Re-resolve the manager
+        // uid(s) on a miss (throttled so a denied third party can't spam package lookups) and retry,
+        // so a genuine manager self-heals.
+        if (refreshManagerAppIdsThrottled()) {
+            return isManagerAppId(appId);
+        }
+        return false;
     }
 
     private boolean isManagerAppId(int appId) {
         return appId == managerAppId || (secondaryManagerAppId != -1 && appId == secondaryManagerAppId);
+    }
+
+    // Re-resolve the manager (and secondary flavor) uids at most once every few seconds, to recover
+    // from a stale/failed startup resolve without letting a rejected caller force unbounded package
+    // lookups. Returns true if a refresh actually ran. See checkCallerManagerPermission (SHIZUKUPLUS-6A).
+    private synchronized boolean refreshManagerAppIdsThrottled() {
+        long now = android.os.SystemClock.uptimeMillis();
+        if (now - lastManagerAppIdRefresh < 5000L) {
+            return false;
+        }
+        lastManagerAppIdRefresh = now;
+        ApplicationInfo ai = getManagerApplicationInfo();
+        if (ai == null) {
+            return false;
+        }
+        managerAppId = ai.uid;
+        String otherApplicationId = ServerConstants.DROPIN_APPLICATION_ID.equals(ServerConstants.MANAGER_APPLICATION_ID)
+                ? ServerConstants.PLUS_APPLICATION_ID : ServerConstants.DROPIN_APPLICATION_ID;
+        ApplicationInfo secondaryAi = Android17Compat.getApplicationInfo(otherApplicationId, 0, 0);
+        if (secondaryAi != null) {
+            secondaryManagerAppId = secondaryAi.uid;
+        }
+        LOGGER.i("Re-resolved manager appId=%d secondary=%d", managerAppId, secondaryManagerAppId);
+        return true;
     }
 
     private int checkCallingPermission() {
