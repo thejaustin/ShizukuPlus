@@ -131,11 +131,16 @@ class AdbPairingService : Service() {
                 startForeground(NOTIFICATION_ID, notification,
                     ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST)
             } catch (e: Throwable) {
-                Timber.tag(tag).e(e, "startForeground failed")
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                    && e is ForegroundServiceStartNotAllowedException) {
+                // startForeground can be denied by the OS: a FGS-start-not-allowed from background,
+                // or a connectedDevice-FGS SecurityException on OEMs that don't grant the required
+                // companion permission (SHIZUKUPLUS-6E). The pairing notification IS the UI the user
+                // needs, so post it directly whenever FGS fails — pairing still works without the
+                // foreground-service upgrade. Warn (not error) so it doesn't read as a hard crash.
+                Timber.tag(tag).w(e, "startForeground failed; posting pairing notification without FGS")
+                try {
                     getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification)
+                } catch (t: Throwable) {
+                    Timber.tag(tag).e(t, "failed to post pairing notification fallback")
                 }
             }
         }
