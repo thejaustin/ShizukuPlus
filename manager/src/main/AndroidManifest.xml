@@ -11,6 +11,18 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- Android 16+ Local Network Protection: on Android 17 (enforced) the mDNS discovery of the
+         wireless-debugging service and the loopback socket ADB pairing/connect use are gated
+         behind these, so without them the service can't be found/started and nothing works (#317).
+         ACCESS_LOCAL_NETWORK / USE_LOOPBACK_INTERFACE are API 36 and this module compiles against
+         SDK 35, but they're plain strings in the manifest and older OSes ignore unknown permissions. -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
+    <uses-permission android:name="android.permission.USE_LOOPBACK_INTERFACE" />
+    <uses-permission
+        android:name="android.permission.NEARBY_WIFI_DEVICES"
+        android:usesPermissionFlags="neverForLocation"
+        tools:targetApi="33" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />

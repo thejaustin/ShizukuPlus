@@ -25,6 +25,17 @@ class AdbMdns(
     private var registered = false
     private var running = false
     private var serviceName: String? = null
+
+    /**
+     * Host the discovered adb service resolved to, for consumers to connect to. Normalized so
+     * loopback stays "127.0.0.1" (byte-identical to the previous hard-coded behavior for the common
+     * on-device case); only a non-loopback *local-interface* address — as can happen under Android
+     * 16+ Local Network Protection, where the adb daemon may advertise a real interface rather than
+     * loopback — is surfaced, so pairing connects to the actual host instead of failing on 127.0.0.1.
+     */
+    @Volatile
+    var resolvedHost: String = "127.0.0.1"
+        private set
     private val listener = DiscoveryListener(this)
     private val nsdManager: NsdManager = context.getSystemService(NsdManager::class.java)
     private val mdnsScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -80,6 +91,7 @@ class AdbMdns(
             && isPortAvailable(resolvedService.port)
         ) {
             serviceName = resolvedService.serviceName
+            resolvedHost = if (isLocal || hostAddress == null) "127.0.0.1" else hostAddress
             observer.onChanged(resolvedService.port)
         } else if (running && ShizukuSettings.isAutoReconnectMdnsEnabled() && attempts < 5 && !restartScheduled) {
             attempts++

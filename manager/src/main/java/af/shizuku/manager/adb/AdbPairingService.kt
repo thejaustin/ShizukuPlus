@@ -175,7 +175,9 @@ class AdbPairingService : Service() {
 
     private fun onInput(code: String, port: Int): Notification {
         serviceScope.launch {
-            val host = "127.0.0.1"
+            // Prefer the mDNS-resolved host; falls back to loopback if discovery isn't live (e.g.
+            // the service was killed and restarted from the reply intent, which only carries the port).
+            val host = adbMdns?.resolvedHost ?: "127.0.0.1"
 
             val key = try {
                 AdbKey(PreferenceAdbKeyStore(ShizukuSettings.getPreferences()), "shizuku+")

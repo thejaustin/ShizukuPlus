@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import af.shizuku.starter.ServiceStarter;
-import rikka.hidden.compat.PackageManagerApis;
+import af.shizuku.common.compat.Android17Compat;
 import rikka.hidden.compat.UserManagerApis;
 import af.shizuku.common.util.UserHandleCompat;
 
@@ -49,7 +49,7 @@ public class ShizukuUserServiceManager extends UserServiceManager {
                 String newSourceDir = null;
 
                 for (int userId : UserManagerApis.getUserIdsNoThrow()) {
-                    PackageInfo pi = PackageManagerApis.getPackageInfoNoThrow(packageName, 0, userId);
+                    PackageInfo pi = Android17Compat.getPackageInfo(packageName, 0, userId);
                     if (pi != null && pi.applicationInfo != null && pi.applicationInfo.sourceDir != null) {
                         newSourceDir = pi.applicationInfo.sourceDir;
                         break;

@@ -20,7 +20,7 @@ import java.util.List;
 import kotlin.collections.ArraysKt;
 import rikka.hidden.compat.ActivityManagerApis;
 import rikka.hidden.compat.PackageManagerApis;
-import rikka.hidden.compat.PermissionManagerApis;
+import af.shizuku.common.compat.Android17Compat;
 import rikka.hidden.compat.adapter.ProcessObserverAdapter;
 import rikka.hidden.compat.adapter.UidObserverAdapter;
 import rikka.shizuku.server.util.Logger;
@@ -172,7 +172,7 @@ public class BinderSender {
 
         int userId = uid / 100000;
         for (String packageName : packages) {
-            PackageInfo pi = PackageManagerApis.getPackageInfoNoThrow(packageName, PackageManager.GET_PERMISSIONS, userId);
+            PackageInfo pi = Android17Compat.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS, userId);
             if (pi == null || pi.requestedPermissions == null)
                 continue;
 
@@ -180,7 +180,7 @@ public class BinderSender {
                 boolean granted = false;
                 try {
                     if (pid == -1)
-                        granted = PermissionManagerApis.checkPermission(PERMISSION_MANAGER, uid) == PackageManager.PERMISSION_GRANTED;
+                        granted = Android17Compat.checkPermission(PERMISSION_MANAGER, uid) == PackageManager.PERMISSION_GRANTED;
                     else
                         granted = ActivityManagerApis.checkPermission(PERMISSION_MANAGER, pid, uid) == PackageManager.PERMISSION_GRANTED;
                 } catch (Throwable e) {

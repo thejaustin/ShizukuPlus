@@ -13,4 +13,8 @@ dependencies {
     implementation libs.timber
     implementation libs.androidx.annotation
     compileOnly libs.hidden.stub
+    // Android 17 hidden-API compat shims (af.shizuku.common.compat) call into rikka's
+    // PackageManagerApis/PermissionManagerApis and fall back to raw reflection when Android 17's
+    // new deviceId-parameter signatures make those throw NoSuchMethodError.
+    implementation libs.hidden.compat
 }

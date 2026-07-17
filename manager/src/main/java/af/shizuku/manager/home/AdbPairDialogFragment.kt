@@ -202,7 +202,7 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
     fun run(port: Int, password: String) {
         _isPairing.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            val host = "127.0.0.1"
+            val host = adbMdns.resolvedHost
 
             val key = try {
                 AdbKey(PreferenceAdbKeyStore(ShizukuSettings.getPreferences()), "shizuku+")

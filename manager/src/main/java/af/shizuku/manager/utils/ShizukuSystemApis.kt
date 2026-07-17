@@ -2,9 +2,8 @@ package af.shizuku.manager.utils
 
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.content.pm.ParceledListSlice
 import android.os.RemoteException
-import rikka.hidden.compat.PackageManagerApis
+import af.shizuku.common.compat.InstalledPackagesCompat
 import rikka.hidden.compat.PermissionManagerApis
 import rikka.hidden.compat.UserManagerApis
 import rikka.hidden.compat.util.SystemServiceBinder
@@ -59,15 +58,12 @@ object ShizukuSystemApis {
         return if (!ShizukuStateMachine.isRunning()) {
             ArrayList()
         } else try {
-            val listSlice: ParceledListSlice<PackageInfo>? =
-                PackageManagerApis.getInstalledPackages(
-                    flags,
-                    userId
-                )
-            return if (listSlice != null) {
-                listSlice.list
-            } else ArrayList()
-        } catch (tr: RemoteException) {
+            // Android 17 changed IPackageManager#getInstalledPackages' return type; the shim
+            // resolves the list via the Shizuku-wrapped binder (privileged) or the context
+            // PackageManager, so the authorized-apps list still populates on A17. See
+            // af.shizuku.common.compat.InstalledPackagesCompat.
+            InstalledPackagesCompat.getInstalledPackages(flags, userId)
+        } catch (tr: Throwable) {
             throw RuntimeException(tr.message, tr)
         }
     }

@@ -54,6 +54,9 @@ class StarterActivity : AppBarActivity() {
         val binding = StarterActivityBinding.inflate(layoutInflater, rootView, true)
 
         val isRoot = intent.getBooleanExtra(EXTRA_IS_ROOT, false)
+        // ADB start connects to the wireless-debugging service over the local network / loopback,
+        // which Android 16+ gates behind local-network access - request it before connecting (#317).
+        if (!isRoot) af.shizuku.manager.adb.LocalNetworkPermission.request(this)
         binding.header.apply {
             headerIcon.setImageResource(if (isRoot) R.drawable.ic_root_24 else R.drawable.ic_adb_24)
             // Same seedKey as the originating Home card (StartRootViewHolder/StartAdbViewHolder)

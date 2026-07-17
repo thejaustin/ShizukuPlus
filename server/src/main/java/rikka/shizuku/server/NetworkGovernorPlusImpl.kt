@@ -7,7 +7,7 @@ import android.os.ServiceManager
 import android.util.Log
 import af.shizuku.server.INetworkGovernorPlus
 import rikka.hidden.compat.ActivityManagerApis
-import rikka.hidden.compat.PackageManagerApis
+import af.shizuku.common.compat.Android17Compat
 import rikka.shizuku.server.api.IContentProviderUtils
 import rikka.shizuku.server.util.InputValidationUtils
 import af.shizuku.common.util.UserHandleCompat
@@ -68,7 +68,7 @@ class NetworkGovernorPlusImpl : INetworkGovernorPlus.Stub() {
             val service = asInterface.invoke(null, binder) ?: return false
 
             val userId = UserHandleCompat.getUserId(Process.myUid())
-            val ai = PackageManagerApis.getApplicationInfoNoThrow(packageName, 0, userId)
+            val ai = Android17Compat.getApplicationInfo(packageName, 0L, userId)
                 ?: return false
             val uid = ai.uid
 
@@ -95,7 +95,7 @@ class NetworkGovernorPlusImpl : INetworkGovernorPlus.Stub() {
             val service = asInterface.invoke(null, binder) ?: return false
 
             val userId = UserHandleCompat.getUserId(Process.myUid())
-            val ai = PackageManagerApis.getApplicationInfoNoThrow(packageName, 0, userId)
+            val ai = Android17Compat.getApplicationInfo(packageName, 0L, userId)
                 ?: return false
             val uid = ai.uid
 

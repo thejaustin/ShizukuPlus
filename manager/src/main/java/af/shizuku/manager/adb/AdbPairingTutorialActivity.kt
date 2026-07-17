@@ -158,7 +158,25 @@ class AdbPairingTutorialActivity : AppBarActivity() {
         }
     }
 
+    // Android 16+ gates mDNS discovery of the pairing service behind local-network access; request
+    // it and only start pairing once the user has responded, so discovery can find the port (#317).
+    private val localNetworkPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            // Start pairing whether or not the grant succeeded; a denial just means discovery/
+            // connect fails and the service surfaces the error, rather than a silent no-op.
+            doStartPairingService()
+        }
+
     private fun startPairingService() {
+        val permission = LocalNetworkPermission.required()
+        if (permission != null && checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            localNetworkPermissionLauncher.launch(permission)
+        } else {
+            doStartPairingService()
+        }
+    }
+
+    private fun doStartPairingService() {
         val intent = AdbPairingService.startIntent(this)
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
