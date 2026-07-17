@@ -352,6 +352,11 @@ jobs:
           TAG_NAME="${VERSION}"
           # Find the previous release tag (ignoring current and non-version tags)
           PREV_TAG=$(git tag --list '*13.6.0.r*' --sort=-creatordate | grep -v "^${TAG_NAME}$" | head -1)
+
+          # Most recent MAJOR release to spotlight in every release's notes. Bump these two lines
+          # when a new headline release ships (keep MAJOR_DESC to one short clause).
+          MAJOR_RELEASE="v13.6.0.r2129"
+          MAJOR_DESC="Android 17 (SDK 37) support — pairing, the authorized-apps list, and permission grants restored on Android 17 (discovery also hardened on Android 16)."
           
           {
             echo "# ${TAG_NAME}"
@@ -390,7 +395,7 @@ jobs:
 
             # Build Context (Failed attempts since last success)
             echo "### 🏗️ Build History"
-            FAILED_RUNS=$(gh run list --branch master --status failure --limit 10 --json databaseId,createdAt,url --template '{{range .}}- [Build #{{.databaseId}}]({{.url}}) ({{.createdAt}})\n{{end}}' || true)
+            FAILED_RUNS=$(gh run list --branch master --status failure --limit 10 --json databaseId,createdAt,url --template '{{range .}}- [Build #{{.databaseId}}]({{.url}}) ({{.createdAt}}){{"\n"}}{{end}}' || true)
             if [ -n "$FAILED_RUNS" ]; then
               echo "Attempts leading to this successful release:"
               echo "$FAILED_RUNS"
@@ -398,6 +403,25 @@ jobs:
               echo "Build succeeded on the first attempt for this iteration."
             fi
             
+            # Recent releases rollup (last 5 tags, current first), spotlighting the major release.
+            echo
+            echo "## 📦 Recent Releases"
+            echo
+            if [ -n "$MAJOR_RELEASE" ]; then
+              echo "> 🚀 **Most recent major release — [${MAJOR_RELEASE}](https://github.com/${{ github.repository }}/releases/tag/${MAJOR_RELEASE})**"
+              echo "> ${MAJOR_DESC}"
+              echo
+            fi
+            echo "| Release | Highlight |"
+            echo "|:--|:--|"
+            for t in $(git tag --list '*13.6.0.r*' --sort=-creatordate | head -5); do
+              SUBJ=$(git log -1 --pretty=%s "$t" 2>/dev/null | sed 's/|/\\|/g')
+              MARK=""
+              if [ "$t" = "$MAJOR_RELEASE" ]; then MARK=" 🚀 **major**"; fi
+              if [ "$t" = "$TAG_NAME" ]; then MARK="${MARK} _(this release)_"; fi
+              echo "| [${t}](https://github.com/${{ github.repository }}/releases/tag/${t})${MARK} | ${SUBJ} |"
+            done
+
             if [ -n "$PREV_TAG" ]; then
               echo
               echo "---"
