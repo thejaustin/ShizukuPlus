@@ -393,16 +393,6 @@ jobs:
               echo
             fi
 
-            # Build Context (Failed attempts since last success)
-            echo "### 🏗️ Build History"
-            FAILED_RUNS=$(gh run list --branch master --status failure --limit 10 --json databaseId,createdAt,url --template '{{range .}}- [Build #{{.databaseId}}]({{.url}}) ({{.createdAt}}){{"\n"}}{{end}}' || true)
-            if [ -n "$FAILED_RUNS" ]; then
-              echo "Attempts leading to this successful release:"
-              echo "$FAILED_RUNS"
-            else
-              echo "Build succeeded on the first attempt for this iteration."
-            fi
-            
             # Recent releases rollup (last 5 tags, current first), spotlighting the major release.
             echo
             echo "## 📦 Recent Releases"
