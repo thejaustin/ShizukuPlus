@@ -78,11 +78,13 @@ Alternatively, install the **drop-in** build, which registers as `moe.shizuku.pr
 
 ## ☑️ Requirements
 
-**Minimum: Android 7+**
+**Minimum: Android 7+ · Fully supported through Android 17 (SDK 37)**
 - **Root mode:** Requires a rooted device
 - **Wireless Debugging mode:** Android 11+ and all Android TVs
 - **PC mode:** All devices
 - **Start on boot:** Available only with Wireless Debugging or Root mode
+
+On **Android 16+**, Shizuku+ requests the new Local Network Protection permissions so wireless-debugging discovery and pairing keep working; on **Android 17**, it transparently handles the hidden-API `deviceId` change so authorized apps still appear and permission grants still apply.
 
 ## 📱 Developer Guide
 
@@ -95,7 +97,7 @@ Shizuku+ is a community-driven enhancement and fork of [thedjchi/Shizuku](https:
 Thanks to the following upstream contributors and projects whose work makes Shizuku+ possible:
 
 - **[RikkaApps / Rikka](https://github.com/RikkaApps)** — For the foundational Shizuku project and its elegant API design.
-- **[thedjchi](https://github.com/thedjchi)** — For the intermediate fork and initial quality-of-life improvements.
+- **[thedjchi](https://github.com/thedjchi)** — For the intermediate fork and quality-of-life improvements, and for the field-verified **Android 17 (SDK 37) compatibility** approach — the hidden-API `deviceId` reflection and Local Network Protection handling — that Shizuku+'s A17 support is adapted from.
 - **[Muntashir Akon](https://github.com/MuntashirAkon)** — For the aShell You codebase, which inspired the terminal and shell automation features.
 - **[iamr0s](https://github.com/iamr0s)** — For Dhizuku, enabling the unified Device Owner privilege mode, and AndroidAppProcess for standalone Java process execution.
 - **[pascua28](https://github.com/pascua28)** — For native Samsung System UID 1000 escalation integration.
@@ -105,7 +107,7 @@ Thanks to the following upstream contributors and projects whose work makes Shiz
 | Project | Author | License | Role |
 |---------|--------|---------|------|
 | [Shizuku](https://github.com/RikkaApps/Shizuku) | RikkaApps / Rikka | Apache 2.0 | Foundational privileged-process architecture |
-| [Shizuku (fork)](https://github.com/thedjchi/Shizuku) | thedjchi | Apache 2.0 | Intermediate fork with QoL improvements |
+| [Shizuku (fork)](https://github.com/thedjchi/Shizuku) | thedjchi | Apache 2.0 | Intermediate fork with QoL improvements; reference for Android 17 hidden-API + Local Network Protection compat |
 | [Shizuku (fork)](https://github.com/pascua28/Shizuku) | pascua28 | Apache 2.0 | Samsung UID 1000 system execution exploit |
 | [Dhizuku](https://github.com/iamr0s/Dhizuku) | iamr0s | Apache 2.0 | Device Owner binder sharing (Dhizuku Mode) |
 | [AndroidAppProcess](https://github.com/iamr0s/AndroidAppProcess) | iamr0s | LGPL-3.0 | Standalone high-privileged Java process wrapper |
@@ -148,3 +150,4 @@ Full license texts and per-library details: [OPEN_SOURCE_LICENSES.md](OPEN_SOURC
 - Thank you to **AlexeiCrystal** for identifying MIUI crash bugs and suggesting the Compat Hub workaround for legacy apps (#241, #242).
 - Thank you to **ddnexus** and **kai-bash** for highlighting the Device Owner factory reset trap and Google Backup conflicts (#237).
 - Thank you to **Kevinco1** for feedback on root compat app detection issues (#243).
+- Thank you to **aragortsantiago6-beep** and **Scoop2389** (Pixel 9a) and **ConversionRituals** (Xiaomi) for on-device Android 16/17 testing, crash reports, and logs that drove the SDK 37 hidden-API and Local Network Protection compatibility fixes (#317, #323).
