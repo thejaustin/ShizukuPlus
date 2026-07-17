@@ -328,21 +328,21 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ needs.build.outputs.artifactName }}
-          path: files
+          path: files/main
 
       - name: Download Drop-in Artifact
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
           name: shizuku-dropin.apk
-          path: files
+          path: files/dropin
 
       - name: Download Compat Stub Artifact
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
           name: shizuku-compat.apk
-          path: files
+          path: files/compat
 
       - name: Generate Release Notes
         id: release_notes
@@ -425,6 +425,19 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG_NAME="${VERSION}"
-          APK_FILES=$(find files -name "*.apk" -type f | sort)
-          # Both ShizukuPlus and drop-in APKs are attached to the release
-          gh release create "$TAG_NAME" $APK_FILES --title "$VERSION" --notes-file release_notes.md
+          # Rename each built APK to a versioned, self-identifying filename before attaching, so a
+          # downloaded file makes its build and flavor obvious (requested on #340).
+          ASSETS=()
+          rename_apk() { # $1=source dir  $2=target basename (without extension)
+            local apk
+            apk=$(find "$1" -name "*.apk" -type f 2>/dev/null | head -1)
+            if [ -n "$apk" ]; then
+              local dest="files/${2}.apk"
+              mv "$apk" "$dest"
+              ASSETS+=("$dest")
+            fi
+          }
+          rename_apk files/main   "Shizuku+-${VERSION}"
+          rename_apk files/dropin "Shizuku+-Drop-In-${VERSION}"
+          rename_apk files/compat "Shizuku+-Compat-Hub-${VERSION}"
+          gh release create "$TAG_NAME" "${ASSETS[@]}" --title "$VERSION" --notes-file release_notes.md
