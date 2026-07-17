@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicInteger
 import af.shizuku.manager.authorization.AuthorizationManager
 import rikka.lifecycle.Resource
 
@@ -22,6 +23,9 @@ class AppsViewModel(application: Application) : AndroidViewModel(application) {
     private val prefs = appContext.getSharedPreferences("app_management_prefs", Context.MODE_PRIVATE)
 
     private var rawPackages: List<PackageInfo> = emptyList()
+
+    // Monotonic token so overlapping load() passes don't clobber each other (see load()).
+    private val loadGeneration = AtomicInteger(0)
     val hiddenPackages: MutableSet<String> =
         (prefs.getStringSet(KEY_HIDDEN, emptySet()) ?: emptySet()).toMutableSet()
 
@@ -80,10 +84,10 @@ class AppsViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun load(onlyCount: Boolean = false) {
+        val myGeneration = loadGeneration.incrementAndGet()
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val allPackages = AuthorizationManager.getPackages()
-                rawPackages = allPackages
 
                 var granted = 0
                 for (pi in allPackages) {
@@ -91,6 +95,15 @@ class AppsViewModel(application: Application) : AndroidViewModel(application) {
                     if (AuthorizationManager.granted(pi.packageName, appInfo.uid)) granted++
                 }
 
+                // A newer load() started after this pass began, so its data is fresher — don't let
+                // this (possibly stale) pass overwrite it. Overlapping loads are routine here: the
+                // RUNNING state listener and onResume() both call load(), so without this guard an
+                // earlier pass that computed 0 (server not ready yet, or a just-applied grant not
+                // yet propagated) could post AFTER the correct count and wrongly show "0 authorized
+                // apps" on the home screen until the list is reopened (issue #317).
+                if (myGeneration != loadGeneration.get()) return@launch
+
+                rawPackages = allPackages
                 if (!onlyCount || filterState != FilterState.ALL) {
                     applyFiltersAndSort()
                 }
