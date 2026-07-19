@@ -200,44 +200,70 @@ class UpdateManager(private val context: Context) {
      * Show notification to install the update
      */
     private fun showInstallNotification(file: File, versionName: String) {
-        val apkUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            FileProvider.getUriForFile(
+        try {
+            val apkUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                shareableApkUri(file)
+            } else {
+                Uri.fromFile(file)
+            }
+
+            val installIntent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(apkUri, "application/vnd.android.package-archive")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+            val pendingIntent = PendingIntent.getActivity(
                 context,
-                "${context.packageName}.fileprovider",
-                file
+                0,
+                installIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
-        } else {
-            Uri.fromFile(file)
+
+            val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_system_icon)
+                .setContentTitle(context.getString(R.string.update_ready_title))
+                .setContentText(context.getString(R.string.update_ready_description, versionName))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .addAction(
+                    R.drawable.ic_system_icon,
+                    context.getString(R.string.update_install_now),
+                    pendingIntent
+                )
+                .build()
+
+            notificationManager.notify(NOTIFICATION_ID + 1, notification)
+        } catch (e: Exception) {
+            // Never let a download-complete notification crash the app (e.g. a FileProvider
+            // "Failed to find configured root" when the APK landed on a volume our paths don't
+            // cover). The download itself succeeded; degrade to the error notification.
+            Timber.tag(TAG).e(e, "Failed to build install notification")
+            Sentry.captureException(e)
+            showDownloadErrorNotification()
         }
+    }
 
-        val installIntent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(apkUri, "application/vnd.android.package-archive")
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    /**
+     * Resolve a content:// URI that FileProvider can actually serve for [file].
+     *
+     * `getExternalFilesDir(...)` can return a secondary/removable volume (e.g. an SD card)
+     * that our `file_paths.xml` primary `<external-files-path>` root doesn't cover, so
+     * `getUriForFile` throws `IllegalArgumentException: Failed to find configured root`
+     * (SHIZUKUPLUS-6P). Fall back to a copy in `cacheDir`, which the `<cache-path>` root
+     * always covers, so the install action still works.
+     */
+    private fun shareableApkUri(file: File): Uri {
+        val authority = "${context.packageName}.fileprovider"
+        return try {
+            FileProvider.getUriForFile(context, authority, file)
+        } catch (e: IllegalArgumentException) {
+            Timber.tag(TAG).w(e, "APK path not FileProvider-shareable; copying to cache")
+            val cached = File(context.cacheDir, file.name)
+            file.copyTo(cached, overwrite = true)
+            FileProvider.getUriForFile(context, authority, cached)
         }
-
-        val pendingIntent = PendingIntent.getActivity(
-            context,
-            0,
-            installIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_system_icon)
-            .setContentTitle(context.getString(R.string.update_ready_title))
-            .setContentText(context.getString(R.string.update_ready_description, versionName))
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setAutoCancel(true)
-            .setContentIntent(pendingIntent)
-            .addAction(
-                R.drawable.ic_system_icon,
-                context.getString(R.string.update_install_now),
-                pendingIntent
-            )
-            .build()
-
-        notificationManager.notify(NOTIFICATION_ID + 1, notification)
     }
 
     /**
@@ -282,11 +308,7 @@ class UpdateManager(private val context: Context) {
             }
 
             val apkUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                FileProvider.getUriForFile(
-                    context,
-                    "${context.packageName}.fileprovider",
-                    file
-                )
+                shareableApkUri(file)
             } else {
                 Uri.fromFile(file)
             }
