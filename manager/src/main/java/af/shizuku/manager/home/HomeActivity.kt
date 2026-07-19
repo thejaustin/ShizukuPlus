@@ -76,6 +76,10 @@ abstract class HomeActivity : AppActivity(), MavericksView {
 
     // Removed getLayoutId
 
+    // Show the "restart after update" prompt at most once per Activity instance so it doesn't
+    // reappear on every state refresh while the user hasn't restarted yet.
+    private var versionSkewSnackbarShown = false
+
     private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
         when (state) {
             ShizukuStateMachine.State.RUNNING -> {
@@ -83,6 +87,7 @@ abstract class HomeActivity : AppActivity(), MavericksView {
                 checkServerStatus()
                 appsModel.load()
                 ShizukuSettings.syncAllPlusFeaturesToServer()
+                maybeShowVersionSkewSnackbar()
             }
             ShizukuStateMachine.State.STOPPED,
             ShizukuStateMachine.State.CRASHED -> {
@@ -94,6 +99,29 @@ abstract class HomeActivity : AppActivity(), MavericksView {
                 checkServerStatus()
             }
         }
+    }
+
+    /**
+     * When the running privileged server predates the currently-installed app build (the app was
+     * updated but the separate server process still runs old code), surface a prompt to restart the
+     * service — stale servers can silently break connections for third-party apps until restarted.
+     */
+    private fun maybeShowVersionSkewSnackbar() {
+        if (versionSkewSnackbarShown) return
+        if (!ShizukuStateMachine.isServerVersionSkewed()) return
+        versionSkewSnackbarShown = true
+        SnackbarHelper.show(
+            this,
+            findViewById(android.R.id.content) ?: window.decorView,
+            msg = getString(R.string.snackbar_server_version_skew),
+            duration = Snackbar.LENGTH_INDEFINITE,
+            actionText = getString(R.string.snackbar_action_restart),
+            action = {
+                // Stop the stale server; the home UI then shows the normal Start flow, which
+                // launches a fresh server on the current build. Mirrors the existing Stop action.
+                ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPING)
+            }
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

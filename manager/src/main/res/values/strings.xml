@@ -611,6 +611,8 @@
     <string name="snackbar_battery_optimization_home">Battery optimization must be disabled for start on boot/watchdog to work properly.</string>
     <string name="snackbar_battery_optimization_settings">Please disable battery optimization to use this feature.</string>
     <string name="snackbar_action_fix">Fix</string>
+    <string name="snackbar_server_version_skew">Shizuku+ was updated, but the running service is still on the old version. Restart it so connected apps keep working.</string>
+    <string name="snackbar_action_restart">Restart</string>
 
     <!-- Toast -->
     <string name="toast_no_email_app">No email app found</string>

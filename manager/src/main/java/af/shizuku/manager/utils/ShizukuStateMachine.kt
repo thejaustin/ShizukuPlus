@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import af.shizuku.manager.ShizukuApplication
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.BuildConfig
 import rikka.shizuku.Shizuku
 import io.sentry.Sentry
 import io.sentry.Breadcrumb
@@ -51,6 +52,18 @@ object ShizukuStateMachine {
         if(oldState != newState) {
             listeners.forEach { it(newState) }
             Timber.tag("ShizukuStateMachine").d(newState.toString())
+
+            // Record which app build is starting this server instance. All deliberate start paths
+            // (AdbStarter, ShizukuReceiverStarter, tile, StarterActivity) funnel through STARTING,
+            // so this captures every fresh start centrally and lets isServerVersionSkewed() later
+            // detect a running server left behind by a pre-update build.
+            if (newState == State.STARTING) {
+                try {
+                    ShizukuSettings.setServerStartedBuild(BuildConfig.VERSION_CODE)
+                } catch (e: Exception) {
+                    Timber.tag("ShizukuStateMachine").w(e, "Failed to record server start build")
+                }
+            }
 
             if (newState == State.RUNNING || newState == State.STOPPED || newState == State.CRASHED) {
                 try {
@@ -118,6 +131,19 @@ object ShizukuStateMachine {
 
     fun isRunning(): Boolean {
         return get() == State.RUNNING
+    }
+
+    /**
+     * True when the running privileged server was started by an app build older than the one now
+     * installed — i.e. the app was updated but the server (a separate long-lived process) is still
+     * running the old code. The binder wire protocol can differ across versions, so this can
+     * silently break connections for third-party apps until the service is restarted. Returns false
+     * when the starting build is unknown (0, e.g. server predates this tracking) or already current.
+     */
+    fun isServerVersionSkewed(): Boolean {
+        if (!isRunning()) return false
+        val startedBuild = ShizukuSettings.getServerStartedBuild()
+        return startedBuild in 1 until BuildConfig.VERSION_CODE
     }
 
     fun isDead(): Boolean {

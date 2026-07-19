@@ -140,6 +140,7 @@ public class ShizukuSettings {
         public static final String KEY_LAST_CHECK_FAILED = "last_check_failed";
         public static final String KEY_UPDATE_CHANNEL = "update_channel"; // "stable" or "dev"
         public static final String KEY_LAST_SEEN_VERSION = "last_seen_version";
+        public static final String KEY_SERVER_STARTED_BUILD = "server_started_build";
 
         // Companion Mode (Shizuku+ additions)
         public static final String KEY_COMPANION_MODE = "companion_mode";
@@ -157,6 +158,15 @@ public class ShizukuSettings {
 
     public static void setLastSeenVersion(int versionCode) {
         getPreferences().edit().putInt(Keys.KEY_LAST_SEEN_VERSION, versionCode).apply();
+    }
+
+    /** versionCode of the app build that started the currently-running privileged server (0 = unknown). */
+    public static int getServerStartedBuild() {
+        return getPreferences().getInt(Keys.KEY_SERVER_STARTED_BUILD, 0);
+    }
+
+    public static void setServerStartedBuild(int versionCode) {
+        getPreferences().edit().putInt(Keys.KEY_SERVER_STARTED_BUILD, versionCode).apply();
     }
 
     public static boolean isSentryLimitReached() {
