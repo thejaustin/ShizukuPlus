@@ -355,8 +355,8 @@ jobs:
 
           # Most recent MAJOR release to spotlight in every release's notes. Bump these two lines
           # when a new headline release ships (keep MAJOR_DESC to one short clause).
-          MAJOR_RELEASE="v13.6.0.r2129"
-          MAJOR_DESC="Android 17 (SDK 37) support — pairing, the authorized-apps list, and permission grants restored on Android 17 (discovery also hardened on Android 16)."
+          MAJOR_RELEASE="v13.6.0.r2139"
+          MAJOR_DESC="Stock-client compatibility fixed — App-Ops managers, OptiDroid, Obtainium and other stock Shizuku-API apps now recognize Shizuku+ and show the permission granted per-app (define API_V23 so the server's runtime grant succeeds; also fixed for the Drop-In flavor)."
           
           {
             echo "# ${TAG_NAME}"
