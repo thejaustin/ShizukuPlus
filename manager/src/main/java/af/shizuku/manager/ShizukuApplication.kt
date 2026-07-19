@@ -52,6 +52,14 @@ class ShizukuApplication : Application(), Configuration.Provider {
         /** True only if libadb.so loaded successfully. ADB pairing features must check this. */
         var isAdbNativeAvailable: Boolean = false
             private set
+
+        /**
+         * Per-process Sentry event cap. A single device stuck in a crash/error loop can otherwise
+         * emit hundreds of identical events in one session (one r1989 install produced 1143), which
+         * drains the quota for no added signal — the first few events already capture the bug.
+         */
+        private val sentrySessionEventCount = java.util.concurrent.atomic.AtomicInteger(0)
+        private const val MAX_SENTRY_EVENTS_PER_SESSION = 100
     }
 
     override val workManagerConfiguration: Configuration
@@ -142,6 +150,12 @@ class ShizukuApplication : Application(), Configuration.Provider {
 
                 // Add context about the app
                 options.setBeforeSend { event, _ ->
+                    // 0. Session event cap — stop a crash/error loop from draining the quota. The
+                    // first events already capture the bug; further identical ones add cost, not signal.
+                    if (sentrySessionEventCount.incrementAndGet() > MAX_SENTRY_EVENTS_PER_SESSION) {
+                        return@setBeforeSend null
+                    }
+
                     // 1. Drop coroutine cancellations
                     val throwable = event.throwable
                     if (throwable is kotlinx.coroutines.CancellationException) return@setBeforeSend null
@@ -181,6 +195,34 @@ class ShizukuApplication : Application(), Configuration.Provider {
                     if (simpleName == "BackgroundServiceStartNotAllowedException" ||
                         (throwable is IllegalStateException &&
                             throwable.message?.contains("startForegroundService") == true)) {
+                        return@setBeforeSend null
+                    }
+
+                    val message = throwable?.message ?: ""
+
+                    // 6. Drop hardware-keystore failures — OEM TrustZone/StrongBox (TEE) issues,
+                    //    not app bugs and not fixable from app code.
+                    if (simpleName == "KeyStoreException" ||
+                        (simpleName == "ProviderException" && message.contains("eystore")) ||
+                        message.contains("AndroidKeyStore is unusable") ||
+                        message.contains("Keystore operation failed")) {
+                        return@setBeforeSend null
+                    }
+
+                    // 7. Drop device-storage failures — full disk / filesystem IO (device state).
+                    if (simpleName == "SQLiteFullException" ||
+                        simpleName == "SQLiteDiskIOException" ||
+                        message.contains("ENOSPC") ||
+                        message.contains("No space left on device") ||
+                        message.contains("disk I/O error")) {
+                        return@setBeforeSend null
+                    }
+
+                    // 8. Drop the OEM WifiInfo-redaction SecurityException thrown out of
+                    //    ConnectivityManager.getNetworkCapabilities() on some ROMs — already caught
+                    //    defensively (AutomationService.checkNetworkState); non-eliminable from app code.
+                    if (throwable is SecurityException &&
+                        (message.contains("ACCESS_WIFI_STATE") || message.contains("getNetworkCapabilities"))) {
                         return@setBeforeSend null
                     }
 
