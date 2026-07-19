@@ -20,9 +20,20 @@ if [ $(getprop ro.build.version.sdk) -ge 34 ]; then
   chmod 400 $DEX 2>/dev/null
 fi
 
-# We use the loader but tell it to load our PlusShell instead of the standard Shell
-# This requires ShizukuShellLoader to be able to load arbitrary classes, 
-# or we use a custom RISH_APPLICATION_ID.
-[ -z "$RISH_APPLICATION_ID" ] && export RISH_APPLICATION_ID="af.shizuku.plus.api"
+# Authenticate as the calling app (its package must belong to the calling UID, or the Shizuku+
+# server rejects the attach). Derive it from the process tree when unset — never hardcode a fixed
+# package, or this only works for Shizuku+ itself and fails for every third-party caller.
+if [ -z "$RISH_APPLICATION_ID" ]; then
+  _pid=$PPID
+  _i=0
+  while [ -n "$_pid" ] && [ "$_pid" != "0" ] && [ "$_i" -lt 8 ]; do
+    _name=$(cat "/proc/$_pid/cmdline" 2>/dev/null | tr '\0' '\n' | head -n 1 | sed 's/:.*//')
+    case "$_name" in
+      *.*.*) export RISH_APPLICATION_ID="$_name"; break ;;
+    esac
+    _pid=$(grep -a '^PPid:' "/proc/$_pid/status" 2>/dev/null | sed 's/[^0-9]//g')
+    _i=$((_i + 1))
+  done
+fi
 
 /system/bin/app_process -Djava.class.path="$DEX" -Dshizuku.cmd=plus /system/bin --nice-name=plus rikka.shizuku.shell.ShizukuShellLoader "$@"

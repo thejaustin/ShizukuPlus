@@ -20,8 +20,23 @@ if [ $(getprop ro.build.version.sdk) -ge 34 ]; then
   fi
 fi
 
-# Replace "PKG" with the application id of your terminal app
-[ -z "$RISH_APPLICATION_ID" ] && export RISH_APPLICATION_ID="PKG"
+# The Shizuku+ server authenticates this shell as RISH_APPLICATION_ID and REQUIRES that package to
+# belong to the calling app's UID (attachApplication throws SecurityException otherwise). So when it
+# isn't already set, discover the app that invoked us by walking up the process tree and using the
+# first ancestor whose name looks like a package id (e.g. org.swiftapps.swiftbackup). This is what
+# makes the su/rish bridge work for third-party apps like Swift Backup instead of only for Shizuku+.
+if [ -z "$RISH_APPLICATION_ID" ]; then
+  _pid=$PPID
+  _i=0
+  while [ -n "$_pid" ] && [ "$_pid" != "0" ] && [ "$_i" -lt 8 ]; do
+    _name=$(cat "/proc/$_pid/cmdline" 2>/dev/null | tr '\0' '\n' | head -n 1 | sed 's/:.*//')
+    case "$_name" in
+      *.*.*) export RISH_APPLICATION_ID="$_name"; break ;;
+    esac
+    _pid=$(grep -a '^PPid:' "/proc/$_pid/status" 2>/dev/null | sed 's/[^0-9]//g')
+    _i=$((_i + 1))
+  done
+fi
 
 # Set SHIZUKU_TOKEN if you have authentication enabled in Shizuku app
 # [ -z "$SHIZUKU_TOKEN" ] && export SHIZUKU_TOKEN="YOUR_TOKEN_HERE"

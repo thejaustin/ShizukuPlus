@@ -6,8 +6,11 @@
 
 BASEDIR=$(dirname "$0")
 
-# rish needs RISH_APPLICATION_ID to be a package that has Shizuku permission.
-export RISH_APPLICATION_ID="af.shizuku.plus.api"
+# Do NOT hardcode RISH_APPLICATION_ID here. rish must authenticate as the *calling* app (the one
+# that ran this su), because the Shizuku+ server rejects a package that doesn't belong to the
+# calling UID. rish derives the calling app's package from the process tree when it's unset, so a
+# hardcoded value here (previously af.shizuku.plus.api) would break the bridge for every app except
+# Shizuku+ itself. Leave it unset and let rish resolve it — unless the caller already exported one.
 
 # If no arguments are provided, drop into an interactive rish shell
 if [ $# -eq 0 ]; then
