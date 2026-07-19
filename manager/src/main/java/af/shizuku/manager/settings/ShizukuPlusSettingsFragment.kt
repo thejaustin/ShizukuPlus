@@ -270,13 +270,23 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
         val backupSettingsPref = findPreference<Preference>("backup_settings")
         backupSettingsPref?.setOnPreferenceClickListener {
             val dateStr = java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.US).format(java.util.Date())
-            createBackupLauncher.launch("ShizukuPlus_Settings_$dateStr.json")
+            // Some ROMs ship no Storage Access Framework document UI, so launching the picker throws
+            // ActivityNotFoundException (SHIZUKUPLUS-82). Fail with a message instead of crashing.
+            try {
+                createBackupLauncher.launch("ShizukuPlus_Settings_$dateStr.json")
+            } catch (e: android.content.ActivityNotFoundException) {
+                Toast.makeText(requireContext(), "No file manager app found to save the backup", Toast.LENGTH_LONG).show()
+            }
             true
         }
 
         val restoreSettingsPref = findPreference<Preference>("restore_settings")
         restoreSettingsPref?.setOnPreferenceClickListener {
-            restoreBackupLauncher.launch(arrayOf("application/json", "*/*"))
+            try {
+                restoreBackupLauncher.launch(arrayOf("application/json", "*/*"))
+            } catch (e: android.content.ActivityNotFoundException) {
+                Toast.makeText(requireContext(), "No file manager app found to open the backup", Toast.LENGTH_LONG).show()
+            }
             true
         }
 
