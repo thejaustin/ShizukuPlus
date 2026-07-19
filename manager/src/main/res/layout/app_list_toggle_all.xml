@@ -12,7 +12,7 @@
     android:focusable="true"
     app:layout_fitsSystemWindowsInsets="start|end"
     app:cardBackgroundColor="?colorSurfaceContainerLow"
-    app:cardCornerRadius="28dp"
+    app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
     app:contentPaddingLeft="16dp"
     app:contentPaddingRight="16dp"
     app:contentPaddingTop="8dp"

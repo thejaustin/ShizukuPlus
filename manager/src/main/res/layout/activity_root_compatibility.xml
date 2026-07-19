@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            app:cardCornerRadius="16dp"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge"
             app:cardElevation="0dp"
             app:strokeWidth="0dp"
             app:cardBackgroundColor="?attr/colorSecondaryContainer">
@@ -54,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardCornerRadius="28dp"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
             app:cardElevation="0dp"
             app:strokeWidth="0dp"
             app:cardBackgroundColor="?attr/colorSurfaceContainerHigh">
@@ -120,7 +120,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardCornerRadius="28dp"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
             app:cardElevation="0dp"
             app:strokeWidth="0dp"
             app:cardBackgroundColor="?attr/colorSurfaceContainerHigh">
@@ -163,7 +163,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardCornerRadius="28dp"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
             app:cardBackgroundColor="?attr/colorSurfaceContainerLow">
 
             <LinearLayout
@@ -225,7 +225,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:visibility="gone"
-            app:cardCornerRadius="28dp"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
             app:cardBackgroundColor="?attr/colorSecondaryContainer">
 
             <LinearLayout

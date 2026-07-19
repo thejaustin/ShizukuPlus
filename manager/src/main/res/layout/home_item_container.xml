@@ -11,7 +11,7 @@
     app:cardBackgroundColor="?colorSurfaceContainerHigh"
     app:cardElevation="0dp"
     app:strokeWidth="0dp"
-    app:cardCornerRadius="@dimen/card_corner_radius">
+    app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge">
 
     <!-- Content frame: inner ViewHolder layouts inflate here -->
     <FrameLayout

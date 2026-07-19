@@ -11,7 +11,7 @@
         android:id="@+id/search_bar_card"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        app:cardCornerRadius="28dp"
+        app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
         app:cardElevation="0dp"
         app:cardBackgroundColor="?colorSurfaceContainerHigh"
         android:clickable="true"
