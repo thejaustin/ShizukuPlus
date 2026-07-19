@@ -101,6 +101,11 @@ object RootCompatHelper {
     suspend fun autoSetupAll(context: Context, suPath: String): Int = withContext(Dispatchers.IO) {
         if (!isShizukuAvailable()) return@withContext 0
 
+        // Prefer an exec-permitted deployment: /storage is usually noexec and app_process rejects a
+        // writable dex on A14+, so a config pointing at the storage export often won't actually run.
+        // Deploy to /data/local/tmp and point apps there when we can.
+        val effectiveSuPath = deployBridgeToTmp(context) ?: suPath
+
         val pm = context.packageManager
         val installedPackages = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
         var processedCount = 0
@@ -112,13 +117,80 @@ object RootCompatHelper {
             if (pkg == context.packageName) continue
 
             if (pkg in automatable) {
-                if (autoSetup(context, pkg, suPath)) processedCount++
+                if (autoSetup(context, pkg, effectiveSuPath)) processedCount++
             } else {
                 // Falls through to manual-guidance UI path.
                 processedCount++
             }
         }
         processedCount
+    }
+
+    /**
+     * Deploys the SU Bridge (su/rish/plus + rish_shizuku.dex) to /data/local/tmp via Shizuku.
+     *
+     * This is strictly better than the user-picked storage export for making the bridge actually
+     * work with third-party apps:
+     *  - /data/local/tmp is exec-permitted, whereas shared storage (/sdcard) is usually mounted
+     *    noexec, so apps that exec the su path directly fail from storage.
+     *  - The dex is written 0444 (read-only), which app_process requires on Android 14+ (it refuses
+     *    a writable dex); FAT/exFAT SD cards can't hold unix perms at all.
+     *
+     * Each asset is streamed over the privileged process's stdin (`cat > file`) so it works in both
+     * root and ADB mode without the shell needing to read the app's private files. Returns the
+     * /data/local/tmp/su path on success, or null on failure.
+     */
+    suspend fun deployBridgeToTmp(context: Context): String? = withContext(Dispatchers.IO) {
+        if (!isShizukuAvailable()) return@withContext null
+        val dir = "/data/local/tmp"
+        // asset name -> octal mode (scripts executable; dex read-only for app_process on A14+)
+        val files = listOf(
+            "su" to "755",
+            "rish" to "755",
+            "plus" to "755",
+            "rish_shizuku.dex" to "444"
+        )
+        try {
+            for ((name, mode) in files) {
+                val bytes = context.assets.open(name).use { it.readBytes() }
+                if (!streamToPrivilegedFile(bytes, "$dir/$name", mode)) {
+                    Timber.e("deployBridgeToTmp: failed to write $dir/$name")
+                    return@withContext null
+                }
+            }
+            "$dir/su"
+        } catch (e: Exception) {
+            Timber.e(e, "deployBridgeToTmp failed")
+            null
+        }
+    }
+
+    /** Writes [bytes] to [path] via a privileged `cat`, then chmods it. Streams over stdin so no
+     *  cross-UID file read is needed (works in ADB mode, not just root). */
+    private fun streamToPrivilegedFile(bytes: ByteArray, path: String, mode: String): Boolean {
+        if (!Shizuku.pingBinder()) return false
+        return try {
+            val escaped = escapeShellSingleQuote(path)
+            val process = Shizuku.newProcess(
+                arrayOf("sh", "-c", "cat > '$escaped' && chmod $mode '$escaped'"), null, null
+            )
+            // Drain stdout/stderr concurrently so the child never blocks on a full pipe.
+            val outDrainer = Thread { try { process.inputStream.bufferedReader().use { it.readText() } } catch (_: Exception) {} }
+            val errDrainer = Thread { try { process.errorStream.bufferedReader().use { it.readText() } } catch (_: Exception) {} }
+            outDrainer.start()
+            errDrainer.start()
+            // outputStream is the child's stdin; writing then closing sends EOF so `cat` completes.
+            process.outputStream.use { it.write(bytes) }
+            val exitCode = process.waitFor()
+            outDrainer.join(500)
+            errDrainer.join(500)
+            try { process.inputStream.close() } catch (_: Exception) {}
+            try { process.errorStream.close() } catch (_: Exception) {}
+            exitCode == 0
+        } catch (e: Exception) {
+            Timber.e(e, "streamToPrivilegedFile failed for $path")
+            false
+        }
     }
 
     private fun executePrivileged(cmd: Array<String>): Boolean {

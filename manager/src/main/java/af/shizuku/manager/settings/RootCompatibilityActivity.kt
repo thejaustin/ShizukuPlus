@@ -74,9 +74,22 @@ class RootCompatibilityActivity : AppBarActivity() {
             binding.globalSuPath.text = path
             binding.btnCopyGlobal.setContent {
                 af.shizuku.core.ui.compose.Button(
-                    onClick = { copyToClipboard(path) }
+                    // Read the field at click time so a later /data/local/tmp deploy is reflected.
+                    onClick = { copyToClipboard(resolvedSuPath ?: path) }
                 ) {
                     androidx.compose.material3.Text(getString(R.string.su_bridge_copy_path))
+                }
+            }
+
+            // Deploy the bridge to /data/local/tmp and prefer that path: it's exec-permitted (shared
+            // storage is usually noexec, so apps can't exec the su path there) and holds the
+            // read-only dex app_process requires on Android 14+. Falls back to the storage path if
+            // deployment isn't possible.
+            lifecycleScope.launch {
+                val tmpPath = RootCompatHelper.deployBridgeToTmp(this@RootCompatibilityActivity)
+                if (tmpPath != null && !isFinishing) {
+                    resolvedSuPath = tmpPath
+                    binding.globalSuPath.text = tmpPath
                 }
             }
 

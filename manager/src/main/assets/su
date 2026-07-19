@@ -12,32 +12,33 @@ BASEDIR=$(dirname "$0")
 # hardcoded value here (previously af.shizuku.plus.api) would break the bridge for every app except
 # Shizuku+ itself. Leave it unset and let rish resolve it — unless the caller already exported one.
 
-# If no arguments are provided, drop into an interactive rish shell
-if [ $# -eq 0 ]; then
-    exec sh "$BASEDIR/rish"
-fi
-
-# Handle common 'su -c' usage patterns
+# Parse su-style arguments so more apps' invocation styles work:
+#   su                      -> interactive shell
+#   su -c "cmd"             -> run cmd
+#   su -c cmd arg1 arg2     -> run "cmd arg1 arg2" (everything after -c, not just the first token)
+#   su root -c "cmd" / su 0 -c "cmd" / su <user> -c "cmd"  -> user specifier ignored (rish is shell-level)
+#   su --mount-master -c "cmd" / su -s /bin/sh -c "cmd"    -> Magisk-style flags ignored
 COMMAND=""
+HAS_COMMAND=0
 while [ $# -gt 0 ]; do
     case "$1" in
-        -c)
+        -c|--command|--)
             shift
-            COMMAND="$1"
-            shift
+            COMMAND="$*"      # everything after -c is the command (real su semantics)
+            HAS_COMMAND=1
+            break
             ;;
         *)
-            # Ignore other flags (like -s, --user, etc) for now as rish 
-            # handles the environment.
+            # Positional user specifier (root/0/<name>) or a flag we can't map (-mm, -p, -s ...):
+            # skip it. rish always runs at Shizuku's shell/ADB privilege regardless.
             shift
             ;;
     esac
 done
 
-if [ -n "$COMMAND" ]; then
-    # Execute the command via rish
+if [ "$HAS_COMMAND" = "1" ] && [ -n "$COMMAND" ]; then
     exec sh "$BASEDIR/rish" -c "$COMMAND"
 else
-    # Fallback: pass all original arguments if -c wasn't used
-    exec sh "$BASEDIR/rish" "$@"
+    # No command (e.g. `su`, `su root`) -> interactive rish shell.
+    exec sh "$BASEDIR/rish"
 fi
