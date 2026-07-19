@@ -194,7 +194,10 @@ class ShizukuApplication : Application(), Configuration.Provider {
                     val simpleName = throwable?.javaClass?.simpleName ?: ""
                     if (simpleName == "BackgroundServiceStartNotAllowedException" ||
                         (throwable is IllegalStateException &&
-                            throwable.message?.contains("startForegroundService") == true)) {
+                            (throwable.message?.contains("startForegroundService") == true ||
+                                // Plain startService() from background on API 31+ (AutomationService /
+                                // ShizukuLiveService). Already caught at the call site; expected, not a bug.
+                                throwable.message?.contains("Not allowed to start service") == true))) {
                         return@setBeforeSend null
                     }
 

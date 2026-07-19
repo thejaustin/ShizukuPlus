@@ -107,6 +107,14 @@
 -keep class com.airbnb.mvrx.** { *; }
 -keepnames class com.airbnb.mvrx.** { *; }
 
+# Mavericks state classes (e.g. HomeState) are validated at runtime as immutable Kotlin data
+# classes via reflection (assertMavericksDataClassImmutability reads the component/copy members).
+# Only ViewModels were kept above, not the MavericksState classes themselves, so R8 could strip
+# HomeState's data-class members and break state init with "Mavericks state must be a data class!"
+# — crashing the home screen (SHIZUKUPLUS-46). This is Mavericks' documented consumer keep.
+-keep class * implements com.airbnb.mvrx.MavericksState { *; }
+-keepclassmembers class * implements com.airbnb.mvrx.MavericksState { *; }
+
 # Keep resource IDs and generated R classes to prevent "0_resource_name_obfuscated" crashes with ViewBinding.
 -keep class af.shizuku.manager.R$* { *; }
 -keepclassmembers class **.R$* {
