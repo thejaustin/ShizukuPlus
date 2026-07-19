@@ -57,7 +57,14 @@ class ShellTutorialActivity : AppBarActivity() {
             }
 
             fun writeToDocument(name: String): Boolean {
-                val documentUri = DocumentsContract.createDocument(contentResolver, doc, "application/octet-stream", name)
+                val documentUri = try {
+                    DocumentsContract.createDocument(contentResolver, doc, "application/octet-stream", name)
+                } catch (e: Exception) {
+                    // The parent tree URI can be stale/revoked (removed SD card, cleared permission);
+                    // createDocument then throws FileNotFoundException (SHIZUKUPLUS-84). Don't crash.
+                    Timber.tag(TAG).e(e, "Failed to create document for $name (tree unavailable?)")
+                    return false
+                }
                 if (documentUri == null) {
                     Timber.tag(TAG).e("Failed to create document for $name")
                     return false
