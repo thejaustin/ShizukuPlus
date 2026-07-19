@@ -1568,13 +1568,16 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     try {
                         Android17Compat.grantRuntimePermission(packageName, permToGrant, userId);
                     } catch (Throwable e) {
-                        LOGGER.e("grantRuntimePermission failed for " + permToGrant);
+                        // Most often "Unknown permission" when no installed package defines
+                        // permToGrant (e.g. the Compat Hub / dropin definer is missing) — log the
+                        // cause so this class of failure is diagnosable from logcat/Sentry.
+                        LOGGER.e(e, "grantRuntimePermission failed for %s (%s)", permToGrant, packageName);
                     }
                 } else {
                     try {
                         Android17Compat.revokeRuntimePermission(packageName, permToGrant, userId);
                     } catch (Throwable e) {
-                        LOGGER.e("revokeRuntimePermission failed for " + permToGrant);
+                        LOGGER.e(e, "revokeRuntimePermission failed for %s (%s)", permToGrant, packageName);
                     }
                 }
             }
@@ -1666,13 +1669,16 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     try {
                         Android17Compat.grantRuntimePermission(packageName, permToGrant, userId);
                     } catch (Throwable e) {
-                        LOGGER.e("grantRuntimePermission failed for " + permToGrant);
+                        // Most often "Unknown permission" when no installed package defines
+                        // permToGrant (e.g. the Compat Hub / dropin definer is missing) — log the
+                        // cause so this class of failure is diagnosable from logcat/Sentry.
+                        LOGGER.e(e, "grantRuntimePermission failed for %s (%s)", permToGrant, packageName);
                     }
                 } else {
                     try {
                         Android17Compat.revokeRuntimePermission(packageName, permToGrant, userId);
                     } catch (Throwable e) {
-                        LOGGER.e("revokeRuntimePermission failed for " + permToGrant);
+                        LOGGER.e(e, "revokeRuntimePermission failed for %s (%s)", permToGrant, packageName);
                     }
                     onPermissionRevoked(packageName);
                 }

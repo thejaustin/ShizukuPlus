@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Plus flavor (applicationId af.shizuku.plus.api) CAN be installed alongside stock Shizuku,
+         which owns moe.shizuku.manager.permission.API_V23. If the Plus manager also defined it,
+         installing both would fail with -126 INSTALL_FAILED_DUPLICATE_PERMISSION (#316). So Plus must
+         NOT define it — the separate Compat Hub (package moe.shizuku.privileged.api, mutually
+         exclusive with stock) is the definer for the Plus flavor. This remove strips any definition
+         that could merge in from a dependency. The dropin flavor defines it instead (see
+         src/dropin/AndroidManifest.xml). -->
+    <permission
+        android:name="moe.shizuku.manager.permission.API_V23"
+        tools:node="remove" />
+
+</manifest>

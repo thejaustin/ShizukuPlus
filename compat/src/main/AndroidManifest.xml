@@ -1,13 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- This app spoofs the stock Shizuku package name (moe.shizuku.privileged.api) so third-party
+         apps pass their "is Shizuku installed" checks; the real work is handled by the Shizuku+
+         manager (af.shizuku.plus.api). -->
 
-    <!-- This app exists solely to spoof the package name so apps like SwiftBackup pass their isInstalled checks. -->
+    <!-- Package visibility (API 30+): the forwards below target af.shizuku.plus.api by explicit
+         component. Without a <queries> entry that package is invisible on Android 11+, so the
+         startActivity()/sendBroadcast() forwards silently fail. -->
+    <queries>
+        <package android:name="af.shizuku.plus.api" />
+    </queries>
+
+    <!-- Define the permission every stock Shizuku-API client is hardcoded to
+         (ShizukuProvider.PERMISSION == moe.shizuku.manager.permission.API_V23). When the user
+         authorizes an app, the Shizuku+ server OS-grants this permission to it
+         (ShizukuService.updateFlagsForUid -> grantRuntimePermission), but that grant FAILS when no
+         installed package DEFINES the name — so an authorized third-party app's OS-level
+         checkSelfPermission(PERMISSION) stayed DENIED and it never recognized Shizuku+ (e.g. App Ops
+         managers via the Compat Hub). Defining it here — mirroring stock Shizuku's dangerous
+         permission — lets the server grant it, so authorized apps finally see the permission granted.
+         Collision-safe: this stub's package name IS moe.shizuku.privileged.api, so it can never be
+         installed alongside stock Shizuku (which owns the same definition), and the Plus manager
+         deliberately removes its own definition of this name. -->
+    <permission-group
+        android:name="moe.shizuku.manager.permission-group.API"
+        android:description="@string/permission_group_description"
+        android:label="@string/permission_group_label" />
+    <permission
+        android:name="moe.shizuku.manager.permission.API_V23"
+        android:description="@string/permission_description"
+        android:label="@string/permission_label"
+        android:permissionGroup="moe.shizuku.manager.permission-group.API"
+        android:protectionLevel="dangerous" />
+
     <application
         android:label="Shizuku+ Compat Hub"
         android:hasCode="true"
         android:icon="@android:drawable/ic_secure">
-        
+
         <activity
             android:name=".ForwardActivity"
             android:exported="true"
@@ -26,6 +57,7 @@
                 <action android:name="rikka.shizuku.intent.action.REQUEST_BINDER" />
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>

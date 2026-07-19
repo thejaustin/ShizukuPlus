@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- The Drop-In flavor (applicationId moe.shizuku.privileged.api) IS the stock-Shizuku
+         package-name replacement, so — like stock Shizuku, and unlike the Plus flavor — it must
+         DEFINE moe.shizuku.manager.permission.API_V23 itself. Stock-only clients (App-Ops managers,
+         Obtainium, etc.) request this exact name; on authorize the server OS-grants it
+         (ShizukuService.updateFlagsForUid -> grantRuntimePermission), which silently fails unless an
+         installed package defines it. The Plus flavor delegates this to the separate Compat Hub, but
+         the Compat Hub shares this same package name and so can never be installed alongside Drop-In —
+         hence Drop-In defines it here.
+
+         Collision-safe: this flavor is mutually exclusive with stock Shizuku (identical package name),
+         the only other package that defines this name/group. protectionLevel="dangerous" is required
+         so the server's grantRuntimePermission (a runtime-permission grant) is accepted; it mirrors
+         stock Shizuku exactly so each authorized app shows the permission granted per-app. -->
+    <permission-group
+        android:name="moe.shizuku.manager.permission-group.API"
+        android:description="@string/permission_group_description"
+        android:label="@string/permission_group_label" />
+    <permission
+        android:name="moe.shizuku.manager.permission.API_V23"
+        android:description="@string/permission_description"
+        android:label="@string/permission_label"
+        android:permissionGroup="moe.shizuku.manager.permission-group.API"
+        android:protectionLevel="dangerous" />
+
+</manifest>
