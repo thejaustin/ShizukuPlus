@@ -718,13 +718,22 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         });
     }
 
+    // Whole-partition wipe: `rm` (any flags) whose TARGET is a partition ROOT as a complete path
+    // token — optionally a "/*" glob. Crucially, a deeper path such as /data/data/<pkg>/cache,
+    // /data/local/tmp/..., or /storage/emulated/0/Android/data/<pkg>/... is a LEGITIMATE app
+    // operation and must NOT be blocked, so the root must be followed by whitespace or end-of-string,
+    // never another "/segment". The old `contains("rm -rf /data")` matched all of those subpaths and
+    // hard-failed common app cache-clears (and the SU bridge's own /data/local/tmp cleanup).
+    private static final java.util.regex.Pattern WIPE_PARTITION = java.util.regex.Pattern.compile(
+            "(?:^|\\s)(?:\\S*/)?rm\\s+(?:-\\S+\\s+)*(?:/(?:data|system|storage|vendor|sdcard)|/)(?:/\\*)?(?=\\s|$)");
+
     private boolean isCatastrophicCommand(String[] cmd) {
         if (cmd == null || cmd.length == 0) return false;
         String fullCmd = String.join(" ", cmd);
         // Block formatting block devices
         if (fullCmd.contains("mkfs") || fullCmd.contains("mke2fs")) return true;
-        // Block wiping data
-        if (fullCmd.contains("rm -rf /data") || fullCmd.contains("rm -rf /storage") || fullCmd.contains("rm -rf /system")) return true;
+        // Block wiping an entire partition (but not legitimate deletes of a subpath under it)
+        if (WIPE_PARTITION.matcher(fullCmd).find()) return true;
         // Block dd to raw block devices (unless inside a magisk module context, but we want to prompt)
         if (fullCmd.startsWith("dd ") && fullCmd.contains("of=/dev/block/")) return true;
         return false;
