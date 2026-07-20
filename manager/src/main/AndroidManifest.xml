@@ -380,9 +380,17 @@
                 tools:node="remove" />
         </provider>
 
+        <!-- Authority is ${applicationId}.shizuku ONLY here. A content-provider authority is
+             device-unique, so the coexist-with-stock Plus flavor (af.shizuku.plus.api) must NOT claim
+             the stock authority moe.shizuku.privileged.api — doing so makes it fail to install
+             (INSTALL_FAILED_CONFLICTING_PROVIDER, surfaced as "App not installed") whenever stock
+             Shizuku, the Drop-In, or an old moe.shizuku.privileged.api Shizuku+ is present. The Drop-In
+             flavor re-adds the stock authority in src/dropin/AndroidManifest.xml (it IS that package,
+             so it's collision-safe); stock-client compat for the Plus flavor comes from the separate
+             Compat Hub. -->
         <provider
             android:name=".ShizukuManagerProvider"
-            android:authorities="${applicationId}.shizuku;moe.shizuku.privileged.api"
+            android:authorities="${applicationId}.shizuku"
             android:directBootAware="true"
             android:enabled="true"
             android:exported="true"

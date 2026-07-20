@@ -428,19 +428,38 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           TAG_NAME="${VERSION}"
-          # Rename each built APK to a versioned, self-identifying filename before attaching, so a
-          # downloaded file makes its build and flavor obvious (requested on #340).
+          # Rename each built APK to a versioned, self-identifying filename before attaching (#340).
+          #
+          # Select each asset by its VERIFIED applicationId, not by "first .apk in a directory". The
+          # ShizukuPlus artifact download landed multiple APKs in files/main, so the old
+          # `find files/main | head -1` grabbed the Drop-In and published it as the Plus asset —
+          # every release r2141..r2152 shipped the Drop-In (moe.shizuku.privileged.api) under BOTH the
+          # Plus and Drop-In names, so the standard af.shizuku.plus.api build (the coexist-with-stock
+          # one) never reached users and wouldn't install alongside stock Shizuku.
           ASSETS=()
-          rename_apk() { # $1=source dir  $2=target basename (without extension)
-            local apk
-            apk=$(find "$1" -name "*.apk" -type f 2>/dev/null | head -1)
-            if [ -n "$apk" ]; then
-              local dest="files/${2}.apk"
-              mv "$apk" "$dest"
-              ASSETS+=("$dest")
-            fi
-          }
-          rename_apk files/main   "Shizuku+-${VERSION}"
-          rename_apk files/dropin "Shizuku+-Drop-In-${VERSION}"
-          rename_apk files/compat "Shizuku+-Compat-Hub-${VERSION}"
+          # applicationId of an APK, read from its FileProvider authority (${applicationId}.fileprovider).
+          # Toolless (no aapt in this job): unzip the binary manifest, pull the UTF-16 string.
+          appid_of() { unzip -p "$1" AndroidManifest.xml 2>/dev/null | strings -e l \
+            | grep -oE '[a-zA-Z0-9._]+\.fileprovider' | head -1 | sed 's/\.fileprovider$//'; }
+          attach() { mv "$1" "files/${2}.apk"; ASSETS+=("files/${2}.apk"); }
+
+          # Plus (standard) — uniquely af.shizuku.plus.api. Fail the release if it's missing.
+          PLUS_APK=""
+          for f in $(find files -name "*.apk" -type f 2>/dev/null); do
+            [ "$(appid_of "$f")" = "af.shizuku.plus.api" ] && { PLUS_APK="$f"; break; }
+          done
+          [ -z "$PLUS_APK" ] && { echo "::error::Standard af.shizuku.plus.api APK missing from build artifacts"; exit 1; }
+          attach "$PLUS_APK" "Shizuku+-${VERSION}"
+
+          # Drop-In and the Compat stub BOTH use moe.shizuku.privileged.api. The Drop-In is the full
+          # manager (~5-6 MB); the Compat stub is tiny — so the Drop-In is the largest such APK outside
+          # files/compat. Optional (a build may not produce one).
+          DROPIN_APK=$(for f in $(find files/main files/dropin -name "*.apk" -type f 2>/dev/null); do
+            [ "$(appid_of "$f")" = "moe.shizuku.privileged.api" ] && stat -c '%s %n' "$f"
+          done | sort -rn | head -1 | cut -d' ' -f2-)
+          [ -n "$DROPIN_APK" ] && attach "$DROPIN_APK" "Shizuku+-Drop-In-${VERSION}"
+
+          COMPAT_APK=$(find files/compat -name "*.apk" -type f 2>/dev/null | head -1)
+          [ -n "$COMPAT_APK" ] && attach "$COMPAT_APK" "Shizuku+-Compat-Hub-${VERSION}"
+
           gh release create "$TAG_NAME" "${ASSETS[@]}" --title "$VERSION" --notes-file release_notes.md
