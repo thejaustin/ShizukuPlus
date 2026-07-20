@@ -818,11 +818,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         args.add(cmd[i]);
                     } else if (cmd[i].equals("-c") || cmd[i].equals("--command")) {
                         inCommand = true;
-                    } else if (cmd[i].equals("-s") || cmd[i].equals("--shell") || 
+                    } else if (cmd[i].equals("-s") || cmd[i].equals("--shell") ||
                                cmd[i].equals("-cn") || cmd[i].equals("--context") ||
                                cmd[i].equals("-g") || cmd[i].equals("--group") ||
-                               cmd[i].equals("-u") || cmd[i].equals("--user") ||
-                               cmd[i].equals("-mm") || cmd[i].equals("--mount-master")) {
+                               cmd[i].equals("-u") || cmd[i].equals("--user")) {
                         // These flags take a following argument — skip both
                         skipNext = true;
                     } else if (cmd[i].equals("-v") || cmd[i].equals("--version")) {
@@ -831,8 +830,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     } else if (cmd[i].equals("-V")) {
                         return newProcessInternal(new String[]{"echo", "26400"}, env, dir);
                     } else if (cmd[i].equals("-l") || cmd[i].equals("--login") || cmd[i].equals("-") ||
-                               cmd[i].equals("-M") || cmd[i].equals("--magisk-mode")) {
-                        // Login or Magisk mode flags — skip safely
+                               cmd[i].equals("-M") || cmd[i].equals("--magisk-mode") ||
+                               cmd[i].equals("-mm") || cmd[i].equals("--mount-master")) {
+                        // Login / Magisk mode flags — standalone, take NO argument, skip safely.
+                        // (-mm/--mount-master previously sat in the arg-taking branch above, which ate
+                        // the following token — so `su -mm -c "cmd"` swallowed the -c and dropped the
+                        // command, opening an empty interactive shell instead of running it.)
                     } else if (cmd[i].equals("-p") || cmd[i].equals("-m") || cmd[i].equals("--preserve-environment")) {
                         // Environment preservation flags — skip
                     } else if (!cmd[i].startsWith("-") && args.isEmpty()) {
