@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 
-                app:cardCornerRadius="24dp"
+                app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
                 android:layout_marginBottom="16dp">
 
                 <LinearLayout
@@ -67,7 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 
-                app:cardCornerRadius="24dp"
+                app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
                 android:layout_marginBottom="16dp">
 
                 <LinearLayout
@@ -100,7 +100,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 
-                app:cardCornerRadius="24dp">
+                app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge">
 
                 <LinearLayout
                     android:layout_width="match_parent"
