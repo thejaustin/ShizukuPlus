@@ -116,10 +116,11 @@ object RootCompatHelper {
             val pkg = pkgInfo.packageName
             if (pkg == context.packageName) continue
 
-            if (pkg in automatable) {
-                if (autoSetup(context, pkg, effectiveSuPath)) processedCount++
-            } else {
-                // Falls through to manual-guidance UI path.
+            // Only count apps we actually auto-configured. Non-automatable apps (the vast majority of
+            // what's installed) can't be set up from here — we don't know their SU-path storage format
+            // — so they must NOT inflate the count, or the "configured N apps" toast claims to have
+            // set up every app on the device.
+            if (pkg in automatable && autoSetup(context, pkg, effectiveSuPath)) {
                 processedCount++
             }
         }
