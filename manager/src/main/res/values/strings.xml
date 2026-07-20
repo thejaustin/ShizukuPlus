@@ -533,6 +533,13 @@
     <string name="su_bridge_copy_path">Copy path</string>
     <string name="su_bridge_default_nav_hint">Set custom SU path in app settings</string>
     <string name="su_bridge_path_copied">SU path copied to clipboard</string>
+    <string name="su_bridge_self_test">Run bridge self-test</string>
+    <string name="su_bridge_self_test_running">Testing the SU Bridge…</string>
+    <string name="su_bridge_self_test_title">SU Bridge self-test</string>
+    <string name="su_bridge_self_test_ok">Bridge OK</string>
+    <string name="su_bridge_self_test_fail">Bridge not working</string>
+    <string name="su_bridge_self_test_copy">Copy result</string>
+    <string name="su_bridge_self_test_copied">Self-test result copied</string>
     <string name="su_bridge_device_identity_title">Device Identity</string>
     <string name="starter_service_started">Service started.</string>
     <string name="su_bridge_device_identity_real">Real: %s</string>

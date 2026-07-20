@@ -193,6 +193,105 @@ object RootCompatHelper {
         }
     }
 
+    /** Result of [selfTest]: [ok] is a coarse pass/fail; [report] is a human-readable multi-line
+     *  summary meant to be shown verbatim in a dialog. */
+    data class BridgeSelfTest(val ok: Boolean, val report: String)
+
+    /**
+     * Diagnoses the SU Bridge on THIS device without needing a third-party app. Runs two probes:
+     *
+     *  A. **Deploy + privilege (via Shizuku — reliable).** Deploys to /data/local/tmp, lists the
+     *     files, and reads the *real* uid from `/proc/self/status`. We can't use `id`/`whoami` — the
+     *     server intercepts those and spoofs `uid=0(root)` for root-detection, so they'd lie about
+     *     the true privilege ceiling (shell/ADB = uid 2000 vs. real root = uid 0).
+     *
+     *  B. **App-side exec (best-effort).** Has *this app's own process* exec the deployed `su`, which
+     *     is the exact mechanism a third-party app uses: app_process then runs at the app's uid, so
+     *     the server's package↔uid check in `attachApplication` passes for our own package. This is
+     *     the only way to exercise the real attach from inside the app. Some ROMs' SELinux blocks an
+     *     untrusted app from exec'ing app_process or reading `shell_data_file` in /data/local/tmp; if
+     *     so we report that honestly instead of as a bridge bug — it tells the user the deploy
+     *     location won't work for exec-style callers on their device.
+     */
+    suspend fun selfTest(context: Context): BridgeSelfTest = withContext(Dispatchers.IO) {
+        if (!isShizukuAvailable()) {
+            return@withContext BridgeSelfTest(false,
+                "Shizuku isn't connected. Start the Shizuku service from the home screen, then try again.")
+        }
+        val tmpSu = deployBridgeToTmp(context)
+            ?: return@withContext BridgeSelfTest(false,
+                "❌ Could not deploy the bridge to /data/local/tmp.\n\nMake sure the Shizuku service is running, then retry.")
+        val tmpDir = tmpSu.substringBeforeLast('/')
+
+        // Probe A — deploy check + true privilege, via Shizuku.
+        val (_, lsOut, _) = runPrivilegedCapture(arrayOf("sh", "-c",
+            "ls -l '$tmpDir'/su '$tmpDir'/rish '$tmpDir'/plus '$tmpDir'/rish_shizuku.dex 2>&1; " +
+                "echo '---'; grep -m1 '^Uid:' /proc/self/status"))
+        val deployed = lsOut.isNotBlank() && !lsOut.contains("No such file")
+        val uid = Regex("Uid:\\s+(\\d+)").find(lsOut)?.groupValues?.get(1)?.toIntOrNull()
+        val privLabel = when (uid) {
+            0 -> "root (uid 0) — full privileges"
+            2000 -> "shell / ADB (uid 2000)"
+            null -> "unknown"
+            else -> "uid $uid"
+        }
+
+        val sb = StringBuilder()
+        sb.append(if (deployed) "✅ Bridge deployed to $tmpDir\n" else "❌ Bridge files missing under $tmpDir\n")
+        sb.append("• Privilege level: $privLabel\n")
+
+        // Probe B — real app-exec flow (best-effort).
+        val appExec = try {
+            val p = Runtime.getRuntime().exec(arrayOf("sh", "$tmpDir/su", "-c",
+                "echo APP_OK; grep -m1 '^Uid:' /proc/self/status"))
+            val out = p.inputStream.bufferedReader().readText()
+            val err = p.errorStream.bufferedReader().readText()
+            p.waitFor()
+            if (out.contains("APP_OK")) {
+                val auid = Regex("Uid:\\s+(\\d+)").find(out)?.groupValues?.get(1)?.toIntOrNull()
+                "✅ ran end-to-end (uid ${auid ?: "?"})"
+            } else {
+                "⚠️ didn't round-trip — an exec-style app may fail here:\n${(out + err).trim().take(220)}"
+            }
+        } catch (e: Exception) {
+            "⚠️ blocked on this device (likely SELinux): ${e.message?.take(160)}"
+        }
+        sb.append("• App-exec test: $appExec\n\n")
+
+        if (uid == 0) {
+            sb.append("Root-level bridge: apps needing true root can work through it.")
+        } else {
+            sb.append("Shell-level bridge (like ADB): app features needing only shell/ADB will work; " +
+                "features that require true root — e.g. reading another app's private data — cannot, " +
+                "even though the app may detect \"root\".")
+        }
+        sb.append("\n\nRemember: the calling app must be authorized in Shizuku+ before its own commands " +
+            "through the bridge succeed.")
+
+        BridgeSelfTest(deployed && uid != null, sb.toString())
+    }
+
+    /** Runs a privileged command and returns (exitCode, stdout, stderr). Unlike [executePrivileged]
+     *  this captures output, which the self-test needs. */
+    private fun runPrivilegedCapture(cmd: Array<String>): Triple<Int, String, String> {
+        if (!Shizuku.pingBinder()) return Triple(-1, "", "Shizuku binder not available")
+        return try {
+            val process = Shizuku.newProcess(cmd, null, null)
+            val out = StringBuilder()
+            val errb = StringBuilder()
+            val outT = Thread { try { process.inputStream.bufferedReader().use { out.append(it.readText()) } } catch (_: Exception) {} }
+            val errT = Thread { try { process.errorStream.bufferedReader().use { errb.append(it.readText()) } } catch (_: Exception) {} }
+            outT.start(); errT.start()
+            try { process.outputStream.close() } catch (_: Exception) {}
+            val exit = process.waitFor()
+            outT.join(1500); errT.join(1500)
+            Triple(exit, out.toString(), errb.toString())
+        } catch (e: Exception) {
+            Timber.e(e, "runPrivilegedCapture failed")
+            Triple(-1, "", e.message ?: "exception")
+        }
+    }
+
     private fun executePrivileged(cmd: Array<String>): Boolean {
         if (!Shizuku.pingBinder()) {
             Timber.w("RootCompatHelper: Shizuku binder not available, skipping command")

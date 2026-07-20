@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.Settings
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil3.load
 import coil3.request.crossfade
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
@@ -229,12 +231,44 @@ class RootCompatibilityActivity : AppBarActivity() {
         if (intent != null) startActivity(intent)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_root_compatibility, menu)
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            finish()
-            return true
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+            R.id.action_self_test -> {
+                runSelfTest()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    /** Runs the SU Bridge self-test off the main thread and shows the result in a dialog. */
+    private fun runSelfTest() {
+        Toast.makeText(this, R.string.su_bridge_self_test_running, Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            val result = RootCompatHelper.selfTest(this@RootCompatibilityActivity)
+            if (isFinishing) return@launch
+            val heading = if (result.ok) getString(R.string.su_bridge_self_test_ok)
+                          else getString(R.string.su_bridge_self_test_fail)
+            MaterialAlertDialogBuilder(this@RootCompatibilityActivity)
+                .setTitle(getString(R.string.su_bridge_self_test_title))
+                .setMessage("$heading\n\n${result.report}")
+                .setPositiveButton(android.R.string.ok, null)
+                .setNeutralButton(R.string.su_bridge_self_test_copy) { _, _ ->
+                    val cm = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    cm.setPrimaryClip(ClipData.newPlainText("SU Bridge self-test", result.report))
+                    Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_self_test_copied, Toast.LENGTH_SHORT).show()
+                }
+                .show()
+        }
     }
 
     private inner class CategorizedSuggestedAppsAdapter(items: List<ListItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
