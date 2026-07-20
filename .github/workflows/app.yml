@@ -354,9 +354,12 @@ jobs:
           PREV_TAG=$(git tag --list '*13.6.0.r*' --sort=-creatordate | grep -v "^${TAG_NAME}$" | head -1)
 
           # Most recent MAJOR release to spotlight in every release's notes. Bump these two lines
-          # when a new headline release ships (keep MAJOR_DESC to one short clause).
-          MAJOR_RELEASE="v13.6.0.r2139"
-          MAJOR_DESC="Stock-client compatibility fixed — App-Ops managers, OptiDroid, Obtainium and other stock Shizuku-API apps now recognize Shizuku+ and show the permission granted per-app (define API_V23 so the server's runtime grant succeeds; also fixed for the Drop-In flavor)."
+          # when a new headline release ships (keep MAJOR_DESC to one short clause). For the CURRENT
+          # build the headline major == the era major, so a single callout is correct here. When you
+          # bump this, also re-run scripts/backfill_majors.py (add the new major to its MAJORS list)
+          # so older release pages show BOTH this headline and the major of their own era.
+          MAJOR_RELEASE="v13.6.0.r2149"
+          MAJOR_DESC="SU Bridge now works with third-party root apps — apps like Swift Backup can use their root-only features on non-rooted devices by pointing their custom-su path at Shizuku+ (the bridge now authenticates as the calling app, fixing the long-standing caller-identity bug, and deploys to an exec-permitted location)."
           
           {
             echo "# ${TAG_NAME}"
