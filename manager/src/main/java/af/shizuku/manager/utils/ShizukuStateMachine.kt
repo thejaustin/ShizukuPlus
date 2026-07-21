@@ -124,7 +124,14 @@ object ShizukuStateMachine {
             span?.finish()
         }
 
-        val state = if (isAlive) State.RUNNING else State.STOPPED
+        val currentState = get()
+        val state = when {
+            isAlive -> State.RUNNING
+            currentState == State.STARTING -> State.STARTING
+            currentState == State.STOPPING -> State.STOPPING
+            currentState == State.CRASHED -> State.CRASHED
+            else -> State.STOPPED
+        }
         set(state)
         return state
     }

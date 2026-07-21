@@ -154,6 +154,8 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                 "/system/bin/su (Standard AOSP)",
                 "/system/xbin/su (SuperSU Legacy)",
                 "/sbin/su (Magisk/Custom ROMs)",
+                "/data/adb/ksu/bin/su (KernelSU)",
+                "/data/adb/ap/bin/su (APatch)",
                 "Custom Path..."
             )
             val presetValues = arrayOf(
@@ -161,6 +163,8 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                 "/system/bin/su",
                 "/system/xbin/su",
                 "/sbin/su",
+                "/data/adb/ksu/bin/su",
+                "/data/adb/ap/bin/su",
                 "custom"
             )
 

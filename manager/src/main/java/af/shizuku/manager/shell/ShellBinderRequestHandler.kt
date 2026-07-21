@@ -30,11 +30,11 @@ object ShellBinderRequestHandler {
         val shizukuBinder = try {
             Shizuku.getBinder()
         } catch (e: Exception) {
-            LOGGER.e(e, "getBinder failed")
+            LOGGER.w(e, "getBinder failed")
             return false
         }
         if (shizukuBinder == null) {
-            LOGGER.e("shizuku binder is null")
+            LOGGER.w("shizuku binder is null")
             return false
         }
 
@@ -46,7 +46,7 @@ object ShellBinderRequestHandler {
             binder.transact(IBinder.FIRST_CALL_TRANSACTION, data, reply, IBinder.FLAG_ONEWAY)
             return true
         } catch (e: Exception) {
-            LOGGER.e(e, "transact")
+            LOGGER.w(e, "transact")
             return false
         } finally {
             data.recycle()

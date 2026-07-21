@@ -571,3 +571,7 @@ status:	none
 It has to do with the different application IDs and names I was using before. I've got things set up to use the Shizuku+ name now, and am working on fixes at the moment that I'll push soon. I'm trying to ensure the app actually functions as separate to Shizuku while still giving the user all the capabilities of the original app. Apps that worked with Shizuku should still work with ShizukuPlus without adding the custom API and currently I think that has been broken, amongst other things. Anyway, you may need to uninstall and reinstall any other versions of Shizuku+ you have. I don't personally recognize one of the ones you have.
 --
 =================
+
+### Module Consideration (ADB-backed ZIP modules)
+Status: OPEN
+Description: Consider implementing an ADB-backed ZIP module manager similar to Nightzuku. Allows users to execute complex scripts and setups natively via Shizuku without needing Termux or external terminal apps. Need to evaluate security implications, UI overhead, and script sandboxing. Currently unsure if this is the method we'll use in full, if at all, but keeping it open for architectural review.

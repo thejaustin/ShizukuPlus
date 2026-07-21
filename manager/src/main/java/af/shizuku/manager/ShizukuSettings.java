@@ -943,6 +943,9 @@ public class ShizukuSettings {
                     try {
                         android.net.Uri uri = android.net.Uri.parse(suPathUri);
                         String docId = android.provider.DocumentsContract.getTreeDocumentId(uri);
+                        if (docId != null && docId.startsWith("raw:")) {
+                            docId = docId.substring("raw:".length());
+                        }
                         String resolvedPath = null;
                         if (docId.startsWith("primary:")) {
                             String relative = docId.substring("primary:".length());
@@ -960,11 +963,11 @@ public class ShizukuSettings {
                             service.setPlusSetting("su_path", resolvedPath);
                         }
                     } catch (Exception e) {
-                        Timber.tag("ShizukuSettings").e(e, "failed to update su_path");
+                        Timber.tag("ShizukuSettings").w(e, "failed to update su_path");
                     }
                 }
             } catch (Throwable tr) {
-                Timber.tag("ShizukuSettings").e(tr, "failed to sync plus features");
+                Timber.tag("ShizukuSettings").w(tr, "failed to sync plus features");
             }
         }).start();
     }

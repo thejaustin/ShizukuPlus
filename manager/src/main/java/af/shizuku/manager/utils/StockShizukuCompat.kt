@@ -82,7 +82,7 @@ object StockShizukuCompat {
             var line: String?
             var isOriginal = false
             while (reader.readLine().also { line = it } != null) {
-                if (line!!.contains("moe.shizuku.privileged.api")) {
+                if (line?.contains("moe.shizuku.privileged.api") == true) {
                     isOriginal = true
                     break
                 }

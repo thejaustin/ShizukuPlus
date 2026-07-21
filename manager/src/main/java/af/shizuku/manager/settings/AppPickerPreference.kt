@@ -48,7 +48,7 @@ class AppPickerPreference(context: Context, attrs: AttributeSet?) : Preference(c
                         .sortedBy { it.label.lowercase() }
                 }
             }
-            cachedApps!!
+            cachedApps ?: emptyList()
         }
 
         fun invalidateCache() {

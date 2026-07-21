@@ -63,7 +63,21 @@ object EnvironmentUtils {
     fun isRooted(): Boolean = isRootedCached ?: false
 
     private fun checkSuExists(): Boolean {
-        val paths = System.getenv("PATH")?.split(":") ?: return false
+        val paths = System.getenv("PATH")?.split(":")?.toMutableList() ?: mutableListOf()
+        // Add common modern root paths that might not be in the standard PATH
+        paths.addAll(listOf(
+            "/data/adb/ksu/bin",
+            "/data/adb/ap/bin",
+            "/data/adb/magisk",
+            "/sbin",
+            "/system/bin",
+            "/system/xbin",
+            "/data/local/xbin",
+            "/data/local/bin",
+            "/system/sd/xbin",
+            "/system/bin/failsafe",
+            "/data/local"
+        ))
         for (path in paths) {
             if (java.io.File(path, "su").exists()) return true
         }
@@ -124,7 +138,10 @@ object EnvironmentUtils {
         val uriStr = ShizukuSettings.getExportDirUri() ?: return null
         return try {
             val uri = android.net.Uri.parse(uriStr)
-            val docId = android.provider.DocumentsContract.getTreeDocumentId(uri)
+            var docId = android.provider.DocumentsContract.getTreeDocumentId(uri)
+            if (docId.startsWith("raw:")) {
+                docId = docId.removePrefix("raw:")
+            }
 
             // Check for common volume patterns
             val basePath = when {

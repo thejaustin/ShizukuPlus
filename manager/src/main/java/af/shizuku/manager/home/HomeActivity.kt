@@ -67,7 +67,7 @@ import androidx.compose.ui.platform.LocalContext
 import af.shizuku.core.ui.AppActivity
 import af.shizuku.manager.home.compose.HomeScreen
 
-abstract class HomeActivity : AppActivity(), MavericksView {
+open class HomeActivity : AppActivity(), MavericksView {
 
     private val homeModel: HomeViewModel by viewModel()
     private val appsModel: AppsViewModel by viewModels()
@@ -133,14 +133,18 @@ abstract class HomeActivity : AppActivity(), MavericksView {
             try {
                 val iconViewAny: Any? = provider.iconView
                 if (iconViewAny is android.view.View) {
-                    iconViewAny.animate()
-                        ?.alpha(0f)
-                        ?.scaleX(0.8f)
-                        ?.scaleY(0.8f)
-                        ?.setDuration(ShizukuSettings.scaledAnimationDuration(220))
-                        ?.setInterpolator(android.view.animation.PathInterpolator(0.4f, 0f, 1f, 1f))
-                        ?.withEndAction { provider.remove() }
-                        ?.start()
+                    val animator = iconViewAny.animate()
+                    if (animator != null) {
+                        animator.alpha(0f)
+                            .scaleX(0.8f)
+                            .scaleY(0.8f)
+                            .setDuration(ShizukuSettings.scaledAnimationDuration(220))
+                            .setInterpolator(android.view.animation.PathInterpolator(0.4f, 0f, 1f, 1f))
+                            .withEndAction { provider.remove() }
+                            .start()
+                    } else {
+                        provider.remove()
+                    }
                 } else {
                     provider.remove()
                 }
@@ -395,17 +399,18 @@ abstract class HomeActivity : AppActivity(), MavericksView {
                 super.clearView(rv, vh)
                 adapter.isDragging = false
                 if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
-                    // Guard against NPE: animate() returns null when the view is
-                    // no longer attached to a window (OEM/Android 15+ nullability
-                    // contract violation observed in crash reports).
-                    if (vh.itemView.isAttachedToWindow) {
-                        vh.itemView.animate()
-                            ?.scaleX(1f)
-                            ?.scaleY(1f)
-                            ?.translationZ(0f)
-                            ?.setDuration(ShizukuSettings.scaledAnimationDuration(250))
-                            ?.setInterpolator(android.view.animation.OvershootInterpolator(0.8f))
-                            ?.start()
+                    val animator = vh.itemView.animate()
+                    if (animator != null) {
+                        animator.scaleX(1f)
+                            .scaleY(1f)
+                            .translationZ(0f)
+                            .setDuration(ShizukuSettings.scaledAnimationDuration(250))
+                            .setInterpolator(android.view.animation.OvershootInterpolator(0.8f))
+                            .start()
+                    } else {
+                        vh.itemView.scaleX = 1f
+                        vh.itemView.scaleY = 1f
+                        vh.itemView.translationZ = 0f
                     }
                 }
                 adapter.persistCardOrder()
@@ -446,26 +451,38 @@ abstract class HomeActivity : AppActivity(), MavericksView {
                 if (HomeEditMode.isActive) {
                     HomeEditMode.exit()
                     if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
-                        recyclerView.animate()
-                            .scaleX(1f)
-                            .scaleY(1f)
-                            .alpha(1f)
-                            .setDuration(ShizukuSettings.scaledAnimationDuration(400))
-                            .setInterpolator(androidx.core.view.animation.PathInterpolatorCompat.create(0.2f, 0f, 0f, 1f))
-                            .start()
+                        val animator = recyclerView.animate()
+                        if (animator != null) {
+                            animator.scaleX(1f)
+                                .scaleY(1f)
+                                .alpha(1f)
+                                .setDuration(ShizukuSettings.scaledAnimationDuration(400))
+                                .setInterpolator(androidx.core.view.animation.PathInterpolatorCompat.create(0.2f, 0f, 0f, 1f))
+                                .start()
+                        } else {
+                            recyclerView.scaleX = 1f
+                            recyclerView.scaleY = 1f
+                            recyclerView.alpha = 1f
+                        }
                     }
                 }
             }
 
             override fun handleOnBackCancelled() {
                 if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
-                    recyclerView.animate()
-                        .scaleX(1f)
-                        .scaleY(1f)
-                        .alpha(1f)
-                        .setDuration(ShizukuSettings.scaledAnimationDuration(300))
-                        .setInterpolator(android.view.animation.DecelerateInterpolator())
-                        .start()
+                    val animator = recyclerView.animate()
+                    if (animator != null) {
+                        animator.scaleX(1f)
+                            .scaleY(1f)
+                            .alpha(1f)
+                            .setDuration(ShizukuSettings.scaledAnimationDuration(300))
+                            .setInterpolator(android.view.animation.DecelerateInterpolator())
+                            .start()
+                    } else {
+                        recyclerView.scaleX = 1f
+                        recyclerView.scaleY = 1f
+                        recyclerView.alpha = 1f
+                    }
                 }
             }
         }

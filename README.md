@@ -103,6 +103,8 @@ Thanks to the following upstream contributors and projects whose work makes Shiz
 - **[Muntashir Akon](https://github.com/MuntashirAkon)** — For the aShell You codebase, which inspired the terminal and shell automation features.
 - **[iamr0s](https://github.com/iamr0s)** — For Dhizuku, enabling the unified Device Owner privilege mode, and AndroidAppProcess for standalone Java process execution.
 - **[pascua28](https://github.com/pascua28)** — For native Samsung System UID 1000 escalation integration.
+- **[kerneldroid](https://github.com/kerneldroid)** — For the Nightzuku fork, which inspired our Android 16/17 (SDK 37) hidden API resilience (handling `deviceId`) and UI modernizations.
+- **[ShizukuExt-SystemUID](https://github.com/ShizukuExt)** — For conceptualizing systemic UID 1000 privilege escalation beyond standard limits.
 
 ### Upstream Projects
 
@@ -112,6 +114,8 @@ Thanks to the following upstream contributors and projects whose work makes Shiz
 | [Shizuku (fork)](https://github.com/thedjchi/Shizuku) | thedjchi | Apache 2.0 | Intermediate fork with QoL improvements; carried the Android 17 compat work Shizuku+ adapted |
 | [Nightzuku](https://github.com/kerneldroid/Nightzuku) | kerneldroid | Apache 2.0 | Origin of the Android 17 hidden-API `deviceId` + Local Network Protection compatibility approach |
 | [Shizuku (fork)](https://github.com/pascua28/Shizuku) | pascua28 | Apache 2.0 | Samsung UID 1000 system execution exploit |
+| [Nightzuku](https://github.com/kerneldroid/Nightzuku) | kerneldroid | Apache 2.0 | Android 16/17 API resilience & UI modernizations |
+| [ShizukuExt-SystemUID](https://github.com/ShizukuExt) | ShizukuExt Team | Apache 2.0 | System UID privilege escalation concepts |
 | [Dhizuku](https://github.com/iamr0s/Dhizuku) | iamr0s | Apache 2.0 | Device Owner binder sharing (Dhizuku Mode) |
 | [AndroidAppProcess](https://github.com/iamr0s/AndroidAppProcess) | iamr0s | LGPL-3.0 | Standalone high-privileged Java process wrapper |
 

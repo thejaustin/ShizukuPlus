@@ -57,20 +57,25 @@ fun ServerMetricsScreen() {
                     
                     clientCountText = "${stats.getInt("client_count")} applications connected"
                     
-                    val max = stats.getLong("mem_max")
-                    val used = stats.getLong("mem_total") - stats.getLong("mem_free")
+                    val maxRaw = stats.getLong("mem_max")
+                    val total = stats.getLong("mem_total")
+                    val free = stats.getLong("mem_free")
+                    val used = (total - free).coerceAtLeast(0L)
+                    val max = if (maxRaw == Long.MAX_VALUE || maxRaw <= 0) total else maxRaw
                     
-                    memoryProgress = if (max > 0) used.toFloat() / max.toFloat() else 0f
+                    memoryProgress = if (max > 0) (used.toFloat() / max.toFloat()).coerceIn(0f, 1f) else 0f
                     
                     val formatSize = { bytes: Long ->
                         val kb = bytes / 1024
                         val mb = kb / 1024
-                        if (mb > 0) "$mb MB" else "$kb KB"
+                        val gb = mb / 1024
+                        if (gb > 0) "$gb GB" else if (mb > 0) "$mb MB" else "$kb KB"
                     }
-                    memoryDetails = "${formatSize(used)} / ${formatSize(max)} (Max Allowed)"
+                    val maxStr = if (maxRaw == Long.MAX_VALUE) "Uncapped" else formatSize(max)
+                    memoryDetails = "${formatSize(used)} / $maxStr (Max Allowed)"
                 }
             } catch (e: Exception) {
-                Timber.e(e)
+                Timber.w(e)
             }
             delay(1000)
         }

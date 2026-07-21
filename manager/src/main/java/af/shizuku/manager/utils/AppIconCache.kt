@@ -35,7 +35,7 @@ object AppIconCache {
 
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
 
-    private val appIconLoaders = mutableMapOf<Int, AppIconLoader>()
+    private val appIconLoaders = java.util.concurrent.ConcurrentHashMap<Int, AppIconLoader>()
 
     init {
         val maxMemory = Runtime.getRuntime().maxMemory() / 1024

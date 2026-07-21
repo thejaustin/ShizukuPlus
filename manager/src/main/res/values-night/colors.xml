@@ -10,4 +10,8 @@
     <color name="widget_subtitle">#CAC4D0</color>
     <color name="widget_start_container">#4A4458</color>
     <color name="widget_start_icon">#E8DEF8</color>
+
+    <color name="status_ok">#81C784</color>
+    <color name="status_error">#E57373</color>
+    <color name="status_starting">#FFB74D</color>
 </resources>

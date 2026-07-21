@@ -86,10 +86,8 @@ object ShizukuSystemApis {
         }
         try {
             PermissionManagerApis.grantRuntimePermission(packageName, permissionName, userId)
-        } catch (tr: RemoteException) {
-            throw RuntimeException(tr.message, tr)
         } catch (tr: Throwable) {
-            // Permission may be unknown
+            LOGGER.w("grantRuntimePermission failed for $permissionName on $packageName: ${tr.message}")
         }
     }
 
@@ -99,10 +97,8 @@ object ShizukuSystemApis {
         }
         try {
             PermissionManagerApis.revokeRuntimePermission(packageName, permissionName, userId)
-        } catch (tr: RemoteException) {
-            throw RuntimeException(tr.message, tr)
         } catch (tr: Throwable) {
-            // Permission may be unknown
+            LOGGER.w("revokeRuntimePermission failed for $permissionName on $packageName: ${tr.message}")
         }
     }
 }

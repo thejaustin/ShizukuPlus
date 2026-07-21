@@ -205,17 +205,29 @@ class HomeAdapter(
         super.onBindViewHolder(holder, position)
 
         // M3E entrance animation — only on first appearance per card id, not every recycle.
-        if (!animatedIds.add(id)) return
+        if (!animatedIds.add(id)) {
+            holder.itemView.alpha = 1f
+            holder.itemView.translationY = 0f
+            holder.itemView.scaleX = 1f
+            holder.itemView.scaleY = 1f
+            holder.itemView.translationZ = 0f
+            return
+        }
         val view = holder.itemView
         view.alpha = 0f
         view.translationY = 24f
-        view.animate()
-            .alpha(1f)
-            .translationY(0f)
-            .setDuration(af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(400))
-            .setStartDelay(af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(position * 50L))
-            .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
-            .start()
+        val animator = view.animate()
+        if (animator != null) {
+            animator.alpha(1f)
+                .translationY(0f)
+                .setDuration(af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(400))
+                .setStartDelay(af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(position * 50L))
+                .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+                .start()
+        } else {
+            view.alpha = 1f
+            view.translationY = 0f
+        }
     }
 
     fun moveItem(fromPos: Int, toPos: Int) {

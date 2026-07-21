@@ -28,7 +28,7 @@ class ChangelogDialogFragment : DialogFragment() {
                 sb.toString()
             }
         } catch (e: Exception) {
-            Timber.e(e, "Failed to read changelog.txt")
+            Timber.w(e, "Failed to read changelog.txt")
             "No changelog available."
         }
 

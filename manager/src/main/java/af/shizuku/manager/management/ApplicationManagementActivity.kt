@@ -42,7 +42,7 @@ import rikka.recyclerview.addEdgeSpacing
 import rikka.recyclerview.fixEdgeEffect
 import java.util.Objects
 
-class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks {
+open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks {
 
     private val viewModel: AppsViewModel by viewModels()
     private val adapter = AppsAdapter()
@@ -128,9 +128,12 @@ class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callbacks 
                     }
                 }
                 Status.ERROR -> {
-                    finish()
-                    Toast.makeText(this, Objects.toString(it.error, "unknown"), Toast.LENGTH_SHORT).show()
-                    Timber.e("load apps failed", it.error)
+                    runOnUiThread {
+                        if (isFinishing || isDestroyed) return@runOnUiThread
+                        finish()
+                        Toast.makeText(this, Objects.toString(it.error, "unknown"), Toast.LENGTH_SHORT).show()
+                    }
+                    Timber.w("load apps failed", it.error)
                 }
                 Status.LOADING -> {}
             }

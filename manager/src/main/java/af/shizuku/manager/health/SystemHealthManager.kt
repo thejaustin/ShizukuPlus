@@ -29,7 +29,7 @@ object SystemHealthManager {
                 batteryTemp = raw / 10f // Battery temp is usually in tenths of a degree
             }
         } catch (e: Exception) {
-            Timber.e(e, "Failed to read system health metrics")
+            Timber.w(e, "Failed to read system health metrics")
         }
 
         return SystemHealthData(cpuTemp, batteryTemp, 0f)

@@ -168,20 +168,22 @@ class ServiceDoctorActivity : AppBarActivity() {
         // 7. Samsung Auto Blocker (One UI 6.1+)
         if (EnvironmentUtils.isSamsung()) {
             val oneUi = EnvironmentUtils.getOneUiVersion()
+            val isAutoBlockerOff = SettingsHelper.isSamsungAutoBlockerDisabled(this)
             checks.add(DoctorCheck(
                 getString(R.string.doctor_check_samsung_autoblocker),
-                if (oneUi >= 6) getString(R.string.doctor_status_manual_check) else getString(R.string.doctor_status_ok),
-                oneUi < 6,
-                onFix = if (oneUi >= 6) { { SettingsPage.Samsung.AutoBlocker.launch(this) } } else null
+                if (isAutoBlockerOff) getString(R.string.doctor_status_ok) else "Enabled (Turn OFF)",
+                isAutoBlockerOff,
+                onFix = if (!isAutoBlockerOff || oneUi >= 6) { { SettingsPage.Samsung.AutoBlocker.launch(this) } } else null
             ))
 
             // OneUI 8+ specific check for "Maximum Restrictions"
             if (oneUi >= 8) {
+                val isMaxRestrictionsOff = SettingsHelper.isSamsungMaxRestrictionsDisabled(this)
                 checks.add(DoctorCheck(
                     "Maximum Restrictions (One UI 8)",
-                    getString(R.string.doctor_status_manual_check) + " (Must be OFF)",
-                    false,
-                    onFix = { SettingsPage.Samsung.AutoBlocker.launch(this) }
+                    if (isMaxRestrictionsOff) getString(R.string.doctor_status_ok) else "Enabled (Must be OFF)",
+                    isMaxRestrictionsOff,
+                    onFix = if (!isMaxRestrictionsOff) { { SettingsPage.Samsung.AutoBlocker.launch(this) } } else null
                 ))
             }
 

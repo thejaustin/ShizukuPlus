@@ -75,7 +75,7 @@ class HomeViewModel(
                     isOriginalShizukuRunning = isOriginalRunning
                 ) }
             } catch (e: Exception) {
-                LOGGER.e(e, "Failed to load Shizuku status")
+                LOGGER.w(e, "Failed to load Shizuku status")
                 setState { copy(serviceStatus = Fail(e)) }
             }
         }

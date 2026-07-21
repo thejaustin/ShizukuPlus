@@ -45,7 +45,7 @@ class ServerMetricsFragment : Fragment() {
                 aiCore = shizukuService.aiCorePlus
             }
         } catch (e: Exception) {
-            Timber.e(e)
+            Timber.w(e)
         }
     }
 
@@ -69,13 +69,15 @@ class ServerMetricsFragment : Fragment() {
             binding.textClientCount.text = "$clientCount applications connected"
             val total = stats.getLong("mem_total")
             val free = stats.getLong("mem_free")
-            val max = stats.getLong("mem_max")
-            val used = total - free
-            val progress = (used.toFloat() / max.toFloat() * 100).toInt()
+            val maxRaw = stats.getLong("mem_max")
+            val used = (total - free).coerceAtLeast(0L)
+            val max = if (maxRaw == Long.MAX_VALUE || maxRaw <= 0) total else maxRaw
+            val progress = if (max > 0) ((used.toFloat() / max.toFloat()) * 100).toInt().coerceIn(0, 100) else 0
             binding.progressMemory.progress = progress
-            binding.textMemoryDetails.text = "${formatSize(used)} / ${formatSize(max)} (Max Allowed)"
+            val maxStr = if (maxRaw == Long.MAX_VALUE) "Uncapped" else formatSize(max)
+            binding.textMemoryDetails.text = "${formatSize(used)} / $maxStr (Max Allowed)"
         } catch (e: Exception) {
-            Timber.e(e)
+            Timber.w(e)
         }
     }
 

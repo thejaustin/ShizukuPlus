@@ -56,7 +56,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                         Toast.makeText(context, R.string.settings_update_app_database_success, Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: Exception) {
-                    Timber.e("update app database failed", e)
+                    Timber.w("update app database failed", e)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, R.string.settings_update_app_database_error, Toast.LENGTH_SHORT).show()
                     }

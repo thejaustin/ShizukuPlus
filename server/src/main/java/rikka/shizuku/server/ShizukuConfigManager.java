@@ -209,11 +209,12 @@ public class ShizukuConfigManager extends ConfigManager {
                     continue;
                 }
 
-                List<String> packages = new ArrayList<>();
-                packages.add(pi.packageName);
-
-                updateLocked(uid, packages, ConfigManager.MASK_PERMISSION, allowed ? ConfigManager.FLAG_ALLOWED : 0);
-                changed = true;
+                if (allowed) {
+                    List<String> packages = new ArrayList<>();
+                    packages.add(pi.packageName);
+                    updateLocked(uid, packages, ConfigManager.MASK_PERMISSION, ConfigManager.FLAG_ALLOWED);
+                    changed = true;
+                }
         }
 
         if (changed) {

@@ -65,7 +65,7 @@ abstract class ActivityLogDatabase : RoomDatabase() {
                     parent.mkdirs()
                 }
                 if (parent == null || parent.exists()) {
-                    return Room.databaseBuilder(ctx, ActivityLogDatabase::class.java, dbFile.absolutePath)
+                    return Room.databaseBuilder(ctx, ActivityLogDatabase::class.java, DATABASE_NAME)
                         .fallbackToDestructiveMigration()
                         .build()
                 }

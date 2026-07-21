@@ -93,7 +93,7 @@ object ActivityLogManager {
                         }
                     }
                 } catch (e: Exception) {
-                    Timber.tag(TAG).e(e, "Failed to create database directory")
+                    Timber.tag(TAG).w(e, "Failed to create database directory")
                 }
 
                 try {
@@ -103,14 +103,14 @@ object ActivityLogManager {
                     loadFromDatabase()
                     cleanupOldRecords()
                 } catch (e: Exception) {
-                    Timber.tag(TAG).e(e, "Failed to initialize ActivityLog database")
+                    Timber.tag(TAG).w(e, "Failed to initialize ActivityLog database")
                     database = null
                     dao = null
                 }
 
                 Timber.tag(TAG).d("ActivityLogManager initialized")
             } catch (e: Exception) {
-                Timber.tag(TAG).e(e, "Failed to initialize ActivityLogManager")
+                Timber.tag(TAG).w(e, "Failed to initialize ActivityLogManager")
             }
         }
     }

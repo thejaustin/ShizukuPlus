@@ -20,6 +20,8 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    env:
+      ANDROID_HOME: "/usr/local/lib/android/sdk"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -138,14 +140,17 @@ jobs:
             echo "artifactName=shizukuplus-debug.apk" >> $GITHUB_OUTPUT
             echo "filePath=${RENAMED}" >> $GITHUB_OUTPUT
           else
-            CMD="./gradlew :manager:assembleShizukuplusRelease :manager:assembleDropinRelease $ARGS"
+            CMD="./gradlew :manager:assembleShizukuplusRelease :manager:assembleDropinRelease :manager:assembleCompatRelease $ARGS"
             eval $CMD --stacktrace --info \
               -x uploadSentryProguardMappingsShizukuplusRelease \
               -x uploadSentryProguardMappingsDropinRelease \
+              -x uploadSentryProguardMappingsCompatRelease \
               -x uploadSentryNativeSymbolsForShizukuplusRelease \
               -x uploadSentryNativeSymbolsForDropinRelease \
+              -x uploadSentryNativeSymbolsForCompatRelease \
               -x sentryUploadSourceBundleShizukuplusRelease \
               -x sentryUploadSourceBundleDropinRelease \
+              -x sentryUploadSourceBundleCompatRelease \
               -x :manager:lint
 
             sign_apk() {

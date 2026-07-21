@@ -79,6 +79,7 @@ class StarterActivity : AppBarActivity() {
                 binding.root.performHapticFeedback(haptic)
                 if (!isFinishing) finish()
             } else if (result.status == Status.ERROR) {
+                if (isFinishing || isDestroyed) return@observe
                 binding.progressIndicator.visibility = View.GONE
                 binding.cancelButton.visibility = View.GONE
                 var message = 0
@@ -243,12 +244,14 @@ class ViewModel(application: Application) : AndroidViewModel(application) {
                         override fun onAddElement(s: String?) { s?.let { log(it) } }
                     })
                     .submit {
-                        if (it.isSuccess) {
-                            ShizukuStateMachine.update()
-                            ActivityLogManager.log("Shizuku", appContext.packageName, "Service started via root")
-                            cont.resume(Unit)
-                        } else {
-                            cont.resumeWithException(Exception("Failed to start with root"))
+                        if (cont.isActive) {
+                            if (it.isSuccess) {
+                                ShizukuStateMachine.update()
+                                ActivityLogManager.log("Shizuku", appContext.packageName, "Service started via root")
+                                cont.resume(Unit)
+                            } else {
+                                cont.resumeWithException(Exception("Failed to start with root"))
+                            }
                         }
                     }
             }

@@ -131,6 +131,105 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private final NetworkGovernorPlusImpl networkGovernorPlus = new NetworkGovernorPlusImpl();
     private final ActivityManagerPlusImpl activityManagerPlus = new ActivityManagerPlusImpl();
 
+    private void grantRuntimePermissionRobust(String packageName, String permName, int userId) throws Exception {
+        try {
+            PermissionManagerApis.grantRuntimePermission(packageName, permName, userId);
+        } catch (Throwable e) {
+            if (Build.VERSION.SDK_INT >= 34) {
+                try {
+                    Object permissionManager = ServiceManager.getService("permissionmgr");
+                    Object iPermissionManager = Class.forName("android.permission.IPermissionManager$Stub")
+                            .getMethod("asInterface", IBinder.class)
+                            .invoke(null, permissionManager);
+                    for (java.lang.reflect.Method m : iPermissionManager.getClass().getMethods()) {
+                        if (m.getName().equals("grantRuntimePermission")) {
+                            Class<?>[] params = m.getParameterTypes();
+                            if (params.length == 3) {
+                                m.invoke(iPermissionManager, packageName, permName, userId);
+                                return;
+                            } else if (params.length == 4) {
+                                if (params[2] == String.class) {
+                                    m.invoke(iPermissionManager, packageName, permName, "default:0", userId);
+                                } else if (params[2] == int.class) {
+                                    m.invoke(iPermissionManager, packageName, permName, 0, userId);
+                                } else {
+                                    m.invoke(iPermissionManager, packageName, permName, null, userId);
+                                }
+                                return;
+                            }
+                        }
+                    }
+                } catch (Throwable refE) {
+                    LOGGER.w("grantRuntimePermission reflection fallback failed", refE);
+                }
+            }
+            throw new Exception("grantRuntimePermission failed", e);
+        }
+    }
+
+    private void revokeRuntimePermissionRobust(String packageName, String permName, int userId) throws Exception {
+        try {
+            PermissionManagerApis.revokeRuntimePermission(packageName, permName, userId);
+        } catch (Throwable e) {
+            if (Build.VERSION.SDK_INT >= 34) {
+                try {
+                    Object permissionManager = ServiceManager.getService("permissionmgr");
+                    Object iPermissionManager = Class.forName("android.permission.IPermissionManager$Stub")
+                            .getMethod("asInterface", IBinder.class)
+                            .invoke(null, permissionManager);
+                    for (java.lang.reflect.Method m : iPermissionManager.getClass().getMethods()) {
+                        if (m.getName().equals("revokeRuntimePermission")) {
+                            Class<?>[] params = m.getParameterTypes();
+                            if (params.length == 3) {
+                                m.invoke(iPermissionManager, packageName, permName, userId);
+                                return;
+                            } else if (params.length == 4) {
+                                if (params[2] == String.class) {
+                                    m.invoke(iPermissionManager, packageName, permName, "default:0", userId);
+                                } else if (params[2] == int.class) {
+                                    m.invoke(iPermissionManager, packageName, permName, 0, userId);
+                                } else {
+                                    m.invoke(iPermissionManager, packageName, permName, null, userId);
+                                }
+                                return;
+                            } else if (params.length == 5) {
+                                // Sometimes it has a reason string too
+                                if (params[2] == String.class) {
+                                    m.invoke(iPermissionManager, packageName, permName, "default:0", userId, "Shizuku");
+                                } else if (params[2] == int.class) {
+                                    m.invoke(iPermissionManager, packageName, permName, 0, userId, "Shizuku");
+                                }
+                                return;
+                            }
+                        }
+                    }
+                } catch (Throwable refE) {
+                    LOGGER.w("revokeRuntimePermission reflection fallback failed", refE);
+                }
+            }
+            throw new Exception("revokeRuntimePermission failed", e);
+        }
+    }
+
+    private void disablePhantomProcessKiller() {
+        try {
+            if (Build.VERSION.SDK_INT >= 32) { // Android 12L+ (also affects Android 12 which is 31)
+                // Disable monitor (Android 13+)
+                Runtime.getRuntime().exec(new String[]{"sh", "-c", "settings put global settings_enable_monitor_phantom_procs false"}).waitFor();
+                
+                // Disable device_config sync (Android 12+)
+                Runtime.getRuntime().exec(new String[]{"sh", "-c", "/system/bin/device_config set_sync_disabled_for_tests persistent"}).waitFor();
+                
+                // Increase max phantom processes limit (Android 12+)
+                Runtime.getRuntime().exec(new String[]{"sh", "-c", "/system/bin/device_config put activity_manager max_phantom_processes 2147483647"}).waitFor();
+                
+                LOGGER.i("Phantom Process Killer mitigation applied");
+            }
+        } catch (Exception e) {
+            LOGGER.w("Failed to mitigate Phantom Process Killer", e);
+        }
+    }
+
     public ShizukuService() {
         super();
 
@@ -147,6 +246,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         HandlerUtil.setMainHandler(mainHandler);
 
         LOGGER.i("starting server...");
+
+        // Automatically disable Phantom Process Killer on Android 12+ so the system doesn't kill Shizuku
+        disablePhantomProcessKiller();
 
         waitSystemService("package");
         waitSystemService(Context.ACTIVITY_SERVICE);
@@ -384,12 +486,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             }
             reply.putBoolean(BIND_APPLICATION_PERMISSION_GRANTED, record.allowed);
             reply.putBoolean(BIND_APPLICATION_SHOULD_SHOW_REQUEST_PERMISSION_RATIONALE, false);
-        } else {
             try {
                 Android17Compat.grantRuntimePermission(MANAGER_APPLICATION_ID,
                         WRITE_SECURE_SETTINGS, UserHandleCompat.getUserId(callingUid));
             } catch (Throwable e) {
-                LOGGER.e(e, "grant WRITE_SECURE_SETTINGS");
+                LOGGER.w(e, "grant WRITE_SECURE_SETTINGS");
             }
         }
         try {
@@ -1568,16 +1669,13 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     try {
                         Android17Compat.grantRuntimePermission(packageName, permToGrant, userId);
                     } catch (Throwable e) {
-                        // Most often "Unknown permission" when no installed package defines
-                        // permToGrant (e.g. the Compat Hub / dropin definer is missing) — log the
-                        // cause so this class of failure is diagnosable from logcat/Sentry.
-                        LOGGER.e(e, "grantRuntimePermission failed for %s (%s)", permToGrant, packageName);
+                        LOGGER.w(e, "grantRuntimePermission failed for %s (%s)", permToGrant, packageName);
                     }
                 } else {
                     try {
                         Android17Compat.revokeRuntimePermission(packageName, permToGrant, userId);
                     } catch (Throwable e) {
-                        LOGGER.e(e, "revokeRuntimePermission failed for %s (%s)", permToGrant, packageName);
+                        LOGGER.w(e, "revokeRuntimePermission failed for %s (%s)", permToGrant, packageName);
                     }
                 }
             }
@@ -1669,16 +1767,13 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     try {
                         Android17Compat.grantRuntimePermission(packageName, permToGrant, userId);
                     } catch (Throwable e) {
-                        // Most often "Unknown permission" when no installed package defines
-                        // permToGrant (e.g. the Compat Hub / dropin definer is missing) — log the
-                        // cause so this class of failure is diagnosable from logcat/Sentry.
-                        LOGGER.e(e, "grantRuntimePermission failed for %s (%s)", permToGrant, packageName);
+                        LOGGER.w(e, "grantRuntimePermission failed for %s (%s)", permToGrant, packageName);
                     }
                 } else {
                     try {
                         Android17Compat.revokeRuntimePermission(packageName, permToGrant, userId);
                     } catch (Throwable e) {
-                        LOGGER.e(e, "revokeRuntimePermission failed for %s (%s)", permToGrant, packageName);
+                        LOGGER.w(e, "revokeRuntimePermission failed for %s (%s)", permToGrant, packageName);
                     }
                     onPermissionRevoked(packageName);
                 }
@@ -1864,12 +1959,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 try {
                     boolean success = sendBinderToUserApp(binder, MANAGER_APPLICATION_ID, userId);
                     if (success) {
-                        LOGGER.e("retry succeeded for user %d", userId);
+                        LOGGER.i("retry succeeded for user %d", userId);
                     } else {
-                        LOGGER.e("retry failed for user %d", userId);
+                        LOGGER.w("retry failed for user %d", userId);
                     }
                 } catch (Throwable tr) {
-                    LOGGER.e(tr, "retry failed");
+                    LOGGER.w(tr, "retry failed");
                 }
             }
         }
@@ -1888,12 +1983,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     try {
                         boolean retrySuccess = sendBinderToUserApp(binder, MANAGER_APPLICATION_ID, userId);
                         if (retrySuccess) {
-                            LOGGER.e("retry succeeded");
+                            LOGGER.i("retry succeeded");
                         } else {
-                            LOGGER.e("retry failed");
+                            LOGGER.w("retry failed");
                         }
                     } catch (Throwable tr) {
-                        LOGGER.e(tr, "retry failed");
+                        LOGGER.w(tr, "retry failed");
                     }
                 };
 

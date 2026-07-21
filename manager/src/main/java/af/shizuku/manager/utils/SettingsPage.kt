@@ -94,7 +94,34 @@ sealed class SettingsPage(
     object Accessibility : SettingsPage(Settings.ACTION_ACCESSIBILITY_SETTINGS)
 
     object Samsung {
-        object AutoBlocker : SettingsPage("android.settings.SECURITY_ADVANCED_SETTINGS")
+        object AutoBlocker : SettingsPage("android.settings.SECURITY_ADVANCED_SETTINGS") {
+            override fun launch(context: Context) {
+                runCatching {
+                    val intent = Intent("com.samsung.android.settings.AUTO_BLOCKER").apply {
+                        flags = defaultFlags
+                    }
+                    context.startActivity(intent)
+                }.recoverCatching {
+                    val intent = Intent().apply {
+                        setComponent(ComponentName("com.android.settings", "com.samsung.android.settings.autoblocker.AutoBlockerSettingsActivity"))
+                        flags = defaultFlags
+                    }
+                    context.startActivity(intent)
+                }.recoverCatching {
+                    val intent = Intent("android.settings.SECURITY_ADVANCED_SETTINGS").apply {
+                        flags = defaultFlags
+                    }
+                    context.startActivity(intent)
+                }.recoverCatching {
+                    val intent = Intent(Settings.ACTION_SECURITY_SETTINGS).apply {
+                        flags = defaultFlags
+                    }
+                    context.startActivity(intent)
+                }.onFailure { e ->
+                    Timber.tag("SettingsUtils").w("Failed to start AutoBlocker Settings activity: ${e.message}")
+                }
+            }
+        }
         object DeviceCareBattery : SettingsPage("com.samsung.android.sm.ACTION_BATTERY") {
             override fun launch(context: Context) {
                 runCatching {

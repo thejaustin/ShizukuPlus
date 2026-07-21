@@ -13,19 +13,30 @@ class CrashHandler(private val context: Context, private val defaultHandler: Thr
     companion object {
         private const val CRASH_FILE_NAME = "last_crash.txt"
 
-        fun getCrashFile(context: Context): File? {
-            val storageContext = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                context.createDeviceProtectedStorageContext()
-            } else {
-                context
+        fun getCrashFile(context: Context, checkExistingOnly: Boolean = false): File? {
+            val candidates = buildList {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    add(context.createDeviceProtectedStorageContext())
+                }
+                add(context.applicationContext)
             }
-            val dir = storageContext.cacheDir ?: storageContext.filesDir
-            if (dir == null) return null
-            return File(dir, CRASH_FILE_NAME)
+            for (ctx in candidates) {
+                val dir = ctx.cacheDir ?: ctx.filesDir ?: continue
+                if (!dir.exists()) {
+                    dir.mkdirs()
+                }
+                if (dir.exists()) {
+                    val file = File(dir, CRASH_FILE_NAME)
+                    if (!checkExistingOnly || file.exists()) {
+                        return file
+                    }
+                }
+            }
+            return null
         }
 
         fun getLastCrashReport(context: Context): String? {
-            val file = getCrashFile(context) ?: return null
+            val file = getCrashFile(context, checkExistingOnly = true) ?: return null
             if (!file.exists()) return null
             return try {
                 file.readText()
@@ -35,8 +46,17 @@ class CrashHandler(private val context: Context, private val defaultHandler: Thr
         }
 
         fun clearLastCrash(context: Context) {
-            val file = getCrashFile(context) ?: return
-            if (file.exists()) file.delete()
+            val candidates = buildList {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    add(context.createDeviceProtectedStorageContext())
+                }
+                add(context.applicationContext)
+            }
+            for (ctx in candidates) {
+                val dir = ctx.cacheDir ?: ctx.filesDir ?: continue
+                val file = File(dir, CRASH_FILE_NAME)
+                if (file.exists()) file.delete()
+            }
         }
     }
 

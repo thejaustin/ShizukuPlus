@@ -101,10 +101,12 @@ class RootCompatibilityActivity : AppBarActivity() {
                         onClick = {
                             lifecycleScope.launch {
                                 val count = RootCompatHelper.autoSetupAll(this@RootCompatibilityActivity, path)
-                                if (count > 0) {
-                                    Toast.makeText(this@RootCompatibilityActivity, getString(R.string.su_bridge_magic_setup_all_summary, count), Toast.LENGTH_LONG).show()
-                                } else {
-                                    Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_magic_setup_all_no_apps, Toast.LENGTH_SHORT).show()
+                                if (!isFinishing && !isDestroyed) {
+                                    if (count > 0) {
+                                        Toast.makeText(this@RootCompatibilityActivity, getString(R.string.su_bridge_magic_setup_all_summary, count), Toast.LENGTH_LONG).show()
+                                    } else {
+                                        Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_magic_setup_all_no_apps, Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             }
                         }
@@ -431,7 +433,7 @@ class RootCompatibilityActivity : AppBarActivity() {
                             try {
                                 startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$pkg")))
                             } catch (e: Exception) {
-                                timber.log.Timber.e(e, "start application details settings failed")
+                                timber.log.Timber.w(e, "start application details settings failed")
                                 Sentry.captureException(e)
                             }
                         }
@@ -467,7 +469,7 @@ class RootCompatibilityActivity : AppBarActivity() {
                             try {
                                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$pkg")))
                             } catch (e2: Exception) {
-                                Timber.e("start view intent failed", e2)
+                                Timber.w("start view intent failed", e2)
                                 Sentry.captureException(e2)
                             }
                         }
