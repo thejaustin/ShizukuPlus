@@ -59,6 +59,7 @@ import af.shizuku.server.IActivityManagerPlus;
 import rikka.hidden.compat.ActivityManagerApis;
 import rikka.hidden.compat.DeviceIdleControllerApis;
 import rikka.hidden.compat.PackageManagerApis;
+import rikka.hidden.compat.PermissionManagerApis;
 import af.shizuku.common.compat.Android17Compat;
 import af.shizuku.common.compat.InstalledPackagesCompat;
 import rikka.hidden.compat.UserManagerApis;
@@ -132,43 +133,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private final NetworkGovernorPlusImpl networkGovernorPlus = new NetworkGovernorPlusImpl();
     private final ActivityManagerPlusImpl activityManagerPlus = new ActivityManagerPlusImpl();
 
-    private void grantRuntimePermissionRobust(String packageName, String permName, int userId) throws Exception {
-        try {
-            PermissionManagerApis.grantRuntimePermission(packageName, permName, userId);
-        } catch (Throwable e) {
-            if (Build.VERSION.SDK_INT >= 34) {
-                try {
-                    Object permissionManager = ServiceManager.getService("permissionmgr");
-                    Object iPermissionManager = Class.forName("android.permission.IPermissionManager$Stub")
-                            .getMethod("asInterface", IBinder.class)
-                            .invoke(null, permissionManager);
-                    for (java.lang.reflect.Method m : iPermissionManager.getClass().getMethods()) {
-                        if (m.getName().equals("grantRuntimePermission")) {
-                            Class<?>[] params = m.getParameterTypes();
-                            if (params.length == 3) {
-                                m.invoke(iPermissionManager, packageName, permName, userId);
-                                return;
-                            } else if (params.length == 4) {
-                                if (params[2] == String.class) {
-                                    m.invoke(iPermissionManager, packageName, permName, "default:0", userId);
-                                } else if (params[2] == int.class) {
-                                    m.invoke(iPermissionManager, packageName, permName, 0, userId);
-                                } else {
-                                    m.invoke(iPermissionManager, packageName, permName, null, userId);
-                                }
-                                return;
-                            }
-                        }
-                    }
-                } catch (Throwable refE) {
-                    LOGGER.w("grantRuntimePermission reflection fallback failed", refE);
-                }
-            }
-            throw new Exception("grantRuntimePermission failed", e);
-        }
+    private void grantRuntimePermissionRobust(String packageName, String permName, int userId) throws Throwable {
+        Android17Compat.grantRuntimePermission(packageName, permName, userId);
     }
 
-    private void revokeRuntimePermissionRobust(String packageName, String permName, int userId) throws Exception {
+    private void revokeRuntimePermissionRobust(String packageName, String permName, int userId) throws Throwable {
         try {
             PermissionManagerApis.revokeRuntimePermission(packageName, permName, userId);
         } catch (Throwable e) {
