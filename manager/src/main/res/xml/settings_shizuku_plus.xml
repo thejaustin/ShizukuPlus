@@ -197,7 +197,7 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="window_manager_plus_enabled"
-            android:title="Window Tuner (Experimental)"
+            android:title="Window Tuner"
             android:summary="@string/settings_window_manager_plus_summary"
             android:icon="@drawable/ic_window_24"
             android:defaultValue="false"
@@ -207,7 +207,7 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="overlay_manager_plus_enabled"
-            android:title="Theming Bridge (Experimental)"
+            android:title="Theming Bridge"
             android:summary="@string/settings_overlay_manager_plus_summary"
             android:icon="@drawable/ic_palette_24"
             android:defaultValue="false"
@@ -218,7 +218,7 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="ai_core_plus_enabled"
-            android:title="AI Bridge &amp; NPU (Experimental)"
+            android:title="AI Bridge &amp; NPU"
             android:summary="@string/settings_ai_core_plus_summary"
             android:icon="@drawable/ic_integration_instructions_24"
             android:defaultValue="false"

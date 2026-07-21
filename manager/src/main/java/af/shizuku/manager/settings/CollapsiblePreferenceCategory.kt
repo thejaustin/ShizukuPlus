@@ -45,15 +45,19 @@ class CollapsiblePreferenceCategory @JvmOverloads constructor(
         holder.itemView.setOnClickListener {
             expanded = !expanded
             if (shouldPersist()) persistBoolean(expanded)
-            updateChildren()
-            onExpansionChanged?.invoke(expanded)
-            notifyChanged()
             // Animate arrow with M3E spring-style motion
             arrow?.animate()
                 ?.rotation(if (expanded) 180f else 0f)
                 ?.setDuration(af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(300))
                 ?.setInterpolator(android.view.animation.OvershootInterpolator(0.8f))
                 ?.start()
+            // updateChildren() already notifies the adapter per child via Preference.setVisible();
+            // an additional notifyChanged() here used to schedule a rebind of this same header
+            // ViewHolder mid-animation, which snapped the arrow's rotation back and forth against
+            // the running ViewPropertyAnimator and could leave the RecyclerView's sync pass
+            // needing a second click to fully settle on the expanded child list.
+            updateChildren()
+            onExpansionChanged?.invoke(expanded)
         }
     }
 

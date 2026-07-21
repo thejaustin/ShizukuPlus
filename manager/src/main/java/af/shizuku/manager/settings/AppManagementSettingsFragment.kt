@@ -13,6 +13,11 @@ import af.shizuku.manager.ShizukuSettings
 
 class AppManagementSettingsFragment : BaseSettingsFragment() {
 
+    companion object {
+        private const val VIRUSTOTAL_KEY_URL = "https://www.virustotal.com/gui/my-apikey"
+        private const val PITHUS_KEY_URL = "https://beta.pithus.org"
+    }
+
     override fun getTitle(): CharSequence? = "App Interactions"
 
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -40,6 +45,7 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
                     title = getString(R.string.verify_virustotal_key_title),
                     hint = getString(R.string.verify_api_key_hint),
                     currentKey = "",
+                    getKeyUrl = VIRUSTOTAL_KEY_URL,
                     onSave = { key ->
                         if (key.isBlank()) {
                             (pref as TwoStatePreference).isChecked = false
@@ -64,6 +70,7 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
                 title = getString(R.string.verify_virustotal_key_title),
                 hint = getString(R.string.verify_api_key_hint),
                 currentKey = ShizukuSettings.getVirusTotalApiKey(),
+                getKeyUrl = VIRUSTOTAL_KEY_URL,
                 onSave = { key ->
                     ShizukuSettings.setVirusTotalApiKey(key)
                     updateApiKeyManageSummary("virustotal_api_key_manage", key)
@@ -84,6 +91,7 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
                 title = getString(R.string.verify_pithus_key_title),
                 hint = getString(R.string.verify_api_key_hint),
                 currentKey = ShizukuSettings.getPithusApiKey(),
+                getKeyUrl = PITHUS_KEY_URL,
                 onSave = { key ->
                     ShizukuSettings.setPithusApiKey(key)
                     updateApiKeyManageSummary("pithus_api_key_manage", key)
@@ -104,6 +112,7 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
         title: String,
         hint: String,
         currentKey: String,
+        getKeyUrl: String? = null,
         onSave: (String) -> Unit,
         onCancel: () -> Unit
     ) {
@@ -118,12 +127,17 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
             setPadding(dp16, dp16 / 2, dp16, 0)
             addView(input)
         }
-        MaterialAlertDialogBuilder(ctx)
+        val builder = MaterialAlertDialogBuilder(ctx)
             .setTitle(title)
             .setView(container)
             .setPositiveButton(android.R.string.ok) { _, _ -> onSave(input.text.toString().trim()) }
             .setNegativeButton(android.R.string.cancel) { _, _ -> onCancel() }
             .setOnCancelListener { onCancel() }
-            .show()
+        if (getKeyUrl != null) {
+            builder.setNeutralButton(R.string.verify_get_api_key) { _, _ ->
+                startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(getKeyUrl)))
+            }
+        }
+        builder.show()
     }
 }

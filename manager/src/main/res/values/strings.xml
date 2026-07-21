@@ -476,9 +476,9 @@
     <string name="settings_spoof_device_summary">Report a different device model to apps for compatibility or testing purposes</string>
     <string name="settings_avf_manager_experimental">Virtual Machine Manager (AVF) (Experimental)</string>
     <string name="settings_ai_core_plus_experimental">Intelligence Bridge (Experimental)</string>
-    <string name="settings_vector_experimental">Vector Acceleration (Experimental)</string>
-    <string name="settings_experimental_root_experimental">Experimental Root Compatibility (Experimental)</string>
-    <string name="settings_spoof_device_experimental">Spoof Device Identity (Experimental)</string>
+    <string name="settings_vector_experimental">Vector Acceleration</string>
+    <string name="settings_experimental_root_experimental">Experimental Root Compatibility</string>
+    <string name="settings_spoof_device_experimental">Spoof Device Identity</string>
     <string name="settings_open_source_licenses">Open source licenses</string>
     <string name="settings_open_source_licenses_summary">Open source libraries used by Shizuku+</string>
     <string name="settings_experimental_warning_title">Experimental Feature</string>
@@ -1029,4 +1029,5 @@
     <string name="verify_pithus_default_summary">Check hashes against Pithus to detect malware traits.</string>
     <string name="verify_api_key_hint">Tap to enter API key</string>
     <string name="verify_api_key_configured">API key saved · tap to update</string>
+    <string name="verify_get_api_key">Get API Key</string>
 </resources>
