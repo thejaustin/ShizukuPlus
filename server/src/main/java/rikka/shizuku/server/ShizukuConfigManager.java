@@ -163,6 +163,20 @@ public class ShizukuConfigManager extends ConfigManager {
                 continue;
             }
 
+            if (entry.packages.isEmpty()) {
+                // Entries created via the plain toggle path (updateFlagsForUid) used to be
+                // written with no package names at all - that's missing data, not evidence this
+                // uid's packages changed. Treating it as "changed" pruned a still-valid
+                // authorization on every server restart, and separately made getApplications()
+                // exclude the package from the authorized list on the very next refresh (its
+                // membership check on this same empty list always fails). Backfill from the
+                // live package list instead.
+                LOGGER.i("backfilling empty packages list for uid %d from current package manager state", entry.uid);
+                entry.packages.addAll(packages);
+                changed = true;
+                continue;
+            }
+
             boolean packagesChanged = true;
 
             for (String packageName : entry.packages) {

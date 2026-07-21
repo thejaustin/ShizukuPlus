@@ -1709,6 +1709,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         }
 
         int userId = UserHandleCompat.getUserId(uid);
+        List<String> packagesForUid = PackageManagerApis.getPackagesForUidNoThrow(uid);
 
         if ((mask & ConfigManager.MASK_PERMISSION) != 0) {
             boolean allowed = (value & ConfigManager.FLAG_ALLOWED) != 0;
@@ -1725,7 +1726,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 }
             }
 
-            for (String packageName : PackageManagerApis.getPackagesForUidNoThrow(uid)) {
+            for (String packageName : packagesForUid) {
                 PackageInfo pi = Android17Compat.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS, userId);
                 if (pi == null || pi.requestedPermissions == null) {
                     continue;
@@ -1762,7 +1763,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             }
         }
 
-        configManager.update(uid, null, mask, value);
+        // Recording the actual package names here (rather than null) matters: both
+        // getApplications()'s per-package membership filter and ShizukuConfigManager's
+        // startup reconciliation ("did this uid's package set change since we last saw it?")
+        // treat an entry with an empty/unrecorded packages list as "doesn't cover any package
+        // for this uid" - which made every toggle-authorized app either vanish from the
+        // authorized-apps list on the very next refresh, or get pruned outright the next time
+        // the server restarted, even though nothing about the app had actually changed.
+        configManager.update(uid, packagesForUid, mask, value);
     }
 
     private void onPermissionRevoked(String packageName) {
@@ -1793,7 +1801,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 int flags = 0;
                 ShizukuConfig.PackageEntry entry = configManager.find(uid);
                 if (entry != null) {
-                    if (entry.packages != null && !entry.packages.contains(pi.packageName))
+                    // An empty packages list means no package name was ever recorded for this
+                    // uid (e.g. an entry written before updateFlagsForUid started recording
+                    // them) - treat that as unrestricted rather than as "matches nothing", or
+                    // this package silently vanishes from the authorized-apps list entirely.
+                    if (entry.packages != null && !entry.packages.isEmpty() && !entry.packages.contains(pi.packageName))
                         continue;
                     flags = entry.flags & ConfigManager.MASK_PERMISSION;
                 }
