@@ -123,6 +123,109 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-07-21 — Claude Code (Fable 5) [PRoot ShizukuPlus, rescuing an Antigravity CLI session + reconciling clones]
+
+**Commits:** `ac92c5da`, `469bdde3` (CI-green fixes); `a5b24d68`/`4e708c16`/`1c950cf3` (rebased, previously unpushed); `f162889f`/`a7d8365a`/`ebc63cc6` (follow-up: changelog + release labeling, see below)
+
+**Context:** the user runs an Antigravity CLI (Gemini) agent against the Termux clone independently of
+Claude Code sessions — no shared `/resume`, so continuity across the two tools means reading
+Antigravity's own local transcript logs (`~/.gemini/antigravity-cli/brain/*/.system_generated/logs/transcript.jsonl`,
+found by grepping all conversations for "ShizukuPlus" and picking the most recently modified). This
+morning's Antigravity session (07:22–08:43 UTC, model switched Gemini 3.5 Flash → Claude Sonnet 4.6
+Thinking mid-session) worked through GitHub issue comments and Sentry crashes on the user's own
+"continue" / "look for more" / "fix sentry issues" prompts, landing one large 36-file commit
+(`1d860a2a`, "resolve issue #337 #358 #329 #355") plus two same-session compile-error follow-ups
+(`6f908bcc`, `880d5555`). `master` was still red when the session ended — its last action was polling
+a still-in-progress CI run that went on to fail without the agent noticing.
+
+**Found and fixed 4 defects, all classic AI-patch artifacts (lines silently dropped mid-diff):**
+1. **`HomeScreen.kt`** — `fun HomeScreen(...) {` was missing its closing brace (brace-balance check
+   caught it: whole-file depth ended at +1). Added the missing `}`.
+2. **`SettingsHelper.kt`** — a new function's signature line was dropped, leaving
+   `isSamsungAutoBlockerDisabled`'s `return try { ... }` body orphaned directly under the previous
+   function. Recovered the name from its one call site in `ServiceDoctorActivity.kt`.
+3. **`.github/workflows/app.yml`** — added `:manager:assembleCompatRelease` plus matching
+   `uploadSentry*CompatRelease` exclusions, on the false assumption "Compat" is a product flavor of
+   `:manager`. It's actually the separate `:compat` module, already built as a dependency of
+   `copyCompatApkRelease` wired into `pre{Flavor}ReleaseBuild` — the extra task/exclusions referenced
+   Gradle tasks that don't exist and failed task selection outright (the *actual* root cause of the
+   `build` job's failure, independent of the Kotlin errors below).
+4. **`ShizukuSystemApis.kt`** — new `LOGGER.w(...)` calls in `grantRuntimePermission`/
+   `revokeRuntimePermission` with no import. Added `import af.shizuku.manager.utils.Logger.LOGGER`
+   (the same static-import convention `ShellBinderRequestHandler`/`HomeViewModel`/
+   `AuthorizationManager` already use — considered switching to `Timber` first since that's *also* a
+   live convention in this same `utils/` directory, but `Logger.LOGGER` is the closer match: it's
+   literally what the broken patch already called, just missing the import).
+
+No local Android SDK, so verified each fix with a brace-balance script + `javac -Xmaxerrs 2000` on the
+touched `.java` files (parses clean through classpath-resolution errors, i.e. no real syntax breaks)
+before pushing — confirmed `Build App` green afterward (run `29818072361`).
+
+**Separately found:** the SD card clone (`/sdcard/Documents/ShizukuPlus`) had 3 real bugfix commits
+from the previous evening that were never pushed — `su -mm`/`--mount-master` flag-parsing fix,
+catastrophic-guard blocking legitimate `/data` deletes, root-compat counting only bridge-configured
+apps. The two clones had diverged from a shared `5d28196b` ancestor ~15 hours earlier. Asked the user
+before touching shared git history (git-history reconciliation across diverged clones is a real
+decision point, not a mechanical one); confirmed the only overlapping file (`ShizukuService.java`)
+touched non-overlapping line ranges, rebased clean (pre-push guard's 21 checks passed), pushed as
+`a5b24d68`/`4e708c16`/`1c950cf3`, then fast-forwarded the Termux clone to match — both clones now
+identical to `origin/master`.
+
+**Also found, left alone (out of scope, harmless):**
+- 4 untracked `.kt` files in the Termux clone (`af.shizuku.manager.{ApplicationManagementActivity,
+  LauncherAlias,TvActivity}`, `moe.shizuku.manager.ApplicationManagementActivity`), dated ~00:41–00:42
+  same morning — *before* the Antigravity session started, so a leftover from an unrelated earlier
+  attempt. Initially looked alarming (the manifest, committed since `07316516` on 2026-07-20,
+  references all 4 by name) but they're all `<activity-alias>` elements — those resolve via
+  `targetActivity` and never needed backing classes. The files are an abandoned, unnecessary local
+  experiment; safe to delete whenever, not blocking anything.
+- The Termux clone's `api` submodule had locally regressed to `8657364f` — the exact broken ref the
+  2026-07-13 entry below already fixed (CI reads the committed pointer, not this local checkout, so it
+  never affected CI; only matters if someone tries a local Gradle build here). Ran `git submodule
+  update` to resync to the committed `df0d0dd8`.
+- The `release` job's "Compat Hub stub APK not found" warning is pre-existing — identical on the last
+  known-good build (`5d28196b`, 2026-07-20) — not a regression from today, not touched.
+
+**Follow-up, same day — changelog + release-labeling audit (user: "improve on everything mentioned,
+especially the attribution/changelogs thing needs fixing"):**
+
+- **Release-notes crash/stability split** (`f162889f`) — `fix(...)` commits in the generated release
+  notes now split into a "💥 Crash & Stability Fixes" bucket (matched on
+  `sentry|crash|anr|SHIZUKUPLUS-\d+` in the subject) versus general "🐛 Bug Fixes", plus a distinct
+  `#NNNN` GitHub-issue count for the release range — a visible signal for "does this look
+  major/critical-worthy", not an auto-promotion.
+- **New critical-fix tier** (`ebc63cc6`) — `CRITICAL_RELEASE`/`CRITICAL_DESC` added alongside the
+  existing `MAJOR_RELEASE`/`MAJOR_DESC` in `app.yml`, for a regression severe enough users should
+  update but that isn't new capability (so doesn't belong in the majors list). First entry: `r2153`
+  (the Drop-In-shipped-as-Plus packaging bug). Own blockquote + own "⚠️ critical fix" table mark,
+  independent of "🚀 major". No backfill script for this tier yet (old pages deliberately left
+  un-backfilled — see [[shizukuplus-release-majors]] memory).
+- **The in-app "What's New" dialog was actually dead code** (`a7d8365a`) — `ChangelogDialogFragment`
+  existed but nothing ever called `.show()` on it, and it read `assets/changelog.txt` (the static
+  Apache 2.0 §4(b) "Changes from Upstream" doc) as if it were per-version notes — every user would
+  have seen the same generic text regardless of what changed in their update, and none ever saw it at
+  all. Rewrote it to fetch the real GitHub release body for the exact version tag via a new
+  `UpdateChecker.fetchReleaseNotesForTag()`, called from a new `MainActivity.checkAndShowChangelog()`
+  gated on its own `getLastSeenChangelogVersion()` pref (kept separate from the existing
+  `getLastSeenVersion()` key, which gates the Sentry-quota reset in `ShizukuApplication.onCreate()` —
+  that one runs before any Activity and would already have advanced past the point where an
+  Activity-level check could see the bump).
+- **CI false alarm on `a7d8365a`:** its `Build App` run showed `release` job failure —
+  `! [remote rejected] ... refusing to allow a GitHub App to create or update workflow
+  .github/workflows/app.yml without workflows permission`. Not a code bug: `build` and `lint` both
+  passed clean (confirming the new Kotlin was fine); only the tag-push step failed, because GitHub
+  hard-blocks the default `GITHUB_TOKEN` from creating *any* tag whose checked-out commit's workflow
+  file differs from the current default-branch tip — a fixed anti-tampering rule no `permissions:`
+  block can waive (needs a real PAT with `workflow` scope instead). Pushing `f162889f` → `a7d8365a` →
+  `ebc63cc6` back-to-back meant `a7d8365a`'s release job ran against a since-superseded `app.yml` by
+  the time it reached the tagging step. Self-resolved: `ebc63cc6` (a strict descendant containing
+  everything from `a7d8365a`) got a clean CI run end-to-end and tagged `v13.6.0.r2165` — `r2164` is
+  just a skipped number, same as any other failed-build commit in this repo's history; nothing shipped
+  is missing. Lesson: avoid rapid-fire pushes when a commit in the middle touches `app.yml`, or expect
+  that middle commit's release job to occasionally lose this race.
+
+---
+
 ### 2026-07-16 (pass 4) — Claude Code (Fable 5) [PRoot ShizukuPlus, third-party app-plugin compatibility]
 
 **Commits:** main `17ad35c6`, `24bb109c`; api-submodule `beb20c5`, `2ea3ab2` (both CI-green)
