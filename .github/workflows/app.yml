@@ -384,7 +384,18 @@ jobs:
               echo
             fi
 
-            FIXES=$(git log "$RANGE" --no-merges --grep="^fix" --pretty=format:"- %s (%h)" || true)
+            # Split "^fix" commits into crash/stability fixes vs general bug fixes so a
+            # release that closed out Sentry crashes reads differently from routine fixes.
+            ALL_FIXES=$(git log "$RANGE" --no-merges --grep="^fix" --pretty=format:"- %s (%h)" || true)
+            CRASHES=$(printf '%s\n' "$ALL_FIXES" | grep -iE "sentry|crash|anr|SHIZUKUPLUS-[0-9]+" || true)
+            FIXES=$(printf '%s\n' "$ALL_FIXES" | grep -ivE "sentry|crash|anr|SHIZUKUPLUS-[0-9]+" || true)
+
+            if [ -n "$CRASHES" ]; then
+              echo "### 💥 Crash & Stability Fixes"
+              echo "$CRASHES"
+              echo
+            fi
+
             if [ -n "$FIXES" ]; then
               echo "### 🐛 Bug Fixes"
               echo "$FIXES"
@@ -395,6 +406,16 @@ jobs:
             if [ -n "$OTHERS" ]; then
               echo "### 🔧 Improvements & Refactors"
               echo "$OTHERS"
+              echo
+            fi
+
+            # Surface how many distinct GitHub issues this release touches. Promoting a
+            # release to MAJOR_RELEASE (see scripts/backfill_majors.py) stays a deliberate,
+            # curated call -- this is just a visible signal so an unusually issue-dense
+            # release is easy to notice instead of relying on remembering to check.
+            ISSUE_REFS=$(git log "$RANGE" --no-merges --pretty=format:"%s" | grep -oE '#[0-9]+' | sort -u | wc -l | tr -d ' ' || true)
+            if [ -n "$ISSUE_REFS" ] && [ "$ISSUE_REFS" -gt 0 ] 2>/dev/null; then
+              echo "_${ISSUE_REFS} distinct GitHub issue(s) referenced in this release._"
               echo
             fi
 
