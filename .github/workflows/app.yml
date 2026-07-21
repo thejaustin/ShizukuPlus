@@ -362,7 +362,14 @@ jobs:
           # so older release pages show BOTH this headline and the major of their own era.
           MAJOR_RELEASE="v13.6.0.r2149"
           MAJOR_DESC="SU Bridge now works with third-party root apps — apps like Swift Backup can use their root-only features on non-rooted devices by pointing their custom-su path at Shizuku+ (the bridge now authenticates as the calling app, fixing the long-standing caller-identity bug, and deploys to an exec-permitted location)."
-          
+
+          # Most recent CRITICAL FIX to spotlight — a distinct, lower tier from MAJOR_RELEASE
+          # above: not new capability, but a regression severe enough that users on the
+          # affected range should know to update. Same update procedure as MAJOR_RELEASE.
+          # Leave both blank ("") to omit this callout entirely once nothing recent qualifies.
+          CRITICAL_RELEASE="v13.6.0.r2153"
+          CRITICAL_DESC="Releases r2141–r2152 all shipped the Drop-In build under the Plus APK's filename — anyone who installed \"Shizuku+\" in that window actually got moe.shizuku.privileged.api, which fails to install or update alongside stock Shizuku. Fixed by selecting release assets by verified applicationId instead of directory order."
+
           {
             echo "# ${TAG_NAME}"
             echo
@@ -428,12 +435,18 @@ jobs:
               echo "> ${MAJOR_DESC}"
               echo
             fi
+            if [ -n "$CRITICAL_RELEASE" ]; then
+              echo "> ⚠️ **Most recent critical fix — [${CRITICAL_RELEASE}](https://github.com/${{ github.repository }}/releases/tag/${CRITICAL_RELEASE})**"
+              echo "> ${CRITICAL_DESC}"
+              echo
+            fi
             echo "| Release | Highlight |"
             echo "|:--|:--|"
             for t in $(git tag --list '*13.6.0.r*' --sort=-creatordate | head -5); do
               SUBJ=$(git log -1 --pretty=%s "$t" 2>/dev/null | sed 's/|/\\|/g')
               MARK=""
               if [ "$t" = "$MAJOR_RELEASE" ]; then MARK=" 🚀 **major**"; fi
+              if [ "$t" = "$CRITICAL_RELEASE" ]; then MARK="${MARK} ⚠️ **critical fix**"; fi
               if [ "$t" = "$TAG_NAME" ]; then MARK="${MARK} _(this release)_"; fi
               echo "| [${t}](https://github.com/${{ github.repository }}/releases/tag/${t})${MARK} | ${SUBJ} |"
             done
