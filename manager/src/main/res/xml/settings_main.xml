@@ -2,7 +2,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory android:title="Capabilities">
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:title="Capabilities"
+        app:collapsible="false">
 
         <af.shizuku.manager.settings.PlusNavPreference
             android:key="nav_shizuku_plus"
@@ -18,9 +20,11 @@
             android:icon="@drawable/ic_shield_24"
             android:fragment="af.shizuku.manager.settings.RootIntegrationSettingsFragment" />
 
-    </PreferenceCategory>
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
-    <PreferenceCategory android:title="Personalization">
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:title="Personalization"
+        app:collapsible="false">
 
         <Preference
             android:key="nav_personalization"
@@ -36,9 +40,11 @@
             android:icon="@drawable/ic_devices_24"
             android:fragment="af.shizuku.manager.settings.AppManagementSettingsFragment" />
 
-    </PreferenceCategory>
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
-    <PreferenceCategory android:title="System">
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:title="System"
+        app:collapsible="false">
 
         <Preference
             android:key="nav_behavior"
@@ -54,9 +60,11 @@
             android:icon="@drawable/ic_terminal_24"
             android:fragment="af.shizuku.manager.settings.AdvancedSettingsFragment" />
 
-    </PreferenceCategory>
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
-    <PreferenceCategory android:title="About">
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:title="About"
+        app:collapsible="false">
 
         <Preference
             android:key="nav_about"
@@ -65,6 +73,6 @@
             android:icon="@drawable/ic_info_24"
             android:fragment="af.shizuku.manager.settings.AboutSettingsFragment" />
 
-    </PreferenceCategory>
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
 </PreferenceScreen>

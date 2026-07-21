@@ -290,5 +290,18 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         }
 
         override fun isHeader(view: View): Boolean = view.tag == "category_header"
+
+        // A row gets a divider under it only when another row in the SAME card follows it -
+        // i.e. the next visible child isn't a header (which starts a new card) and isn't absent
+        // (end of the list). This is what actually groups rows into one Chrome-style card instead
+        // of just drawing a background behind them with no internal separation.
+        override fun shouldDrawDivider(parent: RecyclerView, index: Int, count: Int): Boolean {
+            for (i in index + 1 until count) {
+                val next = parent.getChildAt(i) ?: continue
+                if (next.visibility != View.VISIBLE) continue
+                return !isHeader(next)
+            }
+            return false
+        }
     }
 }

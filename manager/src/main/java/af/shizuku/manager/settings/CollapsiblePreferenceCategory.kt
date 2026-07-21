@@ -17,6 +17,7 @@ class CollapsiblePreferenceCategory @JvmOverloads constructor(
     var onExpansionChanged: ((Boolean) -> Unit)? = null
 
     private var defaultExpanded = false
+    private var collapsible = true
 
     // Keys of children that are conditionally unavailable (e.g. hidden by an OWNER fragment
     // based on OS version or another setting). Such children must stay hidden even when the
@@ -25,12 +26,17 @@ class CollapsiblePreferenceCategory @JvmOverloads constructor(
 
     init {
         layoutResource = R.layout.collapsible_preference_category_card
-        isSelectable = true
 
-        val a = context.obtainStyledAttributes(attrs, intArrayOf(android.R.attr.defaultValue))
+        val a = context.obtainStyledAttributes(attrs, intArrayOf(android.R.attr.defaultValue, R.attr.collapsible))
         defaultExpanded = a.getBoolean(0, false)
-        expanded = defaultExpanded
+        collapsible = a.getBoolean(1, true)
         a.recycle()
+
+        // A non-collapsible category (e.g. a top-level nav menu) still needs the M3E card-grouping
+        // treatment from isHeader()/tag, but must never hide its own entries - there'd be no other
+        // way back to them.
+        expanded = if (collapsible) defaultExpanded else true
+        isSelectable = collapsible
     }
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
@@ -38,8 +44,15 @@ class CollapsiblePreferenceCategory @JvmOverloads constructor(
 
         holder.itemView.tag = "category_header"
 
-        // Sync arrow to current state without animation on first bind
         val arrow = holder.findViewById(R.id.category_arrow)
+        if (!collapsible) {
+            arrow?.visibility = android.view.View.GONE
+            holder.itemView.setOnClickListener(null)
+            holder.itemView.isClickable = false
+            return
+        }
+
+        // Sync arrow to current state without animation on first bind
         arrow?.rotation = if (expanded) 180f else 0f
 
         holder.itemView.setOnClickListener {
@@ -93,8 +106,9 @@ class CollapsiblePreferenceCategory @JvmOverloads constructor(
 
     override fun onAttachedToHierarchy(preferenceManager: PreferenceManager) {
         super.onAttachedToHierarchy(preferenceManager)
-        // Restore persisted state if we have a key, otherwise use defaultValue
-        if (shouldPersist()) {
+        // Restore persisted state if we have a key, otherwise use defaultValue. A non-collapsible
+        // category always stays expanded regardless, even if a key is added later.
+        if (collapsible && shouldPersist()) {
             expanded = getPersistedBoolean(defaultExpanded)
         }
         updateChildren()

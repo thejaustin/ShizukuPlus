@@ -25,5 +25,9 @@
             <enum name="experimental" value="3" />
         </attr>
     </declare-styleable>
+
+    <!-- CollapsiblePreferenceCategory: set false for a top-level nav category that should still
+         get the M3E card-grouping treatment but must always stay expanded (e.g. settings_main). -->
+    <attr name="collapsible" format="boolean" />
 </resources>
 

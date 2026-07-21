@@ -8,6 +8,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import af.shizuku.manager.R
 import af.shizuku.manager.ktx.themeColor
+import af.shizuku.manager.ktx.themeCornerSizePx
 
 /**
  * Base ItemDecoration for Material 3 Expressive card-style lists.
@@ -16,7 +17,9 @@ import af.shizuku.manager.ktx.themeColor
 abstract class M3ECardItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
     protected val cardPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     protected val dividerPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    protected val cornerRadius = context.resources.getDimension(R.dimen.card_corner_radius)
+    // Matches every other 28dp/ExtraLarge card in the app (see #333) and follows the Shape
+    // Style setting (Modern/Classic/Squircle) instead of a fixed radius.
+    protected val cornerRadius = context.themeCornerSizePx(com.google.android.material.R.attr.shapeAppearanceCornerExtraLarge)
     protected val cardMargin = context.resources.getDimension(R.dimen.m3e_spacing_medium)
     protected val density = context.resources.displayMetrics.density
 

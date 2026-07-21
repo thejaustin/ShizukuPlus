@@ -25,6 +25,21 @@ fun Context.themeColor(@AttrRes attr: Int): Int {
     return tv.data
 }
 
+/**
+ * Resolves a `?attr/shapeAppearanceCorner*` theme attribute to its absolute corner size in
+ * pixels, so Canvas-drawn (non-MaterialCardView) shapes can follow the Shape Style setting too.
+ * Assumes the referenced ShapeAppearance uses an absolute cornerSize (true for every
+ * ThemeOverlay.Shape.* variant in this app) — a percentage-based corner would need real bounds.
+ */
+fun Context.themeCornerSizePx(@AttrRes attr: Int): Float {
+    val tv = TypedValue()
+    theme.resolveAttribute(attr, tv, true)
+    val shapeAppearanceModel = com.google.android.material.shape.ShapeAppearanceModel
+        .builder(this, 0, tv.resourceId)
+        .build()
+    return shapeAppearanceModel.topLeftCornerSize.getCornerSize(android.graphics.RectF())
+}
+
 val Context.application: ShizukuApplication
     get() {
         return applicationContext as ShizukuApplication

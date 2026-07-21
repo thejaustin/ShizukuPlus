@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Rounder corners for modern flagship phones (S22 Ultra, Pixel 9 Pro, etc.)
-         Capped at 28dp per M3E shape scale — "extra large" shape token. -->
-    <dimen name="card_corner_radius">28dp</dimen>
-</resources>
