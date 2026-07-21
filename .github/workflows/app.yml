@@ -140,17 +140,14 @@ jobs:
             echo "artifactName=shizukuplus-debug.apk" >> $GITHUB_OUTPUT
             echo "filePath=${RENAMED}" >> $GITHUB_OUTPUT
           else
-            CMD="./gradlew :manager:assembleShizukuplusRelease :manager:assembleDropinRelease :manager:assembleCompatRelease $ARGS"
+            CMD="./gradlew :manager:assembleShizukuplusRelease :manager:assembleDropinRelease $ARGS"
             eval $CMD --stacktrace --info \
               -x uploadSentryProguardMappingsShizukuplusRelease \
               -x uploadSentryProguardMappingsDropinRelease \
-              -x uploadSentryProguardMappingsCompatRelease \
               -x uploadSentryNativeSymbolsForShizukuplusRelease \
               -x uploadSentryNativeSymbolsForDropinRelease \
-              -x uploadSentryNativeSymbolsForCompatRelease \
               -x sentryUploadSourceBundleShizukuplusRelease \
               -x sentryUploadSourceBundleDropinRelease \
-              -x sentryUploadSourceBundleCompatRelease \
               -x :manager:lint
 
             sign_apk() {

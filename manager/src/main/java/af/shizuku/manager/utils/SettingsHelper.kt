@@ -62,6 +62,8 @@ object SettingsHelper {
             context.startActivity(intent)
         }
     }
+
+    fun isSamsungAutoBlockerDisabled(context: Context): Boolean {
         return try {
             val rampart = Settings.Secure.getInt(context.contentResolver, "rampart_enabled", 0)
             rampart == 0
