@@ -10,6 +10,7 @@ import rikka.hidden.compat.util.SystemServiceBinder
 import rikka.shizuku.ShizukuBinderWrapper
 import af.shizuku.common.util.UserHandleCompat
 import af.shizuku.common.util.UserInfoCompat
+import af.shizuku.manager.utils.Logger.LOGGER
 
 object ShizukuSystemApis {
 
