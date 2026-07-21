@@ -139,6 +139,23 @@ object UpdateChecker {
     }
 
     /**
+     * Fetches the release notes body for a specific tag (e.g. "v13.6.0.r2162") — used by the
+     * in-app changelog dialog to show what changed in the version the user just updated to,
+     * as opposed to [checkForUpdate]'s "latest" which may have moved on by the time they open
+     * the app. Returns null on any failure (offline, tag not found, etc.) so callers can fall
+     * back to a generic message instead of failing the whole dialog.
+     */
+    suspend fun fetchReleaseNotesForTag(tag: String): String? = withContext(Dispatchers.IO) {
+        try {
+            val json = fetchJson("$RELEASES_URL/tags/$tag") as? JSONObject ?: return@withContext null
+            json.optString("body", "").takeIf { it.isNotBlank() }
+        } catch (e: Exception) {
+            Timber.tag(TAG).w(e, "Failed to fetch release notes for tag $tag")
+            null
+        }
+    }
+
+    /**
      * Reads GitHub's public Atom feed as a last-resort fallback.
      * Served from github.com CDN — a different network path than api.github.com.
      * Can tell us whether an update exists but cannot provide a direct APK URL.

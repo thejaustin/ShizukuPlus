@@ -14,9 +14,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import af.shizuku.manager.R
+import af.shizuku.manager.home.ChangelogDialogFragment
 import af.shizuku.manager.home.HomeActivity
 import af.shizuku.manager.migration.MigrationHelper
 import af.shizuku.manager.onboarding.OnboardingActivity
+import af.shizuku.manager.update.UpdateChecker
 import af.shizuku.manager.utils.ShizukuStateMachine
 
 class MainActivity : HomeActivity() {
@@ -39,6 +41,11 @@ class MainActivity : HomeActivity() {
 
             // Auto-restore settings if a force-update backup exists
             checkAndRestoreBackup()
+
+            // Show what's new after an update. Separate from the Sentry-quota-reset version
+            // tracking in ShizukuApplication.onCreate() — that one bumps its own flag before any
+            // Activity runs, so this needs its own last-seen key or it would never see an advance.
+            checkAndShowChangelog()
 
             Timber.d("MainActivity onCreate complete")
             Sentry.addBreadcrumb(Breadcrumb("MainActivity onCreate complete"))
@@ -82,6 +89,46 @@ class MainActivity : HomeActivity() {
                 } catch (e: Exception) {
                     Timber.e(e, "Failed to auto-restore settings")
                 }
+            }
+        }
+    }
+
+    /**
+     * Shows "What's New" once per version bump, using the real GitHub release notes for the
+     * exact version just installed (not "latest" — a newer build may already be out by the
+     * time the user opens the app).
+     */
+    private fun checkAndShowChangelog() {
+        val currentCode = try { packageManager.getPackageInfo(packageName, 0).versionCode } catch (e: Exception) { 0 }
+        if (currentCode <= ShizukuSettings.getLastSeenChangelogVersion()) return
+
+        val versionPart = Regex("""\d+\.\d+\.\d+\.r\d+""").find(BuildConfig.VERSION_NAME)?.value
+        if (versionPart == null) {
+            // Can't build a release tag from this build's version string — mark seen so we
+            // don't retry every launch, and skip the dialog rather than showing a broken one.
+            ShizukuSettings.setLastSeenChangelogVersion(currentCode)
+            return
+        }
+        val tagName = "v$versionPart"
+
+        lifecycleScope.launch {
+            val notes = try {
+                UpdateChecker.fetchReleaseNotesForTag(tagName)
+            } catch (e: Exception) {
+                Timber.tag("MainActivity").w(e, "Failed to fetch changelog for $tagName")
+                null
+            }
+
+            // Mark seen regardless of fetch success — an offline user shouldn't be re-prompted
+            // on every cold start; the dialog's fallback message covers that case once.
+            ShizukuSettings.setLastSeenChangelogVersion(currentCode)
+
+            if (isFinishing || isDestroyed) return@launch
+            try {
+                ChangelogDialogFragment.newInstance(notes, tagName)
+                    .show(supportFragmentManager, ChangelogDialogFragment.TAG)
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to show changelog dialog")
             }
         }
     }

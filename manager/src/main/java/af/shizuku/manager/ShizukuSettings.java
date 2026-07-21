@@ -140,6 +140,7 @@ public class ShizukuSettings {
         public static final String KEY_LAST_CHECK_FAILED = "last_check_failed";
         public static final String KEY_UPDATE_CHANNEL = "update_channel"; // "stable" or "dev"
         public static final String KEY_LAST_SEEN_VERSION = "last_seen_version";
+        public static final String KEY_LAST_SEEN_CHANGELOG_VERSION = "last_seen_changelog_version";
         public static final String KEY_SERVER_STARTED_BUILD = "server_started_build";
 
         // Companion Mode (Shizuku+ additions)
@@ -158,6 +159,16 @@ public class ShizukuSettings {
 
     public static void setLastSeenVersion(int versionCode) {
         getPreferences().edit().putInt(Keys.KEY_LAST_SEEN_VERSION, versionCode).apply();
+    }
+
+    /** Separate from {@link #getLastSeenVersion()} (which gates the Sentry-quota reset) so the
+     *  changelog dialog and the quota reset can each track "have I handled this version?" independently. */
+    public static int getLastSeenChangelogVersion() {
+        return getPreferences().getInt(Keys.KEY_LAST_SEEN_CHANGELOG_VERSION, -1);
+    }
+
+    public static void setLastSeenChangelogVersion(int versionCode) {
+        getPreferences().edit().putInt(Keys.KEY_LAST_SEEN_CHANGELOG_VERSION, versionCode).apply();
     }
 
     /** versionCode of the app build that started the currently-running privileged server (0 = unknown). */
