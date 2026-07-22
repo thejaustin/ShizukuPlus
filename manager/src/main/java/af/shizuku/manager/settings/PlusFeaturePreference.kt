@@ -92,7 +92,7 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : SwitchPrefe
         // a step up in severity even when both badges appear on the same item.
         2 -> Triple(
             "DANGEROUS",
-            resolveColor(com.google.android.material.R.attr.colorError, 0xFFB3261E.toInt()),
+            resolveColor(android.R.attr.colorError, 0xFFB3261E.toInt()),
             resolveColor(com.google.android.material.R.attr.colorOnError, 0xFFFFFFFF.toInt())
         )
         else -> null
