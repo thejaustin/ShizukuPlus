@@ -24,6 +24,13 @@
             <enum name="root" value="2" />
             <enum name="experimental" value="3" />
         </attr>
+        <!-- Independent of badgeType (category) - a risk-severity signal, so a feature can be
+             both e.g. ROOT and DANGEROUS without one badge overwriting the other. -->
+        <attr name="severityBadge" format="enum">
+            <enum name="none" value="0" />
+            <enum name="risky" value="1" />
+            <enum name="dangerous" value="2" />
+        </attr>
     </declare-styleable>
 
     <!-- CollapsiblePreferenceCategory: set false for a top-level nav category that should still

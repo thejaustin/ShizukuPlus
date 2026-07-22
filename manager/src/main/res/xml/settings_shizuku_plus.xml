@@ -265,10 +265,10 @@
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="software_keystore_fallback_enabled"
             android:title="Software KeyStore Fallback"
-            android:summary="[RISKY] Allows caching the ADB RSA Private Key encrypted with a software-based static AES key if your device's hardware KeyStore fails (e.g., Samsung Knox). Reduces pairing prompts but decreases security."
+            android:summary="Allows caching the ADB RSA Private Key encrypted with a software-based static AES key if your device's hardware KeyStore fails (e.g., Samsung Knox). Reduces pairing prompts but decreases security."
             android:icon="@drawable/ic_shield_24"
             android:defaultValue="false"
-            app:badgeType="experimental" />
+            app:severityBadge="risky" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="vector_enabled"
@@ -306,10 +306,11 @@
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="samsung_system_uid_escalation_enabled"
             android:title="Samsung System UID Escalation"
-            android:summary="[DANGEROUS] Attempt to escalate to UID 1000 (system) using an exploit specific to unpatched Samsung devices (by pascua28). Use at your own risk."
+            android:summary="Attempt to escalate to UID 1000 (system) using an exploit specific to unpatched Samsung devices (by pascua28). Use at your own risk."
             android:icon="@drawable/ic_warning_24"
             android:defaultValue="false"
-            app:badgeType="root" />
+            app:badgeType="root"
+            app:severityBadge="dangerous" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 

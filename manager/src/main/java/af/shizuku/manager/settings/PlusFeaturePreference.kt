@@ -24,6 +24,7 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : SwitchPrefe
     private val infoTitle: Int
     private val infoDetail: Int
     private val badgeType: Int
+    private val severityBadge: Int
     private var integrationPackage: String? = null
     private var integrationAppName: String? = null
 
@@ -32,6 +33,7 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : SwitchPrefe
         infoTitle = a.getResourceId(R.styleable.PlusFeaturePreference_infoTitle, 0)
         infoDetail = a.getResourceId(R.styleable.PlusFeaturePreference_infoDetail, 0)
         badgeType = a.getInt(R.styleable.PlusFeaturePreference_badgeType, 0)
+        severityBadge = a.getInt(R.styleable.PlusFeaturePreference_severityBadge, 0)
         a.recycle()
     }
 
@@ -49,7 +51,7 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : SwitchPrefe
 
         titleView?.apply {
             isSingleLine = false
-            if (badgeType != 0) applyBadge(this)
+            if (badgeType != 0 || severityBadge != 0) applyBadges(this)
         }
 
         summaryView?.apply {
@@ -64,35 +66,51 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : SwitchPrefe
         }
     }
 
-    private fun applyBadge(titleView: TextView) {
-        val (badgeLabel, bgColor, fgColor) = when (badgeType) {
-            1 -> Triple(
-                "PLUS",
-                resolveColor(com.google.android.material.R.attr.colorPrimaryContainer, 0xFFE8DEF8.toInt()),
-                resolveColor(com.google.android.material.R.attr.colorOnPrimaryContainer, 0xFF21005D.toInt())
-            )
-            2 -> Triple(
-                "ROOT",
-                resolveColor(com.google.android.material.R.attr.colorErrorContainer, 0xFFFFDAD6.toInt()),
-                resolveColor(com.google.android.material.R.attr.colorOnErrorContainer, 0xFF410002.toInt())
-            )
-            3 -> Triple(
-                "EXP",
-                resolveColor(com.google.android.material.R.attr.colorTertiaryContainer, 0xFFFFD8E4.toInt()),
-                resolveColor(com.google.android.material.R.attr.colorOnTertiaryContainer, 0xFF31111D.toInt())
-            )
-            else -> return
-        }
-        val original = titleView.text
-        val spannable = SpannableStringBuilder(original).apply {
-            append("  ")
-            val start = length
-            append(" $badgeLabel ")
-            val end = length
-            setSpan(BackgroundColorSpan(bgColor), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            setSpan(ForegroundColorSpan(fgColor), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            setSpan(RelativeSizeSpan(0.65f), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            setSpan(StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    private fun badgeStyleFor(type: Int): Triple<String, Int, Int>? = when (type) {
+        1 -> Triple(
+            "PLUS",
+            resolveColor(com.google.android.material.R.attr.colorPrimaryContainer, 0xFFE8DEF8.toInt()),
+            resolveColor(com.google.android.material.R.attr.colorOnPrimaryContainer, 0xFF21005D.toInt())
+        )
+        2 -> Triple(
+            "ROOT",
+            resolveColor(com.google.android.material.R.attr.colorErrorContainer, 0xFFFFDAD6.toInt()),
+            resolveColor(com.google.android.material.R.attr.colorOnErrorContainer, 0xFF410002.toInt())
+        )
+        3 -> Triple(
+            "EXP",
+            resolveColor(com.google.android.material.R.attr.colorTertiaryContainer, 0xFFFFD8E4.toInt()),
+            resolveColor(com.google.android.material.R.attr.colorOnTertiaryContainer, 0xFF31111D.toInt())
+        )
+        else -> null
+    }
+
+    private fun severityBadgeStyleFor(type: Int): Triple<String, Int, Int>? = when (type) {
+        // No M3 "warning" role exists, so RISKY is a fixed amber rather than theme-resolved.
+        1 -> Triple("RISKY", 0xFFFFE0B2.toInt(), 0xFF7A4A00.toInt())
+        // Solid colorError (not the softer colorErrorContainer ROOT uses) so DANGEROUS reads as
+        // a step up in severity even when both badges appear on the same item.
+        2 -> Triple(
+            "DANGEROUS",
+            resolveColor(com.google.android.material.R.attr.colorError, 0xFFB3261E.toInt()),
+            resolveColor(com.google.android.material.R.attr.colorOnError, 0xFFFFFFFF.toInt())
+        )
+        else -> null
+    }
+
+    private fun applyBadges(titleView: TextView) {
+        val badges = listOfNotNull(badgeStyleFor(badgeType), severityBadgeStyleFor(severityBadge))
+        if (badges.isEmpty()) return
+        val spannable = SpannableStringBuilder(titleView.text)
+        for ((badgeLabel, bgColor, fgColor) in badges) {
+            spannable.append("  ")
+            val start = spannable.length
+            spannable.append(" $badgeLabel ")
+            val end = spannable.length
+            spannable.setSpan(BackgroundColorSpan(bgColor), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            spannable.setSpan(ForegroundColorSpan(fgColor), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            spannable.setSpan(RelativeSizeSpan(0.65f), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            spannable.setSpan(StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
         titleView.text = spannable
     }
