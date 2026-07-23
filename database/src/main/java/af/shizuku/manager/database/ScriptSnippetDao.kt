@@ -15,13 +15,13 @@ import kotlinx.coroutines.flow.Flow
 interface ScriptSnippetDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(snippet: ScriptSnippetRoom): Long
+    fun insert(snippet: ScriptSnippetRoom): Long
 
     @Update
-    suspend fun update(snippet: ScriptSnippetRoom)
+    fun update(snippet: ScriptSnippetRoom)
 
     @Delete
-    suspend fun delete(snippet: ScriptSnippetRoom)
+    fun delete(snippet: ScriptSnippetRoom)
 
     @Query("SELECT * FROM script_snippets ORDER BY updatedAt DESC")
     fun getAll(): Flow<List<ScriptSnippetRoom>>
