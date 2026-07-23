@@ -27,5 +27,5 @@ interface ScriptSnippetDao {
     fun getAll(): Flow<List<ScriptSnippetRoom>>
 
     @Query("SELECT * FROM script_snippets WHERE id = :id")
-    suspend fun getById(id: Long): ScriptSnippetRoom?
+    fun getById(id: Long): ScriptSnippetRoom?
 }
