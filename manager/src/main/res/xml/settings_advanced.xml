@@ -38,6 +38,12 @@
             android:summary="@string/settings_update_app_database_summary"
             android:icon="@drawable/ic_autorenew" />
 
+        <Preference
+            android:key="scripting"
+            android:title="@string/scripting_title"
+            android:summary="@string/scripting_summary"
+            android:icon="@drawable/ic_code_24" />
+
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory

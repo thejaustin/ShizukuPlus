@@ -1030,4 +1030,36 @@
     <string name="verify_api_key_hint">Tap to enter API key</string>
     <string name="verify_api_key_configured">API key saved · tap to update</string>
     <string name="verify_get_api_key">Get API Key</string>
+
+    <!-- Scripting & Snippets (#11) -->
+    <string name="scripting_title">Scripting</string>
+    <string name="scripting_summary">Save, share, and run privileged shell snippets</string>
+    <string name="scripting_empty_title">No snippets yet</string>
+    <string name="scripting_empty_description">Save a privileged shell snippet to run it anytime through Shizuku+.</string>
+    <string name="scripting_add">Add snippet</string>
+    <string name="scripting_edit">Edit snippet</string>
+    <string name="scripting_run">Run</string>
+    <string name="scripting_running">Running “%1$s…”</string>
+    <string name="scripting_no_output">(no output)</string>
+    <string name="scripting_exit_code">Exit code: %1$d</string>
+    <string name="scripting_copy_output">Copy Output</string>
+    <string name="scripting_output_copied">Output copied to clipboard</string>
+    <string name="scripting_title_hint">Snippet name</string>
+    <string name="scripting_script_hint">Shell command(s)</string>
+    <string name="scripting_title_and_script_required">Name and script are both required</string>
+    <string name="scripting_delete_title">Delete snippet?</string>
+    <string name="scripting_delete_message">“%1$s” will be permanently deleted.</string>
+    <string name="scripting_delete">Delete</string>
+
+    <!-- Tasker/Locale automation plugin (#6) -->
+    <string name="automation_plugin_action_label">Shizuku+ Service</string>
+    <string name="automation_plugin_action_edit_title">Choose action</string>
+    <string name="automation_plugin_action_start">Start Shizuku+ service</string>
+    <string name="automation_plugin_action_stop">Stop Shizuku+ service</string>
+    <string name="automation_plugin_blurb_start">Start Shizuku+ service</string>
+    <string name="automation_plugin_blurb_stop">Stop Shizuku+ service</string>
+    <string name="automation_plugin_condition_label">Shizuku+ Service Running</string>
+    <string name="automation_plugin_condition_title">Shizuku+ service running</string>
+    <string name="automation_plugin_condition_description">This condition is satisfied whenever the Shizuku+ service is running.</string>
+    <string name="automation_plugin_condition_blurb">Shizuku+ service is running</string>
 </resources>

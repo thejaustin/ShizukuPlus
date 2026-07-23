@@ -183,6 +183,12 @@
             android:label="@string/settings_activity_log" />
 
         <activity
+            android:name=".scripting.ScriptingActivity"
+            android:theme="@style/Theme"
+            android:exported="false"
+            android:label="@string/scripting_title" />
+
+        <activity
             android:name=".management.ApplicationManagementActivity"
             android:exported="false"
             android:label="@string/home_app_management_title" />
@@ -467,6 +473,47 @@
                     foreground-app check and reacts to system network callbacks, so battery impact is
                     minimal, and it is toggleable via settings." />
         </service>
+
+        <!-- Tasker/Locale-compatible automation plugin (#6): exposes start/stop as a plugin
+             action and "service is running" as a plugin condition to any Locale-style host app
+             (Tasker, MacroDroid, etc). -->
+        <activity
+            android:name="af.shizuku.manager.automation.locale.LocaleActionEditActivity"
+            android:exported="true"
+            android:icon="@drawable/ic_bolt_24"
+            android:label="@string/automation_plugin_action_label"
+            android:theme="@style/Theme.App.DialogHost">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name="af.shizuku.manager.automation.locale.LocaleActionFireReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="af.shizuku.manager.automation.locale.LocaleConditionEditActivity"
+            android:exported="true"
+            android:icon="@drawable/ic_bolt_24"
+            android:label="@string/automation_plugin_condition_label"
+            android:theme="@style/Theme.App.DialogHost">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_CONDITION" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name="af.shizuku.manager.automation.locale.LocaleConditionQueryReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.QUERY_CONDITION" />
+            </intent-filter>
+        </receiver>
 
         <!-- AICore+ automation accessibility service. Restored: a modularity refactor
              (af6eca73) accidentally dropped this declaration, hiding it from Android's

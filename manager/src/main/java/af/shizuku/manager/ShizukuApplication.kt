@@ -340,6 +340,8 @@ class ShizukuApplication : Application(), Configuration.Provider {
      */
     private fun initializeManagers() {
         ActivityLogManager.initialize(this, ActivityLogSettingsImpl())
+        af.shizuku.manager.database.ScriptSnippetManager.initialize(this)
+        af.shizuku.manager.plugin.PlusFeatureRegistry.register(af.shizuku.manager.scripting.ScriptingFeatureModule)
         AppContextManager.initialize(AppContextSettingsImpl())
         LocaleDelegate.defaultLocale = ShizukuSettings.getLocale()
         AppCompatDelegate.setDefaultNightMode(ShizukuSettings.getNightMode())
