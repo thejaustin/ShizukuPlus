@@ -143,15 +143,34 @@ object ShizukuReceiverStarter {
 
         try {
             ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
-            Shell.cmd(Starter.internalCommand).exec()
+            val result = Shell.cmd(Starter.internalCommand).exec()
+            if (!result.isSuccess) {
+                // libsu doesn't throw on a non-zero exit. Without this check the state machine is
+                // left in STARTING, which update() preserves indefinitely while the binder is dead —
+                // so the watchdog (which only reacts to CRASHED) never retries and the UI shows a
+                // perpetual "Starting…".
+                Sentry.addBreadcrumb(Breadcrumb("Background Root start failed: starter exited ${result.code}").apply {
+                    category = "shizuku.starter"
+                    level = io.sentry.SentryLevel.ERROR
+                })
+                Timber.tag(AppConstants.TAG).e("Root starter exited with code ${result.code}")
+                recoverFromFailedStart()
+            }
         } catch (e: Exception) {
             Sentry.addBreadcrumb(Breadcrumb("Background Root start failed: ${e.message}").apply {
                 category = "shizuku.starter"
                 level = io.sentry.SentryLevel.ERROR
             })
             Timber.tag(AppConstants.TAG).e(e, "Failed to start Shizuku with root")
-            ShizukuStateMachine.update()
+            recoverFromFailedStart()
         }
+    }
+
+    /** Clears a stuck STARTING state after a failed start attempt, then re-detects: if a previous
+     *  server instance is actually still alive, update() flips the state back to RUNNING. */
+    private fun recoverFromFailedStart() {
+        ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
+        ShizukuStateMachine.update()
     }
 
     private fun showPermissionErrorNotification(context: Context) {

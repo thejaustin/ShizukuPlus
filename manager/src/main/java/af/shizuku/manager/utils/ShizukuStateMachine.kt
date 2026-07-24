@@ -47,8 +47,12 @@ object ShizukuStateMachine {
     fun get(): State = state.get()
 
     private fun transition(transform: (State) -> State) {
-        val oldState = state.getAndUpdate(transform)
-        val newState = state.get()
+        // Capture the value our own CAS produced: a separate state.get() after getAndUpdate can
+        // observe a concurrent transition's later write, making oldState == newState and silently
+        // skipping listener/broadcast side effects for a transition that did occur.
+        var computed: State? = null
+        val oldState = state.getAndUpdate { current -> transform(current).also { computed = it } }
+        val newState = computed!!
         if(oldState != newState) {
             listeners.forEach { it(newState) }
             Timber.tag("ShizukuStateMachine").d(newState.toString())

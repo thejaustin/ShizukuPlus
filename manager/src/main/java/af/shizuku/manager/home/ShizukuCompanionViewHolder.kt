@@ -50,13 +50,16 @@ class ShizukuCompanionViewHolder(
         // and Shell.exec() are both blocking IPC/subprocess waits, so without this dispatch
         // they'd block the main thread for the duration of the command (ANR - SHIZUKUPLUS-7H/7P).
         if (Shizuku.pingBinder()) {
+            var process: Process? = null
             try {
-                val process = Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
-                val success = process.waitFor() == 0
-                process.destroy()
-                success
+                process = Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
+                process.waitFor() == 0
             } catch (e: Exception) {
                 false
+            } finally {
+                // waitFor() can throw if the binder dies mid-command; without the finally the
+                // process handle (and its pipes) leaks on that path.
+                try { process?.destroy() } catch (_: Exception) {}
             }
         } else if (MigrationHelper.isRootAvailable()) {
             try {

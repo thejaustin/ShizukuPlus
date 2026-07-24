@@ -76,8 +76,9 @@ object StockShizukuCompat {
         // dropin build IS that package.
         if (af.shizuku.manager.BuildConfig.APPLICATION_ID == PACKAGE) return false
         if (!rikka.shizuku.Shizuku.pingBinder()) return false
+        var process: Process? = null
         return try {
-            val process = rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", "ps -A | grep shizuku_server"), null, null)
+            process = rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", "ps -A | grep shizuku_server"), null, null)
             val reader = java.io.BufferedReader(java.io.InputStreamReader(process.inputStream))
             var line: String?
             var isOriginal = false
@@ -87,7 +88,6 @@ object StockShizukuCompat {
                     break
                 }
             }
-            process.destroy()
             isOriginal
         } catch (e: Exception) {
             // If the stock server is running but the stock manager is uninstalled,
@@ -97,6 +97,10 @@ object StockShizukuCompat {
                 return true
             }
             false
+        } finally {
+            // readLine() can throw if the binder dies mid-read; destroy in finally so the
+            // process handle doesn't leak on that path.
+            try { process?.destroy() } catch (_: Exception) {}
         }
     }
 }

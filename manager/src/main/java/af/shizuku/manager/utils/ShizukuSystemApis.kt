@@ -43,7 +43,9 @@ object ShizukuSystemApis {
                 users.clear()
                 users.addAll(getUsers())
             }
-            return users
+            // Copy while still holding the lock: returning the live list lets callers iterate it
+            // outside synchronization while a refresh clears/refills it on another thread (CME).
+            return ArrayList(users)
         }
     }
 

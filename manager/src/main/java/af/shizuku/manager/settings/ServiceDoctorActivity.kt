@@ -240,8 +240,11 @@ class ServiceDoctorActivity : AppBarActivity() {
                                 // (SHIZUKUPLUS-7H/7P).
                                 withContext(Dispatchers.IO) {
                                     val p = Shizuku.newProcess(arrayOf("device_config", "put", "activity_manager", "max_phantom_processes", "2147483647"), null, null)
-                                    p.waitFor()
-                                    p.destroy()
+                                    try {
+                                        p.waitFor()
+                                    } finally {
+                                        try { p.destroy() } catch (_: Exception) {}
+                                    }
                                 }
                                 withContext(Dispatchers.Main) { Toast.makeText(this@ServiceDoctorActivity, R.string.service_doctor_fix_phantom_attempted, Toast.LENGTH_SHORT).show() }
                             } else {

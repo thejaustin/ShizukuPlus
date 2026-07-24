@@ -48,9 +48,13 @@ class AdbProxyService : Service() {
             return try {
                 if (Shizuku.pingBinder()) {
                     val p = Shizuku.newProcess(cmd, null, null)
-                    val success = p.waitFor() == 0
-                    p.destroy()
-                    success
+                    try {
+                        p.waitFor() == 0
+                    } finally {
+                        // waitFor() can throw if the binder dies mid-command; destroy in finally
+                        // so the process handle doesn't leak on that path.
+                        try { p.destroy() } catch (_: Exception) {}
+                    }
                 } else if (com.topjohnwu.superuser.Shell.getShell().isRoot) {
                     com.topjohnwu.superuser.Shell.cmd(*cmd).exec().isSuccess
                 } else {
