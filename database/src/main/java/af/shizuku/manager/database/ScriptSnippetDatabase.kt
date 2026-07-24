@@ -2,11 +2,9 @@ package af.shizuku.manager.database
 
 import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
-import timber.log.Timber
 
 /**
  * Room database for saved script snippets (Scripting & Snippets, #11).
@@ -34,34 +32,9 @@ abstract class ScriptSnippetDatabase : RoomDatabase() {
             }
         }
 
-        private fun buildDatabase(context: Context): ScriptSnippetDatabase {
-            // Same device-protected-storage-first strategy as ActivityLogDatabase, so snippets
-            // survive direct boot; falls back to regular app storage if that context isn't usable.
-            val candidates = buildList {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    add(context.createDeviceProtectedStorageContext())
-                }
-                add(context.applicationContext)
-            }
-
-            for (ctx in candidates) {
-                val dbFile = ctx.getDatabasePath(DATABASE_NAME)
-                val parent = dbFile.parentFile
-                if (parent != null && !parent.exists()) {
-                    parent.mkdirs()
-                }
-                if (parent == null || parent.exists()) {
-                    return Room.databaseBuilder(ctx, ScriptSnippetDatabase::class.java, DATABASE_NAME)
-                        .fallbackToDestructiveMigration()
-                        .build()
-                }
-                Timber.tag("ScriptSnippetDatabase").w("mkdirs failed for ${parent.absolutePath}, trying next context")
-            }
-
-            Timber.tag("ScriptSnippetDatabase").e("All storage contexts failed; falling back to in-memory database")
-            return Room.inMemoryDatabaseBuilder(context.applicationContext, ScriptSnippetDatabase::class.java)
-                .fallbackToDestructiveMigration()
-                .build()
-        }
+        private fun buildDatabase(context: Context): ScriptSnippetDatabase =
+            buildRoomDatabaseWithStorageFallback(
+                context, DATABASE_NAME, ScriptSnippetDatabase::class.java, "ScriptSnippetDatabase"
+            )
     }
 }

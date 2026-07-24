@@ -170,28 +170,14 @@ object RootCompatHelper {
      *  cross-UID file read is needed (works in ADB mode, not just root). */
     private fun streamToPrivilegedFile(bytes: ByteArray, path: String, mode: String): Boolean {
         if (!Shizuku.pingBinder()) return false
-        return try {
-            val escaped = escapeShellSingleQuote(path)
-            val process = Shizuku.newProcess(
-                arrayOf("sh", "-c", "cat > '$escaped' && chmod $mode '$escaped'"), null, null
-            )
-            // Drain stdout/stderr concurrently so the child never blocks on a full pipe.
-            val outDrainer = Thread { try { process.inputStream.bufferedReader().use { it.readText() } } catch (_: Exception) {} }
-            val errDrainer = Thread { try { process.errorStream.bufferedReader().use { it.readText() } } catch (_: Exception) {} }
-            outDrainer.start()
-            errDrainer.start()
-            // outputStream is the child's stdin; writing then closing sends EOF so `cat` completes.
-            process.outputStream.use { it.write(bytes) }
-            val exitCode = process.waitFor()
-            outDrainer.join(500)
-            errDrainer.join(500)
-            try { process.inputStream.close() } catch (_: Exception) {}
-            try { process.errorStream.close() } catch (_: Exception) {}
-            exitCode == 0
-        } catch (e: Exception) {
-            Timber.e(e, "streamToPrivilegedFile failed for $path")
-            false
-        }
+        val escaped = escapeShellSingleQuote(path)
+        // outputStream is the child's stdin; writing then closing sends EOF so `cat` completes.
+        val result = ShizukuProcessUtils.runPrivilegedCapture(
+            arrayOf("sh", "-c", "cat > '$escaped' && chmod $mode '$escaped'"),
+            joinTimeoutMs = 500,
+            writeStdin = { it.use { stream -> stream.write(bytes) } }
+        )
+        return result.exitCode == 0
     }
 
     /** Result of [selfTest]: [ok] is a coarse pass/fail; [report] is a human-readable multi-line
@@ -272,25 +258,12 @@ object RootCompatHelper {
         BridgeSelfTest(deployed && uid != null, sb.toString())
     }
 
-    /** Runs a privileged command and returns (exitCode, stdout, stderr). Unlike [executePrivileged]
-     *  this captures output, which the self-test needs. */
+    /** Runs a privileged command and returns (exitCode, stdout, stderr) via the shared
+     *  [ShizukuProcessUtils.runPrivilegedCapture]. Unlike [executePrivileged] this captures
+     *  output, which the self-test needs. */
     private fun runPrivilegedCapture(cmd: Array<String>): Triple<Int, String, String> {
-        if (!Shizuku.pingBinder()) return Triple(-1, "", "Shizuku binder not available")
-        return try {
-            val process = Shizuku.newProcess(cmd, null, null)
-            val out = StringBuilder()
-            val errb = StringBuilder()
-            val outT = Thread { try { process.inputStream.bufferedReader().use { out.append(it.readText()) } } catch (_: Exception) {} }
-            val errT = Thread { try { process.errorStream.bufferedReader().use { errb.append(it.readText()) } } catch (_: Exception) {} }
-            outT.start(); errT.start()
-            try { process.outputStream.close() } catch (_: Exception) {}
-            val exit = process.waitFor()
-            outT.join(1500); errT.join(1500)
-            Triple(exit, out.toString(), errb.toString())
-        } catch (e: Exception) {
-            Timber.e(e, "runPrivilegedCapture failed")
-            Triple(-1, "", e.message ?: "exception")
-        }
+        val result = ShizukuProcessUtils.runPrivilegedCapture(cmd, joinTimeoutMs = 1500)
+        return Triple(result.exitCode, result.stdout, result.stderr)
     }
 
     private fun executePrivileged(cmd: Array<String>): Boolean {
@@ -298,32 +271,6 @@ object RootCompatHelper {
             Timber.w("RootCompatHelper: Shizuku binder not available, skipping command")
             return false
         }
-        return try {
-            val process = Shizuku.newProcess(cmd, null, null)
-            
-            // Start threads to drain output/error streams to prevent buffer-fill hangs
-            val outDrainer = Thread { try { process.inputStream.bufferedReader().use { it.readText() } } catch (e: Exception) { Timber.w(e, "RootCompatHelper: Error draining output stream") } }
-            val errDrainer = Thread { try { process.errorStream.bufferedReader().use { it.readText() } } catch (e: Exception) { Timber.w(e, "RootCompatHelper: Error draining error stream") } }
-            outDrainer.start()
-            errDrainer.start()
-
-            val exitCode = process.waitFor()
-            outDrainer.join(500)
-            errDrainer.join(500)
-
-            // Close all streams
-            process.inputStream.close()
-            process.errorStream.close()
-            process.outputStream.close()
-            
-            exitCode == 0
-        } catch (e: IllegalStateException) {
-            // Binder lost between ping and call — not a bug, just timing.
-            Timber.w("RootCompatHelper: binder lost during privileged command: ${e.message}")
-            false
-        } catch (e: Exception) {
-            Timber.e(e, "execute privileged command failed")
-            false
-        }
+        return ShizukuProcessUtils.runPrivilegedCapture(cmd, joinTimeoutMs = 500).exitCode == 0
     }
 }

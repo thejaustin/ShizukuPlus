@@ -1,10 +1,7 @@
 package af.shizuku.manager.database
 
-import timber.log.Timber
-
 import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -46,38 +43,10 @@ abstract class ActivityLogDatabase : RoomDatabase() {
             }
         }
 
-        private fun buildDatabase(context: Context): ActivityLogDatabase {
-            // Try device-protected storage first so logs survive direct boot.
-            // Fall back to regular app storage if the directory can't be created
-            // (happens on some devices where createDeviceProtectedStorageContext()
-            // maps back to credential-encrypted storage that isn't yet accessible).
-            val candidates = buildList {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    add(context.createDeviceProtectedStorageContext())
-                }
-                add(context.applicationContext)
-            }
-
-            for (ctx in candidates) {
-                val dbFile = ctx.getDatabasePath(DATABASE_NAME)
-                val parent = dbFile.parentFile
-                if (parent != null && !parent.exists()) {
-                    parent.mkdirs()
-                }
-                if (parent == null || parent.exists()) {
-                    return Room.databaseBuilder(ctx, ActivityLogDatabase::class.java, DATABASE_NAME)
-                        .fallbackToDestructiveMigration()
-                        .build()
-                }
-                Timber.tag("ActivityLogDatabase").w("mkdirs failed for ${parent?.absolutePath}, trying next context")
-            }
-
-            // Last resort: in-memory database so the app never crashes due to storage issues
-            Timber.tag("ActivityLogDatabase").e("All storage contexts failed; falling back to in-memory database")
-            return Room.inMemoryDatabaseBuilder(context.applicationContext, ActivityLogDatabase::class.java)
-                .fallbackToDestructiveMigration()
-                .build()
-        }
+        private fun buildDatabase(context: Context): ActivityLogDatabase =
+            buildRoomDatabaseWithStorageFallback(
+                context, DATABASE_NAME, ActivityLogDatabase::class.java, "ActivityLogDatabase"
+            )
 
         /**
          * Reset the singleton instance (useful for testing).

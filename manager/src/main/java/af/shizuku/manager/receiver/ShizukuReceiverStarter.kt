@@ -26,6 +26,7 @@ import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuStateMachine
 import af.shizuku.common.util.UserHandleCompat
 import af.shizuku.manager.worker.AdbStartWorker
+import rikka.shizuku.Shizuku
 
 object ShizukuReceiverStarter {
 
@@ -57,6 +58,15 @@ object ShizukuReceiverStarter {
         } else {
             Timber.tag(AppConstants.TAG).w("Background start not supported")
         }
+    }
+
+    /** Symmetric with [start]: stops a running service. Shared by the manual STOP broadcast
+     *  receiver and the Tasker/Locale plugin's fire receiver. */
+    fun stop() {
+        if (!ShizukuStateMachine.isRunning()) return
+        ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPING)
+        runCatching { Shizuku.exit() }
+            .onFailure { Timber.tag(AppConstants.TAG).w(it, "Shizuku.exit failed") }
     }
 
     fun buildNotification(context: Context, msg: String? = null): Notification {
