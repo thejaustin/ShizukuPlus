@@ -231,7 +231,7 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : SwitchPrefe
             }
 
             val switchText = TextView(context).apply {
-                text = "Enable feature"
+                text = context.getString(R.string.settings_plus_enable_feature)
                 setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 15f)
                 setTypeface(null, android.graphics.Typeface.BOLD)
                 setTextColor(resolveColor(com.google.android.material.R.attr.colorOnPrimaryContainer, 0xFF004D40.toInt()))
@@ -253,7 +253,7 @@ class PlusFeaturePreference(context: Context, attrs: AttributeSet) : SwitchPrefe
 
             // Dismiss Button
             val closeButton = com.google.android.material.button.MaterialButton(context).apply {
-                text = "Close"
+                text = context.getString(R.string.action_close)
                 cornerRadius = (24 * context.resources.displayMetrics.density).toInt()
                 val params = android.widget.LinearLayout.LayoutParams(
                     android.view.ViewGroup.LayoutParams.MATCH_PARENT,

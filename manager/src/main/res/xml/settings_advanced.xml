@@ -3,7 +3,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_diagnostics"
-        android:title="Diagnostics"
+        android:title="@string/settings_diagnostics_category_title"
         android:defaultValue="true">
 
         <Preference
@@ -14,8 +14,8 @@
 
         <SwitchPreferenceCompat
             android:key="diagnostics_enabled"
-            android:title="Settings Diagnostics"
-            android:summary="Scan configurations for conflicts and anomalies proactively"
+            android:title="@string/settings_diagnostics_toggle_title"
+            android:summary="@string/settings_diagnostics_toggle_summary"
             android:icon="@drawable/ic_warning_24"
             android:defaultValue="true" />
 
@@ -48,7 +48,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_adb_tools"
-        android:title="ADB Tools"
+        android:title="@string/settings_adb_tools_category_title"
         android:defaultValue="false">
 
         <SwitchPreferenceCompat
@@ -74,7 +74,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_help"
-        android:title="Help &amp; Recovery"
+        android:title="@string/settings_help_recovery_category_title"
         android:defaultValue="false">
 
         <Preference

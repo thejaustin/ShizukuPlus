@@ -3,7 +3,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_color_theme"
-        android:title="Color &amp; Theme"
+        android:title="@string/settings_color_theme_category_title"
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.IntegerSimpleMenuPreference
@@ -27,8 +27,8 @@
 
         <rikka.preference.SimpleMenuPreference
             android:key="custom_accent"
-            android:title="Custom Accent Color"
-            android:summary="Choose a color when Dynamic Color is off"
+            android:title="@string/settings_custom_accent_color_title"
+            android:summary="@string/settings_custom_accent_color_summary"
             android:defaultValue="DEFAULT"
             android:entries="@array/custom_accents"
             android:entryValues="@array/custom_accents_values"
@@ -53,7 +53,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_shape_style"
-        android:title="Shape &amp; Icon Style"
+        android:title="@string/settings_shape_icon_style_category_title"
         android:defaultValue="true">
 
         <SwitchPreferenceCompat
@@ -95,7 +95,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_motion"
-        android:title="Motion"
+        android:title="@string/settings_motion_category_title"
         android:defaultValue="true">
 
         <SwitchPreferenceCompat
@@ -140,7 +140,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_home_screen"
-        android:title="Home Screen"
+        android:title="@string/settings_home_screen_category_title"
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.HomeLayoutSimulatorPreference
@@ -187,7 +187,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_language"
-        android:title="Language"
+        android:title="@string/settings_language_category_title"
         android:defaultValue="false">
 
         <rikka.preference.SimpleMenuPreference

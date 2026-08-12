@@ -38,28 +38,31 @@ import java.io.OutputStreamWriter
 
 class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
 
-    override fun getTitle(): CharSequence? = "Feature Hub"
+    override fun getTitle(): CharSequence? = getString(R.string.settings_feature_hub_title)
 
     // e.message is often null for keystore/cipher exceptions (#315's "Backup failed: null"), and
     // KeyPermanentlyInvalidatedException needs a message explaining it's unrecoverable rather
     // than a raw exception string (#332) - encryption self-heals from this in CryptoUtils, but
     // decryption of an existing backup genuinely can't.
-    private fun backupErrorMessage(prefix: String, e: Exception): String = when (e) {
+    private fun backupErrorMessage(ctx: Context, prefixRes: Int, isRestore: Boolean, e: Exception): String = when (e) {
         is KeyPermanentlyInvalidatedException ->
-            "$prefix: your device's screen lock or biometrics changed since this backup's " +
-                "encryption key was created, which permanently invalidates it by design. " +
-                if (prefix == "Restore failed") "This backup can no longer be decrypted."
-                else "Please try again to generate a new key."
+            ctx.getString(
+                if (isRestore) {
+                    R.string.settings_backup_key_invalidated_restore
+                } else {
+                    R.string.settings_backup_key_invalidated_backup
+                },
+                ctx.getString(prefixRes)
+            )
         // The key was destroyed (uninstall/reinstall or cleared data) — explain, don't show a raw error (#370).
-        is BackupKeyUnavailableException -> "$prefix: ${e.message}"
+        is BackupKeyUnavailableException ->
+            ctx.getString(R.string.settings_backup_key_unavailable, ctx.getString(prefixRes))
         // A valid key exists but can't authenticate this ciphertext: the backup was made by a
         // different install, is corrupt, or was tampered with. GCM's tag check is exactly what
         // catches that — surface it as a clear cause instead of "AEADBadTagException" (#370).
         is AEADBadTagException ->
-            "$prefix: this backup could not be decrypted. It was most likely created by a different " +
-                "installation of Shizuku+ — backups are encrypted per-install and can't be restored " +
-                "after reinstalling or clearing the app's data."
-        else -> "$prefix: ${e.message ?: e.javaClass.simpleName}"
+            ctx.getString(R.string.settings_backup_decryption_failed_install, ctx.getString(prefixRes))
+        else -> ctx.getString(R.string.settings_error_with_detail, ctx.getString(prefixRes), e.message ?: e.javaClass.simpleName)
     }
 
     private val createPlainBackupLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
@@ -70,9 +73,9 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
             ctx.contentResolver.openOutputStream(uri)?.use { os ->
                 OutputStreamWriter(os, Charsets.UTF_8).use { it.write(payload) }
             }
-            Toast.makeText(ctx, "Plain backup exported. Keep this file private — it is not encrypted.", Toast.LENGTH_LONG).show()
+            Toast.makeText(ctx, R.string.settings_plain_backup_exported, Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
-            Toast.makeText(ctx, "Backup failed: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(ctx, R.string.settings_backup_operation_failed, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -89,9 +92,9 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                 ctx.contentResolver.openOutputStream(uri)?.use { os ->
                     OutputStreamWriter(os, Charsets.UTF_8).use { it.write(payload) }
                 }
-                Toast.makeText(ctx, "Backup exported successfully", Toast.LENGTH_SHORT).show()
+                Toast.makeText(ctx, R.string.settings_backup_exported, Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
-                Toast.makeText(ctx, backupErrorMessage("Backup failed", e), Toast.LENGTH_LONG).show()
+                Toast.makeText(ctx, backupErrorMessage(ctx, R.string.settings_backup_failed_prefix, false, e), Toast.LENGTH_LONG).show()
             }
             return@registerForActivityResult
         }
@@ -104,15 +107,15 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                     ctx.contentResolver.openOutputStream(uri)?.use { os ->
                         OutputStreamWriter(os, Charsets.UTF_8).use { it.write(payload) }
                     }
-                    Toast.makeText(ctx, "Backup exported successfully", Toast.LENGTH_SHORT).show()
+                Toast.makeText(ctx, R.string.settings_backup_exported, Toast.LENGTH_SHORT).show()
                 } catch (e: Exception) {
-                    Toast.makeText(ctx, backupErrorMessage("Backup failed", e), Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, backupErrorMessage(ctx, R.string.settings_backup_failed_prefix, false, e), Toast.LENGTH_LONG).show()
                 }
             }, onError = { errCode ->
-                Toast.makeText(ctx, "Authentication failed ($errCode)", Toast.LENGTH_SHORT).show()
+                Toast.makeText(ctx, ctx.getString(R.string.settings_authentication_failed, errCode), Toast.LENGTH_SHORT).show()
             }, crypto = BiometricPrompt.CryptoObject(cipher))
         } catch (e: Exception) {
-            Toast.makeText(ctx, "Backup failed: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(ctx, R.string.settings_backup_operation_failed, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -131,9 +134,9 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
             if (!BackupRestoreManager.isEncrypted(payload)) {
                 try {
                     BackupRestoreManager.restoreFromPlainPayload(ctx, payload)
-                    Toast.makeText(ctx, "Backup restored successfully. Please restart the app.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, R.string.settings_backup_restored_restart, Toast.LENGTH_LONG).show()
                 } catch (e: Exception) {
-                    Toast.makeText(ctx, "Restore failed: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, R.string.settings_restore_operation_failed, Toast.LENGTH_LONG).show()
                 }
                 return@registerForActivityResult
             }
@@ -144,9 +147,9 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                 try {
                     val cipher = CryptoUtils.getCipherForDecryption(iv, userAuthRequired = false)
                     BackupRestoreManager.restoreFromPayload(ctx, payload, cipher)
-                    Toast.makeText(ctx, "Backup restored successfully. Please restart the app.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, R.string.settings_backup_restored_restart, Toast.LENGTH_LONG).show()
                 } catch (e: Exception) {
-                    Toast.makeText(ctx, backupErrorMessage("Restore failed", e), Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, backupErrorMessage(ctx, R.string.settings_restore_failed_prefix, true, e), Toast.LENGTH_LONG).show()
                 }
                 return@registerForActivityResult
             }
@@ -155,15 +158,15 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
             lock.authenticate(onSuccess = { crypto ->
                 try {
                     BackupRestoreManager.restoreFromPayload(ctx, payload, crypto?.cipher ?: cipher)
-                    Toast.makeText(ctx, "Backup restored successfully. Please restart the app.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, R.string.settings_backup_restored_restart, Toast.LENGTH_LONG).show()
                 } catch (e: Exception) {
-                    Toast.makeText(ctx, backupErrorMessage("Restore failed", e), Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, backupErrorMessage(ctx, R.string.settings_restore_failed_prefix, true, e), Toast.LENGTH_LONG).show()
                 }
             }, onError = { errCode ->
-                Toast.makeText(ctx, "Authentication failed ($errCode)", Toast.LENGTH_SHORT).show()
+                Toast.makeText(ctx, ctx.getString(R.string.settings_authentication_failed, errCode), Toast.LENGTH_SHORT).show()
             }, crypto = BiometricPrompt.CryptoObject(cipher))
         } catch (e: Exception) {
-            Toast.makeText(ctx, "Restore failed: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(ctx, R.string.settings_restore_operation_failed, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -229,10 +232,14 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                 val dpm = ctx.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
                 val admin = ComponentName(ctx, af.shizuku.manager.admin.DhizukuAdminReceiver::class.java)
                 dpm.setScreenCaptureDisabled(admin, enabled)
-                Toast.makeText(ctx, if (enabled) "Screen Capture Disabled Globally" else "Screen Capture Enabled", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    ctx,
+                    if (enabled) R.string.settings_screen_capture_disabled else R.string.settings_screen_capture_enabled,
+                    Toast.LENGTH_SHORT
+                ).show()
                 true
             } catch (e: Exception) {
-                Toast.makeText(ctx, "Failed: Device Owner privileges required", Toast.LENGTH_LONG).show()
+                Toast.makeText(ctx, R.string.settings_device_owner_required, Toast.LENGTH_LONG).show()
                 false
             }
         }
@@ -246,14 +253,14 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                 val admin = ComponentName(ctx, af.shizuku.manager.admin.DhizukuAdminReceiver::class.java)
                 if (enabled) {
                     dpm.addUserRestriction(admin, android.os.UserManager.DISALLOW_USB_FILE_TRANSFER)
-                    Toast.makeText(ctx, "USB Data Locked Down", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(ctx, R.string.settings_usb_data_locked, Toast.LENGTH_SHORT).show()
                 } else {
                     dpm.clearUserRestriction(admin, android.os.UserManager.DISALLOW_USB_FILE_TRANSFER)
-                    Toast.makeText(ctx, "USB Data Unlocked", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(ctx, R.string.settings_usb_data_unlocked, Toast.LENGTH_SHORT).show()
                 }
                 true
             } catch (e: Exception) {
-                Toast.makeText(ctx, "Failed: Device Owner privileges required", Toast.LENGTH_LONG).show()
+                Toast.makeText(ctx, R.string.settings_device_owner_required, Toast.LENGTH_LONG).show()
                 false
             }
         }
@@ -283,9 +290,9 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                         val toSuspend = packagesList.filter { installed.contains(it) }
                         val failed = dpm.setPackagesSuspended(admin, toSuspend.toTypedArray(), true)
                         message = if (failed.isNotEmpty()) {
-                            "Failed to freeze: ${failed.joinToString()}"
+                            ctx.getString(R.string.settings_frozen_apps_failed, failed.joinToString())
                         } else {
-                            "Frozen ${toSuspend.size} applications"
+                            ctx.getString(R.string.settings_frozen_apps_count, toSuspend.size)
                         }
                     }
                     withContext(Dispatchers.Main) {
@@ -293,7 +300,7 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                     }
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(ctx, "Failed: Device Owner privileges required", Toast.LENGTH_LONG).show()
+                        Toast.makeText(ctx, R.string.settings_device_owner_required, Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -318,10 +325,10 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
         backupSettingsPref?.setOnPreferenceClickListener {
             val dateStr = java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.US).format(java.util.Date())
             MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Export backup")
+                .setTitle(R.string.settings_export_backup_title)
                 .setItems(arrayOf(
-                    "Encrypted (recommended)",
-                    "Plain text — for testing across reinstalls"
+                    getString(R.string.settings_encrypted_backup_option),
+                    getString(R.string.settings_plain_backup_option)
                 )) { _, which ->
                     try {
                         when (which) {
@@ -329,7 +336,7 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                             1 -> createPlainBackupLauncher.launch("ShizukuPlus_Settings_plain_$dateStr.json")
                         }
                     } catch (e: android.content.ActivityNotFoundException) {
-                        Toast.makeText(requireContext(), "No file manager app found to save the backup", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), R.string.settings_no_file_manager_save, Toast.LENGTH_LONG).show()
                     }
                 }
                 .show()
@@ -341,7 +348,7 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
             try {
                 restoreBackupLauncher.launch(arrayOf("application/json", "*/*"))
             } catch (e: android.content.ActivityNotFoundException) {
-                Toast.makeText(requireContext(), "No file manager app found to open the backup", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), R.string.settings_no_file_manager_open, Toast.LENGTH_LONG).show()
             }
             true
         }

@@ -3,7 +3,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_swipe"
-        android:title="Swipe Gestures"
+        android:title="@string/settings_swipe_gestures_category_title"
         android:defaultValue="true">
 
         <rikka.preference.SimpleMenuPreference
@@ -28,7 +28,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_long_press"
-        android:title="Long Press Actions"
+        android:title="@string/settings_long_press_actions_category_title"
         android:defaultValue="true">
 
         <Preference
@@ -64,27 +64,27 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_verified_install"
-        android:title="Verified Installation"
+        android:title="@string/settings_verified_installation_category_title"
         android:defaultValue="false">
 
         <SwitchPreferenceCompat
             android:key="verify_apk_local"
-            android:title="Local Signature Matching"
-            android:summary="Verify updates match the installed app's signature. Fast and fully offline."
+            android:title="@string/verify_local_signature_title"
+            android:summary="@string/verify_local_signature_summary"
             android:defaultValue="true"
             android:icon="@drawable/ic_shield_24" />
 
         <SwitchPreferenceCompat
             android:key="verify_apk_fdroid"
-            android:title="F-Droid / IzzyOnDroid Index"
-            android:summary="Verify APK hashes locally against trusted open-source metadata."
+            android:title="@string/verify_fdroid_index_title"
+            android:summary="@string/verify_fdroid_index_summary"
             android:defaultValue="true"
             android:icon="@drawable/ic_folder_24" />
 
         <SwitchPreferenceCompat
             android:key="verify_apk_virustotal"
-            android:title="VirusTotal Scan"
-            android:summary="Scan APK hashes against VirusTotal before installation. Requires API key."
+            android:title="@string/verify_virustotal_scan_title"
+            android:summary="@string/verify_virustotal_scan_summary"
             android:defaultValue="false"
             android:icon="@drawable/ic_update_24" />
 
@@ -97,8 +97,8 @@
 
         <SwitchPreferenceCompat
             android:key="verify_apk_pithus"
-            android:title="Pithus Threat Intel"
-            android:summary="Check hashes against Pithus to detect malware traits."
+            android:title="@string/verify_pithus_threat_intel_title"
+            android:summary="@string/verify_pithus_threat_intel_summary"
             android:defaultValue="false"
             android:icon="@drawable/ic_admin_panel_settings_24" />
 

@@ -142,7 +142,7 @@ fun ActivityLogScreen() {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(painterResource(R.drawable.ic_empty_log_24), contentDescription = null, modifier = Modifier.size(64.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Activity Log is empty", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.system_hub_activity_log_empty), style = MaterialTheme.typography.titleMedium)
             }
         }
     } else {

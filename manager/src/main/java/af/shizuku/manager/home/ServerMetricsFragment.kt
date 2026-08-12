@@ -66,7 +66,7 @@ class ServerMetricsFragment : Fragment() {
             val uptimeMs = stats.getLong("uptime_ms")
             binding.textUptime.text = formatUptime(uptimeMs)
             val clientCount = stats.getInt("client_count")
-            binding.textClientCount.text = "$clientCount applications connected"
+            binding.textClientCount.text = getString(R.string.server_clients_connected, clientCount)
             val total = stats.getLong("mem_total")
             val free = stats.getLong("mem_free")
             val maxRaw = stats.getLong("mem_max")
@@ -74,8 +74,8 @@ class ServerMetricsFragment : Fragment() {
             val max = if (maxRaw == Long.MAX_VALUE || maxRaw <= 0) total else maxRaw
             val progress = if (max > 0) ((used.toFloat() / max.toFloat()) * 100).toInt().coerceIn(0, 100) else 0
             binding.progressMemory.progress = progress
-            val maxStr = if (maxRaw == Long.MAX_VALUE) "Uncapped" else formatSize(max)
-            binding.textMemoryDetails.text = "${formatSize(used)} / $maxStr (Max Allowed)"
+            val maxStr = if (maxRaw == Long.MAX_VALUE) getString(R.string.server_memory_uncapped) else formatSize(max)
+            binding.textMemoryDetails.text = getString(R.string.server_memory_details, formatSize(used), maxStr)
         } catch (e: Exception) {
             Timber.w(e)
         }

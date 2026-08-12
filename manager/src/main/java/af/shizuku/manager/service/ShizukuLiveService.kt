@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
+import af.shizuku.manager.R
 import af.shizuku.manager.utils.LiveActivityNotificationManager
 import af.shizuku.manager.utils.ShizukuStateMachine
 import kotlinx.coroutines.*
@@ -22,7 +23,8 @@ class ShizukuLiveService : Service() {
                 val isRunning = state == ShizukuStateMachine.State.RUNNING
                 if (isRunning) {
                     val notif = LiveActivityNotificationManager.buildNotification(
-                        this@ShizukuLiveService, "System Bridge Active"
+                        this@ShizukuLiveService,
+                        getString(R.string.live_activity_status_system_bridge_active)
                     )
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                         startForeground(LiveActivityNotificationManager.NOTIFICATION_ID, notif,
@@ -47,7 +49,14 @@ class ShizukuLiveService : Service() {
         // Use current state for the initial notification; the flow in onCreate() will keep it updated.
         val isRunning = ShizukuStateMachine.get() == ShizukuStateMachine.State.RUNNING
         val notif = LiveActivityNotificationManager.buildNotification(
-            this, if (isRunning) "System Bridge Active" else "Monitoring..."
+            this,
+            getString(
+                if (isRunning) {
+                    R.string.live_activity_status_system_bridge_active
+                } else {
+                    R.string.live_activity_status_monitoring
+                }
+            )
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startForeground(LiveActivityNotificationManager.NOTIFICATION_ID, notif,

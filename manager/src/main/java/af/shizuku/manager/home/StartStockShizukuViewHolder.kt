@@ -58,14 +58,14 @@ class StartStockShizukuViewHolder(
                 }
                 kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
                     start.isEnabled = true
-                    android.widget.Toast.makeText(activity, "Restarting via Root...", android.widget.Toast.LENGTH_SHORT).show()
+                    android.widget.Toast.makeText(activity, R.string.home_stock_restart_via_root, android.widget.Toast.LENGTH_SHORT).show()
                 }
             }
         } else {
             val activity = v.context.asActivity<android.app.Activity>() ?: return
             com.google.android.material.dialog.MaterialAlertDialogBuilder(activity)
-                .setTitle("Incompatible Server Running")
-                .setMessage("The original Shizuku server is currently running in the background. Because of Android security constraints, Shizuku+ cannot communicate with or kill the original server.\n\nPlease completely restart your device to kill the original server, then start Shizuku+ using ADB or Root.")
+                .setTitle(R.string.home_stock_incompatible_title)
+                .setMessage(R.string.home_stock_incompatible_message)
                 .setPositiveButton(android.R.string.ok, null)
                 .show()
         }
@@ -73,9 +73,9 @@ class StartStockShizukuViewHolder(
 
     override fun onBind() {
         start.isEnabled = true
-        start.text = "Fix Conflict"
-        binding.title.text = "Incompatible Server Detected"
-        binding.text1.text = "The original Shizuku server is running in the background. It is incompatible with Shizuku+ and blocks it from starting."
+        start.text = binding.root.context.getString(R.string.home_stock_fix_conflict)
+        binding.title.text = binding.root.context.getString(R.string.home_stock_incompatible_card_title)
+        binding.text1.text = binding.root.context.getString(R.string.home_stock_incompatible_card_message)
         binding.icon.setImageResource(R.drawable.ic_warning_24)
 
         // Proper Material error-container two-tone instead of a hardcoded Color.RED tint on the

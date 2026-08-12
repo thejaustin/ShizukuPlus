@@ -24,7 +24,7 @@ import rikka.shizuku.Shizuku
  */
 class RootIntegrationSettingsFragment : BaseSettingsFragment() {
 
-    override fun getTitle(): CharSequence? = "Root & Compatibility"
+    override fun getTitle(): CharSequence? = getString(R.string.settings_root_compatibility_title)
 
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_root_integration, rootKey)
@@ -116,14 +116,14 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                 if (newValue is Boolean) {
                     if (newValue && key == "bootloader_flash_ota_enabled") {
                         com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
-                            .setTitle("Dangerous Experimental Feature")
-                            .setMessage("Systemless OTA Flashing uses android.os.UpdateEngine via the Shizuku shell to install zip payloads to your inactive slot.\n\nDANGER: Flashing an incompatible payload WILL result in a hard brick or bootloop. Are you sure you want to enable this feature?")
-                            .setPositiveButton("I Understand, Enable") { _, _ ->
+                            .setTitle(R.string.root_ota_danger_title)
+                            .setMessage(R.string.root_ota_danger_message)
+                            .setPositiveButton(R.string.root_ota_enable) { _, _ ->
                                 preferenceManager.sharedPreferences?.edit()?.putBoolean(key, true)?.apply()
                                 pref.isChecked = true
                                 ShizukuSettings.syncAllPlusFeaturesToServer()
                             }
-                            .setNegativeButton("Cancel", null)
+                            .setNegativeButton(R.string.action_cancel, null)
                             .show()
                         return@setOnPreferenceChangeListener false
                     } else {
@@ -149,13 +149,13 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
         }
         suPathPref?.setOnPreferenceClickListener {
             val presets = arrayOf(
-                "Default (Auto-detect)",
-                "/system/bin/su (Standard AOSP)",
-                "/system/xbin/su (SuperSU Legacy)",
-                "/sbin/su (Magisk/Custom ROMs)",
-                "/data/adb/ksu/bin/su (KernelSU)",
-                "/data/adb/ap/bin/su (APatch)",
-                "Custom Path..."
+                context.getString(R.string.root_su_path_default),
+                context.getString(R.string.root_su_path_aosp),
+                context.getString(R.string.root_su_path_supersu),
+                context.getString(R.string.root_su_path_magisk),
+                context.getString(R.string.root_su_path_kernelsu),
+                context.getString(R.string.root_su_path_apatch),
+                context.getString(R.string.root_su_path_custom)
             )
             val presetValues = arrayOf(
                 "",
@@ -168,7 +168,7 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             )
 
             com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
-                .setTitle("Select SU Path Preset")
+                .setTitle(R.string.root_select_su_path_title)
                 .setItems(presets) { _, which ->
                     val chosen = presetValues[which]
                     if (chosen == "custom") {
@@ -179,7 +179,11 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                         // so push the new path to the server explicitly.
                         suPathPref.text = chosen
                         ShizukuSettings.syncAllPlusFeaturesToServer()
-                        Toast.makeText(context, "SU path preset applied: ${presets[which]}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.root_su_path_preset_applied, presets[which]),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
                 .show()

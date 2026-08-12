@@ -24,7 +24,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Dashboard Layout Simulator"
+            android:text="@string/home_layout_simulator_title"
             android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
             android:textColor="?colorPrimary"
             android:textStyle="bold"
@@ -43,7 +43,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Shizuku+"
+                android:text="@string/home_layout_simulator_shizuku"
                 android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                 android:textColor="?colorOnSurface"
                 android:textStyle="bold"
@@ -71,7 +71,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
-                    android:text="Wireless ADB"
+                    android:text="@string/home_layout_simulator_wireless_adb"
                     android:textSize="10sp"
                     android:textColor="?colorOnSurfaceVariant" />
                 <ImageView
@@ -104,7 +104,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
-                    android:text="Terminal Apps"
+                    android:text="@string/home_layout_simulator_terminal_apps"
                     android:textSize="10sp"
                     android:textColor="?colorOnSurfaceVariant" />
                 <ImageView
@@ -137,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
-                    android:text="Automation"
+                    android:text="@string/home_layout_simulator_automation"
                     android:textSize="10sp"
                     android:textColor="?colorOnSurfaceVariant" />
                 <ImageView
@@ -170,7 +170,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
-                    android:text="Activity Logs"
+                    android:text="@string/home_layout_simulator_activity_logs"
                     android:textSize="10sp"
                     android:textColor="?colorOnSurfaceVariant" />
                 <ImageView
@@ -202,7 +202,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
-                    android:text="Developer Guide"
+                    android:text="@string/home_layout_simulator_developer_guide"
                     android:textSize="10sp"
                     android:textColor="?colorOnSurfaceVariant" />
                 <ImageView
@@ -219,7 +219,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Tap simulated blocks in the mockup device to instantly toggle their visibility on the main home screen."
+            android:text="@string/home_layout_simulator_hint"
             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             android:textColor="?colorOnSurfaceVariant"
             android:textAlignment="center" />

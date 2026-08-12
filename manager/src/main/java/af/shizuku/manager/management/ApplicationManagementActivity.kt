@@ -131,7 +131,7 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
                     runOnUiThread {
                         if (isFinishing || isDestroyed) return@runOnUiThread
                         finish()
-                        Toast.makeText(this, Objects.toString(it.error, "unknown"), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, Objects.toString(it.error, getString(R.string.error_unknown)), Toast.LENGTH_SHORT).show()
                     }
                     Timber.w("load apps failed", it.error)
                 }

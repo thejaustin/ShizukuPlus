@@ -20,7 +20,6 @@ class ShellRequestHandlerActivity : MaterialActivity() {
 
     companion object {
         private const val CHANNEL_ID = "auth_errors"
-        private const val CHANNEL_NAME = "Authentication Errors"
         private const val NOTIFICATION_ID = 1450
     }
 
@@ -55,7 +54,7 @@ class ShellRequestHandlerActivity : MaterialActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                CHANNEL_NAME,
+                getString(R.string.notification_auth_errors_channel_name),
                 NotificationManager.IMPORTANCE_HIGH
             )
             nm.createNotificationChannel(channel)

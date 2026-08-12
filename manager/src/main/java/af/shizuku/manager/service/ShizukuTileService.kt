@@ -9,6 +9,7 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.widget.Toast
 import af.shizuku.manager.MainActivity
+import af.shizuku.manager.R
 import af.shizuku.manager.utils.ShizukuStateMachine
 
 import androidx.work.WorkManager
@@ -41,14 +42,14 @@ class ShizukuTileService : TileService() {
             else -> Tile.STATE_INACTIVE
         }
         tile.label = when {
-            isRunning -> "Shizuku: Active"
-            isStarting -> "Starting..."
-            else -> "Shizuku: Off"
+            isRunning -> getString(R.string.quick_settings_tile_label_active)
+            isStarting -> getString(R.string.quick_settings_tile_label_starting)
+            else -> getString(R.string.quick_settings_tile_label_off)
         }
         tile.subtitle = when {
-            isRunning -> "Running"
-            isStarting -> "Please wait"
-            else -> "Tap to Start"
+            isRunning -> getString(R.string.quick_settings_tile_subtitle_running)
+            isStarting -> getString(R.string.quick_settings_tile_subtitle_wait)
+            else -> getString(R.string.quick_settings_tile_subtitle_tap_to_start)
         }
         tile.updateTile()
     }
@@ -90,7 +91,11 @@ class ShizukuTileService : TileService() {
                 }
             }
         } catch (e: Exception) {
-            Toast.makeText(this, "Failed to update Shizuku state: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                getString(R.string.service_state_update_failed, e.localizedMessage ?: e.javaClass.simpleName),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 }

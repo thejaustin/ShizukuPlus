@@ -35,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="Search settings..."
+                android:text="@string/settings_search_hint"
                 android:textSize="16sp"
                 android:textColor="?colorOnSurfaceVariant" />
                 

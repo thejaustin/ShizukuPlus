@@ -29,12 +29,12 @@ class ShizukuGlanceWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
-            content()
+            content(context)
         }
     }
 
     @Composable
-    private fun content() {
+    private fun content(context: Context) {
         val isRunning = ShizukuStateMachine.get() == ShizukuStateMachine.State.RUNNING
 
         Row(
@@ -74,7 +74,7 @@ class ShizukuGlanceWidget : GlanceAppWidget() {
 
             Column(modifier = GlanceModifier.defaultWeight()) {
                 Text(
-                    text = "Shizuku+",
+                    text = context.getString(R.string.app_name),
                     style = TextStyle(
                         color = ColorProvider(R.color.widget_title),
                         fontSize = 16.sp,
@@ -82,7 +82,13 @@ class ShizukuGlanceWidget : GlanceAppWidget() {
                     )
                 )
                 Text(
-                    text = if (isRunning) "Running" else "Stopped",
+                    text = context.getString(
+                        if (isRunning) {
+                            R.string.home_status_service_running_tile_sublabel
+                        } else {
+                            R.string.home_status_service_stopped_tile_sublabel
+                        }
+                    ),
                     style = TextStyle(
                         color = ColorProvider(R.color.widget_subtitle),
                         fontSize = 14.sp
@@ -101,7 +107,7 @@ class ShizukuGlanceWidget : GlanceAppWidget() {
                 ) {
                     Image(
                         provider = ImageProvider(R.drawable.ic_server_start_24),
-                        contentDescription = "Start",
+                        contentDescription = context.getString(R.string.accessibility_icon_start),
                         colorFilter = ColorFilter.tint(ColorProvider(R.color.widget_start_icon))
                     )
                 }

@@ -138,7 +138,14 @@ class AppViewHolder(private val binding: AppListItemBinding) :
         return buildList {
             if (ShizukuSettings.getLongPressOpenApp()) {
                 add(LpAction(context.getString(R.string.app_management_context_open_app)) {
-                    ActivityLogManager.log(appLabel, capturedPackage, "Long-press: open_app")
+                    ActivityLogManager.log(
+                        appLabel,
+                        capturedPackage,
+                        context.getString(
+                            R.string.app_management_log_long_press,
+                            context.getString(R.string.app_management_context_open_app)
+                        )
+                    )
                     val intent = pm.getLaunchIntentForPackage(capturedPackage)
                     if (intent != null) launchActivity(context, intent)
                     else Toast.makeText(context, R.string.app_management_no_launcher, Toast.LENGTH_SHORT).show()
@@ -146,7 +153,14 @@ class AppViewHolder(private val binding: AppListItemBinding) :
             }
             if (ShizukuSettings.getLongPressAppInfo()) {
                 add(LpAction(context.getString(R.string.app_management_context_app_info)) {
-                    ActivityLogManager.log(appLabel, capturedPackage, "Long-press: app_info")
+                    ActivityLogManager.log(
+                        appLabel,
+                        capturedPackage,
+                        context.getString(
+                            R.string.app_management_log_long_press,
+                            context.getString(R.string.app_management_context_app_info)
+                        )
+                    )
                     launchActivity(context, Intent(
                         Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
                         Uri.fromParts("package", capturedPackage, null)
@@ -186,7 +200,14 @@ class AppViewHolder(private val binding: AppListItemBinding) :
             }
             if (ShizukuSettings.getLongPressHideFromList()) {
                 add(LpAction(context.getString(R.string.app_management_context_hide)) {
-                    ActivityLogManager.log(appLabel, capturedPackage, "Long-press: hide_app")
+                    ActivityLogManager.log(
+                        appLabel,
+                        capturedPackage,
+                        context.getString(
+                            R.string.app_management_log_long_press,
+                            context.getString(R.string.app_management_context_hide)
+                        )
+                    )
                     (context as? Callbacks)?.onHideApp(capturedPackage)
                 })
             }
@@ -200,24 +221,49 @@ class AppViewHolder(private val binding: AppListItemBinding) :
                     } catch (e: Exception) { null }
                     if (amPlus != null) {
                         val isFrozen = try { amPlus.isAppFrozen(capturedPackage) } catch (e: Exception) { false }
-                        val freezeLabel = if (isFrozen) "Unfreeze App (Enable)" else "Freeze App (Disable)"
+                        val freezeLabel = context.getString(
+                            if (isFrozen) {
+                                R.string.app_management_context_unfreeze
+                            } else {
+                                R.string.app_management_context_freeze
+                            }
+                        )
                         add(LpAction(freezeLabel) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 try {
                                     val success = if (isFrozen) amPlus.unfreezeApp(capturedPackage) else amPlus.freezeApp(capturedPackage)
                                     withContext(Dispatchers.Main) {
                                         if (success) {
-                                            Toast.makeText(context, if (isFrozen) "App unfrozen" else "App frozen", Toast.LENGTH_SHORT).show()
-                                            ActivityLogManager.log(appLabel, capturedPackage, "Long-press: ${if (isFrozen) "unfreeze" else "freeze"}")
+                                            Toast.makeText(
+                                                context,
+                                                if (isFrozen) R.string.app_management_app_unfrozen else R.string.app_management_app_frozen,
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            ActivityLogManager.log(
+                                                appLabel,
+                                                capturedPackage,
+                                                context.getString(
+                                                    R.string.app_management_log_long_press,
+                                                    if (isFrozen) {
+                                                        context.getString(R.string.app_management_context_unfreeze)
+                                                    } else {
+                                                        context.getString(R.string.app_management_context_freeze)
+                                                    }
+                                                )
+                                            )
                                             val pos = adapterPosition
                                             if (pos != androidx.recyclerview.widget.RecyclerView.NO_POSITION) adapter.notifyItemChanged(pos)
                                         } else {
-                                            Toast.makeText(context, "Operation failed", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(context, R.string.app_management_operation_failed, Toast.LENGTH_SHORT).show()
                                         }
                                     }
                                 } catch (e: Exception) {
                                     withContext(Dispatchers.Main) {
-                                        Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.app_management_operation_error, e.message ?: e.javaClass.simpleName),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 }
                             }

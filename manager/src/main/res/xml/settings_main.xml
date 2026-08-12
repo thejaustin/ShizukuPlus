@@ -3,73 +3,73 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:title="Capabilities"
+        android:title="@string/settings_capabilities_category"
         app:collapsible="false">
 
         <af.shizuku.manager.settings.PlusNavPreference
             android:key="nav_shizuku_plus"
-            android:title="Feature Hub"
-            android:summary="Manage exclusive Plus capabilities"
+            android:title="@string/settings_feature_hub_title"
+            android:summary="@string/settings_feature_hub_summary"
             android:icon="@drawable/ic_bolt_24"
             android:fragment="af.shizuku.manager.settings.ShizukuPlusSettingsFragment" />
 
         <af.shizuku.manager.settings.PlusNavPreference
             android:key="nav_root_integration"
-            android:title="Root &amp; Compatibility"
-            android:summary="ADB connection, SU bridge, rootless integration, and stock Shizuku compatibility"
+            android:title="@string/settings_root_compatibility_title"
+            android:summary="@string/settings_root_compatibility_summary"
             android:icon="@drawable/ic_shield_24"
             android:fragment="af.shizuku.manager.settings.RootIntegrationSettingsFragment" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:title="Personalization"
+        android:title="@string/settings_personalization_category"
         app:collapsible="false">
 
         <Preference
             android:key="nav_personalization"
-            android:title="Appearance"
-            android:summary="Theme, shapes, icons, motion, home layout, and language"
+            android:title="@string/settings_appearance_title"
+            android:summary="@string/settings_appearance_summary"
             android:icon="@drawable/ic_palette_24"
             android:fragment="af.shizuku.manager.settings.PersonalizationSettingsFragment" />
 
         <Preference
             android:key="nav_app_management"
-            android:title="App Interactions"
-            android:summary="Gestures, long-press actions, and install verification"
+            android:title="@string/settings_app_interactions_title"
+            android:summary="@string/settings_app_interactions_summary"
             android:icon="@drawable/ic_devices_24"
             android:fragment="af.shizuku.manager.settings.AppManagementSettingsFragment" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:title="System"
+        android:title="@string/settings_system_category"
         app:collapsible="false">
 
         <Preference
             android:key="nav_behavior"
-            android:title="Startup &amp; Behavior"
-            android:summary="Boot options, watchdog, network, and activity status"
+            android:title="@string/settings_startup_behavior_title"
+            android:summary="@string/settings_startup_behavior_summary"
             android:icon="@drawable/ic_settings_suggest_24"
             android:fragment="af.shizuku.manager.settings.BehaviorSettingsFragment" />
 
         <Preference
             android:key="nav_advanced"
-            android:title="Advanced &amp; Diagnostics"
-            android:summary="Logs, ADB tools, and troubleshooting"
+            android:title="@string/settings_advanced_diagnostics_title"
+            android:summary="@string/settings_advanced_diagnostics_summary"
             android:icon="@drawable/ic_terminal_24"
             android:fragment="af.shizuku.manager.settings.AdvancedSettingsFragment" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:title="About"
+        android:title="@string/settings_about_category"
         app:collapsible="false">
 
         <Preference
             android:key="nav_about"
-            android:title="About"
-            android:summary="Version, licenses, and updates"
+            android:title="@string/settings_about_title"
+            android:summary="@string/settings_about_summary"
             android:icon="@drawable/ic_info_24"
             android:fragment="af.shizuku.manager.settings.AboutSettingsFragment" />
 

@@ -39,7 +39,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Troubleshooting Tips"
+                    android:text="@string/service_doctor_tips_title"
                     android:textAppearance="?textAppearanceTitleLarge"
                     android:layout_marginBottom="12dp" />
 

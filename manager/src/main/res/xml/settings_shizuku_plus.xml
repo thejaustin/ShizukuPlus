@@ -22,12 +22,12 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_connectivity"
-        android:title="Networking &amp; Connectivity"
+        android:title="@string/settings_networking_connectivity_category_title"
         android:defaultValue="false">
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="network_governor_plus_enabled"
-            android:title="DNS Governor"
+            android:title="@string/settings_dns_governor_title"
             android:summary="@string/settings_network_governor_plus_summary"
             android:icon="@drawable/ic_lan_24"
             android:defaultValue="true"
@@ -45,7 +45,7 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="continuity_bridge_enabled"
-            android:title="Continuity Bridge"
+            android:title="@string/settings_continuity_bridge_title"
             android:summary="@string/settings_continuity_bridge_summary"
             android:icon="@drawable/ic_devices_24"
             android:defaultValue="true"
@@ -57,12 +57,12 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_system"
-        android:title="System &amp; Performance"
+        android:title="@string/settings_system_performance_category_title"
         android:defaultValue="false">
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="activity_manager_plus_enabled"
-            android:title="Process Control"
+            android:title="@string/settings_process_control_title"
             android:summary="@string/settings_activity_manager_plus_summary"
             android:icon="@drawable/ic_bolt_24"
             android:defaultValue="true"
@@ -72,7 +72,7 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="shell_interceptor_enabled"
-            android:title="Shell Accelerator"
+            android:title="@string/settings_shell_accelerator_title"
             android:summary="@string/settings_shell_interceptor_summary"
             android:icon="@drawable/ic_terminal_24"
             android:defaultValue="true"
@@ -82,7 +82,7 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="avf_manager_enabled"
-            android:title="VM Manager"
+            android:title="@string/settings_vm_manager_title"
             android:summary="@string/settings_avf_manager_summary"
             android:icon="@drawable/ic_server_24"
             android:defaultValue="true"
@@ -94,7 +94,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_security"
-        android:title="Security &amp; Access"
+        android:title="@string/settings_security_access_category_title"
         android:defaultValue="false">
 
         <af.shizuku.manager.settings.PlusFeaturePreference
@@ -116,28 +116,28 @@
 
         <af.shizuku.manager.settings.CollapsiblePreferenceCategory
             android:key="category_dhizuku_admin"
-            android:title="Device Owner Tools"
+            android:title="@string/settings_device_owner_tools_category_title"
             android:dependency="dhizuku_mode"
             android:defaultValue="false">
 
             <SwitchPreferenceCompat
                 android:key="dhizuku_disable_screencap"
-                android:title="Screen Capture Lockdown"
-                android:summary="Disable screenshots and screen recordings globally across the device"
+                android:title="@string/settings_screen_capture_lockdown_title"
+                android:summary="@string/settings_screen_capture_lockdown_summary"
                 android:icon="@drawable/ic_visibility_off_24"
                 android:defaultValue="false" />
 
             <SwitchPreferenceCompat
                 android:key="dhizuku_disallow_usb"
-                android:title="USB Data Lockdown"
-                android:summary="Disallow USB file transfer (MTP) and secure device physically"
+                android:title="@string/settings_usb_data_lockdown_title"
+                android:summary="@string/settings_usb_data_lockdown_summary"
                 android:icon="@drawable/ic_shield_24"
                 android:defaultValue="false" />
 
             <af.shizuku.manager.settings.AppPickerPreference
                 android:key="dhizuku_suspended_packages"
-                android:title="Suspended Applications"
-                android:summary="Select applications to freeze and block from running completely"
+                android:title="@string/settings_suspended_applications_title"
+                android:summary="@string/settings_suspended_applications_summary"
                 android:icon="@drawable/ic_science_24" />
 
         </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
@@ -161,12 +161,12 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_storage"
-        android:title="Storage &amp; Files"
+        android:title="@string/settings_storage_files_category_title"
         android:defaultValue="false">
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="storage_proxy_enabled"
-            android:title="Storage Bridge"
+            android:title="@string/settings_storage_bridge_title"
             android:summary="@string/settings_storage_proxy_summary"
             android:icon="@drawable/ic_folder_24"
             android:defaultValue="true"
@@ -178,19 +178,19 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_backup"
-        android:title="Backup &amp; Restore"
+        android:title="@string/settings_backup_restore_category_title"
         android:defaultValue="false">
 
         <Preference
             android:key="backup_settings"
-            android:title="Backup Settings"
-            android:summary="Export your configurations and enhancements securely using Biometric encryption."
+            android:title="@string/settings_backup_title"
+            android:summary="@string/settings_backup_summary"
             android:icon="@drawable/ic_folder_24" />
 
         <Preference
             android:key="restore_settings"
-            android:title="Restore Settings"
-            android:summary="Restore your configurations from an encrypted backup."
+            android:title="@string/settings_restore_title"
+            android:summary="@string/settings_restore_summary"
             android:icon="@drawable/ic_install_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
@@ -203,7 +203,7 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="window_manager_plus_enabled"
-            android:title="Window Tuner"
+            android:title="@string/settings_window_tuner_title"
             android:summary="@string/settings_window_manager_plus_summary"
             android:icon="@drawable/ic_window_24"
             android:defaultValue="false"
@@ -213,7 +213,7 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="overlay_manager_plus_enabled"
-            android:title="Theming Bridge"
+            android:title="@string/settings_theming_bridge_title"
             android:summary="@string/settings_overlay_manager_plus_summary"
             android:icon="@drawable/ic_palette_24"
             android:defaultValue="false"
@@ -224,7 +224,7 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="ai_core_plus_enabled"
-            android:title="AI Bridge &amp; NPU"
+            android:title="@string/settings_ai_bridge_npu_title"
             android:summary="@string/settings_ai_core_plus_summary"
             android:icon="@drawable/ic_integration_instructions_24"
             android:defaultValue="false"
@@ -234,8 +234,8 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="ai_core_master_enabled"
-            android:title="AI Core Master"
-            android:summary="Enable privileged AI operations: NPU scheduling and window hierarchy access"
+            android:title="@string/settings_ai_core_master_title"
+            android:summary="@string/settings_ai_core_master_summary"
             android:icon="@drawable/ic_integration_instructions_24"
             android:defaultValue="false"
             android:dependency="ai_core_plus_enabled"
@@ -243,8 +243,8 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="npu_acceleration_enabled"
-            android:title="NPU Acceleration"
-            android:summary="Delegate AI inference tasks to the device Neural Processing Unit when available"
+            android:title="@string/settings_npu_acceleration_title"
+            android:summary="@string/settings_npu_acceleration_summary"
             android:icon="@drawable/ic_settings_suggest_24"
             android:defaultValue="false"
             android:dependency="ai_core_master_enabled"
@@ -252,8 +252,8 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="native_window_crawler_enabled"
-            android:title="Window Hierarchy Crawler"
-            android:summary="Allow AI automation to read the active window view hierarchy without Accessibility Services"
+            android:title="@string/settings_window_hierarchy_crawler_title"
+            android:summary="@string/settings_window_hierarchy_crawler_summary"
             android:icon="@drawable/ic_code_24"
             android:defaultValue="false"
             android:dependency="ai_core_master_enabled"
@@ -261,8 +261,8 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="ai_core_experimental_enabled"
-            android:title="Experimental AI Automation"
-            android:summary="Enable gesture simulation, pixel capture, and text injection for AI-driven automation"
+            android:title="@string/settings_experimental_ai_automation_title"
+            android:summary="@string/settings_experimental_ai_automation_summary"
             android:icon="@drawable/ic_science_24"
             android:defaultValue="false"
             android:dependency="ai_core_plus_enabled"
@@ -270,16 +270,16 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="software_keystore_fallback_enabled"
-            android:title="Software KeyStore Fallback"
-            android:summary="Allows caching the ADB RSA Private Key encrypted with a software-based static AES key if your device's hardware KeyStore fails (e.g., Samsung Knox). Reduces pairing prompts but decreases security."
+            android:title="@string/settings_software_keystore_fallback_title"
+            android:summary="@string/settings_software_keystore_fallback_summary"
             android:icon="@drawable/ic_shield_24"
             android:defaultValue="false"
             app:severityBadge="risky" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="samsung_system_uid_escalation_enabled"
-            android:title="Samsung System UID Escalation"
-            android:summary="Attempt to escalate to UID 1000 (system) using an exploit specific to unpatched Samsung devices (by pascua28). Use at your own risk."
+            android:title="@string/settings_samsung_system_uid_title"
+            android:summary="@string/settings_samsung_system_uid_summary"
             android:icon="@drawable/ic_warning_24"
             android:defaultValue="false"
             app:badgeType="root"

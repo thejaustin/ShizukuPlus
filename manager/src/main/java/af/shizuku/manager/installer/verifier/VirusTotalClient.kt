@@ -1,5 +1,7 @@
 package af.shizuku.manager.installer.verifier
 
+import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuApplication
 import af.shizuku.manager.ShizukuSettings
 import org.json.JSONObject
 import java.io.File
@@ -7,14 +9,16 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class VirusTotalClient : ApkVerificationClient {
-    override val name = "VirusTotal API"
+    override val name: String
+        get() = ShizukuApplication.appContext.getString(R.string.verification_method_virustotal)
     override val preferenceKey = "verify_apk_virustotal"
 
     override suspend fun verifyApk(apkFile: File, sha256: String): VerificationResult {
+        val context = ShizukuApplication.appContext
         val apiKey = ShizukuSettings.getVirusTotalApiKey()
         if (apiKey.isBlank()) {
             return VerificationResult(isSafe = true, methodsUsed = listOf(name), riskScore = 0,
-                details = "VirusTotal: no API key configured, skipped.")
+                details = context.getString(R.string.verification_detail_no_api_key))
         }
         return try {
             val url = URL("https://www.virustotal.com/vtapi/v2/file/report?apikey=$apiKey&resource=$sha256")
@@ -25,11 +29,11 @@ class VirusTotalClient : ApkVerificationClient {
             val code = conn.responseCode
             if (code == 204) {
                 return VerificationResult(isSafe = true, methodsUsed = listOf(name), riskScore = 0,
-                    details = "VirusTotal: rate limit reached, skipped.")
+                    details = context.getString(R.string.verification_detail_rate_limit))
             }
             if (code != HttpURLConnection.HTTP_OK) {
                 return VerificationResult(isSafe = true, methodsUsed = listOf(name), riskScore = 0,
-                    details = "VirusTotal: HTTP $code, skipped.")
+                    details = context.getString(R.string.verification_detail_http_skipped, code))
             }
             val body = conn.inputStream.use { it.bufferedReader().readText() }
             conn.disconnect()
@@ -37,7 +41,7 @@ class VirusTotalClient : ApkVerificationClient {
             val responseCode = json.optInt("response_code", -1)
             if (responseCode == 0) {
                 return VerificationResult(isSafe = true, methodsUsed = listOf(name), riskScore = 0,
-                    details = "VirusTotal: hash not in database.")
+                    details = context.getString(R.string.verification_detail_hash_not_found))
             }
             val positives = json.optInt("positives", 0)
             val total = json.optInt("total", 0)
@@ -46,11 +50,14 @@ class VirusTotalClient : ApkVerificationClient {
                 isSafe = isSafe,
                 methodsUsed = listOf(name),
                 riskScore = if (total > 0) (positives * 100 / total) else 0,
-                details = "VirusTotal: $positives/$total engines flagged this file."
+                details = context.getString(R.string.verification_detail_engines_flagged, positives, total)
             )
         } catch (e: Exception) {
             VerificationResult(isSafe = true, methodsUsed = listOf(name), riskScore = 0,
-                details = "VirusTotal: lookup failed (${e.message}), skipped.")
+                details = context.getString(
+                    R.string.verification_detail_lookup_failed,
+                    e.message ?: e.javaClass.simpleName
+                ))
         }
     }
 }
