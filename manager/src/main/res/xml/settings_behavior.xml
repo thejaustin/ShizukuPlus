@@ -3,7 +3,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_startup"
-        android:title="Startup &amp; Recovery"
+        android:title="@string/settings_startup_recovery_category_title"
         android:defaultValue="true">
 
         <SwitchPreferenceCompat
@@ -20,8 +20,8 @@
 
         <SwitchPreferenceCompat
             android:key="auto_reconnect_mdns"
-            android:title="Intelligent Auto-Reconnect"
-            android:summary="Run a lightweight mDNS listener to automatically rebind the server if the ADB daemon drops on sleep or doze."
+            android:title="@string/settings_auto_reconnect_title"
+            android:summary="@string/settings_auto_reconnect_summary"
             android:defaultValue="true"
             android:icon="@drawable/ic_server_restart" />
 
@@ -29,7 +29,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_network"
-        android:title="Network"
+        android:title="@string/settings_network_category_title"
         android:defaultValue="true">
 
         <SwitchPreferenceCompat
@@ -48,7 +48,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_activity"
-        android:title="Activity &amp; Status"
+        android:title="@string/settings_activity_status_category_title"
         android:defaultValue="true">
 
         <SwitchPreferenceCompat

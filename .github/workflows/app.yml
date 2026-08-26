@@ -16,6 +16,21 @@ on:
         type: boolean
         required: false
         default: false
+      release_version:
+        description: 'Release tag override, for example v13.6.0.r2285-zh.1'
+        type: string
+        required: false
+        default: ''
+      version_code:
+        description: 'APK versionCode override, for example 2285'
+        type: string
+        required: false
+        default: ''
+      version_name:
+        description: 'APK versionName override, for example Shizuku+ 13.6.0.r2285'
+        type: string
+        required: false
+        default: ''
 
 jobs:
   pre-push-guard:
@@ -134,13 +149,31 @@ jobs:
           # Extract version from build.gradle
           BASE_VERSION=$(grep "baseVersionName =" build.gradle | cut -d'"' -f2)
           GIT_COUNT=$(git rev-list --count HEAD)
+          RELEASE_VERSION_OVERRIDE="${{ github.event.inputs.release_version }}"
+          VERSION_CODE_OVERRIDE="${{ github.event.inputs.version_code }}"
+          VERSION_NAME_OVERRIDE="${{ github.event.inputs.version_name }}"
+          BUILD_COUNT="${VERSION_CODE_OVERRIDE:-$GIT_COUNT}"
           
           if [ "$IS_PRERELEASE" = "true" ]; then
-            VERSION="v${BASE_VERSION}.r${GIT_COUNT}"
+            VERSION="v${BASE_VERSION}.r${BUILD_COUNT}"
             ARGS="-Pbeta"
           else
-            VERSION="v${BASE_VERSION}.r${GIT_COUNT}"
+            VERSION="v${BASE_VERSION}.r${BUILD_COUNT}"
             ARGS=""
+          fi
+
+          if [ -n "$RELEASE_VERSION_OVERRIDE" ]; then
+            VERSION="$RELEASE_VERSION_OVERRIDE"
+          fi
+
+          if [ -n "$VERSION_CODE_OVERRIDE" ]; then
+            export SHIZUKU_VERSION_CODE="$VERSION_CODE_OVERRIDE"
+          fi
+
+          if [ -n "$VERSION_NAME_OVERRIDE" ]; then
+            export SHIZUKU_VERSION_NAME="$VERSION_NAME_OVERRIDE"
+          elif [ -n "$VERSION_CODE_OVERRIDE" ]; then
+            export SHIZUKU_VERSION_NAME="Shizuku+ ${BASE_VERSION}.r${VERSION_CODE_OVERRIDE}"
           fi
           
           echo "$VERSION" > version.txt
@@ -162,10 +195,6 @@ jobs:
             eval $CMD --stacktrace --info \
               -x uploadSentryProguardMappingsShizukuplusRelease \
               -x uploadSentryProguardMappingsDropinRelease \
-              -x uploadSentryNativeSymbolsForShizukuplusRelease \
-              -x uploadSentryNativeSymbolsForDropinRelease \
-              -x sentryUploadSourceBundleShizukuplusRelease \
-              -x sentryUploadSourceBundleDropinRelease \
               -x :manager:lint
 
             sign_apk() {

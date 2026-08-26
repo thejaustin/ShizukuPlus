@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import af.shizuku.manager.utils.MultiLocaleEntity
+import af.shizuku.manager.utils.ProjectLinks
 
 object Helps {
     // Points at Service-Connection's "Starting via PC ADB" section specifically — this link is
@@ -13,39 +14,41 @@ object Helps {
     // section didn't exist yet — the link resolved but didn't actually answer what the
     // reader came for).
     val ADB = MultiLocaleEntity().apply {
-        put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-pc-adb")
-        put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-pc-adb")
-        put("en", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-pc-adb")
+        put("zh-CN", ProjectLinks.HELP_PC_ADB)
+        put("zh-TW", ProjectLinks.HELP_PC_ADB)
+        put("en", ProjectLinks.SERVICE_CONNECTION)
     }
 
     val ADB_ANDROID11 = MultiLocaleEntity().apply {
-        put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-wireless-adb")
-        put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-wireless-adb")
-        put("en", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#starting-via-wireless-adb")
+        put("zh-CN", ProjectLinks.HELP_WIRELESS_ADB)
+        put("zh-TW", ProjectLinks.HELP_WIRELESS_ADB)
+        put("en", ProjectLinks.SERVICE_CONNECTION)
     }
 
     // "Supported-apps" doesn't exist as its own page either — Knowledgebase is the closest
     // real landing page until a dedicated compatibility list is written.
     val APPS = MultiLocaleEntity().apply {
-        put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/wiki/ShizukuPlus-Knowledgebase")
-        put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/wiki/ShizukuPlus-Knowledgebase")
-        put("en", "https://github.com/thejaustin/ShizukuPlus/wiki/ShizukuPlus-Knowledgebase")
+        put("zh-CN", ProjectLinks.KNOWLEDGEBASE)
+        put("zh-TW", ProjectLinks.KNOWLEDGEBASE)
+        put("en", ProjectLinks.KNOWLEDGEBASE)
     }
 
     val HOME = MultiLocaleEntity().apply {
-        put("en", "https://github.com/thejaustin/ShizukuPlus/tree/master/README.md#developer-guide")
+        put("zh-CN", ProjectLinks.HELP_HOME)
+        put("zh-TW", ProjectLinks.HELP_HOME)
+        put("en", ProjectLinks.README_DEVELOPER_GUIDE)
     }
 
     val DOWNLOAD = MultiLocaleEntity().apply {
-        put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/releases")
-        put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/releases")
-        put("en", "https://github.com/thejaustin/ShizukuPlus/releases")
+        put("zh-CN", ProjectLinks.RELEASES)
+        put("zh-TW", ProjectLinks.RELEASES)
+        put("en", ProjectLinks.RELEASES)
     }
 
     val ADB_PERMISSION = MultiLocaleEntity().apply {
-        put("zh-CN", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#error-reference")
-        put("zh-TW", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#error-reference")
-        put("en", "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#error-reference")
+        put("zh-CN", ProjectLinks.HELP_ERROR_REFERENCE)
+        put("zh-TW", ProjectLinks.HELP_ERROR_REFERENCE)
+        put("en", ProjectLinks.SERVICE_CONNECTION)
     }
 
     val SUI = MultiLocaleEntity().apply {
@@ -53,14 +56,16 @@ object Helps {
     }
 
     val RISH = MultiLocaleEntity().apply {
-        put("en", "https://github.com/thejaustin/ShizukuPlus-API/tree/master/rish")
+        put("zh-CN", ProjectLinks.RISH)
+        put("zh-TW", ProjectLinks.RISH)
+        put("en", ProjectLinks.RISH)
     }
 
     /**
      * Get help URL for the given locale
      */
     fun getHelpUrl(locale: String?): String {
-        return HOME.get(locale) ?: HOME.get("en") ?: "https://github.com/thejaustin/ShizukuPlus/wiki"
+        return HOME.get(locale) ?: HOME.get("en") ?: ProjectLinks.HELP_HOME
     }
 
     /**

@@ -14,6 +14,7 @@ import af.shizuku.manager.BuildConfig
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.utils.CustomTabsHelper
+import af.shizuku.manager.utils.ProjectLinks
 import af.shizuku.manager.update.UpdateChecker
 import af.shizuku.manager.update.UpdateManager
 import org.koin.android.ext.android.inject
@@ -31,7 +32,6 @@ class AboutSettingsFragment : BaseSettingsFragment() {
         private const val KEY_UPDATE_CHANNEL = "update_channel"
         private const val KEY_CHECK_FOR_UPDATE = "check_for_update"
         private const val KEY_LAST_CHECK = "last_check_time"
-        private const val RELEASES_URL = "https://github.com/thejaustin/ShizukuPlus/releases"
     }
 
     override fun getTitle(): CharSequence? = getString(R.string.settings_about)
@@ -68,12 +68,12 @@ class AboutSettingsFragment : BaseSettingsFragment() {
 
         // 2. Setup standard links
         findPreference<Preference>("source_code")?.setOnPreferenceClickListener {
-            CustomTabsHelper.launchUrlOrCopy(context, "https://github.com/thejaustin/ShizukuPlus")
+            CustomTabsHelper.launchUrlOrCopy(context, ProjectLinks.REPOSITORY)
             true
         }
 
         findPreference<Preference>("open_source_licenses")?.setOnPreferenceClickListener {
-            CustomTabsHelper.launchUrlOrCopy(requireContext(), "https://github.com/thejaustin/ShizukuPlus/blob/main/OPEN_SOURCE_LICENSES.md")
+            CustomTabsHelper.launchUrlOrCopy(requireContext(), ProjectLinks.OPEN_SOURCE_LICENSES)
             true
         }
 
@@ -212,7 +212,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
 
     private fun showUpdateAvailableDialog(info: UpdateChecker.UpdateInfo) {
         val context = context ?: return
-        val devBadge = if (info.isPrerelease) " ⚠ Dev" else ""
+        val devBadge = if (info.isPrerelease) " (${getString(R.string.update_prerelease_badge)})" else ""
         val builder = MaterialAlertDialogBuilder(context)
             .setTitle(getString(R.string.update_available_title) + devBadge)
             .setNegativeButton(R.string.update_later, null)
@@ -272,7 +272,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
     private fun openReleasesPage() {
         try {
             startActivity(
-                Intent(Intent.ACTION_VIEW, Uri.parse(RELEASES_URL))
+                Intent(Intent.ACTION_VIEW, Uri.parse(ProjectLinks.RELEASES))
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
         } catch (e: android.content.ActivityNotFoundException) {

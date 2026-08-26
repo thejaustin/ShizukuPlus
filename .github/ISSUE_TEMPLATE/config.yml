@@ -1,7 +1,7 @@
 blank_issues: false
 contact_links:
   - name: Help and Documentation
-    url: https://github.com/thejaustin/ShizukuPlus/wiki
+    url: https://github.com/qianyumeng0228/ShizukuPlus/blob/master/docs/zh-CN/index.md
     about: Please read the wiki before creating a bug report.
   - name: Telegram
     url: https://t.me/ShizukuPlus

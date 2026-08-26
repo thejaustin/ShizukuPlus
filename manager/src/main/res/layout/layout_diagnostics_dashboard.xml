@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
-            android:text="Action Required"
+            android:text="@string/diagnostics_action_required"
             android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
             android:textColor="?colorError"
             android:textStyle="bold" />
@@ -41,7 +41,7 @@
             android:padding="6dp"
             android:src="@drawable/ic_close_24"
             android:background="?selectableItemBackgroundBorderless"
-            android:contentDescription="Disable Diagnostics"
+            android:contentDescription="@string/accessibility_disable_diagnostics"
             app:tint="?colorOnSurfaceVariant" />
     </LinearLayout>
 

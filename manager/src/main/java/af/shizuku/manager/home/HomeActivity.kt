@@ -51,6 +51,7 @@ import af.shizuku.manager.utils.AppIconCache
 import af.shizuku.manager.utils.EnvironmentUtils
 import io.noties.markwon.Markwon
 import af.shizuku.manager.utils.HapticUtils
+import af.shizuku.manager.utils.ProjectLinks
 import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuStateMachine
@@ -312,9 +313,9 @@ open class HomeActivity : AppActivity(), MavericksView {
                     SnackbarHelper.show(
                         this,
                         findViewById(android.R.id.content) ?: window.decorView,
-                        msg = "Samsung Auto Blocker may block ADB on One UI 7/8. Check Security settings.",
+                        msg = getString(R.string.home_samsung_auto_blocker_message),
                         duration = Snackbar.LENGTH_LONG,
-                        actionText = "Check",
+                        actionText = getString(R.string.home_check_security_action),
                         action = {
                             try {
                                 startActivity(Intent("android.settings.SECURITY_ADVANCED_SETTINGS"))
@@ -643,10 +644,11 @@ open class HomeActivity : AppActivity(), MavericksView {
      */
     private fun showUpdateAvailableDialog(updateInfo: UpdateChecker.UpdateInfo) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_update_available, null)
-        dialogView.findViewById<TextView>(R.id.update_version_name).text = "Version ${updateInfo.versionName}"
+        dialogView.findViewById<TextView>(R.id.update_version_name).text =
+            getString(R.string.update_version_name, updateInfo.versionName)
         dialogView.findViewById<TextView>(R.id.update_published_date).text =
             if (updateInfo.publishedAt.isNotEmpty())
-                "Published: ${UpdateChecker.formatPublishedDate(updateInfo.publishedAt)}"
+                getString(R.string.update_published_date, UpdateChecker.formatPublishedDate(updateInfo.publishedAt))
             else ""
         // updateInfo.releaseNotes is the raw GitHub release body (Markdown) - render it instead
         // of dumping it as plain text, which showed literal "**", "###", "|...|" table syntax
@@ -663,7 +665,7 @@ open class HomeActivity : AppActivity(), MavericksView {
         val openReleases = {
             startActivity(
                 android.content.Intent(android.content.Intent.ACTION_VIEW,
-                    android.net.Uri.parse("https://github.com/thejaustin/ShizukuPlus/releases"))
+                    android.net.Uri.parse(ProjectLinks.RELEASES))
                     .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
             )
         }

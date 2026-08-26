@@ -22,6 +22,7 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.ShizukuSettings.LaunchMethod
 import af.shizuku.manager.starter.Starter
 import af.shizuku.manager.utils.EnvironmentUtils
+import af.shizuku.manager.utils.ProjectLinks
 import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuStateMachine
 import af.shizuku.common.util.UserHandleCompat
@@ -184,7 +185,7 @@ object ShizukuReceiverStarter {
             nm.createNotificationChannel(channel)
         }
 
-        val webpageIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thejaustin/ShizukuPlus/wiki#shizuku-isnt-starting-on-boot-for-me"))
+        val webpageIntent = Intent(Intent.ACTION_VIEW, Uri.parse(ProjectLinks.HELP_BOOT))
         val pendingWebpageIntent = PendingIntent.getActivity(
             context, 0, webpageIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )

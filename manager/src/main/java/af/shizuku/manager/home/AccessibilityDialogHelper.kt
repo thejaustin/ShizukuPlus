@@ -46,7 +46,7 @@ private fun Context.showPermissionDialog() {
         .setTitle(android.R.string.dialog_alert_title)
         .setMessage(
             TextUtils.expandTemplate(
-                getString(R.string.dialog_adb_pairing_accessibility_permission),
+                getString(R.string.dialog_adb_pairing_accessibility_permission_template),
                 permissionName,
                 styledPermissionCommand,
             ),

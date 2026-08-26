@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="support_email" translatable="false">shizukuplus-support@thejaustin.com</string>
+    <string name="support_email" translatable="false">support@xiaoyuanqiang.xyz</string>
 
-    <string name="help_url" translatable="false">https://github.com/thejaustin/ShizukuPlus/wiki</string>
-    <string name="automation_apps_url" translatable="false">https://github.com/thejaustin/ShizukuPlus/wiki#using-automation-apps-to-startstop-shizuku</string>
-    <string name="update_check_url" translatable="false">https://api.github.com/repos/thejaustin/ShizukuPlus/releases/latest</string>
+    <string name="help_url" translatable="false">https://github.com/qianyumeng0228/ShizukuPlus/blob/master/docs/zh-CN/index.md</string>
+    <string name="automation_apps_url" translatable="false">https://github.com/qianyumeng0228/ShizukuPlus/blob/master/docs/zh-CN/automation-apps.md</string>
+    <string name="update_check_url" translatable="false">https://api.github.com/repos/qianyumeng0228/ShizukuPlus/releases/latest</string>
 </resources>

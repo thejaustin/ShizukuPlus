@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="night_mode">
+        <item>@string/dark_theme_off</item>
+        <item>@string/dark_theme_on</item>
+        <item>@string/follow_system</item>
+    </string-array>
+
+    <string-array name="swipe_actions">
+        <item>@string/settings_action_none</item>
+        <item>@string/settings_action_open_app</item>
+        <item>@string/settings_action_app_info</item>
+        <item>@string/settings_action_toggle_permission</item>
+        <item>@string/settings_action_hide_from_list</item>
+    </string-array>
+
+    <string-array name="spoof_targets">
+        <item>自动检测（系统默认）</item>
+        <item>Pixel 10 Pro XL</item>
+        <item>Pixel 9 Pro XL</item>
+        <item>Pixel 8 Pro</item>
+        <item>Galaxy S25 Ultra</item>
+        <item>Galaxy S24 Ultra</item>
+        <item>Galaxy S23 Ultra</item>
+        <item>Galaxy S22 Ultra</item>
+        <item>OnePlus 13</item>
+        <item>OnePlus 12</item>
+        <item>Nothing Phone (3)</item>
+        <item>Nothing Phone (2)</item>
+        <item>Xiaomi 15 Pro</item>
+        <item>Xiaomi 14 Ultra</item>
+        <item>Oppo Find X8 Ultra</item>
+        <item>TCL 50 Pro</item>
+    </string-array>
+
+    <string-array name="custom_accents">
+        <item>标准蓝色（默认）</item>
+        <item>午夜紫</item>
+        <item>森林绿</item>
+        <item>深红玫瑰</item>
+        <item>深海蓝</item>
+    </string-array>
+
+    <string-array name="update_channel_entries">
+        <item>@string/update_channel_stable</item>
+        <item>@string/update_channel_dev</item>
+    </string-array>
+
+    <string-array name="icon_styles">
+        <item>标准（填充）</item>
+        <item>描边</item>
+        <item>双色</item>
+    </string-array>
+
+    <string-array name="icon_color_modes">
+        <item>无颜色（单色）</item>
+        <item>全部使用同一颜色</item>
+        <item>每个图标使用不同颜色</item>
+    </string-array>
+
+    <string-array name="shape_styles">
+        <item>禅意（艺术化）</item>
+        <item>现代（Material 3）</item>
+        <item>经典（Material 2）</item>
+        <item>自然（圆角方形）</item>
+    </string-array>
+
+    <string-array name="animation_intensities">
+        <item>无</item>
+        <item>轻微</item>
+        <item>标准</item>
+        <item>丰富</item>
+    </string-array>
+</resources>

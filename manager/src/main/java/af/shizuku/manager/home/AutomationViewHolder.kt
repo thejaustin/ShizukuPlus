@@ -74,7 +74,11 @@ class AutomationViewHolder(
                 val fields = listOf(
                     Field(actionLayout, actionEditText, action),
                     Field(packageLayout, packageEditText, context.packageName),
-                    Field(targetLayout, targetEditText, "Broadcast Receiver"),
+                    Field(
+                        targetLayout,
+                        targetEditText,
+                        context.getString(R.string.home_automation_target_broadcast_receiver)
+                    ),
                     Field(extrasLayout, extrasEditText, "auth:$encryptedToken")
                 )
 

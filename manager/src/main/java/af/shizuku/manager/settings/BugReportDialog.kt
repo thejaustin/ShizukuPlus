@@ -18,6 +18,7 @@ import af.shizuku.manager.databinding.BugReportDialogBinding
 import af.shizuku.manager.ktx.asLink
 import af.shizuku.manager.ktx.applyTemplateArgs
 import af.shizuku.manager.utils.CustomTabsHelper
+import af.shizuku.manager.utils.ProjectLinks
 import af.shizuku.manager.worker.AdbStartWorker
 
 class BugReportDialog : DialogFragment() {
@@ -29,13 +30,13 @@ class BugReportDialog : DialogFragment() {
         binding = BugReportDialogBinding.inflate(layoutInflater)
 
         val updateLink = getString(R.string.bug_report_dialog_link_update)
-            .asLink("https://github.com/thejaustin/ShizukuPlus/releases/latest")
+            .asLink(ProjectLinks.LATEST_RELEASE)
 
         val wikiLink = getString(R.string.bug_report_dialog_link_wiki)
-            .asLink("https://github.com/thejaustin/ShizukuPlus/releases/wiki#troubleshooting")
+            .asLink(ProjectLinks.KNOWLEDGEBASE)
 
         val issuesLink = getString(R.string.bug_report_dialog_link_issues)
-            .asLink("https://github.com/thejaustin/ShizukuPlus/releases/issues")
+            .asLink(ProjectLinks.ISSUES)
 
         binding.apply {
             updateText.applyTemplateArgs(updateLink)
@@ -48,20 +49,19 @@ class BugReportDialog : DialogFragment() {
             .setTitle(R.string.settings_report_bug)
             .setView(binding.root)
             .setPositiveButton(R.string.action_open_github) { _, _ ->
-                CustomTabsHelper.launchUrlOrCopy(context, "https://github.com/thejaustin/ShizukuPlus/issues/new")
+                CustomTabsHelper.launchUrlOrCopy(context, ProjectLinks.NEW_ISSUE)
             }
             .setNegativeButton(R.string.bug_report_dialog_button_email) { _, _ ->
-                val plainBody = """
-                    Please describe the bug. Include steps to reproduce if possible, as well as any relevant images/logs.
-
-                    Device: ${Build.MANUFACTURER} ${Build.MODEL}
-                    Android Version: ${Build.VERSION.RELEASE}
-                    Shizuku Version: ${BuildConfig.VERSION_NAME}
-                """.trimIndent()
+                val plainBody = getString(
+                    R.string.bug_report_email_body,
+                    "${Build.MANUFACTURER} ${Build.MODEL}",
+                    Build.VERSION.RELEASE,
+                    BuildConfig.VERSION_NAME
+                )
 
                 val intent = Intent(Intent.ACTION_SENDTO, Uri.parse(
                     "mailto:" + context.getString(R.string.support_email) +
-                    "?subject=" + Uri.encode("[ISSUE TITLE]") +
+                    "?subject=" + Uri.encode(getString(R.string.bug_report_email_subject)) +
                     "&body=" + Uri.encode(plainBody)
                 ))
                 try {

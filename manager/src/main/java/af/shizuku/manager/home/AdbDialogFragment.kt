@@ -44,7 +44,7 @@ class AdbDialogFragment : DialogFragment() {
 
             // Samsung Specific: Launch in Pop-up mode
             if (EnvironmentUtils.isSamsung()) {
-                setNeutralButton("Pop-up Settings") { _, _ ->
+                setNeutralButton(R.string.dialog_adb_popup_settings) { _, _ ->
                     val intent = SettingsPage.Developer.WirelessDebugging.buildIntent(context).apply {
                         // Samsung specific flags for Pop-up window
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)

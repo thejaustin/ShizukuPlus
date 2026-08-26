@@ -12,6 +12,7 @@ import java.net.UnknownHostException
 import javax.net.ssl.SSLException
 import kotlinx.coroutines.withContext
 import af.shizuku.manager.BuildConfig
+import af.shizuku.manager.utils.ProjectLinks
 import org.json.JSONArray
 import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
@@ -25,11 +26,11 @@ import java.util.TimeZone
 object UpdateChecker {
 
     private const val TAG = "UpdateChecker"
-    private const val RELEASES_URL = "https://api.github.com/repos/thejaustin/ShizukuPlus/releases"
+    private const val RELEASES_URL = ProjectLinks.API_RELEASES
     private const val LATEST_URL = "$RELEASES_URL/latest"
     // Fallback: GitHub's Atom feed is served from github.com CDN — different IP range
     // than api.github.com, so routing issues specific to that host don't affect it.
-    private const val ATOM_URL = "https://github.com/thejaustin/ShizukuPlus/releases.atom"
+    private const val ATOM_URL = ProjectLinks.RELEASES_ATOM
     private const val CONNECT_TIMEOUT_MS = 5_000
     private const val READ_TIMEOUT_MS = 8_000
     private const val RETRY_DELAY_MS = 2_000L
@@ -56,10 +57,12 @@ object UpdateChecker {
      *
      * Strategy:
      *   1. Try GitHub API (up to 2 attempts, 2 s apart)
-     *   2. If both fail with a network error, fall back to the GitHub Atom feed
-     *      (can detect an update exists but can't supply a download URL — user is
-     *      directed to GitHub Releases manually)
-     *   3. If all three fail → NetworkError
+     *   2. For Stable, if both fail with a network error, fall back to the GitHub
+     *      Atom feed (can detect an update exists but can't supply a download URL
+     *      - user is directed to GitHub Releases manually). Pre-release channels
+     *      only use the Releases API because the Atom feed has no reliable
+     *      prerelease flag.
+     *   3. If the allowed strategy for the selected channel fails -> NetworkError
      */
     suspend fun checkForUpdate(channel: String = "stable"): CheckResult = withContext(Dispatchers.IO) {
         val transaction = Sentry.startTransaction("UpdateCheck", "check_for_update")
@@ -85,6 +88,11 @@ object UpdateChecker {
                 }
             }
 
+            if (isPrereleaseChannel(channel)) {
+                Timber.tag(TAG).w("API unreachable after 2 attempts; skipping Atom fallback for pre-release channel")
+                return@withContext CheckResult.NetworkError
+            }
+
             Timber.tag(TAG).w("API unreachable after 2 attempts, trying Atom feed fallback")
             val fallbackSpan = transaction.startChild("atom_feed", "fallback")
             try {
@@ -104,31 +112,15 @@ object UpdateChecker {
     }
 
     private fun checkViaApi(channel: String): CheckResult {
-        val json: JSONObject = if (channel == "dev" || channel == "beta") {
-            val arr = fetchJson("$RELEASES_URL?per_page=5") as? JSONArray
-            // Dev/beta channel must track the newest *prerelease* build, not simply the newest
-            // release entry overall. Index 0 is whichever release was created most recently
-            // regardless of its "prerelease" flag, so as soon as a stable release is cut after a
-            // dev build, index 0 silently becomes that stable release and the dev channel starts
-            // resolving to the exact same release as the stable channel's /releases/latest — the
-            // user's channel choice stops making any difference. Explicitly prefer the newest
-            // entry flagged prerelease=true within the fetched page, falling back to index 0 only
-            // if none of the recent releases are marked as a prerelease.
-            val prerelease = (0 until (arr?.length() ?: 0))
-                .map { arr!!.getJSONObject(it) }
-                .firstOrNull { it.optBoolean("prerelease", false) }
-            val newestOverall = arr?.optJSONObject(0)
-            // ...but a stable release is still a valid, newer build for a Dev/Beta user — a
-            // prerelease cut before the latest stable shouldn't keep them stuck on an older
-            // version just because it's tagged "prerelease". Compare actual version codes and
-            // take whichever is newer, so a fresher stable release "wins" over a stale dev build.
-            val prereleaseCode = prerelease?.let { parseVersionCode(it.optString("tag_name", "").removePrefix("v")) } ?: -1
-            val overallCode = newestOverall?.let { parseVersionCode(it.optString("tag_name", "").removePrefix("v")) } ?: -1
-            when {
-                prerelease != null && prereleaseCode >= overallCode -> prerelease
-                newestOverall != null -> newestOverall
-                else -> return CheckResult.UpToDate
-            }
+        val json: JSONObject = if (isPrereleaseChannel(channel)) {
+            val arr = fetchJson("$RELEASES_URL?per_page=10") as? JSONArray
+                ?: return CheckResult.UpToDate
+            (0 until arr.length())
+                .map { arr.getJSONObject(it) }
+                .firstOrNull {
+                    it.optBoolean("prerelease", false) && !it.optBoolean("draft", false)
+                }
+                ?: return CheckResult.UpToDate
         } else {
             fetchJson(LATEST_URL) as? JSONObject ?: return CheckResult.UpToDate
         }
@@ -246,6 +238,9 @@ object UpdateChecker {
     private fun Exception.isNetworkError(): Boolean =
         this is UnknownHostException || this is SocketTimeoutException ||
         this is ConnectException || this is SSLException || this is IOException
+
+    private fun isPrereleaseChannel(channel: String): Boolean =
+        channel.equals("dev", ignoreCase = true) || channel.equals("beta", ignoreCase = true)
 
     private fun fetchJson(urlString: String): Any? {
         val connection = (URL(urlString).openConnection() as HttpURLConnection).apply {

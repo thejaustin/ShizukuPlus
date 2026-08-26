@@ -28,7 +28,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         }
     }
 
-    override fun getTitle(): CharSequence? = "Appearance"
+    override fun getTitle(): CharSequence? = getString(R.string.settings_appearance_title)
 
     private var colorThemeCategory: CollapsiblePreferenceCategory? = null
     private lateinit var nightModePreference: IntegerSimpleMenuPreference
@@ -324,12 +324,12 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
     private fun getCustomAccentSummary(value: String? = null): String {
         val currentValue = value ?: ShizukuSettings.getPreferences().getString("custom_accent", "DEFAULT")
         return when (currentValue) {
-            "VIOLET" -> "Midnight Violet applied"
-            "GREEN" -> "Forest Green applied"
-            "CRIMSON" -> "Crimson Rose applied"
-            "OCEAN" -> "Deep Ocean applied"
-            "DEFAULT" -> "Standard Blue (Default)"
-            else -> "Standard Blue (Default)"
+            "VIOLET" -> getString(R.string.custom_accent_violet_applied)
+            "GREEN" -> getString(R.string.custom_accent_green_applied)
+            "CRIMSON" -> getString(R.string.custom_accent_crimson_applied)
+            "OCEAN" -> getString(R.string.custom_accent_ocean_applied)
+            "DEFAULT" -> getString(R.string.custom_accent_default_applied)
+            else -> getString(R.string.custom_accent_default_applied)
         }
     }
 }

@@ -7,7 +7,7 @@ body:
     attributes:
       label: Before suggesting
       options:
-        - label: I searched through all [open/closed issues](https://github.com/thejaustin/ShizukuPlus/issues) and confirmed that this is a new feature request
+        - label: I searched through all [open/closed issues](https://github.com/qianyumeng0228/ShizukuPlus/issues) and confirmed that this is a new feature request
           required: true
   - type: dropdown
     id: component

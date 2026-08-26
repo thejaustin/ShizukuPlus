@@ -21,9 +21,20 @@ def getGitCommitCount() {
 
 def gitCommitCount = getGitCommitCount()
 def baseVersionName = "13.6.0"
+def versionCodeOverride = {
+    def raw = findProperty("shizukuVersionCode") ?: System.getenv("SHIZUKU_VERSION_CODE")
+    if (raw == null || raw.toString().trim().isEmpty()) return null
+    return Integer.parseInt(raw.toString().trim())
+}()
+def versionNameOverride = {
+    def raw = findProperty("shizukuVersionName") ?: System.getenv("SHIZUKU_VERSION_NAME")
+    if (raw == null || raw.toString().trim().isEmpty()) return null
+    return raw.toString().trim()
+}()
+def resolvedVersionCode = versionCodeOverride ?: gitCommitCount
 ext {
-    versionCode = gitCommitCount
-    versionName = "Shizuku+ ${baseVersionName}.r${gitCommitCount}"
+    versionCode = resolvedVersionCode
+    versionName = versionNameOverride ?: "Shizuku+ ${baseVersionName}.r${resolvedVersionCode}"
 }
 
 subprojects {

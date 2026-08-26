@@ -87,7 +87,7 @@ fun SettingsScreen(
                         IconButton(onClick = { onNavigateUp() }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_back_24),
-                                contentDescription = stringResource(R.string.cd_navigate_back)
+                                contentDescription = stringResource(R.string.accessibility_back)
                             )
                         }
                     },
@@ -95,7 +95,7 @@ fun SettingsScreen(
                         IconButton(onClick = { isSearchActive = true }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_search_24),
-                                contentDescription = stringResource(R.string.cd_settings_search)
+                                contentDescription = stringResource(R.string.accessibility_search)
                             )
                         }
                     },
@@ -118,11 +118,11 @@ fun SettingsScreen(
                         if (isSearchActive) {
                             TextField(
                                 value = searchQuery,
-                                onValueChange = { 
+                                onValueChange = {
                                     searchQuery = it
                                     onSearchQueryChanged(it)
                                 },
-                                placeholder = { Text(stringResource(R.string.settings_search_hint)) },
+                                placeholder = { Text(stringResource(R.string.settings_search_hint_compose)) },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .focusRequester(focusRequester),
@@ -155,7 +155,7 @@ fun SettingsScreen(
                         }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_back_24),
-                                contentDescription = stringResource(R.string.cd_navigate_back)
+                                contentDescription = stringResource(R.string.accessibility_back)
                             )
                         }
                     },
@@ -164,17 +164,17 @@ fun SettingsScreen(
                             IconButton(onClick = { isSearchActive = true }) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_search_24),
-                                    contentDescription = stringResource(R.string.cd_settings_search)
+                                    contentDescription = stringResource(R.string.accessibility_search)
                                 )
                             }
                         } else if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { 
+                            IconButton(onClick = {
                                 searchQuery = ""
                                 onSearchQueryChanged("")
                             }) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_close_24),
-                                    contentDescription = stringResource(R.string.cd_settings_search_clear)
+                                    contentDescription = stringResource(R.string.settings_search_clear)
                                 )
                             }
                         }
@@ -225,7 +225,7 @@ fun SettingsScreen(
                     if (searchQuery.isNotBlank()) {
                         if (searchResults.isEmpty()) {
                             Text(
-                                text = stringResource(R.string.settings_search_empty_state),
+                                text = stringResource(R.string.settings_search_empty),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(32.dp),
@@ -277,7 +277,7 @@ fun SearchResultItem(
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
             Text(
-                text = item.category ?: "Settings",
+                text = item.category ?: stringResource(R.string.settings_search_default_category),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 4.dp)

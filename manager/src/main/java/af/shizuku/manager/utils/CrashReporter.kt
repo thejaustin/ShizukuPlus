@@ -99,7 +99,7 @@ object CrashReporter {
     fun getGitHubReportUrl(context: Context): String {
         val report = generateReport(context)
         val title = "Manual Crash Report: ${Build.MANUFACTURER} ${Build.MODEL} (Android ${Build.VERSION.RELEASE})"
-        return "https://github.com/thejaustin/ShizukuPlus/issues/new" +
+        return ProjectLinks.NEW_PREFILLED_ISSUE +
                "?title=" + Uri.encode(title) +
                "&body=" + Uri.encode(report)
     }

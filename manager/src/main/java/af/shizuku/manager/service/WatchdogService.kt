@@ -19,6 +19,7 @@ import af.shizuku.manager.MainActivity
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.receiver.ShizukuReceiverStarter
 import af.shizuku.manager.database.ActivityLogManager
+import af.shizuku.manager.utils.ProjectLinks
 import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuStateMachine
 import af.shizuku.manager.utils.StockShizukuCompat
@@ -177,15 +178,14 @@ class WatchdogService : Service() {
             nm.createNotificationChannel(channel)
         }
 
-        val learnMoreIntent = Intent(Intent.ACTION_VIEW).apply {
-                                    setData(Uri.parse("https://github.com/thejaustin/ShizukuPlus/wiki#shizuku-keeps-stopping-randomly"))        }
+        val learnMoreIntent = Intent(Intent.ACTION_VIEW, Uri.parse(ProjectLinks.HELP_WATCHDOG))
         val learnMorePendingIntent = PendingIntent.getActivity(this, 10, learnMoreIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
         val disableIntent = SettingsPage.Notifications.NotificationChannel.buildIntent(applicationContext)
         val disablePendingIntent = PendingIntent.getActivity(this, 11, disableIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
         // Manual crash report via BugReportDialogActivity or similar
-        val reportIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thejaustin/ShizukuPlus/issues/new"))
+        val reportIntent = Intent(Intent.ACTION_VIEW, Uri.parse(ProjectLinks.NEW_ISSUE))
         val reportPendingIntent = PendingIntent.getActivity(this, 12, reportIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
         val builder = NotificationCompat.Builder(this, channelId)

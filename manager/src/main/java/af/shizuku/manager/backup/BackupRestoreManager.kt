@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Base64
 import org.json.JSONObject
 import javax.crypto.Cipher
+import af.shizuku.manager.R
 import af.shizuku.manager.utils.SettingsBackupManager
 
 object BackupRestoreManager {
@@ -27,10 +28,10 @@ object BackupRestoreManager {
         if (version == 2) {
             val jsonString = String(Base64.decode(backupJson.getString("data"), Base64.NO_WRAP), Charsets.UTF_8)
             if (!SettingsBackupManager.import(context, jsonString)) {
-                throw Exception("Failed to import settings (invalid format)")
+                throw IllegalArgumentException(context.getString(R.string.settings_backup_invalid_format))
             }
         } else {
-            throw Exception("This backup is encrypted. Use the encrypted restore option.")
+            throw IllegalArgumentException(context.getString(R.string.settings_backup_encrypted_restore_required))
         }
     }
 
@@ -61,7 +62,7 @@ object BackupRestoreManager {
 
         val success = SettingsBackupManager.import(context, jsonString)
         if (!success) {
-            throw Exception("Failed to import settings (invalid format)")
+            throw IllegalArgumentException(context.getString(R.string.settings_backup_invalid_format))
         }
     }
 }

@@ -11,6 +11,7 @@ import androidx.work.WorkerParameters
 import af.shizuku.manager.BuildConfig
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.database.AppContextManager
+import af.shizuku.manager.utils.ProjectLinks
 import timber.log.Timber
 import java.net.HttpURLConnection
 import java.net.URL
@@ -20,8 +21,7 @@ class RemoteDbSyncWorker(context: Context, params: WorkerParameters) : Coroutine
 
     companion object {
         private const val WORK_NAME = "remote_app_db_sync"
-        private const val DB_URL =
-            "https://raw.githubusercontent.com/thejaustin/ShizukuPlus/master/app-context-db.json"
+        private const val DB_URL = ProjectLinks.APP_CONTEXT_DB
         private const val CONNECT_TIMEOUT_MS = 8_000
         private const val READ_TIMEOUT_MS = 12_000
         // Only re-fetch if the cached data is older than 20 hours

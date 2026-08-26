@@ -14,15 +14,15 @@ An enhanced version of [Shizuku](https://github.com/RikkaApps/Shizuku) built on 
 
 Shizuku lets normal apps use system-level APIs directly via a privileged process started with adb or root. Shizuku+ keeps full compatibility while adding features for power users and developers.
 
-[![Stars](https://img.shields.io/github/stars/thejaustin/ShizukuPlus?style=for-the-badge&color=bfb330&labelColor=807820)](https://github.com/thejaustin/ShizukuPlus/stargazers)
-[![Downloads](https://img.shields.io/github/downloads/thejaustin/ShizukuPlus/total?style=for-the-badge&color=bf7830&labelColor=805020)](https://github.com/thejaustin/ShizukuPlus/releases)
-[![Latest Release](https://img.shields.io/github/v/release/thejaustin/ShizukuPlus?style=for-the-badge&color=3060bf&labelColor=204080&label=Latest)](https://github.com/thejaustin/ShizukuPlus/releases/latest)
+[![Stars](https://img.shields.io/github/stars/qianyumeng0228/ShizukuPlus?style=for-the-badge&color=bfb330&labelColor=807820)](https://github.com/qianyumeng0228/ShizukuPlus/stargazers)
+[![Downloads](https://img.shields.io/github/downloads/qianyumeng0228/ShizukuPlus/total?style=for-the-badge&color=bf7830&labelColor=805020)](https://github.com/qianyumeng0228/ShizukuPlus/releases)
+[![Latest Release](https://img.shields.io/github/v/release/qianyumeng0228/ShizukuPlus?style=for-the-badge&color=3060bf&labelColor=204080&label=Latest)](https://github.com/qianyumeng0228/ShizukuPlus/releases/latest)
 
 </div>
 
 ## ⬇️ Download
 
-Get the latest release from [GitHub Releases](https://github.com/thejaustin/ShizukuPlus/releases) — see the release notes there for what's changed recently.
+Get the latest release from [GitHub Releases](https://github.com/qianyumeng0228/ShizukuPlus/releases) — see the release notes there for what's changed recently.
 
 ## ✨ Shizuku+ Core Features
 
@@ -43,16 +43,16 @@ Get the latest release from [GitHub Releases](https://github.com/thejaustin/Shiz
 
 Shizuku+ provides exclusive system interfaces for advanced automation and tools — none of these exist in stock Shizuku:
 
-*   **AICore+ Automation Bridge**: Privileged UI automation (hierarchy dumps, tap/swipe) for AI-driven tools — no root needed. ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
-*   **AVF (Virtual Machine) Manager**: Run isolated Linux/Microdroid VMs with GPU acceleration. ([added](https://github.com/thejaustin/ShizukuPlus/commit/c8e962f6))
-*   **Privileged Storage Proxy**: Authenticated access to restricted paths (`/data/data/`, `/data/app/`) for backups and file management. ([added](https://github.com/thejaustin/ShizukuPlus/commit/c8e962f6))
-*   **Device Spoofing** (*Spoof Device Identity* in Settings): Present a different device identity to bypass device-specific restrictions. ([added](https://github.com/thejaustin/ShizukuPlus/commit/11867f44))
-*   **Intelligence Bridge** (*AI Core Plus*): Privileged NPU scheduling and screen context intelligence. ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
-*   **Window Manager Plus**: Force free-form resizing, manage the Bubble Bar, and resilient overlays. ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
-*   **System Theming Bridge** (*Overlay Manager Plus*): Privileged overlay management for rootless theming (e.g. Hex Installer). ([added](https://github.com/thejaustin/ShizukuPlus/commit/55f6b7c7))
-*   **Network & DNS Governor**: Manage Private DNS and firewall routing for rootless ad-blockers. ([added](https://github.com/thejaustin/ShizukuPlus/commit/55f6b7c7))
-*   **Deep Process Control** (*Activity Manager Plus*): Lets process managers kill apps and set standby buckets more aggressively. ([added](https://github.com/thejaustin/ShizukuPlus/commit/55f6b7c7))
-*   **Continuity Bridge**: Secure state and task handoff between Shizuku+ devices. ([added](https://github.com/thejaustin/ShizukuPlus/commit/20cf14f7))
+*   **AICore+ Automation Bridge**: Privileged UI automation (hierarchy dumps, tap/swipe) for AI-driven tools — no root needed. ([added](https://github.com/qianyumeng0228/ShizukuPlus/commit/e9bd1187))
+*   **AVF (Virtual Machine) Manager**: Run isolated Linux/Microdroid VMs with GPU acceleration. ([added](https://github.com/qianyumeng0228/ShizukuPlus/commit/c8e962f6))
+*   **Privileged Storage Proxy**: Authenticated access to restricted paths (`/data/data/`, `/data/app/`) for backups and file management. ([added](https://github.com/qianyumeng0228/ShizukuPlus/commit/c8e962f6))
+*   **Device Spoofing** (*Spoof Device Identity* in Settings): Present a different device identity to bypass device-specific restrictions. ([added](https://github.com/qianyumeng0228/ShizukuPlus/commit/11867f44))
+*   **Intelligence Bridge** (*AI Core Plus*): Privileged NPU scheduling and screen context intelligence. ([added](https://github.com/qianyumeng0228/ShizukuPlus/commit/e9bd1187))
+*   **Window Manager Plus**: Force free-form resizing, manage the Bubble Bar, and resilient overlays. ([added](https://github.com/qianyumeng0228/ShizukuPlus/commit/e9bd1187))
+*   **System Theming Bridge** (*Overlay Manager Plus*): Privileged overlay management for rootless theming (e.g. Hex Installer). ([added](https://github.com/qianyumeng0228/ShizukuPlus/commit/55f6b7c7))
+*   **Network & DNS Governor**: Manage Private DNS and firewall routing for rootless ad-blockers. ([added](https://github.com/qianyumeng0228/ShizukuPlus/commit/55f6b7c7))
+*   **Deep Process Control** (*Activity Manager Plus*): Lets process managers kill apps and set standby buckets more aggressively. ([added](https://github.com/qianyumeng0228/ShizukuPlus/commit/55f6b7c7))
+*   **Continuity Bridge**: Secure state and task handoff between Shizuku+ devices. ([added](https://github.com/qianyumeng0228/ShizukuPlus/commit/20cf14f7))
 
 ## 🛠️ Backporting & Optimizations
 
@@ -95,7 +95,7 @@ On **Android 16+**, Shizuku+ requests the new Local Network Protection permissio
 
 ## 📱 Developer Guide
 
-See the [Shizuku+-API](https://github.com/thejaustin/ShizukuPlus-API) repository for documentation on the exclusive Plus APIs.
+See the [bundled API module](https://github.com/qianyumeng0228/ShizukuPlus/tree/master/api) for documentation on the exclusive Plus APIs.
 
 ## 🙏 Acknowledgements & Licenses
 

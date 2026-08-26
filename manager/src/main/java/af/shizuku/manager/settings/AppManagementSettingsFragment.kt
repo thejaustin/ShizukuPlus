@@ -18,7 +18,7 @@ class AppManagementSettingsFragment : BaseSettingsFragment() {
         private const val PITHUS_KEY_URL = "https://beta.pithus.org"
     }
 
-    override fun getTitle(): CharSequence? = "App Interactions"
+    override fun getTitle(): CharSequence? = getString(R.string.settings_app_interactions_title)
 
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_app_management, rootKey)

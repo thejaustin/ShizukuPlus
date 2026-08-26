@@ -51,7 +51,7 @@ Original Shizuku apps often run shell commands (e.g., `pm install`). These are s
 A real-time diagnostic engine that monitors for vendor-specific "app killers" (like Samsung's Auto Blocker or Oppo's Battery Guard) and provides one-tap fixes to keep the Shizuku service alive.
 
 ### Watchdog Resilience
-Three independent recovery layers, each covering a gap the others can't: an in-process crash listener for fast recovery, a periodic WorkManager backstop in case just the watchdog service dies, and an `AlarmManager`-based external re-arm that can restart everything even if an OEM freezer (e.g. Samsung One UI's "Sleeping apps") kills the *entire* app process on screen lock — the one failure mode nothing running inside that process can self-detect. See the [Service Connection wiki page](https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#watchdog).
+Three independent recovery layers, each covering a gap the others can't: an in-process crash listener for fast recovery, a periodic WorkManager backstop in case just the watchdog service dies, and an `AlarmManager`-based external re-arm that can restart everything even if an OEM freezer (e.g. Samsung One UI's "Sleeping apps") kills the *entire* app process on screen lock — the one failure mode nothing running inside that process can self-detect. See the [Service Connection page](https://github.com/qianyumeng0228/ShizukuPlus/blob/master/docs/zh-CN/service-connection.md#watchdog).
 
 ## 4. UI/UX Refinement
 *   **Material 3 Expressive:** Uses the latest M3 design language with spring animations and adaptive shapes.
@@ -59,4 +59,4 @@ Three independent recovery layers, each covering a gap the others can't: an in-p
 *   **Bulk Management:** Industrial-grade permission management for power users with hundreds of apps.
 
 ---
-*For documentation on integrating the Plus APIs into your own app, see the [Shizuku+-API](https://github.com/thejaustin/ShizukuPlus-API) repository. For a full breakdown of every permission Shizuku+ requests and why, see the [Permissions wiki page](https://github.com/thejaustin/ShizukuPlus/wiki/Permissions).*
+*For documentation on integrating the Plus APIs into your own app, see the [bundled API module](https://github.com/qianyumeng0228/ShizukuPlus/tree/master/api). For a full breakdown of every permission Shizuku+ requests and why, see the [Permissions page](https://github.com/qianyumeng0228/ShizukuPlus/blob/master/docs/zh-CN/permissions.md).*

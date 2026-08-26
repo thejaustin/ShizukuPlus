@@ -21,11 +21,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import af.shizuku.manager.database.AppContextManager
+import af.shizuku.manager.utils.ProjectLinks
 import androidx.preference.TwoStatePreference
 
 class AdvancedSettingsFragment : BaseSettingsFragment() {
 
-    override fun getTitle(): CharSequence? = "Advanced & Diagnostics"
+    override fun getTitle(): CharSequence? = getString(R.string.settings_advanced_diagnostics_title)
 
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_advanced, rootKey)
@@ -34,7 +35,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
         findPreference<Preference>("update_app_database")?.setOnPreferenceClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
-                    val url = java.net.URL("https://raw.githubusercontent.com/thejaustin/ShizukuPlus/master/database/apps.json")
+                    val url = java.net.URL(ProjectLinks.APPS_DB)
                     val connection = url.openConnection() as java.net.HttpURLConnection
                     val content = try {
                         connection.instanceFollowRedirects = true
@@ -132,14 +133,14 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                 val enable = newValue as Boolean
                 if (enable) {
                     MaterialAlertDialogBuilder(context)
-                        .setTitle("Enable Stealth Mode?")
+                        .setTitle(R.string.settings_enable_stealth_title)
                         .setMessage(
-                            "The app icon will be removed from your launcher.\n\n" +
-                            "You can still open the app from the Shizuku notification. " +
-                            "Disable stealth mode via ADB to restore the icon:\n\n" +
-                            "adb shell pm enable ${context.packageName}/af.shizuku.manager.LauncherAlias"
+                            getString(
+                                R.string.settings_enable_stealth_message,
+                                "adb shell pm enable ${context.packageName}/af.shizuku.manager.LauncherAlias"
+                            )
                         )
-                        .setPositiveButton("Enable") { _, _ ->
+                        .setPositiveButton(R.string.settings_enable_stealth_confirm) { _, _ ->
                             context.packageManager.setComponentEnabled(launcherAlias, false)
                             ShizukuSettings.setStealthModeEnabled(true)
                             (pref as? TwoStatePreference)?.isChecked = true

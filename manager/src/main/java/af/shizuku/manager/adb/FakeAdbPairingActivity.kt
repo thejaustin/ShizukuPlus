@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicBoolean
+import af.shizuku.manager.R
 
 class FakeAdbPairingActivity : Activity() {
 
@@ -41,14 +42,14 @@ class FakeAdbPairingActivity : Activity() {
         val hash = pubKeyStr.hashCode().toString(16).uppercase()
 
         AlertDialog.Builder(this)
-            .setTitle("Allow fake ADB connection?")
-            .setMessage("An app is trying to connect to Shizuku+ via the Fake Local ADB server.\n\nRSA key fingerprint:\n$hash")
-            .setPositiveButton("Allow") { _, _ ->
+            .setTitle(R.string.fake_adb_allow_title)
+            .setMessage(getString(R.string.fake_adb_allow_message, hash))
+            .setPositiveButton(R.string.fake_adb_allow) { _, _ ->
                 currentResult.set(true)
                 currentLatch?.countDown()
                 finish()
             }
-            .setNegativeButton("Deny") { _, _ ->
+            .setNegativeButton(R.string.action_deny) { _, _ ->
                 currentResult.set(false)
                 currentLatch?.countDown()
                 finish()

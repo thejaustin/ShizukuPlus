@@ -7,9 +7,9 @@ body:
     attributes:
       label: Before reporting
       options:
-        - label: I read the [wiki](https://github.com/thejaustin/ShizukuPlus/wiki/ShizukuPlus-Knowledgebase) and followed all relevant troubleshooting steps
+        - label: I read the [wiki](https://github.com/qianyumeng0228/ShizukuPlus/blob/master/docs/zh-CN/knowledgebase.md) and followed all relevant troubleshooting steps
           required: true
-        - label: I searched through all [issues](https://github.com/thejaustin/ShizukuPlus/issues) and confirmed that this is a new bug
+        - label: I searched through all [issues](https://github.com/qianyumeng0228/ShizukuPlus/issues) and confirmed that this is a new bug
           required: true
   - type: dropdown
     id: component

@@ -19,7 +19,7 @@ import af.shizuku.manager.utils.ShizukuStateMachine
 
 class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    override fun getTitle(): CharSequence? = "Startup & Behavior"
+    override fun getTitle(): CharSequence? = getString(R.string.settings_startup_behavior_title)
 
     private lateinit var startOnBootPreference: TwoStatePreference
     private lateinit var watchdogPreference: TwoStatePreference

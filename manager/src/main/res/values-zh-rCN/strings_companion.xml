@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="companion_conflict_title">检测到原版 Shizuku</string>
+    <string name="companion_conflict_description">原版 Shizuku 与 Shizuku+ 同时安装可能导致权限冲突和应用崩溃。为确保 Shizuku+ 正常运行，请卸载或禁用原版 Shizuku。\n\n你可以通过以下方式处理：\n1. 设置 -> 应用 -> Shizuku -> 禁用/卸载\n2. 使用下方按钮（需要 Shizuku+ 服务正在运行）\n3. ADB：adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_action_disable">禁用原版 Shizuku</string>
+    <string name="companion_action_uninstall">卸载原版 Shizuku</string>
+    <string name="companion_disable_success">已成功禁用原版 Shizuku。</string>
+    <string name="companion_disable_failure">无法禁用原版 Shizuku。请确认 Shizuku+ 正在运行，或手动使用 ADB 处理。</string>
+    <string name="companion_action_disabling">正在禁用…</string>
+
+    <string name="compat_hub_installed_title">兼容中心已安装</string>
+    <string name="compat_hub_installed_desc">第三方应用（例如 SwiftBackup）现在可以无缝识别 Shizuku+。</string>
+    <string name="compat_hub_missing_title">需要兼容中心</string>
+    <string name="compat_hub_missing_desc">显式检查原版 Shizuku 的第三方应用无法识别 Shizuku+。安装轻量级兼容中心后，这些应用即可检测到 Shizuku+。</string>
+    <string name="compat_hub_install_btn">安装兼容中心</string>
+    <string name="compat_hub_installing">正在安装…</string>
+    <string name="compat_hub_install_success">兼容中心已成功安装！</string>
+    <string name="compat_hub_install_fail">安装失败。请确认 Shizuku+ 或 Root 已激活。</string>
+</resources>

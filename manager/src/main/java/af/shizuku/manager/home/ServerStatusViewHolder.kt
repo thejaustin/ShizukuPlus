@@ -11,6 +11,7 @@ import af.shizuku.manager.databinding.HomeItemContainerBinding
 import af.shizuku.manager.databinding.HomeServerStatusBinding
 import af.shizuku.manager.ktx.startWithSceneTransition
 import af.shizuku.manager.model.ServiceStatus
+import af.shizuku.manager.utils.ProjectLinks
 import rikka.html.text.HtmlCompat
 import rikka.html.text.toHtml
 import rikka.recyclerview.BaseViewHolder
@@ -81,7 +82,7 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
                 .setMessage(R.string.sentry_offline_notice_learn_more)
                 .setPositiveButton(android.R.string.ok, null)
                 .setNeutralButton(R.string.update_view_on_github) { _, _ ->
-                    af.shizuku.manager.utils.CustomTabsHelper.launchUrlOrCopy(context, "https://github.com/thejaustin/ShizukuPlus/issues")
+                    af.shizuku.manager.utils.CustomTabsHelper.launchUrlOrCopy(context, ProjectLinks.ISSUES)
                 }
                 .show()
         }

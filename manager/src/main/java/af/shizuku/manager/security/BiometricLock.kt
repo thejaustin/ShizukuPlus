@@ -37,8 +37,8 @@ class BiometricLock(private val activity: FragmentActivity) {
         // password-locked devices anyway). The system now prompts for whatever credential type
         // is actually configured (password, PIN, or pattern) with the correct label.
         val promptInfoBuilder = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Unlock Shizuku+")
-            .setSubtitle("Authenticate to access sensitive settings")
+            .setTitle(activity.getString(R.string.biometric_unlock_title))
+            .setSubtitle(activity.getString(R.string.biometric_unlock_subtitle))
 
         if (crypto != null && Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             // CryptoObject is not supported with DEVICE_CREDENTIAL on older API levels

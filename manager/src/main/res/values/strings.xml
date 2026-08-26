@@ -4,10 +4,12 @@
     <string name="server_memory_usage">Server Memory Usage</string>
     <string name="server_memory_uncapped">Uncapped</string>
     <string name="server_clients_connected">%1$d applications connected</string>
+    <string name="plus_dashboard_title">Shizuku+ Dashboard</string>
+    <string name="error_unknown">Unknown error</string>
 
     <!-- To translators: you can leave your here -->
     <string name="translation_contributors">thejaustin</string>
-    <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
+    <string name="translation_url">https://github.com/qianyumeng0228/ShizukuPlus</string>
 
     <!-- UI Settings - Expressive -->
     <string name="settings_expressive_title">Expressive Design (M3E)</string>
@@ -128,6 +130,7 @@
     <string name="dialog_usb_debugging_not_enabled">USB debugging is not enabled.\nPlease enable it in \"Developer Options\".</string>
     <string name="dialog_adb_pairing_message">Please start pairing by performing the following steps:\n- Navigate to \"Developer Options\"\n- Enable \"USB debugging\" and \"Wireless debugging\"\n- Tap the left side of \"Wireless debugging\"\n- Tap \"Pair device with pairing code\"\n- Input the pairing code in the notification</string>
     <string name="dialog_adb_pairing_accessibility_permission">On Android 14, installing/updating Shizuku with the Package Installer revokes the %1$s permission, which is required to enable the accessibility service for pairing.\n\nTo grant it, run the following ADB command:\n\n%2$s\n\nAfter running the command, you may continue with the pairing process.\n\nNote: you can bypass this by installing/updating Shizuku with ADB.</string>
+    <string name="dialog_adb_pairing_accessibility_permission_template">On Android 14, installing/updating Shizuku with the Package Installer revokes the ^1 permission, which is required to enable the accessibility service for pairing.\n\nTo grant it, run the following ADB command:\n\n^2\n\nAfter running the command, you may continue with the pairing process.\n\nNote: you can bypass this by installing/updating Shizuku with ADB.</string>
 
     <!-- Service Doctor -->
     <string name="doctor_check_samsung_autoblocker">Samsung Auto Blocker</string>
@@ -602,6 +605,8 @@
     <string name="bug_report_dialog_method">Please submit an issue on %1$s if you have an account.</string>
     <string name="bug_report_dialog_method_2">Otherwise, you can send an email.</string>
     <string name="bug_report_dialog_button_email">Email</string>
+    <string name="bug_report_email_subject">问题标题</string>
+    <string name="bug_report_email_body">请描述该问题（Bug）。如果可能，请包含复现步骤，以及任何相关的截图或日志。\n\n设备：%1$s\n\nAndroid 版本：%2$s\n\nShizuku 版本：%3$s</string>
 
     <!-- Service Doctor -->
     <string name="home_service_doctor_title">Service Doctor</string>
@@ -614,6 +619,8 @@
     <string name="doctor_check_permission">ADB permission: %1$s</string>
     <string name="doctor_check_server">Shizuku server: %1$s</string>
     <string name="doctor_check_background">Background limits: %1$s</string>
+    <string name="doctor_check_accessibility">Accessibility service</string>
+    <string name="doctor_check_maximum_restrictions">Maximum Restrictions (One UI 8)</string>
     <string name="doctor_status_ok">OK</string>
     <string name="doctor_status_running">Running</string>
     <string name="doctor_status_stopped">Stopped</string>
@@ -623,11 +630,15 @@
     <string name="doctor_status_optimized">Optimized (May kill service)</string>
     <string name="doctor_status_unlocked">Unlocked</string>
     <string name="doctor_status_restricted_bg">Restricted background execution</string>
+    <string name="doctor_status_enabled_turn_off">Enabled (Turn OFF)</string>
+    <string name="doctor_status_enabled_must_off">Enabled (Must be OFF)</string>
+    <string name="doctor_status_review_sleeping_apps">Review (Check sleeping apps)</string>
     <string name="doctor_tip_xiaomi">Xiaomi/HyperOS: Enable "USB Debugging (Security Settings)" in Developer Options.</string>
     <string name="doctor_tip_oppo_permission">Oppo/Realme/OnePlus: Disable "Permission Monitoring" in Developer Options to prevent background service kills.</string>
     <string name="doctor_tip_tcl_background">TCL: Ensure Shizuku+ is added to "Auto-start" and "High background power consumption" allowlists in Settings.</string>
     <string name="doctor_tip_battery">Disable battery optimization for Shizuku+ to prevent it from being killed in the background.</string>
     <string name="doctor_tip_adb">Wireless debugging must be active for Shizuku to start in non-root mode after a reboot.</string>
+    <string name="doctor_tip_oneui_maximum_restrictions">One UI 8: "Maximum Restrictions" in Auto Blocker disables ADB. Turn it off to use Shizuku.</string>
     <string name="doctor_button_fix">Fix</string>
 
     <!-- Snackbar -->
@@ -845,9 +856,9 @@
     <string name="settings_update_channel_category">Release Channel</string>
     <string name="settings_update_channel_title">Update channel</string>
     <string name="update_channel_stable">Stable</string>
-    <string name="update_channel_dev">Dev / Pre-release</string>
+    <string name="update_channel_dev">Development / Pre-release</string>
     <string name="update_channel_dev_warning_title">Switch to Dev channel?</string>
-    <string name="update_channel_dev_warning_message">Dev releases are built from the latest commits and may contain bugs, crashes, or breaking changes. Only use this if you want to test new features early.\n\nYou can switch back to Stable at any time.</string>
+    <string name="update_channel_dev_warning_message">Development and pre-release builds from qianyumeng0228/ShizukuPlus may contain bugs, crashes, or breaking changes. Only use this if you want to test new features early.\n\nYou can switch back to Stable at any time.</string>
     <string name="settings_update_manual_category">Manual Update</string>
     <string name="settings_check_for_update_title">Check for update</string>
     <string name="settings_check_for_update_summary">Manually check if a new version is available</string>
@@ -885,6 +896,7 @@
 
     <!-- Update Dialogs -->
     <string name="update_available_title">Update Available</string>
+    <string name="update_prerelease_badge">Pre-release</string>
     <string name="update_available_message">A new version %1$s is available for download.</string>
     <string name="update_download">Download</string>
     <string name="update_later">Later</string>

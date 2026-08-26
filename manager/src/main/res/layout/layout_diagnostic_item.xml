@@ -22,7 +22,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Warning message"
+            android:text="@string/diagnostic_warning_message"
             android:textSize="13sp"
             android:textColor="?colorOnErrorContainer" />
             
@@ -35,7 +35,7 @@
             android:minWidth="0dp"
             android:paddingHorizontal="8dp"
             android:paddingVertical="4dp"
-            android:text="Dismiss"
+            android:text="@string/diagnostic_dismiss"
             android:textColor="?colorOnErrorContainer"
             android:textSize="12sp" />
     </LinearLayout>
