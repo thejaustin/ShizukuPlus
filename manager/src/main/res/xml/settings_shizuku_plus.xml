@@ -43,6 +43,12 @@
             android:defaultValue="false"
             app:badgeType="plus" />
 
+        <EditTextPreference
+            android:key="automation_trusted_networks"
+            android:title="@string/settings_automation_trusted_networks"
+            android:summary="@string/settings_automation_trusted_networks_summary"
+            android:icon="@drawable/ic_lan_24" />
+
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="continuity_bridge_enabled"
             android:title="Continuity Bridge"
@@ -155,6 +161,13 @@
             android:title="@string/settings_shadow_binder_hidden_packages"
             android:summary="@string/settings_shadow_binder_hidden_packages_summary"
             android:icon="@drawable/ic_visibility_24"
+            android:dependency="shadow_binder_enabled" />
+
+        <af.shizuku.manager.settings.AppPickerPreference
+            android:key="automation_auto_hide_packages"
+            android:title="@string/settings_automation_auto_hide_packages"
+            android:summary="@string/settings_automation_auto_hide_packages_summary"
+            android:icon="@drawable/ic_visibility_off_24"
             android:dependency="shadow_binder_enabled" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>

@@ -89,6 +89,10 @@ public class ShizukuSettings {
         public static final String KEY_BINDER_LOGGING_ENABLED = "binder_logging_enabled";
         public static final String KEY_SHADOW_BINDER_ENABLED = "shadow_binder_enabled";
         public static final String KEY_SHADOW_BINDER_HIDDEN_PACKAGES = "shadow_binder_hidden_packages";
+        // Automation Engine (#435) - separate from KEY_SHADOW_BINDER_HIDDEN_PACKAGES above so the
+        // automatic per-foreground-app list never mutates the user's manually-managed static one.
+        public static final String KEY_AUTOMATION_TRUSTED_NETWORKS = "automation_trusted_networks";
+        public static final String KEY_AUTOMATION_AUTO_HIDE_PACKAGES = "automation_auto_hide_packages";
         public static final String KEY_ON_DEVICE_ADB_TCP = "on_device_adb_tcp";
         public static final String KEY_FORCE_START_WADB = "force_start_wadb";
         public static final String KEY_SU_BRIDGE_ENABLED = "su_bridge_enabled";
@@ -828,6 +832,13 @@ public class ShizukuSettings {
         return p != null && p.getBoolean(Keys.KEY_BINDER_FIREWALL_ENABLED, false);
     }
 
+    /** Was missing entirely (#435) - NetworkFirewallRule needs to flip this programmatically,
+     *  not just have the user flip it by hand in Settings. */
+    public static void setBinderFirewallEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_BINDER_FIREWALL_ENABLED, enabled).apply();
+    }
+
     public static boolean isBinderLoggingEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_BINDER_LOGGING_ENABLED, false);
@@ -846,6 +857,85 @@ public class ShizukuSettings {
     public static void setShadowBinderHiddenPackages(String packages) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putString(Keys.KEY_SHADOW_BINDER_HIDDEN_PACKAGES, packages).apply();
+    }
+
+    // --- Automation Engine (#435) ---
+
+    /** Comma-separated Wi-Fi SSIDs the user considers trusted; NetworkFirewallRule disables the
+     *  Binder Firewall while connected to one of these and enables it otherwise. Empty by default
+     *  - deliberately opt-in, matching AutomationService only running once something is configured. */
+    public static String getTrustedNetworks() {
+        SharedPreferences p = getPreferences();
+        return p != null ? p.getString(Keys.KEY_AUTOMATION_TRUSTED_NETWORKS, "") : "";
+    }
+
+    public static void setTrustedNetworks(String commaSeparatedSsids) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putString(Keys.KEY_AUTOMATION_TRUSTED_NETWORKS, commaSeparatedSsids).apply();
+    }
+
+    public static java.util.Set<String> getTrustedNetworksSet() {
+        return splitCsv(getTrustedNetworks());
+    }
+
+    /** Comma-separated package names to auto-hide via ShadowBinder only while they're the
+     *  foreground app - kept entirely separate from getShadowBinderHiddenPackages()'s
+     *  user-managed static list (bound to the same AppPickerPreference widget, different key) so
+     *  automation can never clobber a choice the user made by hand there. */
+    public static String getAutoHidePackages() {
+        SharedPreferences p = getPreferences();
+        return p != null ? p.getString(Keys.KEY_AUTOMATION_AUTO_HIDE_PACKAGES, "") : "";
+    }
+
+    public static java.util.Set<String> getAutoHidePackagesSet() {
+        return splitCsv(getAutoHidePackages());
+    }
+
+    private static java.util.Set<String> splitCsv(String csv) {
+        java.util.Set<String> result = new java.util.HashSet<>();
+        if (csv == null) return result;
+        for (String s : csv.split(",")) {
+            String trimmed = s.trim();
+            if (!trimmed.isEmpty()) result.add(trimmed);
+        }
+        return result;
+    }
+
+    /** True once the user has configured at least one automation list - gates whether
+     *  AutomationService (and its notification/polling) should run at all. */
+    public static boolean isAnyAutomationConfigured() {
+        return !getTrustedNetworksSet().isEmpty() || !getAutoHidePackagesSet().isEmpty();
+    }
+
+    /** The hidden-packages value that should actually be pushed to the server right now: the
+     *  user's static list plus, if it's currently foreground, whichever auto-hide package matches.
+     *  Never persists this back to KEY_SHADOW_BINDER_HIDDEN_PACKAGES - it's compute-on-push only,
+     *  so the user's own manual list (and what they see in the AppPickerPreference UI) is untouched. */
+    public static String computeEffectiveShadowHiddenPackages(@Nullable String currentForegroundPackage) {
+        java.util.LinkedHashSet<String> effective = new java.util.LinkedHashSet<>(splitCsv(getShadowBinderHiddenPackages()));
+        if (currentForegroundPackage != null && getAutoHidePackagesSet().contains(currentForegroundPackage)) {
+            effective.add(currentForegroundPackage);
+        }
+        return String.join(",", effective);
+    }
+
+    /** Lightweight, single-setting push - deliberately NOT syncAllPlusFeaturesToServer(), which
+     *  pushes ~35 settings and would be wasteful/risky to call every time the foreground app
+     *  changes (AppAutoHideRule can fire every couple of seconds). Mirrors the same
+     *  fire-and-forget binder-call pattern syncAllPlusFeaturesToServer() uses. */
+    public static void pushShadowHiddenPackagesToServer(@Nullable String currentForegroundPackage) {
+        if (!rikka.shizuku.Shizuku.pingBinder()) return;
+        String effective = computeEffectiveShadowHiddenPackages(currentForegroundPackage);
+        new Thread(() -> {
+            try {
+                android.os.IBinder binder = (android.os.IBinder) rikka.shizuku.Shizuku.getBinder();
+                if (binder == null) return;
+                moe.shizuku.server.IShizukuService service = moe.shizuku.server.IShizukuService.Stub.asInterface(binder);
+                service.setPlusSetting("shadow_hidden_packages", effective);
+            } catch (Exception e) {
+                Timber.tag("ShizukuSettings").w(e, "Failed to push effective shadow hidden packages");
+            }
+        }).start();
     }
 
     public static void setAdbProxyEnabled(boolean enable) {

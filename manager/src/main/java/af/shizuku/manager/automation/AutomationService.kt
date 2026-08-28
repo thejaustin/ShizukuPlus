@@ -46,6 +46,36 @@ class AutomationService : Service() {
         private const val NOTIFICATION_CHANNEL_ID = "automation_service"
         // 1001/1002 are taken by WatchdogService — use a distinct ID to avoid foreground-token conflicts
         private const val NOTIFICATION_ID = 1003
+
+        /** Starts the service (and its notification/polling) - only call when the caller has
+         *  already confirmed the user actually configured something (#435); this itself does not
+         *  re-check af.shizuku.manager.ShizukuSettings.isAnyAutomationConfigured(), since callers
+         *  that already know they're reacting to a list becoming non-empty shouldn't need to. */
+        @JvmStatic
+        fun startIfNeeded(context: Context) {
+            try {
+                val intent = Intent(context, AutomationService::class.java)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent)
+                } else {
+                    context.startService(intent)
+                }
+            } catch (e: Exception) {
+                Timber.tag("AutomationService").w(e, "Failed to start AutomationService")
+            }
+        }
+
+        /** Symmetric with [startIfNeeded] - called when the last configured trusted network or
+         *  auto-hide package is removed, so the service (and its notification/polling) actually
+         *  stop instead of continuing to run for lists that are now empty. */
+        @JvmStatic
+        fun stopIfRunning(context: Context) {
+            try {
+                context.stopService(Intent(context, AutomationService::class.java))
+            } catch (e: Exception) {
+                Timber.tag("AutomationService").w(e, "Failed to stop AutomationService")
+            }
+        }
     }
 
     override fun onCreate() {

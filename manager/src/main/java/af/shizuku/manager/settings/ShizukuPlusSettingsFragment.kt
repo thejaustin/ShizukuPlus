@@ -420,6 +420,22 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
             true
         }
 
+        // AutomationService (#435) only runs while at least one of these two lists is non-empty -
+        // start/stop it right here as each list is edited, rather than only checking at app launch,
+        // so the very first (or last) entry takes effect immediately without needing a restart.
+        findPreference<Preference>(KEY_AUTOMATION_TRUSTED_NETWORKS)?.setOnPreferenceChangeListener { _, newValue ->
+            val isConfigured = (newValue as? String).orEmpty().split(",").any { it.isNotBlank() } ||
+                ShizukuSettings.getAutoHidePackagesSet().isNotEmpty()
+            updateAutomationServiceState(isConfigured)
+            true
+        }
+        findPreference<Preference>(KEY_AUTOMATION_AUTO_HIDE_PACKAGES)?.setOnPreferenceChangeListener { _, newValue ->
+            val isConfigured = (newValue as? String).orEmpty().split(",").any { it.isNotBlank() } ||
+                ShizukuSettings.getTrustedNetworksSet().isNotEmpty()
+            updateAutomationServiceState(isConfigured)
+            true
+        }
+
         findPreference<Preference>("ai_core_plus_enabled")?.setOnPreferenceChangeListener { _, newValue ->
             val enabled = newValue as? Boolean ?: false
             if (enabled) {
@@ -596,6 +612,17 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
                     }
                 }
             }
+        }
+    }
+
+    /** Starts or stops AutomationService (#435) to match whether the user has any automation
+     *  list configured, right as they edit either list - see the two listeners above. */
+    private fun updateAutomationServiceState(isConfigured: Boolean) {
+        val context = context ?: return
+        if (isConfigured) {
+            af.shizuku.manager.automation.AutomationService.startIfNeeded(context)
+        } else {
+            af.shizuku.manager.automation.AutomationService.stopIfRunning(context)
         }
     }
 

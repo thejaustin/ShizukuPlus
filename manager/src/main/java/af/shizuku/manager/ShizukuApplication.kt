@@ -471,22 +471,21 @@ class ShizukuApplication : Application(), Configuration.Provider {
             }
         }
 
-        // AutomationService used to be started unconditionally here, for every user, on every
-        // process start - a permanent "Network monitor" foreground notification plus a 2-second
-        // UsageStatsManager foreground-app poll and an always-on network callback, all running
-        // indefinitely in the background. Its only two registered rules (NetworkFirewallRule,
-        // AppSpecificProfileRule, in AutomationRules.kt) are non-functional placeholders: they
-        // match hardcoded demo values ("HomeWiFi"/"WorkNetwork" SSIDs, "com.banking.app"/
-        // "com.games.app" package names) that can never match a real device, and their execute()
-        // bodies are just Timber logs with the real logic commented out. Nothing else in the app
-        // depends on AutomationService or the events it dispatches (ShizukuStateMachine's own
-        // AutomationEngine.dispatchEvent call also has no functional listener right now) - the
-        // real Tasker/MacroDroid "control Shizuku with automation apps" feature on the Home screen
-        // is a separate mechanism (AuthenticatedReceiver) that doesn't need this service running.
-        // So this was pure background cost - notification, polling, battery - for a feature that
-        // cannot do anything yet. Leaving the service/engine/rules code in place as scaffolding for
-        // when real rules exist (#6), but no longer starting it until then.
+        // AutomationService (#435) now runs real rules - NetworkFirewallRule (trusted-network ->
+        // Binder Firewall) and AppAutoHideRule (per-app ShadowBinder auto-hide) - but only if the
+        // user has actually configured a trusted network or an auto-hide package in Settings.
+        // It used to start unconditionally for every user regardless, showing a permanent "Network
+        // monitor" notification and running a battery-costing 2-second UsageStatsManager
+        // foreground-app poll for two rules that, at the time, were non-functional placeholders
+        // that could never match real data. Registering rules is cheap and always safe; actually
+        // starting the service (and its notification/polling) is gated on real configuration so a
+        // user who never touches either list sees nothing - see ShizukuPlusSettingsFragment's
+        // change listeners for where the service gets started/stopped dynamically as the user
+        // edits those lists after this initial launch-time check.
         af.shizuku.manager.automation.registerDefaultRules()
+        if (ShizukuSettings.isAnyAutomationConfigured()) {
+            af.shizuku.manager.automation.AutomationService.startIfNeeded(this)
+        }
 
         Shizuku.addLogListener { appName, packageName, action ->
             ActivityLogManager.log(appName, packageName, action)

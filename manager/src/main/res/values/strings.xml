@@ -1031,6 +1031,12 @@
     <string name="settings_shadow_binder_hidden_packages">Hidden Packages</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Comma-separated list of package names to hide from other apps. If you have both OG Shizuku and Shizuku+ installed, add both (moe.shizuku.privileged.api, af.shizuku.manager) to prevent conflicts.</string>
 
+    <!-- Automation Engine (Issue #435) -->
+    <string name="settings_automation_trusted_networks">Trusted Networks</string>
+    <string name="settings_automation_trusted_networks_summary">Comma-separated Wi-Fi network names (SSIDs). Binder Firewall is disabled automatically while connected to one of these, and enabled automatically everywhere else (including mobile data). Leave empty to control Binder Firewall manually instead.</string>
+    <string name="settings_automation_auto_hide_packages">Auto-Hide While Foregrounded</string>
+    <string name="settings_automation_auto_hide_packages_summary">Apps that are automatically added to Shadow Binder\'s hidden list only while they\'re open, on top of the Hidden Packages list above. Leave empty to manage hidden packages manually instead.</string>
+
     <plurals name="settings_shadow_binder_hidden_packages_count">
         <item quantity="one">%d app selected</item>
         <item quantity="other">%d apps selected</item>
