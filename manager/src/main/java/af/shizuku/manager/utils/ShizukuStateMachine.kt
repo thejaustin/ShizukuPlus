@@ -30,6 +30,8 @@ object ShizukuStateMachine {
     // exists to handle.
     private var state = AtomicReference<State>(loadPersistedSettledState())
     private val listeners = CopyOnWriteArrayList<(State) -> Unit>()
+    private val startingTimestamp = java.util.concurrent.atomic.AtomicLong(0L)
+    private const val STARTING_TIMEOUT_MS = 90_000L
 
     private fun loadPersistedSettledState(): State = try {
         when (ShizukuSettings.getLastSettledState()) {
@@ -79,6 +81,7 @@ object ShizukuStateMachine {
             // so this captures every fresh start centrally and lets isServerVersionSkewed() later
             // detect a running server left behind by a pre-update build.
             if (newState == State.STARTING) {
+                startingTimestamp.set(System.currentTimeMillis())
                 try {
                     ShizukuSettings.setServerStartedBuild(BuildConfig.VERSION_CODE)
                 } catch (e: Exception) {
@@ -156,7 +159,12 @@ object ShizukuStateMachine {
         val currentState = get()
         val state = when {
             isAlive -> State.RUNNING
-            currentState == State.STARTING -> State.STARTING
+            currentState == State.STARTING -> {
+                // Break out of STARTING after 90 s so a failed start (server process died,
+                // ADB connection refused, etc.) never leaves the UI permanently locked.
+                val elapsed = System.currentTimeMillis() - startingTimestamp.get()
+                if (elapsed > STARTING_TIMEOUT_MS) State.STOPPED else State.STARTING
+            }
             currentState == State.STOPPING -> State.STOPPING
             currentState == State.CRASHED -> State.CRASHED
             // Was RUNNING (or, thanks to loadPersistedSettledState(), a freshly cold-started

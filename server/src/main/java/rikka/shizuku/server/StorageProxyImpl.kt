@@ -99,7 +99,19 @@ class StorageProxyImpl : IStorageProxy.Stub() {
 
     override fun listFiles(path: String?): List<String> {
         if (!InputValidationUtils.isSafePath(path)) return emptyList()
-        return File(path!!).list()?.toList() ?: emptyList()
+        val direct = File(path!!).list()
+        if (!direct.isNullOrEmpty()) return direct.toList()
+        // For /data/data/<pkg>/ paths (ADB mode, debuggable apps only)
+        if (serverUid == 2000 &&
+            (path.startsWith("/data/data/") || path.startsWith("/data/user/"))) {
+            val pkg = extractPackageName(path) ?: return emptyList()
+            return try {
+                Runtime.getRuntime().exec(arrayOf("run-as", pkg, "ls", path))
+                    .inputStream.bufferedReader().readLines()
+                    .filter { it.isNotBlank() }
+            } catch (_: Exception) { emptyList() }
+        }
+        return emptyList()
     }
 
     override fun getFileInfo(path: String?): Bundle {
@@ -126,6 +138,46 @@ class StorageProxyImpl : IStorageProxy.Stub() {
             File(path!!).mkdirs()
         } catch (e: Exception) {
             false
+        }
+    }
+
+    override fun copyFile(srcPath: String?, destPath: String?): Boolean {
+        if (!InputValidationUtils.isSafePath(srcPath) || !InputValidationUtils.isSafePath(destPath)) return false
+        return try {
+            File(srcPath!!).inputStream().use { src ->
+                File(destPath!!).outputStream().use { dst -> src.copyTo(dst) }
+            }
+            true
+        } catch (_: Exception) {
+            // For /data/data/<pkg>/ paths, fall back to run-as cp
+            if (serverUid == 2000 &&
+                (srcPath!!.startsWith("/data/data/") || srcPath.startsWith("/data/user/"))) {
+                val pkg = extractPackageName(srcPath) ?: return false
+                return try {
+                    Runtime.getRuntime().exec(arrayOf("run-as", pkg, "cp", srcPath, destPath!!))
+                        .waitFor() == 0
+                } catch (_: Exception) { false }
+            }
+            false
+        }
+    }
+
+    override fun openContentUri(contentUri: String?): ParcelFileDescriptor? {
+        if (contentUri.isNullOrBlank()) return null
+        // Reject non-content URIs to prevent unintended file-scheme access
+        if (!contentUri.startsWith("content://")) return null
+        return openViaShellPipe(arrayOf("content", "read", "--uri", contentUri))
+    }
+
+    override fun tarDirectory(dirPath: String?, packageContext: String?): ParcelFileDescriptor? {
+        if (!InputValidationUtils.isSafePath(dirPath)) return null
+        val dir = dirPath!!
+        return if (!packageContext.isNullOrBlank() && serverUid == 2000 &&
+            (dir.startsWith("/data/data/") || dir.startsWith("/data/user/"))) {
+            // run-as <pkg> tar for debuggable-app data directories
+            openViaShellPipe(arrayOf("run-as", packageContext, "tar", "-czf", "-", "-C", dir, "."))
+        } else {
+            openViaShellPipe(arrayOf("tar", "-czf", "-", "-C", dir, "."))
         }
     }
 }

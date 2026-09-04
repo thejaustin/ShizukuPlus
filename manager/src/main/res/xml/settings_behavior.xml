@@ -21,8 +21,8 @@
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="auto_reconnect_mdns"
             android:title="Intelligent Auto-Reconnect"
-            android:summary="Run a lightweight mDNS listener to automatically rebind the server if the ADB daemon drops on sleep or doze."
-            android:defaultValue="true"
+            android:summary="Automatically restart the server when the app opens if a wireless ADB port is already active. Off by default."
+            android:defaultValue="false"
             android:icon="@drawable/ic_server_restart" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>

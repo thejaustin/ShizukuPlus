@@ -1214,6 +1214,21 @@
     <!-- Samsung ADB dialog -->
     <string name="adb_dialog_popup_settings">Pop-up Settings</string>
 
+    <!-- Tile service: state subtitles (shown in Samsung OneUI wide tile text area and standard subtitle) -->
+    <string name="tile_subtitle_active">Active</string>
+    <string name="tile_subtitle_starting">Starting…</string>
+    <string name="tile_subtitle_stopping">Stopping…</string>
+    <string name="tile_subtitle_crashed">Crashed · Tap to restart</string>
+    <string name="tile_subtitle_tap_to_start">Tap to start</string>
+    <!-- Tile service: mode labels -->
+    <string name="tile_mode_root">Root</string>
+    <string name="tile_mode_wifi_adb">WiFi ADB</string>
+    <string name="tile_mode_adb">ADB</string>
+    <!-- Tile service: action labels (tap dialog and long-press options activity) -->
+    <string name="tile_action_start">Start Service</string>
+    <string name="tile_action_stop">Stop Service</string>
+    <string name="tile_action_restart">Restart Service</string>
+    <string name="tile_action_open_app">Open App</string>
     <!-- Tile service error -->
     <string name="tile_state_update_failed">Failed to update Shizuku state: %1$s</string>
 
@@ -1227,4 +1242,16 @@
     <string name="app_profile_state_allow">Allow</string>
     <string name="app_profile_search_hint">Search apps…</string>
     <string name="app_profile_empty">No apps found</string>
+    <string name="su_bridge_api36_adb_warning_title">Android 16 ADB Limitation</string>
+    <string name="su_bridge_api36_adb_warning_body">The ADB shell process cannot write to /data/local/tmp on Android 16+. Export Shizuku files to a folder instead — the SU Bridge will use that exported path.</string>
+    <string name="su_bridge_export_files">Export Files…</string>
+    <string name="settings_status_bar_governor_plus_summary">Control the status bar and Quick Settings panel: collapse/expand the shade, toggle expansion lock, and manage tile layout — all without user interaction.</string>
+    <string name="help_status_bar_governor_plus_title">Status Bar Control</string>
+    <string name="help_status_bar_governor_plus_detail">Grants privileged access to the status bar and Quick Settings panel via the system statusbar service. Apps and automations can collapse or expand the notification shade, lock expansion to prevent user access, click individual QS tiles, and read or rewrite the full tile list — all without requiring the device to be unlocked or user gestures.</string>
+    <string name="settings_package_governor_plus_summary">Grant or revoke runtime permissions without prompts, silently install APKs, debloat system apps per-user, and suspend/restore apps with full data preservation — all via privileged shell access.</string>
+    <string name="help_package_governor_plus_title">Package Governor</string>
+    <string name="help_package_governor_plus_detail">Exposes privileged package management operations available to the ADB/shell process: runtime permission grant/revoke (pm grant/revoke), user-scoped system app uninstall (pm uninstall --user 0) and restore (pm install-existing), data-safe app suspension (pm suspend/unsuspend), and silent APK install with automatic permission grants. These are genuine root-class capabilities that work on any device running Shizuku over ADB without needing actual root access.</string>
+    <string name="settings_display_tuner_plus_summary">Override display resolution and DPI — the same as adb shell wm size/density — so apps and automation can adjust screen layout without requiring ADB access themselves.</string>
+    <string name="help_display_tuner_plus_title">Display Tuner</string>
+    <string name="help_display_tuner_plus_detail">Provides privileged display configuration via the wm shell tool: override resolution (wm size) and density (wm density) on the fly, read current and physical values, and reset overrides to device defaults. Useful for fixing app layout issues, forcing a specific aspect ratio for screen recording, desktop mode tweaks, and accessibility scaling — historically a root-only capability now available through the ADB shell process.</string>
 </resources>

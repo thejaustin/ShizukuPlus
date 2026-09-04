@@ -37,6 +37,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.adb.AdbPairingService
+import af.shizuku.manager.worker.AdbStartWorker
 import af.shizuku.core.ui.AppBarActivity
 import af.shizuku.manager.app.SnackbarHelper
 import af.shizuku.manager.databinding.AboutDialogBinding
@@ -99,6 +100,11 @@ open class HomeActivity : AppActivity(), MavericksView {
     // the one before this particular update. Null until the first Success is observed, so the
     // animation doesn't fire on cold start just because the service happened to already be running.
     private var wasServiceRunning: Boolean? = null
+
+    // Guard: attempt auto-restart at most once per Activity instance. Prevents re-trying on
+    // every subsequent resume/status-refresh if the first attempt doesn't produce a running binder
+    // quickly enough (which would create a WorkManager queue pile-up).
+    private var autoRestartAttempted = false
 
     private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
         when (state) {
@@ -252,6 +258,27 @@ open class HomeActivity : AppActivity(), MavericksView {
                 val status = it.invoke()
                 val previouslyRunning = wasServiceRunning
                 wasServiceRunning = status.isRunning
+
+                // If the service is already running, mark the auto-restart guard so a subsequent
+                // manual stop in the same session does not trigger an unwanted re-start.
+                if (status.isRunning) autoRestartAttempted = true
+
+                // Auto-reconnect: only when the user has explicitly enabled it in Settings.
+                // Gated on isAutoReconnectMdnsEnabled() (default OFF) so a fresh install
+                // never silently attempts ADB without user consent.
+                if (!status.isRunning && !autoRestartAttempted &&
+                    ShizukuSettings.isAutoReconnectMdnsEnabled() &&
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
+                    ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ADB &&
+                    checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
+                    val sysPropPort = EnvironmentUtils.getAdbTcpPort()
+                    val discoveredPort = withState(homeModel) { s -> s.discoveredAdbPort }
+                    val hasLivePort = sysPropPort in 1..65535 || discoveredPort in 1..65535
+                    if (hasLivePort) {
+                        autoRestartAttempted = true
+                        AdbStartWorker.enqueue(this)
+                    }
+                }
 
                 adapter.updateData()
                 ShizukuSettings.setLastLaunchMode(if (status.uid == 0) ShizukuSettings.LaunchMethod.ROOT else ShizukuSettings.LaunchMethod.ADB)

@@ -49,6 +49,66 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Android 16+ ADB mode: SELinux blocks /data/local/tmp writes; direct users to export instead -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/api36_adb_warning_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="?attr/colorErrorContainer">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_warning_24"
+                        app:tint="?attr/colorOnErrorContainer" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/su_bridge_api36_adb_warning_title"
+                        android:textAppearance="?textAppearanceTitleSmall"
+                        android:textColor="?attr/colorOnErrorContainer" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/su_bridge_api36_adb_warning_body"
+                    android:textAppearance="?textAppearanceBodySmall"
+                    android:textColor="?attr/colorOnErrorContainer" />
+
+                <androidx.compose.ui.platform.ComposeView
+                    android:id="@+id/btn_api36_export"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/global_setup_card"
             android:layout_width="match_parent"

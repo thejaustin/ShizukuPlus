@@ -72,6 +72,9 @@ public class ShizukuSettings {
         public static final String KEY_OVERLAY_MANAGER_PLUS_ENABLED = "overlay_manager_plus_enabled";
         public static final String KEY_NETWORK_GOVERNOR_PLUS_ENABLED = "network_governor_plus_enabled";
         public static final String KEY_ACTIVITY_MANAGER_PLUS_ENABLED = "activity_manager_plus_enabled";
+        public static final String KEY_STATUS_BAR_GOVERNOR_PLUS_ENABLED = "status_bar_governor_plus_enabled";
+        public static final String KEY_PACKAGE_GOVERNOR_PLUS_ENABLED = "package_governor_plus_enabled";
+        public static final String KEY_DISPLAY_TUNER_PLUS_ENABLED = "display_tuner_plus_enabled";
         public static final String KEY_EXPERIMENTAL_ROOT_COMPAT = "experimental_root_compat";
         public static final String KEY_SPOOF_DEVICE_ENABLED = "spoof_device_enabled";
         public static final String KEY_SPOOF_TARGET = "spoof_target";
@@ -817,6 +820,21 @@ public class ShizukuSettings {
         return p == null || p.getBoolean(Keys.KEY_NETWORK_GOVERNOR_PLUS_ENABLED, true);
     }
 
+    public static boolean isStatusBarGovernorPlusEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_STATUS_BAR_GOVERNOR_PLUS_ENABLED, true);
+    }
+
+    public static boolean isPackageGovernorPlusEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_PACKAGE_GOVERNOR_PLUS_ENABLED, true);
+    }
+
+    public static boolean isDisplayTunerPlusEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_DISPLAY_TUNER_PLUS_ENABLED, false);
+    }
+
     public static boolean isActivityManagerPlusEnabled() {
         SharedPreferences p = getPreferences();
         return p == null || p.getBoolean(Keys.KEY_ACTIVITY_MANAGER_PLUS_ENABLED, true);
@@ -1082,6 +1100,9 @@ public class ShizukuSettings {
                 service.updatePlusFeatureEnabled("window_manager_plus", isWindowManagerPlusEnabled());
                 service.updatePlusFeatureEnabled("overlay_manager_plus", isOverlayManagerPlusEnabled());
                 service.updatePlusFeatureEnabled("network_governor_plus", isNetworkGovernorPlusEnabled());
+                service.updatePlusFeatureEnabled("status_bar_governor_plus", isStatusBarGovernorPlusEnabled());
+                service.updatePlusFeatureEnabled("package_governor_plus", isPackageGovernorPlusEnabled());
+                service.updatePlusFeatureEnabled("display_tuner_plus", isDisplayTunerPlusEnabled());
                 service.updatePlusFeatureEnabled("activity_manager_plus", isActivityManagerPlusEnabled());
                 service.updatePlusFeatureEnabled("su_bridge", isSuBridgeEnabled());
                 service.setPlusSetting("custom_su_path", getCustomSuPath());
@@ -1229,6 +1250,8 @@ public class ShizukuSettings {
 
     public static boolean isAutoReconnectMdnsEnabled() {
         SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_AUTO_RECONNECT_MDNS, true);
+        // Default OFF: auto-reconnect is opt-in, not opt-out. A null prefs object
+        // (prefs not yet initialized) is treated as disabled, not enabled.
+        return p != null && p.getBoolean(Keys.KEY_AUTO_RECONNECT_MDNS, false);
     }
 }

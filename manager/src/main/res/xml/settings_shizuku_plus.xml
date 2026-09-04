@@ -86,6 +86,26 @@
             app:badgeType="plus" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="status_bar_governor_plus_enabled"
+            android:title="Status Bar Control"
+            android:summary="@string/settings_status_bar_governor_plus_summary"
+            android:icon="@drawable/ic_outline_expand_more_24"
+            android:defaultValue="true"
+            app:infoTitle="@string/help_status_bar_governor_plus_title"
+            app:infoDetail="@string/help_status_bar_governor_plus_detail"
+            app:badgeType="plus" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="package_governor_plus_enabled"
+            android:title="Package Governor"
+            android:summary="@string/settings_package_governor_plus_summary"
+            android:icon="@drawable/ic_install_24"
+            android:defaultValue="true"
+            app:infoTitle="@string/help_package_governor_plus_title"
+            app:infoDetail="@string/help_package_governor_plus_detail"
+            app:badgeType="plus" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="shell_interceptor_enabled"
             android:title="Shell Accelerator"
             android:summary="@string/settings_shell_interceptor_summary"
@@ -281,6 +301,16 @@
             android:icon="@drawable/ic_science_24"
             android:defaultValue="false"
             android:dependency="ai_core_plus_enabled"
+            app:badgeType="experimental" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="display_tuner_plus_enabled"
+            android:title="Display Tuner"
+            android:summary="@string/settings_display_tuner_plus_summary"
+            android:icon="@drawable/ic_smartphone_24"
+            android:defaultValue="false"
+            app:infoTitle="@string/help_display_tuner_plus_title"
+            app:infoDetail="@string/help_display_tuner_plus_detail"
             app:badgeType="experimental" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference

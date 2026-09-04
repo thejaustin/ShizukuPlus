@@ -186,6 +186,12 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
                 }
             }
 
+            // Reset STARTING → STOPPED so update() can re-detect the real state.
+            // Without this, update() perpetually preserves STARTING (binder never
+            // arrived) and every subsequent button click shows "already starting".
+            if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
+                ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
+            }
             if (ShizukuStateMachine.update() == ShizukuStateMachine.State.RUNNING) {
                 return Result.success()
             } else {

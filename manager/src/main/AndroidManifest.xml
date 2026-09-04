@@ -241,6 +241,12 @@
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:exported="false" />
+        <activity
+            android:name=".service.TileOptionsActivity"
+            android:theme="@style/Theme.App.DialogHost"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
+            android:exported="false" />
         
         <activity
             android:name=".authorization.RequestPermissionActivity"
@@ -339,6 +345,9 @@
             <meta-data
                 android:name="android.service.quicksettings.ACTIVE_TILE"
                 android:value="true" />
+            <meta-data
+                android:name="android.service.quicksettings.SETTINGS_ACTIVITY"
+                android:value="af.shizuku.manager.service.TileOptionsActivity" />
         </service>
 
         <service

@@ -222,6 +222,30 @@ class ServiceDoctorActivity : AppBarActivity() {
             tips.add("• " + getString(R.string.doctor_tip_secure_folder))
         }
 
+        // 8b. SU Bridge — Android 16+ ADB mode limitation
+        // On Android 16+ (API 36), the shell/ADB process (uid 2000) can no longer write to
+        // /data/local/tmp due to SELinux policy tightening. The SU Bridge falls back to the
+        // user-exported path; show a targeted fix if that path isn't set yet.
+        if (Build.VERSION.SDK_INT >= 36) {
+            val isAdbMode = try { Shizuku.pingBinder() && Shizuku.getUid() == 2000 } catch (_: Exception) { false }
+            if (isAdbMode) {
+                val hasExportedPath = af.shizuku.manager.ShizukuSettings.getExportDirUri() != null
+                checks.add(DoctorCheck(
+                    "SU Bridge (Android 16+ ADB)",
+                    if (hasExportedPath) getString(R.string.doctor_status_ok) + " — exported path set"
+                    else "Exported path not configured",
+                    hasExportedPath,
+                    onFix = if (!hasExportedPath) { {
+                        startActivity(android.content.Intent(this, RootCompatibilityActivity::class.java))
+                    } } else null
+                ))
+                if (!hasExportedPath) {
+                    tips.add("• Android 16+ restricts /data/local/tmp writes from the ADB shell. " +
+                        "Open the Root Compat Hub and tap \"Export\" to set a SU Bridge path that works on your device.")
+                }
+            }
+        }
+
         // 9. Background Limits (Android 14+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             checks.add(DoctorCheck(

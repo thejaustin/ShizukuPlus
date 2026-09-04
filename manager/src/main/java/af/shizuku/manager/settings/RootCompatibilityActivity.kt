@@ -9,6 +9,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.Settings
@@ -41,6 +42,7 @@ import af.shizuku.manager.databinding.ListSectionHeaderBinding
 import timber.log.Timber
 import af.shizuku.manager.database.AppContextManager
 import af.shizuku.manager.database.RootCompatHelper
+import af.shizuku.manager.shell.ShellTutorialActivity
 import rikka.shizuku.Shizuku
 import af.shizuku.manager.database.RootSupportLevel
 class RootCompatibilityActivity : AppBarActivity() {
@@ -72,6 +74,21 @@ class RootCompatibilityActivity : AppBarActivity() {
         isAdbMode = try { Shizuku.pingBinder() && Shizuku.getUid() == 2000 } catch (_: Exception) { false }
 
         resolvedSuPath = resolveSuPath()
+
+        // Android 16+ ADB mode: /data/local/tmp is SELinux-blocked from the shell process, so the
+        // tmp deploy is always skipped. Show a banner directing the user to the export flow instead.
+        if (isAdbMode && Build.VERSION.SDK_INT >= 36) {
+            binding.api36AdbWarningCard.visibility = View.VISIBLE
+            binding.btnApi36Export.setContent {
+                af.shizuku.core.ui.compose.Button(
+                    onClick = {
+                        startActivity(Intent(this@RootCompatibilityActivity, ShellTutorialActivity::class.java))
+                    }
+                ) {
+                    androidx.compose.material3.Text(getString(R.string.su_bridge_export_files))
+                }
+            }
+        }
 
         // Show the setup card whenever a path is available OR the tmp deploy might provide one.
         // ADB mode users can still auto-configure GLOBAL_SETTINGS_APPS (AdAway, AFWall+, etc.)
