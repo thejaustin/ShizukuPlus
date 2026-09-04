@@ -1220,6 +1220,22 @@
     <!-- Samsung ADB dialog -->
     <string name="adb_dialog_popup_settings">Налаштування спливаючих вікон</string>
 
+    <!-- Tile service: state subtitles (shown in Samsung OneUI wide tile text area and standard subtitle) -->
+    <string name="tile_subtitle_active">Активно</string>
+    <string name="tile_subtitle_starting">Запуск…</string>
+    <string name="tile_subtitle_stopping">Зупинення…</string>
+    <string name="tile_subtitle_crashed">Стався збій · Натисніть, щоб перезапустити</string>
+    <string name="tile_subtitle_tap_to_start">Натисніть для запуску</string>
+    <!-- Tile service: mode labels -->
+    <string name="tile_mode_root">Root</string>
+    <string name="tile_mode_wifi_adb">WiFi ADB</string>
+    <string name="tile_mode_adb">ADB</string>
+    <!-- Tile service: action labels (tap dialog and long-press options activity) -->
+    <string name="tile_action_start">Запустити службу</string>
+    <string name="tile_action_stop">Зупинити службу</string>
+    <string name="tile_action_restart">Перезапустити службу</string>
+    <string name="tile_action_open_app">Відкрити додаток</string>
+
     <!-- Tile service error -->
     <string name="tile_state_update_failed">Не вдалося оновити стан Shizuku: %1$s</string>
 
@@ -1233,4 +1249,16 @@
     <string name="app_profile_state_allow">Дозволити</string>
     <string name="app_profile_search_hint">Пошук додатків…</string>
     <string name="app_profile_empty">Додатки не знайдено</string>
+    <string name="su_bridge_api36_adb_warning_title">Обмеження ADB в Android 16</string>
+    <string name="su_bridge_api36_adb_warning_body">Процес оболонки ADB не може записувати в /data/local/tmp на Android 16+. Натомість експортуйте файли Shizuku до папки — SU-міст використовуватиме цей експортований шлях.</string>
+    <string name="su_bridge_export_files">Експортувати файли…</string>
+    <string name="settings_status_bar_governor_plus_summary">Керування рядком стану та панеллю Швидких налаштувань: згортайте/розгортайте панель, перемикайте блокування розгортання та керуйте макетом плиток — усе це без взаємодії з користувачем.</string>
+    <string name="help_status_bar_governor_plus_title">Керування рядком стану</string>
+    <string name="help_status_bar_governor_plus_detail">Надає привілейований доступ до рядка стану та панелі Швидких налаштувань через системну службу statusbar. Додатки та засоби автоматизації можуть згортати або розгортати панель сповіщень, блокувати розгортання для запобігання доступу користувача, натискати окремі плитки QS, а також читати або перезаписувати весь список плиток — усе це не вимагає розблокування пристрою або жестів користувача.</string>
+    <string name="settings_package_governor_plus_summary">Надавайте або відкликайте дозволи під час виконання без запитів, тихо встановлюйте APK, видаляйте системні додатки для окремого користувача та призупиняйте/відновлюйте додатки зі збереженням усіх даних — усе це через привілейований доступ до оболонки.</string>
+    <string name="help_package_governor_plus_title">Керування пакетами</string>
+    <string name="help_package_governor_plus_detail">Відкриває доступ до привілейованих операцій керування пакетами, доступних для процесу ADB/оболонки: надання/відкликання дозволів під час виконання (pm grant/revoke), видалення системних додатків на рівні користувача (pm uninstall --user 0) та їх відновлення (pm install-existing), безпечне призупинення додатків без втрати даних (pm suspend/unsuspend) та тихе встановлення APK з автоматичним наданням дозволів. Це справжні можливості рівня root, які працюють на будь-якому пристрої, де Shizuku запущено через ADB, без необхідності фактичного root-доступу.</string>
+    <string name="settings_display_tuner_plus_summary">Перевизначення роздільної здатності дисплея та DPI — так само, як adb shell wm size/density — що дозволяє додаткам і засобам автоматизації налаштовувати макет екрана, не потребуючи доступу до ADB.</string>
+    <string name="help_display_tuner_plus_title">Налаштування дисплея</string>
+    <string name="help_display_tuner_plus_detail">Надає привілейовану конфігурацію дисплея за допомогою інструменту wm оболонки: перевизначення роздільної здатності (wm size) та щільності (wm density) на льоту, читання поточних і фізичних значень, а також скидання перевизначень до заводських налаштувань пристрою. Корисно для виправлення проблем із макетом додатків, примусового встановлення певного співвідношення сторін для запису екрана, налаштувань режиму робочого столу та масштабування доступності — історично функція лише для root, яка тепер доступна через процес оболонки ADB.</string>
 </resources>
