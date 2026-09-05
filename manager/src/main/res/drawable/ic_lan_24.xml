@@ -1,5 +1,11 @@
-<vector android:tint="?attr/colorControlNormal" android:height="24dp" android:viewportWidth="960" android:viewportHeight="960" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
-  <group android:translateY="960">
-  <path android:pathData="M300-720q-25 0-42.5 17.5T240-660q0 25 17.5 42.5T300-600q25 0 42.5-17.5T360-660q0-25-17.5-42.5T300-720zm0 400q-25 0-42.5 17.5T240-260q0 25 17.5 42.5T300-200q25 0 42.5-17.5T360-260q0-25-17.5-42.5T300-320zM160-840h640q17 0 28.5 11.5T840-800v280q0 17-11.5 28.5T800-480H160q-17 0-28.5-11.5T120-520v-280q0-17 11.5-28.5T160-840zm40 80v200h560v-200H200zm-40 320h640q17 0 28.5 11.5T840-400v280q0 17-11.5 28.5T800-80H160q-17 0-28.5-11.5T120-120v-280q0-17 11.5-28.5T160-440zm40 80v200h560v-200H200zm0-400v200-200zm0 400v200-200z" android:fillColor="@android:color/white"/>
-</group>
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960"
+    android:tint="?attr/colorControlNormal">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M300,240q-25,0 -42.5,17.5T240,300q0,25 17.5,42.5T300,360q25,0 42.5,-17.5T360,300q0,-25 -17.5,-42.5T300,240zm0,400q-25,0 -42.5,17.5T240,700q0,25 17.5,42.5T300,760q25,0 42.5,-17.5T360,700q0,-25 -17.5,-42.5T300,640zM160,120h640q17,0 28.5,11.5T840,160v280q0,17 -11.5,28.5T800,480H160q-17,0 -28.5,-11.5T120,440v-280q0,-17 11.5,-28.5T160,120zm40,80v200h560v-200H200zm-40,320h640q17,0 28.5,11.5T840,560v280q0,17 -11.5,28.5T800,880H160q-17,0 -28.5,-11.5T120,840v-280q0,-17 11.5,-28.5T160,520zm40,80v200h560v-200H200zm0,-400v200 -200zm0,400v200 -200z" />
 </vector>

@@ -1,5 +1,11 @@
-<vector android:tint="?attr/colorControlNormal" android:height="24dp" android:viewportWidth="960" android:viewportHeight="960" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
-  <group android:translateY="960">
-  <path android:pathData="M320-120v-80h80v-80H160q-33 0-56.5-23.5T80-360v-400q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v400q0 33-23.5 56.5T800-280H560v80h80v80H320zM160-360h640v-400H160v400zm0 0v-400 400z" android:fillColor="@android:color/white"/>
-</group>
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960"
+    android:tint="?attr/colorControlNormal">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M320,840v-80h80v-80H160q-33,0 -56.5,-23.5T80,600v-400q0,-33 23.5,-56.5T160,120h640q33,0 56.5,23.5T880,200v400q0,33 -23.5,56.5T800,680H560v80h80v80H320zM160,600h640v-400H160v400zm0,0v-400 400z" />
 </vector>
