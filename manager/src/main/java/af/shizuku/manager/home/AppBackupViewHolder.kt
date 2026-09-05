@@ -2,6 +2,7 @@ package af.shizuku.manager.home
 
 import android.content.Intent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import rikka.core.content.asActivity
@@ -16,20 +17,30 @@ import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
 
-class AppBackupViewHolder(private val binding: HomeAppBackupItemBinding, root: View) :
-    BaseViewHolder<ServiceStatus>(root), View.OnClickListener {
+class AppBackupViewHolder(
+    private val binding: HomeAppBackupItemBinding,
+    private val containerBinding: HomeItemContainerBinding,
+) : BaseViewHolder<ServiceStatus>(containerBinding.root), View.OnClickListener {
 
     companion object {
         val CREATOR = Creator<ServiceStatus> { inflater: LayoutInflater, parent: ViewGroup? ->
             val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
             val inner = HomeAppBackupItemBinding.inflate(inflater, outer.cardContent, true)
-            AppBackupViewHolder(inner, outer.root)
+            AppBackupViewHolder(inner, outer)
         }
     }
 
     init {
-        root.setOnClickListener(this)
-        root.applySpringTouch()
+        containerBinding.root.setOnClickListener(this)
+        containerBinding.root.applySpringTouch()
+        containerBinding.root.setOnLongClickListener { HomeEditMode.enter(); true }
+        containerBinding.dragHandle.apply {
+            setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_DOWN) HomeEditMode.startDragCallback?.invoke(this@AppBackupViewHolder)
+                false
+            }
+            setOnLongClickListener { HomeEditMode.enter(); true }
+        }
     }
 
     private val originalIcon = binding.icon.drawable
@@ -40,6 +51,7 @@ class AppBackupViewHolder(private val binding: HomeAppBackupItemBinding, root: V
 
     override fun onBind() {
         val context = itemView.context
+        HomeEditMode.applyOverlay(containerBinding)
         IconStyleHelper.applyToCardIcon(iconView, originalIcon, "home_app_backup")
         if (!data.isRunning) {
             itemView.isEnabled = false

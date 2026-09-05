@@ -29,14 +29,14 @@ class AdbPermissionLimitedViewHolder(private val binding: HomeExtraStepRequiredB
     }
 
     override fun onBind() {
-        // This card was missed in the earlier icon-styling pass: its pill always used the static
-        // shape_droplet_background XML drawable (via CardIcon.Droplet), ignoring the shape_style
-        // setting (zen/modern/classic/squircle) that every other card's icon now follows. Keeps
-        // the same semantic error colors the XML had, just routed through pillBackground so the
-        // shape stays in sync with the rest of the app.
+        // Card body is already colorErrorContainer (soft red), so the pill must be darker to stand
+        // out. colorOnErrorContainer (dark red) as the pill background with colorOnError (white)
+        // as the icon tint gives a clearly legible warning icon with proper M3 contrast ratios.
+        // Previous code had the tintColor set to colorErrorContainer (light red on dark red) which
+        // produced near-invisible icon contrast.
         val context = binding.icon.context
-        val onErrorContainer = context.themeColor(com.google.android.material.R.attr.colorOnErrorContainer)
-        val errorContainer = context.themeColor(com.google.android.material.R.attr.colorErrorContainer)
-        IconStyleHelper.applyToStatusCardIcon(binding.icon, pillColor = onErrorContainer, tintColor = errorContainer)
+        val pillColor = context.themeColor(com.google.android.material.R.attr.colorOnErrorContainer)
+        val tintColor = context.themeColor(com.google.android.material.R.attr.colorOnError)
+        IconStyleHelper.applyToStatusCardIcon(binding.icon, pillColor = pillColor, tintColor = tintColor)
     }
 }
