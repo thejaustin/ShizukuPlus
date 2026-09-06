@@ -448,15 +448,15 @@ open class HomeActivity : AppActivity(), MavericksView {
             override fun isLongPressDragEnabled() = false
 
             override fun getMovementFlags(rv: RecyclerView, vh: RecyclerView.ViewHolder): Int {
-                return if (adapter.isDraggable(vh.adapterPosition))
+                return if (adapter.isDraggable(vh.bindingAdapterPosition))
                     makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
                     else
                     makeMovementFlags(0, 0)
                     }
 
                     override fun onMove(rv: RecyclerView, src: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-                if (!adapter.isDraggable(target.adapterPosition)) return false
-                adapter.moveItem(src.adapterPosition, target.adapterPosition)
+                if (!adapter.isDraggable(target.bindingAdapterPosition)) return false
+                adapter.moveItem(src.bindingAdapterPosition, target.bindingAdapterPosition)
                 HapticUtils.tap(target.itemView)
                 return true
             }
