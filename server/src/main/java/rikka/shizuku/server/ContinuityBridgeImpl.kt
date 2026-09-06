@@ -1,10 +1,14 @@
 package rikka.shizuku.server
 
+import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
 import android.os.RemoteException
 import android.util.Log
 import af.shizuku.server.IContinuityBridge
+import af.shizuku.common.util.UserHandleCompat
+import rikka.hidden.compat.ActivityManagerApis
+import rikka.shizuku.server.api.IContentProviderUtils
 
 /**
  * Implementation of ContinuityBridge using Android 15+ Handoff APIs.
@@ -121,15 +125,18 @@ class ContinuityBridgeImpl : IContinuityBridge.Stub() {
                 }
             }
 
-            // Fallback: Check settings for manually configured devices
-            val process = Runtime.getRuntime().exec(
-                arrayOf("settings", "get", "global", "continuity_devices")
+            // Fallback: Check global settings via ContentProvider (no exec, works at shell UID)
+            val userId = UserHandleCompat.getUserId(Binder.getCallingUid())
+            val provider = ActivityManagerApis.getContentProviderExternal(
+                "settings", userId, null, "com.android.shell"
             )
-            val reader = process.inputStream.bufferedReader()
-            val output = reader.readLine()
-            process.waitFor()
+            val output = if (provider != null) {
+                IContentProviderUtils.callCompat(
+                    provider, null, "settings", "GET_global", "continuity_devices", null
+                )?.getString("value")
+            } else null
 
-            if (output != null && output != "null" && output.isNotBlank()) {
+            if (!output.isNullOrBlank() && output != "null") {
                 val devices = output.split(",").filter { it.isNotBlank() }
                 Log.d(TAG, "Found ${devices.size} devices from settings")
                 return devices

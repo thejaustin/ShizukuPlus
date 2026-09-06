@@ -111,19 +111,40 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
 
     override fun sendSms(recipient: String?, body: String?): Boolean {
         if (recipient.isNullOrBlank() || body.isNullOrEmpty()) return false
-        // 'service call sms' is unreliable; the simplest path from uid 2000 is via
-        // the 'sms' command on older OEM builds, or falling back to telephony service calls.
-        // SEND_SMS SYSTEM_FIXED means the permission is held — SmsManager.sendTextMessage()
-        // would work if we had a Context. Without one, use the telephony service call directly.
+        // Primary: ISms.sendTextForSubscriber via Binder IPC — no Context required.
+        // Shell UID holds SEND_SMS as SYSTEM_FIXED so the permission check passes.
         return try {
-            // Attempt via 'am broadcast' to the default SMS app — reliable on Android 5+
-            Runtime.getRuntime().exec(arrayOf(
-                "am", "broadcast",
-                "-a", "android.provider.Telephony.SMS_DELIVER",
-                "--es", "recipient", recipient,
-                "--es", "body", body
-            )).waitFor() == 0
-        } catch (_: Exception) { false }
+            val binder = android.os.ServiceManager.getService("isms") ?: return false
+            val smsService = Class.forName("com.android.internal.telephony.ISms\$Stub")
+                .getDeclaredMethod("asInterface", android.os.IBinder::class.java)
+                .invoke(null, binder) ?: return false
+
+            val methods = smsService.javaClass.methods
+            // sendTextForSubscriber(subId, callingPkg, [attributionTag,] destAddr,
+            //   scAddr, text, sentIntent, deliveryIntent, persist[, messageId])
+            val sendSub = methods.firstOrNull { it.name == "sendTextForSubscriber" }
+            if (sendSub != null) {
+                val n = sendSub.parameterTypes.size
+                val args: Array<Any?> = when {
+                    n >= 10 -> arrayOf(1, "com.android.shell", null, recipient, null, body, null, null, true, 0L)
+                    n == 9  -> arrayOf(1, "com.android.shell", null, recipient, null, body, null, null, true)
+                    n == 8  -> arrayOf(1, "com.android.shell", recipient, null, body, null, null, true)
+                    else    -> return false
+                }
+                sendSub.invoke(smsService, *args)
+                return true
+            }
+            // Fallback: sendText(callingPkg, dest, scAddr, text, sentPI, delivPI) — API < 22
+            val sendText = methods.firstOrNull { it.name == "sendText" }
+            if (sendText != null) {
+                sendText.invoke(smsService, "com.android.shell", recipient, null, body, null, null)
+                return true
+            }
+            false
+        } catch (e: Exception) {
+            android.util.Log.w("PrivilegedDataSource", "sendSms ISms failed", e)
+            false
+        }
     }
 
     // ── Contacts (READ_CONTACTS — SYSTEM_FIXED) ──────────────────────────────

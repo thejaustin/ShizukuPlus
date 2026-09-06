@@ -1217,9 +1217,18 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     }
                     return newProcessInternal(new String[]{"true"}, env, dir);
                 } else if (baseCmd.equals("setprop") && cmd.length > 2) {
-                    LOGGER.i("SUBridge: intercepted setprop " + cmd[1] + " " + cmd[2]);
+                    String spProp = cmd[1];
+                    String spValue = cmd[2];
+                    // Map animator/hwui props to settings put — works at shell UID without root
+                    if (spProp.equals("debug.hwui.anim_duration_scale") || spProp.equals("persist.sys.anim_duration_scale")) {
+                        return newProcessInternal(new String[]{"settings", "put", "global", "animator_duration_scale", spValue}, env, dir);
+                    } else if (spProp.equals("debug.hwui.force_dark")) {
+                        String mappedValue = spValue.equals("true") || spValue.equals("1") ? "2" : "1";
+                        return newProcessInternal(new String[]{"settings", "put", "secure", "ui_night_mode", mappedValue}, env, dir);
+                    }
+                    LOGGER.i("SUBridge: intercepted setprop " + spProp + " " + spValue);
                     try {
-                        android.os.SystemProperties.set(cmd[1], cmd[2]);
+                        android.os.SystemProperties.set(spProp, spValue);
                         return newProcessInternal(new String[]{"true"}, env, dir);
                     } catch (Exception e) {
                         LOGGER.e("SUBridge: setprop failed", e);
@@ -1701,6 +1710,26 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             } else if (baseCmd.equals("pm") && cmd.length >= 2 && cmd[1].equals("install")) {
                 LOGGER.i("Plus Optimization: pm install");
                 // For now, let it fall through to sh -c pm install which is already functional
+            } else if (baseCmd.equals("pm") && cmd.length > 2 && cmd[1].equals("disable")) {
+                // pm disable → pm disable-user --user 0 (shell UID 2000 can disable for a user but not globally)
+                cmd[1] = "disable-user";
+                String[] newCmd = new String[cmd.length + 2];
+                System.arraycopy(cmd, 0, newCmd, 0, cmd.length);
+                newCmd[cmd.length] = "--user";
+                newCmd[cmd.length + 1] = "0";
+                LOGGER.i("Plus Optimization: pm disable → pm disable-user --user 0 " + cmd[2]);
+                return newProcessInternal(newCmd, env, dir);
+            } else if (baseCmd.equals("svc") && cmd.length >= 3) {
+                // svc wifi/data → cmd wifi/phone (works at shell UID; svc requires root on Android 12+)
+                String svcName = cmd[1];
+                String svcAction = cmd[2];
+                if (svcName.equals("wifi")) {
+                    LOGGER.i("Plus Optimization: svc wifi " + svcAction + " → cmd wifi set-wifi-enabled");
+                    return newProcessInternal(new String[]{"cmd", "wifi", "set-wifi-enabled", svcAction.equals("enable") ? "enabled" : "disabled"}, env, dir);
+                } else if (svcName.equals("data")) {
+                    LOGGER.i("Plus Optimization: svc data " + svcAction + " → cmd phone data");
+                    return newProcessInternal(new String[]{"cmd", "phone", "data", svcAction}, env, dir);
+                }
             } else if (baseCmd.equals("appops") && cmd.length >= 5) {
                 // Intercept appops set/get for native speed
                 String op = cmd[1]; // set/get
