@@ -877,6 +877,27 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         return false;
     }
 
+    /**
+     * Returns a no-exec IRemoteProcess with the given exit code and stdout content.
+     * Used to return synthetic results for overlay/other commands on devices where
+     * Runtime.exec() is blocked by SELinux (Samsung OneUI 8 / Android 16).
+     */
+    private IRemoteProcess syntheticProcess(int exitCode, @Nullable String stdout) {
+        try {
+            android.os.ParcelFileDescriptor[] pipe = android.os.ParcelFileDescriptor.createPipe();
+            if (stdout != null && !stdout.isEmpty()) {
+                try (java.io.FileOutputStream fos = new java.io.FileOutputStream(pipe[1].getFileDescriptor())) {
+                    fos.write(stdout.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                }
+            }
+            try { pipe[1].close(); } catch (java.io.IOException ignored) {}
+            return new ProxyRemoteProcess(pipe[0], exitCode);
+        } catch (Exception e) {
+            LOGGER.e("syntheticProcess: pipe failed, stdout empty", e);
+            return new ProxyRemoteProcess(null, exitCode);
+        }
+    }
+
     @Override
     public IRemoteProcess newProcess(String[] cmd, String[] env, String dir) {
         // Every branch below this point (SU-bridge mocking, build.prop redirection, iptables/pm
@@ -1745,6 +1766,43 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     } catch (Exception e) {
                         LOGGER.e("SUBridge: StorageProxy command failed", e);
                     }
+                }
+            } else if (baseCmd.equals("cmd") && cmd.length >= 3 && "overlay".equals(cmd[1]) && isFeatureEnabled("overlay_manager_plus")) {
+                // Intercept `cmd overlay <sub> ...` and route through IOverlayManagerPlus (direct
+                // Binder call, no exec). This lets font/theme apps like Hex Installer and SamFonts
+                // work on Samsung OneUI 8 / Android 16 where Runtime.exec() is SELinux-blocked.
+                String overlaySubCmd = cmd[2];
+                LOGGER.i("Plus Overlay: intercepting cmd overlay %s", String.join(" ", cmd));
+                try {
+                    if (("enable".equals(overlaySubCmd) || "enable-exclusive".equals(overlaySubCmd)) && cmd.length >= 4) {
+                        // Package name is always the last arg; --user N may appear in between
+                        String pkg = cmd[cmd.length - 1];
+                        boolean ok = overlayManagerPlus.setOverlayEnabled(pkg, true);
+                        return syntheticProcess(ok ? 0 : 1, "");
+                    } else if ("disable".equals(overlaySubCmd) && cmd.length >= 4) {
+                        String pkg = cmd[cmd.length - 1];
+                        boolean ok = overlayManagerPlus.setOverlayEnabled(pkg, false);
+                        return syntheticProcess(ok ? 0 : 1, "");
+                    } else if ("set-priority".equals(overlaySubCmd) && cmd.length >= 5 && "highest".equals(cmd[cmd.length - 1])) {
+                        String pkg = cmd[cmd.length - 2];
+                        boolean ok = overlayManagerPlus.setHighestPriority(pkg);
+                        return syntheticProcess(ok ? 0 : 1, "");
+                    } else if ("list".equals(overlaySubCmd)) {
+                        java.util.List<String> overlays = overlayManagerPlus.getAllOverlays();
+                        StringBuilder sb = new StringBuilder();
+                        for (String entry : overlays) {
+                            // Internal format is "packageName:true/false"; output mirrors cmd overlay list
+                            int sep = entry.lastIndexOf(':');
+                            if (sep > 0) {
+                                boolean enabled = "true".equals(entry.substring(sep + 1));
+                                sb.append(enabled ? "[x] " : "[ ] ").append(entry, 0, sep).append('\n');
+                            }
+                        }
+                        return syntheticProcess(0, sb.toString());
+                    }
+                    // Unrecognised overlay subcommand — fall through to native exec below
+                } catch (Exception e) {
+                    LOGGER.e("Plus Overlay: cmd overlay interception failed — falling through to exec", e);
                 }
             }
         }

@@ -1,8 +1,8 @@
 package rikka.shizuku.server
 
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.os.Process
 import android.os.ServiceManager
 import android.util.Log
 import af.shizuku.server.IOverlayManagerPlus
@@ -95,61 +95,74 @@ class OverlayManagerPlusImpl : IOverlayManagerPlus.Stub() {
 
     override fun setOverlayEnabled(packageName: String?, enabled: Boolean): Boolean {
         if (packageName == null) return false
-        val userId = UserHandleCompat.getUserId(Process.myUid())
+        // Derive user from the caller's UID, not the server's own UID (which is always shell/root
+        // and always maps to user 0 — incorrect for multi-user setups).
+        val userId = UserHandleCompat.getUserId(Binder.getCallingUid())
         Log.d(TAG, "setOverlayEnabled pkg=$packageName enabled=$enabled userId=$userId")
 
-        // --- Primary path: reflection ---
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.R) {
-            // Android 11 and below: setEnabled(String, boolean, int) exists
+        val service = getIOverlayManager()
+
+        // --- Primary path: IOverlayManager.setEnabled(String, boolean, int) ---
+        // This method exists in the AIDL on ALL API levels (including 31+); the previous
+        // implementation incorrectly skipped it for API 31+ and used a transaction-builder
+        // path whose setEnabled() method doesn't actually exist on the builder class.
+        if (service != null) {
             try {
-                val service = getIOverlayManager()
-                if (service != null) {
-                    val method = service.javaClass.getMethod(
-                        "setEnabled", String::class.java, Boolean::class.java, Int::class.java
-                    )
-                    method.invoke(service, packageName, enabled, userId)
-                    Log.i(TAG, "setOverlayEnabled: reflection (≤API30) succeeded")
-                    return true
-                }
+                val method = service.javaClass.getMethod(
+                    "setEnabled", String::class.java, Boolean::class.java, Int::class.java
+                )
+                method.invoke(service, packageName, enabled, userId)
+                Log.i(TAG, "setOverlayEnabled: setEnabled() reflection succeeded")
+                return true
             } catch (e: Exception) {
-                Log.w(TAG, "setOverlayEnabled: reflection (≤API30) failed — ${e.message}")
+                Log.w(TAG, "setOverlayEnabled: setEnabled() reflection failed — ${e.message}")
             }
-        } else {
-            // Android 12+ — try OverlayManagerTransaction commit path
+        }
+
+        // --- Secondary path: Samsung-specific setEnabledExclusive (OneUI font/theme overlays) ---
+        // Samsung's IOverlayManager adds setEnabledExclusive and setEnabledExclusiveInCategory
+        // for themed overlays where only one overlay per target resource should be active.
+        if (service != null && enabled) {
             try {
-                val service = getIOverlayManager()
-                if (service != null) {
-                    val txBuilderClass = Class.forName("android.content.om.OverlayManagerTransaction\$Builder")
-                    val txBuilder = txBuilderClass.getConstructor().newInstance()
+                val method = service.javaClass.getMethod(
+                    "setEnabledExclusive", String::class.java, Boolean::class.java, Int::class.java
+                )
+                method.invoke(service, packageName, true, userId)
+                Log.i(TAG, "setOverlayEnabled: setEnabledExclusive() reflection succeeded")
+                return true
+            } catch (_: Exception) {}
 
-                    // setEnabled(String, boolean, int) was removed; use the transaction builder methods
-                    // Try setEnabled on the transaction builder (some AOSP builds expose this)
-                    val enableMethod = try {
-                        txBuilderClass.getMethod(
-                            if (enabled) "registerFabricatedOverlay" else "unregisterFabricatedOverlay",
-                            String::class.java
+            try {
+                val method = service.javaClass.getMethod(
+                    "setEnabledExclusiveInCategory", String::class.java, Int::class.java
+                )
+                method.invoke(service, packageName, userId)
+                Log.i(TAG, "setOverlayEnabled: setEnabledExclusiveInCategory() reflection succeeded")
+                return true
+            } catch (_: Exception) {}
+        }
+
+        // --- Tertiary path: OverlayManagerTransaction (API 31+, AOSP OMT commit) ---
+        if (service != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            try {
+                val txBuilderClass = Class.forName("android.content.om.OverlayManagerTransaction\$Builder")
+                val txBuilder = txBuilderClass.getConstructor().newInstance()
+                // On some AOSP builds, the transaction builder has setEnabled/setEnabledExclusive
+                for (methodName in listOf("setEnabled", "setEnabledExclusive")) {
+                    try {
+                        val m = txBuilderClass.getMethod(
+                            methodName, String::class.java, Boolean::class.java, Int::class.java
                         )
-                        null // These are for fabricated overlays; fall through
-                    } catch (_: Exception) { null }
-
-                    // Direct: setEnabled(String overlayPackage, boolean enable, int userId) on builder
-                    val setEnabledOnBuilder = try {
-                        txBuilderClass.getMethod(
-                            "setEnabled", String::class.java, Boolean::class.java, Int::class.java
-                        )
-                    } catch (_: NoSuchMethodException) { null }
-
-                    if (setEnabledOnBuilder != null) {
-                        setEnabledOnBuilder.invoke(txBuilder, packageName, enabled, userId)
+                        m.invoke(txBuilder, packageName, enabled, userId)
                         val tx = txBuilderClass.getMethod("build").invoke(txBuilder)
                         val txClass = Class.forName("android.content.om.OverlayManagerTransaction")
                         service.javaClass.getMethod("commit", txClass).invoke(service, tx)
-                        Log.i(TAG, "setOverlayEnabled: reflection (API31+ tx) succeeded")
+                        Log.i(TAG, "setOverlayEnabled: OMT.$methodName() succeeded")
                         return true
-                    }
+                    } catch (_: Exception) {}
                 }
             } catch (e: Exception) {
-                Log.w(TAG, "setOverlayEnabled: reflection (API31+ tx) failed — ${e.message}")
+                Log.w(TAG, "setOverlayEnabled: OverlayManagerTransaction path failed — ${e.message}")
             }
         }
 
@@ -157,7 +170,7 @@ class OverlayManagerPlusImpl : IOverlayManagerPlus.Stub() {
         val action = if (enabled) "enable" else "disable"
         val ok = runOverlayCmd(action, "--user", userId.toString(), packageName)
         if (ok) Log.i(TAG, "setOverlayEnabled: cmd overlay fallback succeeded")
-        else Log.e(TAG, "setOverlayEnabled: both reflection and cmd overlay failed for $packageName")
+        else Log.e(TAG, "setOverlayEnabled: all paths failed for $packageName")
         return ok
     }
 
@@ -167,7 +180,7 @@ class OverlayManagerPlusImpl : IOverlayManagerPlus.Stub() {
 
     override fun setHighestPriority(packageName: String?): Boolean {
         if (packageName == null) return false
-        val userId = UserHandleCompat.getUserId(Process.myUid())
+        val userId = UserHandleCompat.getUserId(Binder.getCallingUid())
         Log.d(TAG, "setHighestPriority pkg=$packageName userId=$userId")
 
         // --- Primary path: reflection ---
@@ -204,7 +217,7 @@ class OverlayManagerPlusImpl : IOverlayManagerPlus.Stub() {
     // -------------------------------------------------------------------------
 
     override fun getAllOverlays(): List<String> {
-        val userId = UserHandleCompat.getUserId(Process.myUid())
+        val userId = UserHandleCompat.getUserId(Binder.getCallingUid())
         Log.d(TAG, "getAllOverlays userId=$userId")
 
         // --- Primary path: reflection ---
