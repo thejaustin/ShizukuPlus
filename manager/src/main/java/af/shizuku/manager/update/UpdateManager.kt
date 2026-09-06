@@ -136,7 +136,11 @@ class UpdateManager(private val context: Context) {
                         null
                     }
 
-                    if (cursor != null && cursor.moveToFirst()) {
+                    if (cursor != null && !cursor.moveToFirst()) {
+                        // Empty cursor — download entry is gone (cancelled, removed externally).
+                        // Nothing to act on; close to avoid leaking the cursor object.
+                        cursor.close()
+                    } else if (cursor != null) {
                         val statusIdx = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
                         val progressIdx = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
                         val totalIdx = cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES)
@@ -340,7 +344,12 @@ class UpdateManager(private val context: Context) {
                             true
                         } else {
                             Timber.tag(TAG).w("Root install failed (signature mismatch?): ${result.out}")
-                            UpdateInstaller.forceUpdateWithShizuku(context, file)
+                            // forceUpdateWithShizuku is blocking (Shell.cmd().exec() + file I/O);
+                            // must stay on IO — installApk's outer withTimeoutOrNull runs on the
+                            // caller's dispatcher which is Main for the auto-install path.
+                            withContext(Dispatchers.IO) {
+                                UpdateInstaller.forceUpdateWithShizuku(context, file)
+                            }
                         }
                     }
                     hasShizuku -> {

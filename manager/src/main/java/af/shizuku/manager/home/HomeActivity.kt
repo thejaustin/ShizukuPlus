@@ -78,6 +78,7 @@ open class HomeActivity : AppActivity(), MavericksView {
     private val appsModel: AppsViewModel by viewModels()
     private val adapter by unsafeLazy { HomeAdapter(homeModel, appsModel, lifecycleScope) }
     private var versionClickCount = 0
+    private var activeUpdateManager: UpdateManager? = null
 
     // Registered unconditionally (required before onStart); only invoked on API 33+. The
     // shell-consent notification (#377) silently no-ops without this permission, reproducing
@@ -653,6 +654,8 @@ open class HomeActivity : AppActivity(), MavericksView {
         HomeEditMode.removeCardCallback = null
         ShizukuStateMachine.removeListener(stateListener)
         ShizukuSettings.getPreferences()?.unregisterOnSharedPreferenceChangeListener(appearanceChangeListener)
+        activeUpdateManager?.cancel()
+        activeUpdateManager = null
         super.onDestroy()
     }
 
@@ -742,7 +745,10 @@ open class HomeActivity : AppActivity(), MavericksView {
             builder.setPositiveButton(R.string.update_view_on_github) { _, _ -> openReleases() }
         } else {
             builder.setPositiveButton(R.string.update_download) { _, _ ->
-                UpdateManager(this).downloadUpdate(updateInfo.downloadUrl, updateInfo.versionName)
+                activeUpdateManager?.cancel()
+                activeUpdateManager = UpdateManager(this).also {
+                    it.downloadUpdate(updateInfo.downloadUrl, updateInfo.versionName)
+                }
             }
         }
 

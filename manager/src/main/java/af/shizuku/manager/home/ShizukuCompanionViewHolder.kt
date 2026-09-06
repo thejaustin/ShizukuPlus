@@ -96,6 +96,9 @@ class ShizukuCompanionViewHolder(
                 scope.launch {
                     val success = runPrivilegedCommand("pm disable-user --user 0 ${StockShizukuCompat.PACKAGE}")
                     withContext(Dispatchers.Main) {
+                        // Re-enable unconditionally so a reload Fail (e.g. binder death) doesn't
+                        // leave the button permanently locked — onBind() resets it on success.
+                        binding.button1.isEnabled = true
                         Toast.makeText(
                             v.context,
                             if (success) R.string.companion_disable_success else R.string.companion_disable_failure,
@@ -141,7 +144,10 @@ class ShizukuCompanionViewHolder(
                         return@launch
                     }
 
-                    val installScript = "cat > /data/local/tmp/compat.apk && chmod 644 /data/local/tmp/compat.apk && pm install -r /data/local/tmp/compat.apk 2>&1; echo EXIT:\$?; rm -f /data/local/tmp/compat.apk"
+                    // rm -f first: a previous failed install may have left a chmod 000 file that
+                    // would block the cat redirect. /data/local/tmp is world-writable so rm works
+                    // even on a 000-permission file owned by shell UID 2000.
+                    val installScript = "rm -f /data/local/tmp/compat.apk; cat > /data/local/tmp/compat.apk && chmod 644 /data/local/tmp/compat.apk && pm install -r /data/local/tmp/compat.apk 2>&1; echo EXIT:\$?; rm -f /data/local/tmp/compat.apk"
                     val installOutput = withContext(Dispatchers.IO) {
                         if (Shizuku.pingBinder()) {
                             // Pipe APK bytes directly to the shell's stdin — cat writes to
