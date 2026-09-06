@@ -1,8 +1,15 @@
 package rikka.shizuku.server
 
+import android.os.Binder
 import android.os.Bundle
+import android.os.IBinder
 import android.os.ParcelFileDescriptor
+import android.os.ServiceManager
+import android.util.Log
 import af.shizuku.server.IPrivilegedDataSource
+import af.shizuku.common.util.UserHandleCompat
+import rikka.hidden.compat.ActivityManagerApis
+import rikka.shizuku.server.api.IContentProviderUtils
 
 /**
  * Implements IPrivilegedDataSource entirely through shell commands executed under uid 2000.
@@ -311,9 +318,31 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
 
     // ── Keyguard (CONTROL_KEYGUARD — install permission) ─────────────────────
 
-    override fun dismissKeyguard(): Boolean = try {
-        Runtime.getRuntime().exec(arrayOf("wm", "dismiss-keyguard")).waitFor() == 0
-    } catch (_: Exception) { false }
+    override fun dismissKeyguard(): Boolean {
+        // Primary: IWindowManager.dismissKeyguard — no exec needed, works at shell UID
+        try {
+            val binder = ServiceManager.getService("window") ?: error("no window service")
+            val wm = Class.forName("android.view.IWindowManager\$Stub")
+                .getDeclaredMethod("asInterface", IBinder::class.java).invoke(null, binder)
+                ?: error("asInterface returned null")
+            // Try the IBinder, String variant (API 26+) then the no-arg variant (older)
+            val method = wm.javaClass.methods.firstOrNull { it.name == "dismissKeyguard" }
+                ?: error("dismissKeyguard not found")
+            when (method.parameterCount) {
+                2 -> method.invoke(wm, null as IBinder?, null as String?)
+                1 -> method.invoke(wm, null as IBinder?)
+                0 -> method.invoke(wm)
+                else -> method.invoke(wm, null as IBinder?, null as String?)
+            }
+            return true
+        } catch (e: Exception) {
+            Log.w("PrivilegedDataSource", "dismissKeyguard IPC failed, falling back to exec", e)
+        }
+        // Fallback: wm dismiss-keyguard exec
+        return try {
+            Runtime.getRuntime().exec(arrayOf("wm", "dismiss-keyguard")).waitFor() == 0
+        } catch (_: Exception) { false }
+    }
 
     // ── WiFi (READ_WIFI_CREDENTIAL — install permission) ─────────────────────
 

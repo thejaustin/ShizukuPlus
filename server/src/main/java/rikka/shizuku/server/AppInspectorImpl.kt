@@ -10,6 +10,8 @@ import android.util.Log
 import af.shizuku.server.IAppInspector
 import af.shizuku.common.compat.Android17Compat
 import af.shizuku.common.util.UserHandleCompat
+import rikka.hidden.compat.ActivityManagerApis
+import rikka.shizuku.server.api.IContentProviderUtils
 import java.io.File
 import java.nio.file.Files
 
@@ -158,12 +160,28 @@ class AppInspectorImpl : IAppInspector.Stub() {
     override fun callContentProvider(uri: String?, method: String?, arg: String?): Bundle {
         val result = Bundle()
         if (uri.isNullOrBlank() || !uri.startsWith("content://")) return result
+        // Primary: direct IContentProvider.call() via Binder — no exec needed
+        if (!method.isNullOrBlank()) {
+            try {
+                val authority = uri.removePrefix("content://").substringBefore("/").substringBefore("?")
+                val provider = ActivityManagerApis.getContentProviderExternal(
+                    authority, callingUserId(), null, "com.android.shell"
+                )
+                if (provider != null) {
+                    return IContentProviderUtils.callCompat(
+                        provider, "com.android.shell", authority, method, arg, null
+                    ) ?: result
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "callContentProvider IPC failed, falling back to exec", e)
+            }
+        }
+        // Fallback: content call exec
         val cmd = mutableListOf("content", "call", "--uri", uri)
         if (!method.isNullOrBlank()) { cmd += listOf("--method", method) }
         if (!arg.isNullOrBlank()) { cmd += listOf("--arg", arg) }
         val output = execOutput(*cmd.toTypedArray())
         result.putString("raw", output)
-        // Parse simple "Bundle[{key=value}]" form
         val inner = output.removePrefix("Bundle[{").removeSuffix("}]")
         for (pair in inner.split(", ")) {
             val eq = pair.indexOf('=')
