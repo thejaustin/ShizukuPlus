@@ -233,19 +233,49 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     }
 
     private void disablePhantomProcessKiller() {
+        if (Build.VERSION.SDK_INT < 31) return; // Only needed on Android 12+
         try {
-            if (Build.VERSION.SDK_INT >= 32) { // Android 12L+ (also affects Android 12 which is 31)
-                // Disable monitor (Android 13+)
-                Runtime.getRuntime().exec(new String[]{"sh", "-c", "settings put global settings_enable_monitor_phantom_procs false"}).waitFor();
-                
-                // Disable device_config sync (Android 12+)
-                Runtime.getRuntime().exec(new String[]{"sh", "-c", "/system/bin/device_config set_sync_disabled_for_tests persistent"}).waitFor();
-                
-                // Increase max phantom processes limit (Android 12+)
-                Runtime.getRuntime().exec(new String[]{"sh", "-c", "/system/bin/device_config put activity_manager max_phantom_processes 2147483647"}).waitFor();
-                
-                LOGGER.i("Phantom Process Killer mitigation applied");
+            int userId = UserHandleCompat.getUserId(android.os.Process.myUid());
+
+            // 1. Disable phantom-process monitor (Android 13+) via settings ContentProvider.
+            //    This replaces `settings put global settings_enable_monitor_phantom_procs false`
+            //    which exec()s a shell and fails silently on Samsung SELinux.
+            IContentProvider settingsProvider = ActivityManagerApis.getContentProviderExternal(
+                    "settings", userId, null, "com.android.shell");
+            if (settingsProvider != null) {
+                try {
+                    Bundle extras = new Bundle();
+                    extras.putString("value", "false");
+                    IContentProviderUtils.callCompat(
+                            settingsProvider, null, "settings",
+                            "PUT_global", "settings_enable_monitor_phantom_procs", extras);
+                } catch (Exception e) {
+                    LOGGER.w("phantom killer: settings ContentProvider write failed", e);
+                }
             }
+
+            // 2. Disable device_config sync so phantom-process limit can't be reset by DeviceConfig push.
+            //    Replaces `device_config set_sync_disabled_for_tests persistent`.
+            try {
+                if (Build.VERSION.SDK_INT >= 33) {
+                    android.provider.DeviceConfig.setGlobalSyncDisabledForTests(
+                            android.provider.DeviceConfig.SYNC_DISABLED_MODE_PERSISTENT);
+                }
+            } catch (Exception e) {
+                LOGGER.w("phantom killer: DeviceConfig sync disable failed", e);
+            }
+
+            // 3. Raise max_phantom_processes to INT_MAX.
+            //    Replaces `device_config put activity_manager max_phantom_processes 2147483647`.
+            try {
+                android.provider.DeviceConfig.setProperty(
+                        "activity_manager", "max_phantom_processes",
+                        "2147483647", /* makeDefault= */ false);
+            } catch (Exception e) {
+                LOGGER.w("phantom killer: DeviceConfig setProperty failed", e);
+            }
+
+            LOGGER.i("Phantom Process Killer mitigation applied");
         } catch (Exception e) {
             LOGGER.w("Failed to mitigate Phantom Process Killer", e);
         }
@@ -268,13 +298,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
         LOGGER.i("starting server...");
 
-        // Automatically disable Phantom Process Killer on Android 12+ so the system doesn't kill Shizuku
-        disablePhantomProcessKiller();
-
         waitSystemService("package");
         waitSystemService(Context.ACTIVITY_SERVICE);
         waitSystemService(Context.USER_SERVICE);
         waitSystemService(Context.APP_OPS_SERVICE);
+
+        // Disable Phantom Process Killer on Android 12+ — must run after waitSystemService so the
+        // ContentProvider path for the settings write has a live activity-manager binder.
+        disablePhantomProcessKiller();
 
         ApplicationInfo ai = getManagerApplicationInfo();
         if (ai == null) {
