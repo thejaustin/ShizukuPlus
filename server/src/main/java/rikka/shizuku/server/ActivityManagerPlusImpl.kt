@@ -1,6 +1,7 @@
 package rikka.shizuku.server
 
 import android.os.Binder
+import android.os.Bundle
 import android.os.IBinder
 import android.os.ServiceManager
 import android.util.Log
@@ -8,6 +9,7 @@ import af.shizuku.server.IActivityManagerPlus
 import af.shizuku.common.compat.Android17Compat
 import af.shizuku.common.util.UserHandleCompat
 import rikka.hidden.compat.ActivityManagerApis
+import rikka.shizuku.server.api.IContentProviderUtils
 
 class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
 
@@ -161,14 +163,43 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
         } catch (e: Exception) {
             Log.w(TAG, "setProcessLimit IPC failed", e)
         }
-        // Fallback: settings + am
+        // Fallback: ContentProvider PUT for settings + am exec for process limit
         try {
-            Runtime.getRuntime().exec(arrayOf("settings", "put", "global", "max_phantom_processes", limit.toString())).waitFor()
+            val userId = callingUserId()
+            val provider = ActivityManagerApis.getContentProviderExternal(
+                "settings", userId, null, "com.android.shell"
+            )
+            if (provider != null) {
+                val extras = Bundle().apply { putString("value", limit.toString()) }
+                IContentProviderUtils.callCompat(provider, null, "settings", "PUT_global", "max_phantom_processes", extras)
+            }
+        } catch (_: Exception) {}
+        try {
             Runtime.getRuntime().exec(arrayOf("am", "set-process-limit", limit.toString())).waitFor()
         } catch (_: Exception) {}
     }
 
     override fun getRunningProcesses(): List<String> {
+        // Primary: IActivityManager.getRunningAppProcesses — works at shell UID, no exec needed
+        try {
+            val am = activityManagerService() ?: error("no activity service")
+            val method = am.javaClass.methods.firstOrNull { it.name == "getRunningAppProcesses" }
+                ?: error("getRunningAppProcesses not found")
+            @Suppress("UNCHECKED_CAST")
+            val procs = method.invoke(am) as? List<*>
+            if (!procs.isNullOrEmpty()) {
+                return procs.mapNotNull { p ->
+                    try {
+                        val name = p!!.javaClass.getField("processName").get(p) as? String ?: return@mapNotNull null
+                        val pid = p.javaClass.getField("pid").get(p) as? Int ?: 0
+                        "$name $pid"
+                    } catch (_: Exception) { null }
+                }
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "getRunningAppProcesses IPC failed, falling back to exec", e)
+        }
+        // Fallback: ps -A (may be blocked by SELinux on Samsung OneUI 8)
         return try {
             Runtime.getRuntime().exec(arrayOf("ps", "-A", "-o", "NAME,RSS,PID"))
                 .inputStream.bufferedReader().use { it.readLines() }
