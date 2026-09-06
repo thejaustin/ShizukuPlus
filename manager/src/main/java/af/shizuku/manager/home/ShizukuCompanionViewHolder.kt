@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.databinding.HomeItemContainerBinding
@@ -140,6 +141,7 @@ class ShizukuCompanionViewHolder(
                         return@launch
                     }
 
+                    val installScript = "cat > /data/local/tmp/compat.apk && chmod 644 /data/local/tmp/compat.apk && pm install -r /data/local/tmp/compat.apk 2>&1; echo EXIT:\$?; rm -f /data/local/tmp/compat.apk"
                     val installOutput = withContext(Dispatchers.IO) {
                         if (Shizuku.pingBinder()) {
                             // Pipe APK bytes directly to the shell's stdin — cat writes to
@@ -147,18 +149,26 @@ class ShizukuCompanionViewHolder(
                             // ever touching app-private storage the privileged process can't read.
                             // cat finishes when we close stdin, then && runs pm install; no
                             // concurrent stdout/stdin needed so no deadlock risk.
-                            val installScript = "cat > /data/local/tmp/compat.apk && chmod 644 /data/local/tmp/compat.apk && pm install -r /data/local/tmp/compat.apk 2>&1; echo EXIT:\$?; rm -f /data/local/tmp/compat.apk"
-                            try {
-                                val process = Shizuku.newProcess(arrayOf("sh", "-c", installScript), null, null)
-                                    ?: throw IllegalStateException("Shizuku.newProcess returned null")
+                            val process = try {
+                                Shizuku.newProcess(arrayOf("sh", "-c", installScript), null, null)
+                            } catch (e: Exception) {
+                                Timber.tag("ShizukuCompanion").w(e, "Shizuku.newProcess() threw")
+                                null
+                            }
+                            if (process != null) {
                                 try {
                                     process.outputStream.use { it.write(apkBytes) }
                                     process.inputStream.bufferedReader().readText().also { process.waitFor() }
+                                } catch (e: Exception) {
+                                    e.message ?: "unknown error"
                                 } finally {
                                     try { process.destroy() } catch (_: Exception) {}
                                 }
-                            } catch (e: Exception) {
-                                e.message ?: "unknown error"
+                            } else {
+                                // newProcess() returned null — device restricts Shizuku process
+                                // spawning (Samsung One UI 8 / Android 16 SELinux policy). Signal
+                                // the caller to fall back to the system installer UI.
+                                "NEWPROCESS_NULL"
                             }
                         } else if (MigrationHelper.isRootAvailable()) {
                             // Root can read internal storage — extract there and install directly.
@@ -175,14 +185,48 @@ class ShizukuCompanionViewHolder(
                             "no privileged access available"
                         }
                     }
+
+                    // If newProcess was blocked, prepare the APK in cacheDir for the system
+                    // installer fallback (IO work done here so Main dispatch below is fast).
+                    val systemInstallerUri = if (installOutput == "NEWPROCESS_NULL") {
+                        withContext(Dispatchers.IO) {
+                            try {
+                                val tmpApk = java.io.File(v.context.cacheDir, "compat_install.apk")
+                                tmpApk.writeBytes(apkBytes)
+                                FileProvider.getUriForFile(
+                                    v.context,
+                                    "${v.context.packageName}.fileprovider",
+                                    tmpApk
+                                )
+                            } catch (e: Exception) {
+                                Timber.tag("ShizukuCompanion").e(e, "system installer fallback prep failed")
+                                null
+                            }
+                        }
+                    } else null
+
                     val success = installOutput.contains("EXIT:0")
-                    if (!success) {
+                    if (!success && installOutput != "NEWPROCESS_NULL") {
                         Timber.tag("ShizukuCompanion").e("compat hub install failed: %s", installOutput.take(1000))
                     }
                     withContext(Dispatchers.Main) {
                         when {
                             success ->
                                 Toast.makeText(v.context, R.string.compat_hub_install_success, Toast.LENGTH_SHORT).show()
+                            systemInstallerUri != null -> {
+                                // Device blocks newProcess — open system installer as fallback.
+                                Toast.makeText(v.context, R.string.compat_hub_install_fail_newprocess, Toast.LENGTH_LONG).show()
+                                try {
+                                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                                        setDataAndType(systemInstallerUri, "application/vnd.android.package-archive")
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    v.context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    Timber.tag("ShizukuCompanion").e(e, "system installer launch failed")
+                                }
+                            }
                             installOutput.contains("INSTALL_FAILED_INSUFFICIENT_STORAGE") ->
                                 Toast.makeText(v.context, R.string.compat_hub_install_fail_storage, Toast.LENGTH_SHORT).show()
                             installOutput.contains("INSTALL_FAILED_NO_MATCHING_ABIS") ->

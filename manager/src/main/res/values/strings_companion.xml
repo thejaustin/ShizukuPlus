@@ -21,4 +21,6 @@
     <string name="compat_hub_install_signature_conflict">Can\'t install: a different app (e.g. stock Shizuku) is already installed as moe.shizuku.privileged.api with an incompatible signature. Uninstall it first.</string>
     <string name="compat_hub_install_fail_storage">Can\'t install: not enough free storage on device.</string>
     <string name="compat_hub_install_fail_abi">Can\'t install: Compat Hub doesn\'t support this device\'s CPU architecture.</string>
+    <string name="compat_hub_install_manual_launched">Opening installer — follow the on-screen prompts to complete installation.</string>
+    <string name="compat_hub_install_fail_newprocess">Your device restricts Shizuku\'s process-spawning API. Opening the system installer instead — tap Install when prompted.</string>
 </resources>
