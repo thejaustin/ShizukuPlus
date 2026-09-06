@@ -58,6 +58,15 @@
             </intent-filter>
         </receiver>
 
+        <!-- Shizuku API v11+ apps call ContentResolver.call() on authority
+             "moe.shizuku.privileged.api.shizuku" to retrieve the Shizuku binder.
+             This proxy forwards those calls to the real provider in the manager. -->
+        <provider
+            android:name=".ShizukuProviderProxy"
+            android:authorities="moe.shizuku.privileged.api.shizuku"
+            android:exported="true"
+            android:multiprocess="false" />
+
     </application>
 
 </manifest>

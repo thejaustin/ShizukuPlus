@@ -316,65 +316,76 @@ class UpdateManager(private val context: Context) {
 
     /**
      * Install APK directly (for auto-install when enabled).
-     * Must be called from a background coroutine — Shell.getShell() blocks until a shell is ready.
-     * @return true if a silent install succeeded or the system installer was handed off to,
-     *   false only if an unexpected failure happened before either could occur.
+     * Must be called from a background coroutine.
+     * @return true only if the APK was installed silently without user interaction.
+     *   Returns false for any failure or timeout — the caller then shows the install notification.
      */
     suspend fun installApk(file: File): Boolean {
-        try {
-            // Shell.getShell()/pingBinder() are blocking calls that can wedge forever if a
-            // root prompt is ignored or the Shizuku binder is stuck — without a timeout the
-            // download just hangs with no install notification ever shown (never falls
-            // through to the system installer below).
-            val silentInstallHandled = withTimeoutOrNull(5000) {
-                val isRootOrShizuku = withContext(Dispatchers.IO) {
-                    com.topjohnwu.superuser.Shell.getShell().isRoot || rikka.shizuku.Shizuku.pingBinder()
+        return try {
+            // 60 s covers piping a multi-MB APK over Shizuku stdin + pm install processing.
+            withTimeoutOrNull(60_000) {
+                val isRoot = withContext(Dispatchers.IO) {
+                    runCatching { com.topjohnwu.superuser.Shell.getShell().isRoot }.getOrDefault(false)
                 }
-                if (isRootOrShizuku) {
-                    Timber.tag(TAG).d("Attempting silent install via Shizuku/Root...")
-                    val result = withContext(Dispatchers.IO) {
-                        com.topjohnwu.superuser.Shell.cmd("pm install -r -d \"${file.absolutePath}\"").exec()
-                    }
-                    if (result.isSuccess) {
-                        Timber.tag(TAG).i("Silent install successful")
-                        true
-                    } else {
-                        Timber.tag(TAG).w("Silent install failed (likely signature mismatch): ${result.out}")
-                        if (UpdateInstaller.forceUpdateWithShizuku(context, file)) {
-                            Timber.tag(TAG).i("Force-update background script initiated to handle signature mismatch")
+                val hasShizuku = rikka.shizuku.Shizuku.pingBinder()
+
+                when {
+                    isRoot -> {
+                        // Root shell can read files in getExternalFilesDir on all API levels.
+                        val result = withContext(Dispatchers.IO) {
+                            com.topjohnwu.superuser.Shell.cmd("pm install -r -d \"${file.absolutePath}\"").exec()
+                        }
+                        if (result.isSuccess) {
+                            Timber.tag(TAG).i("Silent install via root succeeded")
                             true
                         } else {
-                            false
+                            Timber.tag(TAG).w("Root install failed (signature mismatch?): ${result.out}")
+                            UpdateInstaller.forceUpdateWithShizuku(context, file)
                         }
                     }
-                } else {
-                    false
+                    hasShizuku -> {
+                        // Shell UID 2000 cannot read getExternalFilesDir on Android 11+ scoped
+                        // storage. Read bytes in the app process (which owns the file) and pipe
+                        // them to pm install via stdin — same pattern as compat hub install.
+                        withContext(Dispatchers.IO) { installViaShizukuStdin(file) }
+                    }
+                    else -> false
                 }
-            }
-            if (silentInstallHandled == null) {
-                Timber.tag(TAG).w("Silent install attempt timed out; falling back to system installer")
-            } else if (silentInstallHandled) {
-                return true
-            }
-
-            val apkUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                shareableApkUri(file)
-            } else {
-                Uri.fromFile(file)
-            }
-
-            val installIntent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(apkUri, "application/vnd.android.package-archive")
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-
-            context.startActivity(installIntent)
-            Timber.tag(TAG).d("Install intent launched for: ${file.absolutePath}")
-            return true
+            } == true
         } catch (e: Exception) {
-            Timber.tag(TAG).e(e, "Failed to launch install intent")
-            return false
+            Timber.tag(TAG).e(e, "installApk failed unexpectedly")
+            false
+        }
+    }
+
+    /**
+     * Reads the APK in the app process and streams it to `pm install` via Shizuku stdin,
+     * sidestepping Android 11+ scoped-storage restrictions on shell UID 2000.
+     */
+    private fun installViaShizukuStdin(file: File): Boolean {
+        return try {
+            val apkBytes = file.readBytes()
+            val script = "cat > /data/local/tmp/update.apk && chmod 644 /data/local/tmp/update.apk" +
+                " && pm install -r -d /data/local/tmp/update.apk 2>&1; echo EXIT:\$?; rm -f /data/local/tmp/update.apk"
+            val process = rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", script), null, null)
+                ?: run {
+                    Timber.tag(TAG).w("Shizuku.newProcess returned null")
+                    return false
+                }
+            process.outputStream.use { it.write(apkBytes) }
+            val output = process.inputStream.bufferedReader().readText()
+            process.waitFor()
+            val exitCode = Regex("EXIT:(\\d+)").find(output)?.groupValues?.get(1)?.toIntOrNull()
+            val success = exitCode == 0
+            if (success) {
+                Timber.tag(TAG).i("Shizuku stdin install succeeded")
+            } else {
+                Timber.tag(TAG).w("Shizuku stdin install failed (exit=$exitCode): $output")
+            }
+            success
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "installViaShizukuStdin failed")
+            false
         }
     }
 
