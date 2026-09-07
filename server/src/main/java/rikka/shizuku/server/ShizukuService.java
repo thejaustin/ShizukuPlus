@@ -2768,10 +2768,15 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     }
                 }
             }
-            // Also try to grant WRITE_SECURE_SETTINGS and DUMP directly via shell.
-            // waitFor() reaps the child; without it each call leaks a zombie process + its fds.
-            Runtime.getRuntime().exec(new String[]{"pm", "grant", packageName, "android.permission.WRITE_SECURE_SETTINGS"}).waitFor();
-            Runtime.getRuntime().exec(new String[]{"pm", "grant", packageName, "android.permission.DUMP"}).waitFor();
+            // Also grant WRITE_SECURE_SETTINGS and DUMP via Binder IPC — no exec/fork required.
+            for (String perm : new String[]{"android.permission.WRITE_SECURE_SETTINGS", "android.permission.DUMP"}) {
+                try {
+                    Android17Compat.grantRuntimePermission(packageName, perm, UserHandleCompat.getUserId(uid));
+                } catch (Exception e) {
+                    // Fallback: pm grant exec (blocked on Samsung OneUI 8 SELinux)
+                    try { Runtime.getRuntime().exec(new String[]{"pm", "grant", packageName, perm}).waitFor(); } catch (Exception ignored) {}
+                }
+            }
         } catch (Exception e) {
             LOGGER.e(e, "Plus: AppOps elevation failed for " + packageName);
         }
