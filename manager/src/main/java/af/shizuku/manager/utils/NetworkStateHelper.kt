@@ -38,10 +38,14 @@ object NetworkStateHelper {
 
     /**
      * Returns true if network conditions allow standard Android mDNS Wireless Debugging
-     * (either active Wi-Fi connection or local Mobile Hotspot).
+     * (either active Wi-Fi connection or local Mobile Hotspot on non-Samsung devices).
      */
     @JvmStatic
     fun isWirelessAdbSupportedNetwork(context: Context): Boolean {
+        // On Samsung One UI, Mobile Hotspot disables/blocks Wireless Debugging.
+        if (EnvironmentUtils.isSamsung()) {
+            return isWifiConnected(context)
+        }
         return isWifiConnected(context) || isHotspotEnabled(context)
     }
 }

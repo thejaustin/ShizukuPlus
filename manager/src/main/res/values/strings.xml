@@ -123,6 +123,7 @@
     <string name="dialog_adb_discovery_message_toggle_wireless_debugging">Please try to disable and enable \"Wireless debugging\" if it keeps searching.</string>
     <string name="dialog_adb_wifi_disconnected_warning"><![CDATA[<b>Wi-Fi is disconnected.</b><br>Android cannot discover Wireless Debugging over mobile data (5G/LTE).]]></string>
     <string name="dialog_adb_hotspot_tip"><![CDATA[💡 <b>Tip:</b> Turn on your phone\'s <b>Mobile Hotspot</b> to enable Wireless Debugging without a Wi-Fi network, or connect over local port 5555.]]></string>
+    <string name="dialog_adb_samsung_hotspot_warning"><![CDATA[💡 <b>Samsung Note:</b> One UI disables Wireless Debugging while Mobile Hotspot is active. Connect to another device\'s Wi-Fi hotspot (offline is fine) or run <code>adb tcpip 5555</code> via USB once.]]></string>
     <string name="dialog_adb_open_hotspot">Mobile Hotspot Settings</string>
     <string name="dialog_adb_probing_loopback">Checking local port (127.0.0.1:5555)...</string>
     <string name="dialog_adb_loopback_found">Found active ADB service on port %1$d! Connecting...</string>
@@ -1245,6 +1246,7 @@
     <string name="tile_action_open_app">Open App</string>
     <!-- Tile service error -->
     <string name="tile_state_update_failed">Failed to update Shizuku state: %1$s</string>
+    <string name="tile_open_app_required">Open Shizuku to start or pair Wireless Debugging</string>
 
     <!-- App Profiles automation activity -->
     <string name="app_profiles_title">App Profiles</string>

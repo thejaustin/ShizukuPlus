@@ -88,24 +88,32 @@ class AdbDialogFragment : DialogFragment() {
         if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED)
             Settings.Global.putInt(context.contentResolver, "adb_wifi_enabled", 1)
 
+        val isSamsung = EnvironmentUtils.isSamsung()
         val isWifi = NetworkStateHelper.isWifiConnected(context)
-        val isHotspot = NetworkStateHelper.isHotspotEnabled(context)
+        val isHotspot = !isSamsung && NetworkStateHelper.isHotspotEnabled(context)
         if (!isWifi && !isHotspot) {
             binding.wifiWarningLayout.isVisible = true
-            binding.btnOpenHotspot.setOnClickListener {
-                val intent = Intent().apply {
-                    action = Settings.ACTION_WIRELESS_SETTINGS
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                try {
-                    context.startActivity(intent)
-                } catch (_: Exception) {
+            if (isSamsung) {
+                binding.hotspotTipText.setText(R.string.dialog_adb_samsung_hotspot_warning)
+                binding.btnOpenHotspot.isVisible = false
+            } else {
+                binding.hotspotTipText.setText(R.string.dialog_adb_hotspot_tip)
+                binding.btnOpenHotspot.isVisible = true
+                binding.btnOpenHotspot.setOnClickListener {
+                    val intent = Intent().apply {
+                        action = Settings.ACTION_WIRELESS_SETTINGS
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
                     try {
-                        context.startActivity(Intent("android.settings.TETHER_SETTINGS").apply {
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        })
+                        context.startActivity(intent)
                     } catch (_: Exception) {
-                        SettingsPage.Developer.WirelessDebugging.launch(context)
+                        try {
+                            context.startActivity(Intent("android.settings.TETHER_SETTINGS").apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            })
+                        } catch (_: Exception) {
+                            SettingsPage.Developer.WirelessDebugging.launch(context)
+                        }
                     }
                 }
             }

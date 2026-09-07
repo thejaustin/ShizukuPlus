@@ -104,7 +104,12 @@ class AdbPairDialogFragment : DialogFragment() {
                 binding.progress.isVisible = true
                 binding.status.isVisible = true
                 if (!af.shizuku.manager.utils.NetworkStateHelper.isWirelessAdbSupportedNetwork(requireContext())) {
-                    binding.status.text = getString(R.string.dialog_adb_wifi_disconnected_warning) + "\n\n" + getString(R.string.dialog_adb_hotspot_tip)
+                    val tip = if (af.shizuku.manager.utils.EnvironmentUtils.isSamsung()) {
+                        getString(R.string.dialog_adb_samsung_hotspot_warning)
+                    } else {
+                        getString(R.string.dialog_adb_hotspot_tip)
+                    }
+                    binding.status.text = getString(R.string.dialog_adb_wifi_disconnected_warning) + "\n\n" + tip
                 } else {
                     binding.status.text = getString(R.string.adb_pairing_searching)
                 }
