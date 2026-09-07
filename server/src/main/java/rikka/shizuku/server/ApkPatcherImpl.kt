@@ -1,14 +1,20 @@
 package rikka.shizuku.server
 
+import android.os.Binder
 import android.os.ParcelFileDescriptor
+import android.util.Log
 import af.shizuku.server.IApkPatcher
+import af.shizuku.common.compat.Android17Compat
+import af.shizuku.common.util.UserHandleCompat
 import java.io.File
+import java.io.FileInputStream
 import java.util.concurrent.ConcurrentHashMap
 
 class ApkPatcherImpl : IApkPatcher.Stub() {
 
     companion object {
         private const val TMP_DIR = "/data/local/tmp/splus_td"
+        private const val TAG = "ApkPatcher"
     }
 
     // pkg → list of saved original APK paths (base first, then splits)
@@ -57,7 +63,22 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
         proc.waitFor() == 0
     } catch (_: Exception) { false }
 
+    private fun callingUserId() = UserHandleCompat.getUserId(Binder.getCallingUid())
+
     private fun findAllApks(packageName: String): List<String> {
+        // Primary: ApplicationInfo.sourceDir + splitSourceDirs — direct Binder IPC, no exec
+        try {
+            val ai = Android17Compat.getApplicationInfo(packageName, 0L, callingUserId())
+            if (ai != null) {
+                val paths = mutableListOf<String>()
+                ai.sourceDir?.let { if (it.isNotEmpty()) paths.add(it) }
+                ai.splitSourceDirs?.forEach { if (it.isNotEmpty()) paths.add(it) }
+                if (paths.isNotEmpty()) return paths
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "findAllApks IPC failed for $packageName, falling back", e)
+        }
+        // Fallback: pm path exec
         val out = exec("pm", "path", packageName)
         return out.lines()
             .filter { it.startsWith("package:") }
@@ -110,9 +131,14 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
         for (path in apkPaths) {
             val fileName = File(path).name  // base.apk, split_config.arm64_v8a.apk, etc.
             val dest = "$TMP_DIR/${packageName}_orig_$fileName"
-            if (execCode("cp", path, dest) != 0) {
-                origPaths.forEach { File(it).delete() }
-                return false
+            try {
+                File(path).copyTo(File(dest), overwrite = true)
+            } catch (e: Exception) {
+                Log.w(TAG, "copyTo failed for $path, falling back to exec cp", e)
+                if (execCode("cp", path, dest) != 0) {
+                    origPaths.forEach { File(it).delete() }
+                    return false
+                }
             }
             origPaths.add(dest)
         }
@@ -190,7 +216,13 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
             ?.firstOrNull { it.endsWith("_orig_base.apk") }
             ?: sessions[packageName]?.firstOrNull()
             ?: return null
-        return pipe("cat", origPath)
+        // Primary: open file directly via ParcelFileDescriptor — no exec, no cat
+        return try {
+            ParcelFileDescriptor.open(File(origPath), ParcelFileDescriptor.MODE_READ_ONLY)
+        } catch (e: Exception) {
+            Log.w(TAG, "streamOriginalApk direct open failed, falling back to cat", e)
+            pipe("cat", origPath)
+        }
     }
 
     override fun isTempDebugging(packageName: String?): Boolean {
