@@ -670,6 +670,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         } else if (featureEnabledMap.containsKey(key + "_enabled")) {
             return featureEnabledMap.get(key + "_enabled");
         }
+        // Core bridge and mocking features default to true so standalone CLI / ADB runs work
+        if (key.equals("su_bridge") || key.equals("shell_interceptor") || key.equals("root_magisk_mocking") || key.equals("root_auto_grant")) {
+            return true;
+        }
         return featureEnabledMap.getOrDefault(key, false);
     }
 
@@ -1306,15 +1310,18 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         }
                         return newProcessInternal(newCmd.toArray(new String[0]), env, dir);
                     }
-                } else if (baseCmd.equals("magisk") || baseCmd.endsWith("/magisk")) {
+                } else if (baseCmd.equals("magisk") || baseCmd.endsWith("/magisk") || baseCmd.equals("su") || baseCmd.endsWith("/su")) {
                     if (isFeatureEnabled("root_magisk_mocking")) {
-                        LOGGER.i("SUBridge: mocking magisk command");
+                        LOGGER.i("SUBridge: mocking " + baseCmd + " command");
                         if (cmd.length > 1) {
                             if (cmd[1].equals("-v") || cmd[1].equals("--version")) {
                                 return newProcessInternal(new String[]{"echo", "26.4:MAGISKSU"}, env, dir);
                             } else if (cmd[1].equals("-V")) {
                                 return newProcessInternal(new String[]{"echo", "26400"}, env, dir);
                             }
+                        }
+                        if (baseCmd.equals("su") || baseCmd.endsWith("/su")) {
+                            return newProcessInternal(new String[]{"echo", "26.4:MAGISKSU"}, env, dir);
                         }
                         return newProcessInternal(new String[]{"echo", "Magisk v26.4 (26400) - Shizuku+ Bridge Mode"}, env, dir);
                     }

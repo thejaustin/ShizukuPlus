@@ -176,20 +176,6 @@ object RootCompatHelper {
     suspend fun deployBridgeToTmpDetailed(context: Context): DeployResult = withContext(Dispatchers.IO) {
         if (!isShizukuAvailable()) return@withContext DeployResult(null, "Shizuku binder not available")
 
-        // Android 16+ (API 36) tightened the SELinux policy for the ADB/shell process (uid 2000),
-        // denying writes to /data/local/tmp. Skip all 4 write attempts immediately to avoid a
-        // multi-second stall — each cat > file times out waiting for the shell to report EACCES.
-        // selfTest() already explains this to the user and directs them to the exported path.
-        // (SHIZUKUPLUS-8A/8G/8D — all Android 16 non-rooted devices hitting this.)
-        val serverUid = try { Shizuku.getUid() } catch (_: Exception) { -1 }
-        if (serverUid == 2000 && android.os.Build.VERSION.SDK_INT >= 36) {
-            return@withContext DeployResult(
-                null,
-                "Android 16+ ADB/shell mode: /data/local/tmp is not writable from the shell " +
-                "process (SELinux policy). Use the exported path instead."
-            )
-        }
-
         val dir = "/data/local/tmp"
         // asset name -> octal mode (scripts executable; dex read-only for app_process on A14+)
         val files = listOf(
@@ -265,13 +251,9 @@ object RootCompatHelper {
                 val serverUid = try { Shizuku.getUid() } catch (_: Exception) { -1 }
                 val detail = deployResult.failureDetail?.let { "Reason: $it\n\n" } ?: ""
                 val action = if (serverUid == 2000) {
-                    // On Android 16+ the SELinux policy for the shell (ADB) process was tightened
-                    // to deny writes to /data/local/tmp (SHIZUKUPLUS-8A/8G/8D). This is expected
-                    // and the bridge still functions via the user-exported path.
-                    "ADB/shell mode detected. Android 16+ restricts writes to /data/local/tmp from " +
-                        "the shell process — this is expected. The SU Bridge still works via your " +
-                        "exported path. Tap \"Export\" in the compatibility hub and direct root apps " +
-                        "to that path, or switch to root mode for full /data/local/tmp access."
+                    "ADB/shell mode detected. If your device restricts writes to /data/local/tmp from " +
+                        "the shell process, use the exported path instead. Tap \"Export\" in the " +
+                        "compatibility hub and direct root apps to that path, or switch to root mode for full access."
                 } else {
                     "Make sure the Shizuku service is running, then retry."
                 }
