@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
-import android.os.Process
 import android.os.ServiceManager
 import android.util.Log
 import af.shizuku.server.IStatusBarGovernorPlus
@@ -67,14 +66,13 @@ class StatusBarGovernorPlusImpl : IStatusBarGovernorPlus.Stub() {
     }
 
     override fun disableExpansion(): Boolean {
-        // Primary: IStatusBarService.disable() — stateful call, works at shell UID
+        // Primary: IStatusBarService.disable(int what, IBinder token, String pkg)
+        // DISABLE_EXPAND = 0x10000 (StatusBarManager.DISABLE_EXPAND)
         try {
             val sb = statusBarService() ?: error("no statusbar service")
-            val userId = callingUserId()
-            // DISABLE_EXPAND = 0x10000 (StatusBarManager.DISABLE_EXPAND)
             val method = sb.javaClass.methods.firstOrNull { it.name == "disable" && it.parameterCount == 3 }
             if (method != null) {
-                method.invoke(sb, userId, 0x10000, 0)
+                method.invoke(sb, 0x10000, null as IBinder?, "com.android.shell")
                 return true
             }
         } catch (e: Exception) {
@@ -84,13 +82,12 @@ class StatusBarGovernorPlusImpl : IStatusBarGovernorPlus.Stub() {
     }
 
     override fun enableExpansion(): Boolean {
-        // Primary: IStatusBarService.disable() — clear all disable flags
+        // Primary: IStatusBarService.disable() with what=0 clears all disable flags
         try {
             val sb = statusBarService() ?: error("no statusbar service")
-            val userId = callingUserId()
             val method = sb.javaClass.methods.firstOrNull { it.name == "disable" && it.parameterCount == 3 }
             if (method != null) {
-                method.invoke(sb, userId, 0, 0)
+                method.invoke(sb, 0, null as IBinder?, "com.android.shell")
                 return true
             }
         } catch (e: Exception) {

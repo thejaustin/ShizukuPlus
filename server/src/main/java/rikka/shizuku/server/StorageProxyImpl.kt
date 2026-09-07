@@ -1,8 +1,13 @@
 package rikka.shizuku.server
 
+import android.net.Uri
+import android.os.Binder
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
+import android.util.Log
 import af.shizuku.server.IStorageProxy
+import af.shizuku.common.util.UserHandleCompat
+import rikka.hidden.compat.ActivityManagerApis
 import rikka.shizuku.server.util.InputValidationUtils
 import java.io.File
 
@@ -163,9 +168,31 @@ class StorageProxyImpl : IStorageProxy.Stub() {
     }
 
     override fun openContentUri(contentUri: String?): ParcelFileDescriptor? {
-        if (contentUri.isNullOrBlank()) return null
-        // Reject non-content URIs to prevent unintended file-scheme access
-        if (!contentUri.startsWith("content://")) return null
+        if (contentUri.isNullOrBlank() || !contentUri.startsWith("content://")) return null
+        // Primary: IContentProvider.openFile() via Binder — no exec needed
+        try {
+            val uri = Uri.parse(contentUri)
+            val authority = uri.authority ?: throw Exception("no authority in URI")
+            val userId = UserHandleCompat.getUserId(Binder.getCallingUid())
+            val provider = ActivityManagerApis.getContentProviderExternal(authority, userId, null, "com.android.shell")
+                ?: throw Exception("provider unavailable for $authority")
+            val methods = provider.javaClass.methods.filter { it.name == "openFile" }
+            for (m in methods) {
+                val pfd = runCatching {
+                    when (m.parameterTypes.size) {
+                        5 -> m.invoke(provider, null, uri, "r", null, null) as? ParcelFileDescriptor
+                        4 -> m.invoke(provider, null, uri, "r", null) as? ParcelFileDescriptor
+                        3 -> m.invoke(provider, uri, "r", null) as? ParcelFileDescriptor
+                        2 -> m.invoke(provider, uri, "r") as? ParcelFileDescriptor
+                        else -> null
+                    }
+                }.getOrNull()
+                if (pfd != null) return pfd
+            }
+        } catch (e: Exception) {
+            Log.w("StorageProxy", "openContentUri IPC failed, falling back to exec", e)
+        }
+        // Fallback: content read exec
         return openViaShellPipe(arrayOf("content", "read", "--uri", contentUri))
     }
 

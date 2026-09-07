@@ -154,7 +154,12 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
         if (packageName.isNullOrBlank()) return null
         val paths = getApkPaths(packageName)
         val base = paths.firstOrNull { !it.contains("split_") } ?: paths.firstOrNull() ?: return null
-        return pipe("cat", base)
+        return try {
+            ParcelFileDescriptor.open(File(base), ParcelFileDescriptor.MODE_READ_ONLY)
+        } catch (e: Exception) {
+            Log.w(TAG, "streamApk direct open failed for $base, falling back to cat", e)
+            pipe("cat", base)
+        }
     }
 
     override fun getAppDataSize(packageName: String?): Bundle {
@@ -563,7 +568,12 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
     override fun streamApkSplit(packageName: String?, fileName: String?): ParcelFileDescriptor? {
         if (packageName.isNullOrBlank() || fileName.isNullOrBlank()) return null
         val validPath = getApkPaths(packageName).firstOrNull { File(it).name == fileName } ?: return null
-        return pipe("cat", validPath)
+        return try {
+            ParcelFileDescriptor.open(File(validPath), ParcelFileDescriptor.MODE_READ_ONLY)
+        } catch (e: Exception) {
+            Log.w(TAG, "streamApkSplit direct open failed for $validPath, falling back to cat", e)
+            pipe("cat", validPath)
+        }
     }
 
     // ── App Freeze / Unfreeze ─────────────────────────────────────────────────
@@ -615,6 +625,14 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
 
     override fun insertSmsMessages(messages: List<Bundle>?): Int {
         if (messages.isNullOrEmpty()) return 0
+        val smsUri = android.net.Uri.parse("content://sms")
+        val smsAuthority = "sms"
+        val userId = callingUserId()
+        // Primary: IContentProvider.insert() via Binder — no exec needed
+        val provider = try {
+            ActivityManagerApis.getContentProviderExternal(smsAuthority, userId, null, "com.android.shell")
+        } catch (_: Exception) { null }
+
         var count = 0
         for (msg in messages) {
             val address = msg.getString("address") ?: continue
@@ -622,14 +640,34 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             val date    = msg.getLong("date", System.currentTimeMillis())
             val type    = msg.getInt("type", 1)
             val read    = msg.getInt("read", 1)
+
+            if (provider != null) {
+                val cv = android.content.ContentValues().apply {
+                    put("address", address)
+                    put("body", body)
+                    put("date", date)
+                    put("type", type)
+                    put("read", read)
+                }
+                val inserted = runCatching {
+                    val insertMethods = provider.javaClass.methods.filter { it.name == "insert" }
+                    insertMethods.any { m ->
+                        runCatching {
+                            when (m.parameterTypes.size) {
+                                4 -> m.invoke(provider, "com.android.shell", null, smsUri, cv) != null
+                                3 -> m.invoke(provider, "com.android.shell", smsUri, cv) != null
+                                else -> false
+                            }
+                        }.getOrDefault(false)
+                    }
+                }.getOrDefault(false)
+                if (inserted) { count++; continue }
+            }
+            // Fallback: content insert exec
             val result = execExit(
-                "content", "insert",
-                "--uri", "content://sms",
-                "--bind", "address:s:$address",
-                "--bind", "body:s:$body",
-                "--bind", "date:l:$date",
-                "--bind", "type:i:$type",
-                "--bind", "read:i:$read"
+                "content", "insert", "--uri", "content://sms",
+                "--bind", "address:s:$address", "--bind", "body:s:$body",
+                "--bind", "date:l:$date", "--bind", "type:i:$type", "--bind", "read:i:$read"
             )
             if (result == 0) count++
         }
