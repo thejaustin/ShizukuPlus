@@ -7,6 +7,7 @@ import android.os.ParcelFileDescriptor
 import android.os.ServiceManager
 import android.util.Log
 import af.shizuku.server.IPrivilegedDataSource
+import af.shizuku.common.compat.Android17Compat
 import af.shizuku.common.util.UserHandleCompat
 import rikka.hidden.compat.ActivityManagerApis
 import rikka.shizuku.server.api.IContentProviderUtils
@@ -192,33 +193,64 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
 
     override fun getPhoneInfo(): Bundle {
         val b = Bundle()
-        // getprop gives us build properties; telephony details come from dumpsys
-        b.putString("network_operator", exec("getprop", "gsm.operator.alpha").ifEmpty {
-            exec("getprop", "ro.cdma.home.operator.alpha")
-        })
-        b.putString("sim_operator", exec("getprop", "gsm.sim.operator.alpha"))
+        // Use SystemProperties directly — no exec/fork needed
+        b.putString("network_operator",
+            android.os.SystemProperties.get("gsm.operator.alpha").ifEmpty {
+                android.os.SystemProperties.get("ro.cdma.home.operator.alpha")
+            })
+        b.putString("sim_operator", android.os.SystemProperties.get("gsm.sim.operator.alpha"))
 
-        // Parse IMEI and phone number from dumpsys telephony.registry
-        val dump = exec("dumpsys", "telephony.registry")
-        for (line in dump.lines()) {
-            val t = line.trim()
-            when {
-                t.startsWith("mCellIdentity") -> {} // carrier-level only
-                t.startsWith("mImei=") -> b.putString("imei", t.removePrefix("mImei=").trim())
-                t.startsWith("mPhoneNumber=") ->
-                    b.putString("phone_number", t.removePrefix("mPhoneNumber=").trim())
-                t.startsWith("mMeid=") -> b.putString("meid", t.removePrefix("mMeid=").trim())
-                t.startsWith("mSimSerialNumber=") ->
-                    b.putString("sim_serial", t.removePrefix("mSimSerialNumber=").trim())
+        // Primary: IPhoneSubInfo Binder IPC — IMEI and phone number without exec
+        try {
+            val binder = ServiceManager.getService("iphonesubinfo") ?: error("no iphonesubinfo")
+            val subInfo = Class.forName("com.android.internal.telephony.IPhoneSubInfo\$Stub")
+                .getDeclaredMethod("asInterface", IBinder::class.java).invoke(null, binder)!!
+            // getImei (API 29+: getImei(slotIndex, pkg); API 22-28: getDeviceId(pkg))
+            val imei = subInfo.javaClass.methods.firstNotNullOfOrNull { m ->
+                if (m.name != "getImei" && m.name != "getDeviceId") return@firstNotNullOfOrNull null
+                runCatching {
+                    when {
+                        m.name == "getImei" && m.parameterCount == 2 ->
+                            m.invoke(subInfo, 0, "com.android.shell") as? String
+                        m.name == "getImei" && m.parameterCount == 1 ->
+                            m.invoke(subInfo, "com.android.shell") as? String
+                        m.name == "getDeviceId" && m.parameterCount == 1 ->
+                            m.invoke(subInfo, "com.android.shell") as? String
+                        else -> null
+                    }
+                }.getOrNull()?.takeIf { it.isNotBlank() && it != "null" }
             }
-        }
+            imei?.let { b.putString("imei", it) }
 
-        // Fallback: try service call iphonesubinfo for IMEI (older Android)
-        if (!b.containsKey("imei")) {
-            val imeiRaw = exec("service", "call", "iphonesubinfo", "1")
-            // Output is: "Result: Parcel(...) \n  0x00000000: ... '1234567890xxxxx'"
-            val imeiMatch = Regex("'([0-9A-Fa-f]{14,17})'").find(imeiRaw)
-            imeiMatch?.groupValues?.getOrNull(1)?.let { b.putString("imei", it) }
+            // getLine1NumberForDisplay (phone number)
+            val phone = subInfo.javaClass.methods.firstNotNullOfOrNull { m ->
+                if (!m.name.contains("Line1") && !m.name.contains("Number")) return@firstNotNullOfOrNull null
+                runCatching {
+                    when {
+                        m.name.contains("Line1") && m.parameterCount == 3 ->
+                            m.invoke(subInfo, 1, "com.android.shell", null) as? String
+                        m.name.contains("Line1") && m.parameterCount == 2 ->
+                            m.invoke(subInfo, 1, "com.android.shell") as? String
+                        else -> null
+                    }
+                }.getOrNull()?.takeIf { it.isNotBlank() && it != "null" }
+            }
+            phone?.let { b.putString("phone_number", it) }
+        } catch (e: Exception) {
+            Log.w("PrivilegedDataSource", "getPhoneInfo IPC failed, falling back to dumpsys", e)
+            // Fallback: parse dumpsys telephony.registry (works when exec is available)
+            val dump = exec("dumpsys", "telephony.registry")
+            for (line in dump.lines()) {
+                val t = line.trim()
+                when {
+                    t.startsWith("mImei=") -> b.putString("imei", t.removePrefix("mImei=").trim())
+                    t.startsWith("mPhoneNumber=") ->
+                        b.putString("phone_number", t.removePrefix("mPhoneNumber=").trim())
+                    t.startsWith("mMeid=") -> b.putString("meid", t.removePrefix("mMeid=").trim())
+                    t.startsWith("mSimSerialNumber=") ->
+                        b.putString("sim_serial", t.removePrefix("mSimSerialNumber=").trim())
+                }
+            }
         }
         return b
     }
@@ -289,23 +321,72 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
 
     // ── AppOps (MANAGE_APP_OPS_MODES — install permission) ───────────────────
 
+    private fun appOpsService(): Any? = try {
+        val binder = ServiceManager.getService("appops") ?: return null
+        Class.forName("com.android.internal.app.IAppOpsService\$Stub")
+            .getDeclaredMethod("asInterface", IBinder::class.java).invoke(null, binder)
+    } catch (_: Exception) { null }
+
+    private fun appOpStrToInt(service: Any, op: String): Int? = try {
+        service.javaClass.getMethod("strOpToOp", String::class.java).invoke(service, op) as? Int
+    } catch (_: Exception) { null }
+
     override fun setAppOpsMode(packageName: String?, op: String?, mode: String?): Boolean {
         if (packageName.isNullOrBlank() || op.isNullOrBlank() || mode.isNullOrBlank()) return false
-        val modeArg = when (mode.lowercase()) {
-            "allow", "deny", "ignore", "default" -> mode.lowercase()
+        val intMode = when (mode.lowercase()) {
+            "allow"   -> 0
+            "ignore", "deny" -> 1
+            "default" -> 3
             else -> return false
         }
+        val userId = UserHandleCompat.getUserId(Binder.getCallingUid())
+        // Primary: IAppOpsService.setMode — works at shell UID (has MANAGE_APP_OPS_MODES)
+        try {
+            val service = appOpsService() ?: error("no appops service")
+            val intOp = appOpStrToInt(service, op) ?: error("unknown op $op")
+            val ai = Android17Compat.getApplicationInfo(packageName, 0L, userId)
+                ?: error("package not found: $packageName")
+            service.javaClass.getMethod("setMode", Int::class.java, Int::class.java, String::class.java, Int::class.java)
+                .invoke(service, intOp, ai.uid, packageName, intMode)
+            return true
+        } catch (e: Exception) {
+            Log.w("PrivilegedDataSource", "setAppOpsMode IPC failed for $packageName/$op, falling back", e)
+        }
         return try {
-            Runtime.getRuntime()
-                .exec(arrayOf("appops", "set", packageName, op, modeArg))
-                .waitFor() == 0
+            val modeArg = when (mode.lowercase()) { "allow" -> "allow"; "ignore", "deny" -> "ignore"; else -> "default" }
+            Runtime.getRuntime().exec(arrayOf("appops", "set", packageName, op, modeArg)).waitFor() == 0
         } catch (_: Exception) { false }
     }
 
     override fun getAppOpsMode(packageName: String?, op: String?): String {
         if (packageName.isNullOrBlank() || op.isNullOrBlank()) return ""
+        val userId = UserHandleCompat.getUserId(Binder.getCallingUid())
+        // Primary: IAppOpsService.checkOperation — works at shell UID
+        try {
+            val service = appOpsService() ?: error("no appops service")
+            val intOp = appOpStrToInt(service, op) ?: error("unknown op $op")
+            val ai = Android17Compat.getApplicationInfo(packageName, 0L, userId)
+                ?: error("package not found: $packageName")
+            val result = service.javaClass.methods.filter { it.name == "checkOperation" }.firstNotNullOfOrNull { m ->
+                runCatching {
+                    when (m.parameterTypes.size) {
+                        3 -> m.invoke(service, intOp, ai.uid, packageName) as? Int
+                        4 -> m.invoke(service, intOp, ai.uid, packageName, false) as? Int
+                        else -> null
+                    }
+                }.getOrNull()
+            }
+            return when (result) {
+                0 -> "allow"
+                1 -> "ignore"
+                2 -> "deny"
+                3 -> "default"
+                else -> ""
+            }
+        } catch (e: Exception) {
+            Log.w("PrivilegedDataSource", "getAppOpsMode IPC failed for $packageName/$op, falling back", e)
+        }
         val output = exec("appops", "get", packageName, op)
-        // Output: "allow", "deny", "ignore", "default", or "<op>: <mode>"
         val raw = output.substringAfterLast(":").trim().lowercase()
         return when {
             raw.contains("allow")   -> "allow"
