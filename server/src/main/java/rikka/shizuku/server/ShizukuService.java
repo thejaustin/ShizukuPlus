@@ -1323,13 +1323,20 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         String targetPkg = cmd[2];
                         String perm = cmd[3];
                         if (perm.contains("WRITE_SECURE_SETTINGS") || perm.contains("DUMP") || perm.contains("PACKAGE_USAGE_STATS")) {
+                            int grantUserId = UserHandleCompat.getUserId(callingUid);
                             try {
-                                // waitFor() reaps the child (and lets the grant land before we
-                                // report success); without it each call leaks a zombie + its fds.
-                                Runtime.getRuntime().exec(new String[]{"pm", "grant", targetPkg, perm}).waitFor();
+                                // Primary: Android17Compat.grantRuntimePermission — direct Binder IPC,
+                                // works at shell UID, no exec/fork required (Samsung SELinux compatible).
+                                Android17Compat.grantRuntimePermission(targetPkg, perm, grantUserId);
                                 return newProcessInternal(new String[]{"true"}, env, dir);
                             } catch (Exception e) {
-                                LOGGER.e("SUBridge: pm grant failed", e);
+                                LOGGER.w(e, "SUBridge: grantRuntimePermission IPC failed for %s/%s, falling back to exec", targetPkg, perm);
+                                try {
+                                    Runtime.getRuntime().exec(new String[]{"pm", "grant", targetPkg, perm}).waitFor();
+                                    return newProcessInternal(new String[]{"true"}, env, dir);
+                                } catch (Exception e2) {
+                                    LOGGER.e("SUBridge: pm grant exec also failed", e2);
+                                }
                             }
                         }
                     }
