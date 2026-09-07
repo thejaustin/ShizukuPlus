@@ -980,11 +980,13 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         String proxyPath = "/data/adb/shizuku/" + fileName;
                         
                         try {
-                            Runtime.getRuntime().exec(new String[]{"mkdir", "-p", "/data/adb/shizuku"}).waitFor();
+                            new java.io.File("/data/adb/shizuku").mkdirs();
                             java.io.File dest = new java.io.File(proxyPath);
                             if (!dest.exists()) {
-                                String sourcePath = target;
-                                Runtime.getRuntime().exec(new String[]{"cp", sourcePath, proxyPath}).waitFor();
+                                java.nio.file.Files.copy(
+                                    java.nio.file.Paths.get(target),
+                                    java.nio.file.Paths.get(proxyPath)
+                                );
                             }
                         } catch (Exception e) {
                             LOGGER.e(e, "SUBridge: failed to prepare proxy file for " + target);

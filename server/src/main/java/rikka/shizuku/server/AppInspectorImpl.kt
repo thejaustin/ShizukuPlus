@@ -63,6 +63,36 @@ class AppInspectorImpl : IAppInspector.Stub() {
 
     override fun dumpHeap(pid: Int, destPath: String?): Boolean {
         if (pid <= 0 || destPath.isNullOrBlank()) return false
+        // Primary: IActivityManager.dumpHeap — passes a PFD instead of spawning am dumpheap
+        try {
+            val am = activityManagerService() ?: error("no activity service")
+            val destFile = File(destPath)
+            destFile.parentFile?.mkdirs()
+            val pfd = ParcelFileDescriptor.open(
+                destFile,
+                ParcelFileDescriptor.MODE_WRITE_ONLY or
+                ParcelFileDescriptor.MODE_CREATE or
+                ParcelFileDescriptor.MODE_TRUNCATE
+            )
+            pfd.use {
+                val invoked = am.javaClass.methods.filter { it.name == "dumpHeap" }.any { m ->
+                    runCatching {
+                        // Param-count dispatch across API 26-35 variants:
+                        // (String, int, boolean, String, PFD, RemoteCallback) — API 26-28
+                        // (String, int, boolean, boolean, boolean, String, PFD, RemoteCallback) — API 29+
+                        when (m.parameterTypes.size) {
+                            6 -> { m.invoke(am, pid.toString(), -1, true, destPath, pfd, null); true }
+                            8 -> { m.invoke(am, pid.toString(), -1, true, false, false, destPath, pfd, null); true }
+                            else -> false
+                        }
+                    }.getOrDefault(false)
+                }
+                if (invoked) return destFile.exists() && destFile.length() > 0
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "dumpHeap IPC failed for pid=$pid, falling back to exec", e)
+        }
+        // Fallback: am dumpheap (blocked on Samsung OneUI 8)
         return try {
             Runtime.getRuntime().exec(arrayOf("am", "dumpheap", pid.toString(), destPath))
                 .waitFor() == 0
