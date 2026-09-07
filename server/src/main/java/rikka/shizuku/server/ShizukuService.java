@@ -1125,7 +1125,15 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             }
             
             String baseCmd = cmd[0];
-            
+
+            // Safety: block factory-reset commands unconditionally — these must never reach exec
+            // even when root mocking or experimental features are disabled.
+            if (String.join(" ", cmd).contains("MASTER_CLEAR") || String.join(" ", cmd).contains("wipe_data")
+                    || (baseCmd.equals("sm") && cmd.length > 1 && cmd[1].equals("format"))) {
+                LOGGER.e("SUBridge: Blocked destructive factory-reset command: %s", String.join(" ", cmd));
+                return newProcessInternal(new String[]{"true"}, env, dir);
+            }
+
             // Dynamic Shell Function Injection for Deep Root Spoofing
             if (isFeatureEnabled("su_bridge") && (baseCmd.equals("sh") || baseCmd.endsWith("/sh")) && cmd.length >= 3 && (cmd[1].equals("-c") || cmd[1].equals("--command"))) {
                 String originalScript = cmd[2];
@@ -1827,6 +1835,96 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         LOGGER.e("SUBridge: StorageProxy command failed", e);
                     }
                 }
+            } else if ((baseCmd.equals("kill") || baseCmd.equals("pkill") || baseCmd.equals("killall")) && cmd.length >= 2) {
+                // kill <pid> / pkill <name> / killall <name> → IActivityManager.forceStopPackage
+                // Works at shell UID; replaces sh-c shell scripts that fail on Samsung SELinux.
+                try {
+                    IBinder amBinder = ServiceManager.getService("activity");
+                    if (amBinder != null) {
+                        Object am = Class.forName("android.app.IActivityManager$Stub")
+                            .getMethod("asInterface", IBinder.class).invoke(null, amBinder);
+                        String target = cmd[cmd.length - 1];
+                        if (baseCmd.equals("kill") && target.matches("\\d+")) {
+                            // PID-based: find package by walking getRunningAppProcesses
+                            int targetPid = Integer.parseInt(target);
+                            java.util.List<?> procs = (java.util.List<?>) am.getClass()
+                                .getMethod("getRunningAppProcesses").invoke(am);
+                            if (procs != null) {
+                                for (Object p : procs) {
+                                    int pid = (int) p.getClass().getField("pid").get(p);
+                                    if (pid == targetPid) {
+                                        String[] pkgs = (String[]) p.getClass().getField("pkgList").get(p);
+                                        if (pkgs != null && pkgs.length > 0) {
+                                            LOGGER.i("Plus: kill %d → am force-stop %s", targetPid, pkgs[0]);
+                                            ActivityManagerApis.forceStopPackageNoThrow(pkgs[0],
+                                                UserHandleCompat.getUserId(callingUid));
+                                            return newProcessInternal(new String[]{"true"}, env, dir);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        } else {
+                            // Name-based pkill/killall: treat target as package name
+                            LOGGER.i("Plus: %s %s → am force-stop", baseCmd, target);
+                            ActivityManagerApis.forceStopPackageNoThrow(target,
+                                UserHandleCompat.getUserId(callingUid));
+                            return newProcessInternal(new String[]{"true"}, env, dir);
+                        }
+                    }
+                } catch (Exception e) {
+                    LOGGER.w("Plus: kill/pkill Binder IPC failed — falling through", e);
+                }
+            } else if (baseCmd.equals("ifconfig") && cmd.length >= 3) {
+                // ifconfig wlan0 up/down → cmd wifi (works at shell UID; ifconfig requires root)
+                String iface = cmd[1];
+                String action = cmd[2];
+                if (iface.startsWith("wlan") && (action.equals("up") || action.equals("down"))) {
+                    LOGGER.i("Plus: ifconfig %s %s → cmd wifi set-wifi-enabled", iface, action);
+                    return newProcessInternal(new String[]{"cmd", "wifi", "set-wifi-enabled",
+                        action.equals("up") ? "enabled" : "disabled"}, env, dir);
+                }
+            } else if (baseCmd.equals("ip") && cmd.length >= 4 && cmd[1].equals("link") && cmd[2].equals("set")) {
+                // ip link set wlan0 up/down → cmd wifi (same mapping)
+                String iface = cmd[3];
+                String action = cmd[cmd.length - 1];
+                if (iface.startsWith("wlan") && (action.equals("up") || action.equals("down"))) {
+                    LOGGER.i("Plus: ip link set %s %s → cmd wifi set-wifi-enabled", iface, action);
+                    return newProcessInternal(new String[]{"cmd", "wifi", "set-wifi-enabled",
+                        action.equals("up") ? "enabled" : "disabled"}, env, dir);
+                }
+            } else if (baseCmd.equals("dumpsys") && cmd.length >= 2
+                    && (cmd[1].equals("battery") || cmd[1].equals("deviceidle"))) {
+                // dumpsys battery/deviceidle — shell UID has DUMP permission, pass through directly
+                LOGGER.i("Plus: dumpsys %s (shell DUMP permission)", cmd[1]);
+                return newProcessInternal(cmd, env, dir);
+            } else if ((baseCmd.equals("iptables") || baseCmd.equals("ip6tables")) && cmd.length >= 2) {
+                // iptables --uid-owner <uid> → INetworkPolicyManager.setUidPolicy (Binder IPC, no exec)
+                String fullCmd = String.join(" ", cmd);
+                if (fullCmd.contains("--uid-owner")) {
+                    try {
+                        int uidIndex = -1;
+                        for (int i = 0; i < cmd.length; i++) {
+                            if (cmd[i].equals("--uid-owner")) { uidIndex = i + 1; break; }
+                        }
+                        if (uidIndex != -1 && uidIndex < cmd.length) {
+                            int targetUid = Integer.parseInt(cmd[uidIndex]);
+                            boolean restrict = !fullCmd.contains("-D");
+                            IBinder npBinder = ServiceManager.getService("netpolicy");
+                            if (npBinder != null) {
+                                Object svc = Class.forName("android.net.INetworkPolicyManager$Stub")
+                                    .getMethod("asInterface", IBinder.class).invoke(null, npBinder);
+                                int policy = restrict ? (android.os.Build.VERSION.SDK_INT >= 29 ? 4 : 1) : 0;
+                                LOGGER.i("Plus: iptables uid %d → NetworkPolicy %d", targetUid, policy);
+                                svc.getClass().getMethod("setUidPolicy", int.class, int.class)
+                                    .invoke(svc, targetUid, policy);
+                            }
+                        }
+                    } catch (Exception e) {
+                        LOGGER.e("Plus: iptables → NetworkPolicy failed", e);
+                    }
+                }
+                return newProcessInternal(new String[]{"true"}, env, dir);
             } else if (baseCmd.equals("cmd") && cmd.length >= 3 && "overlay".equals(cmd[1]) && isFeatureEnabled("overlay_manager_plus")) {
                 // Intercept `cmd overlay <sub> ...` and route through IOverlayManagerPlus (direct
                 // Binder call, no exec). This lets font/theme apps like Hex Installer and SamFonts
