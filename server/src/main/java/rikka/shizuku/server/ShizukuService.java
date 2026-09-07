@@ -1904,9 +1904,15 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 }
             } else if (baseCmd.equals("dumpsys") && cmd.length >= 2
                     && (cmd[1].equals("battery") || cmd[1].equals("deviceidle"))) {
-                // dumpsys battery/deviceidle — shell UID has DUMP permission, pass through directly
+                // dumpsys battery/deviceidle — shell UID has DUMP permission; wrap in try-catch
+                // so Samsung SELinux exec-block returns a failed process instead of null (#466).
                 LOGGER.i("Plus: dumpsys %s (shell DUMP permission)", cmd[1]);
-                return newProcessInternal(cmd, env, dir);
+                try {
+                    return newProcessInternal(cmd, env, dir);
+                } catch (Exception e) {
+                    LOGGER.w("Plus: dumpsys %s exec blocked (SELinux?), returning synthetic exit 1", cmd[1]);
+                    return syntheticProcess(1, null);
+                }
             } else if ((baseCmd.equals("iptables") || baseCmd.equals("ip6tables")) && cmd.length >= 2) {
                 // iptables --uid-owner <uid> → INetworkPolicyManager.setUidPolicy (Binder IPC, no exec)
                 String fullCmd = String.join(" ", cmd);
@@ -1973,7 +1979,18 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 }
             }
         }
-        return super.newProcessInternal(cmd, env, dir);
+        // Guard the native exec fallback: if SELinux blocks exec (Samsung OneUI 8 / Android 16),
+        // super.newProcessInternal() throws rather than returning null. Without this catch,
+        // the exception propagates over Binder and the client receives a null IRemoteProcess —
+        // causing NullPointerExceptions in apps like aShellYou (#466). Return a synthetic
+        // failed process so callers can inspect the exit code instead of crashing.
+        try {
+            return super.newProcessInternal(cmd, env, dir);
+        } catch (Exception e) {
+            LOGGER.w("newProcessInternal exec failed (SELinux block?): %s — returning synthetic exit 1",
+                String.join(" ", cmd));
+            return syntheticProcess(1, null);
+        }
     }
 
     @Override
