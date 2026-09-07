@@ -135,10 +135,16 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
      * Install a list of APK files atomically via a pm install session.
      * Works for both single APKs and split APK sets.
      * All APKs must be signed with the same certificate.
+     *
+     * Primary: IPackageInstaller Binder IPC (Samsung SELinux compatible, no exec).
+     * Fallback: pm install-create/write/commit exec (blocked on Samsung OneUI 8).
      */
     private fun installViaSession(apkPaths: List<String>, grantPerms: Boolean = true): Boolean {
         if (apkPaths.isEmpty()) return false
-
+        // Primary: IPackageInstaller Binder IPC
+        if (installViaSessionIpc(apkPaths, grantPerms)) return true
+        Log.w(TAG, "IPC install failed, falling back to exec pm install-create/write/commit")
+        // Fallback: exec-based (blocked on Samsung OneUI 8)
         val sessionArgs = buildList {
             add("pm"); add("install-create")
             if (grantPerms) add("-g")
@@ -148,7 +154,6 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
             ?: return false
 
         for (path in apkPaths) {
-            // Derive the canonical split name from the filename (strip our temp prefix)
             val fileName = File(path).name
             val splitName = when {
                 fileName.contains("_orig_") -> fileName.substringAfter("_orig_")
@@ -161,6 +166,150 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
             }
         }
         return execCode("pm", "install-commit", sessionId.toString()) == 0
+    }
+
+    // IPC-based install via IPackageInstaller. Uses a raw Binder to implement
+    // the IIntentSender callback without needing a Context or PendingIntent.
+    private fun installViaSessionIpc(apkPaths: List<String>, grantPerms: Boolean): Boolean {
+        return try {
+            val pm = packageManagerService() ?: return false
+            val installer = pm.javaClass.methods.firstOrNull { it.name == "getPackageInstaller" }
+                ?.invoke(pm) ?: return false
+
+            // SessionParams: MODE_FULL_INSTALL = 1
+            val paramsClass = Class.forName("android.content.pm.PackageInstaller\$SessionParams")
+            val params = paramsClass.getConstructor(Int::class.java).newInstance(1)
+            if (grantPerms) {
+                runCatching { paramsClass.getMethod("setGrantAllRequested").invoke(params) }
+                    .onFailure {
+                        runCatching {
+                            paramsClass.getMethod("setGrantedRuntimePermissions", Array<String>::class.java)
+                                .invoke(params, null as Array<String>?)
+                        }
+                    }
+            }
+
+            // createSession(params, callerPackageName, [attributionTag,] userId)
+            val sessionId = installer.javaClass.methods.filter { it.name == "createSession" }
+                .firstNotNullOfOrNull { m ->
+                    runCatching {
+                        when (m.parameterTypes.size) {
+                            4 -> m.invoke(installer, params, "com.android.shell", null, 0) as? Int
+                            3 -> m.invoke(installer, params, "com.android.shell", 0) as? Int
+                            2 -> m.invoke(installer, params, "com.android.shell") as? Int
+                            else -> null
+                        }?.takeIf { it >= 0 }
+                    }.getOrNull()
+                } ?: return false
+
+            // openSession(sessionId) → IPackageInstallerSession
+            val session = installer.javaClass.methods.firstOrNull { it.name == "openSession" }
+                ?.invoke(installer, sessionId) ?: run {
+                installer.javaClass.methods.firstOrNull { it.name == "abandonSession" }?.invoke(installer, sessionId)
+                return false
+            }
+
+            // Write each APK via openWrite(name, offsetBytes, lengthBytes)
+            for (apkPath in apkPaths) {
+                val file = File(apkPath)
+                val splitName = when {
+                    file.name.contains("_orig_") -> file.name.substringAfter("_orig_")
+                    file.name.contains("_dbg_")  -> file.name.substringAfter("_dbg_")
+                    else                         -> file.name
+                }
+                val pfd = session.javaClass.methods.filter { it.name == "openWrite" }
+                    .firstNotNullOfOrNull { m ->
+                        runCatching {
+                            when (m.parameterTypes.size) {
+                                3 -> m.invoke(session, splitName, 0L, file.length()) as? ParcelFileDescriptor
+                                else -> null
+                            }
+                        }.getOrNull()
+                    }
+                if (pfd == null) {
+                    session.javaClass.methods.firstOrNull { it.name == "abandon" }?.invoke(session)
+                    return false
+                }
+                try {
+                    file.inputStream().use { src ->
+                        ParcelFileDescriptor.AutoCloseOutputStream(pfd).use { dst -> src.copyTo(dst) }
+                    }
+                    session.javaClass.methods.firstOrNull { it.name == "fsync" }?.invoke(session, pfd)
+                } catch (e: Exception) {
+                    session.javaClass.methods.firstOrNull { it.name == "abandon" }?.invoke(session)
+                    return false
+                }
+            }
+
+            // Commit with a local IntentSender backed by a raw Binder
+            val latch = CountDownLatch(1)
+            var success = false
+            val intentSender = createLocalIntentSender { intent ->
+                val status = intent?.getIntExtra("android.content.pm.extra.STATUS", -1) ?: -1
+                success = (status == 0) // PackageInstaller.STATUS_SUCCESS
+                latch.countDown()
+            } ?: run {
+                session.javaClass.methods.firstOrNull { it.name == "abandon" }?.invoke(session)
+                return false
+            }
+
+            val commitMethods = session.javaClass.methods.filter { it.name == "commit" }
+            val committed = commitMethods.any { m ->
+                runCatching {
+                    when (m.parameterTypes.size) {
+                        2 -> m.invoke(session, intentSender, false).let { true }
+                        1 -> m.invoke(session, intentSender).let { true }
+                        else -> false
+                    }
+                }.getOrDefault(false)
+            }
+            if (!committed) {
+                session.javaClass.methods.firstOrNull { it.name == "abandon" }?.invoke(session)
+                return false
+            }
+
+            latch.await(60, TimeUnit.SECONDS)
+            if (!success) session.javaClass.methods.firstOrNull { it.name == "abandon" }?.invoke(session)
+            success
+        } catch (e: Exception) {
+            Log.w(TAG, "installViaSessionIpc failed", e)
+            false
+        }
+    }
+
+    // Create an IntentSender that delivers the result Intent to [callback] without
+    // needing a Context. Uses a raw Binder as the IIntentSender implementation:
+    // IIntentSender.Stub.asInterface(binder) creates a proxy that calls binder.transact(),
+    // which invokes our onTransact() where we read the Intent from the Parcel.
+    private fun createLocalIntentSender(callback: (android.content.Intent?) -> Unit): android.content.IntentSender? {
+        return try {
+            val iIntentSenderDescriptor = "android.content.IIntentSender"
+            val rawBinder = object : android.os.Binder() {
+                init { attachInterface(null, iIntentSenderDescriptor) }
+                override fun onTransact(code: Int, data: android.os.Parcel, reply: android.os.Parcel?, flags: Int): Boolean {
+                    if (code == android.os.IBinder.FIRST_CALL_TRANSACTION) {
+                        data.enforceInterface(iIntentSenderDescriptor)
+                        data.readInt() // int code
+                        val hasIntent = data.readInt() != 0
+                        val intent = if (hasIntent) android.content.Intent.CREATOR.createFromParcel(data) else null
+                        callback(intent)
+                        reply?.writeNoException()
+                        return true
+                    }
+                    return super.onTransact(code, data, reply, flags)
+                }
+            }
+            val iIntentSenderStub = Class.forName("android.content.IIntentSender\$Stub")
+            val asInterface = iIntentSenderStub.getMethod("asInterface", android.os.IBinder::class.java)
+            val iSender = asInterface.invoke(null, rawBinder)
+            val ctor = android.content.IntentSender::class.java
+                .getDeclaredConstructor(Class.forName("android.content.IIntentSender"))
+            ctor.isAccessible = true
+            ctor.newInstance(iSender)
+        } catch (e: Exception) {
+            Log.w(TAG, "createLocalIntentSender failed", e)
+            null
+        }
     }
 
     override fun prepareTempDebug(packageName: String?): Boolean {
