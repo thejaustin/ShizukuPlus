@@ -1,7 +1,9 @@
 package rikka.shizuku.server
 
 import android.os.Binder
+import android.os.IBinder
 import android.os.ParcelFileDescriptor
+import android.os.ServiceManager
 import android.util.Log
 import af.shizuku.server.IApkPatcher
 import af.shizuku.common.compat.Android17Compat
@@ -9,6 +11,8 @@ import af.shizuku.common.util.UserHandleCompat
 import java.io.File
 import java.io.FileInputStream
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class ApkPatcherImpl : IApkPatcher.Stub() {
 
@@ -64,6 +68,48 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
     } catch (_: Exception) { false }
 
     private fun callingUserId() = UserHandleCompat.getUserId(Binder.getCallingUid())
+
+    private fun packageManagerService(): Any? = try {
+        val binder = ServiceManager.getService("package") ?: return null
+        Class.forName("android.content.pm.IPackageManager\$Stub")
+            .getDeclaredMethod("asInterface", IBinder::class.java).invoke(null, binder)
+    } catch (_: Exception) { null }
+
+    // IPackageManager.deletePackageAsUser with DELETE_KEEP_DATA=1 flag.
+    // Primary path for uninstalling during APK patching without wiping app data.
+    private fun uninstallKeepData(packageName: String): Boolean {
+        try {
+            val pm = packageManagerService() ?: error("no package service")
+            val latch = CountDownLatch(1)
+            var result = -1
+            val observer = object : android.content.pm.IPackageDeleteObserver.Stub() {
+                override fun packageDeleted(name: String?, returnCode: Int) {
+                    result = returnCode
+                    latch.countDown()
+                }
+            }
+            val invoked = pm.javaClass.methods
+                .filter { it.name == "deletePackageAsUser" }
+                .any { m ->
+                    runCatching {
+                        val DELETE_KEEP_DATA = 1
+                        when (m.parameterTypes.size) {
+                            4 -> m.invoke(pm, packageName, observer, callingUserId(), DELETE_KEEP_DATA)
+                            5 -> m.invoke(pm, packageName, null, observer, callingUserId(), DELETE_KEEP_DATA)
+                            else -> return@any false
+                        }
+                        true
+                    }.getOrDefault(false)
+                }
+            if (invoked) {
+                latch.await(30, TimeUnit.SECONDS)
+                return result == 1 // DELETE_SUCCEEDED
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "uninstallKeepData IPC failed for $packageName, falling back to exec", e)
+        }
+        return execCode("pm", "uninstall", "--user", "0", "-k", packageName) == 0
+    }
 
     private fun findAllApks(packageName: String): List<String> {
         // Primary: ApplicationInfo.sourceDir + splitSourceDirs — direct Binder IPC, no exec
@@ -165,7 +211,7 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
         }
 
         // pm uninstall -k preserves all app data
-        if (execCode("pm", "uninstall", "--user", "0", "-k", packageName) != 0) {
+        if (!uninstallKeepData(packageName)) {
             origPaths.forEach { File(it).delete() }
             patchedPaths.forEach { File(it).delete() }
             return false
@@ -201,7 +247,7 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
         if (packageName.isNullOrBlank()) return false
         val origPaths = sessions[packageName] ?: return false
 
-        val ok = execCode("pm", "uninstall", "--user", "0", "-k", packageName) == 0 &&
+        val ok = uninstallKeepData(packageName) &&
                  installViaSession(origPaths)
 
         sessions.remove(packageName)
