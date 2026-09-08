@@ -1,8 +1,10 @@
 # Changelog
 
-All notable changes to ShizukuPlus are documented here.
+All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md](AI_ATTRIBUTIONS.md) for full AI pair-programming provenance and commit mapping.
 
 ## [Unreleased]
+
+*Co-developed with Antigravity & Claude Code*
 
 ### 🐛 Bug Fixes
 
@@ -54,6 +56,8 @@ All notable changes to ShizukuPlus are documented here.
 
 ## [v13.6.0.r2287 → r2343]
 
+*Co-developed with Claude Code*
+
 ### 🐛 Bug Fixes
 
 #### Server / Service
@@ -96,6 +100,8 @@ All notable changes to ShizukuPlus are documented here.
 - **SU Bridge self-test now shows the actual deploy failure reason** (exit code/stderr) instead of a generic "could not deploy" message — the detail was already being captured to logcat but never reached the dialog users actually see/report. ([#402](https://github.com/thejaustin/ShizukuPlus/issues/402))
 
 ## [Unreleased / Build r2248+]
+
+*Co-developed with Claude Code*
 
 ### 🐛 Bug Fixes
 
