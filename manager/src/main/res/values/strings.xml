@@ -747,6 +747,10 @@
     <string name="permission_group_description" translatable="false">@string/permission_label</string>
     <string name="permission_label">access Shizuku</string>
     <string name="permission_description">Allow the app to use Shizuku.</string>
+    <string name="permission_group_label_plus" translatable="false">Shizuku (+)</string>
+    <string name="permission_group_description_plus" translatable="false">@string/permission_label_plus</string>
+    <string name="permission_label_plus">access Shizuku (+)</string>
+    <string name="permission_description_plus">Allow the app to use Shizuku (+).</string>
     <string name="permission_warning_template"><![CDATA[Allow <b>%1$s</b> to %2$s?]]></string>
     <string name="grant_dialog_button_allow_always">Allow all the time</string>
     <string name="grant_dialog_button_deny">"Deny"</string>
