@@ -30,16 +30,20 @@ object MigrationHelper {
         }
     }
 
-    /** Returns true if root is available. Avoids obtaining a full shell when not needed. */
+    /** Returns true if root or Shizuku privileged shell is available. */
     fun isRootAvailable(): Boolean = try {
-        Shell.getShell().isRoot
+        Shell.getShell().isRoot || rikka.shizuku.Shizuku.pingBinder()
     } catch (e: Exception) {
-        Timber.tag(TAG).d(e, "Root check failed")
-        false
+        try {
+            rikka.shizuku.Shizuku.pingBinder()
+        } catch (_: Exception) {
+            Timber.tag(TAG).d(e, "Privileged shell check failed")
+            false
+        }
     }
 
     /**
-     * Reads the old app's settings via root shell and applies every key-value entry to
+     * Reads the old app's settings via root shell or Shizuku and applies every key-value entry to
      * current preferences. Keys that already exist are skipped.
      *
      * @return true if at least one setting was migrated successfully, false otherwise.
@@ -63,14 +67,36 @@ object MigrationHelper {
     private fun migrateFile(context: Context, prefsName: String, oldPath: String): Boolean {
         val currentPrefs = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
 
-        // Read the raw XML from the old package's data dir via root shell
-        val result = Shell.cmd("cat '$oldPath'").exec()
-        if (!result.isSuccess || result.out.isEmpty()) {
-            Timber.tag(TAG).w("Could not read old prefs (path=$oldPath, code=${result.code})")
-            return false
+        // Read the raw XML from the old package's data dir via root shell or Shizuku shell
+        var xmlContent: String? = null
+        try {
+            val result = Shell.cmd("cat '$oldPath'").exec()
+            if (result.isSuccess && result.out.isNotEmpty()) {
+                xmlContent = result.out.joinToString("\n")
+            }
+        } catch (e: Exception) {
+            Timber.tag(TAG).d(e, "Root read failed, attempting Shizuku fallback")
         }
 
-        val xmlContent = result.out.joinToString("\n")
+        if (xmlContent == null && rikka.shizuku.Shizuku.pingBinder()) {
+            try {
+                val p = rikka.shizuku.Shizuku.newProcess(arrayOf("cat", oldPath), null, null)
+                if (p != null) {
+                    val out = p.inputStream.bufferedReader().use { it.readText() }
+                    if (p.waitFor() == 0 && out.isNotBlank()) {
+                        xmlContent = out
+                    }
+                    try { p.destroy() } catch (_: Exception) {}
+                }
+            } catch (e: Exception) {
+                Timber.tag(TAG).w(e, "Shizuku read failed for $oldPath")
+            }
+        }
+
+        if (xmlContent == null) {
+            Timber.tag(TAG).w("Could not read old prefs (path=$oldPath)")
+            return false
+        }
         val editor = currentPrefs.edit()
         var count = 0
 

@@ -14,7 +14,7 @@ object RootCompatHelper {
     fun canAutoSetupInAdbMode(packageName: String): Boolean = packageName in GLOBAL_SETTINGS_APPS
 
     /** Returns true if [packageName] supports Magic Setup in the current privilege mode.
-     *  Pass [rootMode] = true when Shizuku is running as UID 0.
+     *  Pass [rootMode] = true when Shizuku is running as UID 0 or ADB mode (UID 2000).
      *  This is the single source of truth for whether the Magic Setup button should be enabled. */
     fun canAutoSetup(packageName: String, rootMode: Boolean): Boolean =
         packageName in GLOBAL_SETTINGS_APPS || (rootMode && packageName in ROOT_PREFS_APPS)
@@ -34,7 +34,8 @@ object RootCompatHelper {
         "me.piebridge.prevent"  to "prevent_su_path"
     )
 
-    // Apps that store their SU path in shared_prefs; only reachable with UID 0 (root Shizuku).
+    // Apps that store their SU path in shared_prefs; reachable with UID 0 (root Shizuku) or
+    // via privileged shell / run-as in ADB mode.
     // Format: package → Pair(prefs file basename, XML key name)
     private val ROOT_PREFS_APPS = mapOf(
         "com.keramidas.TitaniumBackup"    to Pair("TitaniumBackup-preferences", "suCommand"),
@@ -44,21 +45,12 @@ object RootCompatHelper {
         "com.jrummy.root.browserfree"    to Pair("es_preferences", "su_path"),
         "com.estrongs.android.pop"       to Pair("es_preferences", "su_path"),
         "com.github.machiav3lli.backup"  to Pair("com.github.machiav3lli.backup_preferences", "custom_su_path")
-        // Swift Backup (org.swiftapps.swiftbackup) intentionally has no entry here: reverse-
-        // engineering its 5.1.0 APK found it never reads a custom su-binary path from its own
-        // SharedPreferences - root access goes through libsu's Shell.Builder, which just invokes
-        // plain PATH-resolved "su". There is no su_path/custom_su/suCommand-style key anywhere in
-        // its bytecode for this (or any prior) entry to have matched, so autoSetup() correctly
-        // falls through to the "no automatic path" branch for it. It IS a genuine Shizuku client
-        // (own rikka.shizuku.ShizukuProvider at authority org.swiftapps.swiftbackup.shizuku,
-        // package-agnostic binder handshake) - point users at its own Settings > grant-permissions
-        // flow ("Grant with Root or Shizuku") instead of SU Bridge auto-setup for this app.
     )
 
     /**
      * Automatically configures a root app to use the Shizuku+ SU Bridge.
      * Uses global settings for apps that support it; falls back to direct shared_prefs
-     * editing when Shizuku is running as root (UID 0).
+     * editing when Shizuku is running as root (UID 0) or privileged ADB shell (UID 2000).
      */
     suspend fun autoSetup(context: Context, packageName: String, suPath: String): Boolean = withContext(Dispatchers.IO) {
         if (!isShizukuAvailable()) return@withContext false
@@ -72,8 +64,8 @@ object RootCompatHelper {
                 globalKey != null -> {
                     success = executePrivileged(arrayOf("settings", "put", "global", globalKey, suPath))
                 }
-                prefsEntry != null && isShizukuRoot() -> {
-                    // Root Shizuku (UID 0) can directly edit another app's shared_prefs.
+                prefsEntry != null -> {
+                    // Shizuku (UID 0 root or UID 2000 ADB shell) edits another app's shared_prefs.
                     val (prefsFile, prefsKey) = prefsEntry
                     // Force-stop first: a running app periodically flushes its in-memory
                     // SharedPreferences to disk, which would overwrite the edit we are about to
@@ -83,6 +75,7 @@ object RootCompatHelper {
                     val escapedKey  = escapeSed(prefsKey)
                     val target = "/data/data/$packageName/shared_prefs/$prefsFile.xml"
                     // Replace existing value or append before </map> if key is absent.
+                    // Also try run-as if direct shell access is blocked by permission on non-root.
                     val cmd = """
                         if [ -f '$target' ]; then
                             if grep -q 'name="$escapedKey"' '$target'; then
@@ -90,6 +83,8 @@ object RootCompatHelper {
                             else
                                 sed -i 's|</map>|    <string name="$escapedKey">$escapedPath</string>\n</map>|' '$target'
                             fi
+                        else
+                            run-as $packageName sh -c "if [ -f shared_prefs/$prefsFile.xml ]; then if grep -q 'name=\"$escapedKey\"' shared_prefs/$prefsFile.xml; then sed -i 's|<string name=\"$escapedKey\">.*</string>|<string name=\"$escapedKey\">$escapedPath</string>|' shared_prefs/$prefsFile.xml; else sed -i 's|</map>|    <string name=\"$escapedKey\">$escapedPath</string>\n</map>|' shared_prefs/$prefsFile.xml; fi; fi" 2>/dev/null
                         fi
                     """.trimIndent()
                     success = executePrivileged(arrayOf("sh", "-c", cmd))
@@ -108,7 +103,7 @@ object RootCompatHelper {
 
     private fun isShizukuRoot(): Boolean {
         return try {
-            Shizuku.pingBinder() && Shizuku.getUid() == 0
+            Shizuku.pingBinder() && (Shizuku.getUid() == 0 || Shizuku.getUid() == 2000)
         } catch (e: Exception) {
             false
         }

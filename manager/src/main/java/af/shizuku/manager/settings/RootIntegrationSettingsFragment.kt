@@ -218,24 +218,22 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
 
         when {
             uid == 2000 -> {
-                // Running in ADB/shell mode -- gray out root-only categories
-                val rootOnlyCategories = listOf(
+                // Running in ADB/shell mode -- enable rootless bridges, SU bridge (rish emulation),
+                // and mocking/simulation features so ADB users gain full access.
+                val bridgeCategories = listOf(
                     "category_su_bridge",
                     "category_root_modules",
-                    "category_ghost_bridge",
-                    "category_unlocked_bootloader"
+                    "category_ghost_bridge"
                 )
-                for (key in rootOnlyCategories) {
+                for (key in bridgeCategories) {
                     findPreference<PreferenceGroup>(key)?.apply {
-                        isEnabled = false
-                        // Append mode hint only once to avoid duplicating on repeated onResume()
-                        val suffix = " (root mode only)"
-                        if (!title.toString().endsWith(suffix)) {
-                            title = "$title$suffix"
-                        }
+                        isEnabled = true
                     }
                 }
-                // ADB connection category: keep visible but annotate with mode indicator
+                findPreference<PreferenceGroup>("category_unlocked_bootloader")?.apply {
+                    isEnabled = isBootloaderUnlocked()
+                }
+                // ADB connection category: keep visible and annotate with mode indicator
                 findPreference<PreferenceCategory>("category_adb_connection")?.apply {
                     isVisible = true
                     summary = getString(R.string.settings_mode_indicator_adb)
