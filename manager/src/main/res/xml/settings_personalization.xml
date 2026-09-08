@@ -187,7 +187,7 @@
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="show_backup_home"
             android:title="@string/home_backup_title"
-            android:icon="@drawable/ic_restore_24"
+            android:icon="@drawable/ic_folder_24"
             android:defaultValue="false" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
