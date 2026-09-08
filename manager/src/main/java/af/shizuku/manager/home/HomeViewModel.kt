@@ -154,19 +154,19 @@ class HomeViewModel(
 
         if (tcpPort.isEmpty() || tcpPort == "0" || tcpPort == "-1") {
             try {
-                tcpPort = Shizuku.getSystemProperty("service.adb.tcp.port", "")
+                tcpPort = rikka.shizuku.ShizukuSystemProperties.get("service.adb.tcp.port", "")
             } catch (_: Throwable) {
             }
         }
         if (tlsPort.isEmpty() || tlsPort == "0" || tlsPort == "-1") {
             try {
-                tlsPort = Shizuku.getSystemProperty("service.adb.tls.port", "")
+                tlsPort = rikka.shizuku.ShizukuSystemProperties.get("service.adb.tls.port", "")
             } catch (_: Throwable) {
             }
         }
         if (usbState.isEmpty()) {
             try {
-                usbState = Shizuku.getSystemProperty("sys.usb.state", "")
+                usbState = rikka.shizuku.ShizukuSystemProperties.get("sys.usb.state", "")
             } catch (_: Throwable) {
             }
         }
