@@ -208,6 +208,23 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
         }
     }
 
+    private fun createPackageDataObserver(latch: java.util.concurrent.CountDownLatch): IBinder? {
+        return try {
+            val stubClass = Class.forName("android.content.pm.IPackageDataObserver\$Stub")
+            java.lang.reflect.Proxy.newProxyInstance(
+                stubClass.classLoader,
+                arrayOf(Class.forName("android.content.pm.IPackageDataObserver"), IBinder::class.java)
+            ) { _, method, _ ->
+                if (method.name == "onRemoveCompleted") {
+                    latch.countDown()
+                }
+                null
+            } as? IBinder
+        } catch (_: Exception) {
+            null
+        }
+    }
+
     override fun clearAppCache(packageName: String?): Boolean {
         if (packageName == null) return false
         val userId = callingUserId()
@@ -215,11 +232,7 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
         try {
             val pm = packageManagerService() ?: error("no package service")
             val latch = java.util.concurrent.CountDownLatch(1)
-            val observer = object : android.content.pm.IPackageDataObserver.Stub() {
-                override fun onRemoveCompleted(pkgName: String?, succeeded: Boolean) {
-                    latch.countDown()
-                }
-            }
+            val observer = createPackageDataObserver(latch)
             val method = pm.javaClass.methods.firstOrNull { it.name == "deleteApplicationCacheFilesAsUser" }
                 ?: pm.javaClass.methods.firstOrNull { it.name == "deleteApplicationCacheFiles" }
                 ?: error("deleteApplicationCacheFiles[AsUser] not found")
@@ -246,11 +259,7 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
         try {
             val pm = packageManagerService() ?: error("no package service")
             val latch = java.util.concurrent.CountDownLatch(1)
-            val observer = object : android.content.pm.IPackageDataObserver.Stub() {
-                override fun onRemoveCompleted(pkgName: String?, succeeded: Boolean) {
-                    latch.countDown()
-                }
-            }
+            val observer = createPackageDataObserver(latch)
             val method = pm.javaClass.methods.firstOrNull { it.name == "clearApplicationUserData" }
                 ?: error("clearApplicationUserData not found")
             method.invoke(pm, packageName, observer, userId)

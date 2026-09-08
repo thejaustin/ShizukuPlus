@@ -197,8 +197,15 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
         try {
             val pm = packageManagerService() ?: error("no package service")
             val latch = java.util.concurrent.CountDownLatch(1)
-            val observer = object : android.content.pm.IPackageDataObserver.Stub() {
-                override fun onRemoveCompleted(pkgName: String?, succeeded: Boolean) { latch.countDown() }
+            val stubClass = Class.forName("android.content.pm.IPackageDataObserver\$Stub")
+            val observer = java.lang.reflect.Proxy.newProxyInstance(
+                stubClass.classLoader,
+                arrayOf(Class.forName("android.content.pm.IPackageDataObserver"), IBinder::class.java)
+            ) { _, method, _ ->
+                if (method.name == "onRemoveCompleted") {
+                    latch.countDown()
+                }
+                null
             }
             val method = pm.javaClass.methods.firstOrNull { it.name == "clearApplicationUserData" }
                 ?: error("clearApplicationUserData not found")

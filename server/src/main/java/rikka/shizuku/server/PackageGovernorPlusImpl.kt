@@ -97,11 +97,16 @@ class PackageGovernorPlusImpl : IPackageGovernorPlus.Stub() {
             val pm = packageManagerService() ?: error("no package service")
             val latch = CountDownLatch(1)
             var deleteResult = -1
-            val observer = object : android.content.pm.IPackageDeleteObserver.Stub() {
-                override fun packageDeleted(name: String?, returnCode: Int) {
-                    deleteResult = returnCode
+            val stubClass = Class.forName("android.content.pm.IPackageDeleteObserver\$Stub")
+            val observer = java.lang.reflect.Proxy.newProxyInstance(
+                stubClass.classLoader,
+                arrayOf(Class.forName("android.content.pm.IPackageDeleteObserver"), IBinder::class.java)
+            ) { _, method, args ->
+                if (method.name == "packageDeleted") {
+                    deleteResult = (args?.getOrNull(1) as? Int) ?: -1
                     latch.countDown()
                 }
+                null
             }
             val invoked = pm.javaClass.methods
                 .filter { it.name == "deletePackageAsUser" }
