@@ -67,7 +67,17 @@ class DhizukuProvider : ContentProvider() {
             if (!ShizukuSettings.isDhizukuModeEnabled()) return false
 
             if (code == FIRST_CALL_TRANSACTION + 10) { // TRANSACT_CODE_REMOTE_BINDER
-                data.enforceInterface("com.rosan.dhizuku.server")
+                try {
+                    data.enforceInterface("com.rosan.dhizuku.server")
+                } catch (e: SecurityException) {
+                    try {
+                        data.setDataPosition(0)
+                        data.enforceInterface("com.rosan.dhizuku.aidl.IDhizuku")
+                    } catch (_: SecurityException) {
+                        data.setDataPosition(0)
+                        try { data.enforceInterface("com.rosan.dhizuku.IDhizuku") } catch (_: SecurityException) {}
+                    }
+                }
                 // Unlike the interface-token check above, this doesn't verify caller identity - without
                 // isCallerAuthorized() any installed app could relay an arbitrary transact() call through
                 // this process's identity onto a binder of its own choosing (confused-deputy).
@@ -79,7 +89,12 @@ class DhizukuProvider : ContentProvider() {
             }
 
             if (code >= FIRST_CALL_TRANSACTION + 0 && code <= FIRST_CALL_TRANSACTION + 3) {
-                data.enforceInterface("com.rosan.dhizuku.aidl.IDhizuku")
+                try {
+                    data.enforceInterface("com.rosan.dhizuku.aidl.IDhizuku")
+                } catch (e: SecurityException) {
+                    data.setDataPosition(0)
+                    try { data.enforceInterface("com.rosan.dhizuku.IDhizuku") } catch (_: SecurityException) {}
+                }
                 when (code) {
                     FIRST_CALL_TRANSACTION + 0 -> { // getVersion
                         reply?.writeNoException()

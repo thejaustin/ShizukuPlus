@@ -20,11 +20,25 @@ class BinderRequestReceiver : BroadcastReceiver() {
         }
 
         val rawToken = intent.getStringExtra("auth")
-        val authToken = if (rawToken != null) IntentCrypto.decrypt(rawToken) else null
+            ?: intent.getStringExtra("token")
+            ?: intent.getStringExtra("auth_token")
+
+        val tokenCandidate = rawToken?.trim()?.removeSurrounding("\"")?.let {
+            if (it.startsWith("auth:")) it.substring(5).trim() else it
+        }
+
         val expectedToken = ShizukuSettings.getAuthToken()
+        val decryptedToken = if (!tokenCandidate.isNullOrEmpty()) {
+            IntentCrypto.decrypt(tokenCandidate)
+        } else null
+
         // Constant-time compare: this gates handing out the live Shizuku binder.
-        val authValid = authToken != null &&
-            MessageDigest.isEqual(authToken.toByteArray(), expectedToken.toByteArray())
+        val authValid = when {
+            tokenCandidate.isNullOrEmpty() -> false
+            decryptedToken != null && MessageDigest.isEqual(decryptedToken.toByteArray(), expectedToken.toByteArray()) -> true
+            MessageDigest.isEqual(tokenCandidate.toByteArray(), expectedToken.toByteArray()) -> true
+            else -> false
+        }
 
         if (authValid) {
             // deliverBinder() may Thread.sleep() up to 2.3 s on freeze-retry — move off main thread.

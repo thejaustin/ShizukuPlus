@@ -185,6 +185,12 @@
             android:defaultValue="true" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="show_backup_home"
+            android:title="@string/home_backup_title"
+            android:icon="@drawable/ic_restore_24"
+            android:defaultValue="false" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="companion_mode"
             android:title="@string/settings_companion_mode"
             android:summary="@string/settings_companion_mode_summary"

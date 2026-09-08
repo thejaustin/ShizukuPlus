@@ -22,15 +22,32 @@ abstract class AuthenticatedReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val rawToken = intent.getStringExtra("auth")
-        val authToken = if (rawToken != null) af.shizuku.manager.utils.IntentCrypto.decrypt(rawToken) else null
+            ?: intent.getStringExtra("token")
+            ?: intent.getStringExtra("auth_token")
+
         val expectedToken = ShizukuSettings.getAuthToken()
 
-        if (authToken.isNullOrEmpty()) {
+        val tokenCandidate = rawToken?.trim()?.removeSurrounding("\"")?.let {
+            if (it.startsWith("auth:")) it.substring(5).trim() else it
+        }
+
+        val decryptedToken = if (!tokenCandidate.isNullOrEmpty()) {
+            af.shizuku.manager.utils.IntentCrypto.decrypt(tokenCandidate)
+        } else null
+
+        val isValid = when {
+            tokenCandidate.isNullOrEmpty() -> false
+            decryptedToken != null && java.security.MessageDigest.isEqual(decryptedToken.toByteArray(), expectedToken.toByteArray()) -> true
+            java.security.MessageDigest.isEqual(tokenCandidate.toByteArray(), expectedToken.toByteArray()) -> true
+            else -> false
+        }
+
+        if (tokenCandidate.isNullOrEmpty()) {
             context.notify(
                 R.string.notification_auth_missing_title,
                 R.string.notification_auth_missing_message
             )
-        } else if (!java.security.MessageDigest.isEqual(authToken.toByteArray(), expectedToken.toByteArray())) {
+        } else if (!isValid) {
             context.notify(
                 R.string.notification_auth_invalid_title,
                 R.string.notification_auth_invalid_message

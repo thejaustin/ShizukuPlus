@@ -83,6 +83,7 @@ public class ShizukuSettings {
 
         // Home card extras (Shizuku+ additions)
         public static final String KEY_SHOW_START_ADB_HOME = "show_start_adb_home";
+        public static final String KEY_SHOW_BACKUP_HOME = "show_backup_home";
         public static final String KEY_CARD_ORDER = "home_card_order";
         public static final String KEY_HIDDEN_HOME_CARDS = "hidden_home_cards";
 
@@ -590,7 +591,7 @@ public class ShizukuSettings {
 
     public static boolean showBackupHome() {
         SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean("show_backup_home", true);
+        return p != null && p.getBoolean(Keys.KEY_SHOW_BACKUP_HOME, false);
     }
 
     public static boolean showActivityLogHome() {

@@ -176,7 +176,8 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             "show_terminal_home",
             "show_automation_home",
             "show_activity_log_home",
-            "show_learn_more_home"
+            "show_learn_more_home",
+            "show_backup_home"
         )
 
         for (prefKey in switchKeys) {
