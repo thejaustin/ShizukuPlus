@@ -256,10 +256,17 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
             // 2. Disable device_config sync so phantom-process limit can't be reset by DeviceConfig push.
             //    Replaces `device_config set_sync_disabled_for_tests persistent`.
+            //    SYNC_DISABLED_MODE_PERSISTENT = 2 in android.provider.DeviceConfig
             try {
                 if (Build.VERSION.SDK_INT >= 33) {
-                    android.provider.DeviceConfig.setGlobalSyncDisabledForTests(
-                            android.provider.DeviceConfig.SYNC_DISABLED_MODE_PERSISTENT);
+                    java.lang.reflect.Method method = android.provider.DeviceConfig.class
+                            .getMethod("setGlobalSyncDisabledForTests", int.class);
+                    int mode = 2; // DeviceConfig.SYNC_DISABLED_MODE_PERSISTENT
+                    try {
+                        mode = android.provider.DeviceConfig.class
+                                .getField("SYNC_DISABLED_MODE_PERSISTENT").getInt(null);
+                    } catch (Exception ignored) {}
+                    method.invoke(null, mode);
                 }
             } catch (Exception e) {
                 LOGGER.w("phantom killer: DeviceConfig sync disable failed", e);
