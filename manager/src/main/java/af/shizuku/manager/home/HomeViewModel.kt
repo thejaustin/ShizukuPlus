@@ -133,7 +133,50 @@ class HomeViewModel(
 
         // pingBinder() above already succeeded, so the service is reachable and running regardless
         // of whether the attach-gated getUid()/getVersion() calls returned valid values.
-        return ServiceStatus(uid, apiVersion, patchVersion, seContext, permissionTest, running = true)
+        val startMethod = detectStartMethod(uid)
+        return ServiceStatus(uid, apiVersion, patchVersion, seContext, permissionTest, running = true, startMethod = startMethod)
+    }
+
+    private fun detectStartMethod(uid: Int): String {
+        if (uid == 0) return "root"
+        if (uid != 2000) return "adb"
+
+        var tcpPort = ""
+        var tlsPort = ""
+        var usbState = ""
+
+        try {
+            tcpPort = android.os.SystemProperties.get("service.adb.tcp.port", "")
+            tlsPort = android.os.SystemProperties.get("service.adb.tls.port", "")
+            usbState = android.os.SystemProperties.get("sys.usb.state", "")
+        } catch (_: Throwable) {
+        }
+
+        if (tcpPort.isEmpty() || tcpPort == "0" || tcpPort == "-1") {
+            try {
+                tcpPort = Shizuku.getSystemProperty("service.adb.tcp.port", "")
+            } catch (_: Throwable) {
+            }
+        }
+        if (tlsPort.isEmpty() || tlsPort == "0" || tlsPort == "-1") {
+            try {
+                tlsPort = Shizuku.getSystemProperty("service.adb.tls.port", "")
+            } catch (_: Throwable) {
+            }
+        }
+        if (usbState.isEmpty()) {
+            try {
+                usbState = Shizuku.getSystemProperty("sys.usb.state", "")
+            } catch (_: Throwable) {
+            }
+        }
+
+        return when {
+            tcpPort.isNotEmpty() && tcpPort != "0" && tcpPort != "-1" -> "adb over TCP ($tcpPort)"
+            tlsPort.isNotEmpty() && tlsPort != "0" && tlsPort != "-1" -> "wireless adb ($tlsPort)"
+            usbState.contains("adb") -> "adb (USB)"
+            else -> "adb"
+        }
     }
 
     /**

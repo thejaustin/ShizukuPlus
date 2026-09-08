@@ -19,17 +19,33 @@ public class ProxyRemoteProcess extends IRemoteProcess.Stub {
 
     @Override
     public ParcelFileDescriptor getOutputStream() {
-        return null;
+        try {
+            return ParcelFileDescriptor.open(
+                    new java.io.File("/dev/null"), ParcelFileDescriptor.MODE_WRITE_ONLY);
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     @Override
     public ParcelFileDescriptor getInputStream() {
-        return pfd;
+        if (pfd != null) return pfd;
+        try {
+            return ParcelFileDescriptor.open(
+                    new java.io.File("/dev/null"), ParcelFileDescriptor.MODE_READ_ONLY);
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     @Override
     public ParcelFileDescriptor getErrorStream() {
-        return null;
+        try {
+            return ParcelFileDescriptor.open(
+                    new java.io.File("/dev/null"), ParcelFileDescriptor.MODE_READ_ONLY);
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     @Override
