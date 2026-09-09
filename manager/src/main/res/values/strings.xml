@@ -869,6 +869,7 @@
     <string name="accessibility_icon_help">Help icon</string>
     <string name="accessibility_icon_drag_handle">Drag to reorder</string>
     <string name="accessibility_icon_remove">Remove card</string>
+    <string name="accessibility_icon_toggle_visibility">Toggle card visibility</string>
     <string name="accessibility_icon_close">Close</string>
     <string name="accessibility_icon_info">Information</string>
     <string name="accessibility_icon_play">Play</string>

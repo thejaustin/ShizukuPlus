@@ -56,9 +56,9 @@
             android:background="@drawable/shape_edit_control_background"
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:padding="12dp"
-            android:src="@drawable/ic_close_24"
-            app:tint="?attr/colorError"
-            android:contentDescription="@string/accessibility_icon_remove"
+            android:src="@drawable/ic_visibility_24"
+            app:tint="?attr/colorOnSurfaceVariant"
+            android:contentDescription="@string/accessibility_icon_toggle_visibility"
             android:elevation="4dp"
             android:visibility="gone" />
 

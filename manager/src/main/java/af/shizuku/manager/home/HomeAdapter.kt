@@ -252,9 +252,12 @@ class HomeAdapter(
         val hidden = ShizukuSettings.getHiddenHomeCards()
         holder.itemView.tag = id.toString() in hidden
 
-        val removeBtn = holder.itemView.findViewById<android.view.View>(R.id.remove_btn)
-        removeBtn?.setOnClickListener {
-            HomeEditMode.removeCardCallback?.invoke(id)
+        val removeBtn = holder.itemView.findViewById<android.widget.ImageButton>(R.id.remove_btn)
+        if (removeBtn != null) {
+            val isHidden = id.toString() in hidden
+            val iconRes = if (isHidden) R.drawable.ic_visibility_off_24 else R.drawable.ic_visibility_24
+            removeBtn.setImageResource(iconRes)
+            removeBtn.setOnClickListener { HomeEditMode.removeCardCallback?.invoke(id) }
         }
 
         super.onBindViewHolder(holder, position)

@@ -169,13 +169,13 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
             cardView.strokeWidth = (strokeDp * context.resources.displayMetrics.density + 0.5f).toInt()
             cardView.strokeColor = when {
                 ok -> com.google.android.material.color.MaterialColors.getColor(
-                    context, com.google.android.material.R.attr.colorPrimary,
+                    context, androidx.appcompat.R.attr.colorPrimary,
                     ContextCompat.getColor(context, R.color.status_ok)
                 )
                 state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING ->
                     ContextCompat.getColor(context, R.color.status_starting)
                 else -> com.google.android.material.color.MaterialColors.getColor(
-                    context, com.google.android.material.R.attr.colorError,
+                    context, androidx.appcompat.R.attr.colorError,
                     ContextCompat.getColor(context, R.color.status_error)
                 )
             }

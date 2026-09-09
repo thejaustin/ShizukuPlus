@@ -151,9 +151,6 @@
         android:title="Home Screen"
         android:defaultValue="true">
 
-        <af.shizuku.manager.settings.HomeLayoutSimulatorPreference
-            android:key="home_layout_simulator" />
-
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="show_terminal_home"
             android:title="@string/settings_show_terminal_home"
