@@ -207,4 +207,47 @@ class StorageProxyImpl : IStorageProxy.Stub() {
             openViaShellPipe(arrayOf("tar", "-czf", "-", "-C", dir, "."))
         }
     }
+
+    override fun restoreTarDirectory(
+        destDirPath: String?,
+        packageContext: String?,
+        tarPfd: ParcelFileDescriptor?
+    ): Boolean {
+        if (!InputValidationUtils.isSafePath(destDirPath) || tarPfd == null) return false
+        val dir = destDirPath!!
+        val cmd = if (!packageContext.isNullOrBlank() && serverUid == 2000 &&
+            (dir.startsWith("/data/data/") || dir.startsWith("/data/user/"))) {
+            arrayOf("run-as", packageContext, "tar", "-xf", "-", "-C", dir)
+        } else {
+            arrayOf("tar", "-xf", "-", "-C", dir)
+        }
+        return try {
+            val proc = ProcessBuilder(*cmd)
+                .start()
+            // Drain stderr on a daemon thread to prevent the child from blocking if its stderr
+            // pipe buffer fills up (e.g., verbose tar warnings). We collect it for logging only.
+            val errBuf = StringBuilder()
+            val stderrThread = Thread {
+                try {
+                    proc.errorStream.bufferedReader().forEachLine { errBuf.appendLine(it) }
+                } catch (_: Exception) {}
+            }.also { it.isDaemon = true; it.start() }
+            // Pipe the tar stream into the process's stdin, then close stdin so tar sees EOF.
+            ParcelFileDescriptor.AutoCloseInputStream(tarPfd).use { input ->
+                proc.outputStream.use { output ->
+                    input.copyTo(output)
+                }
+            }
+            stderrThread.join(5_000)
+            val exitCode = proc.waitFor()
+            if (exitCode != 0) {
+                Log.e("StorageProxy", "restoreTarDirectory exitCode=$exitCode: $errBuf")
+            }
+            exitCode == 0
+        } catch (e: Exception) {
+            Log.e("StorageProxy", "restoreTarDirectory failed", e)
+            false
+        }
+    }
 }
+
