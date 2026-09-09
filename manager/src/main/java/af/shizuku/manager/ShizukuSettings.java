@@ -98,6 +98,8 @@ public class ShizukuSettings {
         public static final String KEY_AUTOMATION_TRUSTED_NETWORKS = "automation_trusted_networks";
         public static final String KEY_AUTOMATION_AUTO_HIDE_PACKAGES = "automation_auto_hide_packages";
         public static final String KEY_AUTOMATION_APP_PROFILES_JSON = "automation_app_profiles_json";
+        public static final String KEY_HIDE_BACKUP_SETTINGS = "hide_backup_settings";
+        public static final String KEY_CUSTOM_APP_LABEL = "custom_app_label";
         public static final String KEY_ON_DEVICE_ADB_TCP = "on_device_adb_tcp";
         public static final String KEY_FORCE_START_WADB = "force_start_wadb";
         public static final String KEY_SU_BRIDGE_ENABLED = "su_bridge_enabled";
