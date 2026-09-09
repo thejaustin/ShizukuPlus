@@ -297,17 +297,12 @@ class HomeAdapter(
             cardOrder.removeAt(fromIdx)
             cardOrder.add(toIdx, fromId)
         }
-        // notifyItemMoved requires the backing list to already reflect the new order (stable IDs
-        // are on); rebuild it synchronously here rather than relying on updateData(), which is
-        // gated by isDragging during the drag gesture.
-        val status = lastRenderStatus
-        if (status != null) {
-            rebuildItems(
-                status, lastRenderGrantedCount, lastRenderIsEditMode, lastRenderCompanionInstalled,
-                lastRenderCompatHubInstalled, lastRenderIsOriginalShizukuRunning, lastRenderHidden
-            )
-        }
-        notifyItemMoved(fromPos, toPos)
+        // ItemTouchHelper owns the visual drag animation — calling notifyItemMoved() during an
+        // active drag conflicts with it and causes a brief re-bind flash (#475). The backing
+        // adapter list only needs to be in the right order when clearView() fires (at which point
+        // updateData() → notifyDataSetChanged() rebuilds everything cleanly from cardOrder).
+        // Calling rebuildItems() here would also re-trigger onBindViewHolder on adjacent items and
+        // reset their translationY to 0 mid-animation, causing the visible flash.
     }
 
     fun persistCardOrder() {

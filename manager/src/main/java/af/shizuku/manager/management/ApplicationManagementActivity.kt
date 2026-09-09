@@ -53,8 +53,11 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
     private var swipeRightAction = "none"
     private var swipeLeftAction = "none"
 
-    private val stateListener: (ShizukuStateMachine.State) -> Unit = {
-        if (ShizukuStateMachine.isDead() && !isFinishing) finish()
+    private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
+        when {
+            ShizukuStateMachine.isDead() && !isFinishing -> finish()
+            state == ShizukuStateMachine.State.RUNNING -> viewModel.load()
+        }
     }
 
     override fun getLayoutId() = R.layout.apps_appbar_activity
@@ -62,7 +65,10 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (!ShizukuStateMachine.isRunning()) {
+        // Close immediately only when Shizuku is definitively stopped/crashed; allow the
+        // activity to open during STARTING so it can display a "waiting" state and load the
+        // list as soon as the binder arrives (fixes #471 — tap during startup transition).
+        if (ShizukuStateMachine.isDead()) {
             finish()
             return
         }
@@ -76,12 +82,20 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // Empty state view
+        // Empty state view — also used as "waiting for Shizuku" placeholder while STARTING.
         val emptyStateView = binding.emptyStateView
         emptyStateView.setIcon(R.drawable.ic_empty_search_24)
         emptyStateView.setTitle(R.string.empty_state_title_no_results)
         emptyStateView.setDescription(R.string.empty_state_description_no_results)
         emptyStateView.hideActionButton()
+
+        // If the binder isn't up yet (STARTING state), show a "waiting" placeholder and let
+        // the stateListener trigger the real load once RUNNING is reached.
+        if (!ShizukuStateMachine.isRunning()) {
+            emptyStateView.setTitle(R.string.empty_state_title_service_starting)
+            emptyStateView.setDescription(R.string.empty_state_description_service_starting)
+            emptyStateView.visibility = View.VISIBLE
+        }
 
         // Predictive back support for selection mode
         backCallback = object : androidx.activity.OnBackPressedCallback(false) {
@@ -119,6 +133,11 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
                     val data = it.data ?: emptyList()
                     adapter.updateData(data)
 
+                    // Reset empty state to "no results" variant in case it was showing the
+                    // "waiting for Shizuku" placeholder while the service was STARTING.
+                    emptyStateView.setTitle(R.string.empty_state_title_no_results)
+                    emptyStateView.setDescription(R.string.empty_state_description_no_results)
+
                     // Show empty state when filtered results are empty
                     val hasData = data.isNotEmpty()
                     emptyStateView.visibility = if (hasData) View.GONE else View.VISIBLE
@@ -141,7 +160,9 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
                 Status.LOADING -> {}
             }
         }
-        viewModel.load()
+        // Only trigger an initial load if Shizuku is actually running; otherwise the
+        // stateListener will fire viewModel.load() once the binder arrives.
+        if (ShizukuStateMachine.isRunning()) viewModel.load()
 
         recyclerView.adapter = adapter
         recyclerView.clipToPadding = false

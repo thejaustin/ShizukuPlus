@@ -906,6 +906,8 @@
     <string name="accessibility_permission_denied">Permission denied</string>
 
     <!-- Empty State Views -->
+    <string name="empty_state_title_service_starting">Starting…</string>
+    <string name="empty_state_description_service_starting">Waiting for Shizuku+ to finish starting. This usually takes a moment.</string>
     <string name="empty_state_title_no_results">No results found</string>
     <string name="empty_state_description_no_results">No apps match your current filter or search criteria.</string>
     <string name="empty_state_title_no_apps">No apps yet</string>
