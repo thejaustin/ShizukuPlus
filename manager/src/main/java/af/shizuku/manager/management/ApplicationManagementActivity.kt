@@ -24,6 +24,10 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import af.shizuku.manager.R
@@ -52,6 +56,7 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
     private var backCallback: androidx.activity.OnBackPressedCallback? = null
     private var swipeRightAction = "none"
     private var swipeLeftAction = "none"
+    private var isFirstResume = true
 
     private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
         when {
@@ -378,15 +383,32 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
             )
             "toggle_permission" -> {
                 val uid = item.applicationInfo?.uid ?: return
-                try {
-                    if (AuthorizationManager.granted(item.packageName, uid)) {
-                        AuthorizationManager.revoke(item.packageName, uid)
-                    } else {
-                        AuthorizationManager.grant(item.packageName, uid)
+                // Binder IPC (granted + grant/revoke) must not block the main thread — an ANR
+                // risk that showed up on slow devices during rapid swipe gestures.
+                // After the toggle, post a targeted payload-rebind so the switch reflects the
+                // new state: the snap-back notifyItemChanged(pos) from onSwiped may have started
+                // a grantedLoadJob that raced against this IO work and read the pre-toggle state.
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        if (AuthorizationManager.granted(item.packageName, uid)) {
+                            AuthorizationManager.revoke(item.packageName, uid)
+                        } else {
+                            AuthorizationManager.grant(item.packageName, uid)
+                        }
+                        withContext(Dispatchers.Main) {
+                            val items = adapter.getItems<Any>()
+                            val pos = items.indexOfFirst {
+                                it is PackageInfo && it.packageName == item.packageName
+                            }
+                            if (pos >= 0) adapter.notifyItemChanged(pos, Any())
+                            adapter.notifyItemChanged(0) // update toggle-all header
+                        }
+                    } catch (e: SecurityException) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@ApplicationManagementActivity,
+                                R.string.app_management_dialog_adb_is_limited_title, Toast.LENGTH_SHORT).show()
+                        }
                     }
-                    adapter.notifyItemChanged(0) // update summary
-                } catch (e: SecurityException) {
-                    Toast.makeText(this, R.string.app_management_dialog_adb_is_limited_title, Toast.LENGTH_SHORT).show()
                 }
             }
             "hide_from_list" -> onHideApp(item.packageName)
@@ -508,7 +530,15 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
 
     override fun onResume() {
         super.onResume()
-        viewModel.refresh()
+        // Skip the very first resume (right after onCreate) — onCreate already called
+        // viewModel.load() when Shizuku was running, so a second load here is redundant.
+        // Subsequent resumes (returning from Settings, app-info, etc.) still refresh so a
+        // permission change made outside the activity is reflected immediately.
+        if (isFirstResume) {
+            isFirstResume = false
+        } else {
+            viewModel.refresh()
+        }
         // Re-read swipe settings: setupSwipe()'s callback closes over these fields, so a
         // change made in Settings while this activity was backgrounded takes effect here
         // without needing to rebuild the ItemTouchHelper.
