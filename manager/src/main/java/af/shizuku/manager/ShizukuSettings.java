@@ -97,6 +97,7 @@ public class ShizukuSettings {
         // automatic per-foreground-app list never mutates the user's manually-managed static one.
         public static final String KEY_AUTOMATION_TRUSTED_NETWORKS = "automation_trusted_networks";
         public static final String KEY_AUTOMATION_AUTO_HIDE_PACKAGES = "automation_auto_hide_packages";
+        public static final String KEY_AUTOMATION_APP_PROFILES_JSON = "automation_app_profiles_json";
         public static final String KEY_ON_DEVICE_ADB_TCP = "on_device_adb_tcp";
         public static final String KEY_FORCE_START_WADB = "force_start_wadb";
         public static final String KEY_SU_BRIDGE_ENABLED = "su_bridge_enabled";
@@ -1339,5 +1340,44 @@ public class ShizukuSettings {
     public static void setCustomAppLabel(@Nullable String label) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putString(Keys.KEY_CUSTOM_APP_LABEL, label).apply();
+    }
+
+    /**
+     * Returns true when at least one automation rule has been configured by the user.
+     * Used to guard AutomationService startup so a permanent foreground notification is never
+     * shown on devices where the user has never touched the automation settings.
+     */
+    public static boolean hasAnyAutomationRulesConfigured() {
+        SharedPreferences p = getPreferences();
+        if (p == null) return false;
+        String trustedNetworks = p.getString(Keys.KEY_AUTOMATION_TRUSTED_NETWORKS, "");
+        String autoHide = p.getString(Keys.KEY_AUTOMATION_AUTO_HIDE_PACKAGES, "");
+        String appProfiles = p.getString(Keys.KEY_AUTOMATION_APP_PROFILES_JSON, "{}");
+        boolean hasNetworks = trustedNetworks != null && !trustedNetworks.trim().isEmpty();
+        boolean hasAutoHide = autoHide != null && !autoHide.trim().isEmpty();
+        boolean hasProfiles = appProfiles != null && appProfiles.length() > 2 && !appProfiles.equals("{}");
+        return hasNetworks || hasAutoHide || hasProfiles;
+    }
+
+    /**
+     * Returns the per-app Binder Firewall automation profiles as a JSON string.
+     * Format: {"com.pkg": {"binder_firewall": true}}
+     * Returns "{}" when no profiles are configured.
+     */
+    @NonNull
+    public static String getAutomationAppProfilesJson() {
+        SharedPreferences p = getPreferences();
+        if (p == null) return "{}";
+        String json = p.getString(Keys.KEY_AUTOMATION_APP_PROFILES_JSON, "{}");
+        return json != null ? json : "{}";
+    }
+
+    /**
+     * Persists the per-app Binder Firewall automation profiles JSON string.
+     * See {@link #getAutomationAppProfilesJson()} for format.
+     */
+    public static void setAutomationAppProfilesJson(@NonNull String json) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putString(Keys.KEY_AUTOMATION_APP_PROFILES_JSON, json).apply();
     }
 }
