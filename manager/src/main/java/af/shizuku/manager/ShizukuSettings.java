@@ -166,6 +166,9 @@ public class ShizukuSettings {
         public static final String KEY_SERVER_STARTED_BUILD = "server_started_build";
         public static final String KEY_LAST_SETTLED_STATE = "last_settled_shizuku_state";
 
+        // Appearance (Shizuku+ additions)
+        public static final String KEY_SHOW_STATUS_CARD_OUTLINE = "show_status_card_outline";
+
         // Companion Mode (Shizuku+ additions)
         public static final String KEY_COMPANION_MODE = "companion_mode";
         public static final String KEY_COMPANION_FALLBACK = "companion_fallback";
@@ -600,6 +603,17 @@ public class ShizukuSettings {
     public static boolean showActivityLogHome() {
         SharedPreferences p = getPreferences();
         return p == null || p.getBoolean(Keys.KEY_SHOW_ACTIVITY_LOG_HOME, true);
+    }
+
+    /** Whether to show a colored outline on the service status card. Default: on. */
+    public static boolean isShowStatusCardOutlineEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_SHOW_STATUS_CARD_OUTLINE, true);
+    }
+
+    public static void setShowStatusCardOutlineEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_SHOW_STATUS_CARD_OUTLINE, enabled).apply();
     }
 
     public static boolean isActivityLogEnabled() {

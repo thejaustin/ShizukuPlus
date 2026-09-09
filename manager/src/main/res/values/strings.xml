@@ -383,6 +383,8 @@
     <string name="settings_enable_activity_log">Enable activity log</string>
     <string name="settings_enable_activity_log_summary">Record and display Shizuku API calls and events on the home screen.</string>
     <string name="settings_show_activity_log_home">Show Activity Log</string>
+    <string name="settings_show_status_card_outline">Status card outline</string>
+    <string name="settings_show_status_card_outline_summary">Show a colored outline on the service status card — green when running, red when stopped</string>
     <string name="settings_home_visibility">Home screen visibility</string>
     <string name="settings_update_app_database">Update app database</string>
     <string name="settings_update_app_database_summary">Fetch latest app descriptions and enhancement suggestions from GitHub.</string>

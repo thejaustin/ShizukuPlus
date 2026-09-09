@@ -161,9 +161,27 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
             cardView.setCardBackgroundColor(bgColor)
         }
 
-        // No stroke — the colored background container and live indicator dot already convey state.
-        // A green stroke (#4CAF50) clashed with the M3 theme and was flagged as out-of-place (#473).
-        cardView.strokeWidth = 0
+        // Status-aware stroke — semantically meaningful outline: green when running, red when stopped,
+        // amber when starting. Hidden entirely when the user disables it in Appearance settings.
+        // Default is on; user can turn it off via Settings → Appearance → Status card outline.
+        if (af.shizuku.manager.ShizukuSettings.isShowStatusCardOutlineEnabled()) {
+            val strokeDp = 2f
+            cardView.strokeWidth = (strokeDp * context.resources.displayMetrics.density + 0.5f).toInt()
+            cardView.strokeColor = when {
+                ok -> com.google.android.material.color.MaterialColors.getColor(
+                    context, com.google.android.material.R.attr.colorPrimary,
+                    ContextCompat.getColor(context, R.color.status_ok)
+                )
+                state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING ->
+                    ContextCompat.getColor(context, R.color.status_starting)
+                else -> com.google.android.material.color.MaterialColors.getColor(
+                    context, com.google.android.material.R.attr.colorError,
+                    ContextCompat.getColor(context, R.color.status_error)
+                )
+            }
+        } else {
+            cardView.strokeWidth = 0
+        }
 
         textView.setTextColor(textColor)
         summaryView.setTextColor(textColor)
