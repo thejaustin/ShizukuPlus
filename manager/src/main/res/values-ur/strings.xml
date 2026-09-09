@@ -1,0 +1,1234 @@
+<resources>
+    <string name="server_uptime">سرور کا اپ ٹائم</string>
+    <string name="active_connections">فعال کنکشنز</string>
+    <string name="server_memory_usage">سرور کی میموری کا استعمال</string>
+    <string name="server_memory_uncapped">بغیر حد کے</string>
+    <string name="server_clients_connected">%1$d ایپلیکیشنز منسلک ہیں</string>
+
+    <!-- To translators: you can leave your here -->
+    <string name="translation_contributors">HAMO</string>
+    <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
+
+    <!-- UI Settings - Expressive -->
+    <string name="settings_expressive_title">ایکسپریسیو ڈیزائن (M3E)</string>
+    <string name="settings_expressive_shapes">ایکسپریسیو آئیکن کی شکلیں</string>
+    <string name="settings_expressive_shapes_summary">آئیکنز کے لیے غیر متناسب پتے اور قطروں جیسی شکلیں استعمال کریں</string>
+    <string name="settings_expressive_animations">لچک دار اینیمیشنز</string>
+    <string name="settings_expressive_animations_summary">M3 کی لچک دار predictive back اور drag scaling فعال کریں</string>
+    <string name="settings_haptic_feedback">ہیپٹک فیڈبیک</string>
+    <string name="settings_haptic_feedback_summary">ٹیپ اور اشاروں پر وائبریٹ کریں</string>
+    <string name="settings_icon_style">آئیکن کا انداز</string>
+    <string name="settings_icon_style_summary">سسٹم آئیکنز کے لیے ظاہری انداز منتخب کریں</string>
+    <string name="settings_shape_style">کنٹینر کی شکل کا انداز</string>
+    <string name="settings_shape_style_summary">کارڈز اور ڈائیلاگز کے کونوں کی گولائی حسبِ ضرورت تبدیل کریں</string>
+    <string name="settings_animation_intensity">اینیمیشن کی شدت</string>
+    <string name="settings_animation_intensity_summary">UI منتقلی کی رفتار اور "اچھال" کو ایڈجسٹ کریں</string>
+
+    <!-- UI Settings - Display -->
+    <string name="settings_display_category">ڈسپلے</string>
+    <string name="settings_edge_to_edge">ایج ٹو ایج لے آؤٹ</string>
+    <string name="settings_edge_to_edge_summary">سسٹم بارز کے پیچھے بھی مواد دکھائیں۔ اگر سسٹم بارز اہم کنٹرولز کو ڈھانپیں تو اسے غیر فعال کریں</string>
+    <string name="settings_blur_ui">فراسٹڈ گلاس ایفیکٹ</string>
+    <string name="settings_blur_ui_summary">ڈائیلاگز اور اوپری بار پر بلر اور شفافیت لگائیں۔ Android 12+ پر بہترین ہے</string>
+
+    <!-- UI Settings - One UI Theme -->
+    <string name="settings_oneui_theme">One UI انداز</string>
+    <string name="settings_oneui_theme_summary">Samsung One UI کے ڈیزائن انداز سے مطابقت رکھیں — بڑے گول کونے اور نمایاں ٹائپوگرافی۔ رنگ متاثر نہیں ہوگا؛ اس کے لیے اوپر Material You یا حسبِ ضرورت accent استعمال کریں۔</string>
+    <string name="settings_one_handed_mode">ایک ہاتھ سے استعمال کا موڈ</string>
+    <string name="settings_one_handed_mode_summary">آرام دہ انگوٹھے کی رسائی کے لیے انٹرایکٹو مواد کو اسکرین کے نچلے حصے کی طرف منتقل کریں</string>
+    <string-array name="icon_styles">
+        <item>معیاری (Filled)</item>
+        <item>Outlined</item>
+        <item>Two-Tone</item>
+    </string-array>
+    <string-array name="icon_styles_value">
+        <item>standard</item>
+        <item>outlined</item>
+        <item>twotone</item>
+    </string-array>
+    <string-array name="icon_color_modes">
+        <item>کوئی رنگ نہیں (Monochrome)</item>
+        <item>سب کے لیے ایک ہی رنگ</item>
+        <item>ہر ایک کے لیے مختلف رنگ</item>
+    </string-array>
+    <string-array name="icon_color_modes_value">
+        <item>none</item>
+        <item>uniform</item>
+        <item>per_icon</item>
+    </string-array>
+    <string-array name="shape_styles">
+        <item>Zen (Leaf/Droplet)</item>
+        <item>جدید (Material 3)</item>
+        <item>کلاسک (Material 2)</item>
+        <item>Organic (Squircle)</item>
+        <item>Cut (Angular)</item>
+    </string-array>
+    <string-array name="shape_styles_value">
+        <item>zen</item>
+        <item>modern</item>
+        <item>classic</item>
+        <item>squircle</item>
+        <item>cut</item>
+    </string-array>
+    <string-array name="animation_intensities">
+        <item>کوئی نہیں</item>
+        <item>ہلکی</item>
+        <item>معیاری</item>
+        <item>ایکسپریسیو</item>
+    </string-array>
+    <string-array name="animation_intensities_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string name="settings_icon_color_mode">دو رنگی آئیکن کے رنگ</string>
+    <string name="settings_icon_color_mode_summary">دو رنگی آئیکن کے پس منظر میں رنگ کیسے استعمال کیا جائے</string>
+
+    <!-- Home - Status -->
+    <string name="home_status_service_running_tile_sublabel">چل رہا ہے</string>
+    <string name="home_status_service_stopped_tile_sublabel">بند ہے</string>
+    <string name="home_status_service_is_running">%1$s چل رہا ہے</string>
+    <string name="home_status_service_not_running">%1$s نہیں چل رہا</string>
+    <string name="home_status_service_not_running_summary">%1$s بند ہے</string>
+    <string name="home_status_service_user_root">root</string>
+    <string name="home_status_service_user_adb">adb</string>
+    <string name="home_status_service_version">ورژن %2$s، %1$s</string>
+    <string name="home_status_service_version_update"><![CDATA[ورژن %2$s، %1$s<br>ورژن %3$s پر اپ ڈیٹ کرنے کے لیے دوبارہ شروع کریں]]></string>
+
+    <!-- Home - Adb -->
+    <string name="home_adb_title"><![CDATA[کمپیوٹر سے منسلک ہو کر شروع کریں]]></string>
+    <string name="home_adb_description"><![CDATA[روٹ کے بغیر ڈیوائسز پر Shizuku شروع کرنے کے لیے adb استعمال کرنا ضروری ہے (کمپیوٹر کنکشن درکار ہے)۔ ڈیوائس دوبارہ شروع ہونے پر یہ عمل دوبارہ کرنا ہوگا۔ براہِ کرم <b><a href="%1$s">رہنمائی پڑھیں</a></b>۔]]></string>
+    <string name="home_adb_button_view_help">رہنمائی پڑھیں</string>
+    <string name="home_adb_button_view_command">کمانڈ دیکھیں</string>
+    <string name="home_adb_dialog_view_command_message"><![CDATA[<font face="monospace">%1$s</font><br><br>* کچھ مزید باتیں بھی قابلِ توجہ ہیں، پہلے تصدیق کریں کہ آپ نے رہنمائی پڑھ لی ہے۔]]></string>
+    <string name="home_adb_dialog_view_command_copy_button">نقل کریں</string>
+    <string name="home_adb_dialog_view_command_button_send">بھیجیں</string>
+
+    <!-- Home - Wireless Adb -->
+    <string name="home_wireless_adb_title"><![CDATA[وائرلیس ڈیبگنگ کے ذریعے شروع کریں]]></string>
+    <string name="home_wireless_adb_description"><![CDATA[Android 11 یا اس کے بعد، آپ وائرلیس ڈیبگنگ فعال کر کے کمپیوٹر سے منسلک ہوئے بغیر براہِ راست اپنی ڈیوائس سے Shizuku شروع کر سکتے ہیں۔<p>پہلے مرحلہ وار رہنمائی دیکھیں۔]]></string>
+    <string name="home_wireless_adb_description_pre_11"><![CDATA[Android 11 سے پہلے وائرلیس ڈیبگنگ فعال کرنے کے لیے کمپیوٹر سے کنکشن ضروری ہے۔]]></string>
+    <string name="home_wireless_adb_view_guide_button">مرحلہ وار رہنمائی</string>
+    <string name="home_layout_sim_adb">ADB</string>
+
+    <!-- Adb -->
+    <string name="dialog_adb_discovery">وائرلیس ڈیبگنگ سروس تلاش کی جا رہی ہے</string>
+    <string name="dialog_adb_discovery_message">براہِ کرم \"Wireless debugging\" کو \"Developer options\" میں فعال کریں۔ نیٹ ورک تبدیل ہونے پر یہ خودکار طور پر غیر فعال ہو جاتی ہے۔\n\nنوٹ: \"Developer options\" یا \"USB debugging\" کو غیر فعال نہ کریں، ورنہ Shizuku بند ہو جائے گا۔</string>
+    <string name="dialog_adb_discovery_message_toggle_wireless_debugging">اگر تلاش جاری رہے تو \"Wireless debugging\" کو غیر فعال کر کے دوبارہ فعال کرنے کی کوشش کریں۔</string>
+    <string name="dialog_adb_port">پورٹ</string>
+    <string name="dialog_adb_invalid_port">پورٹ 1 سے 65535 تک کا عدد ہونا چاہیے۔</string>
+    <string name="adb_pairing">جوڑا بنانا</string>
+    <string name="dialog_adb_pairing_title">ڈیوائس کے ساتھ جوڑا بنائیں</string>
+    <string name="dialog_adb_pairing_discovery">جوڑا بنانے کی سروس تلاش کی جا رہی ہے</string>
+    <string name="dialog_adb_pairing_paring_code">جوڑا بنانے کا کوڈ</string>
+    <string name="paring_code_is_wrong">جوڑا بنانے کا کوڈ غلط ہے۔</string>
+    <string name="cannot_connect_port">وائرلیس ڈیبگنگ سروس سے منسلک نہیں ہو سکا۔\n\nیقینی بنائیں کہ Shizuku کو تمام firewall، ad-block، VPN یا اسی طرح کی ایپس میں whitelist کیا گیا ہے جو نیٹ ورک تک رسائی محدود کر سکتی ہیں۔</string>
+    <string name="dialog_wireless_adb_not_enabled">وائرلیس ڈیبگنگ فعال نہیں ہے۔\nنوٹ: Android 11 سے پہلے وائرلیس ڈیبگنگ فعال کرنے کے لیے کمپیوٹر سے کنکشن ضروری ہے۔</string>
+    <string name="dialog_usb_debugging_not_enabled">USB ڈیبگنگ فعال نہیں ہے۔\nبراہِ کرم اسے \"Developer Options\" میں فعال کریں۔</string>
+    <string name="dialog_adb_pairing_message">براہِ کرم درج ذیل مراحل کے ذریعے جوڑا بنانا شروع کریں:\n- \"Developer Options\" کھولیں\n- \"USB debugging\" اور \"Wireless debugging\" فعال کریں\n- \"Wireless debugging\" کے بائیں حصے پر ٹیپ کریں\n- \"Pair device with pairing code\" پر ٹیپ کریں\n- اطلاع میں جوڑا بنانے کا کوڈ درج کریں</string>
+    <string name="dialog_adb_pairing_accessibility_permission">Android 14 پر Package Installer کے ذریعے Shizuku انسٹال یا اپ ڈیٹ کرنے سے %1$s کی اجازت واپس لے لی جاتی ہے، جو جوڑا بنانے کے لیے accessibility service فعال کرنے کے لیے ضروری ہے۔\n\nاسے دینے کے لیے درج ذیل ADB کمانڈ چلائیں:\n\n%2$s\n\nکمانڈ چلانے کے بعد آپ pairing کا عمل جاری رکھ سکتے ہیں۔\n\nنوٹ: Shizuku کو ADB کے ذریعے انسٹال یا اپ ڈیٹ کر کے آپ اس پابندی سے بچ سکتے ہیں۔</string>
+
+    <!-- Service Doctor -->
+    <string name="doctor_check_samsung_autoblocker">Samsung Auto Blocker</string>
+    <string name="doctor_check_samsung_battery_protection">Samsung Battery Protection</string>
+    <string name="doctor_check_secondary_user">ثانوی صارف / Secure Folder</string>
+    <string name="doctor_check_phantom_process">Phantom Process Killer</string>
+    <string name="doctor_tips_title">مسائل حل کرنے کے طریقے</string>
+    <string name="doctor_status_manual_check">دستی جانچ درکار ہے</string>
+    <string name="doctor_status_detected">پتہ چل گیا</string>
+    <string name="doctor_status_review">جائزہ درکار ہے</string>
+    <string name="doctor_tip_samsung_autoblocker"><![CDATA[<b>Samsung Auto Blocker</b>: یقینی بنائیں کہ یہ <b>OFF</b> ہے یا <b>Maximum Restrictions</b> غیر فعال ہے۔ یہ One UI 7/8+ پر ADB کمانڈز کو خاموشی سے بلاک کرتا ہے۔]]></string>
+    <string name="doctor_tip_oneui_connectivity"><![CDATA[<b>One UI 7/8 Connectivity</b>: اگر Wireless Pairing ناکام ہو تو Shizuku اور Developer Options کو بیک وقت کھلا رکھنے کے لیے <b>Split Screen mode</b> آزمائیں۔]]></string>
+    <string name="doctor_tip_s22_ultra"><![CDATA[<b>S22 Ultra Tip</b>: مستحکم ADB کے لیے dial `*#0808#` کریں اور اگر کنکشن بار بار ٹوٹے تو `MTP + ADB` منتخب کریں۔]]></string>
+    <string name="doctor_tip_secure_folder"><![CDATA[<b>Secure Folder Detected</b>: Shizuku Main User (Owner) میں بہترین کام کرتا ہے۔ Secure Folder یا Work Profile کے اندر چلانے کی صورت میں پہلے Main User سے server شروع کرنا ضروری ہو سکتا ہے۔]]></string>
+    <string name="doctor_tip_phantom_process"><![CDATA[<b>Phantom Process Killer</b>: Android 12-15+ بہت زیادہ کمانڈز چلنے پر Shizuku کو بند کر سکتا ہے۔ <b>Fix</b> بٹن اس حد کو غیر فعال کرنے کی کوشش کرتا ہے۔]]></string>
+    <string name="doctor_tip_samsung_optimization"><![CDATA[<b>Samsung Auto-Optimization</b>: Device Care میں <b>Auto Restart</b> کو غیر فعال کریں تاکہ Shizuku رات کے وقت بند نہ ہو۔]]></string>
+    <string name="doctor_tip_samsung_sleeping"><![CDATA[<b>Samsung Sleeping Apps</b>: Fix پر ٹیپ کرنے سے <b>\'Never sleeping ایپس\'</b> کی فہرست براہِ راست کھلتی ہے۔ <b>+</b> بٹن دبائیں اور Shizuku+ شامل کریں تاکہ Samsung بیک گراؤنڈ سروس کو منجمد نہ کرے۔]]></string>
+    <string name="doctor_tip_s22_ultra_exynos"><![CDATA[<b>S22 Ultra (Exynos)</b>: اگر سروس کا ردِعمل سست ہو تو Device Care > Memory میں <b>\'RAM Plus\'</b> غیر فعال کرنے کی کوشش کریں۔]]></string>
+    <string name="doctor_tip_s22_ultra_snapdragon"><![CDATA[<b>S22 Ultra (Snapdragon)</b>: زیادہ سے زیادہ کمانڈ throughput کے لیے Quick Settings میں <b>\'Enhanced Processing\'</b> فعال رکھیں۔]]></string>
+    <string name="doctor_system_well_configured">آپ کا سسٹم Shizuku+ کے لیے درست طور پر ترتیب دیا ہوا معلوم ہوتا ہے۔</string>
+
+    <!-- Root Compatibility -->
+    <string name="su_bridge_other_detected_apps">دیگر دریافت شدہ Root ایپس</string>
+    <string name="su_bridge_installed_root_app">انسٹال شدہ Root ایپ</string>
+    <string name="su_bridge_suggested_root_app">تجویز کردہ Root ایپ</string>
+
+    <!-- Shell Tutorial -->
+    <string name="terminal_tutorial_export_summary">فائلیں (%1$s، %2$s، %3$s اور %4$s) ایک نئے فولڈر میں ایکسپورٹ کریں۔</string>
+    <string name="terminal_tutorial_copy_command">cp /sdcard/chosen-folder/* /data/data/terminal.package.name/files</string>
+    <string name="terminal_tutorial_copy_summary"><![CDATA[یہ ایکسپورٹ کی گئی فائلوں کو آپ کی terminal ایپ کی نجی اسٹوریج میں کاپی کرتا ہے۔ آپ اپنی <font face="monospace">.bashrc</font> یا <font face="monospace">.zshrc</font> میں %1$s، %2$s اور %3$s کے لیے aliases بھی شامل کر سکتے ہیں۔]]></string>
+    <string name="terminal_tutorial_run_command">sh /path/to/%1$s</string>
+    <string name="terminal_tutorial_run_plus_command">sh /path/to/plus [کمانڈ]</string>
+
+    <!-- Adb Pairing Dialog -->
+    <string name="adb_pairing_searching">جوڑا بنانے کی سروس تلاش کی جا رہی ہے…</string>
+    <string name="adb_pairing_status_pairing">ڈیوائس کے ساتھ جوڑا بنایا جا رہا ہے…</string>
+    <string name="adb_pairing_status_failed">جوڑا بنانے میں ناکامی۔</string>
+
+    <!-- App Management -->
+    <string name="app_management_badge_format"><![CDATA[<b><font color="%1$s">[%2$s]</font></b> %3$s]]></string>
+    <string name="dialog_adb_pairing_accessibility_enable">جوڑا بنانے کا عمل شروع کرنے کے لیے accessibility service فعال کریں۔ اس سے Shizuku کو pairing code معلوم کرنے میں مدد ملتی ہے۔\n\nکوڈ ملنے یا 1 منٹ بعد توانائی بچانے کے لیے accessibility service خودکار طور پر بند ہو جائے گی۔</string>
+    <string name="dialog_adb_pairing_accessibility_navigate">براہِ کرم درج ذیل مراحل کے ذریعے pairing شروع کریں:\n- "Developer Options" کھولیں\n- "USB debugging" اور "Wireless debugging" فعال کریں\n- "Wireless debugging" کے بائیں حصے پر ٹیپ کریں\n- "Pair device with pairing code." پر ٹیپ کریں۔ Shizuku خودکار طور پر pairing code معلوم کر لے گا۔</string>
+    <string name="adb_pairing_requires_multi_window">پہلے split-screen (multi-window) موڈ میں جائیں۔</string>
+    <string name="adb_pairing_requires_multi_window_reason">سسٹم تقاضا کرتا ہے کہ pairing dialog ہر وقت نظر آئے۔ split-screen موڈ ہی واحد طریقہ ہے جس سے یہ ایپ اور سسٹم ڈائیلاگ ایک ہی وقت میں نظر آ سکتے ہیں۔</string>
+    <string name="adb_error_key_store">وائرلیس ڈیبگنگ کے لیے key تیار نہیں ہو سکی۔\nممکن ہے اس ڈیوائس کا KeyStore میکانزم خراب ہو۔</string>
+    <string name="adb_stopping_tcp">TCP پورٹ بند کی جا رہی ہے</string>
+    <string name="adb_error_stop_tcp">TCP پر ADB بند کرنے میں ناکامی</string>
+    <string name="adb_pair_required">براہِ کرم پہلے pairing کا مرحلہ مکمل کریں۔</string>
+    <string name="enable">فعال کریں</string>
+    <string name="development_settings">Developer options</string>
+    <string name="notification_settings">Notification options</string>
+    <string name="adb_pairing_tutorial_title">Shizuku کو اپنی ڈیوائس کے ساتھ جوڑیں</string>
+    <string name="adb_pairing_tutorial_content_notification">Shizuku کی ایک اطلاع آپ کو pairing مکمل کرنے میں مدد دے گی۔</string>
+    <string name="adb_pairing_tutorial_content_steps">"Developer Options" کھولیں، پھر "USB debugging" اور "Wireless debugging" فعال کریں۔</string>
+    <string name="adb_pairing_tutorial_content_enter_pairing_code">"Wireless debugging" کے بائیں حصے پر ٹیپ کریں، پھر "Pair device with pairing code." پر ٹیپ کریں۔ pairing مکمل کرنے کے لیے اطلاع میں کوڈ درج کریں۔</string>
+    <string name="adb_pairing_tutorial_content_notification_blocked">pairing کے عمل میں Shizuku کی اطلاع کے ساتھ تعامل ضروری ہے۔ براہِ کرم Shizuku کو notifications بھیجنے کی اجازت دیں۔</string>
+    <string name="adb_pairing_tutorial_content_miui">MIUI صارفین کو سسٹم کی notification ترتیبات میں "Notification" - "Notification shade" سے notification style کو "Android" پر تبدیل کرنے کی ضرورت ہو سکتی ہے۔</string>
+    <string name="adb_pairing_tutorial_content_miui_2">ورنہ آپ notification سے pairing code درج نہیں کر پائیں گے۔</string>
+    <string name="adb_pairing_tutorial_content_finish">Shizuku پر واپس جائیں اور Shizuku شروع کریں۔</string>
+    <string name="adb_pairing_tutorial_content_network">Shizuku کو local network تک رسائی درکار ہے۔ اسے network اجازت کنٹرول کرتی ہے۔</string>
+    <string name="adb_pairing_tutorial_content_network_limation_not_foreground">کچھ سسٹمز (جیسے MIUI) ایپس کو اس وقت نیٹ ورک تک رسائی نہیں دیتے جب وہ نظر نہیں آ رہیں، چاہے ایپ foreground service استعمال کرتی ہو۔ ایسے سسٹمز پر Shizuku کے لیے battery optimization غیر فعال کریں۔</string>
+
+    <!-- Home - Root -->
+    <string name="home_root_title">شروع کریں (روٹ شدہ ڈیوائسز کے لیے)</string>
+    <string name="home_root_description">اگر آپ Magisk استعمال کرتے ہیں تو %1$s آزما سکتے ہیں۔ Root صارفین کے لیے یہ بالآخر Shizuku کی جگہ لے گا۔ نوٹ: موجودہ ایپس کو %2$s استعمال کرنے کے لیے تھوڑی تبدیلی درکار ہوگی۔</string>
+    <string name="home_root_button_start">شروع کریں</string>
+    <string name="home_root_button_restart">دوبارہ شروع کریں</string>
+
+    <!-- Home - Application management -->
+    <string name="home_app_management_title">ایپلیکیشن مینجمنٹ</string>
+    <plurals name="home_app_management_authorized_apps_count">
+        <item quantity="one">مجاز %d ایپلیکیشن</item>
+        <item quantity="other">مجاز %d ایپلیکیشنز</item>
+    </plurals>
+    <string name="home_app_management_view_authorized_apps"><![CDATA[اجازت یافتہ ایپس کا انتظام کرنے کے لیے ٹیپ کریں]]></string>
+    <string name="home_app_management_empty">جن ایپس نے Shizuku اجازت کی درخواست یا اعلان کیا ہے وہ یہاں دکھائی دیں گی۔</string>
+
+    <!-- Home - Automation -->
+    <string name="home_automation_title">Automation ایپس کے ذریعے Shizuku کو کنٹرول کریں</string>
+    <string name="home_automation_description">Tasker اور MacroDroid جیسی ایپس Shizuku کو خودکار طور پر شروع یا روکنے کے لیے intents بھیج سکتی ہیں۔</string>
+    <string name="home_automation_description_device_restriction">اپنی ڈیوائس پر start intent استعمال کرنے کے لیے پہلے PC سے %1$s چلا کر ADB over TCP فعال کریں۔</string>
+    <string name="home_automation_button_view_intents">Intents دیکھیں</string>
+    <string name="home_automation_bottom_sheet_intents">Intents</string>
+    <string name="home_automation_bottom_sheet_label_action">Action</string>
+    <string name="home_automation_bottom_sheet_label_package">Package</string>
+    <string name="home_automation_bottom_sheet_label_target">Target</string>
+    <string name="home_automation_bottom_sheet_label_extras">Extras</string>
+    <string name="home_automation_regenerate_token">Token دوبارہ بنائیں؟</string>
+    <string name="home_automation_regenerate_token_message">نئے token کے ساتھ اپنے intents دوبارہ ترتیب دینا ہوں گے۔</string>
+    <string name="home_automation_token_encrypt_failed">Token محفوظ کرنے میں ناکامی — دوبارہ کوشش کریں</string>
+
+    <!-- Home - Learn more -->
+    <string name="home_learn_more_title">Developer guide</string>
+    <string name="home_learn_more_description">Shizuku کے ساتھ develop کرنے کا طریقہ سیکھیں</string>
+
+    <!-- Home - Adb permissions limited -->
+    <string name="home_adb_is_limited_title">آپ کو ایک اضافی مرحلہ مکمل کرنا ہوگا</string>
+    <string name="home_adb_is_limited_description">آپ کے ڈیوائس کے مینوفیکچرر نے ADB اجازتیں محدود کر دی ہیں اور Shizuku استعمال کرنے والی ایپس درست طور پر کام نہیں کریں گی۔\n\nعام طور پر یہ پابندی "Developer options" میں کچھ اختیارات تبدیل کر کے ختم کی جا سکتی ہے۔ تفصیلات کے لیے رہنمائی پڑھیں۔\n\nتبدیلی مؤثر ہونے کے لیے Shizuku کو دوبارہ شروع کرنا پڑ سکتا ہے۔</string>
+
+    <!-- Application management - context menu -->
+    <string name="app_management_context_open_app">ایپ کھولیں</string>
+    <string name="app_management_context_app_info">ایپ کی معلومات</string>
+    <string name="app_management_context_grant">اجازت دیں</string>
+    <string name="app_management_context_revoke">اجازت واپس لیں</string>
+    <string name="app_management_context_hide">فہرست سے چھپائیں</string>
+    <string name="app_management_no_launcher">اس ایپ کا کوئی launcher نہیں ہے</string>
+    <string name="app_management_package_copied">Package name کاپی ہو گیا</string>
+    <string name="app_management_log_permission_toggle">اجازت ٹوگل کریں: %s</string>
+    <string name="app_management_log_hide">فہرست سے چھپائیں</string>
+    <string name="app_management_log_unhide">فہرست سے دوبارہ دکھائیں</string>
+    <string name="app_management_hidden">ایپ چھپا دی گئی</string>
+    <string name="app_management_selected">%d منتخب</string>
+    <string name="app_management_undo">واپس کریں</string>
+
+    <!-- Application management - search / filter / sort -->
+    <string name="app_management_hint_search">ایپس تلاش کریں…</string>
+    <string name="app_management_filter_all">سب</string>
+    <string name="app_management_filter_granted">اجازت یافتہ</string>
+    <string name="app_management_filter_denied">مسترد</string>
+    <string name="app_management_filter_hidden">چھپی ہوئی</string>
+    <string name="app_management_action_sort">ترتیب دیں</string>
+    <string name="app_management_action_hidden_apps">چھپی ہوئی ایپس</string>
+    <string name="app_management_sort_a_to_z">نام (A–Z)</string>
+    <string name="app_management_sort_last_installed">حال ہی میں انسٹال شدہ</string>
+    <string name="app_management_sort_last_updated">حال ہی میں اپ ڈیٹ شدہ</string>
+
+    <!-- Application management -->
+    <string name="app_management_dialog_adb_is_limited_title">ADB کی اجازت محدود ہے</string>
+    <string name="app_management_dialog_adb_is_limited_message"><![CDATA[یہ بہت ممکن ہے کہ آپ کے ڈیوائس کے مینوفیکچرر نے ADB کی اجازت محدود کی ہو۔<p>آپ کے سسٹم کے لیے حل <b><a href="%1$s">اس دستاویز</a></b> میں موجود ہو سکتا ہے۔]]></string>
+    <string name="app_management_item_summary_requires_root">* Shizuku کا root کے ساتھ چلنا ضروری ہے</string>
+    <string name="app_management_item_summary_partial_root">⚠ جزوی معاونت — کچھ functions کے لیے اب بھی Shizuku کا root کے ساتھ چلنا ضروری ہے</string>
+    <string name="app_management_item_summary_requires_plus">* Shizuku+ Enhanced API درکار ہے</string>
+    <string name="app_management_item_context">اس ایپ کے بارے میں: %s</string>
+    <string name="app_management_enhancements">Enhancements</string>
+    <string name="app_management_enhancements_desc">کارکردگی اور مطابقت بہتر بنانے کے لیے اس ایپ کے لیے Plus فیچرز فعال کریں۔</string>
+    <string name="app_management_badge_enhanced">Enhanced</string>
+    <string name="app_management_badge_upgrade">Plus upgrade دستیاب ہے</string>
+    <string name="app_management_toggle_all">سب کو ٹوگل کریں</string>
+    <string name="app_management_bulk_grant">منتخب کو اجازت دیں</string>
+    <string name="app_management_bulk_revoke">منتخب کی اجازت واپس لیں</string>
+    <string name="app_management_bulk_hide">منتخب کو چھپائیں</string>
+    <string name="app_management_bulk_select_all">سب منتخب کریں</string>
+
+    <!-- Terminal -->
+    <string name="home_terminal_title">Terminal ایپس میں Shizuku استعمال کریں</string>
+    <string name="home_terminal_description">Shizuku کے ذریعے terminal ایپس میں shell کمانڈز چلائیں</string>
+    <string name="terminal_tutorial_miui">صارفین نے رپورٹ کیا ہے کہ MIUI Storage Access Framework کو خراب کرتا ہے، جو export function استعمال کرتا ہے۔</string>
+    <string name="terminal_tutorial_miui_2">اگر آپ MIUI استعمال کر رہے ہیں تو ممکن ہے Shizuku کے APK کے assets فولڈر سے فائل نکالنی پڑے۔</string>
+    <string name="terminal_tutorial_1">فائلوں کو ایک نئے فولڈر میں ایکسپورٹ کریں۔</string>
+    <string name="terminal_tutorial_1_description">دو فائلیں ایکسپورٹ ہوں گی: %1$s اور %2$s۔ اگر منتخب فولڈر میں فائلیں پہلے سے موجود ہوں تو انہیں حذف کر دیا جائے گا۔</string>
+    <string name="terminal_export_files">فائلیں ایکسپورٹ کریں</string>
+    <string name="terminal_tutorial_2">فائلوں کو اپنی نجی files directory میں کاپی کرنے کے لیے terminal ایپ استعمال کریں۔</string>
+    <string name="terminal_tutorial_2_description">مشورہ: اگر آپ کی terminal ایپ کی home directory (~) نجی files directory میں ہے تو فائلیں وہاں رکھنے سے %1$s کو path لکھے بغیر چلایا جا سکے گا۔\n\nورنہ اپنی terminal ایپ کی %3$s configuration file میں %2$s کے لیے alias بنا سکتے ہیں۔</string>
+    <string name="terminal_tutorial_3">Shell کھولیں یا Shizuku+ کمانڈ چلائیں:</string>
+    <string name="rish_description"><![CDATA[%1$s کے ساتھ آپ کسی بھی terminal ایپ میں shell کمانڈز چلا سکتے ہیں۔<p>اسے استعمال کرنے کا طریقہ جاننے کے لیے ٹیپ کریں۔]]></string>
+
+    <!-- Settings — swipe customisation -->
+    <string name="settings_swipe_right">دائیں swipe کی کارروائی</string>
+    <string name="settings_swipe_left">بائیں swipe کی کارروائی</string>
+    <string name="settings_action_none">کچھ نہیں</string>
+    <string name="settings_action_open_app">ایپ کھولیں</string>
+    <string name="settings_action_app_info">ایپ کی معلومات</string>
+    <string name="settings_action_toggle_permission">اجازت ٹوگل کریں</string>
+    <string name="settings_action_hide_from_list">فہرست سے چھپائیں</string>
+    <string name="settings_app_management">ایپلیکیشن مینجمنٹ</string>
+
+    <!-- Settings — long-press customisation -->
+    <string name="settings_lp_category_summary">منتخب کریں کہ management list میں کسی ایپ کو دیر تک دبانے پر کون سی کارروائیاں دکھائی دیں۔ اگر صرف ایک فعال ہو تو menu کے بغیر براہِ راست چلتی ہے۔</string>
+    <string name="settings_lp_open_app">ایپ کھولیں</string>
+    <string name="settings_lp_app_info">ایپ کی معلومات</string>
+    <string name="settings_lp_toggle_permission">Shizuku اجازت ٹوگل کریں</string>
+    <string name="settings_lp_hide_from_list">فہرست سے چھپائیں</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">Shizuku+ میں خوش آمدید</string>
+    <string name="onboarding_welcome_desc">طاقتور ایپ مینجمنٹ فیچرز کے ساتھ بہتر Shizuku۔ Swipe gestures، quick actions اور حسبِ ضرورت تجربہ — سب ایک جگہ۔</string>
+    <string name="onboarding_swipe_title">ڈیفالٹ Gestures</string>
+    <string name="onboarding_swipe_desc">ڈیفالٹ طور پر app management list میں دائیں swipe سے ایپ کھلتی ہے اور بائیں swipe سے اس کا system ترتیبات page کھلتا ہے۔</string>
+    <string name="onboarding_gestures_title">حسبِ ضرورت Gestures</string>
+    <string name="onboarding_gestures_desc">Settings میں swipe actions کو مکمل طور پر حسبِ ضرورت بنا سکتے ہیں۔ Open ایپ، ایپ Info، Toggle Permission یا Hide from List میں سے انتخاب کریں۔</string>
+    <string name="onboarding_longpress_title">تجربہ حسبِ ضرورت بنائیں</string>
+    <string name="onboarding_longpress_desc">منتخب کریں کہ کسی ایپ کو دیر تک دبانے پر کون سی کارروائیاں دکھائی جائیں، یا Dhizuku Mode جیسی Shizuku+ exclusive فیچرز فعال کریں۔</string>
+    <string name="onboarding_next">اگلا</string>
+    <string name="onboarding_skip">چھوڑیں</string>
+    <string name="onboarding_get_started">شروع کریں</string>
+    <string name="onboarding_setup_title">Shizuku شروع کریں</string>
+    <string name="onboarding_setup_desc">اس ڈیوائس پر Shizuku شروع کرنے کا طریقہ منتخب کریں۔ یہ بعد میں main screen سے بھی کیا جا سکتا ہے۔</string>
+    <string name="onboarding_setup_running">Shizuku چل رہا ہے</string>
+    <string name="onboarding_setup_later">میں یہ بعد میں کروں گا</string>
+    <string name="onboarding_setup_wadb_desc">Android 11+، کمپیوٹر کی ضرورت نہیں۔ Wireless debugging استعمال کرتا ہے۔</string>
+    <string name="onboarding_setup_root_desc">آپ کی ڈیوائس rooted ہے۔ Shizuku کو root access کے ساتھ شروع کریں۔</string>
+    <string name="onboarding_setup_adb_desc">کوئی بھی ڈیوائس۔ شروع کرنے کے لیے کمپیوٹر سے ایک ADB کمانڈ چلائیں۔</string>
+
+    <!-- Swipe hint overlay -->
+    <string name="swipe_hint_title">Swipe gestures</string>
+    <string name="swipe_hint_right">فوری کارروائی کے لیے دائیں swipe کریں</string>
+    <string name="swipe_hint_left">فوری کارروائی کے لیے بائیں swipe کریں</string>
+    <string name="swipe_hint_dismiss">بند کرنے کے لیے کہیں بھی ٹیپ کریں</string>
+
+    <!-- Settings -->
+    <string name="settings_title">ترتیبات</string>
+    <string name="settings_behavior">رویّہ</string>
+    <string name="settings_start_on_boot">بوٹ پر شروع کریں</string>
+    <string name="settings_start_on_boot_summary">Android 11+ یا root درکار ہے</string>
+    <string name="settings_start_on_boot_bug">Android 11-12 کے bug کی وجہ سے wireless debugging authorized networks یاد نہیں رکھتی۔\n\nہر reboot پر authorization dialog ظاہر ہونے پر \"Allow\" پر ٹیپ کر کے network کو دوبارہ authorize کرنا ہوگا۔</string>
+    <string name="settings_use_system_color">سسٹم تھیم کا رنگ استعمال کریں</string>
+    <string name="settings_watchdog">Watchdog</string>
+    <string name="settings_watchdog_summary">Crash یا unexpected stop کے بعد Shizuku کو خودکار طور پر restart کریں۔ اگر underlying network disconnect ہو جائے (مثلاً RNDIS/USB ADB استعمال کرتے وقت USB cable unplug ہو جائے) تو reconnect نہیں کر سکتا۔</string>
+    <string name="settings_tcp_mode">TCP موڈ</string>
+    <string name="settings_tcp_mode_summary">Shizuku کو Wi-Fi کے بغیر restart کرنے کی اجازت دیتا ہے۔ (Reboot کے بعد Shizuku ایک بار ضرور شروع ہوا ہو)</string>
+    <string name="settings_tcp_mode_dialog_close_port">TCP port فوراً بند کر دی جائے گی۔ TCP mode دوبارہ فعال کرنے کے لیے Wi-Fi درکار ہوگا۔ جاری رکھیں؟</string>
+    <string name="settings_tcp_mode_closing_port">TCP port بند کی جا رہی ہے...</string>
+    <string name="settings_restart_dialog_title">Restart ضروری ہے</string>
+    <string name="settings_restart_dialog_message">یہ ترتیب لاگو کرنے کے لیے Shizuku کو restart کرنا ضروری ہے۔</string>
+    <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fi ضروری ہے۔ Shizuku چلتا رہے گا اور background میں restart ہونے سے پہلے Wi-Fi connection کا انتظار کرے گا۔</b>]]></string>
+    <string name="settings_tcp_port">TCP port</string>
+    <string name="settings_tcp_port_default">Default (5555)</string>
+    <string name="settings_tcp_port_hint">Default (5555) استعمال کرنے کے لیے خالی چھوڑیں</string>
+    <string name="settings_auto_disable_usb_debugging">USB debugging خودکار طور پر غیر فعال کریں</string>
+    <string name="settings_auto_disable_usb_debugging_summary">Shizuku روکنے پر USB debugging غیر فعال کریں</string>
+    <string name="settings_language">زبان</string>
+    <string name="settings_translation_contributors">ترجمہ کرنے والے معاونین</string>
+    <string name="settings_translation">ترجمے میں حصہ لیں</string>
+    <string name="settings_translation_summary">%s کو اپنی زبان میں ترجمہ کرنے میں ہماری مدد کریں</string>
+    <string name="settings_user_interface">ظاہری شکل</string>
+    <string name="settings_black_night_theme">سیاہ نائٹ تھیم</string>
+    <string name="settings_black_night_theme_summary">نائٹ موڈ فعال ہونے پر خالص سیاہ تھیم استعمال کریں</string>
+    <string name="settings_support">معاونت</string>
+    <string name="settings_version">ورژن</string>
+    <string name="settings_developer_options_revealed">Developer Options ظاہر ہو گئے!</string>
+    <string name="settings_developer_options_click_more">Developer Options ظاہر کرنے کے لیے مزید %d بار ٹیپ کریں۔</string>
+    <string name="settings_diagnostics_category">تشخیص</string>
+    <string name="settings_stealth_mode">Stealth Mode</string>
+    <string name="settings_stealth_mode_summary">رازداری کے لیے ایپ آئیکن چھپائیں اور UI سادہ بنائیں</string>
+    <string name="settings_report_bug">بگ رپورٹ کریں</string>
+    <string name="settings_activity_log">سرگرمی کا لاگ</string>
+    <string name="settings_activity_log_empty">ابھی تک کوئی سرگرمی ریکارڈ نہیں ہوئی۔</string>
+    <string name="settings_activity_log_clear">لاگز صاف کریں</string>
+    <string name="settings_enable_activity_log">سرگرمی کا لاگ فعال کریں</string>
+    <string name="settings_enable_activity_log_summary">Shizuku API calls اور events کو home screen پر ریکارڈ اور دکھائیں۔</string>
+    <string name="settings_show_activity_log_home">Activity Log دکھائیں</string>
+    <string name="settings_home_visibility">Home screen visibility</string>
+    <string name="settings_update_app_database">ایپ ڈیٹا بیس اپ ڈیٹ کریں</string>
+    <string name="settings_update_app_database_summary">GitHub سے تازہ ترین app descriptions اور enhancement suggestions حاصل کریں۔</string>
+    <string name="settings_update_app_database_success">ڈیٹا بیس کامیابی سے اپ ڈیٹ ہو گیا</string>
+    <string name="settings_update_app_database_error">ڈیٹا بیس اپ ڈیٹ کرنے میں ناکامی</string>
+    <string name="settings_show_terminal_home">Terminal (rish) دکھائیں</string>
+    <string name="settings_show_automation_home">Automation دکھائیں</string>
+    <string name="settings_show_learn_more_home">Developer Guide دکھائیں</string>
+    <string name="settings_show_start_adb_home">Wired ADB Setup دکھائیں</string>
+    <string name="home_edit_mode_hint">گرفت کو دبا کر گھسیٹیں۔ کارڈ ہٹانے کے لیے × پر ٹیپ کریں۔</string>
+    <string name="settings_advanced">Advanced</string>
+    <string name="settings_legacy_pairing">Legacy pairing</string>
+    <string name="settings_legacy_pairing_summary">pairing code کو notification کے بجائے dialog میں درج کریں</string>
+    <string name="settings_reset_adb_keys">ADB Keys ری سیٹ کریں</string>
+    <string name="settings_reset_adb_keys_summary">موجودہ ADB keys اور certificates حذف کریں۔ pairing پھنس جانے یا KeyStore خراب ہونے پر مفید ہے۔</string>
+    <string name="settings_reset_adb_keys_success">ADB keys صاف ہو گئیں</string>
+    <string name="settings_reset_adb_keys_error">ADB keys ری سیٹ کرنے میں ناکامی</string>
+
+    <!-- Shizuku+ Features -->
+    <string name="settings_shizuku_plus_features">Shizuku+ Features</string>
+    <string name="settings_dhizuku_mode">Dhizuku Mode</string>
+    <string name="settings_dhizuku_mode_summary">Dhizuku کو سپورٹ کرنے والی ایپس کو Device Owner (DevicePolicyManager) privileges دیں۔</string>
+    <string name="dhizuku_device_owner_label">Shizuku+ (Dhizuku Mode)</string>
+    <string name="dhizuku_device_owner_desc">مجاز ایپس کے ساتھ Device Owner privileges شیئر کرنے کے لیے Dhizuku Mode کے لیے ضروری ہے۔</string>
+    <string name="dhizuku_device_owner_enabled">Dhizuku Device Owner فعال ہے</string>
+    <string name="dhizuku_device_owner_disabled">Dhizuku Device Owner غیر فعال ہے</string>
+    <string name="settings_enhanced_api">Shizuku+ Enhanced API</string>
+    <string name="settings_enhanced_api_summary">power users کے لیے advanced system interfaces فعال کریں۔ تمام exclusive Shizuku+ فیچرز کے لیے ضروری ہے۔</string>
+    <string name="settings_themed_icon">Themed app icon</string>
+    <string name="settings_themed_icon_summary">جب launcher themed icons سپورٹ کرے تو Shizuku+ آئیکن کا Material You tinted ورژن استعمال کریں۔</string>
+    <string name="settings_themed_icon_open_settings">آئیکن کی ترتیبات کھولیں</string>
+    <string name="settings_shell_interceptor">Shell Accelerator</string>
+    <string name="settings_shell_interceptor_summary">native APIs کے ذریعے shell کمانڈز تیز کریں۔ MacroDroid اور Tasker tasks کی کارکردگی بہتر ہوتی ہے۔</string>
+    <string name="settings_avf_manager">Virtual Machine Manager (AVF)</string>
+    <string name="settings_avf_manager_summary">isolated Microdroid یا Linux VMs چلائیں۔ Hyperbox اور Termux-VM کے ساتھ virtual environments کے انتظام کے لیے استعمال ہوتا ہے۔</string>
+    <string name="settings_storage_proxy">Storage Bridge</string>
+    <string name="settings_storage_proxy_summary">/data/data/ اور restricted paths تک براہِ راست رسائی دیں۔ Neo Backup اور SD Maid کے ذریعے app data manage کرنے کے لیے استعمال ہوتا ہے۔</string>
+    <string name="settings_continuity_bridge">Multi-Device Continuity</string>
+    <string name="settings_continuity_bridge_summary">ڈیوائسز کے درمیان app states اور privileged tasks کو sync اور hand off کریں۔ MacroDroid کے ساتھ cross-device automation کے لیے کام کرتا ہے۔</string>
+    <string name="settings_ai_core_plus">Intelligence Bridge</string>
+    <string name="settings_ai_core_plus_summary">ترجیحی NPU اور screen context APIs۔ Gemini اور local LLMs کو privileged screen awareness فراہم کرتا ہے۔</string>
+    <string name="settings_window_manager_plus">Window Tuner</string>
+    <string name="settings_window_manager_plus_summary">windowing اور Bubble Bars کنٹرول کریں۔ Taskbar اور MacroDroid کے ذریعے free-form windows اور system overlays manage کرنے کے لیے استعمال ہوتا ہے۔</string>
+    <string name="settings_overlay_manager_plus">↳ System Theming Bridge</string>
+    <string name="settings_overlay_manager_plus_summary">system RRO overlays manage کریں۔ Hex Installer اور Substratum themes کو root کے بغیر چلنے کے لیے ضروری ہے۔</string>
+    <string name="settings_network_governor_plus">Network &amp; DNS Governor</string>
+    <string name="settings_network_governor_plus_summary">Privileged network control۔ AFWall+ کے ذریعے مضبوط system-wide filtering کے لیے استعمال ہوتا ہے۔</string>
+    <string name="settings_activity_manager_plus">↳ Deep Process Control</string>
+    <string name="settings_activity_manager_plus_summary">Native process control۔ MacroDroid، Tasker اور Naptime کو ایپس force-stop کرنے اور standby buckets مقرر کرنے کی اجازت دیتا ہے۔</string>
+    <string name="settings_plus_app_found">Integrated app دریافت ہوئی: %1$s۔ Setup کے لیے ٹیپ کریں۔</string>
+    <string name="settings_plus_app_setup_title">Integration Setup</string>
+    <string name="settings_plus_app_open">ایپ کھولیں</string>
+    <string name="settings_plus_learn_more">مزید جانیں</string>
+    <string name="settings_plus_feature_help_enable">Feature فعال کریں</string>
+    <string name="settings_plus_feature_help_close">بند کریں</string>
+    <string name="diagnostics_dismiss">نظر انداز کریں</string>
+    <string name="diagnostics_warning_dhizuku_not_owner">Dhizuku Mode فعال ہے لیکن Device Owner component فعال نہیں۔ حل کرنے کے لیے ٹیپ کریں۔</string>
+    <string name="diagnostics_warning_shadow_binder_no_apps">Shadow Binder فعال ہے لیکن چھپانے کے لیے کوئی ایپ منتخب نہیں۔ انتخاب کرنے کے لیے ٹیپ کریں۔</string>
+    <string name="diagnostics_warning_battery_optimization">Battery optimization فعال ہے۔ Shizuku بیک گراؤنڈ میں بند ہو سکتا ہے۔ exemption دینے کے لیے ٹیپ کریں۔</string>
+    <string name="diagnostics_warning_automation_stopped">Network automation rules ترتیب دیے گئے ہیں لیکن service بند ہے — Binder Firewall خودکار طور پر ٹوگل نہیں ہوگا۔ دوبارہ شروع کرنے کے لیے ٹیپ کریں۔</string>
+    <string name="diagnostics_automation_start_failed">Automation service شروع نہیں ہو سکی</string>
+    <string name="diagnostics_battery_settings_open_failed">Battery ترتیبات نہیں کھل سکیں</string>
+    <string name="diagnostics_shadow_binder_navigate_hint">Feature Hub → Security &amp; Access → Shadow Binder پر جائیں اور ایپس منتخب کریں</string>
+    <string name="diagnostics_device_owner_setup_title">Device Owner سیٹ اپ کریں</string>
+    <string name="diagnostics_device_owner_setup_message">Dhizuku Mode کے لیے اس app کا Device Owner ہونا ضروری ہے۔\n\nاپنے PC سے یہ کمانڈ چلائیں (USB debugging فعال ہونا ضروری ہے):\n\n%1$s</string>
+    <string name="diagnostics_copy_command">کمانڈ کاپی کریں</string>
+    <string name="diagnostics_command_copied">کمانڈ clipboard پر کاپی ہو گئی</string>
+    <string name="diagnostics_disable_title">Diagnostics غیر فعال کریں؟</string>
+    <string name="diagnostics_disable_message">اس سے diagnostic warning panel چھپ جائے گا۔ آپ اسے advanced ترتیبات سے کسی بھی وقت دوبارہ فعال کر سکتے ہیں۔</string>
+    <string name="diagnostics_disable_confirm">غیر فعال کریں</string>
+    <string name="diagnostics_action_required">کارروائی درکار ہے</string>
+    <string name="diagnostics_disable_button">Diagnostics غیر فعال کریں</string>
+    <string name="help_general_plus_summary"><![CDATA[<b>Shizuku+ دوسری ایپس کے ساتھ کیسے کام کرتا ہے</b><br><br>Shizuku+ اس app اور Shizuku+ API (af.shizuku.plus.api) کو واضح طور پر target کرنے والی third-party ایپس کے ذریعے <i>exclusive Plus فیچرز</i> (Storage Bridge، AI Bridge، Theming Bridge) فراہم کرتا ہے۔<br><br><b>اہم:</b> Shizuku+ اصل Shizuku API کے ساتھ مکمل backwards compatible ہے۔ موجودہ ایپس جو stock Shizuku استعمال کرتی ہیں (جیسے SD Maid SE اور SwiftBackup) بغیر developer update کے Shizuku+ کو خودکار طور پر discover اور استعمال کر لیں گی۔<br><br><b>Stock Shizuku کے ساتھ استعمال:</b> ایک وقت میں صرف ایک service چل سکتی ہے۔ اگر stock Shizuku انسٹال ہے تو home screen کا Companion card switching آسان بناتا ہے، تاہم stock Shizuku uninstall کر کے صرف Shizuku+ استعمال کرنے کی سفارش کی جاتی ہے۔]]></string>
+
+    <!-- Detailed Help Strings -->
+    <string name="help_dhizuku_title">Dhizuku Mode کے بارے میں</string>
+    <string name="help_dhizuku_detail">Dhizuku Shizuku کو اپنے Device Owner (DevicePolicyManager) privileges تیسرے فریق کی ایپس کے ساتھ شیئر کرنے کی اجازت دیتا ہے۔ یہ Dhizuku Manager یا بعض kiosk-mode tools جیسی ایپس کے لیے ضروری ہے جو خود واحد Device Owner بنے بغیر system policies manage کرنا چاہتی ہیں۔</string>
+    <string name="help_shell_interceptor_title">Shell Accelerator کے بارے میں</string>
+    <string name="help_shell_interceptor_detail">Shell Accelerator معیاری shell کمانڈز (am، pm، ترتیبات) کو intercept کر کے براہِ راست Shizuku server API calls میں تبدیل کرتا ہے۔ اس سے ہر کمانڈ کے لیے نیا /system/bin/sh process شروع کرنے کا اضافی بوجھ ختم ہوتا ہے اور MacroDroid یا Tasker automation زیادہ تیز اور battery-efficient بنتی ہے۔</string>
+    <string name="help_avf_manager_title">AVF Manager کے بارے میں</string>
+    <string name="help_avf_manager_detail">Android Virtualization Framework (AVF) Manager isolated Linux یا Microdroid virtual machines چلانے کی اجازت دیتا ہے۔ معاون hardware (Snapdragon 8 Gen 1+، Tensor G2+) پر یہ VirtIO-GPU support کے ساتھ hardware-accelerated virtualization فراہم کرتا ہے۔</string>
+    <string name="help_storage_proxy_title">Storage Bridge کے بارے میں</string>
+    <string name="help_storage_proxy_detail">Storage Bridge /data/data/ (app data) اور /data/app/ (APK files) جیسی restricted filesystem paths تک authenticated، high-speed access فراہم کرتا ہے۔ اس سے Neo Backup جیسے backup tools مکمل root access کے بغیر کام کر سکتے ہیں، جبکہ Shizuku کے اجازت model کے ذریعے سیکیورٹی برقرار رہتی ہے۔</string>
+    <string name="help_continuity_bridge_title">Multi-Device Continuity کے بارے میں</string>
+    <string name="help_continuity_bridge_detail">Continuity Bridge ایک ہی نیٹ ورک پر موجود Shizuku+ ڈیوائسز کو tasks hand off کرنے اور clipboard/app state synchronize کرنے کی اجازت دیتا ہے۔ یہ Android 17 Handoff APIs استعمال کرتا ہے (جہاں ممکن ہو backported) تاکہ فون اور tablet کے درمیان automation tasks کی ہموار منتقلی ممکن ہو۔</string>
+    <string name="help_ai_core_plus_title">Intelligence Bridge کے بارے میں</string>
+    <string name="help_ai_core_plus_detail">Intelligence Bridge AI assistants کو screen content اور NPU scheduling تک privileged access دیتا ہے۔ یہ "Circle to Search" اور local LLMs کے لیے screen-aware context جیسی فیچرز کو high-performance, window-aware frame capture کے ذریعے فعال کرتا ہے۔</string>
+    <string name="help_window_manager_plus_title">Window Tuner کے بارے میں</string>
+    <string name="help_window_manager_plus_detail">Window Tuner advanced WindowManager flags فراہم کرتا ہے جن سے کسی بھی ایپ کو free-form mode میں مجبور کیا جا سکتا ہے، persistent Bubble Bar میں رکھا جا سکتا ہے یا always-on-top overlays کے ساتھ دکھایا جا سکتا ہے۔ یہ multitasking اور OneUI desktop experience کو حسبِ ضرورت بنانے کے لیے طاقتور tool ہے۔</string>
+    <string name="help_overlay_manager_plus_title">System Theming Bridge کے بارے میں</string>
+    <string name="help_overlay_manager_plus_detail">یہ bridge OverlayManagerService (OMS) تک rootless access فراہم کرتا ہے۔ یہ modern OverlayManagerTransactions کے ذریعے Fabricated Overlays رجسٹر کرتا ہے، جس سے Hex Installer جیسی ایپس root کے بغیر OneUI 6/7/8 پر system colors، fonts اور dimensions تبدیل کر سکتی ہیں۔</string>
+    <string name="help_network_governor_plus_title">Network &amp; DNS Governor کے بارے میں</string>
+    <string name="help_network_governor_plus_detail">Network Governor INetworkPolicyManager اور Private DNS ترتیبات تک privileged access فراہم کرتا ہے۔ یہ انفرادی ایپس کے لیے POLICY_REJECT_ALL نافذ کر سکتا ہے، جس سے Wi-Fi اور 5G پر بھی فعال VPN tunnel کے بغیر مضبوط system-level firewall ملتا ہے۔</string>
+    <string name="help_activity_manager_plus_title">Deep Process Control کے بارے میں</string>
+    <string name="help_activity_manager_plus_detail">Deep Process Control server کو عام app-hibernation اور standby restrictions سے تجاوز کرنے دیتا ہے۔ یہ ایپس کو RESTRICTED standby bucket میں ڈال سکتا ہے یا true deepForceStop انجام دے سکتا ہے، جس سے تمام services اور background jobs ختم ہو جاتی ہیں۔ یہ aggressive battery-saving tools کے لیے ضروری ہے۔</string>
+
+    <!-- Plus settings category titles -->
+    <string name="settings_plus_category_framework">Framework</string>
+    <string name="settings_plus_category_performance">کارکردگی اور Process Control</string>
+    <string name="settings_plus_category_files">Files اور Virtual Machines</string>
+    <string name="settings_plus_category_display">Display اور Theming</string>
+    <string name="settings_plus_category_network">Network اور Privacy</string>
+    <string name="settings_plus_category_intelligence">Intelligence اور Continuity</string>
+    <string name="settings_plus_category_developer">Developer Options (Experimental)</string>
+    <string name="settings_plus_category_root_compat">Root Compatibility Modules</string>
+    <string name="settings_root_magisk_mocking">Magisk Environment Mocking</string>
+    <string name="settings_root_magisk_mocking_summary">Root detect کرنے والی ایپس کو دھوکا دینے کے لیے Magisk binaries، properties اور internal folders کی نقل کرتا ہے۔</string>
+    <string name="settings_root_auto_grant">Auto-Approval Bridge</string>
+    <string name="settings_root_auto_grant_summary">WRITE_SECURE_SETTINGS جیسی حساس اجازتیں کے لیے \'pm grant\' requests خودکار طور پر منظور کرتا ہے۔</string>
+    <string name="settings_root_file_interceptor">Smart File Interceptor</string>
+    <string name="settings_root_file_interceptor_summary">حساس system paths کو ہدف بنانے والی file operations میں اجازت-preservation flags خودکار طور پر شامل کرتا ہے۔</string>
+    <string name="settings_root_busybox_mocking">BusyBox Simulation</string>
+    <string name="settings_root_busybox_mocking_summary">legacy script requirements پوری کرنے کے لیے \'busybox\' کمانڈ کے لیے جعلی version string واپس کرتا ہے۔</string>
+    <string name="help_root_magisk_title">Magisk Mocking کے بارے میں</string>
+    <string name="help_root_magisk_detail">بہت سی ایپس Magisk کی مخصوص properties یا /sbin/.magisk folder دیکھ کر root چیک کرتی ہیں۔ یہ module ان عناصر کی نقل بناتا ہے، جس سے ان ایپس میں root-only فیچرز استعمال کیے جا سکتے ہیں جو Magisk environment کے بغیر شروع نہیں ہوتیں۔</string>
+    <string name="help_root_auto_grant_title">Auto-Approval کے بارے میں</string>
+    <string name="help_root_auto_grant_detail">قدیم root ایپس اکثر shell کے ذریعے خود کو اجازتیں دینے کی کوشش کرتی ہیں۔ یہ bridge ان \'pm grant\' calls کو سنتا ہے اور Shizuku کے elevated privileges سے انہیں فوراً منظور کرتا ہے، جس سے manual اجازت management کی ضرورت کم ہو جاتی ہے۔</string>
+    <string name="help_root_file_interceptor_title">File Interceptor کے بارے میں</string>
+    <string name="help_root_file_interceptor_detail">جب ایپس standard shell سے /data/data میں فائلیں کاپی کرتی ہیں تو ownership اور SELinux contexts اکثر ضائع ہو جاتے ہیں۔ یہ module integrity برقرار رکھنے اور crashes روکنے کے لیے --preserve=all جیسے flags خودکار طور پر شامل کرتا ہے۔</string>
+    <string name="help_root_busybox_title">BusyBox Simulation کے بارے میں</string>
+    <string name="help_root_busybox_detail">BusyBox Unix utilities کا مجموعہ ہے جو rooted devices پر عام ہے۔ کچھ پرانی root ایپس اپنی logic چلانے سے پہلے اس کی موجودگی چیک کرتی ہیں۔ یہ module \'busybox\' کمانڈ کے لیے کامیابی کا مصنوعی جواب واپس کرتا ہے۔</string>
+    <string name="settings_hide_disabled_plus_features">غیر فعال Plus Features چھپائیں</string>
+    <string name="settings_hide_disabled_plus_features_summary">وہ Plus فیچرز چھپائیں جو اس ڈیوائس یا configuration پر دستیاب نہیں ہیں</string>
+    <string name="settings_vector">Vector Acceleration</string>
+    <string name="settings_vector_summary">بہتر graphics performance کے لیے hardware-accelerated vector rendering فعال کریں</string>
+    <string name="settings_experimental_root">Root Compatibility</string>
+    <string name="settings_experimental_root_summary">Shizuku کے ذریعے root-based operations کے لیے compatibility layer فعال کریں</string>
+    <string name="settings_spoof_device">Device Identity Spoof کریں</string>
+    <string name="settings_spoof_device_summary">compatibility یا testing کے لیے ایپس کو مختلف device model رپورٹ کریں</string>
+    <string name="settings_avf_manager_experimental">Virtual Machine Manager (AVF) (Experimental)</string>
+    <string name="settings_ai_core_plus_experimental">Intelligence Bridge (Experimental)</string>
+    <string name="settings_vector_experimental">Vector Acceleration</string>
+    <string name="settings_experimental_root_experimental">Experimental Root Compatibility</string>
+    <string name="settings_spoof_device_experimental">Spoof Device Identity</string>
+    <string name="settings_open_source_licenses">Open source licenses</string>
+    <string name="settings_open_source_licenses_summary">Shizuku+ میں استعمال ہونے والی open source libraries</string>
+    <string name="settings_experimental_warning_title">Experimental Feature</string>
+    <string name="settings_experimental_warning_message">یہ فیچر تجرباتی ہے اور system instability یا crashes کا سبب بن سکتا ہے۔ کیا آپ واقعی اسے فعال کرنا چاہتے ہیں؟</string>
+    <string name="settings_spoof_target">Target Device</string>
+
+    <!-- Root Integration (renamed from Legacy Compatibility) -->
+    <string name="settings_category_root_integration">Root Integration</string>
+    <string name="settings_nav_root_integration_summary">SU bridge، ADB proxy اور root session management</string>
+    <string name="settings_adb_proxy">Local ADB Proxy Server</string>
+    <string name="settings_adb_proxy_summary">پورٹ 15555 پر ADB server کی نقل بنائیں تاکہ Wireless ADB درکار ایپس کو support کیا جا سکے، بغیر system فیچر کو مسلسل فعال رکھے۔</string>
+    <string name="settings_on_device_adb_tcp">On-device ADB over TCP</string>
+    <string name="settings_on_device_adb_tcp_summary">ADB TCP mode (port 5555) براہِ راست ڈیوائس پر فعال کریں۔ Shizuku کا root کے ساتھ چلنا ضروری ہے۔ Wi-Fi کے بغیر ADB tools کے لیے مفید ہے۔</string>
+    <string name="settings_force_start_wadb">WADB کے لیے Wi-Fi check بائی پاس کریں</string>
+    <string name="settings_force_start_wadb_summary">Wi-Fi منقطع ہونے پر بھی ADB TCP کے ذریعے Shizuku شروع کرنے کی کوشش کریں۔ local loopback یا mobile data ADB کے لیے مفید ہے۔</string>
+    <string name="settings_fake_su">SU Bridge (su wrapper)</string>
+    <string name="settings_fake_su_summary">legacy root ایپس کے لیے Shizuku-backed \'su\' binary فراہم کریں جو custom paths سپورٹ کرتی ہیں۔</string>
+    <string name="settings_root_integration_hub">Root Integration Hub</string>
+    <string name="settings_root_integration_hub_summary">Shizuku+ privileges کے ساتھ root ایپس کو کام کرنے کے لیے configure اور manage کریں۔</string>
+    <string name="settings_root_compatibility_hub">Root Compatibility Hub</string>
+    <string name="settings_root_compatibility_hub_summary">Shizuku+ privileges کے ساتھ root ایپس کو کام کرنے کے لیے configure اور manage کریں۔</string>
+    <string name="su_bridge_title">SU Bridge</string>
+    <string name="su_bridge_description">ایسی ایپس کو root access فراہم کریں جو Shizuku سپورٹ نہیں کرتیں، ایک custom \'su\' binary بنا کر۔</string>
+    <string name="su_bridge_suggested_apps">Suggested Apps</string>
+    <string name="su_bridge_suggested_apps_desc">یہ ایپس custom SU paths سپورٹ کرتی ہیں۔ انہیں اپنی exported \'su\' script کی طرف point کریں۔</string>
+    <string name="su_bridge_global_config_title">Global Configuration</string>
+    <string name="su_bridge_global_config_desc">SU bridge script کے لیے custom path مقرر کریں۔ root کی درخواست کرتے وقت ایپس اسی path کو execute کریں گی۔</string>
+    <string name="su_bridge_setup_all">سب کا Setup</string>
+    <string name="su_bridge_setup_all_success">تمام compatible ایپس کے لیے automatic setup کی کوشش کی گئی۔</string>
+    <string name="su_bridge_magic_setup">Magic Setup</string>
+    <string name="su_bridge_magic_setup_success">Magic Setup مکمل! Shizuku+ نے %s کو آپ کے لیے configure کر دیا ہے۔</string>
+    <string name="su_bridge_magic_setup_fail">Magic Setup ناکام۔ براہِ کرم manual copy path استعمال کریں۔</string>
+    <string name="su_bridge_magic_setup_all">Magic Setup All</string>
+    <string name="su_bridge_magic_setup_all_summary">Shizuku+ نے %d ایپس آپ کے لیے configure کر دیں!</string>
+    <string name="su_bridge_magic_setup_all_no_apps">Automation کے لیے کوئی supported root ایپس نہیں ملیں۔</string>
+    <string name="su_bridge_copy_open">Path کاپی کریں اور کھولیں</string>
+    <string name="su_bridge_no_export">SU path مقرر نہیں ہے۔ پہلے Home screen سے Shizuku files ایکسپورٹ کریں۔</string>
+    <string name="root_hub_shizuku_aware_note">SU Bridge non-rooted devices کو root جیسی رسائی فراہم کرتا ہے۔ تاہم "Magic Setup" (automatic configuration) کے لیے دیگر ایپس میں ترمیم کرنے کے لیے Shizuku کا Root mode میں ہونا ضروری ہے۔ ADB mode میں "Copy path" استعمال کریں اور اپنی ایپس کو دستی طور پر configure کریں۔</string>
+    <string name="su_bridge_magic_setup_root_required">Magic Setup کے لیے Shizuku کا Root mode میں ہونا ضروری ہے۔</string>
+    <string name="su_bridge_no_custom_path_support">اس app میں custom path ترتیب نہیں ہے۔ حقیقی root درکار ہے۔</string>
+    <string name="su_bridge_manual_setup_required">ADB mode میں manual setup درکار ہے</string>
+    <string name="su_bridge_how_to_use">استعمال کا طریقہ:</string>
+    <string name="su_bridge_step_1">1. Home screen سے Shizuku files ایکسپورٹ کریں۔</string>
+    <string name="su_bridge_step_2">2. اپنی root app میں ترتیبات کے اندر "SU Path" یا "Binary Path" تلاش کریں۔</string>
+    <string name="su_bridge_step_3">3. اسے exported 'su' file کے path پر تبدیل کریں۔</string>
+    <string name="su_bridge_step_4">4. custom path ترتیب نہ رکھنے والی ایپس کے لیے Shizuku+ ترتیبات میں "SU Bridge" فعال کریں۔ یہ بہت سی legacy su calls کو خودکار طور پر redirect کرتا ہے۔</string>
+    <string name="su_bridge_app_instruction">Settings &gt; %s میں path مقرر کریں</string>
+    <string name="su_bridge_path_label">Exported su path</string>
+    <string name="su_bridge_su_path_label">Exported su path</string>
+    <string name="su_bridge_copy_path">Path کاپی کریں</string>
+    <string name="su_bridge_default_nav_hint">ایپ ترتیبات میں custom SU path مقرر کریں</string>
+    <string name="su_bridge_path_copied">SU path clipboard پر کاپی ہو گیا</string>
+    <string name="su_bridge_self_test">Bridge self-test چلائیں</string>
+    <string name="su_bridge_self_test_running">SU Bridge کی جانچ ہو رہی ہے…</string>
+    <string name="su_bridge_self_test_title">SU Bridge self-test</string>
+    <string name="su_bridge_self_test_ok">Bridge ٹھیک ہے</string>
+    <string name="su_bridge_self_test_fail">Bridge کام نہیں کر رہا</string>
+    <string name="su_bridge_self_test_copy">نتیجہ کاپی کریں</string>
+    <string name="su_bridge_self_test_copied">Self-test کا نتیجہ کاپی ہو گیا</string>
+    <string name="su_bridge_device_identity_title">Device Identity</string>
+    <string name="starter_service_started">سروس شروع ہو گئی۔</string>
+    <string name="su_bridge_device_identity_real">حقیقی: %s</string>
+    <string name="su_bridge_device_identity_spoofed">Spoofed: %s</string>
+    <string name="su_bridge_device_identity_none">کوئی نہیں (حقیقی ڈیوائس دکھائی جا رہی ہے)</string>
+
+    <!-- Sentry Offline Notice -->
+    <string name="sentry_offline_notice_title">Crash Reporting آف لائن</string>
+    <string name="sentry_offline_notice_summary">Sentry کے ذریعے automatic crash reporting quota limits کی وجہ سے فی الحال غیر فعال ہے (1 مئی کو ری سیٹ ہوگا)۔ براہِ کرم crashes دستی طور پر رپورٹ کریں۔</string>
+    <string name="sentry_offline_notice_button">مزید جانیں</string>
+    <string name="sentry_offline_notice_learn_more">Sentry فی الحال آف لائن ہے۔ اگر ایپ crash کرے یا غیر متوقع رویہ دکھائے تو دستی طور پر report تیار کریں اور اسے ہمارے GitHub Issues tracker پر پوسٹ کریں۔ اس سے automated systems کے رکنے کے باوجود bugs ٹھیک کرنے میں مدد ملتی ہے۔</string>
+    <string name="manual_report_title">Manual Crash Report</string>
+    <string name="manual_report_summary">logs کے ساتھ تفصیلی report بنائیں تاکہ ہم مسائل کی دستی debugging کر سکیں۔</string>
+    <string name="manual_report_button_generate">بنائیں اور کاپی کریں</string>
+    <string name="manual_report_button_github">Report کاپی کریں اور GitHub جائیں</string>
+    <string name="manual_report_toast_copied">Report کاپی ہو گئی! براہِ کرم اسے GitHub issue میں paste کریں۔</string>
+    <string name="manual_report_last_crash_title">آخری Crash رپورٹ کریں</string>
+    <string name="manual_report_last_crash_summary">ایک مستقل crash کا پتہ چلا۔ محفوظ شدہ stacktrace کے ساتھ report بنانے کے لیے ٹیپ کریں۔</string>
+    <string name="manual_report_clipboard_label">Crash Report</string>
+    <string name="manual_report_clear_dialog_title">محفوظ Crash صاف کریں؟</string>
+    <string name="manual_report_clear_dialog_message">اب جبکہ report کاپی ہو گئی ہے، کیا آپ محفوظ crash data صاف کرنا چاہتے ہیں؟</string>
+    <string name="manual_report_clear_dialog_clear">صاف کریں</string>
+    <string name="manual_report_clear_dialog_keep">رکھیں</string>
+    <string name="manual_report_copied_dialog_title">Report کاپی ہو گئی</string>
+    <string name="manual_report_copied_dialog_message">Report آپ کے clipboard پر کاپی ہو گئی ہے۔ کیا آپ ابھی GitHub Issues کھولنا چاہتے ہیں یا report کو file کے طور پر شیئر کرنا چاہتے ہیں؟</string>
+    <string name="manual_report_copied_dialog_share">File شیئر کریں</string>
+    <string name="crash_detected_dialog_message">Shizuku+ نے آپ کے پچھلے session میں crash کا پتہ لگایا ہے۔ کیا آپ اسے ٹھیک کرنے میں مدد کے لیے report بنانا چاہتے ہیں؟</string>
+    <string name="crash_detected_dialog_short_message">Report کاپی ہو گئی ہے۔ اسے paste کرنے کے لیے GitHub کھولیں، یا report کو file کے طور پر شیئر کریں؟</string>
+    <string name="crash_detected_dialog_ignore">نظر انداز کریں</string>
+    <string name="shortcut_open_terminal">Terminal کھولیں</string>
+    <string name="watchdog_shizuku_crashed_action_report_manually">دستی طور پر رپورٹ کریں</string>
+
+    <!-- Bug Report Dialog -->
+    <string name="bug_report_dialog_before_reporting">رپورٹ کرنے سے پہلے درج ذیل کریں:</string>
+    <string name="bug_report_dialog_update">یقینی بنائیں کہ آپ %1$s استعمال کر رہے ہیں۔</string>
+    <string name="bug_report_dialog_link_update">تازہ ترین ورژن</string>
+    <string name="bug_report_dialog_wiki">%1$s پڑھیں اور تمام متعلقہ troubleshooting steps پر عمل کریں۔</string>
+    <string name="bug_report_dialog_link_wiki">wiki</string>
+    <string name="bug_report_dialog_issues">تمام %1$s تلاش کریں تاکہ دیکھ سکیں کہ آپ کا bug پہلے رپورٹ تو نہیں ہو چکا۔</string>
+    <string name="bug_report_dialog_link_issues">موجودہ مسائل</string>
+    <string name="bug_report_dialog_method">اگر اکاؤنٹ ہے تو %1$s پر issue جمع کریں۔</string>
+    <string name="bug_report_dialog_method_2">ورنہ آپ email بھیج سکتے ہیں۔</string>
+    <string name="bug_report_dialog_button_email">Email</string>
+
+    <!-- Service Doctor -->
+    <string name="home_service_doctor_title">Service Doctor</string>
+    <string name="home_service_doctor_summary">Shizuku شروع کرنے میں مشکل ہو رہی ہے؟ diagnostic check چلانے کے لیے ٹیپ کریں۔</string>
+    <string name="doctor_dialog_title">System Diagnostics</string>
+    <string name="doctor_check_battery">Battery optimization: %1$s</string>
+    <string name="doctor_check_adb">Wireless debugging: %1$s</string>
+    <string name="doctor_check_root">Root access: %1$s</string>
+    <string name="doctor_check_secure_settings">Secure Settings: %1$s</string>
+    <string name="doctor_check_permission">ADB اجازت: %1$s</string>
+    <string name="doctor_check_server">Shizuku server: %1$s</string>
+    <string name="doctor_check_background">Background limits: %1$s</string>
+    <string name="doctor_status_ok">ٹھیک ہے</string>
+    <string name="doctor_status_running">چل رہا ہے</string>
+    <string name="doctor_status_stopped">بند ہے</string>
+    <string name="doctor_status_limited">محدود (Restricted ADB)</string>
+    <string name="doctor_status_restricted">محدود (System optimization فعال)</string>
+    <string name="doctor_status_not_enabled">فعال نہیں</string>
+    <string name="doctor_status_optimized">Optimized (سروس بند ہو سکتی ہے)</string>
+    <string name="doctor_status_unlocked">Unlocked</string>
+    <string name="doctor_status_restricted_bg">Restricted background execution</string>
+    <string name="doctor_tip_xiaomi">Xiaomi/HyperOS: Developer Options میں "USB Debugging (Security Settings)" فعال کریں۔</string>
+    <string name="doctor_tip_oppo_permission">Oppo/Realme/OnePlus: background service کے بند ہونے سے بچانے کے لیے Developer Options میں "Permission Monitoring" غیر فعال کریں۔</string>
+    <string name="doctor_tip_tcl_background">TCL: Settings میں Shizuku+ کو "Auto-start" اور "High background power consumption" allowlists میں شامل کریں۔</string>
+    <string name="doctor_tip_battery">Shizuku+ کے لیے battery optimization غیر فعال کریں تاکہ یہ بیک گراؤنڈ میں بند نہ ہو۔</string>
+    <string name="doctor_tip_adb">ری بوٹ کے بعد non-root mode میں Shizuku شروع کرنے کے لیے Wireless debugging فعال ہونا ضروری ہے۔</string>
+    <string name="doctor_button_fix">درست کریں</string>
+
+    <!-- Snackbar -->
+    <string name="snackbar_invalid_port">پورٹ 1 سے 65535 کے درمیان ہونی چاہیے</string>
+    <string name="snackbar_battery_optimization_home">start on boot/watchdog درست طور پر کام کرنے کے لیے battery optimization غیر فعال ہونا ضروری ہے۔</string>
+    <string name="snackbar_battery_optimization_settings">یہ فیچر استعمال کرنے کے لیے براہِ کرم battery optimization غیر فعال کریں۔</string>
+    <string name="snackbar_action_fix">درست کریں</string>
+    <string name="snackbar_server_version_skew">Shizuku+ اپ ڈیٹ ہو گیا ہے، لیکن چلنے والی service ابھی پرانے ورژن پر ہے۔ connected ایپس کے کام جاری رکھنے کے لیے اسے دوبارہ شروع کریں۔</string>
+    <string name="snackbar_action_restart">دوبارہ شروع کریں</string>
+
+    <!-- Toast -->
+    <string name="toast_no_email_app">کوئی email app نہیں ملی</string>
+    <string name="toast_app_frozen">ایپ freeze کر دی گئی</string>
+    <string name="toast_app_unfrozen">ایپ unfreeze کر دی گئی</string>
+    <string name="toast_operation_failed">عمل ناکام ہو گیا</string>
+    <string name="toast_error_with_message">غلطی: %1$s</string>
+    <string name="lp_action_freeze_app">ایپ Freeze کریں (Disable)</string>
+    <string name="lp_action_unfreeze_app">ایپ Unfreeze کریں (Enable)</string>
+    <string name="su_path_preset_applied">SU path preset لاگو ہو گیا: %1$s</string>
+    <string name="stock_shizuku_conflict_title">غیر مطابقت رکھنے والا Server دریافت ہوا</string>
+    <string name="stock_shizuku_conflict_description">اصل Shizuku server بیک گراؤنڈ میں چل رہا ہے۔ یہ Shizuku+ کے ساتھ incompatible ہے اور اسے شروع ہونے سے روکتا ہے۔</string>
+    <string name="stock_shizuku_conflict_fix_button">Conflict درست کریں</string>
+    <string name="stock_shizuku_conflict_dialog_title">غیر مطابقت رکھنے والا Server چل رہا ہے</string>
+    <string name="stock_shizuku_conflict_dialog_message">اصل Shizuku server اس وقت بیک گراؤنڈ میں چل رہا ہے۔ Android security constraints کی وجہ سے Shizuku+ اس سے بات چیت یا اسے ختم نہیں کر سکتا۔\n\nاصل server ختم کرنے کے لیے اپنی ڈیوائس کو مکمل طور پر restart کریں، پھر ADB یا Root سے Shizuku+ شروع کریں۔</string>
+    <string name="stock_shizuku_restarting_via_root">Root کے ذریعے دوبارہ شروع ہو رہا ہے…</string>
+    <string name="backup_plain_exported">Plain backup ایکسپورٹ ہو گیا۔ اس file کو نجی رکھیں — یہ encrypted نہیں ہے۔</string>
+    <string name="backup_exported_success">Backup کامیابی سے ایکسپورٹ ہو گیا</string>
+    <string name="backup_restored_success">Backup کامیابی سے restore ہو گیا۔ براہِ کرم ایپ دوبارہ شروع کریں۔</string>
+    <string name="backup_failed_generic">Backup ناکام: %1$s</string>
+    <string name="restore_failed_generic">Restore ناکام: %1$s</string>
+    <string name="backup_auth_failed">Authentication ناکام (%1$s)</string>
+    <string name="toast_shizuku_already_starting">Shizuku پہلے ہی بیک گراؤنڈ میں شروع ہو رہا ہے</string>
+    <string name="toast_accessibility_tv_only">یہ automation صرف TV یا TLS support والی Samsung One UI ڈیوائسز کے لیے ہے۔</string>
+    <string name="toast_pairing_timeout">Shizuku pairing service کا وقت ختم ہو گیا</string>
+    <string name="toast_adb_ssl_error">Wireless ADB handshake ناکام (SSL protocol error)۔ براہِ کرم 'Reset ADB Keys' استعمال کریں اور دوبارہ کوشش کریں۔</string>
+    <string name="adb_error_ssl_title">Connection Error</string>
+    <string name="adb_error_ssl_message">Wireless ADB handshake ناکام (SSL protocol error)۔ یہ عموماً اس وقت ہوتا ہے جب ADB keys خراب ہوں۔ کیا آپ انہیں Developer Options میں reset کرنا چاہتے ہیں؟</string>
+    <string name="adb_error_ssl_button_reset">Developer Options پر جائیں</string>
+
+    <!-- Dark Mode Setting Override -->
+    <string name="dark_theme">تھیم</string>
+    <string name="dark_theme_off">ہمیشہ روشن</string>
+    <string name="dark_theme_on">ہمیشہ تاریک</string>
+    <string name="follow_system">سسٹم کی پیروی کریں</string>
+
+    <!-- About -->
+    <string name="settings_about">کے بارے میں</string>
+    <string name="action_about">کے بارے میں</string>
+    <string name="about_dialog_button_close">بند کریں</string>
+    <string name="about_view_source_code_title">Source code</string>
+    <string name="about_view_source_code">Source code %s پر دیکھیں</string>
+
+    <!-- Start/Stop -->
+    <string name="start">شروع کریں</string>
+    <string name="stop">روکیں</string>
+    <string name="action_stop">Shizuku روکیں</string>
+    <string name="dialog_stop_message">Shizuku service روک دی جائے گی۔</string>
+
+    <!-- Notification -->
+    <string name="notification_channel_automation">Automation</string>
+    <string name="notification_automation_title">Automation چل رہا ہے</string>
+    <string name="notification_channel_service_status">Service start status</string>
+    <string name="notification_service_starting">Shizuku service شروع ہو رہی ہے…</string>
+    <string name="notification_service_start_failed">Shizuku service شروع کرنے میں ناکامی۔</string>
+    <string name="notification_service_start_no_root">Root اجازت کی درخواست ناکام ہو گئی۔</string>
+    <string name="notification_working">کام جاری ہے…</string>
+    <string name="notification_channel_adb_pairing">Wireless debugging pairing</string>
+    <string name="notification_adb_pairing_input_paring_code">Pairing code درج کریں</string>
+    <string name="notification_adb_pairing_searching_for_service_title">Pairing service تلاش کی جا رہی ہے</string>
+    <string name="notification_adb_pairing_service_found_title">Pairing service مل گئی</string>
+    <string name="notification_adb_pairing_stop_searching">تلاش روکیں</string>
+    <string name="notification_adb_pairing_working_title">Pairing جاری ہے</string>
+    <string name="notification_adb_pairing_succeed_title">Pairing کامیاب</string>
+    <string name="notification_adb_pairing_succeed_text">آپ اب Shizuku service شروع کر سکتے ہیں۔</string>
+    <string name="notification_adb_pairing_failed_title">Pairing ناکام</string>
+    <string name="notification_adb_pairing_retry">دوبارہ کوشش کریں</string>
+    <string name="notification_auth_missing_title">Auth token درکار ہے</string>
+    <string name="notification_auth_missing_message">اپنے intent میں "auth" extra شامل کریں۔ آپ ایپ میں "View intents" پر ٹیپ کر کے اپنا token تلاش کر سکتے ہیں۔</string>
+    <string name="notification_auth_invalid_title">Invalid auth token</string>
+    <string name="notification_auth_invalid_message">یقینی بنائیں کہ آپ کے intent میں موجود token وہی ہے جو ایپ کے "View intents" کے تحت دکھایا گیا ہے۔</string>
+
+    <!-- Permission related, appears in system permission UI -->
+    <string name="permission_label">access Shizuku</string>
+    <string name="permission_description">ایپ کو Shizuku استعمال کرنے کی اجازت دیں۔</string>
+    <string name="permission_warning_template"><![CDATA[کیا <b>%1$s</b> کو %2$s کی اجازت دیں؟]]></string>
+    <string name="grant_dialog_button_allow_always">ہمیشہ اجازت دیں</string>
+    <string name="grant_dialog_button_deny">"انکار کریں"</string>
+
+    <!-- Starter -->
+    <string name="starter">Starter</string>
+    <string name="start_with_root_failed">Root اجازت نہ ملنے یا ڈیوائس کے rooted نہ ہونے کی وجہ سے service شروع نہیں کی جا سکتی۔</string>
+    <string name="starter_waiting">Service کا انتظار…</string>
+    <string name="starter_waiting_description">منسلک ہو رہا ہے — روکنے کے لیے Cancel پر ٹیپ کریں۔</string>
+    <string name="starter_retrying">کنکشن دوبارہ آزمایا جا رہا ہے…</string>
+    <string name="starter_retry">دوبارہ کوشش کریں</string>
+    <string name="adb_error_timeout">Service وقت پر شروع نہیں ہوئی۔ یقینی بنائیں کہ Wireless Debugging فعال ہے اور دوبارہ کوشش کریں۔</string>
+    <string name="adb_error_generic">ایک غیر متوقع خرابی پیش آئی۔ دوبارہ کوشش کریں۔</string>
+
+    <!-- WADB Starter -->
+    <string name="wadb_notification_title">Shizuku شروع ہو رہا ہے…</string>
+    <string name="wadb_notification_wifi_required">جاری رکھنے سے پہلے Wi-Fi کنکشن کا انتظار</string>
+    <string name="wadb_notification_retry">دوبارہ کوشش کے انتظار میں</string>
+    <string name="wadb_error_title">بوٹ پر شروع کرتے وقت خرابی</string>
+    <string name="wadb_error_notify_dev">Developer کو اطلاع دینے کے لیے ٹیپ کریں۔</string>
+    <string name="wadb_permission_error_notification_title">Permission Error</string>
+    <string name="wadb_permission_error_notification_content">Shizuku کو بوٹ پر شروع ہونے کے لیے WRITE_SECURE_SETTINGS درکار ہے۔ اسے دینے کا طریقہ جاننے کے لیے ٹیپ کریں۔</string>
+    <string name="wadb_notification_channel">ADB auto-start service</string>
+
+    <!-- Watchdog -->
+    <string name="watchdog_running">Watchdog چل رہا ہے</string>
+    <string name="watchdog_turn_off">بند کریں</string>
+    <string name="watchdog_shizuku_crashed_title">Shizuku حال ہی میں crash ہوا</string>
+    <string name="watchdog_shizuku_crashed_text">Watchdog نے service دوبارہ شروع کر دی۔ مستقبل کے crashes روکنے کے ممکنہ حل جاننے کے لیے ٹیپ کریں۔</string>
+    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Alerts بند کریں</string>
+
+    <!-- Misc -->
+    <string name="dialog_cannot_open_browser_title">Browser شروع نہیں ہو سکا</string>
+    <string name="toast_copied_to_clipboard">Clipboard پر کاپی ہو گیا</string>
+    <string name="accessibility_service_label">Shizuku+ Pairing Helper</string>
+    <string name="accessibility_service_description">ایسی ڈیوائسز (مثلاً TVs اور Samsung One UI phones) کے لیے pairing support فراہم کرتا ہے جہاں notifications یا split screen آسانی سے استعمال نہیں کیے جا سکتے۔\n\nShizuku+ کو wireless debugging pairing screen سے pairing code نکالنے کے قابل بناتا ہے۔ pairing code ملنے کے بعد یہ خود کو غیر فعال کر دے گا۔</string>
+
+    <!-- Messages for legacy -->
+    <string name="dialog_legacy_not_support_title">%1$s جدید Shizuku کو سپورٹ نہیں کرتا</string>
+    <string name="dialog_legacy_not_support_message"><![CDATA[Legacy Shizuku مارچ 2019 سے deprecated ہے۔ اس کے علاوہ legacy Shizuku نئے Android systems پر کام نہیں کرتا۔<p>براہِ کرم <b>%1$s</b> کے developer سے update کرنے کو کہیں۔]]></string>
+    <string name="dialog_requesting_legacy_title">%1$s legacy Shizuku کی درخواست کر رہا ہے</string>
+    <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> جدید Shizuku support رکھتا ہے، لیکن legacy Shizuku کی درخواست کر رہا ہے۔ ممکن ہے Shizuku چل نہیں رہا ہو، اس لیے Shizuku app میں چیک کریں۔<p>Legacy Shizuku مارچ 2019 سے deprecated ہے۔]]></string>
+    <string name="dialog_requesting_legacy_button_open_shizuku">Shizuku کھولیں</string>
+    <string name="wadb_notification_attempt_now">ابھی کوشش کریں</string>
+
+    <!-- Settings navigation summaries -->
+    <string name="settings_category_general">عمومی</string>
+    <string name="settings_category_dark_mode">Dark Mode</string>
+    <string name="settings_category_automatic">خودکار</string>
+    <string name="settings_category_swipe">Swipe Actions</string>
+    <string name="settings_category_long_press">Long-press Actions</string>
+    <string name="settings_category_home_cards">Home Cards</string>
+    <string name="settings_category_activity_log">Activity Log</string>
+    <string name="settings_category_database">Database</string>
+    <string name="settings_category_network">Network</string>
+    <string name="settings_category_material_you">Material You</string>
+    <string name="settings_category_language">زبان</string>
+    <string name="settings_category_appearance">ظاہری شکل</string>
+    <string name="settings_main_category_capabilities">صلاحیتیں</string>
+    <string name="settings_main_category_personalization">Personalization</string>
+    <string name="settings_main_category_system">سسٹم</string>
+    <string name="settings_main_nav_feature_hub_title">Feature Hub</string>
+    <string name="settings_main_nav_feature_hub_summary">Exclusive Plus capabilities manage کریں</string>
+    <string name="settings_main_nav_root_compat_title">Root &amp; Compatibility</string>
+    <string name="settings_main_nav_root_compat_summary">ADB connection، SU bridge، rootless integration اور stock Shizuku compatibility</string>
+    <string name="settings_main_nav_appearance_summary">Theme، shapes، icons، motion، home layout اور language</string>
+    <string name="settings_main_nav_app_interactions_title">ایپ Interactions</string>
+    <string name="settings_main_nav_app_interactions_summary">Gestures، long-press actions اور install verification</string>
+    <string name="settings_main_nav_startup_behavior_title">Startup &amp; Behavior</string>
+    <string name="settings_main_nav_startup_behavior_summary">Boot options، watchdog، network اور activity status</string>
+    <string name="settings_main_nav_advanced_diagnostics_title">Advanced &amp; Diagnostics</string>
+    <string name="settings_main_nav_advanced_diagnostics_summary">Logs، ADB tools اور troubleshooting</string>
+    <string name="settings_main_nav_about_summary">Version، licenses اور updates</string>
+    <string name="settings_accent_violet_applied">Midnight Violet لاگو ہو گیا</string>
+    <string name="settings_accent_green_applied">Forest Green لاگو ہو گیا</string>
+    <string name="settings_accent_crimson_applied">Crimson Rose لاگو ہو گیا</string>
+    <string name="settings_accent_ocean_applied">Deep Ocean لاگو ہو گیا</string>
+    <string name="settings_accent_amber_applied">Amber Sunset لاگو ہو گیا</string>
+    <string name="settings_accent_rose_applied">Rose Petal لاگو ہو گیا</string>
+    <string name="settings_accent_slate_applied">Midnight Slate لاگو ہو گیا</string>
+    <string name="settings_accent_default_applied">Standard Blue (Default)</string>
+    <string name="fake_adb_pairing_title">Fake ADB connection کی اجازت دیں؟</string>
+    <string name="fake_adb_pairing_message">ایک app Fake Local ADB server کے ذریعے Shizuku+ سے منسلک ہونے کی کوشش کر رہی ہے۔\n\nRSA key fingerprint:\n%1$s</string>
+    <string name="fake_adb_pairing_allow">اجازت دیں</string>
+    <string name="fake_adb_pairing_deny">انکار کریں</string>
+    <string name="settings_category_advanced">Advanced</string>
+    <string name="settings_nav_behavior_summary">Start on boot، Watchdog اور TCP mode</string>
+    <string name="settings_nav_shizuku_plus_summary">Enhanced API، shell interceptor اور مزید</string>
+    <string name="settings_nav_ui_summary">Theme، colors، language</string>
+    <string name="settings_nav_app_management_summary">Swipe اور long-press actions</string>
+    <string name="settings_nav_home_summary">Visible cards اور shortcuts</string>
+    <string name="settings_nav_legacy_summary">ADB proxy، su bridge، root compatibility</string>
+    <string name="settings_nav_advanced_summary">Diagnostics، logs، help</string>
+
+    <!-- Accessibility - Content Descriptions -->
+    <string name="accessibility_icon_server_status">Server status icon</string>
+    <string name="accessibility_icon_app_management">ایپ management icon</string>
+    <string name="accessibility_icon_terminal">Terminal icon</string>
+    <string name="accessibility_icon_adb">ADB icon</string>
+    <string name="accessibility_icon_root">Root access icon</string>
+    <string name="accessibility_icon_wireless_adb">Wireless ADB icon</string>
+    <string name="accessibility_icon_automation">Automation icon</string>
+    <string name="accessibility_icon_learn_more">Learn more icon</string>
+    <string name="accessibility_icon_warning">Warning icon</string>
+    <string name="accessibility_icon_help">Help icon</string>
+    <string name="accessibility_icon_drag_handle">ترتیب بدلنے کے لیے گھسیٹیں</string>
+    <string name="accessibility_icon_remove">کارڈ ہٹائیں</string>
+    <string name="accessibility_icon_close">بند کریں</string>
+    <string name="accessibility_icon_info">معلومات</string>
+    <string name="accessibility_icon_play">چلائیں</string>
+    <string name="accessibility_icon_settings">ترتیبات</string>
+    <string name="accessibility_icon_code">Code</string>
+    <string name="accessibility_icon_open_in_new">نئی جگہ کھولیں</string>
+    <string name="accessibility_icon_link">Link</string>
+    <string name="accessibility_icon_restart">دوبارہ شروع کریں</string>
+    <string name="accessibility_icon_start">شروع کریں</string>
+    <string name="accessibility_button_start">Start button</string>
+    <string name="accessibility_button_restart">Restart button</string>
+    <string name="accessibility_button_view_command">View کمانڈ button</string>
+    <string name="accessibility_button_view_guide">View guide button</string>
+    <string name="accessibility_state_expanded">پھیلا ہوا</string>
+    <string name="accessibility_state_collapsed">سکیڑا ہوا</string>
+    <string name="accessibility_button_view_intents">View intents button</string>
+    <string name="accessibility_button_pairing">Pairing button</string>
+    <string name="accessibility_button_developer_options">Developer options button</string>
+    <string name="accessibility_button_notification_settings">Notification ترتیبات button</string>
+    <string name="accessibility_button_export_files">Export files button</string>
+    <string name="accessibility_button_activity_log">Activity log button</string>
+    <string name="accessibility_swipe_right">فوری کارروائی کے لیے دائیں swipe کریں</string>
+    <string name="accessibility_swipe_left">فوری کارروائی کے لیے بائیں swipe کریں</string>
+    <string name="accessibility_action_grant_permission">Shizuku اجازت دیں</string>
+    <string name="accessibility_action_revoke_permission">Shizuku اجازت واپس لیں</string>
+    <string name="accessibility_action_open_app">ایپلیکیشن کھولیں</string>
+    <string name="accessibility_action_app_info">ایپ info ترتیبات کھولیں</string>
+    <string name="accessibility_action_hide_app">فہرست سے چھپائیں</string>
+    <string name="accessibility_action_unhide_app">فہرست سے دوبارہ دکھائیں</string>
+    <string name="accessibility_action_toggle_selection">انتخاب ٹوگل کریں</string>
+    <string name="accessibility_action_expand">پھیلائیں</string>
+    <string name="accessibility_action_collapse">سکیڑیں</string>
+    <string name="accessibility_status_running">چل رہا ہے</string>
+    <string name="accessibility_status_stopped">بند ہے</string>
+    <string name="accessibility_status_error">غلطی</string>
+    <string name="accessibility_permission_granted">اجازت دی گئی</string>
+    <string name="accessibility_permission_denied">اجازت مسترد</string>
+
+    <!-- Empty State Views -->
+    <string name="empty_state_title_no_results">کوئی نتائج نہیں ملے</string>
+    <string name="empty_state_description_no_results">کوئی ایپ آپ کے موجودہ filter یا search criteria سے مطابقت نہیں رکھتی۔</string>
+    <string name="empty_state_title_no_apps">ابھی کوئی ایپ نہیں</string>
+    <string name="empty_state_description_no_apps">جن ایپس نے Shizuku اجازت کی درخواست یا اعلان کیا ہے وہ یہاں دکھائی دیں گی۔</string>
+    <string name="empty_state_title_no_home_cards">تمام cards چھپے ہوئے ہیں</string>
+    <string name="empty_state_description_no_home_cards">آپ نے home screen کے تمام cards چھپا دیے ہیں۔ انہیں بحال کرنے کے لیے Settings پر جائیں۔</string>
+    <string name="empty_state_action_restore_home_cards">Cards بحال کریں</string>
+    <string name="empty_state_title_no_plus_features">تمام فیچرز غیر فعال ہیں</string>
+    <string name="empty_state_description_no_plus_features">آپ نے تمام Shizuku+ فیچرز غیر فعال کیے ہیں۔ انہیں یہاں دیکھنے کے لیے فیچرز فعال کریں۔</string>
+    <string name="empty_state_title_activity_log_empty">کوئی سرگرمی ریکارڈ نہیں ہوئی</string>
+    <string name="empty_state_description_activity_log_empty">Activity logging فعال ہونے پر Shizuku API calls اور events یہاں نظر آئیں گے۔</string>
+    <string name="empty_state_title_hidden_apps">کوئی hidden ایپس نہیں</string>
+    <string name="empty_state_description_hidden_apps">Management list سے چھپائی گئی ایپس یہاں دکھائی دیں گی۔</string>
+
+    <!-- Update Settings -->
+    <string name="settings_update_category">Auto Update</string>
+    <string name="settings_update_title">Updates</string>
+    <string name="settings_update_summary">ایپ updates چیک کریں اور auto-update configure کریں</string>
+
+    <!-- Developer Options -->
+    <string name="settings_developer_options">Developer Options</string>
+    <string name="settings_developer_options_summary">Virtualization، device spoofing اور experimental فیچرز</string>
+    <string name="settings_developer_category_virtualization">Virtualization</string>
+    <string name="settings_developer_category_experimental">Experimental</string>
+    <string name="settings_auto_update_title">Updates کے لیے خودکار چیک</string>
+    <string name="settings_auto_update_summary">ایپ startup پر نئی versions خودکار طور پر چیک کریں</string>
+    <string name="settings_auto_install_title">Updates خودکار انسٹال کریں</string>
+    <string name="settings_auto_install_summary">Updates خودکار طور پر ڈاؤن لوڈ کریں اور انسٹال کرنے کی درخواست دکھائیں (اجازت درکار ہے)</string>
+    <string name="settings_update_channel_category">Release Channel</string>
+    <string name="settings_update_channel_title">Update channel</string>
+    <string name="update_channel_stable">Stable</string>
+    <string name="update_channel_dev">Dev / Pre-release</string>
+    <string name="update_channel_dev_warning_title">Dev channel پر جائیں؟</string>
+    <string name="update_channel_dev_warning_message">Dev releases تازہ ترین commits سے build ہوتی ہیں اور ان میں bugs، crashes یا breaking changes ہو سکتے ہیں۔ اسے صرف تب استعمال کریں جب آپ نئی فیچرز جلد آزمانا چاہتے ہوں۔\n\nآپ کسی بھی وقت Stable پر واپس جا سکتے ہیں۔</string>
+    <string name="settings_update_manual_category">Manual Update</string>
+    <string name="settings_check_for_update_title">Update چیک کریں</string>
+    <string name="settings_check_for_update_summary">دستی طور پر چیک کریں کہ نئی version دستیاب ہے یا نہیں</string>
+    <string name="settings_current_version_title">موجودہ ورژن</string>
+    <string name="settings_last_check_title">آخری چیک</string>
+    <string name="update_never_checked">کبھی نہیں</string>
+
+    <!-- Update Notifications -->
+    <string name="update_notification_channel">Update Notifications</string>
+    <string name="update_notification_channel_description">ایپ update downloads اور installations کی notifications</string>
+    <string name="update_downloading_title">Update ڈاؤن لوڈ ہو رہی ہے</string>
+    <string name="update_downloading_description">Shizuku+ %1$s ڈاؤن لوڈ ہو رہا ہے…</string>
+    <string name="update_downloading_progress">%1$s ڈاؤن لوڈ ہو رہا ہے - %2$d%%</string>
+    <string name="update_ready_title">Update انسٹال کرنے کے لیے تیار ہے</string>
+    <string name="update_ready_description">Shizuku+ %1$s انسٹال کرنے کے لیے تیار ہے</string>
+    <string name="update_install_now">ابھی انسٹال کریں</string>
+    <string name="update_download_failed_title">ڈاؤن لوڈ ناکام</string>
+    <string name="update_download_failed_message">Update ڈاؤن لوڈ نہیں ہو سکی۔ دوبارہ کوشش کریں۔</string>
+    <string name="update_download_failed_storage">Update ڈاؤن لوڈ کرنے کے لیے کافی free storage نہیں ہے۔</string>
+    <string name="update_download_failed_cannot_resume">Interrupted ہونے کے بعد download دوبارہ شروع نہیں ہو سکی۔ براہِ کرم دوبارہ کوشش کریں۔</string>
+    <string name="update_download_failed_http">Network error نے download روک دی۔ اپنا connection چیک کریں اور دوبارہ کوشش کریں۔</string>
+
+    <!-- Migration Dialog -->
+    <string name="migration_dialog_title">اہم: دوبارہ انسٹال کرنا ضروری ہے</string>
+    <string name="migration_dialog_message"><![CDATA[Shizuku+ نے اپنا package ID moe.shizuku.privileged.api سے af.shizuku.plus.api میں تبدیل کر لیا ہے۔ آپ کے پرانے اور موجودہ ورژن الگ ایپس سمجھے جاتے ہیں، اس لیے direct update ممکن نہیں تھا۔\n\nآپ پرانے version سے ترتیبات migrate کر سکتے ہیں اور پھر اسے uninstall کریں۔]]></string>
+    <string name="migration_dialog_message_root"><![CDATA[Shizuku+ نے اپنا package ID moe.shizuku.privileged.api سے af.shizuku.plus.api میں تبدیل کر لیا ہے۔ آپ کے پرانے اور موجودہ ورژن الگ ایپس سمجھے جاتے ہیں، اس لیے direct update ممکن نہیں تھا۔\n\nRoot access دستیاب ہے — پرانے ورژن سے ترتیبات کاپی کرنے کے لیے Migrate Settings پر ٹیپ کریں، پھر اسے uninstall کریں۔]]></string>
+    <string name="migration_migrate_settings">Settings منتقل کریں</string>
+    <string name="migration_uninstall_old">پرانا ورژن Uninstall کریں</string>
+    <string name="migration_dismiss">نظر انداز کریں</string>
+    <string name="migration_success_title">Settings منتقل ہو گئیں</string>
+    <string name="migration_success_message">آپ کی ترتیبات پرانے version سے کاپی ہو گئی ہیں۔ اب آپ moe.shizuku.privileged.api کو محفوظ طریقے سے uninstall کر سکتے ہیں۔</string>
+    <string name="migration_failure_title">Migration ناکام</string>
+    <string name="migration_failure_message">پرانے version سے ترتیبات پڑھی نہیں جا سکیں۔ آپ کو preferences دستی طور پر دوبارہ configure کرنی پڑ سکتی ہیں۔\n\nآپ اب بھی پرانے version کو محفوظ طریقے سے uninstall کر سکتے ہیں۔</string>
+    <string name="migration_no_root_message">Root access دستیاب نہیں، اس لیے ترتیبات خودکار طور پر migrate نہیں کی جا سکتیں۔ آپ کو preferences دستی طور پر دوبارہ configure کرنی ہوں گی۔\n\nجب تیار ہوں تو پرانے version کو uninstall کر سکتے ہیں۔</string>
+
+    <!-- Update Dialogs -->
+    <string name="update_available_title">Update دستیاب ہے</string>
+    <string name="update_available_message">ایک نیا version %1$s ڈاؤن لوڈ کے لیے دستیاب ہے۔</string>
+    <string name="update_download">ڈاؤن لوڈ</string>
+    <string name="update_later">بعد میں</string>
+    <string name="update_release_notes">Release Notes</string>
+    <string name="update_up_to_date_title">تازہ ترین ورژن</string>
+    <string name="update_up_to_date_message">آپ پہلے ہی تازہ ترین version (%1$s) استعمال کر رہے ہیں۔</string>
+    <string name="update_error_title">چیک ناکام</string>
+    <string name="update_error_message">Updates چیک نہیں ہو سکیں۔ اپنا internet connection چیک کریں اور دوبارہ کوشش کریں۔\n\nآپ GitHub Releases سے دستی طور پر بھی update کر سکتے ہیں۔</string>
+    <string name="update_last_check_failed">چیک ناکام — ضرورت ہو تو manually update کریں</string>
+    <string name="update_available_manual_message">Version %1$s دستیاب ہے۔ Automatic download دستیاب نہیں ہے — GitHub Releases کھولنے کے لیے نیچے ٹیپ کریں۔</string>
+    <string name="update_view_on_github">GitHub پر دیکھیں</string>
+    <string name="update_permission_required_title">Permission درکار ہے</string>
+    <string name="update_permission_required_message">Auto-install فعال کرنے کے لیے system ترتیبات میں "Install unknown ایپس" اجازت دیں۔</string>
+    <string name="update_checking">Updates چیک ہو رہی ہیں…</string>
+    <string name="ok">ٹھیک ہے</string>
+    <string name="no_file_picker">اس ڈیوائس پر کوئی file picker app نہیں ملی</string>
+    <string name="wadb_notification_discovery_timeout">ADB port discovery کا وقت ختم ہو گیا — دوبارہ کوشش کی جا رہی ہے…</string>
+    <string name="shell_export_success">فائلیں کامیابی سے ایکسپورٹ ہو گئیں</string>
+    <string name="shell_export_failed">Export ناکام — کوئی فائل نہیں لکھی جا سکی</string>
+    <string name="shell_export_partial">%2$d میں سے %1$d files ایکسپورٹ ہوئیں (کچھ ناکام)</string>
+
+    <!-- Settings backup/restore -->
+    <string name="settings_backup_category">Backup اور Restore</string>
+    <string name="settings_export_title">Settings ایکسپورٹ کریں</string>
+    <string name="settings_export_summary">تمام Shizuku+ ترتیبات کو JSON file میں محفوظ کریں</string>
+    <string name="settings_import_title">Settings امپورٹ کریں</string>
+    <string name="settings_import_summary">پہلے ایکسپورٹ کی گئی JSON file سے ترتیبات بحال کریں</string>
+    <string name="settings_export_success">Settings کامیابی سے ایکسپورٹ ہو گئیں</string>
+    <string name="settings_export_failed">Export ناکام</string>
+    <string name="settings_import_success">Settings امپورٹ ہو گئیں — تمام تبدیلیاں لاگو کرنے کے لیے app restart کریں</string>
+    <string name="settings_import_failed">Import ناکام: غلط یا غیر مطابقت رکھنے والی فائل</string>
+    <string name="adb_native_unavailable">اس ڈیوائس پر ADB pairing دستیاب نہیں</string>
+    <string name="shizuku_not_available">Shizuku service دستیاب نہیں</string>
+    <string name="su_bridge_magic_setup_success_global_setting">Magic Setup مکمل! System global ترتیب configure ہو گئی۔</string>
+
+    <!-- Update dialog -->
+    <string name="changelog_title">نیا کیا ہے</string>
+    <string name="changelog_close">بند کریں</string>
+    <string name="changelog_view_on_github">GitHub پر دیکھیں</string>
+    <string name="changelog_fallback_message">اس update کے release notes لوڈ نہیں ہو سکے (ممکن ہے آپ offline ہوں)۔ کیا تبدیل ہوا دیکھنے کے لیے "View on GitHub" پر ٹیپ کریں۔</string>
+
+    <!-- AICore+ -->
+    <string name="aicore_plus_label">AICore+ Automation Bridge</string>
+    <string name="aicore_plus_description">Shizuku+ AICore+ فیچرز کے لیے ضروری ہے۔ AI-driven automation کے لیے privileged UI hierarchy dumping اور physical input simulation فراہم کرتا ہے۔ Passwords یا ذاتی data کو observe نہیں کرتا۔</string>
+
+    <!-- Common action labels -->
+    <string name="action_clear_all">سب صاف کریں</string>
+    <string name="action_continue">جاری رکھیں</string>
+    <string name="action_open_github">GitHub</string>
+
+    <!-- Service Doctor auto-fix -->
+    <string name="service_doctor_fix_phantom_attempted">Phantom process limit غیر فعال کر دی گئی۔ ضرورت ہو تو service دوبارہ شروع کریں۔</string>
+    <string name="service_doctor_fix_requires_service">اس fix کو خودکار طور پر لاگو کرنے کے لیے Shizuku چل رہا ہونا ضروری ہے۔</string>
+    <string name="service_doctor_fix_failed">Auto-fix ناکام: %1$s</string>
+    <string name="service_doctor_fix_blocked_samsung">Auto-fix blocked — Samsung Maximum Restrictions فعال ہو سکتی ہے۔ Auto Blocker میں اسے غیر فعال کریں اور دوبارہ کوشش کریں۔</string>
+    <string name="service_doctor_fix_blocked_generic">Auto-fix blocked — device restrictions privileged shell کمانڈز کو روکتی ہیں۔ ADB/OEM ترتیبات چیک کریں۔</string>
+
+    <!-- ADB Pairing -->
+    <string name="adb_foreground_op_denied">Foreground service شروع نہیں کی جا سکی — START_FOREGROUND اجازت مسترد ہے۔ اپنی device app اجازتیں چیک کریں۔</string>
+    <string name="update_no_release_notes">کوئی release notes دستیاب نہیں۔</string>
+
+    <!-- Accessibility service status -->
+    <string name="accessibility_service_monitoring">Accessibility service فعال ہے: pairing code کی نگرانی ہو رہی ہے…</string>
+
+    <!-- Dhizuku Device Owner Setup -->
+    <string name="dhizuku_setup_title">Device Owner سیٹ اپ کریں</string>
+    <string name="dhizuku_setup_message">Dhizuku Mode کے لیے Shizuku+ کو Device Owner کے طور پر سیٹ کرنا ضروری ہے۔ USB debugging فعال رکھتے ہوئے ADB کے ذریعے یہ کمانڈ ایک بار چلائیں:\n\n%1$s\n\nکمانڈ چلانے کے بعد Shizuku دوبارہ شروع کریں۔</string>
+    <string name="dhizuku_setup_copy">کمانڈ کاپی کریں</string>
+    <string name="dhizuku_setup_copied">کمانڈ clipboard پر کاپی ہو گئی</string>
+    <string name="dhizuku_status_active">Device Owner: فعال</string>
+    <string name="dhizuku_status_not_set">Device Owner سیٹ نہیں — setup instructions کے لیے ٹیپ کریں</string>
+
+    <!-- Clear Device Owner (Issue #237) -->
+    <string name="settings_clear_device_owner">Device Owner ہٹائیں</string>
+    <string name="settings_clear_device_owner_summary">Shizuku+ کو Device Owner status سے آزاد کریں۔ uninstall یا downgrade سے پہلے ضروری ہے۔</string>
+    <string name="dhizuku_clear_owner_title">Device Owner ہٹائیں؟</string>
+    <string name="dhizuku_clear_owner_message">اس سے Shizuku+ بطور Device Owner ہٹ جائے گا۔ Dhizuku Mode غیر فعال ہو جائے گا اور delegated Device Owner privileges پر منحصر ایپس رسائی کھو دیں گی۔\n\nآپ setup dialog میں دکھائی گئی ADB کمانڈ چلا کر کسی بھی وقت Device Owner دوبارہ فعال کر سکتے ہیں۔</string>
+    <string name="dhizuku_clear_owner_confirm">ہٹائیں</string>
+    <string name="dhizuku_clear_owner_success">Device Owner status ہٹا دیا گیا۔ اب آپ Shizuku+ کو uninstall یا downgrade کر سکتے ہیں۔</string>
+    <string name="dhizuku_clear_owner_failure">Device Owner status ہٹانے میں ناکامی۔ ممکن ہے service پہلے چلانا ضروری ہو۔</string>
+
+    <!-- Pairing fallback (Issue #204) -->
+    <string name="toast_pair_notifications_required">Notifications blocked ہیں — manual pairing استعمال ہو رہی ہے۔ Developer Options → Wireless debugging → Pair device with pairing code پر جائیں، اپنا code حاصل کریں اور یہاں درج کریں۔</string>
+    <string name="dialog_notif_permission_title">Notifications درکار ہیں</string>
+    <string name="dialog_notif_permission_message">Pairing code ایک notification کے ذریعے دیا جاتا ہے۔ ADB pairing مکمل کرنے کے لیے Shizuku+ کو notifications پوسٹ کرنے کی اجازت دیں۔</string>
+    <string name="dialog_notif_permission_allow">Notifications کی اجازت دیں</string>
+    <string name="dialog_notif_permission_manual">Manually Pair کریں</string>
+    <string name="dialog_notif_permission_open_settings">Settings کھولیں</string>
+    <string name="dialog_notif_permission_denied">Notification اجازت مسترد ہے۔ آپ اسے Settings میں فعال کر سکتے ہیں یا manually pair کر سکتے ہیں۔</string>
+
+    <!-- Remote App DB Sync -->
+    <string name="remote_db_sync_channel_name">ایپ Database Updates</string>
+
+    <!-- Binder Enhancements (Issue #199) -->
+    <string name="settings_binder_firewall">Binder Firewall</string>
+    <string name="settings_binder_firewall_summary">غیر مجاز ایپس سے حساس system transactions کو audit اور block کریں</string>
+    <string name="settings_binder_logging">AIDL Transaction Logging</string>
+    <string name="settings_binder_logging_summary">تمام proxied Binder transactions کو debugging کے لیے system log (Logcat) میں ریکارڈ کریں</string>
+    <string name="settings_shadow_binder">Shadow Binder</string>
+    <string name="settings_shadow_binder_summary">Device information یا app state چھپانے کے لیے system service calls کو intercept اور mock کریں</string>
+    <string name="settings_shadow_binder_hidden_packages">Hidden Packages</string>
+    <string name="settings_shadow_binder_hidden_packages_summary">دوسری ایپس سے چھپانے کے لیے package names کی comma-separated فہرست۔ اگر OG Shizuku اور Shizuku+ دونوں انسٹال ہیں تو conflicts روکنے کے لیے دونوں (moe.shizuku.privileged.api, af.shizuku.manager) شامل کریں۔</string>
+    <plurals name="settings_shadow_binder_hidden_packages_count">
+        <item quantity="one">%d ایپ منتخب</item>
+        <item quantity="other">%d ایپس منتخب</item>
+    </plurals>
+
+    <!-- Companion Mode -->
+    <string name="settings_category_companion">Companion Mode</string>
+    <string name="settings_companion_mode">Show Companion Card</string>
+    <string name="settings_companion_mode_summary">Stock Shizuku جلد کھولنے کے لیے card دکھائیں۔ نوٹ: ایک وقت میں صرف ایک Shizuku service چل سکتی ہے — دونوں کے درمیان switch کرنے کے لیے اسے استعمال کریں۔</string>
+    <string name="settings_companion_fallback">Crash Fallback</string>
+    <string name="settings_companion_fallback_summary">3 مسلسل crashes کے بعد crash notification میں stock Shizuku کھولنے کا option دکھائیں</string>
+    <string name="home_companion_title">Stock Shizuku</string>
+    <string name="home_companion_description">Stock Shizuku انسٹال ہے۔ ایک وقت میں صرف ایک service چل سکتی ہے — جب ایسی ایپس درکار ہوں جو اسے require کرتی ہیں تو stock Shizuku پر switch کرنے کے لیے ٹیپ کریں۔</string>
+    <string name="home_companion_not_installed">Stock Shizuku انسٹال نہیں ہے۔ fallback کے طور پر استعمال کرنے کے لیے GitHub سے انسٹال کریں۔</string>
+    <string name="home_companion_open">کھولیں</string>
+    <string name="home_companion_install">انسٹال کریں</string>
+    <string name="watchdog_open_stock_shizuku">Stock Shizuku کھولیں</string>
+
+    <!-- App picker dialog -->
+    <string name="settings_live_activity">Live Activity Notifications</string>
+    <string name="settings_live_activity_summary">status bar میں real-time service activity دکھائیں</string>
+    <string name="app_management_empty">کوئی ایپ نہیں ملی</string>
+    <string name="app_management_search_hint">ایپس تلاش کریں</string>
+
+    <!-- Root Compatibility Hub -->
+    <string name="root_hub_title">Root Compatibility Hub</string>
+    <string name="root_hub_global_config_title">Global SU Path</string>
+    <string name="root_hub_global_config_desc">تمام ایپس یہ path استعمال کریں گی۔ Auto Setup supported ایپس کو خودکار طور پر configure کرنے کی کوشش کرے گا۔</string>
+    <string name="root_hub_setup_all">سب کا Setup</string>
+    <string name="root_hub_setup_all_success">تمام compatible ایپس کے لیے auto setup کی کوشش کی گئی۔</string>
+    <string name="root_hub_magic_setup_all_summary">Shizuku+ نے %d ایپس آپ کے لیے configure کر دیں!</string>
+    <string name="root_hub_magic_setup_all_no_apps">کوئی root app نہیں ملی جو automated setup سپورٹ کرتی ہو۔</string>
+    <string name="root_hub_magic_setup_success">Magic Setup مکمل! Shizuku+ نے %s آپ کے لیے configure کر دیا ہے۔</string>
+    <string name="root_hub_magic_setup_fail">Magic Setup ناکام۔ براہِ کرم path manually کاپی کرنے کی کوشش کریں۔</string>
+    <string name="root_hub_path_copied">SU path clipboard پر کاپی ہو گیا</string>
+    <string name="root_hub_no_export">SU path مقرر نہیں۔ پہلے home screen سے Shizuku files ایکسپورٹ کریں۔</string>
+    <string name="root_hub_device_identity_title">Device Identity</string>
+    <string name="root_hub_device_identity_none">کوئی نہیں (حقیقی ڈیوائس دکھائیں)</string>
+    <string name="root_hub_device_identity_real">حقیقی: %s</string>
+    <string name="root_hub_device_identity_spoofed">Spoofed: %s</string>
+
+    <!-- Home Automation dialog labels -->
+    <string name="home_automation_dialog_label_action">Action</string>
+    <string name="home_automation_dialog_label_class">Class</string>
+    <string name="home_automation_dialog_label_package">Package</string>
+    <string name="home_automation_dialog_label_target">Target</string>
+
+    <!-- Misc -->
+    <string name="action_start">شروع کریں</string>
+    <string name="settings_tcp_learn_more">Automation tools کے ذریعے Shizuku کو control کرنے کے بارے میں مزید جانیں</string>
+    <string name="settings_help">مدد</string>
+    <string name="settings_adb_category">ADB Management</string>
+
+    <!-- APK verification API key strings -->
+    <string name="verify_virustotal_key_title">VirusTotal API Key</string>
+    <string name="verify_virustotal_key_required">VirusTotal scanning استعمال کرنے کے لیے API key درکار ہے</string>
+    <string name="verify_pithus_key_title">Pithus API Key (Optional)</string>
+    <string name="verify_pithus_key_configured">malware traits کا پتہ لگانے کے لیے hashes کو Pithus کے خلاف چیک کریں · API key configured ہے</string>
+    <string name="verify_pithus_default_summary">malware traits کا پتہ لگانے کے لیے hashes کو Pithus کے خلاف چیک کریں۔</string>
+    <string name="verify_api_key_hint">API key درج کرنے کے لیے ٹیپ کریں</string>
+    <string name="verify_api_key_configured">API key محفوظ ہے · update کرنے کے لیے ٹیپ کریں</string>
+    <string name="verify_get_api_key">API Key حاصل کریں</string>
+
+    <!-- Scripting & Snippets (#11) -->
+    <string name="scripting_title">Scripting</string>
+    <string name="scripting_summary">Privileged shell snippets محفوظ، شیئر اور چلائیں</string>
+    <string name="scripting_empty_title">ابھی کوئی snippets نہیں</string>
+    <string name="scripting_empty_description">Shizuku+ کے ذریعے کسی بھی وقت چلانے کے لیے privileged shell snippet محفوظ کریں۔</string>
+    <string name="scripting_add">Snippet شامل کریں</string>
+    <string name="scripting_edit">Snippet ایڈٹ کریں</string>
+    <string name="scripting_run">چلائیں</string>
+    <string name="scripting_running">“%1$s…” چل رہا ہے</string>
+    <string name="scripting_no_output">(کوئی output نہیں)</string>
+    <string name="scripting_exit_code">Exit code: %1$d</string>
+    <string name="scripting_copy_output">Output کاپی کریں</string>
+    <string name="scripting_output_copied">Output clipboard پر کاپی ہو گیا</string>
+    <string name="scripting_title_hint">Snippet name</string>
+    <string name="scripting_script_hint">Shell کمانڈ(s)</string>
+    <string name="scripting_title_and_script_required">Name اور script دونوں درکار ہیں</string>
+    <string name="scripting_delete_title">Snippet حذف کریں؟</string>
+    <string name="scripting_delete_message">“%1$s” مستقل طور پر حذف ہو جائے گا۔</string>
+    <string name="scripting_delete">حذف کریں</string>
+    <string name="scripting_auto_run_label">Service start پر خودکار چلائیں</string>
+    <string name="scripting_auto_run_badge_desc">Service start پر خودکار چلتا ہے</string>
+
+    <!-- Tasker/Locale automation plugin (#6) -->
+    <string name="automation_plugin_action_label">Shizuku+ Service</string>
+    <string name="automation_plugin_action_edit_title">Action منتخب کریں</string>
+    <string name="automation_plugin_action_start">Shizuku+ service شروع کریں</string>
+    <string name="automation_plugin_action_stop">Shizuku+ service روکیں</string>
+    <string name="automation_plugin_blurb_start">Shizuku+ service شروع کریں</string>
+    <string name="automation_plugin_blurb_stop">Shizuku+ service روکیں</string>
+    <string name="automation_plugin_condition_label">Shizuku+ Service Running</string>
+    <string name="automation_plugin_condition_title">Shizuku+ service چل رہا ہے</string>
+    <string name="automation_plugin_condition_description">یہ condition اس وقت پوری ہوتی ہے جب Shizuku+ service چل رہی ہو۔</string>
+    <string name="automation_plugin_condition_blurb">Shizuku+ service چل رہی ہے</string>
+
+    <!-- Network Firewall automation trusted networks -->
+    <string name="cd_navigate_back">پیچھے</string>
+    <string name="cd_settings_search">تلاش</string>
+    <string name="cd_settings_search_clear">صاف کریں</string>
+    <string name="settings_search_hint">Settings تلاش کریں…</string>
+    <string name="settings_search_empty_state">کوئی ترتیبات نہیں ملیں</string>
+
+    <!-- Network Firewall automation trusted networks -->
+    <string name="settings_binder_firewall_trusted_networks">Trusted Networks</string>
+    <string name="settings_binder_firewall_trusted_networks_summary_none">ترتیب نہیں دی گئی — firewall state صرف manual ہے</string>
+    <string name="settings_binder_firewall_trusted_networks_summary_one">1 trusted network پر خودکار toggle</string>
+    <string name="settings_binder_firewall_trusted_networks_summary_many">%d trusted networks پر خودکار toggle</string>
+    <string name="binder_firewall_trusted_networks_title">Trusted Networks</string>
+    <string name="binder_firewall_trusted_networks_detail">Trusted network (مثلاً آپ کے گھر کا Wi-Fi) سے منسلک ہونے پر Binder Firewall خودکار طور پر غیر فعال ہو جاتا ہے۔ کسی دوسرے network پر یہ خودکار طور پر دوبارہ فعال ہو جاتا ہے۔\n\nہر Wi-Fi SSID الگ لائن پر درج کریں۔ صرف exact matches شمار ہوں گے۔</string>
+    <string name="binder_firewall_trusted_networks_hint">ہر لائن میں ایک SSID</string>
+    <string name="binder_firewall_trusted_networks_add_current">موجودہ network شامل کریں</string>
+    <string name="binder_firewall_trusted_networks_save">محفوظ کریں</string>
+    <string name="binder_firewall_trusted_networks_no_ssid">موجودہ network name معلوم نہیں ہو سکا</string>
+    <string name="binder_firewall_trusted_networks_already_added">"%s" پہلے ہی فہرست میں ہے</string>
+
+    <!-- Biometric lock -->
+    <string name="biometric_prompt_title">Shizuku+ Unlock کریں</string>
+    <string name="biometric_prompt_subtitle">حساس ترتیبات تک رسائی کے لیے authenticate کریں</string>
+
+    <!-- Stealth mode -->
+    <string name="stealth_mode_enable_title">Stealth Mode فعال کریں؟</string>
+    <string name="stealth_mode_enable_message">ایپ icon آپ کے launcher سے ہٹا دیا جائے گا۔\n\nآپ Shizuku notification سے ایپ پھر بھی کھول سکتے ہیں۔ icon بحال کرنے کے لیے ADB کے ذریعے stealth mode غیر فعال کریں:\n\nadb shell pm enable %1$s/af.shizuku.manager.LauncherAlias</string>
+    <string name="stealth_mode_enable_button">فعال کریں</string>
+
+    <!-- OTA flash danger dialog -->
+    <string name="ota_flash_danger_title">خطرناک Experimental Feature</string>
+    <string name="ota_flash_danger_message">Systemless OTA Flashing Shizuku shell کے ذریعے android.os.UpdateEngine استعمال کر کے inactive slot میں zip payloads انسٹال کرتی ہے۔\n\nخطرہ: incompatible payload flash کرنے سے hard brick یا bootloop ہو سکتا ہے۔ کیا آپ واقعی یہ فیچر فعال کرنا چاہتے ہیں؟</string>
+    <string name="ota_flash_danger_confirm">میں سمجھتا ہوں، فعال کریں</string>
+
+    <!-- SU path preset picker dialog -->
+    <string name="su_path_preset_dialog_title">SU Path Preset منتخب کریں</string>
+
+    <!-- Device Owner (Dhizuku) toasts -->
+    <string name="dpm_screen_capture_disabled">Screen Capture عالمی طور پر غیر فعال ہے</string>
+    <string name="dpm_screen_capture_enabled">Screen Capture فعال ہے</string>
+    <string name="dpm_requires_device_owner">ناکام: Device Owner privileges درکار ہیں</string>
+    <string name="dpm_usb_locked">USB Data Locked Down</string>
+    <string name="dpm_usb_unlocked">USB Data Unlocked</string>
+    <string name="dpm_freeze_failed">Freeze ناکام: %1$s</string>
+    <string name="dpm_freeze_success">%1$d applications freeze کی گئیں</string>
+
+    <!-- Backup/restore picker dialog -->
+    <string name="backup_export_title">Backup ایکسپورٹ کریں</string>
+    <string name="backup_type_encrypted">Encrypted (تجویز کردہ)</string>
+    <string name="backup_type_plain">Plain text — reinstalls کے درمیان testing کے لیے</string>
+    <string name="backup_no_file_manager_save">Backup محفوظ کرنے کے لیے کوئی file manager app نہیں ملی</string>
+    <string name="backup_no_file_manager_open">Backup کھولنے کے لیے کوئی file manager app نہیں ملی</string>
+
+    <!-- Samsung ADB dialog -->
+    <string name="adb_dialog_popup_settings">Pop-up Settings</string>
+
+    <!-- Tile service: state subtitles (shown in Samsung OneUI wide tile text area and standard subtitle) -->
+    <string name="tile_subtitle_active">فعال</string>
+    <string name="tile_subtitle_starting">شروع ہو رہا ہے…</string>
+    <string name="tile_subtitle_stopping">روکا جا رہا ہے…</string>
+    <string name="tile_subtitle_crashed">Crash ہوا · دوبارہ شروع کرنے کے لیے ٹیپ کریں</string>
+    <string name="tile_subtitle_tap_to_start">شروع کرنے کے لیے ٹیپ کریں</string>
+
+    <!-- Tile service: mode labels -->
+    <string name="tile_mode_root">Root</string>
+    <string name="tile_mode_wifi_adb">WiFi ADB</string>
+    <string name="tile_mode_adb">ADB</string>
+
+    <!-- Tile service: action labels (tap dialog and long-press options activity) -->
+    <string name="tile_action_start">Service شروع کریں</string>
+    <string name="tile_action_stop">Service روکیں</string>
+    <string name="tile_action_restart">Service دوبارہ شروع کریں</string>
+    <string name="tile_action_open_app">ایپ کھولیں</string>
+
+    <!-- Tile service error -->
+    <string name="tile_state_update_failed">Shizuku state اپ ڈیٹ کرنے میں ناکامی: %1$s</string>
+
+    <!-- App Profiles automation activity -->
+    <string name="app_profiles_title">ایپ Profiles</string>
+    <string name="app_profiles_summary_none">Per-app Binder Firewall overrides نہیں ہیں</string>
+    <string name="app_profiles_summary_count">%1$d app override(s) فعال</string>
+    <string name="app_profiles_description">ہر app کے لیے Binder Firewall override کریں۔ cycle کرنے کے لیے chip پر ٹیپ کریں: Default → Block → Allow۔ AutomationService کے چلنے پر فعال ہوتا ہے۔</string>
+    <string name="app_profile_state_default">ڈیفالٹ</string>
+    <string name="app_profile_state_block">بلاک</string>
+    <string name="app_profile_state_allow">اجازت</string>
+    <string name="app_profile_search_hint">ایپس تلاش کریں…</string>
+    <string name="app_profile_empty">کوئی ایپ نہیں ملی</string>
+    <string name="su_bridge_api36_adb_warning_title">Android 16 ADB Limitation</string>
+    <string name="su_bridge_api36_adb_warning_body">Android 16+ پر ADB shell process /data/local/tmp میں نہیں لکھ سکتا۔ اس کے بجائے Shizuku files کو کسی folder میں export کریں — SU Bridge وہ exported path استعمال کرے گا۔</string>
+    <string name="su_bridge_export_files">Files ایکسپورٹ کریں</string>
+    <string name="settings_status_bar_governor_plus_summary">Status bar اور Quick Settings panel کنٹرول کریں: shade کو collapse/expand کریں، expansion lock ٹوگل کریں اور tile layout manage کریں — سب user interaction کے بغیر۔</string>
+    <string name="help_status_bar_governor_plus_title">Status Bar Control</string>
+    <string name="help_status_bar_governor_plus_detail">system statusbar service کے ذریعے status bar اور Quick Settings panel تک privileged access فراہم کرتا ہے۔ Apps اور automations notification shade collapse یا expand کر سکتی ہیں، expansion کو lock کر سکتی ہیں، انفرادی QS tiles پر click کر سکتی ہیں اور مکمل tile list پڑھ یا rewrite کر سکتی ہیں — device unlock یا user gestures کے بغیر۔</string>
+    <string name="settings_package_governor_plus_summary">runtime اجازتیں بغیر prompts کے grant یا revoke کریں، APKs خاموشی سے انسٹال کریں، per-user system ایپس debloat کریں اور مکمل data preservation کے ساتھ ایپس suspend/restore کریں — سب privileged shell access کے ذریعے۔</string>
+    <string name="help_package_governor_plus_title">Package Governor</string>
+    <string name="help_package_governor_plus_detail">ADB/shell process کے لیے دستیاب privileged package management operations فراہم کرتا ہے: runtime اجازت grant/revoke (pm grant/revoke)، user-scoped system app uninstall (pm uninstall --user 0) اور restore (pm install-existing)، data-safe app suspension (pm suspend/unsuspend)، اور automatic اجازت grants کے ساتھ silent APK install۔ یہ حقیقی root-class capabilities ہیں جو actual root کے بغیر Shizuku over ADB چلانے والی کسی بھی ڈیوائس پر کام کرتی ہیں۔</string>
+    <string name="settings_display_tuner_plus_summary">Display resolution اور DPI override کریں — بالکل adb shell wm size/density کی طرح — تاکہ ایپس اور automation خود ADB access کے بغیر screen layout ایڈجسٹ کر سکیں۔</string>
+    <string name="help_display_tuner_plus_title">Display Tuner</string>
+    <string name="help_display_tuner_plus_detail">wm shell tool کے ذریعے privileged display configuration فراہم کرتا ہے: resolution (wm size) اور density (wm density) کو on the fly override کریں، current اور physical values پڑھیں، اور overrides کو device defaults پر reset کریں۔ ایپ layout issues ٹھیک کرنے، screen recording کے لیے مخصوص aspect ratio نافذ کرنے، desktop mode tweaks اور accessibility scaling کے لیے مفید ہے — تاریخی طور پر root-only capability اب ADB shell process کے ذریعے دستیاب ہے۔</string>
+</resources>
