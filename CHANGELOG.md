@@ -2,7 +2,7 @@
 
 All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md](AI_ATTRIBUTIONS.md) for full AI pair-programming provenance and commit mapping.
 
-## [Unreleased]
+## [Unreleased / Build r2436+]
 
 *Co-developed with Antigravity & Claude Code*
 
@@ -137,16 +137,51 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ## [v13.6.0.r2239]
 
-### Bug Fixes
-- Power-save whitelist re-applied on each `bindApplication` retry.
-- Watchdog scope clarified; RNDIS/Ethernet transport monitored.
-- Binder delivery retried on frozen-app failure with actionable UI feedback.
+*Co-developed with Claude Code*
+
+### 🐛 Bug Fixes
+
+#### Server / Service
+- **Power-save whitelist re-applied on each `bindApplication` retry** — clients on aggressive battery saver OEMs were losing their server connection because the whitelist exemption was granted only at startup, not on each rebind; now re-applied every time a client reconnects.
+- **Binder delivery retried on frozen-app failure with actionable UI feedback** — when a Cached Apps Freezer (Android 12+) thaw takes too long, the retry now shows a dialog explaining why the connection is slow instead of silently failing. (`ad92224b`)
+- **Watchdog scope clarified; RNDIS/Ethernet transport monitored** — the Wi-Fi connectivity check now also watches USB tethering and Ethernet interfaces, so Watchdog auto-reconnect fires over USB ADB, not only over Wi-Fi. (`e2207af1`)
+- **Fixed `newProcess()` dropping the entire boot environment when Magisk mocking is enabled** — `BOOTCLASSPATH`, `ANDROID_DATA`, `ANDROID_ROOT`, etc. were stripped from the child process env when the caller passed `null`, causing spawned `app_process` children to die instantly with `ANDROID_DATA environment variable unset`. ([#410](https://github.com/thejaustin/ShizukuPlus/issues/410))
 
 ## [v13.6.0.r2222]
 
-### Bug Fixes  
-- Shell caller now correctly identified; package name shown in consent notification.
+*Co-developed with Claude Code*
+
+### 🐛 Bug Fixes
+
+#### Server / Service
+- **Shell caller now correctly identified by UID fallback** — when `callingPackage` is absent (as in classic `rish_shizuku.dex`), the caller's UID is resolved via `Os.getuid()` so "Allow always" grants persist correctly. ([#391](https://github.com/thejaustin/ShizukuPlus/issues/391))
+- **Package name shown in shell consent notification** — consent prompt now shows the app's display name instead of "cannot be identified" when the PM lookup succeeds, and falls back to the package name (not a blank) when it does not. ([#398](https://github.com/thejaustin/ShizukuPlus/issues/398))
+- **Shell consent skipped when caller is already authorized** — consent notification no longer fires for apps that already have permanent permission. (`b035b101`)
+- **App display name shown in consent dialog** — replaced raw package ID with the user-visible app label. (`dd77e934`, [#398](https://github.com/thejaustin/ShizukuPlus/issues/398))
+- **Shell consent notification: Allow/Deny action buttons added** — users can now grant or deny directly from the notification shade without launching the dialog. (`bd7898de`)
+- **Shell consent events logged to Activity Log** — every consent grant/deny from rish or ADB is recorded so users can audit shell access history. (`407656e2`)
+- **Allow rish for apps without Shizuku permission in manifest** — apps that call `rish` without pre-declaring the Shizuku permission in their manifest now get a consent prompt instead of an unconditional denial. ([#387](https://github.com/thejaustin/ShizukuPlus/issues/387))
+
+#### Manager App (UI)
+- **Installer NPE cluster fixed** — three null-dereference crashes in the compat hub / APK installer path resolved; dialog height is now responsive on small screens. (`82ab63b5`)
+- **Plain-text backup export added** — backup data can now be exported without encryption for manual inspection/migration. (`f89c4beb`)
+- **OS permissions re-granted for pre-July-19 authorized apps on server start** — apps authorized before the permission-grant overhaul received no OS runtime permission on their next connect; a startup catch-up pass now closes this gap. (`f89c4beb`)
 
 ## [v13.6.0 / r2215]
 
-Initial public release of Shizuku+.
+*Initial public release of Shizuku+*
+
+### ✨ Added
+
+- **Shizuku+ core**: full fork of thedjchi/Shizuku with package `af.shizuku.manager` / `af.shizuku.plus.api` (coexists alongside stock Shizuku)
+- **Material 3 Expressive theme** — `Theme.Material3Expressive` across all screens
+- **Modular home screen** with drag-and-drop reorderable cards (`HomeViewModel` + Mavericks MVI)
+- **Root Compatibility Hub** — dashboard for 60+ root apps; auto-configures them to use the SU Bridge
+- **Wireless ADB pairing** (mDNS discovery) with QR code, PIN, and manual entry modes
+- **Scripting** — save and run privileged shell snippets; auto-run on Shizuku service start
+- **Activity Log** — persistent Room database of Shizuku permission grants/denials
+- **Update channel** — in-app stable and dev/beta APK download and install
+- **Service Doctor** — step-by-step diagnostic tool for common Shizuku startup failures
+- **Sentry crash reporting** (manually initialized; `io.sentry.auto-init=false`)
+- **Dhizuku device-owner mode** support
+- **PixelCopy + decorView overlay** to eliminate the black-screen flash on theme changes (`185b24c0`)
