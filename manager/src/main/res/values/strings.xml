@@ -1294,4 +1294,18 @@
     <!-- Mode-contextual settings (#433) -->
     <string name="settings_mode_indicator_adb">Running in ADB mode — root-only options are hidden</string>
     <string name="settings_mode_indicator_root">Running in root mode — ADB-only options are hidden</string>
+
+    <!-- Hide backup settings (#461) -->
+    <string name="settings_hide_backup_settings">Hide Backup &amp; Restore</string>
+    <string name="settings_hide_backup_settings_summary">Remove the Backup &amp; Restore section from the Feature Hub settings screen</string>
+
+    <!-- Package identity / MDM bypass UI (#469) -->
+    <string name="settings_package_identity_category">Package Identity</string>
+    <string name="settings_custom_app_label">Custom App Label</string>
+    <string name="settings_custom_app_label_summary">Set a display name suffix shown in the About screen. Does not change the installed package name.</string>
+    <string name="settings_custom_app_label_hint">e.g. Work, Personal, Alt</string>
+    <string name="package_identity_info_title">About Package Name Randomization</string>
+    <string name="package_identity_info_detail">MDM and enterprise root-detection systems often scan for known package names (af.shizuku.manager). True package name randomization — like Shevery uses — requires reinstalling the app with a different applicationId baked into the APK at build time. The manager cannot rename itself while it is running.\n\nRoadmap: a future \"Build-Your-Own\" CI workflow will let you generate a custom-named APK. Until then, this setting only stores a display label. For MDM bypass today, use Stealth Mode to remove the launcher icon.</string>
+    <string name="settings_package_identity_current">Current package: %1$s</string>
+    <string name="settings_package_identity_roadmap">Full runtime rename requires a custom build — see issue #469</string>
 </resources>

@@ -169,6 +169,16 @@ public class ShizukuSettings {
         // Automation Engine (Shizuku+ additions)
         public static final String KEY_AUTOMATION_TRUSTED_NETWORKS = "automation_trusted_networks";
         public static final String KEY_AUTOMATION_APP_PROFILES = "automation_app_profiles";
+
+        // UI visibility overrides (Shizuku+ additions)
+        public static final String KEY_HIDE_BACKUP_SETTINGS = "hide_backup_settings";
+
+        // Package identity customization (Shizuku+ additions)
+        // Stores a user-chosen label suffix displayed in the About screen and metrics.
+        // NOTE: True APK-level package name randomization requires a custom build
+        // with a different applicationId — the manager cannot rename itself at runtime.
+        // See GitHub issue #469 for the full roadmap.
+        public static final String KEY_CUSTOM_APP_LABEL = "custom_app_label";
     }
 
     private static SharedPreferences sPreferences;
@@ -1259,5 +1269,33 @@ public class ShizukuSettings {
         // Default OFF: auto-reconnect is opt-in, not opt-out. A null prefs object
         // (prefs not yet initialized) is treated as disabled, not enabled.
         return p != null && p.getBoolean(Keys.KEY_AUTO_RECONNECT_MDNS, false);
+    }
+
+    /** Whether the Backup &amp; Restore category is hidden from the Feature Hub screen (#461). */
+    public static boolean isHideBackupSettingsEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_HIDE_BACKUP_SETTINGS, false);
+    }
+
+    public static void setHideBackupSettingsEnabled(boolean hide) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_HIDE_BACKUP_SETTINGS, hide).apply();
+    }
+
+    /**
+     * Returns a user-configured display label suffix, or null if the user has not set one.
+     * Used only in the About screen; this does NOT change the APK package name at runtime.
+     * Full package name randomization requires a custom build — see issue #469.
+     */
+    @Nullable
+    public static String getCustomAppLabel() {
+        SharedPreferences p = getPreferences();
+        String label = p != null ? p.getString(Keys.KEY_CUSTOM_APP_LABEL, null) : null;
+        return (label != null && !label.isEmpty()) ? label : null;
+    }
+
+    public static void setCustomAppLabel(@Nullable String label) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putString(Keys.KEY_CUSTOM_APP_LABEL, label).apply();
     }
 }

@@ -476,6 +476,11 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
         // Initialize all preference dependencies
         updateAllPlusFeatureDependencies()
 
+        // Feature 2 (#461): Apply backup-settings visibility on fragment entry.
+        // The toggle itself lives in Advanced & Diagnostics settings; the preference screen
+        // re-reads the flag here so the setting takes effect without an app restart.
+        applyBackupCategoryVisibility()
+
         // Check for integrated apps and update summaries
         checkAppIntegrations()
 
@@ -732,6 +737,19 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
         super.onResume()
         // Refresh the App Profiles summary when returning from AppProfilesActivity.
         findPreference<Preference>("binder_firewall_app_profiles")?.let { updateAppProfilesSummary(it) }
+        // Re-apply backup category visibility in case the user toggled it in Advanced settings
+        // and navigated back to Feature Hub without recreating the fragment.
+        applyBackupCategoryVisibility()
+    }
+
+    /**
+     * Shows or hides the entire "Backup & Restore" category in the Feature Hub based on the
+     * [ShizukuSettings.isHideBackupSettingsEnabled] preference (issue #461).
+     */
+    private fun applyBackupCategoryVisibility() {
+        val hide = ShizukuSettings.isHideBackupSettingsEnabled()
+        findPreference<af.shizuku.manager.settings.CollapsiblePreferenceCategory>("category_backup")
+            ?.isVisible = !hide
     }
 
     private fun updateTrustedNetworksSummary(pref: Preference) {
