@@ -104,7 +104,7 @@
 
     <!-- Home - Adb -->
     <string name="home_adb_title"><![CDATA[Почніть з підключення до ПК]]></string>
-    <string name="home_adb_description"><![CDATA[Для пристроїв без root потрібно використовувати adb для запуску Shizuku (потрібне підключення до комп'ютера). Цей процес потрібно повторювати кожного разу, коли пристрій перезавантажується. Будь ласка, <b><a href=\"%1$s\">прочитайте довідку</a></b>.]]></string>
+    <string name="home_adb_description"><![CDATA[Для пристроїв без root потрібно використовувати adb для запуску Shizuku (потрібне підключення до комп\'ютера). Цей процес потрібно повторювати кожного разу, коли пристрій перезавантажується. Будь ласка, <b><a href=\"%1$s\">прочитайте довідку</a></b>.]]></string>
     <string name="home_adb_button_view_help">Прочитати довідку</string>
     <string name="home_adb_button_view_command">Переглянути команду</string>
     <string name="home_adb_dialog_view_command_message"><![CDATA[<font face=\"monospace\">%1$s</font><br><br>* Є деякі інші міркування, будь ласка, спочатку підтвердьте, що ви прочитали довідку.]]></string>
@@ -113,8 +113,8 @@
 
     <!-- Home - Wireless Adb -->
     <string name="home_wireless_adb_title"><![CDATA[Запуск за допомогою бездротового налагодження]]></string>
-    <string name="home_wireless_adb_description"><![CDATA[Починаючи з Android 11 та вище, ви можете ввімкнути бездротове налагодження та запустити Shizuku прямо з вашого пристрою, не під'єднуючись до комп'ютера.<p>Будь ласка, спочатку перегляньте покрокову інструкцію.]]></string>
-    <string name="home_wireless_adb_description_pre_11"><![CDATA[До Android 11, щоб увімкнути бездротове налагодження, під'єднання до ПК є обов'язковим.]]></string>
+    <string name="home_wireless_adb_description"><![CDATA[Починаючи з Android 11 та вище, ви можете ввімкнути бездротове налагодження та запустити Shizuku прямо з вашого пристрою, не під\'єднуючись до комп\'ютера.<p>Будь ласка, спочатку перегляньте покрокову інструкцію.]]></string>
+    <string name="home_wireless_adb_description_pre_11"><![CDATA[До Android 11, щоб увімкнути бездротове налагодження, під\'єднання до ПК є обов\'язковим.]]></string>
     <string name="home_wireless_adb_view_guide_button">Покрокова інструкція</string>
     <string name="home_layout_sim_adb">ADB</string>
 
