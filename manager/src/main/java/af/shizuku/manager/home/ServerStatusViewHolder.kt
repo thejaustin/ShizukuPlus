@@ -161,14 +161,9 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
             cardView.setCardBackgroundColor(bgColor)
         }
 
-        // Status-aware stroke — echoes the live indicator dot to add visual depth to the hero card
-        val strokeDp = if (ok || state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING) 1.5f else 0f
-        cardView.strokeWidth = (strokeDp * context.resources.displayMetrics.density + 0.5f).toInt()
-        cardView.strokeColor = when {
-            ok -> ContextCompat.getColor(context, R.color.status_ok)
-            state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING -> ContextCompat.getColor(context, R.color.status_starting)
-            else -> android.graphics.Color.TRANSPARENT
-        }
+        // No stroke — the colored background container and live indicator dot already convey state.
+        // A green stroke (#4CAF50) clashed with the M3 theme and was flagged as out-of-place (#473).
+        cardView.strokeWidth = 0
 
         textView.setTextColor(textColor)
         summaryView.setTextColor(textColor)
