@@ -471,10 +471,21 @@ class ShizukuApplication : Application(), Configuration.Provider {
             }
         }
 
-        // AutomationService is intentionally not started here. Its two registered rules
-        // (NetworkFirewallRule, AppSpecificProfileRule) are non-functional stubs with hardcoded
-        // demo values; the real opt-in automation feature is pending (#6). ShizukuStateMachine
-        // still dispatches ShizukuStateEvent through AutomationEngine as the future hook point.
+        // AutomationService (#435) now runs real rules - NetworkFirewallRule (trusted-network ->
+        // Binder Firewall) and AppAutoHideRule (per-app ShadowBinder auto-hide) - but only if the
+        // user has actually configured a trusted network or an auto-hide package in Settings.
+        // It used to start unconditionally for every user regardless, showing a permanent "Network
+        // monitor" notification and running a battery-costing 2-second UsageStatsManager
+        // foreground-app poll for two rules that, at the time, were non-functional placeholders
+        // that could never match real data. Registering rules is cheap and always safe; actually
+        // starting the service (and its notification/polling) is gated on real configuration so a
+        // user who never touches either list sees nothing - see ShizukuPlusSettingsFragment's
+        // change listeners for where the service gets started/stopped dynamically as the user
+        // edits those lists after this initial launch-time check.
+        af.shizuku.manager.automation.registerDefaultRules()
+        if (ShizukuSettings.isAnyAutomationConfigured()) {
+            af.shizuku.manager.automation.AutomationService.startIfNeeded(this)
+        }
 
         Shizuku.addLogListener { appName, packageName, action ->
             ActivityLogManager.log(appName, packageName, action)
