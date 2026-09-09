@@ -62,14 +62,19 @@ class AutomationViewHolder(
             val context = v.context
             val authToken = af.shizuku.manager.ShizukuSettings.getAuthToken()
             val encryptedToken = af.shizuku.manager.utils.IntentCrypto.encrypt(authToken)
+            // If AndroidKeyStore is unavailable (restricted OEMs such as Vivo), fall back to the
+            // raw plaintext token.  AuthenticatedReceiver / ShellRequestHandlerActivity already
+            // accept both encrypted ("auth:<base64>") and raw-plaintext values via constant-time
+            // MessageDigest comparison, so this graceful degradation is safe.
             if (encryptedToken == null) {
                 Toast.makeText(context, R.string.home_automation_token_encrypt_failed, Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
             }
 
             val sheetBinding = HomeAutomationBottomSheetBinding.inflate(
                 LayoutInflater.from(context)
             )
+
+            val extrasValue = if (encryptedToken != null) "auth:$encryptedToken" else authToken
 
             sheetBinding.apply {
                 val action = getIntentAction(buttonGroup.checkedButtonId)
@@ -77,7 +82,7 @@ class AutomationViewHolder(
                     Field(actionLayout, actionEditText, action),
                     Field(packageLayout, packageEditText, context.packageName),
                     Field(targetLayout, targetEditText, "Broadcast Receiver"),
-                    Field(extrasLayout, extrasEditText, "auth:$encryptedToken")
+                    Field(extrasLayout, extrasEditText, extrasValue)
                 )
 
                 fields.forEach { (layout, input, initText) ->
@@ -112,12 +117,12 @@ class AutomationViewHolder(
                         .setNegativeButton(android.R.string.cancel, null)
                         .setPositiveButton(android.R.string.ok, { _, _ ->
                             val newToken = ShizukuSettings.generateAuthToken()
-                            // Must match the initial extras format (line seeding extrasEditText):
-                            // "auth:" + encrypted token. Writing the raw token produced a value the
-                            // AuthenticatedReceiver couldn't verify, so a copied automation failed.
                             val newEncryptedToken = af.shizuku.manager.utils.IntentCrypto.encrypt(newToken)
                             if (newEncryptedToken == null) {
+                                // AndroidKeyStore unavailable: show a warning but still populate the
+                                // field with the raw token so the automation can be saved and used.
                                 Toast.makeText(context, R.string.home_automation_token_encrypt_failed, Toast.LENGTH_SHORT).show()
+                                extrasEditText.setText(newToken)
                             } else {
                                 extrasEditText.setText("auth:$newEncryptedToken")
                             }
