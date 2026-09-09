@@ -130,8 +130,14 @@ class HomeAdapter(
         lastUpdateDataTime = now
         isUpdating = true
         scope.launch {
-            val (status, grantedCount, isEditMode) = withState(homeModel) {
-                Triple(it.serviceStatus.invoke(), it.grantedAppCount, it.isEditMode)
+            // Read isEditMode from HomeEditMode.isActive (the live singleton) rather than
+            // homeModel.isEditMode (the Mavericks state). The Mavericks state is updated via
+            // a 150ms-delayed onChanged callback, so it lags behind the real edit-mode
+            // toggle — this lag caused all cards to pop into view after a drag gesture that
+            // started within that 150ms window (fixes #475).
+            val isEditMode = HomeEditMode.isActive
+            val (status, grantedCount) = withState(homeModel) {
+                Pair(it.serviceStatus.invoke(), it.grantedAppCount)
             }
             val companionInstalled = withState(homeModel) { it.companionInstalled }
             val compatHubInstalled = withState(homeModel) { it.compatHubInstalled }

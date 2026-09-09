@@ -97,7 +97,7 @@ class ToggleAllViewHolder(private val binding: AppListToggleAllBinding) : BaseVi
     }
 
     private fun areAllEnabled(items: List<PackageInfo>): Boolean {
-        if (items.size <= 1) {
+        if (items.isEmpty()) {
             return false
         }
         for (pi in items) {
