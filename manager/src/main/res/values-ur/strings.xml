@@ -548,7 +548,7 @@
     <string name="su_bridge_how_to_use">استعمال کا طریقہ:</string>
     <string name="su_bridge_step_1">1. Home screen سے Shizuku files ایکسپورٹ کریں۔</string>
     <string name="su_bridge_step_2">2. اپنی root app میں ترتیبات کے اندر "SU Path" یا "Binary Path" تلاش کریں۔</string>
-    <string name="su_bridge_step_3">3. اسے exported 'su' file کے path پر تبدیل کریں۔</string>
+    <string name="su_bridge_step_3">3. اسے exported \'su\' file کے path پر تبدیل کریں۔</string>
     <string name="su_bridge_step_4">4. custom path ترتیب نہ رکھنے والی ایپس کے لیے Shizuku+ ترتیبات میں "SU Bridge" فعال کریں۔ یہ بہت سی legacy su calls کو خودکار طور پر redirect کرتا ہے۔</string>
     <string name="su_bridge_app_instruction">Settings &gt; %s میں path مقرر کریں</string>
     <string name="su_bridge_path_label">Exported su path</string>
@@ -666,7 +666,7 @@
     <string name="toast_shizuku_already_starting">Shizuku پہلے ہی بیک گراؤنڈ میں شروع ہو رہا ہے</string>
     <string name="toast_accessibility_tv_only">یہ automation صرف TV یا TLS support والی Samsung One UI ڈیوائسز کے لیے ہے۔</string>
     <string name="toast_pairing_timeout">Shizuku pairing service کا وقت ختم ہو گیا</string>
-    <string name="toast_adb_ssl_error">Wireless ADB handshake ناکام (SSL protocol error)۔ براہِ کرم 'Reset ADB Keys' استعمال کریں اور دوبارہ کوشش کریں۔</string>
+    <string name="toast_adb_ssl_error">Wireless ADB handshake ناکام (SSL protocol error)۔ براہِ کرم \'Reset ADB Keys\' استعمال کریں اور دوبارہ کوشش کریں۔</string>
     <string name="adb_error_ssl_title">Connection Error</string>
     <string name="adb_error_ssl_message">Wireless ADB handshake ناکام (SSL protocol error)۔ یہ عموماً اس وقت ہوتا ہے جب ADB keys خراب ہوں۔ کیا آپ انہیں Developer Options میں reset کرنا چاہتے ہیں؟</string>
     <string name="adb_error_ssl_button_reset">Developer Options پر جائیں</string>
