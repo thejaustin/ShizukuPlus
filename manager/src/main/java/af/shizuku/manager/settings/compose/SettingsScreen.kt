@@ -4,7 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -17,8 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -71,9 +70,11 @@ fun SettingsScreen(
         }
     }
 
-    // Samsung OneUI one-handed mode: scale entire settings panel to 75%, anchored to bottom-right.
-    val oneHandedScale by animateFloatAsState(
-        targetValue = if (isOneHanded) 0.75f else 1f,
+    // Samsung OneUI one-handed mode: shift content down into the thumb-reachable zone.
+    // Uses layout padding (not graphicsLayer scale) so touch targets stay aligned with visuals.
+    val screenHeightDp = LocalConfiguration.current.screenHeightDp
+    val oneHandedOffset by animateDpAsState(
+        targetValue = if (isOneHanded) (screenHeightDp * 0.38f).dp else 0.dp,
         animationSpec = if (!af.shizuku.manager.ShizukuSettings.isExpressiveAnimationsEnabled()) {
             snap()
         } else {
@@ -82,7 +83,7 @@ fun SettingsScreen(
                 stiffness = Spring.StiffnessMedium * af.shizuku.manager.ShizukuSettings.getAnimationDurationScale()
             )
         },
-        label = "settingsOneHandedScale"
+        label = "settingsOneHandedOffset"
     )
 
     Scaffold(
@@ -166,7 +167,8 @@ fun SettingsScreen(
         }
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
-            // Fragment Container for Preferences — apply Samsung OneUI one-handed scale+pivot transform
+            // Fragment Container for Preferences — shift down in one-handed mode via layout padding
+            // so touch targets remain aligned with the visual position.
             AndroidView(
                 factory = { context ->
                     FrameLayout(context).apply {
@@ -180,11 +182,7 @@ fun SettingsScreen(
                 },
                 modifier = Modifier
                     .fillMaxSize()
-                    .graphicsLayer(
-                        scaleX = oneHandedScale,
-                        scaleY = oneHandedScale,
-                        transformOrigin = TransformOrigin(0.5f, 1f)
-                    )
+                    .padding(top = oneHandedOffset)
                     .padding(
                         top = innerPadding.calculateTopPadding(),
                         bottom = innerPadding.calculateBottomPadding()

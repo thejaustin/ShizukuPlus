@@ -1,7 +1,7 @@
 package af.shizuku.manager.service
 
-import android.app.AlertDialog
 import android.app.PendingIntent
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.content.Intent
 import android.os.Build
 import android.service.quicksettings.Tile
@@ -165,7 +165,8 @@ class ShizukuTileService : TileService() {
             getString(R.string.tile_action_stop),
             getString(R.string.tile_action_open_app)
         )
-        val dialog = AlertDialog.Builder(this)
+        val ctx = android.view.ContextThemeWrapper(this, af.shizuku.manager.R.style.Theme)
+        val dialog = MaterialAlertDialogBuilder(ctx)
             .setTitle(R.string.app_name)
             .setItems(items) { _, which ->
                 when (which) {
