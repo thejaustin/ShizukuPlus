@@ -219,6 +219,11 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
+        findPreference<TwoStatePreference>(KEY_ONE_HANDED_MODE)?.setOnPreferenceChangeListener { _, _ ->
+            applyTheme(requiresRecreate = false)
+            true
+        }
+
         // 4. Language & System
         languagePreference = requireNotNull(findPreference(KEY_LANGUAGE))
         translationPreference = requireNotNull(findPreference(KEY_TRANSLATION))

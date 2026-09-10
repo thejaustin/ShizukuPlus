@@ -89,6 +89,15 @@
         <item>3</item>
     </string-array>
 
+    <string-array name="status_card_outline_styles">
+        <item>Material (theme color)</item>
+        <item>Green / Red (status color)</item>
+    </string-array>
+    <string-array name="status_card_outline_styles_value">
+        <item>material</item>
+        <item>status</item>
+    </string-array>
+
     <string name="home_status_service_running_tile_sublabel">Running</string>
     <string name="home_status_service_stopped_tile_sublabel">Stopped</string>
 
@@ -384,7 +393,8 @@
     <string name="settings_enable_activity_log_summary">Record and display Shizuku API calls and events on the home screen.</string>
     <string name="settings_show_activity_log_home">Show Activity Log</string>
     <string name="settings_show_status_card_outline">Status card outline</string>
-    <string name="settings_show_status_card_outline_summary">Show a colored outline on the service status card — green when running, red when stopped</string>
+    <string name="settings_show_status_card_outline_summary">Show a colored outline on the service status card</string>
+    <string name="settings_status_card_outline_style">Outline color</string>
     <string name="settings_home_visibility">Home screen visibility</string>
     <string name="settings_update_app_database">Update app database</string>
     <string name="settings_update_app_database_summary">Fetch latest app descriptions and enhancement suggestions from GitHub.</string>

@@ -164,6 +164,16 @@
             android:icon="@drawable/ic_palette_24"
             android:defaultValue="true" />
 
+        <rikka.preference.SimpleMenuPreference
+            android:key="status_card_outline_style"
+            android:title="@string/settings_status_card_outline_style"
+            app:useSimpleSummaryProvider="true"
+            android:defaultValue="material"
+            android:entries="@array/status_card_outline_styles"
+            android:entryValues="@array/status_card_outline_styles_value"
+            android:dependency="show_status_card_outline"
+            android:icon="@drawable/ic_palette_24" />
+
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="companion_mode"
             android:title="@string/settings_companion_mode"

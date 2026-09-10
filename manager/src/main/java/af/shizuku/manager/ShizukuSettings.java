@@ -168,6 +168,7 @@ public class ShizukuSettings {
 
         // Appearance (Shizuku+ additions)
         public static final String KEY_SHOW_STATUS_CARD_OUTLINE = "show_status_card_outline";
+        public static final String KEY_STATUS_CARD_OUTLINE_STYLE = "status_card_outline_style";
 
         // Companion Mode (Shizuku+ additions)
         public static final String KEY_COMPANION_MODE = "companion_mode";
@@ -594,6 +595,12 @@ public class ShizukuSettings {
     public static void setShowStatusCardOutlineEnabled(boolean enabled) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putBoolean(Keys.KEY_SHOW_STATUS_CARD_OUTLINE, enabled).apply();
+    }
+
+    /** "material" (default) = theme colorPrimary/colorError; "status" = green/amber/red semantic colors. */
+    public static String getStatusCardOutlineStyle() {
+        SharedPreferences p = getPreferences();
+        return p != null ? p.getString(Keys.KEY_STATUS_CARD_OUTLINE_STYLE, "material") : "material";
     }
 
     public static boolean isActivityLogEnabled() {

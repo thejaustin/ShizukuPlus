@@ -161,23 +161,29 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
             cardView.setCardBackgroundColor(bgColor)
         }
 
-        // Status-aware stroke — semantically meaningful outline: green when running, red when stopped,
-        // amber when starting. Hidden entirely when the user disables it in Appearance settings.
-        // Default is on; user can turn it off via Settings → Appearance → Status card outline.
+        // Outline: hidden when user disables it. Style toggles between Material (theme roles) and
+        // Status (semantic green/amber/red). Starting state always uses amber regardless of style.
         if (af.shizuku.manager.ShizukuSettings.isShowStatusCardOutlineEnabled()) {
             val strokeDp = 2f
             cardView.strokeWidth = (strokeDp * context.resources.displayMetrics.density + 0.5f).toInt()
+            val useStatusColors = af.shizuku.manager.ShizukuSettings.getStatusCardOutlineStyle() == "status"
             cardView.strokeColor = when {
-                ok -> com.google.android.material.color.MaterialColors.getColor(
-                    context, androidx.appcompat.R.attr.colorPrimary,
+                ok -> if (useStatusColors)
                     ContextCompat.getColor(context, R.color.status_ok)
-                )
+                else
+                    com.google.android.material.color.MaterialColors.getColor(
+                        context, androidx.appcompat.R.attr.colorPrimary,
+                        ContextCompat.getColor(context, R.color.status_ok)
+                    )
                 state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING ->
                     ContextCompat.getColor(context, R.color.status_starting)
-                else -> com.google.android.material.color.MaterialColors.getColor(
-                    context, androidx.appcompat.R.attr.colorError,
+                else -> if (useStatusColors)
                     ContextCompat.getColor(context, R.color.status_error)
-                )
+                else
+                    com.google.android.material.color.MaterialColors.getColor(
+                        context, androidx.appcompat.R.attr.colorError,
+                        ContextCompat.getColor(context, R.color.status_error)
+                    )
             }
         } else {
             cardView.strokeWidth = 0
