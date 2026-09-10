@@ -108,7 +108,15 @@ abstract class AppActivity : MaterialActivity() {
         // actually set (edge-to-edge could never be turned off, and Blur UI could never be turned
         // on, since neither key was ever actually found in the file being read).
         val prefs = createDeviceProtectedStorageContext().getSharedPreferences("settings", android.content.Context.MODE_PRIVATE)
-        if (prefs.getBoolean("edge_to_edge_enabled", true)) {
+        // Android 15+ (API 35) enforces edge-to-edge for targetSdk-35 apps regardless of the user
+        // preference — setDecorFitsSystemWindows(true) is silently ignored by the system. Forcing
+        // enableEdgeToEdge() here ensures every activity window is configured consistently before
+        // the Explode enter/exit transitions run; without it the source and destination windows
+        // have mismatched decor-fits-windows state during the animation, which causes a crash on
+        // Android 16 (#483). On older Android the user's setting is still honoured.
+        val edgeToEdge = prefs.getBoolean("edge_to_edge_enabled", true)
+                || Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+        if (edgeToEdge) {
             enableEdgeToEdge()
         }
         if (prefs.getBoolean("blur_ui_enabled", false) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

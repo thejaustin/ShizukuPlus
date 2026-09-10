@@ -204,11 +204,10 @@ open class HomeActivity : AppActivity(), MavericksView {
             }
         }
         super.onCreate(savedInstanceState)
-        // AppActivity.onCreate already called enableEdgeToEdge() when E2E is on; this mirrors
-        // that guard so the two calls stay consistent.
-        if (ShizukuSettings.isEdgeToEdgeEnabled()) {
-            androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
-        }
+        // AppActivity.onCreate() now handles enableEdgeToEdge() for all activities (including
+        // the Android 15+ enforcement path). The redundant setDecorFitsSystemWindows() call that
+        // was here previously caused inconsistent window state with other activities and contributed
+        // to the Explode transition crash on Android 16 (#483).
         if (ShizukuSettings.isBlurUiEnabled() && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             window.setBackgroundBlurRadius(30)
         }

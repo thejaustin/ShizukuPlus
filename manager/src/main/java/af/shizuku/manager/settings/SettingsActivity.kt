@@ -22,7 +22,10 @@ class SettingsActivity : AppActivity(), PreferenceFragmentCompat.OnPreferenceSta
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        // AppActivity.onCreate() already calls enableEdgeToEdge() (which sets
+        // setDecorFitsSystemWindows=false) based on the user's setting and Android version.
+        // Repeating it unconditionally here was inconsistent with HomeActivity and caused
+        // mismatched window state during the Explode transition, crashing on Android 16 (#483).
 
         SettingsSearchEngine.init(this)
 

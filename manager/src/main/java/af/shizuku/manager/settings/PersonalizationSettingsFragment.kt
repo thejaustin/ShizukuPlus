@@ -201,6 +201,9 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         // 3. Display settings (edge-to-edge, blur)
         edgeToEdgePreference = requireNotNull(findPreference(KEY_EDGE_TO_EDGE))
         edgeToEdgePreference.isChecked = ShizukuSettings.isEdgeToEdgeEnabled()
+        // Android 15+ (API 35) enforces E2E for targetSdk-35 apps — the toggle has no effect
+        // there, so hide it to avoid confusing users (#483).
+        edgeToEdgePreference.isVisible = Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
         edgeToEdgePreference.setOnPreferenceChangeListener { _, _ ->
             applyTheme(requiresRecreate = false)
             true
