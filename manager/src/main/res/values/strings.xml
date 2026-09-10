@@ -152,11 +152,11 @@
     <string name="doctor_status_detected">Detected</string>
     <string name="doctor_status_review">Review required</string>
     <string name="doctor_tip_samsung_autoblocker"><b>Samsung Auto Blocker</b>: Ensure it is turned <b>OFF</b> or that \'Maximum Restrictions\' is disabled. It silently blocks ADB commands on One UI 7/8+.</string>
-    <string name="doctor_tip_oneui_connectivity"><b>One UI 7/8 Connectivity</b>: If Wireless Pairing fails, try using <b>Split Screen mode</b> with Shizuku and Developer Options open simultaneously.</string>
+    <string name="doctor_tip_oneui_connectivity"><b>One UI 7/8 Connectivity</b>: If Wireless Pairing fails, try using <b>Split Screen mode</b> with Shizuku+ and Developer Options open simultaneously.</string>
     <string name="doctor_tip_s22_ultra"><b>S22 Ultra Tip</b>: For consistent ADB, dial `*#0808#` and select `MTP + ADB` if you encounter connection drops.</string>
-    <string name="doctor_tip_secure_folder"><b>Secure Folder Detected</b>: Shizuku works best in the Main User (Owner). Running inside Secure Folder or a Work Profile may require starting the server from the Main User first.</string>
-    <string name="doctor_tip_phantom_process"><b>Phantom Process Killer</b>: Android 12-15+ may kill Shizuku if too many commands are run. The \'Fix\' button attempts to disable this limit.</string>
-    <string name="doctor_tip_samsung_optimization"><b>Samsung Auto-Optimization</b>: Disable \'Auto Restart\' in Device Care to prevent Shizuku from being killed at night.</string>
+    <string name="doctor_tip_secure_folder"><b>Secure Folder Detected</b>: Shizuku+ works best in the Main User (Owner). Running inside Secure Folder or a Work Profile may require starting the server from the Main User first.</string>
+    <string name="doctor_tip_phantom_process"><b>Phantom Process Killer</b>: Android 12-15+ may kill Shizuku+ if too many commands are run. The \'Fix\' button attempts to disable this limit.</string>
+    <string name="doctor_tip_samsung_optimization"><b>Samsung Auto-Optimization</b>: Disable \'Auto Restart\' in Device Care to prevent Shizuku+ from being killed at night.</string>
     <string name="doctor_tip_samsung_sleeping"><b>Samsung Sleeping Apps</b>: Tapping Fix opens the <b>\'Never sleeping apps\'</b> list directly. Tap the <b>+</b> button and add Shizuku+ to prevent Samsung from freezing the background service.</string>
     <string name="doctor_tip_s22_ultra_exynos"><b>S22 Ultra (Exynos)</b>: If service response is sluggish, try disabling <b>\'RAM Plus\'</b> in Device Care > Memory.</string>
     <string name="doctor_tip_s22_ultra_snapdragon"><b>S22 Ultra (Snapdragon)</b>: Ensure \'Enhanced Processing\' is enabled in Quick Settings for maximum command throughput.</string>
@@ -219,8 +219,8 @@
     <string name="home_app_management_empty">Apps that have requested or declared the Shizuku permission will show here.</string>
 
     <!-- Home - Automation -->
-    <string name="home_automation_title">Control Shizuku with automation apps</string>
-    <string name="home_automation_description">Apps like Tasker and MacroDroid can send intents to start/stop Shizuku automatically.</string>
+    <string name="home_automation_title">Control Shizuku+ with automation apps</string>
+    <string name="home_automation_description">Apps like Tasker and MacroDroid can send intents to start/stop Shizuku+ automatically.</string>
     <string name="home_automation_description_device_restriction">To use the start intent on your device, you first need to enable ADB over TCP by running %1$s from a PC.</string>
     <string name="home_automation_button_view_intents">View intents</string>
     <string name="home_automation_bottom_sheet_intents">Intents</string>
@@ -285,8 +285,8 @@
     <string name="app_management_bulk_select_all">Select all</string>
 
     <!-- Terminal -->
-    <string name="home_terminal_title">Use Shizuku in terminal apps</string>
-    <string name="home_terminal_description">Run shell commands in terminal apps through Shizuku</string>
+    <string name="home_terminal_title">Use Shizuku+ in terminal apps</string>
+    <string name="home_terminal_description">Run shell commands in terminal apps through Shizuku+</string>
     <string name="terminal_tutorial_miui">Users have reported that MIUI breaks the Storage Access Framework, which is used by the export function.</string>
     <string name="terminal_tutorial_miui_2">If you are using MIUI, you may have to extract the file from the assets folder in Shizuku\'s APK.</string>
     <string name="terminal_tutorial_1">Export the files to a new folder.</string>
@@ -326,9 +326,9 @@
     <string name="onboarding_next">Next</string>
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_get_started">Get Started</string>
-    <string name="onboarding_setup_title">Start Shizuku</string>
-    <string name="onboarding_setup_desc">Choose how to start Shizuku on this device. You can also do this later from the main screen.</string>
-    <string name="onboarding_setup_running">Shizuku is running</string>
+    <string name="onboarding_setup_title">Start Shizuku+</string>
+    <string name="onboarding_setup_desc">Choose how to start Shizuku+ on this device. You can also do this later from the main screen.</string>
+    <string name="onboarding_setup_running">Shizuku+ is running</string>
     <string name="onboarding_setup_later">I\'ll do this later</string>
     <string name="onboarding_setup_wadb_desc">Android 11+, no computer needed. Uses wireless debugging.</string>
     <string name="onboarding_setup_root_desc">Your device is rooted. Start Shizuku with root access.</string>
@@ -348,14 +348,14 @@
     <string name="settings_start_on_boot_bug">Due to a bug in Android 11-12, wireless debugging does not remember any authorized networks.\n\nYou will need to re-authorize the network on each reboot by tapping \"Allow\" when the authorization dialog pops up.</string>
     <string name="settings_use_system_color">Use system theme color</string>
     <string name="settings_watchdog">Watchdog</string>
-    <string name="settings_watchdog_summary">Automatically restart Shizuku after a crash or unexpected stop. Cannot reconnect when the underlying network disconnects (e.g. USB cable unplugged while using RNDIS/USB ADB).</string>
+    <string name="settings_watchdog_summary">Automatically restart Shizuku+ after a crash or unexpected stop. Cannot reconnect when the underlying network disconnects (e.g. USB cable unplugged while using RNDIS/USB ADB).</string>
     <string name="settings_tcp_mode">TCP mode</string>
-    <string name="settings_tcp_mode_summary">"Allows Shizuku to restart without Wi-Fi. (Shizuku must have started once since reboot)"</string>
+    <string name="settings_tcp_mode_summary">"Allows Shizuku+ to restart without Wi-Fi. (Shizuku+ must have started once since reboot)"</string>
     <string name="settings_tcp_mode_dialog_close_port">"The TCP port will be closed immediately. You will need Wi-Fi to turn on TCP mode again. Continue?"</string>
     <string name="settings_tcp_mode_closing_port">Closing TCP port...</string>
     <string name="settings_restart_dialog_title">Restart Required</string>
-    <string name="settings_restart_dialog_message">Shizuku needs to restart in order to apply this setting.</string>
-    <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fi is required. Shizuku will continue running and wait for a Wi-Fi connection before restarting in the background.</b>]]></string>
+    <string name="settings_restart_dialog_message">Shizuku+ needs to restart in order to apply this setting.</string>
+    <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fi is required. Shizuku+ will continue running and wait for a Wi-Fi connection before restarting in the background.</b>]]></string>
     <string name="settings_tcp_port">TCP port</string>
     <string name="settings_tcp_port_default">Default (5555)</string>
     <string name="settings_tcp_port_hint">Leave blank to use default (5555)</string>
@@ -445,7 +445,7 @@
     <string name="diagnostics_dismiss">Dismiss</string>
     <string name="diagnostics_warning_dhizuku_not_owner">Dhizuku Mode is enabled but the Device Owner component is not active. Tap to resolve.</string>
     <string name="diagnostics_warning_shadow_binder_no_apps">Shadow Binder is enabled but no apps are selected to hide. Tap to select.</string>
-    <string name="diagnostics_warning_battery_optimization">Battery optimization is active. Shizuku may be killed in the background. Tap to exempt.</string>
+    <string name="diagnostics_warning_battery_optimization">Battery optimization is active. Shizuku+ may be killed in the background. Tap to exempt.</string>
     <string name="diagnostics_warning_automation_stopped">Network automation rules configured but the service is stopped — Binder Firewall won\'t auto-toggle. Tap to restart.</string>
     <string name="diagnostics_automation_start_failed">Could not start automation service</string>
     <string name="diagnostics_battery_settings_open_failed">Could not open battery settings</string>
@@ -641,14 +641,14 @@
 
     <!-- Service Doctor -->
     <string name="home_service_doctor_title">Service Doctor</string>
-    <string name="home_service_doctor_summary">Having trouble starting Shizuku? Tap to run a diagnostic check.</string>
+    <string name="home_service_doctor_summary">Having trouble starting Shizuku+? Tap to run a diagnostic check.</string>
     <string name="doctor_dialog_title">System Diagnostics</string>
     <string name="doctor_check_battery">Battery optimization: %1$s</string>
     <string name="doctor_check_adb">Wireless debugging: %1$s</string>
     <string name="doctor_check_root">Root access: %1$s</string>
     <string name="doctor_check_secure_settings">Secure Settings: %1$s</string>
     <string name="doctor_check_permission">ADB permission: %1$s</string>
-    <string name="doctor_check_server">Shizuku server: %1$s</string>
+    <string name="doctor_check_server">Shizuku+ server: %1$s</string>
     <string name="doctor_check_background">Background limits: %1$s</string>
     <string name="doctor_status_ok">OK</string>
     <string name="doctor_status_running">Running</string>
@@ -663,7 +663,7 @@
     <string name="doctor_tip_oppo_permission">Oppo/Realme/OnePlus: Disable "Permission Monitoring" in Developer Options to prevent background service kills.</string>
     <string name="doctor_tip_tcl_background">TCL: Ensure Shizuku+ is added to "Auto-start" and "High background power consumption" allowlists in Settings.</string>
     <string name="doctor_tip_battery">Disable battery optimization for Shizuku+ to prevent it from being killed in the background.</string>
-    <string name="doctor_tip_adb">Wireless debugging must be active for Shizuku to start in non-root mode after a reboot.</string>
+    <string name="doctor_tip_adb">Wireless debugging must be active for Shizuku+ to start in non-root mode after a reboot.</string>
     <string name="doctor_button_fix">Fix</string>
 
     <!-- Snackbar -->
@@ -695,9 +695,9 @@
     <string name="backup_failed_generic">Backup failed: %1$s</string>
     <string name="restore_failed_generic">Restore failed: %1$s</string>
     <string name="backup_auth_failed">Authentication failed (%1$s)</string>
-    <string name="toast_shizuku_already_starting">Shizuku is already starting in the background</string>
+    <string name="toast_shizuku_already_starting">Shizuku+ is already starting in the background</string>
     <string name="toast_accessibility_tv_only">This automation is for TV or Samsung One UI devices with TLS support.</string>
-    <string name="toast_pairing_timeout">Shizuku pairing service timed out</string>
+    <string name="toast_pairing_timeout">Shizuku+ pairing service timed out</string>
     <string name="toast_adb_ssl_error">Wireless ADB handshake failed (SSL protocol error). Please use \'Reset ADB Keys\' in Developer Options and try again.</string>
     <string name="adb_error_ssl_title">Connection Error</string>
     <string name="adb_error_ssl_message">Wireless ADB handshake failed (SSL protocol error). This typically happens when ADB keys are corrupted. Would you like to reset them in Developer Options?</string>
@@ -719,8 +719,8 @@
     <!-- Start/Stop -->
      <string name="start">Start</string>
      <string name="stop">Stop</string>
-    <string name="action_stop">Stop Shizuku</string>
-    <string name="dialog_stop_message">Shizuku service will be stopped.</string>
+    <string name="action_stop">Stop Shizuku+</string>
+    <string name="dialog_stop_message">Shizuku+ service will be stopped.</string>
 
     <!-- Notification -->
     <string name="notification_channel_automation">Automation</string>
