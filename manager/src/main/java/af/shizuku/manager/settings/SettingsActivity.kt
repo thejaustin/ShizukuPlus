@@ -2,6 +2,7 @@ package af.shizuku.manager.settings
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.*
 import androidx.fragment.app.Fragment
 import androidx.preference.Preference
@@ -15,6 +16,22 @@ class SettingsActivity : AppActivity(), PreferenceFragmentCompat.OnPreferenceSta
     private var currentTitle by mutableStateOf("")
     private var searchResults by mutableStateOf<List<SettingsSearchEngine.SettingItem>>(emptyList())
     var themeVersion by mutableStateOf(0)
+
+    private var preferenceScrollState: TopAppBarState? = null
+    private var _isScrollIdle by mutableStateOf(true)
+
+    fun onPreferenceListScrolled(dy: Int) {
+        val state = preferenceScrollState ?: return
+        val limit = state.heightOffsetLimit
+        when {
+            dy > 0 -> state.heightOffset = (state.heightOffset - dy).coerceAtLeast(limit)
+            dy < 0 -> state.heightOffset = (state.heightOffset - dy).coerceAtMost(0f)
+        }
+        state.contentOffset -= dy
+        _isScrollIdle = false
+    }
+
+    fun onPreferenceListScrollIdle() { _isScrollIdle = true }
 
     fun onThemeChanged() {
         themeVersion++
@@ -60,7 +77,9 @@ class SettingsActivity : AppActivity(), PreferenceFragmentCompat.OnPreferenceSta
                                 .replace(R.id.fragment_container, SettingsFragment())
                                 .commit()
                         }
-                    }
+                    },
+                    isScrollIdle = _isScrollIdle,
+                    onScrollStateCreated = { preferenceScrollState = it }
                 )
             }
         }

@@ -188,6 +188,26 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
+            view.post {
+                val lv = listView ?: return@post
+                val interp = android.view.animation.AnimationUtils.loadInterpolator(
+                    lv.context, android.R.interpolator.fast_out_slow_in
+                )
+                for (i in 0 until lv.childCount) {
+                    val child = lv.getChildAt(i) ?: continue
+                    child.alpha = 0f
+                    child.translationY = 12f
+                    child.animate()
+                        .alpha(1f)
+                        .translationY(0f)
+                        .setDuration(ShizukuSettings.scaledAnimationDuration(200))
+                        .setStartDelay(ShizukuSettings.scaledAnimationDuration(i * 25L))
+                        .setInterpolator(interp)
+                        .start()
+                }
+            }
+        }
         setDivider(null)
     }
 
@@ -221,6 +241,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         recyclerView.setPadding(cardMarginPx + contentPaddingPx, 0, cardMarginPx + contentPaddingPx, 0)
         recyclerView.clipToPadding = false
         recyclerView.addItemDecoration(SettingsItemDecoration(context))
+        recyclerView.addItemDecoration(M3ScrollbarDecoration(context))
 
         ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { _, insets ->
             val systemBarsInsets = insets.getInsets(Type.systemBars() or Type.displayCutout())
@@ -235,6 +256,16 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         }
 
         recyclerView.fixEdgeEffect()
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
+                (activity as? SettingsActivity)?.onPreferenceListScrolled(dy)
+            }
+            override fun onScrollStateChanged(rv: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    (activity as? SettingsActivity)?.onPreferenceListScrollIdle()
+                }
+            }
+        })
         return recyclerView
     }
 
@@ -370,6 +401,41 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                 return !isHeader(next)
             }
             return false
+        }
+    }
+
+    private class M3ScrollbarDecoration(context: Context) : RecyclerView.ItemDecoration() {
+        private val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
+        private val widthPx: Float
+        private val marginPx: Float
+        private val minHeightPx: Float
+
+        init {
+            val dm = context.resources.displayMetrics
+            widthPx = 3f * dm.density
+            marginPx = 4f * dm.density
+            minHeightPx = 28f * dm.density
+            val tv = android.util.TypedValue()
+            context.theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, tv, true)
+            paint.color = tv.data
+            paint.alpha = 97
+        }
+
+        override fun onDrawOver(c: android.graphics.Canvas, parent: RecyclerView, state: RecyclerView.State) {
+            val extent = parent.computeVerticalScrollExtent()
+            val range = parent.computeVerticalScrollRange()
+            if (range <= extent) return
+
+            val offset = parent.computeVerticalScrollOffset()
+            val trackTop = parent.paddingTop.toFloat()
+            val trackBottom = (parent.height - parent.paddingBottom).toFloat()
+            val trackH = trackBottom - trackTop
+            val thumbH = (trackH * extent.toFloat() / range).coerceAtLeast(minHeightPx)
+            val thumbTop = trackTop + (trackH - thumbH) * offset.toFloat() / (range - extent)
+            val right = parent.width.toFloat() - marginPx
+            val left = right - widthPx
+            val radius = widthPx / 2f
+            c.drawRoundRect(left, thumbTop, right, thumbTop + thumbH, radius, radius, paint)
         }
     }
 }

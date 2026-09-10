@@ -2,6 +2,7 @@ package af.shizuku.manager.settings.compose
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
@@ -9,24 +10,18 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -45,11 +40,12 @@ fun SettingsScreen(
     onNavigateToSetting: (SettingsSearchEngine.SettingItem) -> Unit,
     searchResults: List<SettingsSearchEngine.SettingItem>,
     onSearchQueryChanged: (String) -> Unit,
-    onContainerCreated: () -> Unit
+    onContainerCreated: () -> Unit,
+    isScrollIdle: Boolean = true,
+    onScrollStateCreated: (TopAppBarState) -> Unit = {}
 ) {
     var isSearchActive by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
-    val focusRequester = remember { FocusRequester() }
 
     BackHandler(enabled = isSearchActive) {
         isSearchActive = false
@@ -60,6 +56,20 @@ fun SettingsScreen(
     val isOneUi = af.shizuku.manager.ShizukuSettings.isOneUiThemeEnabled()
     val isOneHanded = af.shizuku.manager.ShizukuSettings.isOneHandedModeEnabled()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+    LaunchedEffect(Unit) { onScrollStateCreated(scrollBehavior.state) }
+    LaunchedEffect(isScrollIdle) {
+        if (isScrollIdle) {
+            val state = scrollBehavior.state
+            val fraction = state.collapsedFraction
+            if (fraction > 0.001f && fraction < 0.999f) {
+                val target = if (fraction >= 0.5f) state.heightOffsetLimit else 0f
+                Animatable(state.heightOffset).animateTo(
+                    target, spring(stiffness = Spring.StiffnessMediumLow)
+                ) { state.heightOffset = value }
+            }
+        }
+    }
 
     // Samsung OneUI one-handed mode: scale entire settings panel to 75%, anchored to bottom-right.
     val oneHandedScale by animateFloatAsState(
@@ -77,7 +87,8 @@ fun SettingsScreen(
 
     Scaffold(
         topBar = {
-            if (isOneUi && !isSearchActive) {
+            if (!isSearchActive) {
+              if (isOneUi) {
                 LargeTopAppBar(
                     title = {
                         Text(
@@ -121,47 +132,13 @@ fun SettingsScreen(
                     ),
                     scrollBehavior = scrollBehavior
                 )
-            } else {
+              } else {
                 TopAppBar(
                     title = {
-                        if (isSearchActive) {
-                            TextField(
-                                value = searchQuery,
-                                onValueChange = { 
-                                    searchQuery = it
-                                    onSearchQueryChanged(it)
-                                },
-                                placeholder = { Text(stringResource(R.string.settings_search_hint)) },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .focusRequester(focusRequester),
-                                colors = TextFieldDefaults.colors(
-                                    focusedContainerColor = Color.Transparent,
-                                    unfocusedContainerColor = Color.Transparent,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent
-                                ),
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                                keyboardActions = KeyboardActions(onSearch = { /* Handle search */ })
-                            )
-                            LaunchedEffect(Unit) {
-                                focusRequester.requestFocus()
-                            }
-                        } else {
-                            Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        }
+                        Text(text = title, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     },
                     navigationIcon = {
-                        IconButton(onClick = {
-                            if (isSearchActive) {
-                                isSearchActive = false
-                                searchQuery = ""
-                                onSearchQueryChanged("")
-                            } else {
-                                onNavigateUp()
-                            }
-                        }) {
+                        IconButton(onClick = { onNavigateUp() }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_back_24),
                                 contentDescription = stringResource(R.string.cd_navigate_back)
@@ -169,26 +146,22 @@ fun SettingsScreen(
                         }
                     },
                     actions = {
-                        if (!isSearchActive) {
-                            IconButton(onClick = { isSearchActive = true }) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_search_24),
-                                    contentDescription = stringResource(R.string.cd_settings_search)
-                                )
-                            }
-                        } else if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { 
-                                searchQuery = ""
-                                onSearchQueryChanged("")
-                            }) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_close_24),
-                                    contentDescription = stringResource(R.string.cd_settings_search_clear)
-                                )
-                            }
+                        IconButton(onClick = { isSearchActive = true }) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_search_24),
+                                contentDescription = stringResource(R.string.cd_settings_search)
+                            )
                         }
-                    }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = if (af.shizuku.manager.ShizukuSettings.isBlurUiEnabled())
+                            MaterialTheme.colorScheme.surface.copy(alpha = 0.82f)
+                        else
+                            MaterialTheme.colorScheme.surfaceContainer
+                    )
                 )
+              }
             }
         }
     ) { innerPadding ->
@@ -218,7 +191,9 @@ fun SettingsScreen(
                     )
             )
 
-            // Search Overlay
+            // M3 SearchBar — full-screen, manages its own status-bar insets when the
+            // top bar is hidden. The topBar slot is empty when isSearchActive = true so
+            // this SearchBar starts from the very top of the window.
             val searchFadeMs = af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(300L).toInt()
             AnimatedVisibility(
                 visible = isSearchActive,
@@ -226,11 +201,35 @@ fun SettingsScreen(
                 exit = fadeOut(tween(searchFadeMs)),
                 modifier = Modifier.fillMaxSize()
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = innerPadding.calculateTopPadding(), bottom = innerPadding.calculateBottomPadding())
-                        .background(MaterialTheme.colorScheme.background)
+                SearchBar(
+                    modifier = Modifier.fillMaxWidth(),
+                    windowInsets = SearchBarDefaults.windowInsets,
+                    inputField = {
+                        SearchBarDefaults.InputField(
+                            query = searchQuery,
+                            onQueryChange = { q -> searchQuery = q; onSearchQueryChanged(q) },
+                            onSearch = {},
+                            expanded = true,
+                            onExpandedChange = {
+                                if (!it) { isSearchActive = false; searchQuery = ""; onSearchQueryChanged("") }
+                            },
+                            leadingIcon = {
+                                IconButton(onClick = {
+                                    isSearchActive = false; searchQuery = ""; onSearchQueryChanged("")
+                                }) {
+                                    Icon(painterResource(R.drawable.ic_back_24), stringResource(R.string.cd_navigate_back))
+                                }
+                            },
+                            trailingIcon = if (searchQuery.isEmpty()) null else ({
+                                IconButton(onClick = { searchQuery = ""; onSearchQueryChanged("") }) {
+                                    Icon(painterResource(R.drawable.ic_close_24), null)
+                                }
+                            }),
+                            placeholder = { Text(stringResource(R.string.settings_search_hint)) }
+                        )
+                    },
+                    expanded = true,
+                    onExpandedChange = { if (!it) { isSearchActive = false; searchQuery = "" } }
                 ) {
                     if (searchQuery.isNotBlank()) {
                         if (searchResults.isEmpty()) {
@@ -279,7 +278,7 @@ fun SearchResultItem(
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
     ) {
         Column(
             modifier = Modifier
