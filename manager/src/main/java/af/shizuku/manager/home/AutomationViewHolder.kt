@@ -64,7 +64,7 @@ class AutomationViewHolder(
             val encryptedToken = af.shizuku.manager.utils.IntentCrypto.encrypt(authToken)
             // If AndroidKeyStore is unavailable (restricted OEMs such as Vivo), fall back to the
             // raw plaintext token.  AuthenticatedReceiver / ShellRequestHandlerActivity already
-            // accept both encrypted ("auth:<base64>") and raw-plaintext values via constant-time
+            // accept both encrypted (bare base64) and raw-plaintext values via constant-time
             // MessageDigest comparison, so this graceful degradation is safe.
             if (encryptedToken == null) {
                 Toast.makeText(context, R.string.home_automation_token_encrypt_failed, Toast.LENGTH_SHORT).show()
@@ -74,7 +74,20 @@ class AutomationViewHolder(
                 LayoutInflater.from(context)
             )
 
-            val extrasValue = if (encryptedToken != null) "auth:$encryptedToken" else authToken
+            // The extrasLayout already has app:prefixText="auth: " in the layout XML, so we do NOT
+            // add the "auth:" prefix to the EditText value here — doing so would double-prefix the
+            // visible text (users see "auth:  auth:<base64>") and, more critically, the copied
+            // value "auth:<base64>" would survive the "auth:" stripping in AuthenticatedReceiver
+            // but leave "auth:<base64>" fed into Base64.decode(), which fails on the ":"  character
+            // — meaning every encrypted token silently falls back to a plaintext comparison that
+            // can never match (base64 ≠ raw token), producing "Invalid auth token" (#467).
+            //
+            // Showing just the base64 (or raw token) in the field keeps the visual display correct
+            // (prefix "auth: " + base64 body) and makes the copied value exactly what
+            // AuthenticatedReceiver / ShellRequestHandlerActivity / BinderRequestReceiver expect:
+            // either a bare base64 blob that decrypts to the stored token, or the raw plaintext
+            // token on devices where AndroidKeyStore is unavailable.
+            val extrasValue = encryptedToken ?: authToken
 
             sheetBinding.apply {
                 val action = getIntentAction(buttonGroup.checkedButtonId)
@@ -124,7 +137,9 @@ class AutomationViewHolder(
                                 Toast.makeText(context, R.string.home_automation_token_encrypt_failed, Toast.LENGTH_SHORT).show()
                                 extrasEditText.setText(newToken)
                             } else {
-                                extrasEditText.setText("auth:$newEncryptedToken")
+                                // As with the initial display, set only the base64 body — the
+                                // extrasLayout prefixText already supplies the visual "auth: " label.
+                                extrasEditText.setText(newEncryptedToken)
                             }
                         })
                         .show()
