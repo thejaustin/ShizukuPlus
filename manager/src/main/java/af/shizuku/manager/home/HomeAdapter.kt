@@ -218,20 +218,16 @@ class HomeAdapter(
             val isHidden = id.toString() in hidden
             if (isHidden && !isEditMode) return@forEach
             when (id) {
-                ID_TERMINAL -> if (isEditMode || ShizukuSettings.showTerminalHome())
-                    addItem(TerminalViewHolder.CREATOR, status, id)
+                ID_TERMINAL -> addItem(TerminalViewHolder.CREATOR, status, id)
                 ID_START_ROOT -> if (isEditMode || (isPrimaryUser && (EnvironmentUtils.isRooted() || ShizukuSettings.isSamsungSystemUidEscalationEnabled())))
                     addItem(StartRootViewHolder.CREATOR, rootRestart, id)
                 ID_START_WADB -> if (isEditMode || (isPrimaryUser && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || EnvironmentUtils.getAdbTcpPort() > 0)))
                     addItem(startWadbCreator, null, id)
-                ID_START_ADB -> if (isEditMode || (isPrimaryUser && ShizukuSettings.showStartAdbHome()))
+                ID_START_ADB -> if (isEditMode || isPrimaryUser)
                     addItem(StartAdbViewHolder.CREATOR, null, id)
-                ID_AUTOMATION -> if (isEditMode || ShizukuSettings.showAutomationHome())
-                    addItem(AutomationViewHolder.CREATOR, null, id)
-                ID_BACKUP -> if (isEditMode || ShizukuSettings.showBackupHome())
-                    addItem(AppBackupViewHolder.CREATOR, status, id)
-                ID_LEARN_MORE -> if (isEditMode || ShizukuSettings.showLearnMoreHome())
-                    addItem(LearnMoreViewHolder.CREATOR, null, id)
+                ID_AUTOMATION -> addItem(AutomationViewHolder.CREATOR, null, id)
+                ID_BACKUP -> addItem(AppBackupViewHolder.CREATOR, status, id)
+                ID_LEARN_MORE -> addItem(LearnMoreViewHolder.CREATOR, null, id)
                 ID_COMPANION -> {
                     // The compat hub is what lets third-party apps detect Shizuku+, so surface
                     // this card whenever it still needs action — the hub isn't installed yet, or

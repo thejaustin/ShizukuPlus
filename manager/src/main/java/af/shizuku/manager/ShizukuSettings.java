@@ -580,26 +580,6 @@ public class ShizukuSettings {
         getPreferences().edit().putString(Keys.KEY_PITHUS_API_KEY, key).apply();
     }
 
-    public static boolean showTerminalHome() {
-        SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_SHOW_TERMINAL_HOME, true);
-    }
-
-    public static boolean showAutomationHome() {
-        SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_SHOW_AUTOMATION_HOME, true);
-    }
-
-    public static boolean showLearnMoreHome() {
-        SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_SHOW_LEARN_MORE_HOME, true);
-    }
-
-    public static boolean showBackupHome() {
-        SharedPreferences p = getPreferences();
-        return p != null && p.getBoolean(Keys.KEY_SHOW_BACKUP_HOME, false);
-    }
-
     public static boolean showActivityLogHome() {
         SharedPreferences p = getPreferences();
         return p == null || p.getBoolean(Keys.KEY_SHOW_ACTIVITY_LOG_HOME, true);
@@ -1094,11 +1074,6 @@ public class ShizukuSettings {
     public static boolean isRootIptablesMockingEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_ROOT_IPTABLES_MOCKING_ENABLED, false);
-    }
-
-    public static boolean showStartAdbHome() {
-        SharedPreferences p = getPreferences();
-        return p != null && p.getBoolean(Keys.KEY_SHOW_START_ADB_HOME, false);
     }
 
     @Nullable

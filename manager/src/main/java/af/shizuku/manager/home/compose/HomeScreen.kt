@@ -20,6 +20,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import af.shizuku.core.ui.compose.Button
 import af.shizuku.core.ui.compose.ButtonSize
 import af.shizuku.manager.ShizukuSettings
@@ -41,6 +44,23 @@ fun HomeScreen(
     recyclerViewProvider: (Context, PaddingValues) -> RecyclerView
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
+    // Snap the app bar fully open or fully closed when the user lifts their finger,
+    // preventing both title texts from being partially visible at the same time.
+    val isScrollIdle = remember { mutableStateOf(true) }
+    LaunchedEffect(isScrollIdle.value) {
+        if (isScrollIdle.value) {
+            val state = scrollBehavior.state
+            val fraction = state.collapsedFraction
+            if (fraction > 0.001f && fraction < 0.999f) {
+                val target = if (fraction >= 0.5f) state.heightOffsetLimit else 0f
+                Animatable(state.heightOffset).animateTo(
+                    target,
+                    spring(stiffness = Spring.StiffnessMediumLow)
+                ) { state.heightOffset = value }
+            }
+        }
+    }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -135,8 +155,22 @@ fun HomeScreen(
                                 // so drive TopAppBar collapse directly from scroll callbacks.
                                 rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                                     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                                        scrollBehavior.state.heightOffset -= dy
-                                        scrollBehavior.state.contentOffset -= dy
+                                        val state = scrollBehavior.state
+                                        val limit = state.heightOffsetLimit
+                                        when {
+                                            // Scrolling down: collapse, but don't go below limit.
+                                            dy > 0 -> state.heightOffset =
+                                                (state.heightOffset - dy).coerceAtLeast(limit)
+                                            // Scrolling up: only expand if we're at the very top
+                                            // (exitUntilCollapsed semantics — don't re-expand mid-list).
+                                            dy < 0 && !recyclerView.canScrollVertically(-1) ->
+                                                state.heightOffset =
+                                                    (state.heightOffset - dy).coerceAtMost(0f)
+                                        }
+                                        state.contentOffset -= dy
+                                    }
+                                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                                        isScrollIdle.value = (newState == RecyclerView.SCROLL_STATE_IDLE)
                                     }
                                 })
                             }

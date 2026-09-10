@@ -152,30 +152,6 @@
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="show_terminal_home"
-            android:title="@string/settings_show_terminal_home"
-            android:icon="@drawable/ic_terminal_24"
-            android:defaultValue="true" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="show_automation_home"
-            android:title="@string/settings_show_automation_home"
-            android:icon="@drawable/ic_integration_instructions_24"
-            android:defaultValue="true" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="show_learn_more_home"
-            android:title="@string/settings_show_learn_more_home"
-            android:icon="@drawable/ic_outline_info_24"
-            android:defaultValue="true" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="show_start_adb_home"
-            android:title="@string/settings_show_start_adb_home"
-            android:icon="@drawable/ic_adb_24"
-            android:defaultValue="false" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="show_activity_log_home"
             android:title="@string/settings_show_activity_log_home"
             android:icon="@drawable/ic_article_24"
@@ -187,12 +163,6 @@
             android:summary="@string/settings_show_status_card_outline_summary"
             android:icon="@drawable/ic_palette_24"
             android:defaultValue="true" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="show_backup_home"
-            android:title="@string/home_backup_title"
-            android:icon="@drawable/ic_folder_24"
-            android:defaultValue="false" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="companion_mode"
