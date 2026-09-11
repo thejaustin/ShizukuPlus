@@ -38,7 +38,14 @@ abstract class M3ECardItemDecoration(context: Context) : RecyclerView.ItemDecora
 
         for (i in 0 until count) {
             val child = parent.getChildAt(i)
-            if (child.visibility != View.VISIBLE) continue
+            if (child.visibility != View.VISIBLE || !shouldDecorate(child)) {
+                if (currentCardTop != Float.MIN_VALUE && !shouldDecorate(child)) {
+                    drawCard(c, parent, currentCardTop, lastItemBottom)
+                    currentCardTop = Float.MIN_VALUE
+                    lastItemBottom = Float.MIN_VALUE
+                }
+                continue
+            }
 
             if (isHeader(child)) {
                 if (currentCardTop != Float.MIN_VALUE) {
@@ -75,6 +82,7 @@ abstract class M3ECardItemDecoration(context: Context) : RecyclerView.ItemDecora
     }
 
     protected open fun isHeader(view: View): Boolean = false
+    protected open fun shouldDecorate(view: View): Boolean = true
 
     protected open fun getDividerInset(view: View): Float = 56f * density
 
