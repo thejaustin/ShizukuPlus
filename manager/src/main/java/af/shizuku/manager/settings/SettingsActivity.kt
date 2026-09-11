@@ -2,6 +2,7 @@ package af.shizuku.manager.settings
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.*
 import androidx.fragment.app.Fragment
@@ -11,6 +12,7 @@ import af.shizuku.manager.R
 import af.shizuku.manager.settings.compose.SettingsScreen
 import af.shizuku.core.ui.AppActivity
 
+@OptIn(ExperimentalMaterial3Api::class)
 class SettingsActivity : AppActivity(), PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
     private var currentTitle by mutableStateOf("")

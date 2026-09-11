@@ -200,34 +200,28 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 SearchBar(
-                    modifier = Modifier.fillMaxWidth(),
-                    windowInsets = SearchBarDefaults.windowInsets,
-                    inputField = {
-                        SearchBarDefaults.InputField(
-                            query = searchQuery,
-                            onQueryChange = { q -> searchQuery = q; onSearchQueryChanged(q) },
-                            onSearch = {},
-                            expanded = true,
-                            onExpandedChange = {
-                                if (!it) { isSearchActive = false; searchQuery = ""; onSearchQueryChanged("") }
-                            },
-                            leadingIcon = {
-                                IconButton(onClick = {
-                                    isSearchActive = false; searchQuery = ""; onSearchQueryChanged("")
-                                }) {
-                                    Icon(painterResource(R.drawable.ic_back_24), stringResource(R.string.cd_navigate_back))
-                                }
-                            },
-                            trailingIcon = if (searchQuery.isEmpty()) null else ({
-                                IconButton(onClick = { searchQuery = ""; onSearchQueryChanged("") }) {
-                                    Icon(painterResource(R.drawable.ic_close_24), null)
-                                }
-                            }),
-                            placeholder = { Text(stringResource(R.string.settings_search_hint)) }
-                        )
+                    query = searchQuery,
+                    onQueryChange = { q -> searchQuery = q; onSearchQueryChanged(q) },
+                    onSearch = {},
+                    active = true,
+                    onActiveChange = {
+                        if (!it) { isSearchActive = false; searchQuery = ""; onSearchQueryChanged("") }
                     },
-                    expanded = true,
-                    onExpandedChange = { if (!it) { isSearchActive = false; searchQuery = "" } }
+                    modifier = Modifier.fillMaxWidth(),
+                    leadingIcon = {
+                        IconButton(onClick = {
+                            isSearchActive = false; searchQuery = ""; onSearchQueryChanged("")
+                        }) {
+                            Icon(painterResource(R.drawable.ic_back_24), stringResource(R.string.cd_navigate_back))
+                        }
+                    },
+                    trailingIcon = if (searchQuery.isEmpty()) null else ({
+                        IconButton(onClick = { searchQuery = ""; onSearchQueryChanged("") }) {
+                            Icon(painterResource(R.drawable.ic_close_24), null)
+                        }
+                    }),
+                    placeholder = { Text(stringResource(R.string.settings_search_hint)) },
+                    windowInsets = SearchBarDefaults.windowInsets
                 ) {
                     if (searchQuery.isNotBlank()) {
                         if (searchResults.isEmpty()) {

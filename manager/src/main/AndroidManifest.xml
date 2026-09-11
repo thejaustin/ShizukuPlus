@@ -456,7 +456,7 @@
 
         <provider
             android:name=".DhizukuProvider"
-            android:authorities="com.rosan.dhizuku;com.rosan.dhizuku.provider"
+            android:authorities="com.rosan.dhizuku;com.rosan.dhizuku.provider;com.rosan.dhizuku.server.provider;${applicationId}.dhizuku_server.provider"
             android:directBootAware="true"
             android:enabled="true"
             android:exported="true"

@@ -22,10 +22,10 @@ class StorageProxyImpl : IStorageProxy.Stub() {
             try {
                 ParcelFileDescriptor.open(File(path!!), mode)
             } catch (e: Exception) {
-                // Android 13+ (API 33) progressively restricts /Android/data to the owning app's
-                // UID; Android 16 (API 36) + OneUI 8 tightened it further. The shell-pipe fallback
+                // Android 13+ (API 33) progressively restricts /Android/data and /Android/obb to the owning
+                // app's UID; Android 16 (API 36) + OneUI 8 tightened it further. The shell-pipe fallback
                 // works from API 33 onwards — not just the API 36+ check that was here before.
-                if (android.os.Build.VERSION.SDK_INT >= 33 && path!!.contains("/Android/data")) {
+                if (android.os.Build.VERSION.SDK_INT >= 33 && (path!!.contains("/Android/data") || path.contains("/Android/obb"))) {
                     return openViaShellPipe(arrayOf("sh", "-c", "cat \"$1\"", "sh", path))
                 }
                 // ADB mode (UID 2000): /data/data/<pkg>/ is owned by the app UID, but `run-as`
@@ -90,22 +90,39 @@ class StorageProxyImpl : IStorageProxy.Stub() {
 
     override fun exists(path: String?): Boolean {
         if (!InputValidationUtils.isSafePath(path)) return false
-        return File(path!!).exists()
+        val file = File(path!!)
+        if (file.exists()) return true
+        if (path.contains("/Android/data") || path.contains("/Android/obb")) {
+            return try {
+                Runtime.getRuntime().exec(arrayOf("sh", "-c", "[ -e \"$1\" ]", "sh", path)).waitFor() == 0
+            } catch (_: Exception) { false }
+        }
+        return false
     }
 
     override fun delete(path: String?): Boolean {
         if (!InputValidationUtils.isSafePath(path)) return false
-        return try {
-            File(path!!).delete()
-        } catch (e: Exception) {
-            false
+        val file = File(path!!)
+        if (file.delete()) return true
+        if (path.contains("/Android/data") || path.contains("/Android/obb")) {
+            return try {
+                Runtime.getRuntime().exec(arrayOf("sh", "-c", "rm -rf \"$1\"", "sh", path)).waitFor() == 0
+            } catch (_: Exception) { false }
         }
+        return false
     }
 
     override fun listFiles(path: String?): List<String> {
         if (!InputValidationUtils.isSafePath(path)) return emptyList()
         val direct = File(path!!).list()
         if (!direct.isNullOrEmpty()) return direct.toList()
+        if (path.contains("/Android/data") || path.contains("/Android/obb")) {
+            return try {
+                Runtime.getRuntime().exec(arrayOf("sh", "-c", "ls -1 \"$1\"", "sh", path))
+                    .inputStream.bufferedReader().readLines()
+                    .filter { it.isNotBlank() }
+            } catch (_: Exception) { emptyList() }
+        }
         // For /data/data/<pkg>/ paths (ADB mode, debuggable apps only)
         if (serverUid == 2000 &&
             (path.startsWith("/data/data/") || path.startsWith("/data/user/"))) {
@@ -128,6 +145,22 @@ class StorageProxyImpl : IStorageProxy.Stub() {
                 bundle.putLong("size", file.length())
                 bundle.putLong("lastModified", file.lastModified())
                 bundle.putBoolean("isDirectory", file.isDirectory)
+            } else if (path.contains("/Android/data") || path.contains("/Android/obb")) {
+                try {
+                    val proc = Runtime.getRuntime().exec(arrayOf("sh", "-c", "stat -c '%s %Y %F' \"$1\" 2>/dev/null", "sh", path))
+                    val out = proc.inputStream.bufferedReader().readLine()
+                    if (!out.isNullOrBlank()) {
+                        val parts = out.trim().split(" ")
+                        if (parts.size >= 2) {
+                            bundle.putBoolean("exists", true)
+                            bundle.putLong("size", parts[0].toLongOrNull() ?: 0L)
+                            bundle.putLong("lastModified", (parts[1].toLongOrNull() ?: 0L) * 1000)
+                            bundle.putBoolean("isDirectory", out.contains("directory", ignoreCase = true))
+                            return bundle
+                        }
+                    }
+                } catch (_: Exception) {}
+                bundle.putBoolean("exists", false)
             } else {
                 bundle.putBoolean("exists", false)
             }
@@ -139,11 +172,14 @@ class StorageProxyImpl : IStorageProxy.Stub() {
 
     override fun mkdir(path: String?): Boolean {
         if (!InputValidationUtils.isSafePath(path)) return false
-        return try {
-            File(path!!).mkdirs()
-        } catch (e: Exception) {
-            false
+        val file = File(path!!)
+        if (file.mkdirs()) return true
+        if (path.contains("/Android/data") || path.contains("/Android/obb")) {
+            return try {
+                Runtime.getRuntime().exec(arrayOf("sh", "-c", "mkdir -p \"$1\"", "sh", path)).waitFor() == 0
+            } catch (_: Exception) { false }
         }
+        return false
     }
 
     override fun copyFile(srcPath: String?, destPath: String?): Boolean {
@@ -154,9 +190,15 @@ class StorageProxyImpl : IStorageProxy.Stub() {
             }
             true
         } catch (_: Exception) {
+            if (srcPath!!.contains("/Android/data") || srcPath.contains("/Android/obb") ||
+                destPath!!.contains("/Android/data") || destPath.contains("/Android/obb")) {
+                return try {
+                    Runtime.getRuntime().exec(arrayOf("sh", "-c", "cp -rf \"$1\" \"$2\"", "sh", srcPath, destPath!!)).waitFor() == 0
+                } catch (_: Exception) { false }
+            }
             // For /data/data/<pkg>/ paths, fall back to run-as cp
             if (serverUid == 2000 &&
-                (srcPath!!.startsWith("/data/data/") || srcPath.startsWith("/data/user/"))) {
+                (srcPath.startsWith("/data/data/") || srcPath.startsWith("/data/user/"))) {
                 val pkg = extractPackageName(srcPath) ?: return false
                 return try {
                     Runtime.getRuntime().exec(arrayOf("run-as", pkg, "cp", srcPath, destPath!!))

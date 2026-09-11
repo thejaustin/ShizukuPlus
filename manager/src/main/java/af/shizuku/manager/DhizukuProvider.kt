@@ -89,28 +89,36 @@ class DhizukuProvider : ContentProvider() {
             }
 
             if (code >= FIRST_CALL_TRANSACTION + 0 && code <= FIRST_CALL_TRANSACTION + 3) {
+                var isV2 = true
                 try {
                     data.enforceInterface("com.rosan.dhizuku.aidl.IDhizuku")
                 } catch (e: SecurityException) {
                     data.setDataPosition(0)
-                    try { data.enforceInterface("com.rosan.dhizuku.IDhizuku") } catch (_: SecurityException) {}
+                    try {
+                        data.enforceInterface("com.rosan.dhizuku.IDhizuku")
+                        isV2 = false
+                    } catch (_: SecurityException) {}
                 }
                 when (code) {
-                    FIRST_CALL_TRANSACTION + 0 -> { // getVersion
+                    FIRST_CALL_TRANSACTION + 0 -> { // getVersionCode (v2) / getVersion (v1)
                         reply?.writeNoException()
-                        reply?.writeInt(5) // V5
+                        reply?.writeInt(if (isV2) 5 else 1)
                         return true
                     }
-                    FIRST_CALL_TRANSACTION + 1 -> { // getBinder
+                    FIRST_CALL_TRANSACTION + 1 -> { // getVersionName (v2) / getBinder (v1)
                         reply?.writeNoException()
-                        val binder = if (isCallerAuthorized() && ShizukuStateMachine.isRunning()) {
-                            try {
-                                ServiceManager.getService(Context.DEVICE_POLICY_SERVICE)
-                            } catch (e: Exception) {
-                                null
-                            }
-                        } else null
-                        reply?.writeStrongBinder(binder)
+                        if (isV2) {
+                            reply?.writeString("5.0")
+                        } else {
+                            val binder = if (isCallerAuthorized() && ShizukuStateMachine.isRunning()) {
+                                try {
+                                    ServiceManager.getService(Context.DEVICE_POLICY_SERVICE)
+                                } catch (e: Exception) {
+                                    null
+                                }
+                            } else null
+                            reply?.writeStrongBinder(binder)
+                        }
                         return true
                     }
                     FIRST_CALL_TRANSACTION + 2 -> { // isPermissionGranted

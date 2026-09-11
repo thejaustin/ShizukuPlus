@@ -1761,20 +1761,29 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     LOGGER.i("Plus Optimization: svc data " + svcAction + " → cmd phone data");
                     return newProcessInternal(new String[]{"cmd", "phone", "data", svcAction}, env, dir);
                 }
-            } else if (baseCmd.equals("appops") && cmd.length >= 5) {
-                // Intercept appops set/get for native speed
-                String op = cmd[1]; // set/get
-                String pkg = cmd[2];
-                String modeOrOp = cmd[3];
+            } else if (baseCmd.equals("appops") && cmd.length >= 4) {
+                // Intercept appops set for native speed
+                int argIdx = 1;
+                String op = cmd[argIdx++]; // set/get
                 int userId = UserHandleCompat.getUserId(callingUid);
-                LOGGER.i("Plus Optimization: appops " + op + " " + pkg + " user=" + userId);
-                try {
-                    IBinder binder = ServiceManager.getService("appops");
-                    if (binder != null) {
-                        Class<?> stub = Class.forName("com.android.internal.app.IAppOpsService$Stub");
-                        Object service = stub.getMethod("asInterface", IBinder.class).invoke(null, binder);
-                        if (op.equals("set")) {
-                            String value = cmd[4];
+                if (argIdx < cmd.length && cmd[argIdx].equals("--user")) {
+                    argIdx++;
+                    if (argIdx < cmd.length) {
+                        try {
+                            userId = Integer.parseInt(cmd[argIdx++]);
+                        } catch (NumberFormatException ignored) {}
+                    }
+                }
+                if (op.equals("set") && argIdx + 2 < cmd.length) {
+                    String pkg = cmd[argIdx++];
+                    String modeOrOp = cmd[argIdx++];
+                    String value = cmd[argIdx++];
+                    LOGGER.i("Plus Optimization: appops set " + pkg + " " + modeOrOp + " " + value + " user=" + userId);
+                    try {
+                        IBinder binder = ServiceManager.getService("appops");
+                        if (binder != null) {
+                            Class<?> stub = Class.forName("com.android.internal.app.IAppOpsService$Stub");
+                            Object service = stub.getMethod("asInterface", IBinder.class).invoke(null, binder);
                             int intOp = (int) service.getClass().getMethod("strOpToOp", String.class).invoke(service, modeOrOp);
                             int intMode = value.equals("allow") ? 0 : (value.equals("ignore") || value.equals("deny")) ? 1 : 2; 
                             
@@ -1788,12 +1797,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                             
                             if (targetUid != -1) {
                                 service.getClass().getMethod("setMode", int.class, int.class, String.class, int.class).invoke(service, intOp, targetUid, pkg, intMode);
-                                return newProcessInternal(new String[]{"true"}, env, dir);
+                                return syntheticProcess(0, "");
                             }
                         }
+                    } catch (Throwable tr) {
+                        LOGGER.e(tr, "Plus Optimization: appops failed");
                     }
-                } catch (Throwable tr) {
-                    LOGGER.e(tr, "Plus Optimization: appops failed");
                 }
             } else if (baseCmd.equals("service") && cmd.length >= 4 && cmd[1].equals("call")) {
                 String serviceName = cmd[2];
@@ -1812,7 +1821,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                                 if (isBinderCallBlocked(callingUid, descriptor, code)) {
                                     LOGGER.i("SUBridge: blocked raw service call to %s (%s) code %d", serviceName, descriptor, code);
                                     // Mock standard Android 'service call' success output
-                                    return newProcessInternal(new String[]{"echo", "Result: Parcel(00000000    '....')"}, env, dir);
+                                    return syntheticProcess(0, "Result: Parcel(00000000    '....')\n");
                                 }
                             }
                         }
@@ -1827,14 +1836,21 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 }
             } else if (isFeatureEnabled("storage_proxy") && (baseCmd.equals("ls") || baseCmd.equals("rm") || baseCmd.equals("mkdir") || baseCmd.equals("cat") || baseCmd.equals("stat"))) {
                 String path = cmd[cmd.length - 1];
-                if (path.startsWith("/data/data/") || path.startsWith("/sdcard/Android/data/") || path.startsWith("/data/app/")) {
+                if (path.startsWith("\"") && path.endsWith("\"") && path.length() >= 2) {
+                    path = path.substring(1, path.length() - 1);
+                } else if (path.startsWith("'") && path.endsWith("'") && path.length() >= 2) {
+                    path = path.substring(1, path.length() - 1);
+                }
+                boolean isProxyPath = path.startsWith("/data/data/") || path.startsWith("/data/user/") || path.startsWith("/data/app/")
+                    || path.contains("/Android/data") || path.contains("/Android/obb");
+                if (isProxyPath) {
                     LOGGER.i("Plus Optimization (Storage Bridge): mapping " + baseCmd + " " + path);
                     try {
                         if (baseCmd.equals("ls")) {
                             java.util.List<String> files = storageProxy.listFiles(path);
                             if (files != null) {
                                 String joined = String.join("\n", files);
-                                return newProcessInternal(new String[]{"echo", joined}, env, dir);
+                                return syntheticProcess(0, joined.isEmpty() ? "" : joined + "\n");
                             }
                         } else if (baseCmd.equals("cat")) {
                             android.os.ParcelFileDescriptor pfd = storageProxy.openFile(path, android.os.ParcelFileDescriptor.MODE_READ_ONLY);
@@ -1844,15 +1860,17 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         } else if (baseCmd.equals("stat")) {
                             android.os.Bundle info = storageProxy.getFileInfo(path);
                             if (info.getBoolean("exists")) {
-                                String statOut = "File: " + path + "\nSize: " + info.getLong("size") + "\nModify: " + info.getLong("lastModified");
-                                return newProcessInternal(new String[]{"echo", statOut}, env, dir);
+                                String statOut = "File: " + path + "\nSize: " + info.getLong("size") + "\nModify: " + info.getLong("lastModified") + "\n";
+                                return syntheticProcess(0, statOut);
                             }
                         } else if (baseCmd.equals("rm")) {
                             if (storageProxy.delete(path)) {
-                                return newProcessInternal(new String[]{"true"}, env, dir);
+                                return syntheticProcess(0, "");
                             }
                         } else if (baseCmd.equals("mkdir")) {
-                            return newProcessInternal(new String[]{"true"}, env, dir);
+                            if (storageProxy.mkdir(path)) {
+                                return syntheticProcess(0, "");
+                            }
                         }
                     } catch (Exception e) {
                         LOGGER.e("SUBridge: StorageProxy command failed", e);
