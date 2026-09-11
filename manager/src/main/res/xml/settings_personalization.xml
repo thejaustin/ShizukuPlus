@@ -58,6 +58,13 @@
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="rounded_edges_enabled"
+            android:title="@string/settings_rounded_edges"
+            android:summary="@string/settings_rounded_edges_summary"
+            android:defaultValue="true"
+            android:icon="@drawable/ic_window_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="expressive_shapes"
             android:title="@string/settings_expressive_shapes"
             android:summary="@string/settings_expressive_shapes_summary"

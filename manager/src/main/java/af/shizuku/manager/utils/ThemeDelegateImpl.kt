@@ -12,6 +12,7 @@ class ThemeDelegateImpl : ThemeDelegate {
     override fun getThemeKey(context: Context): String {
         val customAccent = ShizukuSettings.getPreferences().getString("custom_accent", "DEFAULT")
         return ThemeHelper.getTheme(context) + ThemeHelper.isUsingSystemColor() + customAccent +
+            ShizukuSettings.isRoundedEdgesEnabled() +
             ShizukuSettings.isExpressiveShapesEnabled() + ShizukuSettings.getShapeStyle() +
             ShizukuSettings.getIconStyle() + ShizukuSettings.getIconColorMode() +
             ShizukuSettings.isOneUiThemeEnabled() + ShizukuSettings.isOneHandedModeEnabled()
@@ -47,7 +48,9 @@ class ThemeDelegateImpl : ThemeDelegate {
             }
         }
 
-        if (!ShizukuSettings.isExpressiveShapesEnabled()) {
+        if (!ShizukuSettings.isRoundedEdgesEnabled()) {
+            theme.applyStyle(R.style.ThemeOverlay_Shape_Sharp, true)
+        } else if (!ShizukuSettings.isExpressiveShapesEnabled()) {
             // shape_style's preference entry is UI-disabled while expressive_shapes is off, so
             // it doesn't apply here regardless of its stored value - flatten to plain Material3.
             theme.applyStyle(R.style.ThemeOverlay_Shapes_Standard, true)

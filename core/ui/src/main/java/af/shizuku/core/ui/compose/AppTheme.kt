@@ -182,11 +182,20 @@ private val OneUiTypography = Typography(
     )
 )
 
+private val SharpShapes = Shapes(
+    extraSmall = RoundedCornerShape(0.dp),
+    small = RoundedCornerShape(0.dp),
+    medium = RoundedCornerShape(0.dp),
+    large = RoundedCornerShape(0.dp),
+    extraLarge = RoundedCornerShape(0.dp),
+)
+
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     isBlackNightTheme: Boolean = false,
     isOneUi: Boolean = false,
+    isRoundedEdges: Boolean = true,
     themeVersion: Int = 0,
     content: @Composable () -> Unit
 ) {
@@ -206,7 +215,11 @@ fun AppTheme(
         )
     }
 
-    val shapes = if (isOneUi) OneUiShapes else Shapes()
+    val shapes = when {
+        !isRoundedEdges -> SharpShapes
+        isOneUi -> OneUiShapes
+        else -> Shapes()
+    }
     val typography = if (isOneUi) OneUiTypography else Typography()
 
     MaterialTheme(

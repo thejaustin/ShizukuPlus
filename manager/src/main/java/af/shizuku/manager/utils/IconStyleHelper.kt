@@ -269,8 +269,7 @@ object IconStyleHelper {
         val context = imageView.context
         imageView.background = pillBackground(context, pillColor)
         imageView.imageTintList = ColorStateList.valueOf(tintColor)
-        val padding = (CARD_ICON_PADDING_DP * context.resources.displayMetrics.density).toInt()
-        imageView.setPadding(padding, padding, padding, padding)
+        imageView.setPadding(0, 0, 0, 0)
     }
 
     private fun tinted(drawable: Drawable, color: Int): Drawable {

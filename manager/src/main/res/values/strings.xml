@@ -21,6 +21,8 @@
     <string name="settings_icon_style_summary">Choose the visual style for system icons</string>
     <string name="settings_shape_style">Container Shape Style</string>
     <string name="settings_shape_style_summary">Customize the corner rounding of cards and dialogs</string>
+    <string name="settings_rounded_edges">Rounded Edges</string>
+    <string name="settings_rounded_edges_summary">Use rounded corners on cards and dialog containers</string>
     <string name="settings_animation_intensity">Animation Intensity</string>
     <string name="settings_animation_intensity_summary">Adjust the speed and "bounciness" of UI transitions</string>
 

@@ -142,6 +142,7 @@ public class ShizukuSettings {
         public static final String KEY_ICON_STYLE = "icon_style";
         public static final String KEY_ICON_COLOR_MODE = "icon_color_mode";
         public static final String KEY_SHAPE_STYLE = "shape_style";
+        public static final String KEY_ROUNDED_EDGES = "rounded_edges_enabled";
         public static final String KEY_ANIMATION_INTENSITY = "animation_intensity";
         public static final String KEY_EDGE_TO_EDGE = "edge_to_edge_enabled";
         public static final String KEY_BLUR_UI = "blur_ui_enabled";
@@ -243,6 +244,14 @@ public class ShizukuSettings {
 
     public static void setRequestedHomeNotificationPermission(boolean requested) {
         getPreferences().edit().putBoolean(Keys.KEY_HOME_NOTIF_PERMISSION_REQUESTED, requested).apply();
+    }
+
+    public static boolean isRoundedEdgesEnabled() {
+        return getPreferences().getBoolean(Keys.KEY_ROUNDED_EDGES, true);
+    }
+
+    public static void setRoundedEdgesEnabled(boolean enabled) {
+        getPreferences().edit().putBoolean(Keys.KEY_ROUNDED_EDGES, enabled).apply();
     }
 
     public static boolean isExpressiveShapesEnabled() {

@@ -379,6 +379,23 @@
     <style name="ThemeOverlay.Shapes.Standard" parent="ThemeOverlay.Shape.Modern"/>
 
     <!--
+        Sharp / Flat Edges (settings key "rounded_edges_enabled", when turned OFF): removes corner
+        rounding across cards, dialogs, and containers for a clean, sharp-edged aesthetic.
+    -->
+    <style name="ShapeAppearance.Sharp.Corner" parent="ShapeAppearance.Material3.Corner.None">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">0dp</item>
+    </style>
+    <style name="ThemeOverlay.Shape.Sharp">
+        <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.Sharp.Corner</item>
+        <item name="shapeAppearanceCornerSmall">@style/ShapeAppearance.Sharp.Corner</item>
+        <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.Sharp.Corner</item>
+        <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.Sharp.Corner</item>
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.Sharp.Corner</item>
+        <item name="cardCornerRadius">0dp</item>
+    </style>
+
+    <!--
         One UI style theme overlay (settings key "oneui_theme_enabled").
         Deliberately structure-only, not color: extra-large rounded corners, heavier typography,
         and One UI-style preference padding - the app's existing dynamic-color/custom-accent

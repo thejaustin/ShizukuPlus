@@ -113,6 +113,7 @@ open class HomeActivity : AppActivity(), MavericksView {
     // without being in onCreate()'s closure scope.
     private var isOneHanded by mutableStateOf(ShizukuSettings.isOneHandedModeEnabled())
     private var isOneUi by mutableStateOf(ShizukuSettings.isOneUiThemeEnabled())
+    private var isRoundedEdges by mutableStateOf(ShizukuSettings.isRoundedEdgesEnabled())
 
     // Strong reference required — SharedPreferences holds listeners weakly, so an inline lambda
     // would be eligible for GC immediately after registerOnSharedPreferenceChangeListener returns.
@@ -121,7 +122,11 @@ open class HomeActivity : AppActivity(), MavericksView {
             ShizukuSettings.Keys.KEY_ICON_STYLE,
             ShizukuSettings.Keys.KEY_ICON_COLOR_MODE,
             ShizukuSettings.Keys.KEY_SHAPE_STYLE,
-            ShizukuSettings.Keys.KEY_EXPRESSIVE_SHAPES -> adapter.notifyDataSetChanged()
+            ShizukuSettings.Keys.KEY_ROUNDED_EDGES,
+            ShizukuSettings.Keys.KEY_EXPRESSIVE_SHAPES -> {
+                isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled()
+                adapter.notifyDataSetChanged()
+            }
             ShizukuSettings.Keys.KEY_SHOW_TERMINAL_HOME,
             ShizukuSettings.Keys.KEY_SHOW_AUTOMATION_HOME,
             ShizukuSettings.Keys.KEY_SHOW_LEARN_MORE_HOME,
@@ -229,7 +234,8 @@ open class HomeActivity : AppActivity(), MavericksView {
             af.shizuku.core.ui.compose.AppTheme(
                 darkTheme = androidx.compose.foundation.isSystemInDarkTheme(),
                 isBlackNightTheme = af.shizuku.manager.app.ThemeHelper.isBlackNightTheme(context),
-                isOneUi = isOneUi
+                isOneUi = isOneUi,
+                isRoundedEdges = isRoundedEdges
             ) {
                 HomeScreen(
                 isEditMode = isEditMode,
@@ -624,6 +630,7 @@ open class HomeActivity : AppActivity(), MavericksView {
         // Sync one-handed mode and OneUI theme compose state in case it changed while in settings.
         isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
         isOneUi = ShizukuSettings.isOneUiThemeEnabled()
+        isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled()
         // Synchronously rebind all visible cards so appearance-setting changes (icon style, shape
         // style, etc.) are visible immediately when returning from SettingsActivity. The async
         // checkServerStatus() / homeModel.reload() path updates service-status content but involves

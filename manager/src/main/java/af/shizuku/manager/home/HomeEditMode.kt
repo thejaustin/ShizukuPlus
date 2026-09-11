@@ -116,11 +116,11 @@ object HomeEditMode {
 
         val res = binding.cardContent.resources
         val base = res.getDimensionPixelSize(R.dimen.card_content_padding)
-        // drag_handle and remove_btn now sit side-by-side in a single top-end row (40dp each +
-        // 4dp gap + 4dp row margin) instead of stacked/overlapping on the same corner; reserve
+        // drag_handle and remove_btn now sit side-by-side in a single top-end row (48dp each +
+        // 4dp gap + 12dp end margin) instead of stacked/overlapping on the same corner; reserve
         // clearance for the whole row so content never sits under either control.
         val overlayClearance = if (isActive)
-            (92 * res.displayMetrics.density).toInt() else 0
+            (112 * res.displayMetrics.density).toInt() else 0
         binding.cardContent.updatePaddingRelative(end = base + overlayClearance)
     }
 }

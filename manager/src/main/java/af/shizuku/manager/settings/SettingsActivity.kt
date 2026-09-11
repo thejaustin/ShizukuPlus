@@ -55,6 +55,7 @@ class SettingsActivity : AppActivity(), PreferenceFragmentCompat.OnPreferenceSta
             af.shizuku.core.ui.compose.AppTheme(
                 isBlackNightTheme = af.shizuku.manager.app.ThemeHelper.isBlackNightTheme(this),
                 isOneUi = af.shizuku.manager.ShizukuSettings.isOneUiThemeEnabled(),
+                isRoundedEdges = af.shizuku.manager.ShizukuSettings.isRoundedEdgesEnabled(),
                 themeVersion = tv
             ) {
                 SettingsScreen(
