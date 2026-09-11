@@ -8,7 +8,9 @@
         <item name="android:colorPrimaryDark">@android:color/black</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="colorSurface">@android:color/black</item>
-        <item name="colorSurfaceContainerLow">?colorSurfaceContainerLowest</item>
+        <item name="colorSurfaceDim">@android:color/black</item>
+        <item name="colorSurfaceContainerLowest">@android:color/black</item>
+        <item name="colorSurfaceContainerLow">@android:color/black</item>
         <!-- Cards/settings groups use colorSurfaceContainerHigh (see home_item_container.xml,
              M3ECardItemDecoration) - dial it down one tone step so AMOLED cards stay close to
              true black instead of inheriting the base theme's full-contrast High tone. -->

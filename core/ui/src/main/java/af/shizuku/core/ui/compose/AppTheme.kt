@@ -52,6 +52,15 @@ private fun androidColorScheme(context: Context, darkTheme: Boolean): ColorSchem
     val surfaceVariant = color(MaterialR.attr.colorSurfaceVariant, fallback.surfaceVariant)
     val onSurfaceVariant = color(MaterialR.attr.colorOnSurfaceVariant, fallback.onSurfaceVariant)
     val outline = color(MaterialR.attr.colorOutline, fallback.outline)
+    val outlineVariant = color(MaterialR.attr.colorOutlineVariant, fallback.outlineVariant)
+    val scrim = color(MaterialR.attr.scrimBackground, fallback.scrim)
+    val surfaceBright = color(MaterialR.attr.colorSurfaceBright, fallback.surfaceBright)
+    val surfaceDim = color(MaterialR.attr.colorSurfaceDim, fallback.surfaceDim)
+    val surfaceContainer = color(MaterialR.attr.colorSurfaceContainer, fallback.surfaceContainer)
+    val surfaceContainerHigh = color(MaterialR.attr.colorSurfaceContainerHigh, fallback.surfaceContainerHigh)
+    val surfaceContainerHighest = color(MaterialR.attr.colorSurfaceContainerHighest, fallback.surfaceContainerHighest)
+    val surfaceContainerLow = color(MaterialR.attr.colorSurfaceContainerLow, fallback.surfaceContainerLow)
+    val surfaceContainerLowest = color(MaterialR.attr.colorSurfaceContainerLowest, fallback.surfaceContainerLowest)
 
     // darkColorScheme()/lightColorScheme() are plain functions (not a shared type with a common
     // named-argument call), so a stored function reference can't be invoked with named args here -
@@ -70,6 +79,15 @@ private fun androidColorScheme(context: Context, darkTheme: Boolean): ColorSchem
             surface = surface, onSurface = onSurface,
             surfaceVariant = surfaceVariant, onSurfaceVariant = onSurfaceVariant,
             outline = outline,
+            outlineVariant = outlineVariant,
+            scrim = scrim,
+            surfaceBright = surfaceBright,
+            surfaceDim = surfaceDim,
+            surfaceContainer = surfaceContainer,
+            surfaceContainerHigh = surfaceContainerHigh,
+            surfaceContainerHighest = surfaceContainerHighest,
+            surfaceContainerLow = surfaceContainerLow,
+            surfaceContainerLowest = surfaceContainerLowest,
         )
     } else {
         lightColorScheme(
@@ -85,6 +103,15 @@ private fun androidColorScheme(context: Context, darkTheme: Boolean): ColorSchem
             surface = surface, onSurface = onSurface,
             surfaceVariant = surfaceVariant, onSurfaceVariant = onSurfaceVariant,
             outline = outline,
+            outlineVariant = outlineVariant,
+            scrim = scrim,
+            surfaceBright = surfaceBright,
+            surfaceDim = surfaceDim,
+            surfaceContainer = surfaceContainer,
+            surfaceContainerHigh = surfaceContainerHigh,
+            surfaceContainerHighest = surfaceContainerHighest,
+            surfaceContainerLow = surfaceContainerLow,
+            surfaceContainerLowest = surfaceContainerLowest,
         )
     }
 }
@@ -119,7 +146,10 @@ fun AppTheme(
     if (darkTheme && isBlackNightTheme) {
         colorScheme = colorScheme.copy(
             background = Color.Black,
-            surface = Color.Black
+            surface = Color.Black,
+            surfaceDim = Color.Black,
+            surfaceContainerLowest = Color.Black,
+            surfaceContainerLow = Color.Black,
         )
     }
 
