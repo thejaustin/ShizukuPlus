@@ -418,15 +418,24 @@ class ShizukuApplication : Application(), Configuration.Provider {
         // it later — common on devices where an OEM freezer (Xiaomi/HyperOS, Samsung "Sleeping
         // apps") or a dropped wireless-ADB session delays the server past that moment. Cheap and
         // idempotent to just redeploy on every RUNNING transition.
+        // Sync the SU bridge when the server starts. If enabled, ensure the latest bridge is deployed.
+        // If disabled, ensure any stale /data/local/tmp/su binaries are cleaned up to prevent Google Wallet
+        // and Play Integrity security failures.
         CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
             ShizukuStateMachine.asFlow()
                 .distinctUntilChanged()
-                .filter { it == ShizukuStateMachine.State.RUNNING && ShizukuSettings.isSuBridgeEnabled() }
+                .filter { it == ShizukuStateMachine.State.RUNNING }
                 .collect {
                     try {
-                        af.shizuku.manager.database.RootCompatHelper.deployBridgeToTmp(this@ShizukuApplication)
+                        if (ShizukuSettings.isSuBridgeEnabled()) {
+                            af.shizuku.manager.database.RootCompatHelper.deployBridgeToTmp(this@ShizukuApplication)
+                        } else {
+                            if (af.shizuku.manager.database.RootCompatHelper.isBridgePresentInTmp()) {
+                                af.shizuku.manager.database.RootCompatHelper.cleanupBridgeFromTmp(this@ShizukuApplication)
+                            }
+                        }
                     } catch (e: Exception) {
-                        Timber.tag("ShizukuApplication").w(e, "SU bridge redeploy on service start skipped")
+                        Timber.tag("ShizukuApplication").w(e, "SU bridge sync on service start failed")
                     }
                 }
         }

@@ -108,16 +108,23 @@ class RootCompatibilityActivity : AppBarActivity() {
             }
         }
 
-        // Deploy the bridge to /data/local/tmp and prefer that path: it's exec-permitted (shared
-        // storage is usually noexec, so apps can't exec the su path there) and holds the
-        // read-only dex app_process requires on Android 14+. Works independently of whether the
-        // user has set an export directory — falls back to the storage path if deploy fails.
+        // Deploy the bridge to /data/local/tmp ONLY if the SU Bridge is enabled by the user.
+        // Unconditional deployment leaves /data/local/tmp/su on disk, which trips root detection
+        // in Google Play Services (DroidGuard) and blocks Google Wallet contactless payments.
         lifecycleScope.launch {
-            val tmpPath = RootCompatHelper.deployBridgeToTmp(this@RootCompatibilityActivity)
-            if (tmpPath != null && !isFinishing) {
-                resolvedSuPath = tmpPath
-                binding.globalSuPath.text = tmpPath
-                binding.globalSetupCard.isVisible = true
+            if (ShizukuSettings.isSuBridgeEnabled()) {
+                val tmpPath = RootCompatHelper.deployBridgeToTmp(this@RootCompatibilityActivity)
+                if (tmpPath != null && !isFinishing) {
+                    resolvedSuPath = tmpPath
+                    binding.globalSuPath.text = tmpPath
+                    binding.globalSetupCard.isVisible = true
+                }
+            } else if (RootCompatHelper.isBridgePresentInTmp()) {
+                // If the user has disabled the bridge but the binary is still lingering in tmp,
+                // automatically clean it up to restore Google Wallet and Play Integrity compliance.
+                RootCompatHelper.cleanupBridgeFromTmp(this@RootCompatibilityActivity)
+                resolvedSuPath = resolveSuPath()
+                binding.globalSuPath.text = resolvedSuPath ?: getString(R.string.su_bridge_device_identity_none)
             }
         }
 
@@ -291,6 +298,36 @@ class RootCompatibilityActivity : AppBarActivity() {
             }
             R.id.action_self_test -> {
                 runSelfTest()
+                return true
+            }
+            R.id.action_deploy_bridge -> {
+                lifecycleScope.launch {
+                    Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_deploy_to_tmp, Toast.LENGTH_SHORT).show()
+                    val path = RootCompatHelper.deployBridgeToTmp(this@RootCompatibilityActivity)
+                    if (path != null && !isFinishing) {
+                        ShizukuSettings.setSuBridgeEnabled(true)
+                        ShizukuSettings.syncAllPlusFeaturesToServer()
+                        resolvedSuPath = path
+                        binding.globalSuPath.text = path
+                        binding.globalSetupCard.isVisible = true
+                        Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_deploy_success, Toast.LENGTH_SHORT).show()
+                    }
+                }
+                return true
+            }
+            R.id.action_cleanup_bridge -> {
+                lifecycleScope.launch {
+                    val success = RootCompatHelper.cleanupBridgeFromTmp(this@RootCompatibilityActivity)
+                    if (success && !isFinishing) {
+                        ShizukuSettings.setSuBridgeEnabled(false)
+                        ShizukuSettings.syncAllPlusFeaturesToServer()
+                        resolvedSuPath = resolveSuPath()
+                        binding.globalSuPath.text = resolvedSuPath ?: getString(R.string.su_bridge_device_identity_none)
+                        Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_cleanup_success, Toast.LENGTH_LONG).show()
+                    } else if (!isFinishing) {
+                        Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_cleanup_failed, Toast.LENGTH_SHORT).show()
+                    }
+                }
                 return true
             }
         }

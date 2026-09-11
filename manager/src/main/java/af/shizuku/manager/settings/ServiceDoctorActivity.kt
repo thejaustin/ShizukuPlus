@@ -33,6 +33,8 @@ import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuStateMachine
 import af.shizuku.manager.utils.DeviceOptimizer
+import af.shizuku.manager.database.RootCompatHelper
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 
@@ -156,6 +158,76 @@ class ServiceDoctorActivity : AppBarActivity() {
                 }
             } } else null
         ))
+
+        // 5d. Google Wallet & Play Integrity Security Check
+        val hasTmpSu = java.io.File("/data/local/tmp/su").exists()
+        val isMagiskMocking = af.shizuku.manager.ShizukuSettings.isRootMagiskMockingEnabled()
+        val isSpoofing = af.shizuku.manager.ShizukuSettings.isSpoofDeviceEnabled()
+        val walletSecurityOk = !hasTmpSu && !isMagiskMocking && !isSpoofing
+
+        val walletStatus = when {
+            hasTmpSu -> getString(R.string.doctor_wallet_risk_tmp_su)
+            isMagiskMocking -> getString(R.string.doctor_wallet_risk_magisk)
+            isSpoofing -> getString(R.string.doctor_wallet_risk_spoof)
+            else -> getString(R.string.doctor_wallet_ok)
+        }
+
+        checks.add(DoctorCheck(
+            getString(R.string.doctor_check_wallet_integrity),
+            walletStatus,
+            walletSecurityOk,
+            onFix = if (!walletSecurityOk) { {
+                MaterialAlertDialogBuilder(this@ServiceDoctorActivity)
+                    .setTitle(R.string.doctor_check_wallet_integrity)
+                    .setMessage(R.string.doctor_tip_wallet_integrity)
+                    .setPositiveButton(R.string.action_continue) { _, _ ->
+                        serviceScope.launch {
+                            val cleaned = RootCompatHelper.cleanupBridgeFromTmp(this@ServiceDoctorActivity)
+
+                            if (isMagiskMocking) {
+                                af.shizuku.manager.ShizukuSettings.setRootMagiskMockingEnabled(false)
+                            }
+                            if (af.shizuku.manager.ShizukuSettings.isSuBridgeEnabled()) {
+                                af.shizuku.manager.ShizukuSettings.setSuBridgeEnabled(false)
+                            }
+                            if (isSpoofing) {
+                                af.shizuku.manager.ShizukuSettings.setSpoofDeviceEnabled(false)
+                            }
+                            af.shizuku.manager.ShizukuSettings.syncAllPlusFeaturesToServer()
+
+                            val msg = if (cleaned) {
+                                getString(R.string.doctor_fix_wallet_success)
+                            } else {
+                                getString(R.string.doctor_fix_wallet_failed)
+                            }
+
+                            MaterialAlertDialogBuilder(this@ServiceDoctorActivity)
+                                .setTitle(R.string.doctor_check_wallet_integrity)
+                                .setMessage(msg)
+                                .setPositiveButton(android.R.string.ok) { _, _ ->
+                                    runDiagnostics()
+                                }
+                                .setNeutralButton(R.string.doctor_action_clear_gms_cache) { _, _ ->
+                                    try {
+                                        val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                            data = android.net.Uri.parse("package:com.google.android.gms")
+                                        }
+                                        startActivity(intent)
+                                    } catch (e: Exception) {
+                                        Timber.w(e, "Could not open GMS settings")
+                                    }
+                                    runDiagnostics()
+                                }
+                                .show()
+                        }
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+            } } else null
+        ))
+        if (!walletSecurityOk) {
+            tips.add("• " + getString(R.string.doctor_tip_wallet_integrity))
+        }
 
         // 6. Xiaomi Restricted ADB
         if (EnvironmentUtils.isXiaomi()) {

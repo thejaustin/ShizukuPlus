@@ -681,6 +681,22 @@
     <string name="doctor_tip_battery">Disable battery optimization for Shizuku+ to prevent it from being killed in the background.</string>
     <string name="doctor_tip_adb">Wireless debugging must be active for Shizuku+ to start in non-root mode after a reboot.</string>
     <string name="doctor_button_fix">Fix</string>
+    <string name="doctor_check_wallet_integrity">Google Wallet &amp; Play Integrity</string>
+    <string name="doctor_wallet_ok">Passes Integrity (No Root Residue)</string>
+    <string name="doctor_wallet_risk_tmp_su">Security Risk (/data/local/tmp/su detected)</string>
+    <string name="doctor_wallet_risk_magisk">Security Risk (Magisk Mocking active)</string>
+    <string name="doctor_wallet_risk_spoof">Attestation Risk (Device Spoofing active)</string>
+    <string name="doctor_tip_wallet_integrity">Google Wallet &amp; Banking Apps: Detected root artifacts or active Magisk mocking cause "Device doesn\'t meet security standards" errors. Run the one-tap fix to purge /data/local/tmp/su and restore compliance.</string>
+    <string name="doctor_fix_wallet_success">Security cleaned! Removed /data/local/tmp binaries and disabled root mocking. If Google Wallet still alerts, clear cache for Google Play Services.</string>
+    <string name="doctor_fix_wallet_failed">Failed to clean /data/local/tmp/su. Please start Shizuku and try again.</string>
+    <string name="doctor_action_clear_gms_cache">Clear Play Services Cache</string>
+    <string name="su_bridge_cleanup_tmp">Remove Bridge from /data/local/tmp</string>
+    <string name="su_bridge_deploy_to_tmp">Deploy Bridge to /data/local/tmp</string>
+    <string name="su_bridge_cleanup_success">Removed SU Bridge from /data/local/tmp. Google Wallet security restored.</string>
+    <string name="su_bridge_cleanup_failed">Failed to remove SU Bridge from /data/local/tmp. Make sure Shizuku is running.</string>
+    <string name="su_bridge_deploy_success">SU Bridge deployed to /data/local/tmp.</string>
+    <string name="su_bridge_warning_wallet_title">Google Wallet Notice</string>
+    <string name="su_bridge_warning_wallet_message">Deploying \'su\' to /data/local/tmp or enabling Magisk Mocking triggers Android root detection in Google Play Services, which disables Google Wallet contactless payments. You can remove it at any time to restore Wallet.</string>
 
     <!-- Snackbar -->
     <string name="snackbar_invalid_port">Port must be between 1 and 65535</string>

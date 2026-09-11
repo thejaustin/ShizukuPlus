@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.ShizukuSettings.Keys.KEY_COMPANION_FALLBACK
+import af.shizuku.manager.database.RootCompatHelper
 import af.shizuku.manager.service.AdbProxyService
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.StockShizukuCompat
@@ -91,10 +92,36 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        findPreference<TwoStatePreference>("su_bridge_enabled")?.setOnPreferenceChangeListener { _, newValue ->
+        findPreference<TwoStatePreference>("su_bridge_enabled")?.setOnPreferenceChangeListener { pref, newValue ->
             if (newValue is Boolean) {
-                preferenceManager.sharedPreferences?.edit()?.putBoolean("su_bridge_enabled", newValue)?.apply()
-                ShizukuSettings.syncAllPlusFeaturesToServer()
+                if (newValue) {
+                    val ctx = context ?: return@setOnPreferenceChangeListener false
+                    com.google.android.material.dialog.MaterialAlertDialogBuilder(ctx)
+                        .setTitle(R.string.su_bridge_warning_wallet_title)
+                        .setMessage(R.string.su_bridge_warning_wallet_message)
+                        .setPositiveButton(R.string.action_continue) { _, _ ->
+                            preferenceManager.sharedPreferences?.edit()?.putBoolean("su_bridge_enabled", true)?.apply()
+                            (pref as? TwoStatePreference)?.isChecked = true
+                            ShizukuSettings.syncAllPlusFeaturesToServer()
+                            val appCtx = context?.applicationContext ?: return@setPositiveButton
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                RootCompatHelper.deployBridgeToTmp(appCtx)
+                            }
+                        }
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show()
+                    return@setOnPreferenceChangeListener false
+                } else {
+                    preferenceManager.sharedPreferences?.edit()?.putBoolean("su_bridge_enabled", false)?.apply()
+                    ShizukuSettings.syncAllPlusFeaturesToServer()
+                    val appCtx = context?.applicationContext
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        if (appCtx != null) {
+                            RootCompatHelper.cleanupBridgeFromTmp(appCtx)
+                        }
+                    }
+                    return@setOnPreferenceChangeListener true
+                }
             }
             true
         }
@@ -118,10 +145,24 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             pref?.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue is Boolean) {
                     if (newValue && key == "bootloader_flash_ota_enabled") {
-                        com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
+                        val ctx = context ?: return@setOnPreferenceChangeListener false
+                        com.google.android.material.dialog.MaterialAlertDialogBuilder(ctx)
                             .setTitle(R.string.ota_flash_danger_title)
                             .setMessage(R.string.ota_flash_danger_message)
                             .setPositiveButton(R.string.ota_flash_danger_confirm) { _, _ ->
+                                preferenceManager.sharedPreferences?.edit()?.putBoolean(key, true)?.apply()
+                                pref.isChecked = true
+                                ShizukuSettings.syncAllPlusFeaturesToServer()
+                            }
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .show()
+                        return@setOnPreferenceChangeListener false
+                    } else if (newValue && key == "root_magisk_mocking_enabled") {
+                        val ctx = context ?: return@setOnPreferenceChangeListener false
+                        com.google.android.material.dialog.MaterialAlertDialogBuilder(ctx)
+                            .setTitle(R.string.su_bridge_warning_wallet_title)
+                            .setMessage(R.string.su_bridge_warning_wallet_message)
+                            .setPositiveButton(R.string.action_continue) { _, _ ->
                                 preferenceManager.sharedPreferences?.edit()?.putBoolean(key, true)?.apply()
                                 pref.isChecked = true
                                 ShizukuSettings.syncAllPlusFeaturesToServer()

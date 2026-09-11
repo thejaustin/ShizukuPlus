@@ -2,6 +2,7 @@ package af.shizuku.manager.database
 
 import android.content.Context
 import android.content.pm.PackageManager
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
@@ -198,6 +199,56 @@ object RootCompatHelper {
             Timber.e(e, "deployBridgeToTmp failed")
             DeployResult(null, e.message ?: e.javaClass.simpleName)
         }
+    }
+
+    /**
+     * Checks whether the SU Bridge binary (/data/local/tmp/su) is present on device.
+     */
+    suspend fun isBridgePresentInTmp(): Boolean = withContext(Dispatchers.IO) {
+        if (File("/data/local/tmp/su").exists()) return@withContext true
+        if (isShizukuAvailable()) {
+            try {
+                val result = ShizukuProcessUtils.runPrivilegedCapture(
+                    arrayOf("sh", "-c", "test -f /data/local/tmp/su && echo EXISTS"),
+                    joinTimeoutMs = 500
+                )
+                return@withContext result.stdout.contains("EXISTS")
+            } catch (_: Exception) {}
+        }
+        false
+    }
+
+    /**
+     * Removes all SU Bridge artifacts from /data/local/tmp.
+     *
+     * Crucial for Google Wallet and Play Integrity compliance: the presence of `/data/local/tmp/su`
+     * triggers Google Play Services root detection (DroidGuard) and disables contactless payments.
+     */
+    suspend fun cleanupBridgeFromTmp(context: Context? = null): Boolean = withContext(Dispatchers.IO) {
+        val files = listOf("su", "rish", "plus", "rish_shizuku.dex")
+        // Best-effort unprivileged deletion
+        for (f in files) {
+            try {
+                File("/data/local/tmp/$f").delete()
+            } catch (_: Exception) {}
+        }
+
+        if (isShizukuAvailable()) {
+            try {
+                val cmd = arrayOf(
+                    "sh", "-c",
+                    "rm -f /data/local/tmp/su /data/local/tmp/rish /data/local/tmp/plus /data/local/tmp/rish_shizuku.dex"
+                )
+                ShizukuProcessUtils.runPrivilegedCapture(cmd, joinTimeoutMs = 1000)
+            } catch (e: Exception) {
+                Timber.w(e, "cleanupBridgeFromTmp privileged rm failed")
+            }
+        }
+
+        val stillExists = File("/data/local/tmp/su").exists()
+        val success = !stillExists
+        Timber.i("cleanupBridgeFromTmp finished, su exists=$stillExists, success=$success")
+        success
     }
 
     /** Writes [bytes] to [path] via a privileged `cat`, then chmods it. Streams over stdin so no

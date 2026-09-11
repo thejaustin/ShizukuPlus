@@ -1058,6 +1058,11 @@ public class ShizukuSettings {
         return p != null && p.getBoolean(Keys.KEY_SU_BRIDGE_ENABLED, false);
     }
 
+    public static void setSuBridgeEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_SU_BRIDGE_ENABLED, enable).apply();
+    }
+
     public static String getCustomSuPath() {
         SharedPreferences p = getPreferences();
         return p != null ? p.getString("custom_su_path", "") : "";
@@ -1066,6 +1071,11 @@ public class ShizukuSettings {
     public static boolean isRootMagiskMockingEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_ROOT_MAGISK_MOCKING_ENABLED, false);
+    }
+
+    public static void setRootMagiskMockingEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_ROOT_MAGISK_MOCKING_ENABLED, enable).apply();
     }
 
     public static boolean isRootAutoGrantEnabled() {
