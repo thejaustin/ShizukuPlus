@@ -16,10 +16,12 @@ import androidx.compose.foundation.background
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.getValue
@@ -71,18 +73,30 @@ fun HomeScreen(
         topBar = {
             LargeTopAppBar(
                 title = {
+                    val fraction = scrollBehavior.state.collapsedFraction
+                    val currentFontSize = lerp(
+                        start = if (isOneUi) 32.sp else 28.sp,
+                        stop = 20.sp,
+                        fraction = fraction
+                    )
+                    val currentFontWeight = if (isOneUi) {
+                        if (fraction > 0.65f) FontWeight.Bold else FontWeight.ExtraBold
+                    } else {
+                        if (fraction > 0.65f) FontWeight.SemiBold else FontWeight.Normal
+                    }
+                    val currentLetterSpacing = if (isOneUi) {
+                        lerp((-0.5).sp, (-0.2).sp, fraction)
+                    } else {
+                        0.sp
+                    }
                     Text(
                         text = if (isEditMode) stringResource(R.string.home_edit_mode_title)
                         else stringResource(R.string.app_name),
-                        style = if (isOneUi) {
-                            MaterialTheme.typography.headlineLarge.copy(
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 32.sp,
-                                letterSpacing = (-0.5).sp
-                            )
-                        } else {
-                            MaterialTheme.typography.headlineMedium
-                        },
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = currentFontWeight,
+                            fontSize = currentFontSize,
+                            letterSpacing = currentLetterSpacing
+                        ),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -146,16 +160,18 @@ fun HomeScreen(
             label = "oneHandedOffset"
         )
         val adjustedPadding = PaddingValues(
-            top = innerPadding.calculateTopPadding(),
+            top = innerPadding.calculateTopPadding() + oneHandedOffset,
             bottom = innerPadding.calculateBottomPadding() + 72.dp
         )
         AnimatedGradientBackground {
             if (isOneHanded && oneHandedOffset > 16.dp) {
+                val handleAlpha = (1f - (scrollBehavior.state.collapsedFraction * 2.5f)).coerceIn(0f, 1f)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(oneHandedOffset + innerPadding.calculateTopPadding())
-                        .padding(top = innerPadding.calculateTopPadding() + 8.dp),
+                        .padding(top = innerPadding.calculateTopPadding() + 8.dp)
+                        .graphicsLayer { alpha = handleAlpha },
                     contentAlignment = Alignment.TopCenter
                 ) {
                     Box(
@@ -170,11 +186,7 @@ fun HomeScreen(
                 }
             }
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    // padding shifts layout position (and touch targets) correctly;
-                    // offset {} is draw-only for AndroidView and causes touch misalignment.
-                    .padding(top = oneHandedOffset)
+                modifier = Modifier.fillMaxSize()
             ) {
                 if (showEmptyState) {
                     Box(modifier = Modifier.padding(adjustedPadding)) {

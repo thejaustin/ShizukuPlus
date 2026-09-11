@@ -182,7 +182,10 @@ class RootCompatibilityActivity : AppBarActivity() {
             val bars = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
             )
-            view.setPadding(bars.left, view.paddingTop, bars.right, bars.bottom)
+            val oneHandedTopPadding = if (ShizukuSettings.isOneHandedModeEnabled()) {
+                (resources.displayMetrics.heightPixels * 0.16f).toInt()
+            } else 0
+            view.setPadding(bars.left, oneHandedTopPadding, bars.right, bars.bottom)
             insets
         }
         recyclerView.layoutManager = LinearLayoutManager(this)

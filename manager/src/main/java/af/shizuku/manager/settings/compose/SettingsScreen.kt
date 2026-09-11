@@ -17,6 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import af.shizuku.manager.R
@@ -77,13 +79,21 @@ fun SettingsScreen(
               if (isOneUi) {
                 LargeTopAppBar(
                     title = {
+                        val fraction = scrollBehavior.state.collapsedFraction
+                        val currentFontSize = lerp(
+                            start = 28.sp,
+                            stop = 20.sp,
+                            fraction = fraction
+                        )
+                        val currentFontWeight = if (fraction > 0.65f) FontWeight.Bold else FontWeight.ExtraBold
+                        val currentLetterSpacing = lerp((-0.5).sp, (-0.2).sp, fraction)
                         Text(
                             text = title,
                             // Samsung OneUI 6/7 uses W800 (ExtraBold) for the large expanded header
                             style = MaterialTheme.typography.headlineLarge.copy(
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 28.sp,
-                                letterSpacing = (-0.5).sp
+                                fontWeight = currentFontWeight,
+                                fontSize = currentFontSize,
+                                letterSpacing = currentLetterSpacing
                             ),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
@@ -171,11 +181,13 @@ fun SettingsScreen(
 
         Box(modifier = Modifier.fillMaxSize()) {
             if (isOneHanded && oneHandedOffset > 16.dp) {
+                val handleAlpha = (1f - (scrollBehavior.state.collapsedFraction * 2.5f)).coerceIn(0f, 1f)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(oneHandedOffset + innerPadding.calculateTopPadding())
-                        .padding(top = innerPadding.calculateTopPadding() + 8.dp),
+                        .padding(top = innerPadding.calculateTopPadding() + 8.dp)
+                        .graphicsLayer { alpha = handleAlpha },
                     contentAlignment = Alignment.TopCenter
                 ) {
                     Box(
@@ -189,8 +201,7 @@ fun SettingsScreen(
                     )
                 }
             }
-            // Fragment Container for Preferences — shift down in one-handed mode via layout padding
-            // so touch targets remain aligned with the visual position.
+            // Fragment Container for Preferences — fill full viewport with top and bottom insets.
             AndroidView(
                 factory = { context ->
                     FrameLayout(context).apply {
@@ -204,7 +215,6 @@ fun SettingsScreen(
                 },
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = oneHandedOffset)
                     .padding(
                         top = innerPadding.calculateTopPadding(),
                         bottom = innerPadding.calculateBottomPadding()

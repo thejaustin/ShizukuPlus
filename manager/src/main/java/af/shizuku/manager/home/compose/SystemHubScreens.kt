@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -87,10 +88,15 @@ fun ServerMetricsScreen() {
         }
     }
 
+    val isOneHanded = af.shizuku.manager.ShizukuSettings.isOneHandedModeEnabled()
+    val screenHeightDp = LocalConfiguration.current.screenHeightDp
+    val oneHandedTop = if (isOneHanded) (screenHeightDp * 0.16f).dp else 0.dp
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .padding(top = oneHandedTop),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         MetricCard(title = stringResource(R.string.server_uptime), value = uptimeText)
@@ -137,9 +143,17 @@ fun ActivityLogScreen() {
     val dateFormat = remember {
         java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.MEDIUM, java.text.DateFormat.MEDIUM, Locale.getDefault())
     }
+    val isOneHanded = af.shizuku.manager.ShizukuSettings.isOneHandedModeEnabled()
+    val screenHeightDp = LocalConfiguration.current.screenHeightDp
+    val oneHandedTop = if (isOneHanded) (screenHeightDp * 0.16f).dp else 0.dp
 
     if (logs.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = oneHandedTop),
+            contentAlignment = Alignment.Center
+        ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(painterResource(R.drawable.ic_empty_log_24), contentDescription = null, modifier = Modifier.size(64.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(16.dp))
@@ -149,7 +163,7 @@ fun ActivityLogScreen() {
     } else {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp + oneHandedTop, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(logs, key = { it.timestamp.toString() + it.packageName }) { record ->

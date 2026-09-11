@@ -237,9 +237,12 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             supportsChangeAnimations = false
         }
 
+        val oneHandedTopPx = if (ShizukuSettings.isOneHandedModeEnabled()) {
+            (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
+        } else 0
         recyclerView.isVerticalScrollBarEnabled = false
         recyclerView.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-        recyclerView.setPadding(cardMarginPx + contentPaddingPx, 0, cardMarginPx + contentPaddingPx, 0)
+        recyclerView.setPadding(cardMarginPx + contentPaddingPx, oneHandedTopPx, cardMarginPx + contentPaddingPx, 0)
         recyclerView.clipToPadding = false
         recyclerView.addItemDecoration(SettingsItemDecoration(context))
         recyclerView.addItemDecoration(M3ScrollbarDecoration(context))
@@ -247,9 +250,12 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { _, insets ->
             val systemBarsInsets = insets.getInsets(Type.systemBars() or Type.displayCutout())
             val navBarClearancePx = (72 * context.resources.displayMetrics.density).toInt()
+            val currentOneHandedTop = if (ShizukuSettings.isOneHandedModeEnabled()) {
+                (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
+            } else 0
             recyclerView.setPadding(
                 cardMarginPx + contentPaddingPx + systemBarsInsets.left,
-                recyclerView.paddingTop,
+                currentOneHandedTop,
                 cardMarginPx + contentPaddingPx + systemBarsInsets.right,
                 systemBarsInsets.bottom + navBarClearancePx
             )
