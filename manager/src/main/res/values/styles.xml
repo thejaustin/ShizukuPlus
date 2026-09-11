@@ -149,6 +149,8 @@
         This overlay layers bolder, slightly-spaced category text on top to complete the look.
     -->
     <style name="AppTheme.PreferenceThemeOverlay.OneUI" parent="@style/AppTheme.PreferenceThemeOverlay">
+        <item name="android:listPreferredItemPaddingStart">16dp</item>
+        <item name="android:listPreferredItemPaddingEnd">16dp</item>
         <item name="preferenceCategoryTitleTextAppearance">@style/TextAppearance.OneUI.CategoryTitle</item>
     </style>
 

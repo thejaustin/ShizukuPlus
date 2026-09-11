@@ -54,6 +54,8 @@
     <style name="Theme" parent="Base.AppTheme.Light" />
 
     <style name="AppTheme.PreferenceThemeOverlay" parent="@style/PreferenceThemeOverlay.Rikka.Material3">
+        <item name="android:listPreferredItemPaddingStart">16dp</item>
+        <item name="android:listPreferredItemPaddingEnd">16dp</item>
         <item name="switchPreferenceCompatStyle">@style/Preference.SwitchPreferenceCompat.M3Expressive</item>
         <item name="switchPreferenceStyle">@style/Preference.SwitchPreferenceCompat.M3Expressive</item>
         <item name="preferenceCategoryStyle">@style/Preference.Category.M3Expressive</item>

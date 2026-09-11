@@ -443,7 +443,7 @@
         <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay.OneUI</item>
         <!-- Explicit padding assertion (rikka's ThemeOverlay.Rikka.Material3.Preference
              sets these but isn't guaranteed to be applied when we apply at overlay level) -->
-        <item name="android:listPreferredItemPaddingStart">24dp</item>
+        <item name="android:listPreferredItemPaddingStart">16dp</item>
         <item name="android:listPreferredItemPaddingEnd">16dp</item>
     </style>
 

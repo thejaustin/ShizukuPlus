@@ -403,6 +403,17 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             }
             return false
         }
+
+        override fun getDividerInset(view: View): Float {
+            if (isHeader(view)) return 16f * density
+            val iconView = view.findViewById<View>(android.R.id.icon)
+            if (iconView == null || iconView.visibility == View.GONE) {
+                return 16f * density
+            }
+            return 56f * density
+        }
+
+        override fun getDividerEndInset(view: View): Float = 16f * density
     }
 
     private class M3ScrollbarDecoration(context: Context) : RecyclerView.ItemDecoration() {
