@@ -230,6 +230,9 @@ fun SettingsScreen(
                         if (!it) { isSearchActive = false; searchQuery = ""; onSearchQueryChanged("") }
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    colors = SearchBarDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
                     leadingIcon = {
                         IconButton(onClick = {
                             isSearchActive = false; searchQuery = ""; onSearchQueryChanged("")

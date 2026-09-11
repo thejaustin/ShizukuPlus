@@ -20,7 +20,7 @@ abstract class M3ECardItemDecoration(context: Context) : RecyclerView.ItemDecora
     // Matches every other 28dp/ExtraLarge card in the app (see #333) and follows the Shape
     // Style setting (Modern/Classic/Squircle) instead of a fixed radius.
     protected val cornerRadius = context.themeCornerSizePx(com.google.android.material.R.attr.shapeAppearanceCornerExtraLarge)
-    protected val cardMargin = context.resources.getDimension(R.dimen.m3e_spacing_medium)
+    protected open val cardMargin: Float get() = context.resources.getDimension(R.dimen.m3e_spacing_medium)
     protected val density = context.resources.displayMetrics.density
 
     init {

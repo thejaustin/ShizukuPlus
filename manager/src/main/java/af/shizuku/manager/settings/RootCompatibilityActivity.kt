@@ -338,7 +338,15 @@ class RootCompatibilityActivity : AppBarActivity() {
             return if (viewType == TYPE_HEADER) {
                 HeaderViewHolder(ListSectionHeaderBinding.inflate(inflater, parent, false))
             } else {
-                AppViewHolder(AppListItemBinding.inflate(inflater, parent, false))
+                val binding = AppListItemBinding.inflate(inflater, parent, false)
+                val density = parent.context.resources.displayMetrics.density
+                binding.root.setPaddingRelative(
+                    (16 * density).toInt(),
+                    binding.root.paddingTop,
+                    (16 * density).toInt(),
+                    binding.root.paddingBottom
+                )
+                AppViewHolder(binding)
             }
         }
 

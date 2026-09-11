@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="@dimen/margin_horizontal"
+    android:paddingHorizontal="44dp"
     android:paddingVertical="@dimen/margin_vertical"
     android:showDividers="middle"
     android:divider="@drawable/spacing_list_item_vertical"

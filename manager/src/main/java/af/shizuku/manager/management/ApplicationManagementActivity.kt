@@ -554,13 +554,23 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
 }
 
 class AppListItemDecoration(context: Context) : af.shizuku.manager.widget.M3ECardItemDecoration(context) {
-    private val dividerInset = 72f * density // icon width + margins
+    override val cardMargin: Float = context.resources.getDimension(R.dimen.m3e_spacing_large)
+    private val dividerInset = 116f * density // 24dp cardMargin + 20dp inner padding + 48dp icon + 24dp gap
 
     override fun shouldDecorate(view: View): Boolean {
         // The toggle-all header is a standalone MaterialCardView with its own floating margins and background
         return view !is com.google.android.material.card.MaterialCardView
     }
 
+    override fun shouldDrawDivider(parent: RecyclerView, index: Int, count: Int): Boolean {
+        for (i in index + 1 until count) {
+            val next = parent.getChildAt(i) ?: continue
+            if (next.visibility != View.VISIBLE) continue
+            return shouldDecorate(next)
+        }
+        return false
+    }
+
     override fun getDividerInset(view: View): Float = dividerInset
-    override fun getDividerEndInset(view: View): Float = cardMargin
+    override fun getDividerEndInset(view: View): Float = cardMargin + (20f * density)
 }

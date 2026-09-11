@@ -237,6 +237,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             supportsChangeAnimations = false
         }
 
+        recyclerView.isVerticalScrollBarEnabled = false
         recyclerView.setBackgroundColor(android.graphics.Color.TRANSPARENT)
         recyclerView.setPadding(cardMarginPx + contentPaddingPx, 0, cardMarginPx + contentPaddingPx, 0)
         recyclerView.clipToPadding = false
