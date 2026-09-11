@@ -1,6 +1,10 @@
 package af.shizuku.manager.home
 
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.animation.OvershootInterpolator
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import androidx.recyclerview.widget.RecyclerView
@@ -70,37 +74,45 @@ object HomeEditMode {
             return tv.data
         }
 
-        // Build a rounded-rectangle background using M3 container colors so the button chip
-        // always reads as part of the theme, not a raw error/primary splash on any card color.
-        fun containerChip(bgColor: Int): android.graphics.drawable.GradientDrawable =
-            android.graphics.drawable.GradientDrawable().apply {
-                shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+        val onSurfaceVariant = attrColor(com.google.android.material.R.attr.colorOnSurfaceVariant)
+        val outlineVariant = attrColor(com.google.android.material.R.attr.colorOutlineVariant)
+
+        // Darkened, almost-hollow button (subtle hairline outline + darkened translucent fill)
+        // so it stays unobtrusive and never clashes or overwhelms in contrast.
+        fun darkenedHollowChip(alphaMultiplier: Float = 1f): GradientDrawable {
+            val strokeAlpha = (110 * alphaMultiplier).toInt().coerceIn(0, 255)
+            val fillAlpha = (0x33 * alphaMultiplier).toInt().coerceIn(0, 255)
+            return GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
                 cornerRadius = 16f * density
-                setColor(bgColor)
+                setStroke((1 * density).toInt().coerceAtLeast(1), ColorUtils.setAlphaComponent(outlineVariant, strokeAlpha))
+                setColor(Color.argb(fillAlpha, 0, 0, 0))
             }
+        }
+
+        val alphaMultiplier = if (isHidden) 0.6f else 1f
+        val chipBg = darkenedHollowChip(alphaMultiplier)
+        val fgColor = if (isHidden) ColorUtils.setAlphaComponent(onSurfaceVariant, 130) else onSurfaceVariant
+        val fgTintList = ColorStateList.valueOf(fgColor)
 
         if (isActive && isHidden) {
             binding.cardContent.alpha = 0.45f
             binding.dragHandle.alpha = 0.35f
-            binding.removeBtn.setImageResource(R.drawable.ic_add_24)
-            val bg = attrColor(com.google.android.material.R.attr.colorPrimaryContainer)
-            val fg = attrColor(com.google.android.material.R.attr.colorOnPrimaryContainer)
-            binding.removeBtn.background = containerChip(bg)
-            binding.removeBtn.imageTintList = android.content.res.ColorStateList.valueOf(fg)
+            binding.removeBtn.setImageResource(R.drawable.ic_visibility_off_24)
+            binding.removeBtn.contentDescription = ctx.getString(R.string.accessibility_icon_toggle_visibility)
         } else {
             binding.cardContent.alpha = 1.0f
             binding.dragHandle.alpha = 0.85f
-            binding.removeBtn.setImageResource(R.drawable.ic_close_24)
-            val bg = attrColor(com.google.android.material.R.attr.colorErrorContainer)
-            val fg = attrColor(com.google.android.material.R.attr.colorOnErrorContainer)
-            binding.removeBtn.background = containerChip(bg)
-            binding.removeBtn.imageTintList = android.content.res.ColorStateList.valueOf(fg)
+            binding.removeBtn.setImageResource(R.drawable.ic_visibility_24)
+            binding.removeBtn.contentDescription = ctx.getString(R.string.accessibility_icon_toggle_visibility)
         }
 
-        // Drag handle: explicit on-surface-variant tint so it reads clearly against any card bg
-        binding.dragHandle.imageTintList = android.content.res.ColorStateList.valueOf(
-            attrColor(com.google.android.material.R.attr.colorOnSurfaceVariant)
-        )
+        binding.removeBtn.background = chipBg
+        binding.removeBtn.imageTintList = fgTintList
+
+        // Drag handle: matching darkened hollow chip and on-surface-variant tint
+        binding.dragHandle.background = darkenedHollowChip(alphaMultiplier)
+        binding.dragHandle.imageTintList = fgTintList
 
         val res = binding.cardContent.resources
         val base = res.getDimensionPixelSize(R.dimen.card_content_padding)
