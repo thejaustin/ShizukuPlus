@@ -55,6 +55,7 @@ class RootCompatibilityActivity : AppBarActivity() {
     // Cached once per activity instance — avoids repeated Shizuku IPC in onBindViewHolder.
     private var isRoot: Boolean = false
     private var isAdbMode: Boolean = false
+    private lateinit var binding: ActivityRootCompatibilityBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CategorizedSuggestedAppsAdapter
     private val packageReceiver = object : android.content.BroadcastReceiver() {
@@ -66,7 +67,7 @@ class RootCompatibilityActivity : AppBarActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = ActivityRootCompatibilityBinding.inflate(layoutInflater, rootView, true)
+        binding = ActivityRootCompatibilityBinding.inflate(layoutInflater, rootView, true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Cache privilege mode once — avoids repeated Shizuku IPC in onBindViewHolder.

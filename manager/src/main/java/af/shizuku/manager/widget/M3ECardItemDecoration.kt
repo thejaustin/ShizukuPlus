@@ -14,7 +14,7 @@ import af.shizuku.manager.ktx.themeCornerSizePx
  * Base ItemDecoration for Material 3 Expressive card-style lists.
  * Handles background card drawing and dividers with consistent spacing.
  */
-abstract class M3ECardItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
+abstract class M3ECardItemDecoration(protected val context: Context) : RecyclerView.ItemDecoration() {
     protected val cardPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     protected val dividerPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     // Matches every other 28dp/ExtraLarge card in the app (see #333) and follows the Shape
