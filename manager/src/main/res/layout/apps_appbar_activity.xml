@@ -33,7 +33,7 @@
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/m3e_spacing_large"
+            android:layout_marginHorizontal="28dp"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="6dp"
             app:startIconDrawable="@drawable/ic_search_24"
@@ -57,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="none"
-            android:paddingHorizontal="@dimen/m3e_spacing_large"
+            android:paddingHorizontal="28dp"
             android:paddingVertical="8dp"
             android:clipToPadding="false">
 

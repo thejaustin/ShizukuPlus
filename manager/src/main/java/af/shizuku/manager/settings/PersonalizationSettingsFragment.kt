@@ -219,6 +219,17 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
+        findPreference<TwoStatePreference>(KEY_ROUNDED_EDGES)?.apply {
+            isChecked = ShizukuSettings.isRoundedEdgesEnabled()
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) {
+                    ShizukuSettings.setRoundedEdgesEnabled(newValue)
+                    applyTheme(requiresRecreate = false)
+                }
+                true
+            }
+        }
+
         findPreference<TwoStatePreference>(KEY_ONE_HANDED_MODE)?.setOnPreferenceChangeListener { _, _ ->
             applyTheme(requiresRecreate = false)
             true
