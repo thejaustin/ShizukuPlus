@@ -267,7 +267,7 @@ public class ShizukuSettings {
     }
 
     public static String getIconStyle() {
-        return getPreferences().getString(Keys.KEY_ICON_STYLE, "standard");
+        return getPreferences().getString(Keys.KEY_ICON_STYLE, "twotone");
     }
 
     public static String getIconColorMode() {
@@ -275,7 +275,7 @@ public class ShizukuSettings {
     }
 
     public static String getShapeStyle() {
-        return getPreferences().getString(Keys.KEY_SHAPE_STYLE, "zen");
+        return getPreferences().getString(Keys.KEY_SHAPE_STYLE, "modern");
     }
 
     public static boolean isEdgeToEdgeEnabled() {

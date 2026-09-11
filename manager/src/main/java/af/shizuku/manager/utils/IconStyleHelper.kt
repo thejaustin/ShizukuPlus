@@ -24,7 +24,7 @@ object IconStyleHelper {
         TWO_TONE("twotone");
 
         companion object {
-            fun fromKey(key: String?): Style = values().firstOrNull { it.key == key } ?: STANDARD
+            fun fromKey(key: String?): Style = values().firstOrNull { it.key == key } ?: TWO_TONE
         }
     }
 

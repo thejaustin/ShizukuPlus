@@ -75,7 +75,7 @@
             android:key="shape_style"
             android:title="@string/settings_shape_style"
             app:useSimpleSummaryProvider="true"
-            android:defaultValue="zen"
+            android:defaultValue="modern"
             android:entries="@array/shape_styles"
             android:entryValues="@array/shape_styles_value"
             android:dependency="expressive_shapes"
@@ -85,7 +85,7 @@
             android:key="icon_style"
             android:title="@string/settings_icon_style"
             app:useSimpleSummaryProvider="true"
-            android:defaultValue="standard"
+            android:defaultValue="twotone"
             android:entries="@array/icon_styles"
             android:entryValues="@array/icon_styles_value"
             android:icon="@drawable/ic_settings_suggest_24" />
