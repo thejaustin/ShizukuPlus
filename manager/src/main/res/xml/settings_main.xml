@@ -37,7 +37,7 @@
             android:key="nav_app_management"
             android:title="@string/settings_main_nav_app_interactions_title"
             android:summary="@string/settings_main_nav_app_interactions_summary"
-            android:icon="@drawable/ic_devices_24"
+            android:icon="@drawable/ic_swipe_24"
             android:fragment="af.shizuku.manager.settings.AppManagementSettingsFragment" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
@@ -50,14 +50,14 @@
             android:key="nav_behavior"
             android:title="@string/settings_main_nav_startup_behavior_title"
             android:summary="@string/settings_main_nav_startup_behavior_summary"
-            android:icon="@drawable/ic_settings_suggest_24"
+            android:icon="@drawable/ic_power_settings_new_24"
             android:fragment="af.shizuku.manager.settings.BehaviorSettingsFragment" />
 
         <Preference
             android:key="nav_advanced"
             android:title="@string/settings_main_nav_advanced_diagnostics_title"
             android:summary="@string/settings_main_nav_advanced_diagnostics_summary"
-            android:icon="@drawable/ic_terminal_24"
+            android:icon="@drawable/ic_medical_services_24"
             android:fragment="af.shizuku.manager.settings.AdvancedSettingsFragment" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>

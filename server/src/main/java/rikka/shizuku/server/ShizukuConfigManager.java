@@ -159,6 +159,11 @@ public class ShizukuConfigManager extends ConfigManager {
             }
         }
 
+        if (packagesByUid.isEmpty()) {
+            LOGGER.w("packagesByUid is empty, skipping config pruning to avoid wiping authorizations");
+            return;
+        }
+
         for (ShizukuConfig.PackageEntry entry : new ArrayList<>(config.packages)) {
             if (entry.packages == null) {
                 entry.packages = new ArrayList<>();
@@ -166,10 +171,16 @@ public class ShizukuConfigManager extends ConfigManager {
 
             List<String> packages = packagesByUid.get(entry.uid);
             if (packages == null || packages.isEmpty()) {
-                LOGGER.i("remove config for uid %d since it has gone", entry.uid);
-                config.packages.remove(entry);
-                changed = true;
-                continue;
+                List<String> livePackages = rikka.hidden.compat.PackageManagerApis.getPackagesForUidNoThrow(entry.uid);
+                if (livePackages != null && !livePackages.isEmpty()) {
+                    packages = livePackages;
+                    packagesByUid.put(entry.uid, livePackages);
+                } else {
+                    LOGGER.i("remove config for uid %d since it has gone", entry.uid);
+                    config.packages.remove(entry);
+                    changed = true;
+                    continue;
+                }
             }
 
             if (entry.packages.isEmpty()) {

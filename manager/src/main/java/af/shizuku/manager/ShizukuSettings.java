@@ -1093,6 +1093,11 @@ public class ShizukuSettings {
         return p != null && p.getBoolean(Keys.KEY_ROOT_BUSYBOX_MOCKING_ENABLED, false);
     }
 
+    public static void setRootBusyboxMockingEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_ROOT_BUSYBOX_MOCKING_ENABLED, enable).apply();
+    }
+
     public static boolean isRootBuildPropRedirectEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_ROOT_BUILD_PROP_REDIRECT_ENABLED, false);

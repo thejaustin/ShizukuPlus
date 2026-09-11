@@ -240,12 +240,11 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         val oneHandedTopPx = if (ShizukuSettings.isOneHandedModeEnabled()) {
             (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
         } else 0
-        recyclerView.isVerticalScrollBarEnabled = false
+        recyclerView.isVerticalScrollBarEnabled = true
         recyclerView.setBackgroundColor(android.graphics.Color.TRANSPARENT)
         recyclerView.setPadding(cardMarginPx + contentPaddingPx, oneHandedTopPx, cardMarginPx + contentPaddingPx, 0)
         recyclerView.clipToPadding = false
         recyclerView.addItemDecoration(SettingsItemDecoration(context))
-        recyclerView.addItemDecoration(M3ScrollbarDecoration(context))
 
         ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { _, insets ->
             val systemBarsInsets = insets.getInsets(Type.systemBars() or Type.displayCutout())
@@ -420,40 +419,5 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         }
 
         override fun getDividerEndInset(view: View): Float = 16f * density
-    }
-
-    private class M3ScrollbarDecoration(context: Context) : RecyclerView.ItemDecoration() {
-        private val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
-        private val widthPx: Float
-        private val marginPx: Float
-        private val minHeightPx: Float
-
-        init {
-            val dm = context.resources.displayMetrics
-            widthPx = 3f * dm.density
-            marginPx = 4f * dm.density
-            minHeightPx = 28f * dm.density
-            val tv = android.util.TypedValue()
-            context.theme.resolveAttribute(androidx.appcompat.R.attr.colorPrimary, tv, true)
-            paint.color = tv.data
-            paint.alpha = 97
-        }
-
-        override fun onDrawOver(c: android.graphics.Canvas, parent: RecyclerView, state: RecyclerView.State) {
-            val extent = parent.computeVerticalScrollExtent()
-            val range = parent.computeVerticalScrollRange()
-            if (range <= extent) return
-
-            val offset = parent.computeVerticalScrollOffset()
-            val trackTop = parent.paddingTop.toFloat()
-            val trackBottom = (parent.height - parent.paddingBottom).toFloat()
-            val trackH = trackBottom - trackTop
-            val thumbH = (trackH * extent.toFloat() / range).coerceAtLeast(minHeightPx)
-            val thumbTop = trackTop + (trackH - thumbH) * offset.toFloat() / (range - extent)
-            val right = parent.width.toFloat() - marginPx
-            val left = right - widthPx
-            val radius = widthPx / 2f
-            c.drawRoundRect(left, thumbTop, right, thumbTop + thumbH, radius, radius, paint)
-        }
     }
 }

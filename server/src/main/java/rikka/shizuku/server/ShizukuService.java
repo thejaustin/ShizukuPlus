@@ -475,7 +475,15 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         // attached-and-authorized non-manager caller (rish included) hitting the final `return
         // false` and getting a silent SecurityException out of newProcess() (#391 follow-up).
         if (clientRecord != null) {
-            return clientRecord.allowed;
+            if (clientRecord.allowed) {
+                return true;
+            }
+            if (checkCallingPermission() == PackageManager.PERMISSION_GRANTED ||
+                (getFlagsForUidInternal(callingUid, ConfigManager.MASK_PERMISSION, true) & ConfigManager.FLAG_ALLOWED) == ConfigManager.FLAG_ALLOWED) {
+                clientRecord.allowed = true;
+                return true;
+            }
+            return false;
         }
         if (checkCallingPermission() == PackageManager.PERMISSION_GRANTED) {
             return true;
@@ -578,6 +586,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             // This lets apps like Swift Backup work without an explicit grant dialog in root mode.
             if (OsUtils.getUid() == 0 && !record.allowed) {
                 record.allowed = true;
+            }
+            if (!record.allowed) {
+                if (checkCallingPermission() == PackageManager.PERMISSION_GRANTED ||
+                    (getFlagsForUidInternal(callingUid, ConfigManager.MASK_PERMISSION, true) & ConfigManager.FLAG_ALLOWED) == ConfigManager.FLAG_ALLOWED) {
+                    record.allowed = true;
+                }
             }
             reply.putBoolean(BIND_APPLICATION_PERMISSION_GRANTED, record.allowed);
             reply.putBoolean(BIND_APPLICATION_SHOULD_SHOW_REQUEST_PERMISSION_RATIONALE, false);
@@ -2090,16 +2104,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 record.allowed = allowed;
                 if (record.pid == requestPid) {
                     record.dispatchRequestPermissionResult(requestCode, allowed);
-                } else if (previouslyAllowed != allowed) {
-                    // Same uid, different pid - e.g. a background :service process that
-                    // independently attached before this dialog was answered. Only the process
-                    // that actually showed requestPermission() gets a live callback above (it needs
-                    // the caller-chosen requestCode that process supplied, which we don't have for
-                    // any other pid - there's no protocol-level way to push a correction otherwise).
-                    // Force-stop so its next launch gets a fresh attachApplication() handshake
-                    // reflecting the real decision, instead of silently caching whatever it saw
-                    // before this dialog was answered - same reasoning as the analogous grant/
-                    // revoke asymmetry fixed in updateFlagsForUid() (b392c8f3, #371).
+                } else if (!allowed && previouslyAllowed) {
+                    // Only force-stop if access was revoked or denied, ensuring revoked processes
+                    // cannot continue making calls with stale assumptions. When granted, record.allowed
+                    // is already set to true above, avoiding abrupt package death mid-flow (#488).
                     ActivityManagerApis.forceStopPackageNoThrow(record.packageName, UserHandleCompat.getUserId(record.uid));
                 }
             }

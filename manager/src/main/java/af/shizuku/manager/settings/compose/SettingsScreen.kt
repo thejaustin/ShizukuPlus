@@ -10,6 +10,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +58,9 @@ fun SettingsScreen(
 
     val isOneUi = af.shizuku.manager.ShizukuSettings.isOneUiThemeEnabled()
     val isOneHanded = af.shizuku.manager.ShizukuSettings.isOneHandedModeEnabled()
+    val context = LocalContext.current
+    val isDarkTheme = isSystemInDarkTheme()
+    val isBlackTheme = isDarkTheme && af.shizuku.manager.app.ThemeHelper.isBlackNightTheme(context)
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     LaunchedEffect(Unit) { onScrollStateCreated(scrollBehavior.state) }
@@ -241,7 +246,7 @@ fun SettingsScreen(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = SearchBarDefaults.colors(
-                        containerColor = MaterialTheme.colorScheme.surface
+                        containerColor = if (isBlackTheme) Color.Black else MaterialTheme.colorScheme.surface
                     ),
                     leadingIcon = {
                         IconButton(onClick = {
@@ -276,12 +281,16 @@ fun SettingsScreen(
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 items(searchResults) { item ->
-                                    SearchResultItem(item = item, onClick = {
-                                        isSearchActive = false
-                                        searchQuery = ""
-                                        onSearchQueryChanged("")
-                                        onNavigateToSetting(item)
-                                    })
+                                    SearchResultItem(
+                                        item = item,
+                                        isBlackTheme = isBlackTheme,
+                                        onClick = {
+                                            isSearchActive = false
+                                            searchQuery = ""
+                                            onSearchQueryChanged("")
+                                            onNavigateToSetting(item)
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -296,6 +305,7 @@ fun SettingsScreen(
 @Composable
 fun SearchResultItem(
     item: SettingsSearchEngine.SettingItem,
+    isBlackTheme: Boolean = false,
     onClick: () -> Unit
 ) {
     // Use Material3's clickable Card overload rather than Modifier.clickable: the latter reads
@@ -305,7 +315,9 @@ fun SearchResultItem(
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+        colors = CardDefaults.cardColors(
+            containerColor = if (isBlackTheme) Color(0xFF141414) else MaterialTheme.colorScheme.surfaceContainerLow
+        )
     ) {
         Column(
             modifier = Modifier

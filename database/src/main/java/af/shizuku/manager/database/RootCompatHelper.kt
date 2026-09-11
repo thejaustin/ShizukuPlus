@@ -201,15 +201,24 @@ object RootCompatHelper {
         }
     }
 
+    const val ADB_CLEANUP_COMMAND =
+        "adb shell rm -f /data/local/tmp/su /data/local/tmp/rish /data/local/tmp/plus /data/local/tmp/rish_shizuku.dex /data/local/su /data/local/bin/su /data/local/xbin/su"
+
     /**
-     * Checks whether the SU Bridge binary (/data/local/tmp/su) is present on device.
+     * Checks whether any SU Bridge or root residue binary is present in known detection paths.
      */
     suspend fun isBridgePresentInTmp(): Boolean = withContext(Dispatchers.IO) {
-        if (File("/data/local/tmp/su").exists()) return@withContext true
+        val targets = listOf(
+            "/data/local/tmp/su",
+            "/data/local/su",
+            "/data/local/bin/su",
+            "/data/local/xbin/su"
+        )
+        if (targets.any { File(it).exists() }) return@withContext true
         if (isShizukuAvailable()) {
             try {
                 val result = ShizukuProcessUtils.runPrivilegedCapture(
-                    arrayOf("sh", "-c", "test -f /data/local/tmp/su && echo EXISTS"),
+                    arrayOf("sh", "-c", "test -f /data/local/tmp/su || test -f /data/local/su && echo EXISTS"),
                     joinTimeoutMs = 500
                 )
                 return@withContext result.stdout.contains("EXISTS")
@@ -219,36 +228,82 @@ object RootCompatHelper {
     }
 
     /**
-     * Removes all SU Bridge artifacts from /data/local/tmp.
+     * Removes all SU Bridge artifacts and root residue from /data/local/tmp and /data/local.
      *
-     * Crucial for Google Wallet and Play Integrity compliance: the presence of `/data/local/tmp/su`
-     * triggers Google Play Services root detection (DroidGuard) and disables contactless payments.
+     * Multi-tier fallback architecture:
+     *  1. Direct unprivileged file deletion.
+     *  2. Privileged Shizuku shell removal.
+     *  3. Direct root shell execution (`su -c rm -f ...`) if Shizuku is stopped but root exists.
+     *  4. In-place zeroing/truncation (`> /data/local/tmp/su && chmod 000`) if unlinking is blocked.
      */
     suspend fun cleanupBridgeFromTmp(context: Context? = null): Boolean = withContext(Dispatchers.IO) {
-        val files = listOf("su", "rish", "plus", "rish_shizuku.dex")
-        // Best-effort unprivileged deletion
-        for (f in files) {
+        val targets = listOf(
+            "/data/local/tmp/su",
+            "/data/local/tmp/rish",
+            "/data/local/tmp/plus",
+            "/data/local/tmp/rish_shizuku.dex",
+            "/data/local/su",
+            "/data/local/bin/su",
+            "/data/local/xbin/su"
+        )
+
+        // Tier 1: Best-effort unprivileged deletion
+        for (path in targets) {
             try {
-                File("/data/local/tmp/$f").delete()
+                File(path).delete()
             } catch (_: Exception) {}
         }
 
+        // Tier 2: Privileged Shizuku removal
         if (isShizukuAvailable()) {
             try {
                 val cmd = arrayOf(
                     "sh", "-c",
-                    "rm -f /data/local/tmp/su /data/local/tmp/rish /data/local/tmp/plus /data/local/tmp/rish_shizuku.dex"
+                    "rm -f ${targets.joinToString(" ")}"
                 )
                 ShizukuProcessUtils.runPrivilegedCapture(cmd, joinTimeoutMs = 1000)
             } catch (e: Exception) {
-                Timber.w(e, "cleanupBridgeFromTmp privileged rm failed")
+                Timber.w(e, "cleanupBridgeFromTmp Shizuku rm failed")
             }
+        }
+
+        // Tier 3: Direct root shell fallback (if Shizuku is unavailable or rm failed, but device has root)
+        if (File("/data/local/tmp/su").exists()) {
+            try {
+                val p = Runtime.getRuntime().exec(arrayOf("su", "-c", "rm -f ${targets.joinToString(" ")}"))
+                p.waitFor()
+            } catch (_: Exception) {}
+        }
+
+        // Tier 4: In-place zeroing / truncation and permission stripping if file still exists
+        if (File("/data/local/tmp/su").exists() && isShizukuAvailable()) {
+            try {
+                val truncateCmd = arrayOf(
+                    "sh", "-c",
+                    "> /data/local/tmp/su 2>/dev/null; chmod 000 /data/local/tmp/su 2>/dev/null"
+                )
+                ShizukuProcessUtils.runPrivilegedCapture(truncateCmd, joinTimeoutMs = 500)
+            } catch (_: Exception) {}
         }
 
         val stillExists = File("/data/local/tmp/su").exists()
         val success = !stillExists
         Timber.i("cleanupBridgeFromTmp finished, su exists=$stillExists, success=$success")
         success
+    }
+
+    /**
+     * Attempts to force-stop Google Wallet to clear cached attestation state and prompt re-evaluation.
+     */
+    suspend fun refreshGoogleWalletAttestation(context: Context? = null) = withContext(Dispatchers.IO) {
+        if (isShizukuAvailable()) {
+            try {
+                ShizukuProcessUtils.runPrivilegedCapture(
+                    arrayOf("am", "force-stop", "com.google.android.apps.walletnfcrel"),
+                    joinTimeoutMs = 1000
+                )
+            } catch (_: Exception) {}
+        }
     }
 
     /** Writes [bytes] to [path] via a privileged `cat`, then chmods it. Streams over stdin so no
