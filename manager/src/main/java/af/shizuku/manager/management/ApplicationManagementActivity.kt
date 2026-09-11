@@ -178,7 +178,12 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
                 androidx.core.view.WindowInsetsCompat.Type.displayCutout()
             )
             val extraBottomPadding = (72 * resources.displayMetrics.density).toInt()
-            v.setPadding(bars.left, v.paddingTop, bars.right, bars.bottom + extraBottomPadding)
+            val oneHandedTopPadding = if (ShizukuSettings.isOneHandedModeEnabled()) {
+                (resources.displayMetrics.heightPixels * 0.16f).toInt()
+            } else {
+                0
+            }
+            v.setPadding(bars.left, oneHandedTopPadding, bars.right, bars.bottom + extraBottomPadding)
             insets
         }
 
@@ -544,6 +549,7 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
         // without needing to rebuild the ItemTouchHelper.
         swipeRightAction = ShizukuSettings.getSwipeRightAction()
         swipeLeftAction = ShizukuSettings.getSwipeLeftAction()
+        androidx.core.view.ViewCompat.requestApplyInsets(recyclerView)
     }
 }
 

@@ -70,21 +70,6 @@ fun SettingsScreen(
         }
     }
 
-    // Samsung OneUI one-handed mode: shift content down into the thumb-reachable zone.
-    // Uses layout padding (not graphicsLayer scale) so touch targets stay aligned with visuals.
-    val screenHeightDp = LocalConfiguration.current.screenHeightDp
-    val oneHandedOffset by animateDpAsState(
-        targetValue = if (isOneHanded) (screenHeightDp * 0.38f).dp else 0.dp,
-        animationSpec = if (!af.shizuku.manager.ShizukuSettings.isExpressiveAnimationsEnabled()) {
-            snap()
-        } else {
-            spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessMedium * af.shizuku.manager.ShizukuSettings.getAnimationDurationScale()
-            )
-        },
-        label = "settingsOneHandedOffset"
-    )
 
     Scaffold(
         topBar = {
@@ -166,7 +151,44 @@ fun SettingsScreen(
             }
         }
     ) { innerPadding ->
+        // Samsung OneUI one-handed mode: shift content down into the thumb-reachable zone (38% screen height).
+        // Subtract innerPadding.top so we don't double-pad on top of the TopAppBar.
+        val screenHeightDp = LocalConfiguration.current.screenHeightDp
+        val targetThumbTop = (screenHeightDp * 0.38f).dp
+        val extraOneHanded = (targetThumbTop - innerPadding.calculateTopPadding()).coerceAtLeast(0.dp)
+        val oneHandedOffset by animateDpAsState(
+            targetValue = if (isOneHanded) extraOneHanded else 0.dp,
+            animationSpec = if (!af.shizuku.manager.ShizukuSettings.isExpressiveAnimationsEnabled()) {
+                snap()
+            } else {
+                spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessMedium / af.shizuku.manager.ShizukuSettings.getAnimationDurationScale().coerceAtLeast(0.1f)
+                )
+            },
+            label = "settingsOneHandedOffset"
+        )
+
         Box(modifier = Modifier.fillMaxSize()) {
+            if (isOneHanded && oneHandedOffset > 16.dp) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(oneHandedOffset + innerPadding.calculateTopPadding())
+                        .padding(top = innerPadding.calculateTopPadding() + 8.dp),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(36.dp)
+                            .height(4.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.28f),
+                                shape = androidx.compose.foundation.shape.RoundedCornerShape(2.dp)
+                            )
+                    )
+                }
+            }
             // Fragment Container for Preferences — shift down in one-handed mode via layout padding
             // so touch targets remain aligned with the visual position.
             AndroidView(

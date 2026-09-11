@@ -16,8 +16,11 @@ import androidx.compose.foundation.background
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.animation.core.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +39,7 @@ fun HomeScreen(
     isEditMode: Boolean,
     isOneHanded: Boolean,
     showEmptyState: Boolean,
+    isOneUi: Boolean = ShizukuSettings.isOneUiThemeEnabled(),
     onStopClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onHelpClick: () -> Unit,
@@ -68,8 +72,19 @@ fun HomeScreen(
             LargeTopAppBar(
                 title = {
                     Text(
-                        if (isEditMode) stringResource(R.string.home_edit_mode_title)
-                        else stringResource(R.string.app_name)
+                        text = if (isEditMode) stringResource(R.string.home_edit_mode_title)
+                        else stringResource(R.string.app_name),
+                        style = if (isOneUi) {
+                            MaterialTheme.typography.headlineLarge.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 32.sp,
+                                letterSpacing = (-0.5).sp
+                            )
+                        } else {
+                            MaterialTheme.typography.headlineMedium
+                        },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 },
                 actions = {
@@ -114,17 +129,17 @@ fun HomeScreen(
         }
     ) { innerPadding ->
         // Samsung One UI one-handed mode: translate the entire content downward so the action
-        // zone stays in the comfortable thumb area without scaling (scaling shrinks side
-        // margins, which the user explicitly doesn't want). Spring animation gives the same
-        // "snap to lower half" feel as Samsung Settings. Full-width content + vertical shift
-        // only = thumb-reachable without forcing the user to reposition their hand.
+        // zone stays in the comfortable thumb area without scaling. Target is 38% screen height,
+        // subtracting innerPadding.top so we don't double-pad with the TopAppBar.
         val screenHeightDp = LocalConfiguration.current.screenHeightDp
+        val targetThumbTop = (screenHeightDp * 0.38f).dp
+        val extraOneHanded = (targetThumbTop - innerPadding.calculateTopPadding()).coerceAtLeast(0.dp)
         val oneHandedOffset by animateDpAsState(
-            targetValue = if (isOneHanded) (screenHeightDp * 0.38f).dp else 0.dp,
+            targetValue = if (isOneHanded) extraOneHanded else 0.dp,
             animationSpec = if (ShizukuSettings.isExpressiveAnimationsEnabled())
                 spring(
                     dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessMedium
+                    stiffness = Spring.StiffnessMedium / ShizukuSettings.getAnimationDurationScale().coerceAtLeast(0.1f)
                 )
             else
                 snap(),
@@ -135,6 +150,25 @@ fun HomeScreen(
             bottom = innerPadding.calculateBottomPadding() + 72.dp
         )
         AnimatedGradientBackground {
+            if (isOneHanded && oneHandedOffset > 16.dp) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(oneHandedOffset + innerPadding.calculateTopPadding())
+                        .padding(top = innerPadding.calculateTopPadding() + 8.dp),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(36.dp)
+                            .height(4.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.28f),
+                                shape = androidx.compose.foundation.shape.RoundedCornerShape(2.dp)
+                            )
+                    )
+                }
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()

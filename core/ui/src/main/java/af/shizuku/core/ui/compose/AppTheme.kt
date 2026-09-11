@@ -9,7 +9,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.R as MaterialR
 
@@ -129,6 +131,57 @@ private val OneUiShapes = Shapes(
     extraLarge = RoundedCornerShape(36.dp),
 )
 
+private val OneUiTypography = Typography(
+    headlineLarge = Typography().headlineLarge.copy(
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 32.sp,
+        letterSpacing = (-0.5).sp
+    ),
+    headlineMedium = Typography().headlineMedium.copy(
+        fontWeight = FontWeight.Bold,
+        fontSize = 26.sp,
+        letterSpacing = (-0.25).sp
+    ),
+    headlineSmall = Typography().headlineSmall.copy(
+        fontWeight = FontWeight.Bold,
+        fontSize = 22.sp
+    ),
+    titleLarge = Typography().titleLarge.copy(
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp,
+        letterSpacing = (-0.15).sp
+    ),
+    titleMedium = Typography().titleMedium.copy(
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp
+    ),
+    titleSmall = Typography().titleSmall.copy(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 14.sp
+    ),
+    labelLarge = Typography().labelLarge.copy(
+        fontWeight = FontWeight.SemiBold
+    ),
+    labelMedium = Typography().labelMedium.copy(
+        fontWeight = FontWeight.SemiBold
+    ),
+    labelSmall = Typography().labelSmall.copy(
+        fontWeight = FontWeight.Medium
+    ),
+    bodyLarge = Typography().bodyLarge.copy(
+        fontSize = 16.sp,
+        letterSpacing = 0.sp
+    ),
+    bodyMedium = Typography().bodyMedium.copy(
+        fontSize = 14.sp,
+        letterSpacing = 0.sp
+    ),
+    bodySmall = Typography().bodySmall.copy(
+        fontSize = 12.sp,
+        letterSpacing = 0.sp
+    )
+)
+
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -154,10 +207,12 @@ fun AppTheme(
     }
 
     val shapes = if (isOneUi) OneUiShapes else Shapes()
+    val typography = if (isOneUi) OneUiTypography else Typography()
 
     MaterialTheme(
         colorScheme = colorScheme,
         shapes = shapes,
+        typography = typography,
         content = content
     )
 }

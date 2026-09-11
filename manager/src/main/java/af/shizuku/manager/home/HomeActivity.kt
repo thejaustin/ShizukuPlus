@@ -112,6 +112,7 @@ open class HomeActivity : AppActivity(), MavericksView {
     // Compose state at class level so onResume() and appearanceChangeListener can update it
     // without being in onCreate()'s closure scope.
     private var isOneHanded by mutableStateOf(ShizukuSettings.isOneHandedModeEnabled())
+    private var isOneUi by mutableStateOf(ShizukuSettings.isOneUiThemeEnabled())
 
     // Strong reference required — SharedPreferences holds listeners weakly, so an inline lambda
     // would be eligible for GC immediately after registerOnSharedPreferenceChangeListener returns.
@@ -127,7 +128,11 @@ open class HomeActivity : AppActivity(), MavericksView {
             ShizukuSettings.Keys.KEY_SHOW_ACTIVITY_LOG_HOME,
             ShizukuSettings.Keys.KEY_SHOW_START_ADB_HOME,
             ShizukuSettings.Keys.KEY_SHOW_BACKUP_HOME -> adapter.updateData()
-            ShizukuSettings.Keys.KEY_ONE_HANDED_MODE -> isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
+            ShizukuSettings.Keys.KEY_ONE_HANDED_MODE,
+            ShizukuSettings.Keys.KEY_ONEUI_THEME -> {
+                isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
+                isOneUi = ShizukuSettings.isOneUiThemeEnabled()
+            }
         }
     }
 
@@ -224,12 +229,13 @@ open class HomeActivity : AppActivity(), MavericksView {
             af.shizuku.core.ui.compose.AppTheme(
                 darkTheme = androidx.compose.foundation.isSystemInDarkTheme(),
                 isBlackNightTheme = af.shizuku.manager.app.ThemeHelper.isBlackNightTheme(context),
-                isOneUi = ShizukuSettings.isOneUiThemeEnabled()
+                isOneUi = isOneUi
             ) {
                 HomeScreen(
                 isEditMode = isEditMode,
                 isOneHanded = isOneHanded,
                 showEmptyState = showEmptyState,
+                isOneUi = isOneUi,
                 onStopClick = {
                     if (ShizukuStateMachine.isRunning()) {
                         MaterialAlertDialogBuilder(this)
@@ -615,8 +621,9 @@ open class HomeActivity : AppActivity(), MavericksView {
 
     override fun onResume() {
         super.onResume()
-        // Sync one-handed mode compose state in case it changed while in settings.
+        // Sync one-handed mode and OneUI theme compose state in case it changed while in settings.
         isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
+        isOneUi = ShizukuSettings.isOneUiThemeEnabled()
         // Synchronously rebind all visible cards so appearance-setting changes (icon style, shape
         // style, etc.) are visible immediately when returning from SettingsActivity. The async
         // checkServerStatus() / homeModel.reload() path updates service-status content but involves

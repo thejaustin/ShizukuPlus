@@ -48,7 +48,7 @@
             android:summary="@string/settings_one_handed_mode_summary"
             android:defaultValue="false"
             android:dependency="oneui_theme_enabled"
-            android:icon="@drawable/ic_settings_suggest_24" />
+            android:icon="@drawable/ic_smartphone_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
