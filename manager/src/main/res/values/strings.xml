@@ -358,6 +358,10 @@
     <string name="settings_use_system_color">Use system theme color</string>
     <string name="settings_watchdog">Watchdog</string>
     <string name="settings_watchdog_summary">Automatically restart Shizuku+ after a crash or unexpected stop. Cannot reconnect when the underlying network disconnects (e.g. USB cable unplugged while using RNDIS/USB ADB).</string>
+    <string name="settings_device_hardening">Device Hardening &amp; Keepalive</string>
+    <string name="settings_device_hardening_summary">Exempt Shizuku and terminal clients from Doze, auto-grant WRITE_SECURE_SETTINGS, and sync starter binaries</string>
+    <string name="doctor_check_device_hardening">Device Hardening &amp; Doze Exemption</string>
+    <string name="device_hardening_applied">Device hardening &amp; Doze optimizations applied</string>
     <string name="settings_tcp_mode">TCP mode</string>
     <string name="settings_tcp_mode_summary">"Allows Shizuku+ to restart without Wi-Fi. (Shizuku+ must have started once since reboot)"</string>
     <string name="settings_tcp_mode_dialog_close_port">"The TCP port will be closed immediately. You will need Wi-Fi to turn on TCP mode again. Continue?"</string>

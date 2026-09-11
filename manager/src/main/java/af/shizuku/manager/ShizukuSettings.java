@@ -176,6 +176,7 @@ public class ShizukuSettings {
         public static final String KEY_LIVE_ACTIVITY_ENABLED = "live_activity_enabled";
         public static final String KEY_AUTO_RECONNECT_MDNS = "auto_reconnect_mdns";
         public static final String KEY_STEALTH_MODE = "stealth_mode";
+        public static final String KEY_DEVICE_HARDENING_ENABLED = "device_hardening_enabled";
     }
 
     private static SharedPreferences sPreferences;
@@ -1310,6 +1311,16 @@ public class ShizukuSettings {
         // Default OFF: auto-reconnect is opt-in, not opt-out. A null prefs object
         // (prefs not yet initialized) is treated as disabled, not enabled.
         return p != null && p.getBoolean(Keys.KEY_AUTO_RECONNECT_MDNS, false);
+    }
+
+    public static boolean isDeviceHardeningEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_DEVICE_HARDENING_ENABLED, true);
+    }
+
+    public static void setDeviceHardeningEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_DEVICE_HARDENING_ENABLED, enabled).apply();
     }
 
     /** Whether the Backup &amp; Restore category is hidden from the Feature Hub screen (#461). */

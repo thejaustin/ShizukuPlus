@@ -10,6 +10,9 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import af.shizuku.manager.ShizukuApplication
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.BuildConfig
@@ -98,6 +101,19 @@ object ShizukuStateMachine {
                     )
                 } catch (e: Exception) {
                     Timber.tag("ShizukuStateMachine").w(e, "Failed to dispatch automation event")
+                }
+
+                if (newState == State.RUNNING) {
+                    try {
+                        val context = ShizukuApplication.appContext
+                        if (ShizukuSettings.isDeviceHardeningEnabled()) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                DeviceOptimizer.applyFixes(context)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Timber.tag("ShizukuStateMachine").w(e, "Failed to apply device hardening on RUNNING")
+                    }
                 }
 
                 // Persist so a future cold-started process (see loadPersistedSettledState() above)

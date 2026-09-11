@@ -32,6 +32,7 @@ import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuStateMachine
+import af.shizuku.manager.utils.DeviceOptimizer
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 
@@ -140,6 +141,20 @@ class ServiceDoctorActivity : AppBarActivity() {
             if (isAccessibilityEnabled) getString(R.string.doctor_status_ok) else getString(R.string.doctor_status_not_enabled),
             isAccessibilityEnabled,
             onFix = if (!isAccessibilityEnabled) { { SettingsPage.Accessibility.launch(this) } } else null
+        ))
+
+        // 5c. Device Hardening & Doze Whitelisting
+        val isHardeningActive = isIgnoring && hasSecureSettings
+        checks.add(DoctorCheck(
+            getString(R.string.doctor_check_device_hardening),
+            if (isHardeningActive) getString(R.string.doctor_status_ok) else "Fix Available",
+            isHardeningActive,
+            onFix = if (!isHardeningActive) { {
+                serviceScope.launch {
+                    DeviceOptimizer.applyFixes(this@ServiceDoctorActivity)
+                    runDiagnostics()
+                }
+            } } else null
         ))
 
         // 6. Xiaomi Restricted ADB

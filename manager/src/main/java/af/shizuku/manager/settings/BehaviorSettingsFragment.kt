@@ -17,6 +17,10 @@ import af.shizuku.manager.app.SnackbarHelper
 import af.shizuku.manager.service.ShizukuLiveService
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.ShizukuStateMachine
+import af.shizuku.manager.utils.DeviceOptimizer
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -24,6 +28,7 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
 
     private lateinit var startOnBootPreference: TwoStatePreference
     private lateinit var watchdogPreference: TwoStatePreference
+    private lateinit var deviceHardeningPreference: TwoStatePreference
     private lateinit var tcpModePreference: TwoStatePreference
     private lateinit var tcpPortPreference: EditTextPreference
 
@@ -40,6 +45,7 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
 
         startOnBootPreference = requireNotNull(findPreference(KEY_START_ON_BOOT))
         watchdogPreference = requireNotNull(findPreference(KEY_WATCHDOG))
+        deviceHardeningPreference = requireNotNull(findPreference(KEY_DEVICE_HARDENING_ENABLED))
         tcpModePreference = requireNotNull(findPreference(KEY_TCP_MODE))
         tcpPortPreference = requireNotNull(findPreference(KEY_TCP_PORT))
 
@@ -91,6 +97,25 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
                     }
                 }
                 false
+            }
+        }
+
+        deviceHardeningPreference.apply {
+            isChecked = ShizukuSettings.isDeviceHardeningEnabled()
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) {
+                    ShizukuSettings.setDeviceHardeningEnabled(newValue)
+                    isChecked = newValue
+                    if (newValue) {
+                        lifecycleScope.launch {
+                            val success = DeviceOptimizer.applyFixes(context)
+                            if (success) {
+                                Toast.makeText(context, R.string.device_hardening_applied, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+                true
             }
         }
 
