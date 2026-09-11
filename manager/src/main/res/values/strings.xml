@@ -1234,6 +1234,8 @@
 
     <!-- SU path preset picker dialog -->
     <string name="su_path_preset_dialog_title">Select SU Path Preset</string>
+    <string name="su_path_preset_default">Default (Auto-detect)</string>
+    <string name="su_path_preset_custom">Custom Path…</string>
 
     <!-- Device Owner (Dhizuku) toasts -->
     <string name="dpm_screen_capture_disabled">Screen Capture Disabled Globally</string>

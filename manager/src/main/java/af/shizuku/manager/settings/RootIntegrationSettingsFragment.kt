@@ -27,7 +27,7 @@ import rikka.shizuku.Shizuku
  */
 class RootIntegrationSettingsFragment : BaseSettingsFragment() {
 
-    override fun getTitle(): CharSequence? = "Root & Compatibility"
+    override fun getTitle(): CharSequence? = getString(R.string.settings_main_nav_root_compat_title)
 
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_root_integration, rootKey)
@@ -152,13 +152,13 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
         }
         suPathPref?.setOnPreferenceClickListener {
             val presets = arrayOf(
-                "Default (Auto-detect)",
+                getString(R.string.su_path_preset_default),
                 "/system/bin/su (Standard AOSP)",
                 "/system/xbin/su (SuperSU Legacy)",
                 "/sbin/su (Magisk/Custom ROMs)",
                 "/data/adb/ksu/bin/su (KernelSU)",
                 "/data/adb/ap/bin/su (APatch)",
-                "Custom Path..."
+                getString(R.string.su_path_preset_custom)
             )
             val presetValues = arrayOf(
                 "",

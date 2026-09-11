@@ -41,7 +41,7 @@ import java.io.OutputStreamWriter
 
 class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
 
-    override fun getTitle(): CharSequence? = "Feature Hub"
+    override fun getTitle(): CharSequence? = getString(R.string.settings_main_nav_feature_hub_title)
 
     // e.message is often null for keystore/cipher exceptions (#315's "Backup failed: null"), and
     // KeyPermanentlyInvalidatedException needs a message explaining it's unrecoverable rather

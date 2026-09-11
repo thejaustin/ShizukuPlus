@@ -27,7 +27,7 @@ import android.content.ClipboardManager
 
 class AdvancedSettingsFragment : BaseSettingsFragment() {
 
-    override fun getTitle(): CharSequence? = "Advanced & Diagnostics"
+    override fun getTitle(): CharSequence? = getString(R.string.settings_main_nav_advanced_diagnostics_title)
 
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_advanced, rootKey)
