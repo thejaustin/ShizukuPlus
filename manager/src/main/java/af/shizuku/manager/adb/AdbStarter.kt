@@ -89,15 +89,6 @@ object AdbStarter {
                                 client.command("tcpip:$activePort")
                             }.onFailure { if (it !is EOFException && it !is SocketException) throw it } // Expected when ADB restarts in TCP mode
                         }
-
-                        // Persist TCP port to Settings.Global so adbd binds it on the next boot
-                        // without needing Wireless Debugging re-enabled. WRITE_SECURE_SETTINGS
-                        // is already held by the ADB shell — no root required.
-                        if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
-                            runCatching {
-                                Settings.Global.putInt(context.contentResolver, "adb_tcp_port", activePort)
-                            }
-                        }
                     }
                 }
 

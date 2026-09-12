@@ -63,20 +63,11 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
             Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)
             Settings.Global.putLong(cr, "adb_allowed_connection_time", 0L)
 
-            // Fast path: if TCP mode is on and we have WRITE_SECURE_SETTINGS, write adb_tcp_port
-            // directly to Settings.Global so adbd binds it on startup — no Wireless Debugging or
-            // Wi-Fi required. This is the same mechanism other ADB-over-TCP forks use; the permission
-            // is already held by the shell process that granted Shizuku in the first place.
-            val hasWriteSecure = applicationContext.checkSelfPermission(
-                android.Manifest.permission.WRITE_SECURE_SETTINGS
-            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-
-            if (ShizukuSettings.getTcpMode() && hasWriteSecure) {
+            // Fast path: if TCP mode is on and the port is already listening, connect directly —
+            // no Wireless Debugging or Wi-Fi required.
+            if (ShizukuSettings.getTcpMode()) {
                 val desiredPort = ShizukuSettings.getTcpPort()
                 if (desiredPort in 1..65535) {
-                    Settings.Global.putInt(cr, "adb_tcp_port", desiredPort)
-                    // Brief pause for adbd to pick up the new setting before probing.
-                    delay(600L)
                     if (AdbPortProber.isPortOpen(desiredPort, 600)) {
                         AdbStarter.startAdb(applicationContext, desiredPort)
                         Starter.waitForBinder()
