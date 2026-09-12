@@ -2593,11 +2593,17 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             }
 
             Bundle extra = new Bundle();
-            if (MANAGER_APPLICATION_ID.equals(packageName)) {
+            boolean isManager = ServerConstants.MANAGER_APPLICATION_ID.equals(packageName)
+                    || ServerConstants.DROPIN_APPLICATION_ID.equals(packageName)
+                    || ServerConstants.PLUS_APPLICATION_ID.equals(packageName)
+                    || "af.shizuku.manager".equals(packageName);
+
+            if (isManager) {
                 extra.putParcelable("af.shizuku.plus.api.intent.extra.BINDER", new af.shizuku.api.BinderContainer(binder));
+                extra.putParcelable("rikka.shizuku.intent.extra.BINDER", new rikka.shizuku.BinderContainer(binder));
             }
-            extra.putParcelable("rikka.shizuku.intent.extra.BINDER", new rikka.shizuku.BinderContainer(binder));
             extra.putParcelable("moe.shizuku.privileged.api.intent.extra.BINDER", new moe.shizuku.api.BinderContainer(binder));
+            extra.putBinder("binder", binder);
 
             Bundle reply = IContentProviderUtils.callCompat(provider, null, name, "sendBinder", null, extra);
             if (reply != null) {
