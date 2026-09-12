@@ -29,6 +29,48 @@ object SettingsHelper {
     }
 
     fun promptWriteSecureSettings(context: Context) {
+        if (hasWriteSecureSettings(context)) {
+            android.widget.Toast.makeText(context, R.string.accessibility_permission_granted, android.widget.Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // 1. Automatic grant via Shizuku if service is alive
+        if (rikka.shizuku.Shizuku.pingBinder()) {
+            try {
+                val p = rikka.shizuku.Shizuku.newProcess(
+                    arrayOf("pm", "grant", context.packageName, "android.permission.WRITE_SECURE_SETTINGS"),
+                    null,
+                    null
+                )
+                if (p != null) {
+                    try {
+                        if (p.waitFor() == 0 && hasWriteSecureSettings(context)) {
+                            android.widget.Toast.makeText(context, R.string.accessibility_permission_granted, android.widget.Toast.LENGTH_SHORT).show()
+                            return
+                        }
+                    } finally {
+                        try { p.destroy() } catch (_: Exception) {}
+                    }
+                }
+            } catch (e: Exception) {
+                timber.log.Timber.w(e, "Auto-grant WRITE_SECURE_SETTINGS via Shizuku failed")
+            }
+        }
+
+        // 2. Automatic grant via Root if available
+        if (EnvironmentUtils.isRooted()) {
+            try {
+                val res = com.topjohnwu.superuser.Shell.cmd("pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS").exec()
+                if (res.isSuccess && hasWriteSecureSettings(context)) {
+                    android.widget.Toast.makeText(context, R.string.accessibility_permission_granted, android.widget.Toast.LENGTH_SHORT).show()
+                    return
+                }
+            } catch (e: Exception) {
+                timber.log.Timber.w(e, "Auto-grant WRITE_SECURE_SETTINGS via Root failed")
+            }
+        }
+
+        // 3. Fallback: manual copy command dialog
         val command = "adb shell pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS"
         com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
             .setTitle(R.string.wadb_permission_error_notification_title)

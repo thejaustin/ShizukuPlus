@@ -54,17 +54,13 @@ Items carried forward from previous sessions that have not yet been committed.
   consumed anywhere, not the same attr, so there was no actual 32-vs-28dp conflict once traced
   through), `textColorOnSurfaceHighEmphasis`/`textColorOnSurfaceMediumEmphasis`,
   `card_corner_radius_large` dimen.
-- [ ] **Every card in the app hardcodes `app:cardCornerRadius` (16/24/28dp)** instead of
-  `app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"` etc. - `cardCornerRadius`
-  unconditionally overrides `shapeAppearanceOverlay` on `MaterialCardView`, so the user-facing
-  Modern/Classic/Squircle shape_style setting currently does nothing for any card in the app,
-  including the home screen. Investigated 2026-07-13: correct fix in principle, but the base
-  `Theme.Material3Expressive.*.Shizuku` theme lives in an external AAR I can't inspect, and I
-  can't confirm it defines a default for `shapeAppearanceCornerExtraLarge` - an unresolved theme
-  attr on `shapeAppearanceOverlay` risks an inflate-time crash, not just a wrong color, across the
-  app's most-used screens. **Needs on-device/build-capable confirmation before attempting** -
-  filed as [issue #333](https://github.com/thejaustin/ShizukuPlus/issues/333) rather than guessed
-  at blind.
+- [x] **Every card in the app hardcodes `app:cardCornerRadius` (16/24/28dp)** — concern was
+  unfounded. Audited 2026-09-11: ALL layout files already use
+  `app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"` (or `Large`/`Medium`
+  variants) — zero occurrences of `app:cardCornerRadius` remain. Shape-style theme overlays
+  (`ThemeOverlay.Shape.Modern/Classic/Squircle/Cut`) correctly define `shapeAppearanceCornerExtraLarge`
+  et al., and `ThemeDelegateImpl` applies them at theme overlay time. Shape-style picker (#333)
+  is fully functional — no code change needed.
 - [x] **`shape_edit_control_background.xml`'s `colorSurfaceContainerHighest` AMOLED remap** — done
   2026-07-13 (`1a637ece`). First pass wrongly assumed chaining `Highest → ?colorSurfaceContainerHigh`
   would make the edit-mode chip invisible against its own card (both resolve to the same color

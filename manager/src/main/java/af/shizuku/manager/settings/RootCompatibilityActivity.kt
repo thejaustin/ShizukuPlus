@@ -55,6 +55,7 @@ class RootCompatibilityActivity : AppBarActivity() {
     // Cached once per activity instance — avoids repeated Shizuku IPC in onBindViewHolder.
     private var isRoot: Boolean = false
     private var isAdbMode: Boolean = false
+    private lateinit var binding: ActivityRootCompatibilityBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CategorizedSuggestedAppsAdapter
     private val packageReceiver = object : android.content.BroadcastReceiver() {
@@ -66,7 +67,7 @@ class RootCompatibilityActivity : AppBarActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = ActivityRootCompatibilityBinding.inflate(layoutInflater, rootView, true)
+        binding = ActivityRootCompatibilityBinding.inflate(layoutInflater, rootView, true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Cache privilege mode once — avoids repeated Shizuku IPC in onBindViewHolder.
@@ -108,16 +109,23 @@ class RootCompatibilityActivity : AppBarActivity() {
             }
         }
 
-        // Deploy the bridge to /data/local/tmp and prefer that path: it's exec-permitted (shared
-        // storage is usually noexec, so apps can't exec the su path there) and holds the
-        // read-only dex app_process requires on Android 14+. Works independently of whether the
-        // user has set an export directory — falls back to the storage path if deploy fails.
+        // Deploy the bridge to /data/local/tmp ONLY if the SU Bridge is enabled by the user.
+        // Unconditional deployment leaves /data/local/tmp/su on disk, which trips root detection
+        // in Google Play Services (DroidGuard) and blocks Google Wallet contactless payments.
         lifecycleScope.launch {
-            val tmpPath = RootCompatHelper.deployBridgeToTmp(this@RootCompatibilityActivity)
-            if (tmpPath != null && !isFinishing) {
-                resolvedSuPath = tmpPath
-                binding.globalSuPath.text = tmpPath
-                binding.globalSetupCard.isVisible = true
+            if (ShizukuSettings.isSuBridgeEnabled()) {
+                val tmpPath = RootCompatHelper.deployBridgeToTmp(this@RootCompatibilityActivity)
+                if (tmpPath != null && !isFinishing) {
+                    resolvedSuPath = tmpPath
+                    binding.globalSuPath.text = tmpPath
+                    binding.globalSetupCard.isVisible = true
+                }
+            } else if (RootCompatHelper.isBridgePresentInTmp()) {
+                // If the user has disabled the bridge but the binary is still lingering in tmp,
+                // automatically clean it up to restore Google Wallet and Play Integrity compliance.
+                RootCompatHelper.cleanupBridgeFromTmp(this@RootCompatibilityActivity)
+                resolvedSuPath = resolveSuPath()
+                binding.globalSuPath.text = resolvedSuPath ?: getString(R.string.su_bridge_device_identity_none)
             }
         }
 
@@ -182,7 +190,10 @@ class RootCompatibilityActivity : AppBarActivity() {
             val bars = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
             )
-            view.setPadding(bars.left, view.paddingTop, bars.right, bars.bottom)
+            val oneHandedTopPadding = if (ShizukuSettings.isOneHandedModeEnabled()) {
+                (resources.displayMetrics.heightPixels * 0.16f).toInt()
+            } else 0
+            view.setPadding(bars.left, oneHandedTopPadding, bars.right, bars.bottom)
             insets
         }
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -290,6 +301,36 @@ class RootCompatibilityActivity : AppBarActivity() {
                 runSelfTest()
                 return true
             }
+            R.id.action_deploy_bridge -> {
+                lifecycleScope.launch {
+                    Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_deploy_to_tmp, Toast.LENGTH_SHORT).show()
+                    val path = RootCompatHelper.deployBridgeToTmp(this@RootCompatibilityActivity)
+                    if (path != null && !isFinishing) {
+                        ShizukuSettings.setSuBridgeEnabled(true)
+                        ShizukuSettings.syncAllPlusFeaturesToServer()
+                        resolvedSuPath = path
+                        binding.globalSuPath.text = path
+                        binding.globalSetupCard.isVisible = true
+                        Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_deploy_success, Toast.LENGTH_SHORT).show()
+                    }
+                }
+                return true
+            }
+            R.id.action_cleanup_bridge -> {
+                lifecycleScope.launch {
+                    val success = RootCompatHelper.cleanupBridgeFromTmp(this@RootCompatibilityActivity)
+                    if (success && !isFinishing) {
+                        ShizukuSettings.setSuBridgeEnabled(false)
+                        ShizukuSettings.syncAllPlusFeaturesToServer()
+                        resolvedSuPath = resolveSuPath()
+                        binding.globalSuPath.text = resolvedSuPath ?: getString(R.string.su_bridge_device_identity_none)
+                        Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_cleanup_success, Toast.LENGTH_LONG).show()
+                    } else if (!isFinishing) {
+                        Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_cleanup_failed, Toast.LENGTH_SHORT).show()
+                    }
+                }
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -338,7 +379,15 @@ class RootCompatibilityActivity : AppBarActivity() {
             return if (viewType == TYPE_HEADER) {
                 HeaderViewHolder(ListSectionHeaderBinding.inflate(inflater, parent, false))
             } else {
-                AppViewHolder(AppListItemBinding.inflate(inflater, parent, false))
+                val binding = AppListItemBinding.inflate(inflater, parent, false)
+                val density = parent.context.resources.displayMetrics.density
+                binding.root.setPaddingRelative(
+                    (16 * density).toInt(),
+                    binding.root.paddingTop,
+                    (16 * density).toInt(),
+                    binding.root.paddingBottom
+                )
+                AppViewHolder(binding)
             }
         }
 
@@ -445,8 +494,8 @@ class RootCompatibilityActivity : AppBarActivity() {
 
                 // Magic Setup is only meaningful when we know how to configure this specific app.
                 // canAutoSetup() is the single source of truth: GLOBAL_SETTINGS_APPS in any mode,
-                // ROOT_PREFS_APPS only when running as root (UID 0).
-                val canMagicSetup = RootCompatHelper.canAutoSetup(pkg, isRoot)
+                // ROOT_PREFS_APPS when running as root (UID 0) or ADB shell (UID 2000).
+                val canMagicSetup = RootCompatHelper.canAutoSetup(pkg, isRoot || isAdbMode)
                 holder.binding.suMagicSetup.isVisible = isInstalled && !isShizukuNative
                 if (isInstalled) {
                     holder.binding.suMagicSetup.alpha = if (canMagicSetup) 1.0f else 0.5f

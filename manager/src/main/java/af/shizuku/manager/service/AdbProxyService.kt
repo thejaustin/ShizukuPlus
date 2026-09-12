@@ -47,7 +47,10 @@ class AdbProxyService : Service() {
             // vendor binder states (race between connected check and actual call).
             return try {
                 if (Shizuku.pingBinder()) {
+                    // newProcess() is a Java platform type: returns null on some chipsets (MT6833)
+                    // when the binder is alive but process spawn fails. Treat null as failure.
                     val p = Shizuku.newProcess(cmd, null, null)
+                        ?: return false
                     try {
                         p.waitFor() == 0
                     } finally {

@@ -21,6 +21,8 @@
     <string name="settings_icon_style_summary">Choose the visual style for system icons</string>
     <string name="settings_shape_style">Container Shape Style</string>
     <string name="settings_shape_style_summary">Customize the corner rounding of cards and dialogs</string>
+    <string name="settings_rounded_edges">Rounded Edges</string>
+    <string name="settings_rounded_edges_summary">Use rounded corners on cards and dialog containers</string>
     <string name="settings_animation_intensity">Animation Intensity</string>
     <string name="settings_animation_intensity_summary">Adjust the speed and "bounciness" of UI transitions</string>
 
@@ -89,6 +91,15 @@
         <item>3</item>
     </string-array>
 
+    <string-array name="status_card_outline_styles">
+        <item>Material (theme color)</item>
+        <item>Green / Red (status color)</item>
+    </string-array>
+    <string-array name="status_card_outline_styles_value">
+        <item>material</item>
+        <item>status</item>
+    </string-array>
+
     <string name="home_status_service_running_tile_sublabel">Running</string>
     <string name="home_status_service_stopped_tile_sublabel">Stopped</string>
 
@@ -121,6 +132,12 @@
     <string name="dialog_adb_discovery">Searching for wireless debugging service</string>
     <string name="dialog_adb_discovery_message">Please enable \"Wireless debugging\" in \"Developer options\". \"Wireless debugging\" is automatically disabled when network changes.\n\nNote, do not disable \"Developer options\" or \"USB debugging\", or Shizuku will be stopped.</string>
     <string name="dialog_adb_discovery_message_toggle_wireless_debugging">Please try to disable and enable \"Wireless debugging\" if it keeps searching.</string>
+    <string name="dialog_adb_wifi_disconnected_warning"><![CDATA[<b>Wi-Fi is disconnected.</b><br>Android cannot discover Wireless Debugging over mobile data (5G/LTE).]]></string>
+    <string name="dialog_adb_hotspot_tip"><![CDATA[💡 <b>Tip:</b> Turn on your phone\'s <b>Mobile Hotspot</b> to enable Wireless Debugging without a Wi-Fi network, or connect over local port 5555.]]></string>
+    <string name="dialog_adb_samsung_hotspot_warning"><![CDATA[💡 <b>Samsung Note:</b> One UI disables Wireless Debugging while Mobile Hotspot is active. Connect to another device\'s Wi-Fi hotspot (offline is fine) or run <code>adb tcpip 5555</code> via USB once.]]></string>
+    <string name="dialog_adb_open_hotspot">Mobile Hotspot Settings</string>
+    <string name="dialog_adb_probing_loopback">Checking local port (127.0.0.1:5555)...</string>
+    <string name="dialog_adb_loopback_found">Found active ADB service on port %1$d! Connecting...</string>
     <string name="dialog_adb_port">Port</string>
     <string name="dialog_adb_invalid_port">Port is an integer ranging from 1 to 65535.</string>
     <string name="adb_pairing">Pairing</string>
@@ -135,6 +152,8 @@
     <string name="dialog_adb_pairing_accessibility_permission">On Android 14, installing/updating Shizuku with the Package Installer revokes the %1$s permission, which is required to enable the accessibility service for pairing.\n\nTo grant it, run the following ADB command:\n\n%2$s\n\nAfter running the command, you may continue with the pairing process.\n\nNote: you can bypass this by installing/updating Shizuku with ADB.</string>
 
     <!-- Service Doctor -->
+    <string name="snackbar_samsung_auto_blocker">Samsung Auto Blocker may block ADB on One UI 7/8. Check Security settings.</string>
+    <string name="snackbar_action_check">Check</string>
     <string name="doctor_check_samsung_autoblocker">Samsung Auto Blocker</string>
     <string name="doctor_check_samsung_battery_protection">Samsung Battery Protection</string>
     <string name="doctor_check_secondary_user">Secondary User / Secure Folder</string>
@@ -144,11 +163,11 @@
     <string name="doctor_status_detected">Detected</string>
     <string name="doctor_status_review">Review required</string>
     <string name="doctor_tip_samsung_autoblocker"><b>Samsung Auto Blocker</b>: Ensure it is turned <b>OFF</b> or that \'Maximum Restrictions\' is disabled. It silently blocks ADB commands on One UI 7/8+.</string>
-    <string name="doctor_tip_oneui_connectivity"><b>One UI 7/8 Connectivity</b>: If Wireless Pairing fails, try using <b>Split Screen mode</b> with Shizuku and Developer Options open simultaneously.</string>
+    <string name="doctor_tip_oneui_connectivity"><b>One UI 7/8 Connectivity</b>: If Wireless Pairing fails, try using <b>Split Screen mode</b> with Shizuku+ and Developer Options open simultaneously.</string>
     <string name="doctor_tip_s22_ultra"><b>S22 Ultra Tip</b>: For consistent ADB, dial `*#0808#` and select `MTP + ADB` if you encounter connection drops.</string>
-    <string name="doctor_tip_secure_folder"><b>Secure Folder Detected</b>: Shizuku works best in the Main User (Owner). Running inside Secure Folder or a Work Profile may require starting the server from the Main User first.</string>
-    <string name="doctor_tip_phantom_process"><b>Phantom Process Killer</b>: Android 12-15+ may kill Shizuku if too many commands are run. The \'Fix\' button attempts to disable this limit.</string>
-    <string name="doctor_tip_samsung_optimization"><b>Samsung Auto-Optimization</b>: Disable \'Auto Restart\' in Device Care to prevent Shizuku from being killed at night.</string>
+    <string name="doctor_tip_secure_folder"><b>Secure Folder Detected</b>: Shizuku+ works best in the Main User (Owner). Running inside Secure Folder or a Work Profile may require starting the server from the Main User first.</string>
+    <string name="doctor_tip_phantom_process"><b>Phantom Process Killer</b>: Android 12-15+ may kill Shizuku+ if too many commands are run. The \'Fix\' button attempts to disable this limit.</string>
+    <string name="doctor_tip_samsung_optimization"><b>Samsung Auto-Optimization</b>: Disable \'Auto Restart\' in Device Care to prevent Shizuku+ from being killed at night.</string>
     <string name="doctor_tip_samsung_sleeping"><b>Samsung Sleeping Apps</b>: Tapping Fix opens the <b>\'Never sleeping apps\'</b> list directly. Tap the <b>+</b> button and add Shizuku+ to prevent Samsung from freezing the background service.</string>
     <string name="doctor_tip_s22_ultra_exynos"><b>S22 Ultra (Exynos)</b>: If service response is sluggish, try disabling <b>\'RAM Plus\'</b> in Device Care > Memory.</string>
     <string name="doctor_tip_s22_ultra_snapdragon"><b>S22 Ultra (Snapdragon)</b>: Ensure \'Enhanced Processing\' is enabled in Quick Settings for maximum command throughput.</string>
@@ -211,8 +230,8 @@
     <string name="home_app_management_empty">Apps that have requested or declared the Shizuku permission will show here.</string>
 
     <!-- Home - Automation -->
-    <string name="home_automation_title">Control Shizuku with automation apps</string>
-    <string name="home_automation_description">Apps like Tasker and MacroDroid can send intents to start/stop Shizuku automatically.</string>
+    <string name="home_automation_title">Control Shizuku+ with automation apps</string>
+    <string name="home_automation_description">Apps like Tasker and MacroDroid can send intents to start/stop Shizuku+ automatically.</string>
     <string name="home_automation_description_device_restriction">To use the start intent on your device, you first need to enable ADB over TCP by running %1$s from a PC.</string>
     <string name="home_automation_button_view_intents">View intents</string>
     <string name="home_automation_bottom_sheet_intents">Intents</string>
@@ -277,8 +296,8 @@
     <string name="app_management_bulk_select_all">Select all</string>
 
     <!-- Terminal -->
-    <string name="home_terminal_title">Use Shizuku in terminal apps</string>
-    <string name="home_terminal_description">Run shell commands in terminal apps through Shizuku</string>
+    <string name="home_terminal_title">Use Shizuku+ in terminal apps</string>
+    <string name="home_terminal_description">Run shell commands in terminal apps through Shizuku+</string>
     <string name="terminal_tutorial_miui">Users have reported that MIUI breaks the Storage Access Framework, which is used by the export function.</string>
     <string name="terminal_tutorial_miui_2">If you are using MIUI, you may have to extract the file from the assets folder in Shizuku\'s APK.</string>
     <string name="terminal_tutorial_1">Export the files to a new folder.</string>
@@ -318,9 +337,9 @@
     <string name="onboarding_next">Next</string>
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_get_started">Get Started</string>
-    <string name="onboarding_setup_title">Start Shizuku</string>
-    <string name="onboarding_setup_desc">Choose how to start Shizuku on this device. You can also do this later from the main screen.</string>
-    <string name="onboarding_setup_running">Shizuku is running</string>
+    <string name="onboarding_setup_title">Start Shizuku+</string>
+    <string name="onboarding_setup_desc">Choose how to start Shizuku+ on this device. You can also do this later from the main screen.</string>
+    <string name="onboarding_setup_running">Shizuku+ is running</string>
     <string name="onboarding_setup_later">I\'ll do this later</string>
     <string name="onboarding_setup_wadb_desc">Android 11+, no computer needed. Uses wireless debugging.</string>
     <string name="onboarding_setup_root_desc">Your device is rooted. Start Shizuku with root access.</string>
@@ -340,14 +359,18 @@
     <string name="settings_start_on_boot_bug">Due to a bug in Android 11-12, wireless debugging does not remember any authorized networks.\n\nYou will need to re-authorize the network on each reboot by tapping \"Allow\" when the authorization dialog pops up.</string>
     <string name="settings_use_system_color">Use system theme color</string>
     <string name="settings_watchdog">Watchdog</string>
-    <string name="settings_watchdog_summary">Automatically restart Shizuku after a crash or unexpected stop. Cannot reconnect when the underlying network disconnects (e.g. USB cable unplugged while using RNDIS/USB ADB).</string>
+    <string name="settings_watchdog_summary">Automatically restart Shizuku+ after a crash or unexpected stop. Cannot reconnect when the underlying network disconnects (e.g. USB cable unplugged while using RNDIS/USB ADB).</string>
+    <string name="settings_device_hardening">Device Hardening &amp; Keepalive</string>
+    <string name="settings_device_hardening_summary">Exempt Shizuku and terminal clients from Doze, auto-grant WRITE_SECURE_SETTINGS, and sync starter binaries</string>
+    <string name="doctor_check_device_hardening">Device Hardening &amp; Doze Exemption</string>
+    <string name="device_hardening_applied">Device hardening &amp; Doze optimizations applied</string>
     <string name="settings_tcp_mode">TCP mode</string>
-    <string name="settings_tcp_mode_summary">"Allows Shizuku to restart without Wi-Fi. (Shizuku must have started once since reboot)"</string>
+    <string name="settings_tcp_mode_summary">"Allows Shizuku+ to restart without Wi-Fi. (Shizuku+ must have started once since reboot)"</string>
     <string name="settings_tcp_mode_dialog_close_port">"The TCP port will be closed immediately. You will need Wi-Fi to turn on TCP mode again. Continue?"</string>
     <string name="settings_tcp_mode_closing_port">Closing TCP port...</string>
     <string name="settings_restart_dialog_title">Restart Required</string>
-    <string name="settings_restart_dialog_message">Shizuku needs to restart in order to apply this setting.</string>
-    <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fi is required. Shizuku will continue running and wait for a Wi-Fi connection before restarting in the background.</b>]]></string>
+    <string name="settings_restart_dialog_message">Shizuku+ needs to restart in order to apply this setting.</string>
+    <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Wi-Fi is required. Shizuku+ will continue running and wait for a Wi-Fi connection before restarting in the background.</b>]]></string>
     <string name="settings_tcp_port">TCP port</string>
     <string name="settings_tcp_port_default">Default (5555)</string>
     <string name="settings_tcp_port_hint">Leave blank to use default (5555)</string>
@@ -375,6 +398,9 @@
     <string name="settings_enable_activity_log">Enable activity log</string>
     <string name="settings_enable_activity_log_summary">Record and display Shizuku API calls and events on the home screen.</string>
     <string name="settings_show_activity_log_home">Show Activity Log</string>
+    <string name="settings_show_status_card_outline">Status card outline</string>
+    <string name="settings_show_status_card_outline_summary">Show a colored outline on the service status card</string>
+    <string name="settings_status_card_outline_style">Outline color</string>
     <string name="settings_home_visibility">Home screen visibility</string>
     <string name="settings_update_app_database">Update app database</string>
     <string name="settings_update_app_database_summary">Fetch latest app descriptions and enhancement suggestions from GitHub.</string>
@@ -384,7 +410,9 @@
     <string name="settings_show_automation_home">Show Automation</string>
     <string name="settings_show_learn_more_home">Show Developer Guide</string>
     <string name="settings_show_start_adb_home">Show Wired ADB Setup</string>
-    <string name="home_edit_mode_hint">Hold the grip to drag. Tap × to remove a card.</string>
+    <string name="home_edit_mode_title">Arrange Cards</string>
+    <string name="home_edit_mode_hint">Drag to reorder · × to hide · + to restore</string>
+    <string name="home_edit_mode_done">Done</string>
     <string name="settings_advanced">Advanced</string>
     <string name="settings_legacy_pairing">Legacy pairing</string>
     <string name="settings_legacy_pairing_summary">Enter the pairing code in a dialog instead of a notification</string>
@@ -433,7 +461,7 @@
     <string name="diagnostics_dismiss">Dismiss</string>
     <string name="diagnostics_warning_dhizuku_not_owner">Dhizuku Mode is enabled but the Device Owner component is not active. Tap to resolve.</string>
     <string name="diagnostics_warning_shadow_binder_no_apps">Shadow Binder is enabled but no apps are selected to hide. Tap to select.</string>
-    <string name="diagnostics_warning_battery_optimization">Battery optimization is active. Shizuku may be killed in the background. Tap to exempt.</string>
+    <string name="diagnostics_warning_battery_optimization">Battery optimization is active. Shizuku+ may be killed in the background. Tap to exempt.</string>
     <string name="diagnostics_warning_automation_stopped">Network automation rules configured but the service is stopped — Binder Firewall won\'t auto-toggle. Tap to restart.</string>
     <string name="diagnostics_automation_start_failed">Could not start automation service</string>
     <string name="diagnostics_battery_settings_open_failed">Could not open battery settings</string>
@@ -629,14 +657,14 @@
 
     <!-- Service Doctor -->
     <string name="home_service_doctor_title">Service Doctor</string>
-    <string name="home_service_doctor_summary">Having trouble starting Shizuku? Tap to run a diagnostic check.</string>
+    <string name="home_service_doctor_summary">Having trouble starting Shizuku+? Tap to run a diagnostic check.</string>
     <string name="doctor_dialog_title">System Diagnostics</string>
     <string name="doctor_check_battery">Battery optimization: %1$s</string>
     <string name="doctor_check_adb">Wireless debugging: %1$s</string>
     <string name="doctor_check_root">Root access: %1$s</string>
     <string name="doctor_check_secure_settings">Secure Settings: %1$s</string>
     <string name="doctor_check_permission">ADB permission: %1$s</string>
-    <string name="doctor_check_server">Shizuku server: %1$s</string>
+    <string name="doctor_check_server">Shizuku+ server: %1$s</string>
     <string name="doctor_check_background">Background limits: %1$s</string>
     <string name="doctor_status_ok">OK</string>
     <string name="doctor_status_running">Running</string>
@@ -651,8 +679,28 @@
     <string name="doctor_tip_oppo_permission">Oppo/Realme/OnePlus: Disable "Permission Monitoring" in Developer Options to prevent background service kills.</string>
     <string name="doctor_tip_tcl_background">TCL: Ensure Shizuku+ is added to "Auto-start" and "High background power consumption" allowlists in Settings.</string>
     <string name="doctor_tip_battery">Disable battery optimization for Shizuku+ to prevent it from being killed in the background.</string>
-    <string name="doctor_tip_adb">Wireless debugging must be active for Shizuku to start in non-root mode after a reboot.</string>
+    <string name="doctor_tip_adb">Wireless debugging must be active for Shizuku+ to start in non-root mode after a reboot.</string>
     <string name="doctor_button_fix">Fix</string>
+    <string name="doctor_check_wallet_integrity">Google Wallet &amp; Play Integrity</string>
+    <string name="doctor_wallet_ok">Passes Integrity (No Root Residue)</string>
+    <string name="doctor_wallet_risk_tmp_su">Security Risk (su binary detected)</string>
+    <string name="doctor_wallet_risk_magisk">Security Risk (Magisk Mocking active)</string>
+    <string name="doctor_wallet_risk_busybox">Security Risk (BusyBox Mocking active)</string>
+    <string name="doctor_wallet_risk_spoof">Attestation Risk (Device Spoofing active)</string>
+    <string name="doctor_tip_wallet_integrity">Google Wallet &amp; Banking Apps: Detected root artifacts or active Magisk/BusyBox mocking cause "Device doesn\'t meet security standards" errors. Run the one-tap fix to purge su binaries and restore compliance.</string>
+    <string name="doctor_fix_wallet_success">Security cleaned! Removed su binaries and disabled root mocking. If Google Wallet still alerts, clear cache for Google Play Services.</string>
+    <string name="doctor_fix_wallet_failed">Unable to delete root binaries automatically. You can copy the ADB command below to remove them manually via terminal.</string>
+    <string name="doctor_action_clear_gms_cache">Clear Play Services Cache</string>
+    <string name="doctor_action_open_wallet">Open Google Wallet</string>
+    <string name="doctor_action_copy_adb_cmd">Copy ADB Command</string>
+    <string name="doctor_adb_cmd_copied">ADB cleanup command copied to clipboard</string>
+    <string name="su_bridge_cleanup_tmp">Remove Bridge from /data/local/tmp</string>
+    <string name="su_bridge_deploy_to_tmp">Deploy Bridge to /data/local/tmp</string>
+    <string name="su_bridge_cleanup_success">Removed SU Bridge from /data/local/tmp. Google Wallet security restored.</string>
+    <string name="su_bridge_cleanup_failed">Failed to remove SU Bridge from /data/local/tmp. Make sure Shizuku is running.</string>
+    <string name="su_bridge_deploy_success">SU Bridge deployed to /data/local/tmp.</string>
+    <string name="su_bridge_warning_wallet_title">Google Wallet Notice</string>
+    <string name="su_bridge_warning_wallet_message">Deploying \'su\' to /data/local/tmp or enabling Magisk Mocking triggers Android root detection in Google Play Services, which disables Google Wallet contactless payments. You can remove it at any time to restore Wallet.</string>
 
     <!-- Snackbar -->
     <string name="snackbar_invalid_port">Port must be between 1 and 65535</string>
@@ -683,9 +731,9 @@
     <string name="backup_failed_generic">Backup failed: %1$s</string>
     <string name="restore_failed_generic">Restore failed: %1$s</string>
     <string name="backup_auth_failed">Authentication failed (%1$s)</string>
-    <string name="toast_shizuku_already_starting">Shizuku is already starting in the background</string>
+    <string name="toast_shizuku_already_starting">Shizuku+ is already starting in the background</string>
     <string name="toast_accessibility_tv_only">This automation is for TV or Samsung One UI devices with TLS support.</string>
-    <string name="toast_pairing_timeout">Shizuku pairing service timed out</string>
+    <string name="toast_pairing_timeout">Shizuku+ pairing service timed out</string>
     <string name="toast_adb_ssl_error">Wireless ADB handshake failed (SSL protocol error). Please use \'Reset ADB Keys\' in Developer Options and try again.</string>
     <string name="adb_error_ssl_title">Connection Error</string>
     <string name="adb_error_ssl_message">Wireless ADB handshake failed (SSL protocol error). This typically happens when ADB keys are corrupted. Would you like to reset them in Developer Options?</string>
@@ -707,8 +755,8 @@
     <!-- Start/Stop -->
      <string name="start">Start</string>
      <string name="stop">Stop</string>
-    <string name="action_stop">Stop Shizuku</string>
-    <string name="dialog_stop_message">Shizuku service will be stopped.</string>
+    <string name="action_stop">Stop Shizuku+</string>
+    <string name="dialog_stop_message">Shizuku+ service will be stopped.</string>
 
     <!-- Notification -->
     <string name="notification_channel_automation">Automation</string>
@@ -737,6 +785,10 @@
     <string name="permission_group_description" translatable="false">@string/permission_label</string>
     <string name="permission_label">access Shizuku</string>
     <string name="permission_description">Allow the app to use Shizuku.</string>
+    <string name="permission_group_label_plus" translatable="false">Shizuku (+)</string>
+    <string name="permission_group_description_plus" translatable="false">@string/permission_label_plus</string>
+    <string name="permission_label_plus">access Shizuku (+)</string>
+    <string name="permission_description_plus">Allow the app to use Shizuku (+).</string>
     <string name="permission_warning_template"><![CDATA[Allow <b>%1$s</b> to %2$s?]]></string>
     <string name="grant_dialog_button_allow_always">Allow all the time</string>
     <string name="grant_dialog_button_deny">"Deny"</string>
@@ -758,6 +810,11 @@
     <string name="wadb_notification_retry">Waiting to retry</string>
     <string name="wadb_error_title">Error while starting on boot</string>
     <string name="wadb_error_notify_dev">Tap to notify the developer.</string>
+    <string name="wadb_error_cannot_connect">Could not reach ADB service — check Wireless Debugging is enabled</string>
+    <string name="wadb_error_discovery_timeout">ADB discovery timed out — ensure Wi-Fi is connected and try again</string>
+    <string name="wadb_error_ssl_mismatch">SSL/TLS error — revoke ADB keys in Developer Options and re-pair</string>
+    <string name="wadb_error_not_authorized">Wireless debugging authorization required</string>
+    <string name="wadb_error_generic_short">ADB connection failed</string>
     <string name="wadb_permission_error_notification_title">Permission Error</string>
     <string name="wadb_permission_error_notification_content">Shizuku needs WRITE_SECURE_SETTINGS to start on boot. Tap to learn how to grant it.</string>
     <string name="wadb_notification_channel">ADB auto-start service</string>
@@ -848,6 +905,7 @@
     <string name="accessibility_icon_help">Help icon</string>
     <string name="accessibility_icon_drag_handle">Drag to reorder</string>
     <string name="accessibility_icon_remove">Remove card</string>
+    <string name="accessibility_icon_toggle_visibility">Toggle card visibility</string>
     <string name="accessibility_icon_close">Close</string>
     <string name="accessibility_icon_info">Information</string>
     <string name="accessibility_icon_play">Play</string>
@@ -887,6 +945,8 @@
     <string name="accessibility_permission_denied">Permission denied</string>
 
     <!-- Empty State Views -->
+    <string name="empty_state_title_service_starting">Starting…</string>
+    <string name="empty_state_description_service_starting">Waiting for Shizuku+ to finish starting. This usually takes a moment.</string>
     <string name="empty_state_title_no_results">No results found</string>
     <string name="empty_state_description_no_results">No apps match your current filter or search criteria.</string>
     <string name="empty_state_title_no_apps">No apps yet</string>
@@ -1060,6 +1120,12 @@
     <string name="settings_shadow_binder_hidden_packages">Hidden Packages</string>
     <string name="settings_shadow_binder_hidden_packages_summary">Comma-separated list of package names to hide from other apps. If you have both OG Shizuku and Shizuku+ installed, add both (moe.shizuku.privileged.api, af.shizuku.manager) to prevent conflicts.</string>
 
+    <!-- Automation Engine (Issue #435) -->
+    <string name="settings_automation_trusted_networks">Trusted Networks</string>
+    <string name="settings_automation_trusted_networks_summary">Comma-separated Wi-Fi network names (SSIDs). Binder Firewall is disabled automatically while connected to one of these, and enabled automatically everywhere else (including mobile data). Leave empty to control Binder Firewall manually instead.</string>
+    <string name="settings_automation_auto_hide_packages">Auto-Hide While Foregrounded</string>
+    <string name="settings_automation_auto_hide_packages_summary">Apps that are automatically added to Shadow Binder\'s hidden list only while they\'re open, on top of the Hidden Packages list above. Leave empty to manage hidden packages manually instead.</string>
+
     <plurals name="settings_shadow_binder_hidden_packages_count">
         <item quantity="one">%d app selected</item>
         <item quantity="other">%d apps selected</item>
@@ -1194,6 +1260,8 @@
 
     <!-- SU path preset picker dialog -->
     <string name="su_path_preset_dialog_title">Select SU Path Preset</string>
+    <string name="su_path_preset_default">Default (Auto-detect)</string>
+    <string name="su_path_preset_custom">Custom Path…</string>
 
     <!-- Device Owner (Dhizuku) toasts -->
     <string name="dpm_screen_capture_disabled">Screen Capture Disabled Globally</string>
@@ -1231,6 +1299,7 @@
     <string name="tile_action_open_app">Open App</string>
     <!-- Tile service error -->
     <string name="tile_state_update_failed">Failed to update Shizuku state: %1$s</string>
+    <string name="tile_open_app_required">Open Shizuku to start or pair Wireless Debugging</string>
 
     <!-- App Profiles automation activity -->
     <string name="app_profiles_title">App Profiles</string>
@@ -1254,4 +1323,38 @@
     <string name="settings_display_tuner_plus_summary">Override display resolution and DPI — the same as adb shell wm size/density — so apps and automation can adjust screen layout without requiring ADB access themselves.</string>
     <string name="help_display_tuner_plus_title">Display Tuner</string>
     <string name="help_display_tuner_plus_detail">Provides privileged display configuration via the wm shell tool: override resolution (wm size) and density (wm density) on the fly, read current and physical values, and reset overrides to device defaults. Useful for fixing app layout issues, forcing a specific aspect ratio for screen recording, desktop mode tweaks, and accessibility scaling — historically a root-only capability now available through the ADB shell process.</string>
+
+    <!-- App Backup feature -->
+    <string name="home_backup_title">App Backup</string>
+    <string name="home_backup_summary">Backup and restore app data without root</string>
+    <string name="backup_activity_title">App Backup</string>
+    <string name="backup_action_backup">Backup</string>
+    <string name="backup_action_freeze">Freeze</string>
+    <string name="backup_action_unfreeze">Unfreeze</string>
+    <string name="backup_service_required">Shizuku service is not running</string>
+    <string name="backup_in_progress">Backup in progress…</string>
+    <string name="backup_app_complete">Backed up %1$s → %2$s</string>
+    <string name="backup_app_failed">Backup failed: %1$s</string>
+    <string name="backup_freeze_success">App frozen</string>
+    <string name="backup_unfreeze_success">App unfrozen</string>
+    <string name="dialog_adb_pair_device">Pair this device now</string>
+    <string name="dialog_adb_autopair_enabled">✓ Auto-Pair is active — pairing will be confirmed automatically</string>
+
+    <!-- Mode-contextual settings (#433) -->
+    <string name="settings_mode_indicator_adb">Running in ADB mode — root-only options are hidden</string>
+    <string name="settings_mode_indicator_root">Running in root mode — ADB-only options are hidden</string>
+
+    <!-- Hide backup settings (#461) -->
+    <string name="settings_hide_backup_settings">Hide Backup &amp; Restore</string>
+    <string name="settings_hide_backup_settings_summary">Remove the Backup &amp; Restore section from the Feature Hub settings screen</string>
+
+    <!-- Package identity / MDM bypass UI (#469) -->
+    <string name="settings_package_identity_category">Package Identity</string>
+    <string name="settings_custom_app_label">Custom App Label</string>
+    <string name="settings_custom_app_label_summary">Set a display name suffix shown in the About screen. Does not change the installed package name.</string>
+    <string name="settings_custom_app_label_hint">e.g. Work, Personal, Alt</string>
+    <string name="package_identity_info_title">About Package Name Randomization</string>
+    <string name="package_identity_info_detail">MDM and enterprise root-detection systems often scan for known package names (af.shizuku.manager). True package name randomization — like Shevery uses — requires reinstalling the app with a different applicationId baked into the APK at build time. The manager cannot rename itself while it is running.\n\nRoadmap: a future \"Build-Your-Own\" CI workflow will let you generate a custom-named APK. Until then, this setting only stores a display label. For MDM bypass today, use Stealth Mode to remove the launcher icon.</string>
+    <string name="settings_package_identity_current">Current package: %1$s</string>
+    <string name="settings_package_identity_roadmap">Full runtime rename requires a custom build — see issue #469</string>
 </resources>

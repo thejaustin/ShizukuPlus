@@ -6,16 +6,13 @@ import android.content.Context
 import android.os.Bundle
 import android.text.InputType
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -26,6 +23,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import af.shizuku.core.ui.EmptyStateView
@@ -65,19 +63,35 @@ class ScriptingFragment : Fragment() {
 
         binding.list.adapter = adapter
 
-        requireActivity().addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.menu_scripting, menu)
-            }
+        // FAB in the inner FrameLayout (parent of list + emptyStateView in apps_activity.xml)
+        val fab = FloatingActionButton(requireContext()).apply {
+            setImageResource(R.drawable.ic_add_24)
+            contentDescription = getString(R.string.scripting_add)
+            visibility = View.GONE // hidden until snippets exist; empty state has its own action button
+        }
+        val fabLp = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            gravity = android.view.Gravity.BOTTOM or android.view.Gravity.END
+            val margin = (16 * resources.displayMetrics.density).toInt()
+            bottomMargin = margin
+            rightMargin = margin
+        }
+        (binding.list.parent as? FrameLayout)?.addView(fab, fabLp)
 
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                if (menuItem.itemId == R.id.action_add_snippet) {
-                    showEditDialog(null)
-                    return true
-                }
-                return false
+        ViewCompat.setOnApplyWindowInsetsListener(fab) { v, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            (v.layoutParams as? FrameLayout.LayoutParams)?.apply {
+                val margin = (16 * resources.displayMetrics.density).toInt()
+                bottomMargin = bars.bottom + margin
+                rightMargin = bars.right + margin
             }
-        }, viewLifecycleOwner)
+            v.requestLayout()
+            insets
+        }
+
+        fab.setOnClickListener { showEditDialog(null) }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -86,6 +100,7 @@ class ScriptingFragment : Fragment() {
                     val isEmpty = snippets.isEmpty()
                     emptyStateView.visibility = if (isEmpty) View.VISIBLE else View.GONE
                     binding.list.visibility = if (isEmpty) View.GONE else View.VISIBLE
+                    fab.visibility = if (isEmpty) View.GONE else View.VISIBLE
                 }
             }
         }

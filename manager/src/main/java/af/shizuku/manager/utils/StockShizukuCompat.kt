@@ -64,17 +64,17 @@ object StockShizukuCompat {
 
     fun isCompatAppInstalled(context: Context): Boolean {
         // Same self-detection problem as isInstalled(): the dropin flavor's own applicationId IS
-        // PACKAGE, so without this check we'd inspect our own versionName (never "compat") and
-        // report the hub as "not installed" on a dropin build. That surfaced an "Install Compat
-        // Hub" card whose action pm-installs the shim stub directly over this running app - same
-        // package + same signing key means a silent overwrite of the working Drop-In install (#334).
+        // PACKAGE, so without this check we'd inspect our own signing cert and correctly conclude
+        // "same signer", but still offer to install the stub over this running app (#334). The
+        // dropin build IS the compat hub — report it as already installed.
         if (context.packageName == PACKAGE) return true
-        return try {
-            val info = context.packageManager.getPackageInfo(PACKAGE, 0)
-            info.versionName?.contains("compat") == true
-        } catch (e: PackageManager.NameNotFoundException) {
-            false
-        }
+        // Certificate-based detection: our compat hub shim is signed with the same key as this
+        // manager app. If PACKAGE is installed and shares our signing certificate it's our hub;
+        // if it's signed with a different key it's stock Shizuku or something else entirely.
+        // Replaces the fragile versionName.contains("compat") string check which broke whenever
+        // the hub was built without an explicit versionName suffix.
+        if (!isInstalled(context)) return false
+        return !isPackageOccupiedByDifferentSigner(context)
     }
 
     fun isStockShizukuInstalled(context: Context): Boolean {
@@ -99,7 +99,9 @@ object StockShizukuCompat {
             // Spawn a fully detached process that waits 1 second, then starts our server.
             // We immediately force-stop the original Shizuku so the ports/ServiceManager are freed up.
             val cmd = "nohup sh -c 'sleep 1 && $starterCmd' >/dev/null 2>&1 & am force-stop $PACKAGE"
-            rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
+            // Process is intentionally fire-and-forget (nohup detaches it); destroy immediately
+            // to avoid leaking the process handle. Null return → not running yet, still return true.
+            rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)?.destroy()
             true
         } catch (e: Exception) {
             false
@@ -117,7 +119,9 @@ object StockShizukuCompat {
         if (!rikka.shizuku.Shizuku.pingBinder()) return false
         var process: Process? = null
         return try {
+            // newProcess() is a Java platform type: null on some chipsets when spawn fails.
             process = rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", "ps -A | grep shizuku_server"), null, null)
+                ?: return false
             val reader = java.io.BufferedReader(java.io.InputStreamReader(process.inputStream))
             var line: String?
             var isOriginal = false

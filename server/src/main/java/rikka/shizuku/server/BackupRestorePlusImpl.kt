@@ -1,12 +1,40 @@
 package rikka.shizuku.server
 
+import android.content.pm.PackageManager
+import android.os.Binder
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.os.ParcelFileDescriptor
+import android.os.ServiceManager
+import android.util.Log
 import af.shizuku.server.IBackupRestorePlus
+import af.shizuku.common.compat.Android17Compat
+import af.shizuku.common.compat.InstalledPackagesCompat
+import af.shizuku.common.util.UserHandleCompat
+import rikka.hidden.compat.ActivityManagerApis
+import rikka.shizuku.server.api.IContentProviderUtils
 import java.io.File
 
 class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
+
+    companion object {
+        private const val TAG = "BackupRestorePlus"
+        // PackageManager.REQUESTED_PERMISSION_GRANTED = 2
+        private const val REQUESTED_PERMISSION_GRANTED = 2
+
+        private fun packageManagerService(): Any? = try {
+            val binder = ServiceManager.getService("package") ?: return null
+            Class.forName("android.content.pm.IPackageManager\$Stub")
+                .getDeclaredMethod("asInterface", IBinder::class.java)
+                .invoke(null, binder)
+        } catch (e: Exception) {
+            Log.w(TAG, "packageManagerService unavailable", e)
+            null
+        }
+    }
+
+    private fun callingUserId() = UserHandleCompat.getUserId(Binder.getCallingUid())
 
     private fun exec(vararg args: String): String = try {
         val proc = Runtime.getRuntime().exec(args)
@@ -37,20 +65,51 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
         readSide
     } catch (_: Exception) { null }
 
+    private fun parseContentRows(output: String): List<Bundle> =
+        output.lines()
+            .filter { it.trimStart().startsWith("Row:") }
+            .map { row ->
+                val b = Bundle()
+                val content = row.substringAfter("Row:").trimStart().substringAfter(" ")
+                for (pair in content.split(", ")) {
+                    val eq = pair.indexOf('=')
+                    if (eq > 0) b.putString(pair.substring(0, eq).trim(), pair.substring(eq + 1).trim())
+                }
+                b
+            }
+
     // ── Package Inventory ─────────────────────────────────────────────────────
 
     override fun listInstalledPackages(includeSystem: Boolean): List<Bundle> {
-        // pm list packages -f gives "package:<path>=<pkg>" lines.
-        // pm dump <pkg> is expensive per-package; use pm list + pm path for bulk inventory.
+        val userId = callingUserId()
+        // Primary: InstalledPackagesCompat — works on Android 17 without exec
+        try {
+            val flags: Long = if (includeSystem) 0L else PackageManager.MATCH_SYSTEM_ONLY.toLong().inv().and(0xFFFFL)
+            val packages = InstalledPackagesCompat.getInstalledPackagesNoThrow(0L, userId)
+            if (packages.isNotEmpty()) {
+                return packages
+                    .filter { pi -> includeSystem || (pi.applicationInfo?.flags?.and(android.content.pm.ApplicationInfo.FLAG_SYSTEM) == 0) }
+                    .map { pi ->
+                        val ai = pi.applicationInfo
+                        Bundle().apply {
+                            putString("packageName", pi.packageName)
+                            putString("sourceDir", ai?.sourceDir)
+                            putLong("versionCode", pi.longVersionCode)
+                            putBoolean("isSystem", (ai?.flags ?: 0) and android.content.pm.ApplicationInfo.FLAG_SYSTEM != 0)
+                        }
+                    }
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "listInstalledPackages IPC failed, falling back to exec", e)
+        }
+        // Fallback: pm list packages
         val args = if (includeSystem)
             arrayOf("pm", "list", "packages", "-f", "--show-versioncode")
         else
             arrayOf("pm", "list", "packages", "-f", "--show-versioncode", "-3")
-
         val output = exec(*args)
         val result = mutableListOf<Bundle>()
         for (line in output.lines()) {
-            // Format: "package:<apkPath>=<pkgName>  versionCode:<N>"
             val pkgSection = line.removePrefix("package:").trim()
             val eqIdx = pkgSection.lastIndexOf('=')
             if (eqIdx < 0) continue
@@ -60,23 +119,33 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             val packageName = parts[0]
             val versionCode = parts.find { it.startsWith("versionCode:") }
                 ?.removePrefix("versionCode:")?.toLongOrNull() ?: -1L
-
-            val b = Bundle()
-            b.putString("packageName", packageName)
-            b.putString("sourceDir", apkPath)
-            b.putLong("versionCode", versionCode)
-            // Lightweight flags: avoid pm dump per-package for the bulk list
-            b.putBoolean("isSystem", apkPath.startsWith("/system/") || apkPath.startsWith("/product/") || apkPath.startsWith("/vendor/"))
-            result.add(b)
+            result.add(Bundle().apply {
+                putString("packageName", packageName)
+                putString("sourceDir", apkPath)
+                putLong("versionCode", versionCode)
+                putBoolean("isSystem", apkPath.startsWith("/system/") || apkPath.startsWith("/product/") || apkPath.startsWith("/vendor/"))
+            })
         }
         return result
     }
 
     override fun getApkPaths(packageName: String?): List<String> {
         if (packageName.isNullOrBlank()) return emptyList()
-        val output = exec("pm", "path", packageName)
-        // Output: one or more lines of "package:<path>"
-        return output.lines()
+        val userId = callingUserId()
+        // Primary: ApplicationInfo.sourceDir + splitSourceDirs
+        try {
+            val ai = Android17Compat.getApplicationInfo(packageName, 0L, userId)
+            if (ai != null) {
+                val paths = mutableListOf<String>()
+                ai.sourceDir?.let { paths.add(it) }
+                ai.splitSourceDirs?.forEach { paths.add(it) }
+                if (paths.isNotEmpty()) return paths
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "getApkPaths IPC failed for $packageName, falling back", e)
+        }
+        // Fallback: pm path parse
+        return exec("pm", "path", packageName).lines()
             .filter { it.startsWith("package:") }
             .map { it.removePrefix("package:").trim() }
     }
@@ -85,19 +154,21 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
         if (packageName.isNullOrBlank()) return null
         val paths = getApkPaths(packageName)
         val base = paths.firstOrNull { !it.contains("split_") } ?: paths.firstOrNull() ?: return null
-        return pipe("cat", base)
+        return try {
+            ParcelFileDescriptor.open(File(base), ParcelFileDescriptor.MODE_READ_ONLY)
+        } catch (e: Exception) {
+            Log.w(TAG, "streamApk direct open failed for $base, falling back to cat", e)
+            pipe("cat", base)
+        }
     }
 
     override fun getAppDataSize(packageName: String?): Bundle {
         val b = Bundle()
         if (packageName.isNullOrBlank()) return b
         val dump = exec("dumpsys", "diskstats")
-        // Android 8+ diskstats format per package:
-        //   Package: <pkg> Code: <N> Data: <N> Cache: <N>
         val line = dump.lines().find { it.contains("Package: $packageName ") } ?: return b
         fun extractBytes(label: String): Long {
-            val pattern = Regex("$label: (\\d+)")
-            return pattern.find(line)?.groupValues?.get(1)?.toLongOrNull() ?: -1L
+            return Regex("$label: (\\d+)").find(line)?.groupValues?.get(1)?.toLongOrNull() ?: -1L
         }
         b.putLong("codeBytes", extractBytes("Code"))
         b.putLong("dataBytes", extractBytes("Data"))
@@ -109,11 +180,41 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
 
     override fun forceStop(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
-        return execExit("am", "force-stop", packageName) == 0
+        // Primary: ActivityManagerApis.forceStopPackageNoThrow — works at shell UID
+        return try {
+            ActivityManagerApis.forceStopPackageNoThrow(packageName, callingUserId())
+            true
+        } catch (e: Exception) {
+            Log.w(TAG, "forceStop IPC failed for $packageName, falling back", e)
+            execExit("am", "force-stop", packageName) == 0
+        }
     }
 
     override fun clearAppData(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
+        val userId = callingUserId()
+        // Primary: IPackageManager.clearApplicationUserData with blocking observer
+        try {
+            val pm = packageManagerService() ?: error("no package service")
+            val latch = java.util.concurrent.CountDownLatch(1)
+            val stubClass = Class.forName("android.content.pm.IPackageDataObserver\$Stub")
+            val observer = java.lang.reflect.Proxy.newProxyInstance(
+                stubClass.classLoader,
+                arrayOf(Class.forName("android.content.pm.IPackageDataObserver"), IBinder::class.java)
+            ) { _, method, _ ->
+                if (method.name == "onRemoveCompleted") {
+                    latch.countDown()
+                }
+                null
+            }
+            val method = pm.javaClass.methods.firstOrNull { it.name == "clearApplicationUserData" }
+                ?: error("clearApplicationUserData not found")
+            method.invoke(pm, packageName, observer, userId)
+            latch.await(5, java.util.concurrent.TimeUnit.SECONDS)
+            return true
+        } catch (e: Exception) {
+            Log.w(TAG, "clearAppData IPC failed for $packageName, falling back", e)
+        }
         return execExit("pm", "clear", packageName) == 0
     }
 
@@ -125,7 +226,6 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
         includeShared: Boolean
     ): ParcelFileDescriptor? {
         if (packageName.isNullOrBlank()) return null
-        // bu restore permission tightened in Android 12 (API 31 was fine, API 32+ is not)
         if (Build.VERSION.SDK_INT >= 32) return null
         val cmd = mutableListOf("bu", "backup")
         if (!includeApk) cmd += "-noapk"
@@ -141,7 +241,6 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             val pb = ProcessBuilder("bu", "restore")
             pb.redirectErrorStream(false)
             val proc = pb.start()
-            // Pipe the client PFD into bu restore's stdin on a background thread
             Thread {
                 try {
                     ParcelFileDescriptor.AutoCloseInputStream(backupStream).use { src ->
@@ -159,7 +258,6 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
 
     override fun backupExternalData(packageName: String?): ParcelFileDescriptor? {
         if (packageName.isNullOrBlank()) return null
-        // Try both the primary external path and the Android/data path
         val dir = listOf(
             "/sdcard/Android/data/$packageName",
             "/storage/emulated/0/Android/data/$packageName"
@@ -189,9 +287,6 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
     // ── Streaming APK Install ─────────────────────────────────────────────────
 
     override fun createInstallSession(packageName: String?): Int {
-        // pm install-create returns: "Success: created install session [<id>]"
-        // Note: --multi-package is for installing multiple packages atomically, NOT for
-        // split APKs of a single package. Split APKs use a plain session without that flag.
         val output = exec("pm", "install-create", "-g")
         val match = Regex("\\[(\\d+)]").find(output)
         return match?.groupValues?.get(1)?.toIntOrNull() ?: -1
@@ -226,65 +321,69 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
 
     override fun abandonInstallSession(sessionId: Int) {
         if (sessionId < 0) return
-        try {
-            Runtime.getRuntime().exec(arrayOf("pm", "install-abandon", sessionId.toString())).waitFor()
-        } catch (_: Exception) {}
+        try { Runtime.getRuntime().exec(arrayOf("pm", "install-abandon", sessionId.toString())).waitFor() } catch (_: Exception) {}
     }
 
     // ── Permission State ──────────────────────────────────────────────────────
 
     override fun getPermissionState(packageName: String?): List<Bundle> {
         if (packageName.isNullOrBlank()) return emptyList()
+        val userId = callingUserId()
+        // Primary: PackageInfo with GET_PERMISSIONS — all runtime perms + grant flags
+        try {
+            val info = Android17Compat.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS.toLong(), userId)
+            if (info != null) {
+                val perms = info.requestedPermissions ?: return emptyList()
+                val flags = info.requestedPermissionsFlags ?: IntArray(perms.size)
+                return perms.mapIndexed { i, perm ->
+                    Bundle().apply {
+                        putString("name", perm)
+                        putBoolean("granted", flags.getOrElse(i) { 0 } and REQUESTED_PERMISSION_GRANTED != 0)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "getPermissionState IPC failed for $packageName, falling back", e)
+        }
+        // Fallback: pm dump parse
         val output = exec("pm", "dump", packageName)
         val result = mutableListOf<Bundle>()
-        var inGranted = false
-        var inRequested = false
+        var inGranted = false; var inRequested = false
         val granted = mutableSetOf<String>()
         val allRuntime = mutableSetOf<String>()
-
         for (line in output.lines()) {
             val t = line.trim()
             when {
                 t == "requested permissions:" -> { inRequested = true; inGranted = false }
                 t == "install permissions:" -> { inRequested = false; inGranted = false }
-                t == "runtime permissions:" || t == "granted permissions:" -> {
-                    inRequested = false; inGranted = true
-                }
-                inRequested && t.startsWith("android.permission.") -> allRuntime.add(t)
-                inRequested && t.contains(".permission.") -> allRuntime.add(t)
-                inGranted && t.startsWith("android.permission.") -> {
-                    // "android.permission.FOO: granted=true, flags=..."
-                    val name = t.substringBefore(":").trim()
-                    val isGranted = t.contains("granted=true")
-                    if (isGranted) granted.add(name)
-                }
+                t == "runtime permissions:" || t == "granted permissions:" -> { inRequested = false; inGranted = true }
+                inRequested && (t.startsWith("android.permission.") || t.contains(".permission.")) -> allRuntime.add(t)
                 inGranted && t.contains(".permission.") && t.contains(":") -> {
                     val name = t.substringBefore(":").trim()
-                    val isGranted = t.contains("granted=true")
-                    if (isGranted) granted.add(name)
+                    if (t.contains("granted=true")) granted.add(name)
                 }
-                // Blank line or next section header resets state
-                t.isEmpty() && (inGranted || inRequested) -> {}
             }
         }
-
-        // Build result: all runtime permissions with their grant state
         for (perm in allRuntime) {
-            val b = Bundle()
-            b.putString("name", perm)
-            b.putBoolean("granted", perm in granted)
-            result.add(b)
+            result.add(Bundle().apply { putString("name", perm); putBoolean("granted", perm in granted) })
         }
         return result
     }
 
     override fun restorePermissions(packageName: String?, permissions: List<Bundle>?): Int {
         if (packageName.isNullOrBlank() || permissions.isNullOrEmpty()) return 0
+        val userId = callingUserId()
         var count = 0
         for (perm in permissions) {
             val name = perm.getString("name") ?: continue
             if (!perm.getBoolean("granted", false)) continue
-            if (execExit("pm", "grant", packageName, name) == 0) count++
+            // Primary: Android17Compat.grantRuntimePermission — handles Android 17 deviceId
+            try {
+                Android17Compat.grantRuntimePermission(packageName, name, userId)
+                count++
+            } catch (e: Exception) {
+                if (execExit("pm", "grant", packageName, name) == 0) count++
+            }
         }
         return count
     }
@@ -303,30 +402,20 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
 
     override fun listBmgrBackupSets(): List<Bundle> {
         val result = mutableListOf<Bundle>()
-        val output = exec("bmgr", "list", "sets")
-        // Output format: "  <token>  <name>"
-        for (line in output.lines()) {
+        for (line in exec("bmgr", "list", "sets").lines()) {
             val t = line.trim()
             if (t.isEmpty()) continue
             val parts = t.split("\\s+".toRegex(), 2)
             if (parts.size < 2) continue
-            val b = Bundle()
-            b.putString("token", parts[0])
-            b.putString("name", parts[1])
-            result.add(b)
+            result.add(Bundle().apply { putString("token", parts[0]); putString("name", parts[1]) })
         }
         return result
     }
 
     override fun getActiveBackupTransport(): String {
-        val output = exec("bmgr", "list", "transports")
-        // Output has "* <transport>" for the active one
-        return output.lines()
+        return exec("bmgr", "list", "transports").lines()
             .firstOrNull { it.trimStart().startsWith("*") }
-            ?.trim()
-            ?.removePrefix("*")
-            ?.trim()
-            ?: ""
+            ?.trim()?.removePrefix("*")?.trim() ?: ""
     }
 
     // ── Settings Backup / Restore ─────────────────────────────────────────────
@@ -337,12 +426,9 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             "global", "secure", "system" -> namespace.lowercase()
             else -> return b
         }
-        val output = exec("settings", "list", ns)
-        for (line in output.lines()) {
+        for (line in exec("settings", "list", ns).lines()) {
             val eq = line.indexOf('=')
-            if (eq > 0) {
-                b.putString(line.substring(0, eq).trim(), line.substring(eq + 1))
-            }
+            if (eq > 0) b.putString(line.substring(0, eq).trim(), line.substring(eq + 1))
         }
         return b
     }
@@ -353,7 +439,28 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             else -> return 0
         }
         if (settings == null || settings.isEmpty) return 0
+        // Primary: ContentProvider PUT for each key
         var count = 0
+        try {
+            val userId = callingUserId()
+            val provider = ActivityManagerApis.getContentProviderExternal(
+                "settings", userId, null, "com.android.shell"
+            )
+            if (provider != null) {
+                for (key in settings.keySet()) {
+                    val value = settings.getString(key) ?: continue
+                    try {
+                        val extras = android.os.Bundle().apply { putString("value", value) }
+                        IContentProviderUtils.callCompat(provider, null, "settings", "PUT_$ns", key, extras)
+                        count++
+                    } catch (_: Exception) {}
+                }
+                return count
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "restoreSettings ContentProvider failed, falling back to exec", e)
+        }
+        // Fallback: settings put exec
         for (key in settings.keySet()) {
             val value = settings.getString(key) ?: continue
             if (execExit("settings", "put", ns, key, value) == 0) count++
@@ -396,21 +503,46 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
     override fun getPackageMetadata(packageName: String?): Bundle {
         val b = Bundle()
         if (packageName.isNullOrBlank()) return b
-
+        val userId = callingUserId()
+        // Primary: PackageInfo + ApplicationInfo via Binder IPC
+        try {
+            val pi = Android17Compat.getPackageInfo(packageName, 0L, userId)
+            val ai = pi?.applicationInfo ?: Android17Compat.getApplicationInfo(packageName, 0L, userId)
+            if (pi != null || ai != null) {
+                ai?.let { a ->
+                    b.putInt("uid", a.uid)
+                    b.putString("dataDir", a.dataDir)
+                    b.putString("nativeLibDir", a.nativeLibraryDir)
+                    b.putBoolean("isDebuggable", (a.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0)
+                    b.putBoolean("allowBackup", (a.flags and android.content.pm.ApplicationInfo.FLAG_ALLOW_BACKUP) != 0)
+                    b.putBoolean("isSystem", (a.flags and android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0)
+                }
+                pi?.let { p ->
+                    b.putString("versionName", p.versionName)
+                    b.putLong("versionCode", p.longVersionCode)
+                    b.putString("firstInstallTime", p.firstInstallTime.toString())
+                    b.putString("lastUpdateTime", p.lastUpdateTime.toString())
+                    b.putInt("targetSdk", p.applicationInfo?.targetSdkVersion ?: -1)
+                    b.putInt("minSdk", p.applicationInfo?.minSdkVersion ?: -1)
+                }
+                return b
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "getPackageMetadata IPC failed for $packageName, falling back", e)
+        }
+        // Fallback: pm dump parse
         val dump = exec("pm", "dump", packageName)
         if (dump.isBlank()) return b
-
         for (line in dump.lines()) {
             val t = line.trim()
             when {
-                t.startsWith("userId=")           -> b.putInt("uid", t.removePrefix("userId=").trim().toIntOrNull() ?: -1)
-                t.startsWith("versionName=")       -> b.putString("versionName", t.removePrefix("versionName=").trim())
-                t.startsWith("dataDir=")           -> b.putString("dataDir", t.removePrefix("dataDir=").trim())
-                t.startsWith("nativeLibraryDir=")  -> b.putString("nativeLibDir", t.removePrefix("nativeLibraryDir=").trim())
-                t.startsWith("firstInstallTime=")  -> b.putString("firstInstallTime", t.removePrefix("firstInstallTime=").trim())
-                t.startsWith("lastUpdateTime=")    -> b.putString("lastUpdateTime", t.removePrefix("lastUpdateTime=").trim())
+                t.startsWith("userId=") -> b.putInt("uid", t.removePrefix("userId=").trim().toIntOrNull() ?: -1)
+                t.startsWith("versionName=") -> b.putString("versionName", t.removePrefix("versionName=").trim())
+                t.startsWith("dataDir=") -> b.putString("dataDir", t.removePrefix("dataDir=").trim())
+                t.startsWith("nativeLibraryDir=") -> b.putString("nativeLibDir", t.removePrefix("nativeLibraryDir=").trim())
+                t.startsWith("firstInstallTime=") -> b.putString("firstInstallTime", t.removePrefix("firstInstallTime=").trim())
+                t.startsWith("lastUpdateTime=") -> b.putString("lastUpdateTime", t.removePrefix("lastUpdateTime=").trim())
                 t.startsWith("versionCode=") || t.contains("versionCode=") -> {
-                    // "versionCode=1234 minSdk=21 targetSdk=33"
                     Regex("versionCode=(\\d+)").find(t)?.groupValues?.get(1)?.toLongOrNull()?.let { b.putLong("versionCode", it) }
                     Regex("targetSdk=(\\d+)").find(t)?.groupValues?.get(1)?.toIntOrNull()?.let { b.putInt("targetSdk", it) }
                     Regex("minSdk=(\\d+)").find(t)?.groupValues?.get(1)?.toIntOrNull()?.let { b.putInt("minSdk", it) }
@@ -429,50 +561,68 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
 
     override fun listApkSplits(packageName: String?): List<Bundle> {
         if (packageName.isNullOrBlank()) return emptyList()
-        val output = exec("pm", "path", packageName)
-        return output.lines()
-            .filter { it.startsWith("package:") }
-            .mapNotNull { line ->
-                val path = line.removePrefix("package:").trim()
-                val file = File(path)
-                if (!file.exists()) return@mapNotNull null
-                Bundle().apply {
-                    putString("fileName", file.name)
-                    putString("path", path)
-                    putLong("size", file.length())
-                }
+        return getApkPaths(packageName).mapNotNull { path ->
+            val file = File(path)
+            if (!file.exists()) return@mapNotNull null
+            Bundle().apply {
+                putString("fileName", file.name)
+                putString("path", path)
+                putLong("size", file.length())
             }
+        }
     }
 
     override fun streamApkSplit(packageName: String?, fileName: String?): ParcelFileDescriptor? {
         if (packageName.isNullOrBlank() || fileName.isNullOrBlank()) return null
-        // Validate: fileName must belong to this package's APK set
-        val output = exec("pm", "path", packageName)
-        val validPath = output.lines()
-            .filter { it.startsWith("package:") }
-            .map { it.removePrefix("package:").trim() }
-            .firstOrNull { File(it).name == fileName }
-            ?: return null
-        return pipe("cat", validPath)
+        val validPath = getApkPaths(packageName).firstOrNull { File(it).name == fileName } ?: return null
+        return try {
+            ParcelFileDescriptor.open(File(validPath), ParcelFileDescriptor.MODE_READ_ONLY)
+        } catch (e: Exception) {
+            Log.w(TAG, "streamApkSplit direct open failed for $validPath, falling back to cat", e)
+            pipe("cat", validPath)
+        }
     }
 
     // ── App Freeze / Unfreeze ─────────────────────────────────────────────────
 
+    private fun setApplicationEnabledSetting(packageName: String, state: Int): Boolean {
+        return try {
+            val pm = packageManagerService() ?: error("no package service")
+            val method = pm.javaClass.methods.firstOrNull { it.name == "setApplicationEnabledSetting" }
+                ?: error("setApplicationEnabledSetting not found")
+            method.invoke(pm, packageName, state, 0, callingUserId(), "com.android.shell")
+            true
+        } catch (e: Exception) {
+            Log.w(TAG, "setApplicationEnabledSetting IPC failed for $packageName state=$state", e)
+            false
+        }
+    }
+
     override fun freezeApp(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
+        // COMPONENT_ENABLED_STATE_DISABLED_USER = 3
+        if (setApplicationEnabledSetting(packageName, 3)) return true
         return execExit("pm", "disable-user", "--user", "0", packageName) == 0
     }
 
     override fun unfreezeApp(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
+        // COMPONENT_ENABLED_STATE_DEFAULT = 0
+        if (setApplicationEnabledSetting(packageName, 0)) return true
         return execExit("pm", "enable", "--user", "0", packageName) == 0
     }
 
     override fun isAppFrozen(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
-        val dump = exec("pm", "dump", packageName)
-        // "enabled=3" means COMPONENT_ENABLED_STATE_DISABLED_USER
-        return dump.lines().any { line ->
+        // Primary: ApplicationInfo.enabled — direct Binder IPC
+        try {
+            val ai = Android17Compat.getApplicationInfo(packageName, 0L, callingUserId())
+            if (ai != null) return !ai.enabled
+        } catch (e: Exception) {
+            Log.w(TAG, "isAppFrozen IPC failed for $packageName, falling back", e)
+        }
+        // Fallback: pm dump parse — "enabled=3" = DISABLED_USER, "enabled=2" = DISABLED
+        return exec("pm", "dump", packageName).lines().any { line ->
             val t = line.trim()
             t.startsWith("enabled=") && (t.contains("=3") || t.contains("=2"))
         }
@@ -482,6 +632,14 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
 
     override fun insertSmsMessages(messages: List<Bundle>?): Int {
         if (messages.isNullOrEmpty()) return 0
+        val smsUri = android.net.Uri.parse("content://sms")
+        val smsAuthority = "sms"
+        val userId = callingUserId()
+        // Primary: IContentProvider.insert() via Binder — no exec needed
+        val provider = try {
+            ActivityManagerApis.getContentProviderExternal(smsAuthority, userId, null, "com.android.shell")
+        } catch (_: Exception) { null }
+
         var count = 0
         for (msg in messages) {
             val address = msg.getString("address") ?: continue
@@ -489,14 +647,34 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             val date    = msg.getLong("date", System.currentTimeMillis())
             val type    = msg.getInt("type", 1)
             val read    = msg.getInt("read", 1)
+
+            if (provider != null) {
+                val cv = android.content.ContentValues().apply {
+                    put("address", address)
+                    put("body", body)
+                    put("date", date)
+                    put("type", type)
+                    put("read", read)
+                }
+                val inserted = runCatching {
+                    val insertMethods = provider.javaClass.methods.filter { it.name == "insert" }
+                    insertMethods.any { m ->
+                        runCatching {
+                            when (m.parameterTypes.size) {
+                                4 -> m.invoke(provider, "com.android.shell", null, smsUri, cv) != null
+                                3 -> m.invoke(provider, "com.android.shell", smsUri, cv) != null
+                                else -> false
+                            }
+                        }.getOrDefault(false)
+                    }
+                }.getOrDefault(false)
+                if (inserted) { count++; continue }
+            }
+            // Fallback: content insert exec
             val result = execExit(
-                "content", "insert",
-                "--uri", "content://sms",
-                "--bind", "address:s:$address",
-                "--bind", "body:s:$body",
-                "--bind", "date:l:$date",
-                "--bind", "type:i:$type",
-                "--bind", "read:i:$read"
+                "content", "insert", "--uri", "content://sms",
+                "--bind", "address:s:$address", "--bind", "body:s:$body",
+                "--bind", "date:l:$date", "--bind", "type:i:$type", "--bind", "read:i:$read"
             )
             if (result == 0) count++
         }
@@ -507,11 +685,23 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
 
     override fun revokeRuntimePermission(packageName: String?, permission: String?): Boolean {
         if (packageName.isNullOrBlank() || permission.isNullOrBlank()) return false
-        return execExit("pm", "revoke", packageName, permission) == 0
+        return try {
+            Android17Compat.revokeRuntimePermission(packageName, permission, callingUserId())
+            true
+        } catch (e: Exception) {
+            Log.w(TAG, "revokeRuntimePermission IPC failed for $packageName/$permission, falling back", e)
+            execExit("pm", "revoke", packageName, permission) == 0
+        }
     }
 
     override fun grantRuntimePermission(packageName: String?, permission: String?): Boolean {
         if (packageName.isNullOrBlank() || permission.isNullOrBlank()) return false
-        return execExit("pm", "grant", packageName, permission) == 0
+        return try {
+            Android17Compat.grantRuntimePermission(packageName, permission, callingUserId())
+            true
+        } catch (e: Exception) {
+            Log.w(TAG, "grantRuntimePermission IPC failed for $packageName/$permission, falling back", e)
+            execExit("pm", "grant", packageName, permission) == 0
+        }
     }
 }

@@ -9,7 +9,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.R as MaterialR
 
@@ -52,6 +54,15 @@ private fun androidColorScheme(context: Context, darkTheme: Boolean): ColorSchem
     val surfaceVariant = color(MaterialR.attr.colorSurfaceVariant, fallback.surfaceVariant)
     val onSurfaceVariant = color(MaterialR.attr.colorOnSurfaceVariant, fallback.onSurfaceVariant)
     val outline = color(MaterialR.attr.colorOutline, fallback.outline)
+    val outlineVariant = color(MaterialR.attr.colorOutlineVariant, fallback.outlineVariant)
+    val scrim = color(MaterialR.attr.scrimBackground, fallback.scrim)
+    val surfaceBright = color(MaterialR.attr.colorSurfaceBright, fallback.surfaceBright)
+    val surfaceDim = color(MaterialR.attr.colorSurfaceDim, fallback.surfaceDim)
+    val surfaceContainer = color(MaterialR.attr.colorSurfaceContainer, fallback.surfaceContainer)
+    val surfaceContainerHigh = color(MaterialR.attr.colorSurfaceContainerHigh, fallback.surfaceContainerHigh)
+    val surfaceContainerHighest = color(MaterialR.attr.colorSurfaceContainerHighest, fallback.surfaceContainerHighest)
+    val surfaceContainerLow = color(MaterialR.attr.colorSurfaceContainerLow, fallback.surfaceContainerLow)
+    val surfaceContainerLowest = color(MaterialR.attr.colorSurfaceContainerLowest, fallback.surfaceContainerLowest)
 
     // darkColorScheme()/lightColorScheme() are plain functions (not a shared type with a common
     // named-argument call), so a stored function reference can't be invoked with named args here -
@@ -70,6 +81,15 @@ private fun androidColorScheme(context: Context, darkTheme: Boolean): ColorSchem
             surface = surface, onSurface = onSurface,
             surfaceVariant = surfaceVariant, onSurfaceVariant = onSurfaceVariant,
             outline = outline,
+            outlineVariant = outlineVariant,
+            scrim = scrim,
+            surfaceBright = surfaceBright,
+            surfaceDim = surfaceDim,
+            surfaceContainer = surfaceContainer,
+            surfaceContainerHigh = surfaceContainerHigh,
+            surfaceContainerHighest = surfaceContainerHighest,
+            surfaceContainerLow = surfaceContainerLow,
+            surfaceContainerLowest = surfaceContainerLowest,
         )
     } else {
         lightColorScheme(
@@ -85,6 +105,15 @@ private fun androidColorScheme(context: Context, darkTheme: Boolean): ColorSchem
             surface = surface, onSurface = onSurface,
             surfaceVariant = surfaceVariant, onSurfaceVariant = onSurfaceVariant,
             outline = outline,
+            outlineVariant = outlineVariant,
+            scrim = scrim,
+            surfaceBright = surfaceBright,
+            surfaceDim = surfaceDim,
+            surfaceContainer = surfaceContainer,
+            surfaceContainerHigh = surfaceContainerHigh,
+            surfaceContainerHighest = surfaceContainerHighest,
+            surfaceContainerLow = surfaceContainerLow,
+            surfaceContainerLowest = surfaceContainerLowest,
         )
     }
 }
@@ -102,11 +131,71 @@ private val OneUiShapes = Shapes(
     extraLarge = RoundedCornerShape(36.dp),
 )
 
+private val OneUiTypography = Typography(
+    headlineLarge = Typography().headlineLarge.copy(
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 32.sp,
+        letterSpacing = (-0.5).sp
+    ),
+    headlineMedium = Typography().headlineMedium.copy(
+        fontWeight = FontWeight.Bold,
+        fontSize = 26.sp,
+        letterSpacing = (-0.25).sp
+    ),
+    headlineSmall = Typography().headlineSmall.copy(
+        fontWeight = FontWeight.Bold,
+        fontSize = 22.sp
+    ),
+    titleLarge = Typography().titleLarge.copy(
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp,
+        letterSpacing = (-0.15).sp
+    ),
+    titleMedium = Typography().titleMedium.copy(
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp
+    ),
+    titleSmall = Typography().titleSmall.copy(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 14.sp
+    ),
+    labelLarge = Typography().labelLarge.copy(
+        fontWeight = FontWeight.SemiBold
+    ),
+    labelMedium = Typography().labelMedium.copy(
+        fontWeight = FontWeight.SemiBold
+    ),
+    labelSmall = Typography().labelSmall.copy(
+        fontWeight = FontWeight.Medium
+    ),
+    bodyLarge = Typography().bodyLarge.copy(
+        fontSize = 16.sp,
+        letterSpacing = 0.sp
+    ),
+    bodyMedium = Typography().bodyMedium.copy(
+        fontSize = 14.sp,
+        letterSpacing = 0.sp
+    ),
+    bodySmall = Typography().bodySmall.copy(
+        fontSize = 12.sp,
+        letterSpacing = 0.sp
+    )
+)
+
+private val SharpShapes = Shapes(
+    extraSmall = RoundedCornerShape(0.dp),
+    small = RoundedCornerShape(0.dp),
+    medium = RoundedCornerShape(0.dp),
+    large = RoundedCornerShape(0.dp),
+    extraLarge = RoundedCornerShape(0.dp),
+)
+
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     isBlackNightTheme: Boolean = false,
     isOneUi: Boolean = false,
+    isRoundedEdges: Boolean = true,
     themeVersion: Int = 0,
     content: @Composable () -> Unit
 ) {
@@ -119,15 +208,24 @@ fun AppTheme(
     if (darkTheme && isBlackNightTheme) {
         colorScheme = colorScheme.copy(
             background = Color.Black,
-            surface = Color.Black
+            surface = Color.Black,
+            surfaceDim = Color.Black,
+            surfaceContainerLowest = Color.Black,
+            surfaceContainerLow = Color.Black,
         )
     }
 
-    val shapes = if (isOneUi) OneUiShapes else Shapes()
+    val shapes = when {
+        !isRoundedEdges -> SharpShapes
+        isOneUi -> OneUiShapes
+        else -> Shapes()
+    }
+    val typography = if (isOneUi) OneUiTypography else Typography()
 
     MaterialTheme(
         colorScheme = colorScheme,
         shapes = shapes,
+        typography = typography,
         content = content
     )
 }

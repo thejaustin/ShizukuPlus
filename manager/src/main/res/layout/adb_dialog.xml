@@ -27,6 +27,67 @@
             android:textStyle="bold"
             android:text="@string/dialog_adb_discovery_message_toggle_wireless_debugging" />
 
+        <LinearLayout
+            android:id="@+id/wifi_warning_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/wifi_warning_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?textAppearanceBodySmall"
+                android:textColor="?colorError"
+                android:text="@string/dialog_adb_wifi_disconnected_warning" />
+
+            <TextView
+                android:id="@+id/hotspot_tip_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="?textAppearanceBodySmall"
+                android:text="@string/dialog_adb_hotspot_tip" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_open_hotspot"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/dialog_adb_open_hotspot" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/probe_status_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="?textAppearanceLabelSmall"
+            android:textColor="?android:textColorSecondary"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pair_device"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/dialog_adb_pair_device"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/auto_pair_status_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAppearance="?textAppearanceLabelMedium"
+            android:textColor="?colorPrimary"
+            android:text="@string/dialog_adb_autopair_enabled"
+            android:visibility="gone" />
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

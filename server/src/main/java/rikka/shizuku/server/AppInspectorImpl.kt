@@ -1,12 +1,34 @@
 package rikka.shizuku.server
 
+import android.content.pm.PackageManager
+import android.os.Binder
 import android.os.Bundle
+import android.os.IBinder
 import android.os.ParcelFileDescriptor
+import android.os.ServiceManager
+import android.util.Log
 import af.shizuku.server.IAppInspector
+import af.shizuku.common.compat.Android17Compat
+import af.shizuku.common.util.UserHandleCompat
+import rikka.hidden.compat.ActivityManagerApis
+import rikka.shizuku.server.api.IContentProviderUtils
 import java.io.File
 import java.nio.file.Files
 
 class AppInspectorImpl : IAppInspector.Stub() {
+
+    companion object {
+        private const val TAG = "AppInspector"
+
+        private fun activityManagerService(): Any? = try {
+            val binder = ServiceManager.getService("activity") ?: return null
+            Class.forName("android.app.IActivityManager\$Stub")
+                .getDeclaredMethod("asInterface", IBinder::class.java)
+                .invoke(null, binder)
+        } catch (_: Exception) { null }
+
+        private fun callingUserId() = UserHandleCompat.getUserId(Binder.getCallingUid())
+    }
 
     private fun execOutput(vararg args: String): String = try {
         Runtime.getRuntime().exec(args).inputStream.bufferedReader().readText().trim()
@@ -41,6 +63,36 @@ class AppInspectorImpl : IAppInspector.Stub() {
 
     override fun dumpHeap(pid: Int, destPath: String?): Boolean {
         if (pid <= 0 || destPath.isNullOrBlank()) return false
+        // Primary: IActivityManager.dumpHeap — passes a PFD instead of spawning am dumpheap
+        try {
+            val am = activityManagerService() ?: error("no activity service")
+            val destFile = File(destPath)
+            destFile.parentFile?.mkdirs()
+            val pfd = ParcelFileDescriptor.open(
+                destFile,
+                ParcelFileDescriptor.MODE_WRITE_ONLY or
+                ParcelFileDescriptor.MODE_CREATE or
+                ParcelFileDescriptor.MODE_TRUNCATE
+            )
+            pfd.use {
+                val invoked = am.javaClass.methods.filter { it.name == "dumpHeap" }.any { m ->
+                    runCatching {
+                        // Param-count dispatch across API 26-35 variants:
+                        // (String, int, boolean, String, PFD, RemoteCallback) — API 26-28
+                        // (String, int, boolean, boolean, boolean, String, PFD, RemoteCallback) — API 29+
+                        when (m.parameterTypes.size) {
+                            6 -> { m.invoke(am, pid.toString(), -1, true, destPath, pfd, null); true }
+                            8 -> { m.invoke(am, pid.toString(), -1, true, false, false, destPath, pfd, null); true }
+                            else -> false
+                        }
+                    }.getOrDefault(false)
+                }
+                if (invoked) return destFile.exists() && destFile.length() > 0
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "dumpHeap IPC failed for pid=$pid, falling back to exec", e)
+        }
+        // Fallback: am dumpheap (blocked on Samsung OneUI 8)
         return try {
             Runtime.getRuntime().exec(arrayOf("am", "dumpheap", pid.toString(), destPath))
                 .waitFor() == 0
@@ -95,12 +147,30 @@ class AppInspectorImpl : IAppInspector.Stub() {
 
     override fun getExportedProviders(packageName: String?): List<String> {
         if (packageName.isNullOrBlank()) return emptyList()
+        // Primary: IPackageManager.getPackageInfo with GET_PROVIDERS — direct Binder IPC
+        try {
+            val pi = Android17Compat.getPackageInfo(
+                packageName, PackageManager.GET_PROVIDERS.toLong(), callingUserId()
+            )
+            if (pi != null) {
+                val authorities = mutableListOf<String>()
+                pi.providers?.forEach { provider ->
+                    if (provider.exported) {
+                        // authority can be comma-separated (multi-authority provider)
+                        provider.authority?.split(";")?.forEach { auth ->
+                            val trimmed = auth.trim()
+                            if (trimmed.isNotEmpty()) authorities.add(trimmed)
+                        }
+                    }
+                }
+                return authorities.distinct()
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "getExportedProviders IPC failed for $packageName, falling back", e)
+        }
+        // Fallback: pm dump (may be blocked on Samsung SELinux)
         val output = execOutput("pm", "dump", packageName)
         val authorities = mutableListOf<String>()
-        // pm dump prints provider blocks like:
-        //   ContentProviderRecord{...} u0 com.pkg/.Provider
-        //     exported=true
-        //     authority=com.pkg.provider
         var pendingExported = false
         for (line in output.lines()) {
             val t = line.trim()
@@ -112,10 +182,6 @@ class AppInspectorImpl : IAppInspector.Stub() {
                     if (auth.isNotEmpty()) authorities.add(auth)
                     pendingExported = false
                 }
-                t.startsWith("authority=") && !pendingExported -> {
-                    // Also catch single-line entries where exported is implicit (some OEMs)
-                    // We'll skip these to avoid false positives
-                }
             }
         }
         return authorities.distinct()
@@ -124,12 +190,28 @@ class AppInspectorImpl : IAppInspector.Stub() {
     override fun callContentProvider(uri: String?, method: String?, arg: String?): Bundle {
         val result = Bundle()
         if (uri.isNullOrBlank() || !uri.startsWith("content://")) return result
+        // Primary: direct IContentProvider.call() via Binder — no exec needed
+        if (!method.isNullOrBlank()) {
+            try {
+                val authority = uri.removePrefix("content://").substringBefore("/").substringBefore("?")
+                val provider = ActivityManagerApis.getContentProviderExternal(
+                    authority, callingUserId(), null, "com.android.shell"
+                )
+                if (provider != null) {
+                    return IContentProviderUtils.callCompat(
+                        provider, "com.android.shell", authority, method, arg, null
+                    ) ?: result
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "callContentProvider IPC failed, falling back to exec", e)
+            }
+        }
+        // Fallback: content call exec
         val cmd = mutableListOf("content", "call", "--uri", uri)
         if (!method.isNullOrBlank()) { cmd += listOf("--method", method) }
         if (!arg.isNullOrBlank()) { cmd += listOf("--arg", arg) }
         val output = execOutput(*cmd.toTypedArray())
         result.putString("raw", output)
-        // Parse simple "Bundle[{key=value}]" form
         val inner = output.removePrefix("Bundle[{").removeSuffix("}]")
         for (pair in inner.split(", ")) {
             val eq = pair.indexOf('=')
@@ -184,16 +266,34 @@ class AppInspectorImpl : IAppInspector.Stub() {
 
     override fun getRunningAppPids(): Bundle {
         val bundle = Bundle()
+        // Primary: IActivityManager.getRunningAppProcesses — no exec, works at shell UID
+        try {
+            val am = activityManagerService() ?: error("no activity service")
+            val method = am.javaClass.methods.firstOrNull { it.name == "getRunningAppProcesses" }
+                ?: error("getRunningAppProcesses not found")
+            @Suppress("UNCHECKED_CAST")
+            val procs = method.invoke(am) as? List<*>
+            if (!procs.isNullOrEmpty()) {
+                procs.forEach { p ->
+                    try {
+                        val name = p!!.javaClass.getField("processName").get(p) as? String ?: return@forEach
+                        val pid = p.javaClass.getField("pid").get(p) as? Int ?: return@forEach
+                        if (name.contains('.') && !name.startsWith('/')) bundle.putInt(name, pid)
+                    } catch (_: Exception) {}
+                }
+                return bundle
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "getRunningAppPids IPC failed, falling back to exec", e)
+        }
+        // Fallback: ps -A (may be blocked on Samsung SELinux)
         try {
             val output = execOutput("ps", "-A", "-o", "PID,NAME")
             for (line in output.lines().drop(1)) {
                 val parts = line.trim().split("\\s+".toRegex(), 2)
                 val pid = parts.getOrNull(0)?.toIntOrNull() ?: continue
                 val name = parts.getOrNull(1) ?: continue
-                // Package names always contain at least one dot
-                if (name.contains('.') && !name.startsWith('/')) {
-                    bundle.putInt(name, pid)
-                }
+                if (name.contains('.') && !name.startsWith('/')) bundle.putInt(name, pid)
             }
         } catch (_: Exception) {}
         return bundle

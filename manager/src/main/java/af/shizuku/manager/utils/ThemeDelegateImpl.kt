@@ -12,6 +12,7 @@ class ThemeDelegateImpl : ThemeDelegate {
     override fun getThemeKey(context: Context): String {
         val customAccent = ShizukuSettings.getPreferences().getString("custom_accent", "DEFAULT")
         return ThemeHelper.getTheme(context) + ThemeHelper.isUsingSystemColor() + customAccent +
+            ShizukuSettings.isRoundedEdgesEnabled() +
             ShizukuSettings.isExpressiveShapesEnabled() + ShizukuSettings.getShapeStyle() +
             ShizukuSettings.getIconStyle() + ShizukuSettings.getIconColorMode() +
             ShizukuSettings.isOneUiThemeEnabled() + ShizukuSettings.isOneHandedModeEnabled()
@@ -47,17 +48,19 @@ class ThemeDelegateImpl : ThemeDelegate {
             }
         }
 
-        if (!ShizukuSettings.isExpressiveShapesEnabled()) {
+        if (!ShizukuSettings.isRoundedEdgesEnabled()) {
+            theme.applyStyle(R.style.ThemeOverlay_Shape_Sharp, true)
+        } else if (!ShizukuSettings.isExpressiveShapesEnabled()) {
             // shape_style's preference entry is UI-disabled while expressive_shapes is off, so
             // it doesn't apply here regardless of its stored value - flatten to plain Material3.
             theme.applyStyle(R.style.ThemeOverlay_Shapes_Standard, true)
         } else {
             val shapeStyleRes = when (ShizukuSettings.getShapeStyle()) {
-                "modern" -> R.style.ThemeOverlay_Shape_Modern
+                "zen" -> 0 // "zen": keep the base Material3Expressive corner scale
                 "classic" -> R.style.ThemeOverlay_Shape_Classic
                 "squircle" -> R.style.ThemeOverlay_Shape_Squircle
                 "cut" -> R.style.ThemeOverlay_Shape_Cut
-                else -> 0 // "zen" (default): keep the base Material3Expressive corner scale
+                else -> R.style.ThemeOverlay_Shape_Modern // "modern" (default)
             }
             if (shapeStyleRes != 0) {
                 theme.applyStyle(shapeStyleRes, true)

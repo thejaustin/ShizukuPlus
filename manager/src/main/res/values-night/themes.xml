@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Night-mode overrides: resolve @style/Theme to the dark base so all activities that
+         declare android:theme="@style/Theme" switch correctly between light and dark. -->
+    <style name="Theme" parent="Base.AppTheme" />
+
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">?android:attr/colorBackground</item>
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>

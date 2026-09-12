@@ -107,53 +107,55 @@ class StartWirelessAdbViewHolder(
                 return@setOnClickListener
             }
 
-            val sysPropPort = EnvironmentUtils.getAdbTcpPort()
-            val discoveredPort = withState(homeModel) { it.discoveredAdbPort }
-            val tcpMode = ShizukuSettings.getTcpMode()
-            val lastPort = ShizukuSettings.getLastPort()
+            scope.launch {
+                val sysPropPort = EnvironmentUtils.getAdbTcpPort()
+                val discoveredPort = withState(homeModel) { it.discoveredAdbPort }
+                val tcpMode = ShizukuSettings.getTcpMode()
+                val lastPort = ShizukuSettings.getLastPort()
 
-            // livePort: a port we know is currently active — either the TCP sysprop (set while
-            // TCP mode is on) or the TLS port just resolved by mDNS discovery in HomeViewModel.
-            // lastPort is a *cached* port from the previous session and may be stale.
-            val livePort = when {
-                sysPropPort in 1..65535 -> sysPropPort
-                discoveredPort in 1..65535 -> discoveredPort
-                else -> -1
-            }
-            val validPort = if (livePort > 0) livePort else if (lastPort in 1..65535) lastPort else -1
+                // Fast active probe on loopback (127.0.0.1:5555, lastPort, etc.)
+                // This enables 1-tap start on 5G/cellular without Wi-Fi when TCP mode is active.
+                val activeLoopbackPort = af.shizuku.manager.adb.AdbPortProber.findActiveLoopbackPort(context)
 
-            if (validPort <= 0 && !EnvironmentUtils.isTlsSupported()) {
-                WadbNotEnabledDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
-            } else if (validPort <= 0) {
-                AdbDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
-            } else if (sysPropPort > 0 && !tcpMode) {
-                // A TCP-mode connection is active but the user wants TLS. Stop TCP first, then
-                // open the dialog so mDNS can rediscover the (different) TLS port.
-                scope.launch {
+                val livePort = when {
+                    activeLoopbackPort in 1..65535 -> activeLoopbackPort
+                    sysPropPort in 1..65535 -> sysPropPort
+                    discoveredPort in 1..65535 -> discoveredPort
+                    else -> -1
+                }
+                val validPort = if (livePort > 0) livePort else if (lastPort in 1..65535) lastPort else -1
+
+                if (validPort <= 0 && !EnvironmentUtils.isTlsSupported()) {
+                    WadbNotEnabledDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
+                } else if (validPort <= 0) {
+                    AdbDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
+                } else if (sysPropPort > 0 && !tcpMode && activeLoopbackPort <= 0) {
+                    // A TCP-mode connection is active but the user wants TLS. Stop TCP first, then
+                    // open the dialog so mDNS can rediscover the (different) TLS port.
                     AdbStarter.stopTcp(context, sysPropPort)
-                }
-                AdbDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
-            } else if (livePort > 0) {
-                // Live port confirmed: either TCP active or TLS already resolved by mDNS.
-                // Skip the intermediate dialog — go straight to the connect flow.
-                val intent = Intent(context, StarterActivity::class.java).apply {
-                    putExtra(StarterActivity.EXTRA_PORT, livePort)
-                }
-                val activity = context.asActivity<android.app.Activity>()
-                if (activity != null) {
-                    activity.startWithSceneTransition(intent, binding.icon, "icon_wireless_adb")
-                } else {
+                    AdbDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
+                } else if (livePort > 0) {
+                    // Live port confirmed: loopback responsive, TCP active, or TLS already resolved by mDNS.
+                    // Skip the intermediate dialog — go straight to the connect flow.
+                    val intent = Intent(context, StarterActivity::class.java).apply {
+                        putExtra(StarterActivity.EXTRA_PORT, livePort)
+                    }
+                    val activity = context.asActivity<android.app.Activity>()
+                    if (activity != null) {
+                        activity.startWithSceneTransition(intent, binding.icon, "icon_wireless_adb")
+                    } else {
+                        context.startActivity(intent)
+                    }
+                } else if (tcpMode) {
+                    // Only a stale cached port in TCP mode — try it directly (TCP port is stable).
+                    val intent = Intent(context, StarterActivity::class.java).apply {
+                        putExtra(StarterActivity.EXTRA_PORT, lastPort)
+                    }
                     context.startActivity(intent)
+                } else {
+                    // Only a stale cached TLS port — open dialog so mDNS can rediscover the current port.
+                    AdbDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
                 }
-            } else if (tcpMode) {
-                // Only a stale cached port in TCP mode — try it directly (TCP port is stable).
-                val intent = Intent(context, StarterActivity::class.java).apply {
-                    putExtra(StarterActivity.EXTRA_PORT, lastPort)
-                }
-                context.startActivity(intent)
-            } else {
-                // Only a stale cached TLS port — open dialog so mDNS can rediscover the current port.
-                AdbDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
             }
         }
 

@@ -32,6 +32,9 @@ import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuStateMachine
+import af.shizuku.manager.utils.DeviceOptimizer
+import af.shizuku.manager.database.RootCompatHelper
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import rikka.shizuku.Shizuku
 import timber.log.Timber
 
@@ -141,6 +144,113 @@ class ServiceDoctorActivity : AppBarActivity() {
             isAccessibilityEnabled,
             onFix = if (!isAccessibilityEnabled) { { SettingsPage.Accessibility.launch(this) } } else null
         ))
+
+        // 5c. Device Hardening & Doze Whitelisting
+        val isHardeningActive = isIgnoring && hasSecureSettings
+        checks.add(DoctorCheck(
+            getString(R.string.doctor_check_device_hardening),
+            if (isHardeningActive) getString(R.string.doctor_status_ok) else "Fix Available",
+            isHardeningActive,
+            onFix = if (!isHardeningActive) { {
+                serviceScope.launch {
+                    DeviceOptimizer.applyFixes(this@ServiceDoctorActivity)
+                    runDiagnostics()
+                }
+            } } else null
+        ))
+
+        // 5d. Google Wallet & Play Integrity Security Check
+        val hasTmpSu = java.io.File("/data/local/tmp/su").exists() ||
+                java.io.File("/data/local/su").exists() ||
+                java.io.File("/data/local/bin/su").exists() ||
+                java.io.File("/data/local/xbin/su").exists()
+        val isMagiskMocking = af.shizuku.manager.ShizukuSettings.isRootMagiskMockingEnabled()
+        val isBusyboxMocking = af.shizuku.manager.ShizukuSettings.isRootBusyboxMockingEnabled()
+        val isSpoofing = af.shizuku.manager.ShizukuSettings.isSpoofDeviceEnabled()
+        val walletSecurityOk = !hasTmpSu && !isMagiskMocking && !isBusyboxMocking && !isSpoofing
+
+        val walletStatus = when {
+            hasTmpSu -> getString(R.string.doctor_wallet_risk_tmp_su)
+            isMagiskMocking -> getString(R.string.doctor_wallet_risk_magisk)
+            isBusyboxMocking -> getString(R.string.doctor_wallet_risk_busybox)
+            isSpoofing -> getString(R.string.doctor_wallet_risk_spoof)
+            else -> getString(R.string.doctor_wallet_ok)
+        }
+
+        checks.add(DoctorCheck(
+            getString(R.string.doctor_check_wallet_integrity),
+            walletStatus,
+            walletSecurityOk,
+            onFix = if (!walletSecurityOk) { {
+                MaterialAlertDialogBuilder(this@ServiceDoctorActivity)
+                    .setTitle(R.string.doctor_check_wallet_integrity)
+                    .setMessage(R.string.doctor_tip_wallet_integrity)
+                    .setPositiveButton(R.string.action_continue) { _, _ ->
+                        serviceScope.launch {
+                            val cleaned = RootCompatHelper.cleanupBridgeFromTmp(this@ServiceDoctorActivity)
+
+                            if (isMagiskMocking) {
+                                af.shizuku.manager.ShizukuSettings.setRootMagiskMockingEnabled(false)
+                            }
+                            if (isBusyboxMocking) {
+                                af.shizuku.manager.ShizukuSettings.setRootBusyboxMockingEnabled(false)
+                            }
+                            if (af.shizuku.manager.ShizukuSettings.isSuBridgeEnabled()) {
+                                af.shizuku.manager.ShizukuSettings.setSuBridgeEnabled(false)
+                            }
+                            if (isSpoofing) {
+                                af.shizuku.manager.ShizukuSettings.setSpoofDeviceEnabled(false)
+                            }
+                            af.shizuku.manager.ShizukuSettings.syncAllPlusFeaturesToServer()
+
+                            RootCompatHelper.refreshGoogleWalletAttestation(this@ServiceDoctorActivity)
+
+                            if (cleaned) {
+                                MaterialAlertDialogBuilder(this@ServiceDoctorActivity)
+                                    .setTitle(R.string.doctor_check_wallet_integrity)
+                                    .setMessage(R.string.doctor_fix_wallet_success)
+                                    .setPositiveButton(R.string.doctor_action_open_wallet) { _, _ ->
+                                        try {
+                                            val pm = packageManager
+                                            val intent = pm.getLaunchIntentForPackage("com.google.android.apps.walletnfcrel")
+                                            if (intent != null) startActivity(intent)
+                                        } catch (_: Exception) {}
+                                        runDiagnostics()
+                                    }
+                                    .setNeutralButton(R.string.doctor_action_clear_gms_cache) { _, _ ->
+                                        try {
+                                            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                                data = android.net.Uri.parse("package:com.google.android.gms")
+                                            }
+                                            startActivity(intent)
+                                        } catch (e: Exception) {
+                                            Timber.w(e, "Could not open GMS settings")
+                                        }
+                                        runDiagnostics()
+                                    }
+                                    .show()
+                            } else {
+                                MaterialAlertDialogBuilder(this@ServiceDoctorActivity)
+                                    .setTitle(R.string.doctor_check_wallet_integrity)
+                                    .setMessage(getString(R.string.doctor_fix_wallet_failed) + "\n\n" + RootCompatHelper.ADB_CLEANUP_COMMAND)
+                                    .setPositiveButton(R.string.doctor_action_copy_adb_cmd) { _, _ ->
+                                        val cm = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
+                                        cm?.setPrimaryClip(android.content.ClipData.newPlainText("ADB Cleanup", RootCompatHelper.ADB_CLEANUP_COMMAND))
+                                        Toast.makeText(this@ServiceDoctorActivity, R.string.doctor_adb_cmd_copied, Toast.LENGTH_SHORT).show()
+                                        runDiagnostics()
+                                    }
+                                    .setNegativeButton(android.R.string.cancel) { _, _ -> runDiagnostics() }
+                                    .show()
+                            }
+                        }
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+            } } else null
+        ))
+        if (!walletSecurityOk) {
+            tips.add("• " + getString(R.string.doctor_tip_wallet_integrity))
+        }
 
         // 6. Xiaomi Restricted ADB
         if (EnvironmentUtils.isXiaomi()) {

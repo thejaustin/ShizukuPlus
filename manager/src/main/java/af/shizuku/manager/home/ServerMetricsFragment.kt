@@ -60,6 +60,9 @@ class ServerMetricsFragment : Fragment() {
     }
 
     private fun updateStats() {
+        if (aiCore == null) {
+            initAiCore()
+        }
         val ai = aiCore ?: return
         try {
             val stats = ai.serverStats

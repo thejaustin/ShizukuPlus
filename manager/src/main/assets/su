@@ -22,6 +22,14 @@ COMMAND=""
 HAS_COMMAND=0
 while [ $# -gt 0 ]; do
     case "$1" in
+        -v|--version)
+            echo "26.4:MAGISKSU"
+            exit 0
+            ;;
+        -V)
+            echo "26400"
+            exit 0
+            ;;
         -c|--command|--)
             shift
             COMMAND="$*"      # everything after -c is the command (real su semantics)

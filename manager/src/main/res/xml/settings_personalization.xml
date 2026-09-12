@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_color_theme"
@@ -47,7 +48,7 @@
             android:summary="@string/settings_one_handed_mode_summary"
             android:defaultValue="false"
             android:dependency="oneui_theme_enabled"
-            android:icon="@drawable/ic_settings_suggest_24" />
+            android:icon="@drawable/ic_smartphone_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
@@ -55,6 +56,13 @@
         android:key="category_shape_style"
         android:title="Shape &amp; Icon Style"
         android:defaultValue="true">
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="rounded_edges_enabled"
+            android:title="@string/settings_rounded_edges"
+            android:summary="@string/settings_rounded_edges_summary"
+            android:defaultValue="true"
+            android:icon="@drawable/ic_window_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="expressive_shapes"
@@ -66,8 +74,8 @@
         <rikka.preference.SimpleMenuPreference
             android:key="shape_style"
             android:title="@string/settings_shape_style"
-            android:summary="%s"
-            android:defaultValue="zen"
+            app:useSimpleSummaryProvider="true"
+            android:defaultValue="modern"
             android:entries="@array/shape_styles"
             android:entryValues="@array/shape_styles_value"
             android:dependency="expressive_shapes"
@@ -76,8 +84,8 @@
         <rikka.preference.SimpleMenuPreference
             android:key="icon_style"
             android:title="@string/settings_icon_style"
-            android:summary="%s"
-            android:defaultValue="standard"
+            app:useSimpleSummaryProvider="true"
+            android:defaultValue="twotone"
             android:entries="@array/icon_styles"
             android:entryValues="@array/icon_styles_value"
             android:icon="@drawable/ic_settings_suggest_24" />
@@ -85,7 +93,7 @@
         <rikka.preference.SimpleMenuPreference
             android:key="icon_color_mode"
             android:title="@string/settings_icon_color_mode"
-            android:summary="%s"
+            app:useSimpleSummaryProvider="true"
             android:defaultValue="uniform"
             android:entries="@array/icon_color_modes"
             android:entryValues="@array/icon_color_modes_value"
@@ -108,7 +116,7 @@
         <rikka.preference.SimpleMenuPreference
             android:key="animation_intensity"
             android:title="@string/settings_animation_intensity"
-            android:summary="%s"
+            app:useSimpleSummaryProvider="true"
             android:defaultValue="2"
             android:entries="@array/animation_intensities"
             android:entryValues="@array/animation_intensities_value"
@@ -150,38 +158,28 @@
         android:title="Home Screen"
         android:defaultValue="true">
 
-        <af.shizuku.manager.settings.HomeLayoutSimulatorPreference
-            android:key="home_layout_simulator" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="show_terminal_home"
-            android:title="@string/settings_show_terminal_home"
-            android:icon="@drawable/ic_terminal_24"
-            android:defaultValue="true" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="show_automation_home"
-            android:title="@string/settings_show_automation_home"
-            android:icon="@drawable/ic_integration_instructions_24"
-            android:defaultValue="true" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="show_learn_more_home"
-            android:title="@string/settings_show_learn_more_home"
-            android:icon="@drawable/ic_outline_info_24"
-            android:defaultValue="true" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="show_start_adb_home"
-            android:title="@string/settings_show_start_adb_home"
-            android:icon="@drawable/ic_adb_24"
-            android:defaultValue="false" />
-
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="show_activity_log_home"
             android:title="@string/settings_show_activity_log_home"
             android:icon="@drawable/ic_article_24"
             android:defaultValue="true" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="show_status_card_outline"
+            android:title="@string/settings_show_status_card_outline"
+            android:summary="@string/settings_show_status_card_outline_summary"
+            android:icon="@drawable/ic_palette_24"
+            android:defaultValue="true" />
+
+        <rikka.preference.SimpleMenuPreference
+            android:key="status_card_outline_style"
+            android:title="@string/settings_status_card_outline_style"
+            app:useSimpleSummaryProvider="true"
+            android:defaultValue="material"
+            android:entries="@array/status_card_outline_styles"
+            android:entryValues="@array/status_card_outline_styles_value"
+            android:dependency="show_status_card_outline"
+            android:icon="@drawable/ic_palette_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="companion_mode"
@@ -200,7 +198,6 @@
         <rikka.preference.SimpleMenuPreference
             android:defaultValue="SYSTEM"
             android:key="language"
-            android:summary="%s"
             android:title="@string/settings_language"
             android:icon="@drawable/ic_outline_translate_24" />
 

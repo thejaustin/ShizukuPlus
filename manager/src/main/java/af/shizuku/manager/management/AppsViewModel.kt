@@ -173,20 +173,6 @@ class AppsViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    /**
-     * For HiddenAppsActivity to get ONLY hidden apps
-     */
-    fun getHiddenPackagesResource(): LiveData<Resource<List<PackageInfo>>> {
-        val ld = MutableLiveData<Resource<List<PackageInfo>>>()
-        viewModelScope.launch(Dispatchers.IO) {
-            val pm = appContext.packageManager
-            val list = rawPackages.filter { it.packageName in hiddenPackages }
-                .sortedBy { it.applicationInfo?.loadLabel(pm)?.toString()?.lowercase() ?: it.packageName }
-            ld.postValue(Resource.success(list))
-        }
-        return ld
-    }
-
     companion object {
         private const val KEY_HIDDEN = "hidden_packages"
         private const val KEY_SORT = "app_list_sort_order"

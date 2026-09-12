@@ -164,7 +164,7 @@ object AdbStarter {
                         is AdbKeyException -> context.getString(R.string.adb_error_key_store)
                         else -> it.message
                     }
-                    Toast.makeText(context, context.getString(R.string.adb_error_stop_tcp) + ". ${errorMsg}", Toast.LENGTH_LONG)
+                    Toast.makeText(context, context.getString(R.string.adb_error_stop_tcp) + ". ${errorMsg?.take(80)}", Toast.LENGTH_LONG)
                         .show()
                 }
             }

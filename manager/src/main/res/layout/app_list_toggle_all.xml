@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/margin_horizontal"
+    android:layout_marginHorizontal="28dp"
     android:layout_marginVertical="@dimen/margin_vertical"
     android:foreground="?selectableItemBackground"
     android:minHeight="56dp"
@@ -13,10 +13,10 @@
     app:layout_fitsSystemWindowsInsets="start|end"
     app:cardBackgroundColor="?colorSurfaceContainerLow"
     app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
-    app:contentPaddingLeft="16dp"
-    app:contentPaddingRight="16dp"
-    app:contentPaddingTop="8dp"
-    app:contentPaddingBottom="8dp"
+    app:contentPaddingLeft="24dp"
+    app:contentPaddingRight="24dp"
+    app:contentPaddingTop="12dp"
+    app:contentPaddingBottom="12dp"
     app:strokeWidth="0dp">
 
     <LinearLayout

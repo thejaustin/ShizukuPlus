@@ -59,6 +59,19 @@
             android:defaultValue="false" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="hide_backup_settings"
+            android:title="@string/settings_hide_backup_settings"
+            android:summary="@string/settings_hide_backup_settings_summary"
+            android:icon="@drawable/ic_folder_24"
+            android:defaultValue="false" />
+
+        <Preference
+            android:key="package_identity_info"
+            android:title="@string/settings_package_identity_category"
+            android:summary="@string/settings_package_identity_roadmap"
+            android:icon="@drawable/ic_shield_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="legacy_pairing"
             android:summary="@string/settings_legacy_pairing_summary"
             android:title="@string/settings_legacy_pairing"

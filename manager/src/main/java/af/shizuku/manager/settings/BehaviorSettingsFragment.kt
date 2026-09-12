@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.InputType
 import androidx.preference.EditTextPreference
 import androidx.preference.Preference
+import androidx.preference.PreferenceCategory
 import androidx.preference.TwoStatePreference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import af.shizuku.manager.R
@@ -16,13 +17,18 @@ import af.shizuku.manager.app.SnackbarHelper
 import af.shizuku.manager.service.ShizukuLiveService
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.ShizukuStateMachine
+import af.shizuku.manager.utils.DeviceOptimizer
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    override fun getTitle(): CharSequence? = "Startup & Behavior"
+    override fun getTitle(): CharSequence? = getString(R.string.settings_main_nav_startup_behavior_title)
 
     private lateinit var startOnBootPreference: TwoStatePreference
     private lateinit var watchdogPreference: TwoStatePreference
+    private lateinit var deviceHardeningPreference: TwoStatePreference
     private lateinit var tcpModePreference: TwoStatePreference
     private lateinit var tcpPortPreference: EditTextPreference
 
@@ -39,6 +45,7 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
 
         startOnBootPreference = requireNotNull(findPreference(KEY_START_ON_BOOT))
         watchdogPreference = requireNotNull(findPreference(KEY_WATCHDOG))
+        deviceHardeningPreference = requireNotNull(findPreference(KEY_DEVICE_HARDENING_ENABLED))
         tcpModePreference = requireNotNull(findPreference(KEY_TCP_MODE))
         tcpPortPreference = requireNotNull(findPreference(KEY_TCP_PORT))
 
@@ -90,6 +97,25 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
                     }
                 }
                 false
+            }
+        }
+
+        deviceHardeningPreference.apply {
+            isChecked = ShizukuSettings.isDeviceHardeningEnabled()
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) {
+                    ShizukuSettings.setDeviceHardeningEnabled(newValue)
+                    isChecked = newValue
+                    if (newValue) {
+                        lifecycleScope.launch {
+                            val success = DeviceOptimizer.applyFixes(context)
+                            if (success) {
+                                Toast.makeText(context, R.string.device_hardening_applied, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+                true
             }
         }
 
@@ -176,6 +202,38 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
             }
             true
         }
+
+        syncModeVisibility()
+    }
+
+    /**
+     * Show/hide preferences that are only relevant to the current connection mode (#433).
+     *
+     * ADB-only: tcp_mode, tcp_port, auto_reconnect_mdns -- meaningless in root mode since root
+     *   starts the server directly without a TCP/wireless ADB connection.
+     *
+     * When in root mode the "Network" and "Startup & Recovery" category headers gain an
+     * explanatory summary so users understand why those options are absent.
+     * Mode is refreshed on every onResume() so it updates if the user switches modes.
+     */
+    private fun syncModeVisibility() {
+        val isRootMode = EnvironmentUtils.isRooted() ||
+            ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ROOT
+        val isAdbMode = !isRootMode
+
+        // ADB-only preferences -- hide when running as root.
+        // Only override when root mode is confirmed; otherwise respect existing TLS/TV logic.
+        if (isRootMode) {
+            tcpModePreference.isVisible = false
+            tcpPortPreference.isVisible = false
+        }
+        findPreference<Preference>(KEY_AUTO_RECONNECT_MDNS)?.isVisible = isAdbMode
+
+        // Category summaries as mode indicators
+        findPreference<PreferenceCategory>("category_network")?.summary =
+            if (isRootMode) getString(R.string.settings_mode_indicator_root) else null
+        findPreference<PreferenceCategory>("category_startup")?.summary =
+            if (isRootMode) getString(R.string.settings_mode_indicator_root) else null
     }
 
     private fun syncTcpPortVisibility() {
@@ -186,6 +244,7 @@ class BehaviorSettingsFragment : BaseSettingsFragment(), SharedPreferences.OnSha
         super.onResume()
         preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
         ShizukuStateMachine.addListener(stateListener)
+        syncModeVisibility()
     }
 
     override fun onPause() {

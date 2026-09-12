@@ -29,7 +29,12 @@ object EnvironmentUtils {
     fun isTlsSupported(): Boolean = af.shizuku.common.util.EnvironmentUtils.isTlsSupported(appContext)
 
     fun isWifiRequired(): Boolean {
-        return (getAdbTcpPort() <= 0 || !ShizukuSettings.getTcpMode())
+        if (ShizukuSettings.getTcpMode()) return false
+        if (getAdbTcpPort() > 0) return false
+        if (af.shizuku.manager.adb.AdbPortProber.isPortOpen(5555, 50)) return false
+        val lastPort = ShizukuSettings.getLastPort()
+        if (lastPort in 1..65535 && af.shizuku.manager.adb.AdbPortProber.isPortOpen(lastPort, 50)) return false
+        return true
     }
 
     // Warm up the root check eagerly when the class is loaded.

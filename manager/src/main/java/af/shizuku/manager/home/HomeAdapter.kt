@@ -34,9 +34,10 @@ class HomeAdapter(
         const val ID_AUTOMATION = 8L
         const val ID_COMPANION = 9L
         const val ID_START_VIA_STOCK = 10L
+        const val ID_BACKUP = 11L
 
         private val DEFAULT_ORDER = listOf(
-            ID_TERMINAL, ID_START_ROOT, ID_START_WADB, ID_START_ADB, ID_AUTOMATION, ID_LEARN_MORE, ID_COMPANION
+            ID_TERMINAL, ID_START_ROOT, ID_START_WADB, ID_START_ADB, ID_AUTOMATION, ID_BACKUP, ID_LEARN_MORE, ID_COMPANION
         )
     }
 
@@ -129,8 +130,14 @@ class HomeAdapter(
         lastUpdateDataTime = now
         isUpdating = true
         scope.launch {
-            val (status, grantedCount, isEditMode) = withState(homeModel) {
-                Triple(it.serviceStatus.invoke(), it.grantedAppCount, it.isEditMode)
+            // Read isEditMode from HomeEditMode.isActive (the live singleton) rather than
+            // homeModel.isEditMode (the Mavericks state). The Mavericks state is updated via
+            // a 150ms-delayed onChanged callback, so it lags behind the real edit-mode
+            // toggle — this lag caused all cards to pop into view after a drag gesture that
+            // started within that 150ms window (fixes #475).
+            val isEditMode = HomeEditMode.isActive
+            val (status, grantedCount) = withState(homeModel) {
+                Pair(it.serviceStatus.invoke(), it.grantedAppCount)
             }
             val companionInstalled = withState(homeModel) { it.companionInstalled }
             val compatHubInstalled = withState(homeModel) { it.compatHubInstalled }
@@ -211,18 +218,16 @@ class HomeAdapter(
             val isHidden = id.toString() in hidden
             if (isHidden && !isEditMode) return@forEach
             when (id) {
-                ID_TERMINAL -> if (isEditMode || (adbPermission && ShizukuSettings.showTerminalHome()))
-                    addItem(TerminalViewHolder.CREATOR, status, id)
+                ID_TERMINAL -> addItem(TerminalViewHolder.CREATOR, status, id)
                 ID_START_ROOT -> if (isEditMode || (isPrimaryUser && (EnvironmentUtils.isRooted() || ShizukuSettings.isSamsungSystemUidEscalationEnabled())))
                     addItem(StartRootViewHolder.CREATOR, rootRestart, id)
                 ID_START_WADB -> if (isEditMode || (isPrimaryUser && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || EnvironmentUtils.getAdbTcpPort() > 0)))
                     addItem(startWadbCreator, null, id)
-                ID_START_ADB -> if (isEditMode || (isPrimaryUser && ShizukuSettings.showStartAdbHome()))
+                ID_START_ADB -> if (isEditMode || isPrimaryUser)
                     addItem(StartAdbViewHolder.CREATOR, null, id)
-                ID_AUTOMATION -> if (isEditMode || ShizukuSettings.showAutomationHome())
-                    addItem(AutomationViewHolder.CREATOR, null, id)
-                ID_LEARN_MORE -> if (isEditMode || ShizukuSettings.showLearnMoreHome())
-                    addItem(LearnMoreViewHolder.CREATOR, null, id)
+                ID_AUTOMATION -> addItem(AutomationViewHolder.CREATOR, null, id)
+                ID_BACKUP -> addItem(AppBackupViewHolder.CREATOR, status, id)
+                ID_LEARN_MORE -> addItem(LearnMoreViewHolder.CREATOR, null, id)
                 ID_COMPANION -> {
                     // The compat hub is what lets third-party apps detect Shizuku+, so surface
                     // this card whenever it still needs action — the hub isn't installed yet, or
@@ -243,9 +248,12 @@ class HomeAdapter(
         val hidden = ShizukuSettings.getHiddenHomeCards()
         holder.itemView.tag = id.toString() in hidden
 
-        val removeBtn = holder.itemView.findViewById<android.view.View>(R.id.remove_btn)
-        removeBtn?.setOnClickListener {
-            HomeEditMode.removeCardCallback?.invoke(id)
+        val removeBtn = holder.itemView.findViewById<android.widget.ImageButton>(R.id.remove_btn)
+        if (removeBtn != null) {
+            val isHidden = id.toString() in hidden
+            val iconRes = if (isHidden) R.drawable.ic_visibility_off_24 else R.drawable.ic_visibility_24
+            removeBtn.setImageResource(iconRes)
+            removeBtn.setOnClickListener { HomeEditMode.removeCardCallback?.invoke(id) }
         }
 
         super.onBindViewHolder(holder, position)
@@ -262,17 +270,26 @@ class HomeAdapter(
         val view = holder.itemView
         view.alpha = 0f
         view.translationY = 24f
+        view.scaleX = 0.92f
+        view.scaleY = 0.92f
         val animator = view.animate()
         if (animator != null) {
+            val interp = android.view.animation.AnimationUtils.loadInterpolator(
+                view.context, android.R.interpolator.fast_out_slow_in
+            )
             animator.alpha(1f)
                 .translationY(0f)
+                .scaleX(1f)
+                .scaleY(1f)
                 .setDuration(af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(400))
                 .setStartDelay(af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(position * 50L))
-                .setInterpolator(android.view.animation.PathInterpolator(0.2f, 0f, 0f, 1f))
+                .setInterpolator(interp)
                 .start()
         } else {
             view.alpha = 1f
             view.translationY = 0f
+            view.scaleX = 1f
+            view.scaleY = 1f
         }
     }
 
@@ -285,17 +302,12 @@ class HomeAdapter(
             cardOrder.removeAt(fromIdx)
             cardOrder.add(toIdx, fromId)
         }
-        // notifyItemMoved requires the backing list to already reflect the new order (stable IDs
-        // are on); rebuild it synchronously here rather than relying on updateData(), which is
-        // gated by isDragging during the drag gesture.
-        val status = lastRenderStatus
-        if (status != null) {
-            rebuildItems(
-                status, lastRenderGrantedCount, lastRenderIsEditMode, lastRenderCompanionInstalled,
-                lastRenderCompatHubInstalled, lastRenderIsOriginalShizukuRunning, lastRenderHidden
-            )
-        }
-        notifyItemMoved(fromPos, toPos)
+        // ItemTouchHelper owns the visual drag animation — calling notifyItemMoved() during an
+        // active drag conflicts with it and causes a brief re-bind flash (#475). The backing
+        // adapter list only needs to be in the right order when clearView() fires (at which point
+        // updateData() → notifyDataSetChanged() rebuilds everything cleanly from cardOrder).
+        // Calling rebuildItems() here would also re-trigger onBindViewHolder on adjacent items and
+        // reset their translationY to 0 mid-animation, causing the visible flash.
     }
 
     fun persistCardOrder() {

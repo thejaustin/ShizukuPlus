@@ -221,6 +221,26 @@ Licensed under the Apache License, Version 2.0
 https://github.com/google/gson
 
 ================================================================================
+AI CO-DEVELOPERS & CODE ASSISTANCE
+================================================================================
+
+This product is developed by Justin Austin (thejaustin) in collaboration with:
+
+- Claude Code (Anthropic) — Architecture, Binder IPC refactor, Drop-In variant,
+  Sentry crash mitigation, Material 3 Expressive Settings redesign.
+  https://claude.ai
+  
+- Antigravity (Google DeepMind) — Android 16/17 compatibility, SU Bridge and
+  Magisk routing, ADB loopback network discovery, Shizuku handover daemon.
+  https://deepmind.google
+
+- Jules (Google Labs) — Binder request token security authentication, logging
+  refactor, ActivityLogDao database optimization, automated testing.
+  https://jules.google.com
+
+For detailed per-commit and release breakdowns, see AI_ATTRIBUTIONS.md.
+
+================================================================================
 APACHE LICENSE, VERSION 2.0
 ================================================================================
 

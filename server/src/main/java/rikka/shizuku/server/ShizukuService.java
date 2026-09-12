@@ -233,19 +233,56 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     }
 
     private void disablePhantomProcessKiller() {
+        if (Build.VERSION.SDK_INT < 31) return; // Only needed on Android 12+
         try {
-            if (Build.VERSION.SDK_INT >= 32) { // Android 12L+ (also affects Android 12 which is 31)
-                // Disable monitor (Android 13+)
-                Runtime.getRuntime().exec(new String[]{"sh", "-c", "settings put global settings_enable_monitor_phantom_procs false"}).waitFor();
-                
-                // Disable device_config sync (Android 12+)
-                Runtime.getRuntime().exec(new String[]{"sh", "-c", "/system/bin/device_config set_sync_disabled_for_tests persistent"}).waitFor();
-                
-                // Increase max phantom processes limit (Android 12+)
-                Runtime.getRuntime().exec(new String[]{"sh", "-c", "/system/bin/device_config put activity_manager max_phantom_processes 2147483647"}).waitFor();
-                
-                LOGGER.i("Phantom Process Killer mitigation applied");
+            int userId = UserHandleCompat.getUserId(android.os.Process.myUid());
+
+            // 1. Disable phantom-process monitor (Android 13+) via settings ContentProvider.
+            //    This replaces `settings put global settings_enable_monitor_phantom_procs false`
+            //    which exec()s a shell and fails silently on Samsung SELinux.
+            IContentProvider settingsProvider = ActivityManagerApis.getContentProviderExternal(
+                    "settings", userId, null, "com.android.shell");
+            if (settingsProvider != null) {
+                try {
+                    Bundle extras = new Bundle();
+                    extras.putString("value", "false");
+                    IContentProviderUtils.callCompat(
+                            settingsProvider, null, "settings",
+                            "PUT_global", "settings_enable_monitor_phantom_procs", extras);
+                } catch (Exception e) {
+                    LOGGER.w("phantom killer: settings ContentProvider write failed", e);
+                }
             }
+
+            // 2. Disable device_config sync so phantom-process limit can't be reset by DeviceConfig push.
+            //    Replaces `device_config set_sync_disabled_for_tests persistent`.
+            //    SYNC_DISABLED_MODE_PERSISTENT = 2 in android.provider.DeviceConfig
+            try {
+                if (Build.VERSION.SDK_INT >= 33) {
+                    java.lang.reflect.Method method = android.provider.DeviceConfig.class
+                            .getMethod("setGlobalSyncDisabledForTests", int.class);
+                    int mode = 2; // DeviceConfig.SYNC_DISABLED_MODE_PERSISTENT
+                    try {
+                        mode = android.provider.DeviceConfig.class
+                                .getField("SYNC_DISABLED_MODE_PERSISTENT").getInt(null);
+                    } catch (Exception ignored) {}
+                    method.invoke(null, mode);
+                }
+            } catch (Exception e) {
+                LOGGER.w("phantom killer: DeviceConfig sync disable failed", e);
+            }
+
+            // 3. Raise max_phantom_processes to INT_MAX.
+            //    Replaces `device_config put activity_manager max_phantom_processes 2147483647`.
+            try {
+                android.provider.DeviceConfig.setProperty(
+                        "activity_manager", "max_phantom_processes",
+                        "2147483647", /* makeDefault= */ false);
+            } catch (Exception e) {
+                LOGGER.w("phantom killer: DeviceConfig setProperty failed", e);
+            }
+
+            LOGGER.i("Phantom Process Killer mitigation applied");
         } catch (Exception e) {
             LOGGER.w("Failed to mitigate Phantom Process Killer", e);
         }
@@ -268,13 +305,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
         LOGGER.i("starting server...");
 
-        // Automatically disable Phantom Process Killer on Android 12+ so the system doesn't kill Shizuku
-        disablePhantomProcessKiller();
-
         waitSystemService("package");
         waitSystemService(Context.ACTIVITY_SERVICE);
         waitSystemService(Context.USER_SERVICE);
         waitSystemService(Context.APP_OPS_SERVICE);
+
+        // Disable Phantom Process Killer on Android 12+ — must run after waitSystemService so the
+        // ContentProvider path for the settings write has a live activity-manager binder.
+        disablePhantomProcessKiller();
 
         ApplicationInfo ai = getManagerApplicationInfo();
         if (ai == null) {
@@ -437,7 +475,15 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         // attached-and-authorized non-manager caller (rish included) hitting the final `return
         // false` and getting a silent SecurityException out of newProcess() (#391 follow-up).
         if (clientRecord != null) {
-            return clientRecord.allowed;
+            if (clientRecord.allowed) {
+                return true;
+            }
+            if (checkCallingPermission() == PackageManager.PERMISSION_GRANTED ||
+                (getFlagsForUidInternal(callingUid, ConfigManager.MASK_PERMISSION, true) & ConfigManager.FLAG_ALLOWED) == ConfigManager.FLAG_ALLOWED) {
+                clientRecord.allowed = true;
+                return true;
+            }
+            return false;
         }
         if (checkCallingPermission() == PackageManager.PERMISSION_GRANTED) {
             return true;
@@ -486,7 +532,16 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         ClientRecord clientRecord = null;
 
         List<String> packages = PackageManagerApis.getPackagesForUidNoThrow(callingUid);
-        if (!packages.contains(requestPackageName)) {
+        if (!packages.isEmpty() && !packages.contains(requestPackageName)) {
+            // Only enforce the UID→package check when PackageManager returned a non-empty list.
+            // On Samsung OneUI 8 (and other OEMs with aggressive process caching), PM can return
+            // an empty list during the brief window after a reboot before the package scan completes.
+            // Throwing here in that case prevents attachApplication from adding a ClientRecord,
+            // so subsequent newProcess() calls fail the permission check with a null-message
+            // SecurityException that surfaces as "execViaShizuku failed: null" in client apps
+            // (#444, aShell You). Skipping the throw on an empty list is safe: the binder was
+            // already granted (BinderSender only sends to authorized UIDs), and clientRecord.allowed
+            // is the authoritative security gate once attached.
             LOGGER.w("Request package " + requestPackageName + "does not belong to uid " + callingUid);
             throw new SecurityException("Request package " + requestPackageName + "does not belong to uid " + callingUid);
         }
@@ -531,6 +586,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             // This lets apps like Swift Backup work without an explicit grant dialog in root mode.
             if (OsUtils.getUid() == 0 && !record.allowed) {
                 record.allowed = true;
+            }
+            if (!record.allowed) {
+                if (checkCallingPermission() == PackageManager.PERMISSION_GRANTED ||
+                    (getFlagsForUidInternal(callingUid, ConfigManager.MASK_PERMISSION, true) & ConfigManager.FLAG_ALLOWED) == ConfigManager.FLAG_ALLOWED) {
+                    record.allowed = true;
+                }
             }
             reply.putBoolean(BIND_APPLICATION_PERMISSION_GRANTED, record.allowed);
             reply.putBoolean(BIND_APPLICATION_SHOULD_SHOW_REQUEST_PERMISSION_RATIONALE, false);
@@ -629,6 +690,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             if (featureEnabledMap.containsKey(stripped)) return featureEnabledMap.get(stripped);
         } else if (featureEnabledMap.containsKey(key + "_enabled")) {
             return featureEnabledMap.get(key + "_enabled");
+        }
+        // Core bridge and mocking features default to true so standalone CLI / ADB runs work
+        if (key.equals("su_bridge") || key.equals("shell_interceptor") || key.equals("root_magisk_mocking") || key.equals("root_auto_grant")) {
+            return true;
         }
         return featureEnabledMap.getOrDefault(key, false);
     }
@@ -749,7 +814,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                             reply.writeNoException();
                             reply.writeTypedObject(info.applicationInfo, 1);
                             return true;
-                        } else if (code == TRANSACTION_getPackageUid) {
+                        } else if (TRANSACTION_getPackageUid != -1 && code == TRANSACTION_getPackageUid) {
                             reply.writeNoException();
                             reply.writeInt(10000); // Mock UID
                             return true;
@@ -771,15 +836,20 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     }
 
                     if (shouldHide) {
-                        // Only intercept known methods to prevent Type Confusion crashes
-                        if (code == TRANSACTION_getPackageInfo || code == TRANSACTION_getApplicationInfo || code == TRANSACTION_getPackageUid) {
+                        // Guard: only intercept codes resolved at runtime; -1 means reflection
+                        // failed, and matching -1 could intercept unrelated binder calls (#444).
+                        boolean matchPackageInfo = TRANSACTION_getPackageInfo != -1 && code == TRANSACTION_getPackageInfo;
+                        boolean matchApplicationInfo = TRANSACTION_getApplicationInfo != -1 && code == TRANSACTION_getApplicationInfo;
+                        boolean matchPackageUid = TRANSACTION_getPackageUid != -1 && code == TRANSACTION_getPackageUid;
+                        if (matchPackageInfo || matchApplicationInfo || matchPackageUid) {
                             LOGGER.i("Shadow: Hiding package %s from IPackageManager call (code %d)", packageName, code);
                             reply.writeNoException();
-                            
-                            if (code == TRANSACTION_getPackageInfo || code == TRANSACTION_getApplicationInfo) { 
-                                reply.writeTypedObject(null, 0); // null ApplicationInfo/PackageInfo
+                            if (matchPackageUid) {
+                                // Android returns -1 for "package not found" from getPackageUid();
+                                // returning 0 (root UID) or anything else breaks callers (#444).
+                                reply.writeInt(-1);
                             } else {
-                                reply.writeInt(0); // 0 UID
+                                reply.writeTypedObject(null, 0); // null ApplicationInfo/PackageInfo
                             }
                             return true;
                         }
@@ -863,6 +933,27 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         return false;
     }
 
+    /**
+     * Returns a no-exec IRemoteProcess with the given exit code and stdout content.
+     * Used to return synthetic results for overlay/other commands on devices where
+     * Runtime.exec() is blocked by SELinux (Samsung OneUI 8 / Android 16).
+     */
+    private IRemoteProcess syntheticProcess(int exitCode, @Nullable String stdout) {
+        try {
+            android.os.ParcelFileDescriptor[] pipe = android.os.ParcelFileDescriptor.createPipe();
+            if (stdout != null && !stdout.isEmpty()) {
+                try (java.io.FileOutputStream fos = new java.io.FileOutputStream(pipe[1].getFileDescriptor())) {
+                    fos.write(stdout.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                }
+            }
+            try { pipe[1].close(); } catch (java.io.IOException ignored) {}
+            return new ProxyRemoteProcess(pipe[0], exitCode);
+        } catch (Exception e) {
+            LOGGER.e("syntheticProcess: pipe failed, stdout empty", e);
+            return new ProxyRemoteProcess(null, exitCode);
+        }
+    }
+
     @Override
     public IRemoteProcess newProcess(String[] cmd, String[] env, String dir) {
         // Every branch below this point (SU-bridge mocking, build.prop redirection, iptables/pm
@@ -914,11 +1005,13 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         String proxyPath = "/data/adb/shizuku/" + fileName;
                         
                         try {
-                            Runtime.getRuntime().exec(new String[]{"mkdir", "-p", "/data/adb/shizuku"}).waitFor();
+                            new java.io.File("/data/adb/shizuku").mkdirs();
                             java.io.File dest = new java.io.File(proxyPath);
                             if (!dest.exists()) {
-                                String sourcePath = target;
-                                Runtime.getRuntime().exec(new String[]{"cp", sourcePath, proxyPath}).waitFor();
+                                java.nio.file.Files.copy(
+                                    java.nio.file.Paths.get(target),
+                                    java.nio.file.Paths.get(proxyPath)
+                                );
                             }
                         } catch (Exception e) {
                             LOGGER.e(e, "SUBridge: failed to prepare proxy file for " + target);
@@ -1059,7 +1152,15 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             }
             
             String baseCmd = cmd[0];
-            
+
+            // Safety: block factory-reset commands unconditionally — these must never reach exec
+            // even when root mocking or experimental features are disabled.
+            if (String.join(" ", cmd).contains("MASTER_CLEAR") || String.join(" ", cmd).contains("wipe_data")
+                    || (baseCmd.equals("sm") && cmd.length > 1 && cmd[1].equals("format"))) {
+                LOGGER.e("SUBridge: Blocked destructive factory-reset command: %s", String.join(" ", cmd));
+                return newProcessInternal(new String[]{"true"}, env, dir);
+            }
+
             // Dynamic Shell Function Injection for Deep Root Spoofing
             if (isFeatureEnabled("su_bridge") && (baseCmd.equals("sh") || baseCmd.endsWith("/sh")) && cmd.length >= 3 && (cmd[1].equals("-c") || cmd[1].equals("--command"))) {
                 String originalScript = cmd[2];
@@ -1151,9 +1252,18 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     }
                     return newProcessInternal(new String[]{"true"}, env, dir);
                 } else if (baseCmd.equals("setprop") && cmd.length > 2) {
-                    LOGGER.i("SUBridge: intercepted setprop " + cmd[1] + " " + cmd[2]);
+                    String spProp = cmd[1];
+                    String spValue = cmd[2];
+                    // Map animator/hwui props to settings put — works at shell UID without root
+                    if (spProp.equals("debug.hwui.anim_duration_scale") || spProp.equals("persist.sys.anim_duration_scale")) {
+                        return newProcessInternal(new String[]{"settings", "put", "global", "animator_duration_scale", spValue}, env, dir);
+                    } else if (spProp.equals("debug.hwui.force_dark")) {
+                        String mappedValue = spValue.equals("true") || spValue.equals("1") ? "2" : "1";
+                        return newProcessInternal(new String[]{"settings", "put", "secure", "ui_night_mode", mappedValue}, env, dir);
+                    }
+                    LOGGER.i("SUBridge: intercepted setprop " + spProp + " " + spValue);
                     try {
-                        android.os.SystemProperties.set(cmd[1], cmd[2]);
+                        android.os.SystemProperties.set(spProp, spValue);
                         return newProcessInternal(new String[]{"true"}, env, dir);
                     } catch (Exception e) {
                         LOGGER.e("SUBridge: setprop failed", e);
@@ -1221,15 +1331,18 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         }
                         return newProcessInternal(newCmd.toArray(new String[0]), env, dir);
                     }
-                } else if (baseCmd.equals("magisk") || baseCmd.endsWith("/magisk")) {
+                } else if (baseCmd.equals("magisk") || baseCmd.endsWith("/magisk") || baseCmd.equals("su") || baseCmd.endsWith("/su")) {
                     if (isFeatureEnabled("root_magisk_mocking")) {
-                        LOGGER.i("SUBridge: mocking magisk command");
+                        LOGGER.i("SUBridge: mocking " + baseCmd + " command");
                         if (cmd.length > 1) {
                             if (cmd[1].equals("-v") || cmd[1].equals("--version")) {
                                 return newProcessInternal(new String[]{"echo", "26.4:MAGISKSU"}, env, dir);
                             } else if (cmd[1].equals("-V")) {
                                 return newProcessInternal(new String[]{"echo", "26400"}, env, dir);
                             }
+                        }
+                        if (baseCmd.equals("su") || baseCmd.endsWith("/su")) {
+                            return newProcessInternal(new String[]{"echo", "26.4:MAGISKSU"}, env, dir);
                         }
                         return newProcessInternal(new String[]{"echo", "Magisk v26.4 (26400) - Shizuku+ Bridge Mode"}, env, dir);
                     }
@@ -1240,13 +1353,20 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         String targetPkg = cmd[2];
                         String perm = cmd[3];
                         if (perm.contains("WRITE_SECURE_SETTINGS") || perm.contains("DUMP") || perm.contains("PACKAGE_USAGE_STATS")) {
+                            int grantUserId = UserHandleCompat.getUserId(callingUid);
                             try {
-                                // waitFor() reaps the child (and lets the grant land before we
-                                // report success); without it each call leaks a zombie + its fds.
-                                Runtime.getRuntime().exec(new String[]{"pm", "grant", targetPkg, perm}).waitFor();
+                                // Primary: Android17Compat.grantRuntimePermission — direct Binder IPC,
+                                // works at shell UID, no exec/fork required (Samsung SELinux compatible).
+                                Android17Compat.grantRuntimePermission(targetPkg, perm, grantUserId);
                                 return newProcessInternal(new String[]{"true"}, env, dir);
                             } catch (Exception e) {
-                                LOGGER.e("SUBridge: pm grant failed", e);
+                                LOGGER.w(e, "SUBridge: grantRuntimePermission IPC failed for %s/%s, falling back to exec", targetPkg, perm);
+                                try {
+                                    Runtime.getRuntime().exec(new String[]{"pm", "grant", targetPkg, perm}).waitFor();
+                                    return newProcessInternal(new String[]{"true"}, env, dir);
+                                } catch (Exception e2) {
+                                    LOGGER.e("SUBridge: pm grant exec also failed", e2);
+                                }
                             }
                         }
                     }
@@ -1609,39 +1729,75 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     }
                 }
             } else if (baseCmd.equals("settings") && cmd.length >= 5 && cmd[1].equals("put")) {
+                // Do NOT short-circuit here with an early return. On Samsung Android 16 (and
+                // other OEMs that tighten secure-settings access), callCompat() can complete
+                // without throwing while the system silently rejects the write — so returning
+                // true(success) before the real shell command runs caused every settings put
+                // from apps like Essential to appear to succeed but do nothing (#452).
+                // Keep the fast-path call as a best-effort pre-write for performance, but always
+                // fall through to super.newProcessInternal(cmd) which is the authoritative path.
                 String namespace = cmd[2];
                 String key = cmd[3];
                 String value = cmd[4];
                 int userId = UserHandleCompat.getUserId(callingUid);
-                LOGGER.i("Plus Optimization: settings put " + namespace + " " + key + " user=" + userId);
+                LOGGER.i("Plus Optimization: settings put %s %s user=%d (best-effort pre-write, native follows)", namespace, key, userId);
                 try {
                     android.content.IContentProvider provider = ActivityManagerApis.getContentProviderExternal("settings", userId, null, "com.android.shell");
                     if (provider != null) {
                         android.os.Bundle extras = new android.os.Bundle();
                         extras.putString("value", value);
                         rikka.shizuku.server.api.IContentProviderUtils.callCompat(provider, null, "settings", "PUT_" + namespace, key, extras);
-                        return newProcessInternal(new String[]{"true"}, env, dir);
                     }
                 } catch (Throwable tr) {
-                    LOGGER.e(tr, "Plus Optimization: settings put failed");
+                    LOGGER.e(tr, "Plus Optimization: settings put pre-write failed (native will retry)");
                 }
+                // Fall through to super.newProcessInternal() for authoritative execution.
             } else if (baseCmd.equals("pm") && cmd.length >= 2 && cmd[1].equals("install")) {
                 LOGGER.i("Plus Optimization: pm install");
                 // For now, let it fall through to sh -c pm install which is already functional
-            } else if (baseCmd.equals("appops") && cmd.length >= 5) {
-                // Intercept appops set/get for native speed
-                String op = cmd[1]; // set/get
-                String pkg = cmd[2];
-                String modeOrOp = cmd[3];
+            } else if (baseCmd.equals("pm") && cmd.length > 2 && cmd[1].equals("disable")) {
+                // pm disable → pm disable-user --user 0 (shell UID 2000 can disable for a user but not globally)
+                cmd[1] = "disable-user";
+                String[] newCmd = new String[cmd.length + 2];
+                System.arraycopy(cmd, 0, newCmd, 0, cmd.length);
+                newCmd[cmd.length] = "--user";
+                newCmd[cmd.length + 1] = "0";
+                LOGGER.i("Plus Optimization: pm disable → pm disable-user --user 0 " + cmd[2]);
+                return newProcessInternal(newCmd, env, dir);
+            } else if (baseCmd.equals("svc") && cmd.length >= 3) {
+                // svc wifi/data → cmd wifi/phone (works at shell UID; svc requires root on Android 12+)
+                String svcName = cmd[1];
+                String svcAction = cmd[2];
+                if (svcName.equals("wifi")) {
+                    LOGGER.i("Plus Optimization: svc wifi " + svcAction + " → cmd wifi set-wifi-enabled");
+                    return newProcessInternal(new String[]{"cmd", "wifi", "set-wifi-enabled", svcAction.equals("enable") ? "enabled" : "disabled"}, env, dir);
+                } else if (svcName.equals("data")) {
+                    LOGGER.i("Plus Optimization: svc data " + svcAction + " → cmd phone data");
+                    return newProcessInternal(new String[]{"cmd", "phone", "data", svcAction}, env, dir);
+                }
+            } else if (baseCmd.equals("appops") && cmd.length >= 4) {
+                // Intercept appops set for native speed
+                int argIdx = 1;
+                String op = cmd[argIdx++]; // set/get
                 int userId = UserHandleCompat.getUserId(callingUid);
-                LOGGER.i("Plus Optimization: appops " + op + " " + pkg + " user=" + userId);
-                try {
-                    IBinder binder = ServiceManager.getService("appops");
-                    if (binder != null) {
-                        Class<?> stub = Class.forName("com.android.internal.app.IAppOpsService$Stub");
-                        Object service = stub.getMethod("asInterface", IBinder.class).invoke(null, binder);
-                        if (op.equals("set")) {
-                            String value = cmd[4];
+                if (argIdx < cmd.length && cmd[argIdx].equals("--user")) {
+                    argIdx++;
+                    if (argIdx < cmd.length) {
+                        try {
+                            userId = Integer.parseInt(cmd[argIdx++]);
+                        } catch (NumberFormatException ignored) {}
+                    }
+                }
+                if (op.equals("set") && argIdx + 2 < cmd.length) {
+                    String pkg = cmd[argIdx++];
+                    String modeOrOp = cmd[argIdx++];
+                    String value = cmd[argIdx++];
+                    LOGGER.i("Plus Optimization: appops set " + pkg + " " + modeOrOp + " " + value + " user=" + userId);
+                    try {
+                        IBinder binder = ServiceManager.getService("appops");
+                        if (binder != null) {
+                            Class<?> stub = Class.forName("com.android.internal.app.IAppOpsService$Stub");
+                            Object service = stub.getMethod("asInterface", IBinder.class).invoke(null, binder);
                             int intOp = (int) service.getClass().getMethod("strOpToOp", String.class).invoke(service, modeOrOp);
                             int intMode = value.equals("allow") ? 0 : (value.equals("ignore") || value.equals("deny")) ? 1 : 2; 
                             
@@ -1655,12 +1811,12 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                             
                             if (targetUid != -1) {
                                 service.getClass().getMethod("setMode", int.class, int.class, String.class, int.class).invoke(service, intOp, targetUid, pkg, intMode);
-                                return newProcessInternal(new String[]{"true"}, env, dir);
+                                return syntheticProcess(0, "");
                             }
                         }
+                    } catch (Throwable tr) {
+                        LOGGER.e(tr, "Plus Optimization: appops failed");
                     }
-                } catch (Throwable tr) {
-                    LOGGER.e(tr, "Plus Optimization: appops failed");
                 }
             } else if (baseCmd.equals("service") && cmd.length >= 4 && cmd[1].equals("call")) {
                 String serviceName = cmd[2];
@@ -1679,7 +1835,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                                 if (isBinderCallBlocked(callingUid, descriptor, code)) {
                                     LOGGER.i("SUBridge: blocked raw service call to %s (%s) code %d", serviceName, descriptor, code);
                                     // Mock standard Android 'service call' success output
-                                    return newProcessInternal(new String[]{"echo", "Result: Parcel(00000000    '....')"}, env, dir);
+                                    return syntheticProcess(0, "Result: Parcel(00000000    '....')\n");
                                 }
                             }
                         }
@@ -1694,14 +1850,21 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 }
             } else if (isFeatureEnabled("storage_proxy") && (baseCmd.equals("ls") || baseCmd.equals("rm") || baseCmd.equals("mkdir") || baseCmd.equals("cat") || baseCmd.equals("stat"))) {
                 String path = cmd[cmd.length - 1];
-                if (path.startsWith("/data/data/") || path.startsWith("/sdcard/Android/data/") || path.startsWith("/data/app/")) {
+                if (path.startsWith("\"") && path.endsWith("\"") && path.length() >= 2) {
+                    path = path.substring(1, path.length() - 1);
+                } else if (path.startsWith("'") && path.endsWith("'") && path.length() >= 2) {
+                    path = path.substring(1, path.length() - 1);
+                }
+                boolean isProxyPath = path.startsWith("/data/data/") || path.startsWith("/data/user/") || path.startsWith("/data/app/")
+                    || path.contains("/Android/data") || path.contains("/Android/obb");
+                if (isProxyPath) {
                     LOGGER.i("Plus Optimization (Storage Bridge): mapping " + baseCmd + " " + path);
                     try {
                         if (baseCmd.equals("ls")) {
                             java.util.List<String> files = storageProxy.listFiles(path);
                             if (files != null) {
                                 String joined = String.join("\n", files);
-                                return newProcessInternal(new String[]{"echo", joined}, env, dir);
+                                return syntheticProcess(0, joined.isEmpty() ? "" : joined + "\n");
                             }
                         } else if (baseCmd.equals("cat")) {
                             android.os.ParcelFileDescriptor pfd = storageProxy.openFile(path, android.os.ParcelFileDescriptor.MODE_READ_ONLY);
@@ -1711,23 +1874,169 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         } else if (baseCmd.equals("stat")) {
                             android.os.Bundle info = storageProxy.getFileInfo(path);
                             if (info.getBoolean("exists")) {
-                                String statOut = "File: " + path + "\nSize: " + info.getLong("size") + "\nModify: " + info.getLong("lastModified");
-                                return newProcessInternal(new String[]{"echo", statOut}, env, dir);
+                                String statOut = "File: " + path + "\nSize: " + info.getLong("size") + "\nModify: " + info.getLong("lastModified") + "\n";
+                                return syntheticProcess(0, statOut);
                             }
                         } else if (baseCmd.equals("rm")) {
                             if (storageProxy.delete(path)) {
-                                return newProcessInternal(new String[]{"true"}, env, dir);
+                                return syntheticProcess(0, "");
                             }
                         } else if (baseCmd.equals("mkdir")) {
-                            return newProcessInternal(new String[]{"true"}, env, dir);
+                            if (storageProxy.mkdir(path)) {
+                                return syntheticProcess(0, "");
+                            }
                         }
                     } catch (Exception e) {
                         LOGGER.e("SUBridge: StorageProxy command failed", e);
                     }
                 }
+            } else if ((baseCmd.equals("kill") || baseCmd.equals("pkill") || baseCmd.equals("killall")) && cmd.length >= 2) {
+                // kill <pid> / pkill <name> / killall <name> → IActivityManager.forceStopPackage
+                // Works at shell UID; replaces sh-c shell scripts that fail on Samsung SELinux.
+                try {
+                    IBinder amBinder = ServiceManager.getService("activity");
+                    if (amBinder != null) {
+                        Object am = Class.forName("android.app.IActivityManager$Stub")
+                            .getMethod("asInterface", IBinder.class).invoke(null, amBinder);
+                        String target = cmd[cmd.length - 1];
+                        if (baseCmd.equals("kill") && target.matches("\\d+")) {
+                            // PID-based: find package by walking getRunningAppProcesses
+                            int targetPid = Integer.parseInt(target);
+                            java.util.List<?> procs = (java.util.List<?>) am.getClass()
+                                .getMethod("getRunningAppProcesses").invoke(am);
+                            if (procs != null) {
+                                for (Object p : procs) {
+                                    int pid = (int) p.getClass().getField("pid").get(p);
+                                    if (pid == targetPid) {
+                                        String[] pkgs = (String[]) p.getClass().getField("pkgList").get(p);
+                                        if (pkgs != null && pkgs.length > 0) {
+                                            LOGGER.i("Plus: kill %d → am force-stop %s", targetPid, pkgs[0]);
+                                            ActivityManagerApis.forceStopPackageNoThrow(pkgs[0],
+                                                UserHandleCompat.getUserId(callingUid));
+                                            return newProcessInternal(new String[]{"true"}, env, dir);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        } else {
+                            // Name-based pkill/killall: treat target as package name
+                            LOGGER.i("Plus: %s %s → am force-stop", baseCmd, target);
+                            ActivityManagerApis.forceStopPackageNoThrow(target,
+                                UserHandleCompat.getUserId(callingUid));
+                            return newProcessInternal(new String[]{"true"}, env, dir);
+                        }
+                    }
+                } catch (Exception e) {
+                    LOGGER.w("Plus: kill/pkill Binder IPC failed — falling through", e);
+                }
+            } else if (baseCmd.equals("ifconfig") && cmd.length >= 3) {
+                // ifconfig wlan0 up/down → cmd wifi (works at shell UID; ifconfig requires root)
+                String iface = cmd[1];
+                String action = cmd[2];
+                if (iface.startsWith("wlan") && (action.equals("up") || action.equals("down"))) {
+                    LOGGER.i("Plus: ifconfig %s %s → cmd wifi set-wifi-enabled", iface, action);
+                    return newProcessInternal(new String[]{"cmd", "wifi", "set-wifi-enabled",
+                        action.equals("up") ? "enabled" : "disabled"}, env, dir);
+                }
+            } else if (baseCmd.equals("ip") && cmd.length >= 4 && cmd[1].equals("link") && cmd[2].equals("set")) {
+                // ip link set wlan0 up/down → cmd wifi (same mapping)
+                String iface = cmd[3];
+                String action = cmd[cmd.length - 1];
+                if (iface.startsWith("wlan") && (action.equals("up") || action.equals("down"))) {
+                    LOGGER.i("Plus: ip link set %s %s → cmd wifi set-wifi-enabled", iface, action);
+                    return newProcessInternal(new String[]{"cmd", "wifi", "set-wifi-enabled",
+                        action.equals("up") ? "enabled" : "disabled"}, env, dir);
+                }
+            } else if (baseCmd.equals("dumpsys") && cmd.length >= 2
+                    && (cmd[1].equals("battery") || cmd[1].equals("deviceidle"))) {
+                // dumpsys battery/deviceidle — shell UID has DUMP permission; wrap in try-catch
+                // so Samsung SELinux exec-block returns a failed process instead of null (#466).
+                LOGGER.i("Plus: dumpsys %s (shell DUMP permission)", cmd[1]);
+                try {
+                    return newProcessInternal(cmd, env, dir);
+                } catch (Exception e) {
+                    LOGGER.w("Plus: dumpsys %s exec blocked (SELinux?), returning synthetic exit 1", cmd[1]);
+                    return syntheticProcess(1, null);
+                }
+            } else if ((baseCmd.equals("iptables") || baseCmd.equals("ip6tables")) && cmd.length >= 2) {
+                // iptables --uid-owner <uid> → INetworkPolicyManager.setUidPolicy (Binder IPC, no exec)
+                String fullCmd = String.join(" ", cmd);
+                if (fullCmd.contains("--uid-owner")) {
+                    try {
+                        int uidIndex = -1;
+                        for (int i = 0; i < cmd.length; i++) {
+                            if (cmd[i].equals("--uid-owner")) { uidIndex = i + 1; break; }
+                        }
+                        if (uidIndex != -1 && uidIndex < cmd.length) {
+                            int targetUid = Integer.parseInt(cmd[uidIndex]);
+                            boolean restrict = !fullCmd.contains("-D");
+                            IBinder npBinder = ServiceManager.getService("netpolicy");
+                            if (npBinder != null) {
+                                Object svc = Class.forName("android.net.INetworkPolicyManager$Stub")
+                                    .getMethod("asInterface", IBinder.class).invoke(null, npBinder);
+                                int policy = restrict ? (android.os.Build.VERSION.SDK_INT >= 29 ? 4 : 1) : 0;
+                                LOGGER.i("Plus: iptables uid %d → NetworkPolicy %d", targetUid, policy);
+                                svc.getClass().getMethod("setUidPolicy", int.class, int.class)
+                                    .invoke(svc, targetUid, policy);
+                            }
+                        }
+                    } catch (Exception e) {
+                        LOGGER.e("Plus: iptables → NetworkPolicy failed", e);
+                    }
+                }
+                return newProcessInternal(new String[]{"true"}, env, dir);
+            } else if (baseCmd.equals("cmd") && cmd.length >= 3 && "overlay".equals(cmd[1]) && isFeatureEnabled("overlay_manager_plus")) {
+                // Intercept `cmd overlay <sub> ...` and route through IOverlayManagerPlus (direct
+                // Binder call, no exec). This lets font/theme apps like Hex Installer and SamFonts
+                // work on Samsung OneUI 8 / Android 16 where Runtime.exec() is SELinux-blocked.
+                String overlaySubCmd = cmd[2];
+                LOGGER.i("Plus Overlay: intercepting cmd overlay %s", String.join(" ", cmd));
+                try {
+                    if (("enable".equals(overlaySubCmd) || "enable-exclusive".equals(overlaySubCmd)) && cmd.length >= 4) {
+                        // Package name is always the last arg; --user N may appear in between
+                        String pkg = cmd[cmd.length - 1];
+                        boolean ok = overlayManagerPlus.setOverlayEnabled(pkg, true);
+                        return syntheticProcess(ok ? 0 : 1, "");
+                    } else if ("disable".equals(overlaySubCmd) && cmd.length >= 4) {
+                        String pkg = cmd[cmd.length - 1];
+                        boolean ok = overlayManagerPlus.setOverlayEnabled(pkg, false);
+                        return syntheticProcess(ok ? 0 : 1, "");
+                    } else if ("set-priority".equals(overlaySubCmd) && cmd.length >= 5 && "highest".equals(cmd[cmd.length - 1])) {
+                        String pkg = cmd[cmd.length - 2];
+                        boolean ok = overlayManagerPlus.setHighestPriority(pkg);
+                        return syntheticProcess(ok ? 0 : 1, "");
+                    } else if ("list".equals(overlaySubCmd)) {
+                        java.util.List<String> overlays = overlayManagerPlus.getAllOverlays();
+                        StringBuilder sb = new StringBuilder();
+                        for (String entry : overlays) {
+                            // Internal format is "packageName:true/false"; output mirrors cmd overlay list
+                            int sep = entry.lastIndexOf(':');
+                            if (sep > 0) {
+                                boolean enabled = "true".equals(entry.substring(sep + 1));
+                                sb.append(enabled ? "[x] " : "[ ] ").append(entry, 0, sep).append('\n');
+                            }
+                        }
+                        return syntheticProcess(0, sb.toString());
+                    }
+                    // Unrecognised overlay subcommand — fall through to native exec below
+                } catch (Exception e) {
+                    LOGGER.e("Plus Overlay: cmd overlay interception failed — falling through to exec", e);
+                }
             }
         }
-        return super.newProcessInternal(cmd, env, dir);
+        // Guard the native exec fallback: if SELinux blocks exec (Samsung OneUI 8 / Android 16),
+        // super.newProcessInternal() throws rather than returning null. Without this catch,
+        // the exception propagates over Binder and the client receives a null IRemoteProcess —
+        // causing NullPointerExceptions in apps like aShellYou (#466). Return a synthetic
+        // failed process so callers can inspect the exit code instead of crashing.
+        try {
+            return super.newProcessInternal(cmd, env, dir);
+        } catch (Exception e) {
+            LOGGER.w("newProcessInternal exec failed (SELinux block?): %s — returning synthetic exit 1",
+                String.join(" ", cmd));
+            return syntheticProcess(1, null);
+        }
     }
 
     @Override
@@ -1795,16 +2104,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 record.allowed = allowed;
                 if (record.pid == requestPid) {
                     record.dispatchRequestPermissionResult(requestCode, allowed);
-                } else if (previouslyAllowed != allowed) {
-                    // Same uid, different pid - e.g. a background :service process that
-                    // independently attached before this dialog was answered. Only the process
-                    // that actually showed requestPermission() gets a live callback above (it needs
-                    // the caller-chosen requestCode that process supplied, which we don't have for
-                    // any other pid - there's no protocol-level way to push a correction otherwise).
-                    // Force-stop so its next launch gets a fresh attachApplication() handshake
-                    // reflecting the real decision, instead of silently caching whatever it saw
-                    // before this dialog was answered - same reasoning as the analogous grant/
-                    // revoke asymmetry fixed in updateFlagsForUid() (b392c8f3, #371).
+                } else if (!allowed && previouslyAllowed) {
+                    // Only force-stop if access was revoked or denied, ensuring revoked processes
+                    // cannot continue making calls with stale assumptions. When granted, record.allowed
+                    // is already set to true above, avoiding abrupt package death mid-flow (#488).
                     ActivityManagerApis.forceStopPackageNoThrow(record.packageName, UserHandleCompat.getUserId(record.uid));
                 }
             }
@@ -2290,11 +2593,17 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             }
 
             Bundle extra = new Bundle();
-            if (MANAGER_APPLICATION_ID.equals(packageName)) {
+            boolean isManager = ServerConstants.MANAGER_APPLICATION_ID.equals(packageName)
+                    || ServerConstants.DROPIN_APPLICATION_ID.equals(packageName)
+                    || ServerConstants.PLUS_APPLICATION_ID.equals(packageName)
+                    || "af.shizuku.manager".equals(packageName);
+
+            if (isManager) {
                 extra.putParcelable("af.shizuku.plus.api.intent.extra.BINDER", new af.shizuku.api.BinderContainer(binder));
+                extra.putParcelable("rikka.shizuku.intent.extra.BINDER", new rikka.shizuku.BinderContainer(binder));
             }
-            extra.putParcelable("rikka.shizuku.intent.extra.BINDER", new rikka.shizuku.BinderContainer(binder));
             extra.putParcelable("moe.shizuku.privileged.api.intent.extra.BINDER", new moe.shizuku.api.BinderContainer(binder));
+            extra.putBinder("binder", binder);
 
             Bundle reply = IContentProviderUtils.callCompat(provider, null, name, "sendBinder", null, extra);
             if (reply != null) {
@@ -2522,10 +2831,15 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     }
                 }
             }
-            // Also try to grant WRITE_SECURE_SETTINGS and DUMP directly via shell.
-            // waitFor() reaps the child; without it each call leaks a zombie process + its fds.
-            Runtime.getRuntime().exec(new String[]{"pm", "grant", packageName, "android.permission.WRITE_SECURE_SETTINGS"}).waitFor();
-            Runtime.getRuntime().exec(new String[]{"pm", "grant", packageName, "android.permission.DUMP"}).waitFor();
+            // Also grant WRITE_SECURE_SETTINGS and DUMP via Binder IPC — no exec/fork required.
+            for (String perm : new String[]{"android.permission.WRITE_SECURE_SETTINGS", "android.permission.DUMP"}) {
+                try {
+                    Android17Compat.grantRuntimePermission(packageName, perm, UserHandleCompat.getUserId(uid));
+                } catch (Exception e) {
+                    // Fallback: pm grant exec (blocked on Samsung OneUI 8 SELinux)
+                    try { Runtime.getRuntime().exec(new String[]{"pm", "grant", packageName, perm}).waitFor(); } catch (Exception ignored) {}
+                }
+            }
         } catch (Exception e) {
             LOGGER.e(e, "Plus: AppOps elevation failed for " + packageName);
         }

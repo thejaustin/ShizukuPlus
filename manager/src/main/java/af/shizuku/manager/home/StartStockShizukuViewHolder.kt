@@ -12,6 +12,7 @@ import af.shizuku.manager.R
 import af.shizuku.manager.databinding.HomeItemContainerBinding
 import af.shizuku.manager.databinding.HomeStartRootBinding
 import af.shizuku.manager.ktx.themeColor
+import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import af.shizuku.manager.utils.StockShizukuCompat
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
@@ -36,6 +37,7 @@ class StartStockShizukuViewHolder(
     private inline val restart get() = binding.button2
 
     init {
+        containerBinding.root.applySpringTouch()
         val listener = View.OnClickListener { v: View -> onStartClicked(v) }
         start.setOnClickListener(listener)
         restart.visibility = View.GONE
@@ -43,16 +45,22 @@ class StartStockShizukuViewHolder(
     }
 
     private fun onStartClicked(v: View) {
-        if (af.shizuku.manager.migration.MigrationHelper.isRootAvailable()) {
+        val hasRoot = af.shizuku.manager.migration.MigrationHelper.isRootAvailable()
+        val hasShizuku = rikka.shizuku.Shizuku.pingBinder()
+
+        if (hasRoot || hasShizuku) {
             val starterCmd = af.shizuku.manager.starter.Starter.internalCommand
             val cmd = "am force-stop moe.shizuku.privileged.api && am force-stop af.shizuku.plus.api && nohup sh -c 'sleep 1 && $starterCmd' >/dev/null 2>&1 &"
             val activity = v.context.asActivity<android.app.Activity>() ?: return
             start.isEnabled = false
-            // Shell.cmd().exec() runs the su/shell invocation synchronously; on the calling
-            // (main) thread that risks jank or an ANR if root takes a moment to attach.
             scope.launch(kotlinx.coroutines.Dispatchers.IO) {
                 try {
-                    com.topjohnwu.superuser.Shell.cmd(cmd).exec()
+                    if (hasRoot) {
+                        com.topjohnwu.superuser.Shell.cmd(cmd).exec()
+                    } else {
+                        val p = rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", cmd), null, null)
+                        p?.waitFor()
+                    }
                 } catch (e: Exception) {
                     // Ignore
                 }

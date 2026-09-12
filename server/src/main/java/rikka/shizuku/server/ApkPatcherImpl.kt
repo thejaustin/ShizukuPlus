@@ -1,14 +1,24 @@
 package rikka.shizuku.server
 
+import android.os.Binder
+import android.os.IBinder
 import android.os.ParcelFileDescriptor
+import android.os.ServiceManager
+import android.util.Log
 import af.shizuku.server.IApkPatcher
+import af.shizuku.common.compat.Android17Compat
+import af.shizuku.common.util.UserHandleCompat
 import java.io.File
+import java.io.FileInputStream
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class ApkPatcherImpl : IApkPatcher.Stub() {
 
     companion object {
         private const val TMP_DIR = "/data/local/tmp/splus_td"
+        private const val TAG = "ApkPatcher"
     }
 
     // pkg → list of saved original APK paths (base first, then splits)
@@ -57,7 +67,69 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
         proc.waitFor() == 0
     } catch (_: Exception) { false }
 
+    private fun callingUserId() = UserHandleCompat.getUserId(Binder.getCallingUid())
+
+    private fun packageManagerService(): Any? = try {
+        val binder = ServiceManager.getService("package") ?: return null
+        Class.forName("android.content.pm.IPackageManager\$Stub")
+            .getDeclaredMethod("asInterface", IBinder::class.java).invoke(null, binder)
+    } catch (_: Exception) { null }
+
+    // IPackageManager.deletePackageAsUser with DELETE_KEEP_DATA=1 flag.
+    // Primary path for uninstalling during APK patching without wiping app data.
+    private fun uninstallKeepData(packageName: String): Boolean {
+        try {
+            val pm = packageManagerService() ?: error("no package service")
+            val latch = CountDownLatch(1)
+            var result = -1
+            val stubClass = Class.forName("android.content.pm.IPackageDeleteObserver\$Stub")
+            val observer = java.lang.reflect.Proxy.newProxyInstance(
+                stubClass.classLoader,
+                arrayOf(Class.forName("android.content.pm.IPackageDeleteObserver"), IBinder::class.java)
+            ) { _, method, args ->
+                if (method.name == "packageDeleted") {
+                    result = (args?.getOrNull(1) as? Int) ?: -1
+                    latch.countDown()
+                }
+                null
+            }
+            val invoked = pm.javaClass.methods
+                .filter { it.name == "deletePackageAsUser" }
+                .any { m ->
+                    runCatching {
+                        val DELETE_KEEP_DATA = 1
+                        when (m.parameterTypes.size) {
+                            4 -> m.invoke(pm, packageName, observer, callingUserId(), DELETE_KEEP_DATA)
+                            5 -> m.invoke(pm, packageName, null, observer, callingUserId(), DELETE_KEEP_DATA)
+                            else -> return@any false
+                        }
+                        true
+                    }.getOrDefault(false)
+                }
+            if (invoked) {
+                latch.await(30, TimeUnit.SECONDS)
+                return result == 1 // DELETE_SUCCEEDED
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "uninstallKeepData IPC failed for $packageName, falling back to exec", e)
+        }
+        return execCode("pm", "uninstall", "--user", "0", "-k", packageName) == 0
+    }
+
     private fun findAllApks(packageName: String): List<String> {
+        // Primary: ApplicationInfo.sourceDir + splitSourceDirs — direct Binder IPC, no exec
+        try {
+            val ai = Android17Compat.getApplicationInfo(packageName, 0L, callingUserId())
+            if (ai != null) {
+                val paths = mutableListOf<String>()
+                ai.sourceDir?.let { if (it.isNotEmpty()) paths.add(it) }
+                ai.splitSourceDirs?.forEach { if (it.isNotEmpty()) paths.add(it) }
+                if (paths.isNotEmpty()) return paths
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "findAllApks IPC failed for $packageName, falling back", e)
+        }
+        // Fallback: pm path exec
         val out = exec("pm", "path", packageName)
         return out.lines()
             .filter { it.startsWith("package:") }
@@ -68,10 +140,16 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
      * Install a list of APK files atomically via a pm install session.
      * Works for both single APKs and split APK sets.
      * All APKs must be signed with the same certificate.
+     *
+     * Primary: IPackageInstaller Binder IPC (Samsung SELinux compatible, no exec).
+     * Fallback: pm install-create/write/commit exec (blocked on Samsung OneUI 8).
      */
     private fun installViaSession(apkPaths: List<String>, grantPerms: Boolean = true): Boolean {
         if (apkPaths.isEmpty()) return false
-
+        // Primary: IPackageInstaller Binder IPC
+        if (installViaSessionIpc(apkPaths, grantPerms)) return true
+        Log.w(TAG, "IPC install failed, falling back to exec pm install-create/write/commit")
+        // Fallback: exec-based (blocked on Samsung OneUI 8)
         val sessionArgs = buildList {
             add("pm"); add("install-create")
             if (grantPerms) add("-g")
@@ -81,7 +159,6 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
             ?: return false
 
         for (path in apkPaths) {
-            // Derive the canonical split name from the filename (strip our temp prefix)
             val fileName = File(path).name
             val splitName = when {
                 fileName.contains("_orig_") -> fileName.substringAfter("_orig_")
@@ -94,6 +171,150 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
             }
         }
         return execCode("pm", "install-commit", sessionId.toString()) == 0
+    }
+
+    // IPC-based install via IPackageInstaller. Uses a raw Binder to implement
+    // the IIntentSender callback without needing a Context or PendingIntent.
+    private fun installViaSessionIpc(apkPaths: List<String>, grantPerms: Boolean): Boolean {
+        return try {
+            val pm = packageManagerService() ?: return false
+            val installer = pm.javaClass.methods.firstOrNull { it.name == "getPackageInstaller" }
+                ?.invoke(pm) ?: return false
+
+            // SessionParams: MODE_FULL_INSTALL = 1
+            val paramsClass = Class.forName("android.content.pm.PackageInstaller\$SessionParams")
+            val params = paramsClass.getConstructor(Int::class.java).newInstance(1)
+            if (grantPerms) {
+                runCatching { paramsClass.getMethod("setGrantAllRequested").invoke(params) }
+                    .onFailure {
+                        runCatching {
+                            paramsClass.getMethod("setGrantedRuntimePermissions", Array<String>::class.java)
+                                .invoke(params, null as Array<String>?)
+                        }
+                    }
+            }
+
+            // createSession(params, callerPackageName, [attributionTag,] userId)
+            val sessionId = installer.javaClass.methods.filter { it.name == "createSession" }
+                .firstNotNullOfOrNull { m ->
+                    runCatching {
+                        when (m.parameterTypes.size) {
+                            4 -> m.invoke(installer, params, "com.android.shell", null, 0) as? Int
+                            3 -> m.invoke(installer, params, "com.android.shell", 0) as? Int
+                            2 -> m.invoke(installer, params, "com.android.shell") as? Int
+                            else -> null
+                        }?.takeIf { it >= 0 }
+                    }.getOrNull()
+                } ?: return false
+
+            // openSession(sessionId) → IPackageInstallerSession
+            val session = installer.javaClass.methods.firstOrNull { it.name == "openSession" }
+                ?.invoke(installer, sessionId) ?: run {
+                installer.javaClass.methods.firstOrNull { it.name == "abandonSession" }?.invoke(installer, sessionId)
+                return false
+            }
+
+            // Write each APK via openWrite(name, offsetBytes, lengthBytes)
+            for (apkPath in apkPaths) {
+                val file = File(apkPath)
+                val splitName = when {
+                    file.name.contains("_orig_") -> file.name.substringAfter("_orig_")
+                    file.name.contains("_dbg_")  -> file.name.substringAfter("_dbg_")
+                    else                         -> file.name
+                }
+                val pfd = session.javaClass.methods.filter { it.name == "openWrite" }
+                    .firstNotNullOfOrNull { m ->
+                        runCatching {
+                            when (m.parameterTypes.size) {
+                                3 -> m.invoke(session, splitName, 0L, file.length()) as? ParcelFileDescriptor
+                                else -> null
+                            }
+                        }.getOrNull()
+                    }
+                if (pfd == null) {
+                    session.javaClass.methods.firstOrNull { it.name == "abandon" }?.invoke(session)
+                    return false
+                }
+                try {
+                    file.inputStream().use { src ->
+                        ParcelFileDescriptor.AutoCloseOutputStream(pfd).use { dst -> src.copyTo(dst) }
+                    }
+                    session.javaClass.methods.firstOrNull { it.name == "fsync" }?.invoke(session, pfd)
+                } catch (e: Exception) {
+                    session.javaClass.methods.firstOrNull { it.name == "abandon" }?.invoke(session)
+                    return false
+                }
+            }
+
+            // Commit with a local IntentSender backed by a raw Binder
+            val latch = CountDownLatch(1)
+            var success = false
+            val intentSender = createLocalIntentSender { intent ->
+                val status = intent?.getIntExtra("android.content.pm.extra.STATUS", -1) ?: -1
+                success = (status == 0) // PackageInstaller.STATUS_SUCCESS
+                latch.countDown()
+            } ?: run {
+                session.javaClass.methods.firstOrNull { it.name == "abandon" }?.invoke(session)
+                return false
+            }
+
+            val commitMethods = session.javaClass.methods.filter { it.name == "commit" }
+            val committed = commitMethods.any { m ->
+                runCatching {
+                    when (m.parameterTypes.size) {
+                        2 -> m.invoke(session, intentSender, false).let { true }
+                        1 -> m.invoke(session, intentSender).let { true }
+                        else -> false
+                    }
+                }.getOrDefault(false)
+            }
+            if (!committed) {
+                session.javaClass.methods.firstOrNull { it.name == "abandon" }?.invoke(session)
+                return false
+            }
+
+            latch.await(60, TimeUnit.SECONDS)
+            if (!success) session.javaClass.methods.firstOrNull { it.name == "abandon" }?.invoke(session)
+            success
+        } catch (e: Exception) {
+            Log.w(TAG, "installViaSessionIpc failed", e)
+            false
+        }
+    }
+
+    // Create an IntentSender that delivers the result Intent to [callback] without
+    // needing a Context. Uses a raw Binder as the IIntentSender implementation:
+    // IIntentSender.Stub.asInterface(binder) creates a proxy that calls binder.transact(),
+    // which invokes our onTransact() where we read the Intent from the Parcel.
+    private fun createLocalIntentSender(callback: (android.content.Intent?) -> Unit): android.content.IntentSender? {
+        return try {
+            val iIntentSenderDescriptor = "android.content.IIntentSender"
+            val rawBinder = object : android.os.Binder() {
+                init { attachInterface(null, iIntentSenderDescriptor) }
+                override fun onTransact(code: Int, data: android.os.Parcel, reply: android.os.Parcel?, flags: Int): Boolean {
+                    if (code == android.os.IBinder.FIRST_CALL_TRANSACTION) {
+                        data.enforceInterface(iIntentSenderDescriptor)
+                        data.readInt() // int code
+                        val hasIntent = data.readInt() != 0
+                        val intent = if (hasIntent) android.content.Intent.CREATOR.createFromParcel(data) else null
+                        callback(intent)
+                        reply?.writeNoException()
+                        return true
+                    }
+                    return super.onTransact(code, data, reply, flags)
+                }
+            }
+            val iIntentSenderStub = Class.forName("android.content.IIntentSender\$Stub")
+            val asInterface = iIntentSenderStub.getMethod("asInterface", android.os.IBinder::class.java)
+            val iSender = asInterface.invoke(null, rawBinder)
+            val ctor = android.content.IntentSender::class.java
+                .getDeclaredConstructor(Class.forName("android.content.IIntentSender"))
+            ctor.isAccessible = true
+            ctor.newInstance(iSender)
+        } catch (e: Exception) {
+            Log.w(TAG, "createLocalIntentSender failed", e)
+            null
+        }
     }
 
     override fun prepareTempDebug(packageName: String?): Boolean {
@@ -110,9 +331,14 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
         for (path in apkPaths) {
             val fileName = File(path).name  // base.apk, split_config.arm64_v8a.apk, etc.
             val dest = "$TMP_DIR/${packageName}_orig_$fileName"
-            if (execCode("cp", path, dest) != 0) {
-                origPaths.forEach { File(it).delete() }
-                return false
+            try {
+                File(path).copyTo(File(dest), overwrite = true)
+            } catch (e: Exception) {
+                Log.w(TAG, "copyTo failed for $path, falling back to exec cp", e)
+                if (execCode("cp", path, dest) != 0) {
+                    origPaths.forEach { File(it).delete() }
+                    return false
+                }
             }
             origPaths.add(dest)
         }
@@ -139,7 +365,7 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
         }
 
         // pm uninstall -k preserves all app data
-        if (execCode("pm", "uninstall", "--user", "0", "-k", packageName) != 0) {
+        if (!uninstallKeepData(packageName)) {
             origPaths.forEach { File(it).delete() }
             patchedPaths.forEach { File(it).delete() }
             return false
@@ -175,7 +401,7 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
         if (packageName.isNullOrBlank()) return false
         val origPaths = sessions[packageName] ?: return false
 
-        val ok = execCode("pm", "uninstall", "--user", "0", "-k", packageName) == 0 &&
+        val ok = uninstallKeepData(packageName) &&
                  installViaSession(origPaths)
 
         sessions.remove(packageName)
@@ -190,7 +416,13 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
             ?.firstOrNull { it.endsWith("_orig_base.apk") }
             ?: sessions[packageName]?.firstOrNull()
             ?: return null
-        return pipe("cat", origPath)
+        // Primary: open file directly via ParcelFileDescriptor — no exec, no cat
+        return try {
+            ParcelFileDescriptor.open(File(origPath), ParcelFileDescriptor.MODE_READ_ONLY)
+        } catch (e: Exception) {
+            Log.w(TAG, "streamOriginalApk direct open failed, falling back to cat", e)
+            pipe("cat", origPath)
+        }
     }
 
     override fun isTempDebugging(packageName: String?): Boolean {

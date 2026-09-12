@@ -56,9 +56,9 @@
          nothing outside this manifest references the group name by string, so scoping it is safe. -->
     <permission-group
         android:name="${applicationId}.permission-group.API"
-        android:description="@string/permission_group_description"
+        android:description="@string/permission_group_description_plus"
         android:icon="@drawable/ic_system_icon"
-        android:label="@string/permission_group_label" />
+        android:label="@string/permission_group_label_plus" />
 
     <permission
         android:name="af.shizuku.plus.permission.MANAGER"
@@ -70,9 +70,9 @@
          compile against, so it must stay stable across flavors. -->
     <permission
         android:name="af.shizuku.plus.permission.API_V23"
-        android:description="@string/permission_description"
+        android:description="@string/permission_description_plus"
         android:icon="@drawable/ic_system_icon"
-        android:label="@string/permission_label"
+        android:label="@string/permission_label_plus"
         android:permissionGroup="${applicationId}.permission-group.API"
         android:protectionLevel="dangerous" />
     
@@ -207,6 +207,11 @@
             android:name=".management.ApplicationManagementActivity"
             android:exported="false"
             android:label="@string/home_app_management_title" />
+
+        <activity
+            android:name=".backup.AppBackupActivity"
+            android:exported="false"
+            android:label="@string/home_backup_title" />
 
         <activity
             android:name=".settings.RootCompatibilityActivity"
@@ -451,7 +456,7 @@
 
         <provider
             android:name=".DhizukuProvider"
-            android:authorities="com.rosan.dhizuku;com.rosan.dhizuku.provider"
+            android:authorities="com.rosan.dhizuku;com.rosan.dhizuku.provider;${applicationId}.dhizuku_server.provider"
             android:directBootAware="true"
             android:enabled="true"
             android:exported="true"
@@ -501,7 +506,7 @@
         <!-- Fake ADB Server -->
         <activity
             android:name=".adb.FakeAdbPairingActivity"
-            android:theme="@android:style/Theme.DeviceDefault.Light.Dialog.Alert"
+            android:theme="@style/Theme.App.DialogHost"
             android:excludeFromRecents="true"
             android:exported="false" />
 

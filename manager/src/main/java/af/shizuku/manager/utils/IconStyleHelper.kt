@@ -24,7 +24,7 @@ object IconStyleHelper {
         TWO_TONE("twotone");
 
         companion object {
-            fun fromKey(key: String?): Style = values().firstOrNull { it.key == key } ?: STANDARD
+            fun fromKey(key: String?): Style = values().firstOrNull { it.key == key } ?: TWO_TONE
         }
     }
 
@@ -67,7 +67,8 @@ object IconStyleHelper {
         original: Drawable,
         style: Style = current(),
         colorMode: ColorMode = currentColorMode(),
-        seedKey: String? = null
+        seedKey: String? = null,
+        insetDp: Int = 4
     ): Drawable {
         val mutable = original.mutate()
         return when (style) {
@@ -77,7 +78,7 @@ object IconStyleHelper {
                 val (bgColor, fgColor) = twoToneColors(context, colorMode, seedKey)
                 val bg = pillBackground(context, bgColor)
                 val fg = tinted(mutable, fgColor)
-                val padding = (4 * context.resources.displayMetrics.density).toInt()
+                val padding = (insetDp * context.resources.displayMetrics.density).toInt()
                 LayerDrawable(arrayOf(bg, InsetDrawable(fg, padding)))
             }
         }
@@ -93,8 +94,8 @@ object IconStyleHelper {
      * XML style, ignoring the Personalization icon settings entirely. This clears that hardcoded
      * background/tint so [stylize] fully controls the result, and swaps the ImageView's own
      * padding per style: Two-Tone's pill needs to fill the whole slot (stylize's own InsetDrawable
-     * already provides the icon-to-pill breathing room), while Standard/Outlined need the
-     * original 12dp padding so the bare vector isn't stretched to fill the whole 48dp box.
+     * provides the balanced 12dp icon-to-pill breathing room), while Standard/Outlined use the
+     * same 12dp padding so the bare vector isn't stretched to fill the whole 48dp box.
      *
      * [original] must be the icon's untouched, freshly-inflated drawable - callers should capture
      * it once (e.g. in a ViewHolder's init block) rather than reading it back from the ImageView,
@@ -112,7 +113,7 @@ object IconStyleHelper {
         imageView.imageTintList = null
         val padding = if (style == Style.TWO_TONE) 0 else (CARD_ICON_PADDING_DP * context.resources.displayMetrics.density).toInt()
         imageView.setPadding(padding, padding, padding, padding)
-        imageView.setImageDrawable(stylize(context, original, style, colorMode, seedKey))
+        imageView.setImageDrawable(stylize(context, original, style, colorMode, seedKey, insetDp = CARD_ICON_PADDING_DP))
     }
 
     /**
@@ -157,6 +158,13 @@ object IconStyleHelper {
      * shape_droplet_background drawable directly and drifting out of sync with shape_style.
      */
     fun pillBackground(context: Context, color: Int): Drawable {
+        if (!ShizukuSettings.isRoundedEdgesEnabled()) {
+            return GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = 0f
+                setColor(color)
+            }
+        }
         if (!ShizukuSettings.isExpressiveShapesEnabled()) {
             return GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
@@ -176,7 +184,7 @@ object IconStyleHelper {
                 setColor(color)
             }
             "cut" -> cutDrawable(context, color)
-            else -> GradientDrawable().apply { // "modern"
+            else -> GradientDrawable().apply { // "modern" (default)
                 shape = GradientDrawable.RECTANGLE
                 cornerRadius = 8 * context.resources.displayMetrics.density
                 setColor(color)
@@ -261,15 +269,15 @@ object IconStyleHelper {
      * incompatible-server warning) — these always render as a Two-Tone-style pill regardless of
      * the user's icon Style setting, since muting an error/warning to Standard/Outlined would lose
      * the color signal. Still routes the shape through [pillBackground] so it follows shape_style,
-     * and clears the ImageView's static 12dp `CardIcon.Droplet` XML padding to 0 - without this,
-     * these pills render visibly smaller/off-center than every Style-driven card's Two-Tone pill,
-     * which gets 0 padding via [applyToCardIcon].
+     * and insets the foreground icon by [CARD_ICON_PADDING_DP] so it renders at a clean, balanced
+     * 24dp centered inside the 48dp pill matching every other card.
      */
     fun applyToStatusCardIcon(imageView: ImageView, pillColor: Int, tintColor: Int) {
         val context = imageView.context
         imageView.background = pillBackground(context, pillColor)
         imageView.imageTintList = ColorStateList.valueOf(tintColor)
-        imageView.setPadding(0, 0, 0, 0)
+        val padding = (CARD_ICON_PADDING_DP * context.resources.displayMetrics.density).toInt()
+        imageView.setPadding(padding, padding, padding, padding)
     }
 
     private fun tinted(drawable: Drawable, color: Int): Drawable {

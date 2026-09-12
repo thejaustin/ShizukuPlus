@@ -7,4 +7,14 @@
         android:title="@string/su_bridge_self_test"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_deploy_bridge"
+        android:title="@string/su_bridge_deploy_to_tmp"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_cleanup_bridge"
+        android:title="@string/su_bridge_cleanup_tmp"
+        app:showAsAction="never" />
+
 </menu>

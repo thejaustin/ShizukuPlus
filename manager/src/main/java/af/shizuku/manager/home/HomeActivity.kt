@@ -78,6 +78,7 @@ open class HomeActivity : AppActivity(), MavericksView {
     private val appsModel: AppsViewModel by viewModels()
     private val adapter by unsafeLazy { HomeAdapter(homeModel, appsModel, lifecycleScope) }
     private var versionClickCount = 0
+    private var activeUpdateManager: UpdateManager? = null
 
     // Registered unconditionally (required before onStart); only invoked on API 33+. The
     // shell-consent notification (#377) silently no-ops without this permission, reproducing
@@ -92,6 +93,8 @@ open class HomeActivity : AppActivity(), MavericksView {
     // Show the "restart after update" prompt at most once per Activity instance so it doesn't
     // reappear on every state refresh while the user hasn't restarted yet.
     private var versionSkewSnackbarShown = false
+    // Same once-per-session guard for the Samsung Auto Blocker hint snackbar.
+    private var autoBlockerSnackbarShown = false
 
     // Tracks the service's running state across successive serviceStatus updates so the
     // "just started" celebratory animation below can detect a real transition. Must be a plain
@@ -105,6 +108,38 @@ open class HomeActivity : AppActivity(), MavericksView {
     // every subsequent resume/status-refresh if the first attempt doesn't produce a running binder
     // quickly enough (which would create a WorkManager queue pile-up).
     private var autoRestartAttempted = false
+
+    // Compose state at class level so onResume() and appearanceChangeListener can update it
+    // without being in onCreate()'s closure scope.
+    private var isOneHanded by mutableStateOf(ShizukuSettings.isOneHandedModeEnabled())
+    private var isOneUi by mutableStateOf(ShizukuSettings.isOneUiThemeEnabled())
+    private var isRoundedEdges by mutableStateOf(ShizukuSettings.isRoundedEdgesEnabled())
+
+    // Strong reference required — SharedPreferences holds listeners weakly, so an inline lambda
+    // would be eligible for GC immediately after registerOnSharedPreferenceChangeListener returns.
+    private val appearanceChangeListener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        when (key) {
+            ShizukuSettings.Keys.KEY_ICON_STYLE,
+            ShizukuSettings.Keys.KEY_ICON_COLOR_MODE,
+            ShizukuSettings.Keys.KEY_SHAPE_STYLE,
+            ShizukuSettings.Keys.KEY_ROUNDED_EDGES,
+            ShizukuSettings.Keys.KEY_EXPRESSIVE_SHAPES -> {
+                isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled()
+                adapter.notifyDataSetChanged()
+            }
+            ShizukuSettings.Keys.KEY_SHOW_TERMINAL_HOME,
+            ShizukuSettings.Keys.KEY_SHOW_AUTOMATION_HOME,
+            ShizukuSettings.Keys.KEY_SHOW_LEARN_MORE_HOME,
+            ShizukuSettings.Keys.KEY_SHOW_ACTIVITY_LOG_HOME,
+            ShizukuSettings.Keys.KEY_SHOW_START_ADB_HOME,
+            ShizukuSettings.Keys.KEY_SHOW_BACKUP_HOME -> adapter.updateData()
+            ShizukuSettings.Keys.KEY_ONE_HANDED_MODE,
+            ShizukuSettings.Keys.KEY_ONEUI_THEME -> {
+                isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
+                isOneUi = ShizukuSettings.isOneUiThemeEnabled()
+            }
+        }
+    }
 
     private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
         when (state) {
@@ -179,11 +214,10 @@ open class HomeActivity : AppActivity(), MavericksView {
             }
         }
         super.onCreate(savedInstanceState)
-        // AppActivity.onCreate already called enableEdgeToEdge() when E2E is on; this mirrors
-        // that guard so the two calls stay consistent.
-        if (ShizukuSettings.isEdgeToEdgeEnabled()) {
-            androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
-        }
+        // AppActivity.onCreate() now handles enableEdgeToEdge() for all activities (including
+        // the Android 15+ enforcement path). The redundant setDecorFitsSystemWindows() call that
+        // was here previously caused inconsistent window state with other activities and contributed
+        // to the Explode transition crash on Android 16 (#483).
         if (ShizukuSettings.isBlurUiEnabled() && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             window.setBackgroundBlurRadius(30)
         }
@@ -200,11 +234,14 @@ open class HomeActivity : AppActivity(), MavericksView {
             af.shizuku.core.ui.compose.AppTheme(
                 darkTheme = androidx.compose.foundation.isSystemInDarkTheme(),
                 isBlackNightTheme = af.shizuku.manager.app.ThemeHelper.isBlackNightTheme(context),
-                isOneUi = ShizukuSettings.isOneUiThemeEnabled()
+                isOneUi = isOneUi,
+                isRoundedEdges = isRoundedEdges
             ) {
                 HomeScreen(
                 isEditMode = isEditMode,
+                isOneHanded = isOneHanded,
                 showEmptyState = showEmptyState,
+                isOneUi = isOneUi,
                 onStopClick = {
                     if (ShizukuStateMachine.isRunning()) {
                         MaterialAlertDialogBuilder(this)
@@ -227,6 +264,7 @@ open class HomeActivity : AppActivity(), MavericksView {
                         .setPositiveButton(android.R.string.ok, null)
                         .show()
                 },
+                onDoneClick = { HomeEditMode.exit() },
                 onRestoreHomeCards = { adapter.restoreAllCards() },
                 recyclerViewProvider = { ctx, paddingValues ->
                     val density = ctx.resources.displayMetrics.density
@@ -335,16 +373,18 @@ open class HomeActivity : AppActivity(), MavericksView {
         }
         homeModel.checkBatteryOptimization()
 
-        // Samsung Auto Blocker check for One UI 7/8+
+        // Samsung Auto Blocker hint — show at most once per session to avoid repeating on
+        // every status refresh while the service stays stopped.
         if (EnvironmentUtils.isSamsung() && EnvironmentUtils.getOneUiVersion() >= 6) {
             homeModel.onEach(HomeState::serviceStatus) {
-                if (it is Success && it.invoke().isRunning == false) {
+                if (!autoBlockerSnackbarShown && it is Success && it.invoke().isRunning == false) {
+                    autoBlockerSnackbarShown = true
                     SnackbarHelper.show(
                         this,
                         findViewById(android.R.id.content) ?: window.decorView,
-                        msg = "Samsung Auto Blocker may block ADB on One UI 7/8. Check Security settings.",
+                        msg = getString(R.string.snackbar_samsung_auto_blocker),
                         duration = Snackbar.LENGTH_LONG,
-                        actionText = "Check",
+                        actionText = getString(R.string.snackbar_action_check),
                         action = {
                             SettingsPage.Samsung.AutoBlocker.launch(this)
                         }
@@ -420,15 +460,15 @@ open class HomeActivity : AppActivity(), MavericksView {
             override fun isLongPressDragEnabled() = false
 
             override fun getMovementFlags(rv: RecyclerView, vh: RecyclerView.ViewHolder): Int {
-                return if (adapter.isDraggable(vh.adapterPosition))
+                return if (adapter.isDraggable(vh.bindingAdapterPosition))
                     makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
                     else
                     makeMovementFlags(0, 0)
                     }
 
                     override fun onMove(rv: RecyclerView, src: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-                if (!adapter.isDraggable(target.adapterPosition)) return false
-                adapter.moveItem(src.adapterPosition, target.adapterPosition)
+                if (!adapter.isDraggable(target.bindingAdapterPosition)) return false
+                adapter.moveItem(src.bindingAdapterPosition, target.bindingAdapterPosition)
                 HapticUtils.tap(target.itemView)
                 return true
             }
@@ -558,6 +598,7 @@ open class HomeActivity : AppActivity(), MavericksView {
         }
 
         ShizukuStateMachine.addListener(stateListener)
+        ShizukuSettings.getPreferences()?.registerOnSharedPreferenceChangeListener(appearanceChangeListener)
 
         // Handle cold-start launch from the ADB pairing success notification.
         // onNewIntent() is only called when the activity already exists; when the app
@@ -586,9 +627,17 @@ open class HomeActivity : AppActivity(), MavericksView {
 
     override fun onResume() {
         super.onResume()
-        // Force refresh status on resume
+        // Sync one-handed mode and OneUI theme compose state in case it changed while in settings.
+        isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
+        isOneUi = ShizukuSettings.isOneUiThemeEnabled()
+        isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled()
+        // Synchronously rebind all visible cards so appearance-setting changes (icon style, shape
+        // style, etc.) are visible immediately when returning from SettingsActivity. The async
+        // checkServerStatus() / homeModel.reload() path updates service-status content but involves
+        // a Loading → Success state cycle that completes AFTER the first frame is painted, so
+        // without this call the user would see the stale style for one navigation round-trip.
+        adapter.notifyDataSetChanged()
         checkServerStatus()
-        // Also reload apps list
         appsModel.load()
     }
 
@@ -618,6 +667,9 @@ open class HomeActivity : AppActivity(), MavericksView {
         HomeEditMode.startDragCallback = null
         HomeEditMode.removeCardCallback = null
         ShizukuStateMachine.removeListener(stateListener)
+        ShizukuSettings.getPreferences()?.unregisterOnSharedPreferenceChangeListener(appearanceChangeListener)
+        activeUpdateManager?.cancel()
+        activeUpdateManager = null
         super.onDestroy()
     }
 
@@ -707,7 +759,10 @@ open class HomeActivity : AppActivity(), MavericksView {
             builder.setPositiveButton(R.string.update_view_on_github) { _, _ -> openReleases() }
         } else {
             builder.setPositiveButton(R.string.update_download) { _, _ ->
-                UpdateManager(this).downloadUpdate(updateInfo.downloadUrl, updateInfo.versionName)
+                activeUpdateManager?.cancel()
+                activeUpdateManager = UpdateManager(this).also {
+                    it.downloadUpdate(updateInfo.downloadUrl, updateInfo.versionName)
+                }
             }
         }
 

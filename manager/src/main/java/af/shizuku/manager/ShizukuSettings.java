@@ -83,6 +83,7 @@ public class ShizukuSettings {
 
         // Home card extras (Shizuku+ additions)
         public static final String KEY_SHOW_START_ADB_HOME = "show_start_adb_home";
+        public static final String KEY_SHOW_BACKUP_HOME = "show_backup_home";
         public static final String KEY_CARD_ORDER = "home_card_order";
         public static final String KEY_HIDDEN_HOME_CARDS = "hidden_home_cards";
 
@@ -92,6 +93,13 @@ public class ShizukuSettings {
         public static final String KEY_BINDER_LOGGING_ENABLED = "binder_logging_enabled";
         public static final String KEY_SHADOW_BINDER_ENABLED = "shadow_binder_enabled";
         public static final String KEY_SHADOW_BINDER_HIDDEN_PACKAGES = "shadow_binder_hidden_packages";
+        // Automation Engine (#435) - separate from KEY_SHADOW_BINDER_HIDDEN_PACKAGES above so the
+        // automatic per-foreground-app list never mutates the user's manually-managed static one.
+        public static final String KEY_AUTOMATION_TRUSTED_NETWORKS = "automation_trusted_networks";
+        public static final String KEY_AUTOMATION_AUTO_HIDE_PACKAGES = "automation_auto_hide_packages";
+        public static final String KEY_AUTOMATION_APP_PROFILES_JSON = "automation_app_profiles_json";
+        public static final String KEY_HIDE_BACKUP_SETTINGS = "hide_backup_settings";
+        public static final String KEY_CUSTOM_APP_LABEL = "custom_app_label";
         public static final String KEY_ON_DEVICE_ADB_TCP = "on_device_adb_tcp";
         public static final String KEY_FORCE_START_WADB = "force_start_wadb";
         public static final String KEY_SU_BRIDGE_ENABLED = "su_bridge_enabled";
@@ -134,6 +142,7 @@ public class ShizukuSettings {
         public static final String KEY_ICON_STYLE = "icon_style";
         public static final String KEY_ICON_COLOR_MODE = "icon_color_mode";
         public static final String KEY_SHAPE_STYLE = "shape_style";
+        public static final String KEY_ROUNDED_EDGES = "rounded_edges_enabled";
         public static final String KEY_ANIMATION_INTENSITY = "animation_intensity";
         public static final String KEY_EDGE_TO_EDGE = "edge_to_edge_enabled";
         public static final String KEY_BLUR_UI = "blur_ui_enabled";
@@ -158,16 +167,17 @@ public class ShizukuSettings {
         public static final String KEY_SERVER_STARTED_BUILD = "server_started_build";
         public static final String KEY_LAST_SETTLED_STATE = "last_settled_shizuku_state";
 
+        // Appearance (Shizuku+ additions)
+        public static final String KEY_SHOW_STATUS_CARD_OUTLINE = "show_status_card_outline";
+        public static final String KEY_STATUS_CARD_OUTLINE_STYLE = "status_card_outline_style";
+
         // Companion Mode (Shizuku+ additions)
         public static final String KEY_COMPANION_MODE = "companion_mode";
         public static final String KEY_COMPANION_FALLBACK = "companion_fallback";
         public static final String KEY_LIVE_ACTIVITY_ENABLED = "live_activity_enabled";
         public static final String KEY_AUTO_RECONNECT_MDNS = "auto_reconnect_mdns";
         public static final String KEY_STEALTH_MODE = "stealth_mode";
-
-        // Automation Engine (Shizuku+ additions)
-        public static final String KEY_AUTOMATION_TRUSTED_NETWORKS = "automation_trusted_networks";
-        public static final String KEY_AUTOMATION_APP_PROFILES = "automation_app_profiles";
+        public static final String KEY_DEVICE_HARDENING_ENABLED = "device_hardening_enabled";
     }
 
     private static SharedPreferences sPreferences;
@@ -236,6 +246,14 @@ public class ShizukuSettings {
         getPreferences().edit().putBoolean(Keys.KEY_HOME_NOTIF_PERMISSION_REQUESTED, requested).apply();
     }
 
+    public static boolean isRoundedEdgesEnabled() {
+        return getPreferences().getBoolean(Keys.KEY_ROUNDED_EDGES, true);
+    }
+
+    public static void setRoundedEdgesEnabled(boolean enabled) {
+        getPreferences().edit().putBoolean(Keys.KEY_ROUNDED_EDGES, enabled).apply();
+    }
+
     public static boolean isExpressiveShapesEnabled() {
         return getPreferences().getBoolean(Keys.KEY_EXPRESSIVE_SHAPES, true);
     }
@@ -249,7 +267,7 @@ public class ShizukuSettings {
     }
 
     public static String getIconStyle() {
-        return getPreferences().getString(Keys.KEY_ICON_STYLE, "standard");
+        return getPreferences().getString(Keys.KEY_ICON_STYLE, "twotone");
     }
 
     public static String getIconColorMode() {
@@ -257,7 +275,7 @@ public class ShizukuSettings {
     }
 
     public static String getShapeStyle() {
-        return getPreferences().getString(Keys.KEY_SHAPE_STYLE, "zen");
+        return getPreferences().getString(Keys.KEY_SHAPE_STYLE, "modern");
     }
 
     public static boolean isEdgeToEdgeEnabled() {
@@ -573,24 +591,26 @@ public class ShizukuSettings {
         getPreferences().edit().putString(Keys.KEY_PITHUS_API_KEY, key).apply();
     }
 
-    public static boolean showTerminalHome() {
-        SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_SHOW_TERMINAL_HOME, true);
-    }
-
-    public static boolean showAutomationHome() {
-        SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_SHOW_AUTOMATION_HOME, true);
-    }
-
-    public static boolean showLearnMoreHome() {
-        SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_SHOW_LEARN_MORE_HOME, true);
-    }
-
     public static boolean showActivityLogHome() {
         SharedPreferences p = getPreferences();
         return p == null || p.getBoolean(Keys.KEY_SHOW_ACTIVITY_LOG_HOME, true);
+    }
+
+    /** Whether to show a colored outline on the service status card. Default: on. */
+    public static boolean isShowStatusCardOutlineEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_SHOW_STATUS_CARD_OUTLINE, true);
+    }
+
+    public static void setShowStatusCardOutlineEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_SHOW_STATUS_CARD_OUTLINE, enabled).apply();
+    }
+
+    /** "material" (default) = theme colorPrimary/colorError; "status" = green/amber/red semantic colors. */
+    public static String getStatusCardOutlineStyle() {
+        SharedPreferences p = getPreferences();
+        return p != null ? p.getString(Keys.KEY_STATUS_CARD_OUTLINE_STYLE, "material") : "material";
     }
 
     public static boolean isActivityLogEnabled() {
@@ -850,38 +870,11 @@ public class ShizukuSettings {
         return p != null && p.getBoolean(Keys.KEY_BINDER_FIREWALL_ENABLED, false);
     }
 
-    public static void setBinderFirewallEnabled(boolean enable) {
+    /** Was missing entirely (#435) - NetworkFirewallRule needs to flip this programmatically,
+     *  not just have the user flip it by hand in Settings. */
+    public static void setBinderFirewallEnabled(boolean enabled) {
         SharedPreferences p = getPreferences();
-        if (p != null) p.edit().putBoolean(Keys.KEY_BINDER_FIREWALL_ENABLED, enable).apply();
-    }
-
-    public static java.util.Set<String> getAutomationTrustedNetworks() {
-        SharedPreferences p = getPreferences();
-        java.util.Set<String> stored = p != null
-                ? p.getStringSet(Keys.KEY_AUTOMATION_TRUSTED_NETWORKS, java.util.Collections.emptySet())
-                : java.util.Collections.emptySet();
-        return new java.util.HashSet<>(stored);
-    }
-
-    public static void setAutomationTrustedNetworks(java.util.Set<String> ssids) {
-        SharedPreferences p = getPreferences();
-        if (p != null) p.edit().putStringSet(Keys.KEY_AUTOMATION_TRUSTED_NETWORKS, ssids).apply();
-    }
-
-    public static String getAutomationAppProfilesJson() {
-        SharedPreferences p = getPreferences();
-        return p != null ? p.getString(Keys.KEY_AUTOMATION_APP_PROFILES, "{}") : "{}";
-    }
-
-    public static void setAutomationAppProfilesJson(String json) {
-        SharedPreferences p = getPreferences();
-        if (p != null) p.edit().putString(Keys.KEY_AUTOMATION_APP_PROFILES, json).apply();
-    }
-
-    public static boolean hasAnyAutomationRulesConfigured() {
-        if (!getAutomationTrustedNetworks().isEmpty()) return true;
-        String json = getAutomationAppProfilesJson();
-        return !"{}".equals(json) && json.length() > 2;
+        if (p != null) p.edit().putBoolean(Keys.KEY_BINDER_FIREWALL_ENABLED, enabled).apply();
     }
 
     public static boolean isBinderLoggingEnabled() {
@@ -902,6 +895,85 @@ public class ShizukuSettings {
     public static void setShadowBinderHiddenPackages(String packages) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putString(Keys.KEY_SHADOW_BINDER_HIDDEN_PACKAGES, packages).apply();
+    }
+
+    // --- Automation Engine (#435) ---
+
+    /** Comma-separated Wi-Fi SSIDs the user considers trusted; NetworkFirewallRule disables the
+     *  Binder Firewall while connected to one of these and enables it otherwise. Empty by default
+     *  - deliberately opt-in, matching AutomationService only running once something is configured. */
+    public static String getTrustedNetworks() {
+        SharedPreferences p = getPreferences();
+        return p != null ? p.getString(Keys.KEY_AUTOMATION_TRUSTED_NETWORKS, "") : "";
+    }
+
+    public static void setTrustedNetworks(String commaSeparatedSsids) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putString(Keys.KEY_AUTOMATION_TRUSTED_NETWORKS, commaSeparatedSsids).apply();
+    }
+
+    public static java.util.Set<String> getTrustedNetworksSet() {
+        return splitCsv(getTrustedNetworks());
+    }
+
+    /** Comma-separated package names to auto-hide via ShadowBinder only while they're the
+     *  foreground app - kept entirely separate from getShadowBinderHiddenPackages()'s
+     *  user-managed static list (bound to the same AppPickerPreference widget, different key) so
+     *  automation can never clobber a choice the user made by hand there. */
+    public static String getAutoHidePackages() {
+        SharedPreferences p = getPreferences();
+        return p != null ? p.getString(Keys.KEY_AUTOMATION_AUTO_HIDE_PACKAGES, "") : "";
+    }
+
+    public static java.util.Set<String> getAutoHidePackagesSet() {
+        return splitCsv(getAutoHidePackages());
+    }
+
+    private static java.util.Set<String> splitCsv(String csv) {
+        java.util.Set<String> result = new java.util.HashSet<>();
+        if (csv == null) return result;
+        for (String s : csv.split(",")) {
+            String trimmed = s.trim();
+            if (!trimmed.isEmpty()) result.add(trimmed);
+        }
+        return result;
+    }
+
+    /** True once the user has configured at least one automation list - gates whether
+     *  AutomationService (and its notification/polling) should run at all. */
+    public static boolean isAnyAutomationConfigured() {
+        return !getTrustedNetworksSet().isEmpty() || !getAutoHidePackagesSet().isEmpty();
+    }
+
+    /** The hidden-packages value that should actually be pushed to the server right now: the
+     *  user's static list plus, if it's currently foreground, whichever auto-hide package matches.
+     *  Never persists this back to KEY_SHADOW_BINDER_HIDDEN_PACKAGES - it's compute-on-push only,
+     *  so the user's own manual list (and what they see in the AppPickerPreference UI) is untouched. */
+    public static String computeEffectiveShadowHiddenPackages(@Nullable String currentForegroundPackage) {
+        java.util.LinkedHashSet<String> effective = new java.util.LinkedHashSet<>(splitCsv(getShadowBinderHiddenPackages()));
+        if (currentForegroundPackage != null && getAutoHidePackagesSet().contains(currentForegroundPackage)) {
+            effective.add(currentForegroundPackage);
+        }
+        return String.join(",", effective);
+    }
+
+    /** Lightweight, single-setting push - deliberately NOT syncAllPlusFeaturesToServer(), which
+     *  pushes ~35 settings and would be wasteful/risky to call every time the foreground app
+     *  changes (AppAutoHideRule can fire every couple of seconds). Mirrors the same
+     *  fire-and-forget binder-call pattern syncAllPlusFeaturesToServer() uses. */
+    public static void pushShadowHiddenPackagesToServer(@Nullable String currentForegroundPackage) {
+        if (!rikka.shizuku.Shizuku.pingBinder()) return;
+        String effective = computeEffectiveShadowHiddenPackages(currentForegroundPackage);
+        new Thread(() -> {
+            try {
+                android.os.IBinder binder = (android.os.IBinder) rikka.shizuku.Shizuku.getBinder();
+                if (binder == null) return;
+                moe.shizuku.server.IShizukuService service = moe.shizuku.server.IShizukuService.Stub.asInterface(binder);
+                service.setPlusSetting("shadow_hidden_packages", effective);
+            } catch (Exception e) {
+                Timber.tag("ShizukuSettings").w(e, "Failed to push effective shadow hidden packages");
+            }
+        }).start();
     }
 
     public static void setAdbProxyEnabled(boolean enable) {
@@ -986,6 +1058,11 @@ public class ShizukuSettings {
         return p != null && p.getBoolean(Keys.KEY_SU_BRIDGE_ENABLED, false);
     }
 
+    public static void setSuBridgeEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_SU_BRIDGE_ENABLED, enable).apply();
+    }
+
     public static String getCustomSuPath() {
         SharedPreferences p = getPreferences();
         return p != null ? p.getString("custom_su_path", "") : "";
@@ -994,6 +1071,11 @@ public class ShizukuSettings {
     public static boolean isRootMagiskMockingEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_ROOT_MAGISK_MOCKING_ENABLED, false);
+    }
+
+    public static void setRootMagiskMockingEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_ROOT_MAGISK_MOCKING_ENABLED, enable).apply();
     }
 
     public static boolean isRootAutoGrantEnabled() {
@@ -1011,6 +1093,11 @@ public class ShizukuSettings {
         return p != null && p.getBoolean(Keys.KEY_ROOT_BUSYBOX_MOCKING_ENABLED, false);
     }
 
+    public static void setRootBusyboxMockingEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_ROOT_BUSYBOX_MOCKING_ENABLED, enable).apply();
+    }
+
     public static boolean isRootBuildPropRedirectEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_ROOT_BUILD_PROP_REDIRECT_ENABLED, false);
@@ -1019,11 +1106,6 @@ public class ShizukuSettings {
     public static boolean isRootIptablesMockingEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_ROOT_IPTABLES_MOCKING_ENABLED, false);
-    }
-
-    public static boolean showStartAdbHome() {
-        SharedPreferences p = getPreferences();
-        return p != null && p.getBoolean(Keys.KEY_SHOW_START_ADB_HOME, false);
     }
 
     @Nullable
@@ -1253,5 +1335,82 @@ public class ShizukuSettings {
         // Default OFF: auto-reconnect is opt-in, not opt-out. A null prefs object
         // (prefs not yet initialized) is treated as disabled, not enabled.
         return p != null && p.getBoolean(Keys.KEY_AUTO_RECONNECT_MDNS, false);
+    }
+
+    public static boolean isDeviceHardeningEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_DEVICE_HARDENING_ENABLED, true);
+    }
+
+    public static void setDeviceHardeningEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_DEVICE_HARDENING_ENABLED, enabled).apply();
+    }
+
+    /** Whether the Backup &amp; Restore category is hidden from the Feature Hub screen (#461). */
+    public static boolean isHideBackupSettingsEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_HIDE_BACKUP_SETTINGS, false);
+    }
+
+    public static void setHideBackupSettingsEnabled(boolean hide) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_HIDE_BACKUP_SETTINGS, hide).apply();
+    }
+
+    /**
+     * Returns a user-configured display label suffix, or null if the user has not set one.
+     * Used only in the About screen; this does NOT change the APK package name at runtime.
+     * Full package name randomization requires a custom build — see issue #469.
+     */
+    @Nullable
+    public static String getCustomAppLabel() {
+        SharedPreferences p = getPreferences();
+        String label = p != null ? p.getString(Keys.KEY_CUSTOM_APP_LABEL, null) : null;
+        return (label != null && !label.isEmpty()) ? label : null;
+    }
+
+    public static void setCustomAppLabel(@Nullable String label) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putString(Keys.KEY_CUSTOM_APP_LABEL, label).apply();
+    }
+
+    /**
+     * Returns true when at least one automation rule has been configured by the user.
+     * Used to guard AutomationService startup so a permanent foreground notification is never
+     * shown on devices where the user has never touched the automation settings.
+     */
+    public static boolean hasAnyAutomationRulesConfigured() {
+        SharedPreferences p = getPreferences();
+        if (p == null) return false;
+        String trustedNetworks = p.getString(Keys.KEY_AUTOMATION_TRUSTED_NETWORKS, "");
+        String autoHide = p.getString(Keys.KEY_AUTOMATION_AUTO_HIDE_PACKAGES, "");
+        String appProfiles = p.getString(Keys.KEY_AUTOMATION_APP_PROFILES_JSON, "{}");
+        boolean hasNetworks = trustedNetworks != null && !trustedNetworks.trim().isEmpty();
+        boolean hasAutoHide = autoHide != null && !autoHide.trim().isEmpty();
+        boolean hasProfiles = appProfiles != null && appProfiles.length() > 2 && !appProfiles.equals("{}");
+        return hasNetworks || hasAutoHide || hasProfiles;
+    }
+
+    /**
+     * Returns the per-app Binder Firewall automation profiles as a JSON string.
+     * Format: {"com.pkg": {"binder_firewall": true}}
+     * Returns "{}" when no profiles are configured.
+     */
+    @NonNull
+    public static String getAutomationAppProfilesJson() {
+        SharedPreferences p = getPreferences();
+        if (p == null) return "{}";
+        String json = p.getString(Keys.KEY_AUTOMATION_APP_PROFILES_JSON, "{}");
+        return json != null ? json : "{}";
+    }
+
+    /**
+     * Persists the per-app Binder Firewall automation profiles JSON string.
+     * See {@link #getAutomationAppProfilesJson()} for format.
+     */
+    public static void setAutomationAppProfilesJson(@NonNull String json) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putString(Keys.KEY_AUTOMATION_APP_PROFILES_JSON, json).apply();
     }
 }

@@ -1,8 +1,8 @@
 package rikka.shizuku.server
 
+import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
-import android.os.Process
 import android.os.ServiceManager
 import android.util.Log
 import af.shizuku.server.INetworkGovernorPlus
@@ -39,7 +39,7 @@ class NetworkGovernorPlusImpl : INetworkGovernorPlus.Stub() {
             }
         } else null
         
-        val userId = UserHandleCompat.getUserId(Process.myUid())
+        val userId = UserHandleCompat.getUserId(Binder.getCallingUid())
         try {
             val provider = ActivityManagerApis.getContentProviderExternal("settings", userId, null, "com.android.shell")
             if (provider != null) {
@@ -67,7 +67,7 @@ class NetworkGovernorPlusImpl : INetworkGovernorPlus.Stub() {
             val asInterface = stub.getMethod("asInterface", IBinder::class.java)
             val service = asInterface.invoke(null, binder) ?: return false
 
-            val userId = UserHandleCompat.getUserId(Process.myUid())
+            val userId = UserHandleCompat.getUserId(Binder.getCallingUid())
             val ai = Android17Compat.getApplicationInfo(packageName, 0L, userId)
                 ?: return false
             val uid = ai.uid
@@ -94,7 +94,7 @@ class NetworkGovernorPlusImpl : INetworkGovernorPlus.Stub() {
             val asInterface = stub.getMethod("asInterface", IBinder::class.java)
             val service = asInterface.invoke(null, binder) ?: return false
 
-            val userId = UserHandleCompat.getUserId(Process.myUid())
+            val userId = UserHandleCompat.getUserId(Binder.getCallingUid())
             val ai = Android17Compat.getApplicationInfo(packageName, 0L, userId)
                 ?: return false
             val uid = ai.uid

@@ -22,10 +22,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import af.shizuku.manager.database.AppContextManager
 import androidx.preference.TwoStatePreference
+import android.content.ClipData
+import android.content.ClipboardManager
 
 class AdvancedSettingsFragment : BaseSettingsFragment() {
 
-    override fun getTitle(): CharSequence? = "Advanced & Diagnostics"
+    override fun getTitle(): CharSequence? = getString(R.string.settings_main_nav_advanced_diagnostics_title)
 
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_advanced, rootKey)
@@ -119,6 +121,40 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                 .setNegativeButton(android.R.string.cancel, null)
                 .show()
             true
+        }
+
+        // Feature 2 (#461): hide_backup_settings toggle — hides the Backup & Restore category
+        // from the Feature Hub (ShizukuPlusSettingsFragment). The toggle is effective on next
+        // entry into Feature Hub (no recreate needed; the fragment re-reads the setting on resume).
+        findPreference<TwoStatePreference>("hide_backup_settings")?.apply {
+            isChecked = ShizukuSettings.isHideBackupSettingsEnabled()
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) ShizukuSettings.setHideBackupSettingsEnabled(newValue)
+                true
+            }
+        }
+
+        // Feature 1 (#469): Package identity info — shows current package name and explains
+        // the roadmap for true package name randomization (requires custom build).
+        // TODO(#469): Replace this info preference with an EditText + "Randomize" action
+        // once the Build-Your-Own CI workflow is available to generate custom-named APKs.
+        // The runtime label stored in KEY_CUSTOM_APP_LABEL can be wired into the About screen
+        // and the automation intent viewer (HomeActivity) once the UI is fleshed out.
+        findPreference<Preference>("package_identity_info")?.apply {
+            summary = getString(R.string.settings_package_identity_current, context.packageName)
+            setOnPreferenceClickListener {
+                MaterialAlertDialogBuilder(context)
+                    .setTitle(R.string.package_identity_info_title)
+                    .setMessage(R.string.package_identity_info_detail)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setNeutralButton(R.string.toast_copied_to_clipboard) { _, _ ->
+                        val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        clipboard.setPrimaryClip(ClipData.newPlainText("package", context.packageName))
+                        Toast.makeText(context, R.string.app_management_package_copied, Toast.LENGTH_SHORT).show()
+                    }
+                    .show()
+                true
+            }
         }
 
         // The manifest's namespace (af.shizuku.manager) differs from the per-flavor applicationId

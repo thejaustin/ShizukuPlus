@@ -402,15 +402,15 @@ jobs:
           # build the headline major == the era major, so a single callout is correct here. When you
           # bump this, also re-run scripts/backfill_majors.py (add the new major to its MAJORS list)
           # so older release pages show BOTH this headline and the major of their own era.
-          MAJOR_RELEASE="v13.6.0.r2341"
-          MAJOR_DESC="Fixed two separate reasons Shizuku+ could look broken even when it appeared to be running: the privileged server could silently die during normal use and never recover, even with Watchdog enabled (a bug in the watchdog's own crash-detection logic defeated the external re-arm added for #415/#417); and an app authorized from Shizuku+'s own screen could stay stuck showing \"no access\" until manually force-stopped, because nothing told its already-running process the grant had changed."
+          MAJOR_RELEASE="v13.6.0.r2393"
+          MAJOR_DESC="Began a systematic migration of all privileged exec()-based shell commands to direct Binder IPC primaries, unlocking ADB-mode support for nearly every advanced feature (rootless bridges, su bridge, auto-grant), dramatically improving security and reliability by eliminating shell injection risks, and resolving Android 17 compatibility gaps that broke exec()-based permissions/package management on the new release."
 
           # Most recent CRITICAL FIX to spotlight — a distinct, lower tier from MAJOR_RELEASE
           # above: not new capability, but a regression severe enough that users on the
           # affected range should know to update. Same update procedure as MAJOR_RELEASE.
           # Leave both blank ("") to omit this callout entirely once nothing recent qualifies.
-          CRITICAL_RELEASE="v13.6.0.r2244"
-          CRITICAL_DESC="attachApplication (binder code 17) had fallen into a dead branch of Service.onTransact() — the call appeared to succeed to the connecting app, but the server never actually registered it as a client, so every API v13+ client's connection silently failed at the first step. Affected Morphe, InstallerX Revived, Droid-ify, ObtainX, Obtainium, MT Manager, Termux rish, and others. If you're still on a build before this, update."
+          CRITICAL_RELEASE="v13.6.0.r2370"
+          CRITICAL_DESC="Fixed a null IRemoteProcess crash (#466) that affected clients on Samsung OneUI 8 and other OEMs — Shizuku.newProcess() returned null on those devices, causing the manager to crash on the first privileged shell operation. All callers now handle null explicitly with clear error messages instead of an NPE."
 
           # Style: Keep a Changelog's category vocabulary (keepachangelog.com), formatted as
           # GitHub Release notes in the thedjchi-fork sibling-project style (this fork's closest

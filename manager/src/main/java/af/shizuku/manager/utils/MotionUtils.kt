@@ -11,13 +11,19 @@ object MotionUtils {
      * Applies a spring-based scale down/up effect on touch.
      */
     fun View.applySpringTouch(scale: Float = 0.97f) {
-        val springAnimX = SpringAnimation(this, SpringAnimation.SCALE_X, 1.0f).apply {
-            spring.stiffness = SpringForce.STIFFNESS_LOW
-            spring.dampingRatio = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
+        // Single spring per axis; animateToFinalPosition() composes smoothly mid-animation
+        // (no ViewPropertyAnimator discontinuity when the finger lifts before the press-in completes).
+        val springX = SpringAnimation(this, SpringAnimation.SCALE_X).apply {
+            spring = SpringForce(1.0f).also {
+                it.stiffness = SpringForce.STIFFNESS_MEDIUM
+                it.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+            }
         }
-        val springAnimY = SpringAnimation(this, SpringAnimation.SCALE_Y, 1.0f).apply {
-            spring.stiffness = SpringForce.STIFFNESS_LOW
-            spring.dampingRatio = SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY
+        val springY = SpringAnimation(this, SpringAnimation.SCALE_Y).apply {
+            spring = SpringForce(1.0f).also {
+                it.stiffness = SpringForce.STIFFNESS_MEDIUM
+                it.dampingRatio = SpringForce.DAMPING_RATIO_NO_BOUNCY
+            }
         }
 
         setOnTouchListener { v, event ->
@@ -30,15 +36,12 @@ object MotionUtils {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     v?.let { HapticUtils.tap(it) }
-                    springAnimX.cancel()
-                    springAnimY.cancel()
-                    v?.animate()?.scaleX(scale)?.scaleY(scale)
-                        ?.setDuration(af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(100))
-                        ?.start()
+                    springX.animateToFinalPosition(scale)
+                    springY.animateToFinalPosition(scale)
                 }
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    springAnimX.start()
-                    springAnimY.start()
+                    springX.animateToFinalPosition(1.0f)
+                    springY.animateToFinalPosition(1.0f)
                 }
             }
             false

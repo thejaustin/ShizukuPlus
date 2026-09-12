@@ -38,6 +38,14 @@ object UpdateInstaller {
             val packageName = context.packageName
             val apkPath = apkFile.absolutePath
 
+            // Paths used inside the shell script for backup preservation.
+            // pm uninstall removes getExternalFilesDir() entirely — the backup is written there
+            // above, so without this preservation it is silently lost on every forced update.
+            // We stage it in /data/local/tmp (world-accessible by shell UID 2000, survives
+            // uninstall) and restore it after pm install into the same absolute path.
+            val backupAbsPath = backupFile?.absolutePath ?: ""
+            val backupParentDir = backupFile?.parent ?: ""
+
             // The script sleeps for 2 seconds to allow the app to finish its current execution,
             // then uninstalls the current package, installs the new APK, and restarts the app.
             val script = """
@@ -45,16 +53,22 @@ object UpdateInstaller {
                 sleep 2
                 cp "$apkPath" /data/local/tmp/update.apk
                 chmod 644 /data/local/tmp/update.apk
+                if [ -n "$backupAbsPath" ] && [ -f "$backupAbsPath" ]; then cp "$backupAbsPath" /data/local/tmp/shizukuplus_settings.json; fi
                 pm uninstall $packageName
                 pm install -r -d /data/local/tmp/update.apk
                 rm /data/local/tmp/update.apk
- 
-                # Enhance: Auto-grant crucial permissions and AppOps to ensure a truly seamless transition
+                if [ -f /data/local/tmp/shizukuplus_settings.json ] && [ -n "$backupParentDir" ]; then
+                    mkdir -p "$backupParentDir"
+                    cp /data/local/tmp/shizukuplus_settings.json "$backupAbsPath"
+                    rm /data/local/tmp/shizukuplus_settings.json
+                fi
+
+                # Auto-grant crucial permissions and AppOps to ensure a truly seamless transition
                 pm grant $packageName android.permission.POST_NOTIFICATIONS 2>/dev/null
                 pm grant $packageName android.permission.WRITE_SECURE_SETTINGS 2>/dev/null
                 appops set $packageName SYSTEM_ALERT_WINDOW allow 2>/dev/null
                 appops set $packageName GET_USAGE_STATS allow 2>/dev/null
- 
+
                 am start -n $packageName/af.shizuku.manager.MainActivity
                 rm /data/local/tmp/force_update.sh
             """.trimIndent()

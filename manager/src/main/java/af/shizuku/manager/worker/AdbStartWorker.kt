@@ -39,6 +39,7 @@ import af.shizuku.manager.receiver.ShizukuReceiverStarter.WorkerState
 import af.shizuku.manager.receiver.ShizukuReceiverStarter.updateNotification
 import af.shizuku.manager.settings.BugReportDialogActivity
 import af.shizuku.manager.starter.Starter
+import af.shizuku.manager.adb.AdbPortProber
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.ShizukuStateMachine
 
@@ -52,8 +53,32 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
 
             val cr = applicationContext.contentResolver
 
+            // Give the system ~1.5 s to finish initializing after reboot before toggling ADB.
+            // On first attempt with ADB currently disabled, this avoids an immediate connect failure.
+            if (runAttemptCount == 0) {
+                val adbCurrentlyEnabled = Settings.Global.getInt(cr, Settings.Global.ADB_ENABLED, 0)
+                if (adbCurrentlyEnabled == 0) delay(1500L)
+            }
+
             Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)
             Settings.Global.putLong(cr, "adb_allowed_connection_time", 0L)
+
+            // Fast path: if TCP mode is on and the port is already listening, connect directly —
+            // no Wireless Debugging or Wi-Fi required.
+            if (ShizukuSettings.getTcpMode()) {
+                val desiredPort = ShizukuSettings.getTcpPort()
+                if (desiredPort in 1..65535) {
+                    if (AdbPortProber.isPortOpen(desiredPort, 600)) {
+                        AdbStarter.startAdb(applicationContext, desiredPort)
+                        Starter.waitForBinder()
+                        ActivityLogManager.log("Shizuku", applicationContext.packageName,
+                            "Service started via direct TCP port $desiredPort (no Wi-Fi required)")
+                        val nm = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+                        nm.cancel(ShizukuReceiverStarter.NOTIFICATION_ID)
+                        return Result.success()
+                    }
+                }
+            }
 
             val tcpPort = EnvironmentUtils.getAdbTcpPort()
             if (tcpPort > 0 && !ShizukuSettings.getTcpMode()) {
@@ -204,6 +229,18 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
         }
     }
 
+    private fun Throwable.toUserMessage(context: Context): String = when {
+        this is java.net.ConnectException || this is java.net.SocketTimeoutException ->
+            context.getString(R.string.wadb_error_cannot_connect)
+        this is java.util.concurrent.TimeoutException ->
+            context.getString(R.string.wadb_error_discovery_timeout)
+        this is javax.net.ssl.SSLException ->
+            context.getString(R.string.wadb_error_ssl_mismatch)
+        this is SecurityException ->
+            context.getString(R.string.wadb_error_not_authorized)
+        else -> context.getString(R.string.wadb_error_generic_short)
+    }
+
     private fun showErrorNotification(context: Context, e: Exception) {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -217,7 +254,9 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
 
         val nb = NotificationCompat.Builder(context, CHANNEL_ID)
 
-        val msgNotif = "$e. ${context.getString(R.string.wadb_error_notify_dev)}"
+        val shortMsg = e.toUserMessage(context)
+        val devDetail = e.message?.take(120)
+        val bigText = if (devDetail != null) "$shortMsg\n\n$devDetail" else shortMsg
 
         val intent = Intent(context, BugReportDialogActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -230,10 +269,10 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
         val notification = nb
             .setSmallIcon(R.drawable.ic_notification_icon)
             .setContentTitle(context.getString(R.string.wadb_error_title))
-            .setContentText(msgNotif)
+            .setContentText(shortMsg)
             .setContentIntent(pendingIntent)
             .setSilent(true)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(msgNotif))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
             .build()
 
         nm.notify(NOTIFICATION_ID, notification)

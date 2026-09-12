@@ -24,6 +24,10 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import af.shizuku.manager.R
@@ -52,9 +56,13 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
     private var backCallback: androidx.activity.OnBackPressedCallback? = null
     private var swipeRightAction = "none"
     private var swipeLeftAction = "none"
+    private var isFirstResume = true
 
-    private val stateListener: (ShizukuStateMachine.State) -> Unit = {
-        if (ShizukuStateMachine.isDead() && !isFinishing) finish()
+    private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
+        when {
+            ShizukuStateMachine.isDead() && !isFinishing -> finish()
+            state == ShizukuStateMachine.State.RUNNING -> viewModel.load()
+        }
     }
 
     override fun getLayoutId() = R.layout.apps_appbar_activity
@@ -62,7 +70,10 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (!ShizukuStateMachine.isRunning()) {
+        // Close immediately only when Shizuku is definitively stopped/crashed; allow the
+        // activity to open during STARTING so it can display a "waiting" state and load the
+        // list as soon as the binder arrives (fixes #471 — tap during startup transition).
+        if (ShizukuStateMachine.isDead()) {
             finish()
             return
         }
@@ -76,12 +87,20 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        // Empty state view
+        // Empty state view — also used as "waiting for Shizuku" placeholder while STARTING.
         val emptyStateView = binding.emptyStateView
         emptyStateView.setIcon(R.drawable.ic_empty_search_24)
         emptyStateView.setTitle(R.string.empty_state_title_no_results)
         emptyStateView.setDescription(R.string.empty_state_description_no_results)
         emptyStateView.hideActionButton()
+
+        // If the binder isn't up yet (STARTING state), show a "waiting" placeholder and let
+        // the stateListener trigger the real load once RUNNING is reached.
+        if (!ShizukuStateMachine.isRunning()) {
+            emptyStateView.setTitle(R.string.empty_state_title_service_starting)
+            emptyStateView.setDescription(R.string.empty_state_description_service_starting)
+            emptyStateView.visibility = View.VISIBLE
+        }
 
         // Predictive back support for selection mode
         backCallback = object : androidx.activity.OnBackPressedCallback(false) {
@@ -119,6 +138,11 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
                     val data = it.data ?: emptyList()
                     adapter.updateData(data)
 
+                    // Reset empty state to "no results" variant in case it was showing the
+                    // "waiting for Shizuku" placeholder while the service was STARTING.
+                    emptyStateView.setTitle(R.string.empty_state_title_no_results)
+                    emptyStateView.setDescription(R.string.empty_state_description_no_results)
+
                     // Show empty state when filtered results are empty
                     val hasData = data.isNotEmpty()
                     emptyStateView.visibility = if (hasData) View.GONE else View.VISIBLE
@@ -141,7 +165,9 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
                 Status.LOADING -> {}
             }
         }
-        viewModel.load()
+        // Only trigger an initial load if Shizuku is actually running; otherwise the
+        // stateListener will fire viewModel.load() once the binder arrives.
+        if (ShizukuStateMachine.isRunning()) viewModel.load()
 
         recyclerView.adapter = adapter
         recyclerView.clipToPadding = false
@@ -152,7 +178,12 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
                 androidx.core.view.WindowInsetsCompat.Type.displayCutout()
             )
             val extraBottomPadding = (72 * resources.displayMetrics.density).toInt()
-            v.setPadding(bars.left, v.paddingTop, bars.right, bars.bottom + extraBottomPadding)
+            val oneHandedTopPadding = if (ShizukuSettings.isOneHandedModeEnabled()) {
+                (resources.displayMetrics.heightPixels * 0.16f).toInt()
+            } else {
+                0
+            }
+            v.setPadding(bars.left, oneHandedTopPadding, bars.right, bars.bottom + extraBottomPadding)
             insets
         }
 
@@ -357,15 +388,32 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
             )
             "toggle_permission" -> {
                 val uid = item.applicationInfo?.uid ?: return
-                try {
-                    if (AuthorizationManager.granted(item.packageName, uid)) {
-                        AuthorizationManager.revoke(item.packageName, uid)
-                    } else {
-                        AuthorizationManager.grant(item.packageName, uid)
+                // Binder IPC (granted + grant/revoke) must not block the main thread — an ANR
+                // risk that showed up on slow devices during rapid swipe gestures.
+                // After the toggle, post a targeted payload-rebind so the switch reflects the
+                // new state: the snap-back notifyItemChanged(pos) from onSwiped may have started
+                // a grantedLoadJob that raced against this IO work and read the pre-toggle state.
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        if (AuthorizationManager.granted(item.packageName, uid)) {
+                            AuthorizationManager.revoke(item.packageName, uid)
+                        } else {
+                            AuthorizationManager.grant(item.packageName, uid)
+                        }
+                        withContext(Dispatchers.Main) {
+                            val items = adapter.getItems<Any>()
+                            val pos = items.indexOfFirst {
+                                it is PackageInfo && it.packageName == item.packageName
+                            }
+                            if (pos >= 0) adapter.notifyItemChanged(pos, Any())
+                            adapter.notifyItemChanged(0) // update toggle-all header
+                        }
+                    } catch (e: SecurityException) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(this@ApplicationManagementActivity,
+                                R.string.app_management_dialog_adb_is_limited_title, Toast.LENGTH_SHORT).show()
+                        }
                     }
-                    adapter.notifyItemChanged(0) // update summary
-                } catch (e: SecurityException) {
-                    Toast.makeText(this, R.string.app_management_dialog_adb_is_limited_title, Toast.LENGTH_SHORT).show()
                 }
             }
             "hide_from_list" -> onHideApp(item.packageName)
@@ -487,18 +535,42 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
 
     override fun onResume() {
         super.onResume()
-        viewModel.refresh()
+        // Skip the very first resume (right after onCreate) — onCreate already called
+        // viewModel.load() when Shizuku was running, so a second load here is redundant.
+        // Subsequent resumes (returning from Settings, app-info, etc.) still refresh so a
+        // permission change made outside the activity is reflected immediately.
+        if (isFirstResume) {
+            isFirstResume = false
+        } else {
+            viewModel.refresh()
+        }
         // Re-read swipe settings: setupSwipe()'s callback closes over these fields, so a
         // change made in Settings while this activity was backgrounded takes effect here
         // without needing to rebuild the ItemTouchHelper.
         swipeRightAction = ShizukuSettings.getSwipeRightAction()
         swipeLeftAction = ShizukuSettings.getSwipeLeftAction()
+        androidx.core.view.ViewCompat.requestApplyInsets(recyclerView)
     }
 }
 
 class AppListItemDecoration(context: Context) : af.shizuku.manager.widget.M3ECardItemDecoration(context) {
-    private val dividerInset = 72f * density // icon width + margins
+    override val cardMargin: Float = 28f * density
+    private val dividerInset = 124f * density // 28dp cardMargin + 24dp inner padding + 48dp icon + 24dp gap
+
+    override fun shouldDecorate(view: View): Boolean {
+        // The toggle-all header is a standalone MaterialCardView with its own floating margins and background
+        return view !is com.google.android.material.card.MaterialCardView
+    }
+
+    override fun shouldDrawDivider(parent: RecyclerView, index: Int, count: Int): Boolean {
+        for (i in index + 1 until count) {
+            val next = parent.getChildAt(i) ?: continue
+            if (next.visibility != View.VISIBLE) continue
+            return shouldDecorate(next)
+        }
+        return false
+    }
 
     override fun getDividerInset(view: View): Float = dividerInset
-    override fun getDividerEndInset(view: View): Float = cardMargin
+    override fun getDividerEndInset(view: View): Float = cardMargin + (24f * density)
 }

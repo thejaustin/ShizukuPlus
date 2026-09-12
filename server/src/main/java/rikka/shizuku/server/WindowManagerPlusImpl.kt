@@ -1,11 +1,15 @@
 package rikka.shizuku.server
 
 import android.graphics.Rect
+import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
 import android.os.ServiceManager
 import android.util.Log
 import af.shizuku.server.IWindowManagerPlus
+import af.shizuku.common.util.UserHandleCompat
+import rikka.hidden.compat.ActivityManagerApis
+import rikka.shizuku.server.api.IContentProviderUtils
 
 /**
  * Implementation of WindowManagerPlus using Android's window management APIs.
@@ -24,6 +28,30 @@ class WindowManagerPlusImpl : IWindowManagerPlus.Stub() {
         private const val TASK_SERVICE_NAME = "task"
         private const val WINDOW_SERVICE_NAME = "window"
         private const val ACTIVITY_TASK_SERVICE_NAME = "activity_task"
+    }
+
+    private fun callingUserId() = UserHandleCompat.getUserId(Binder.getCallingUid())
+
+    /**
+     * Write a system setting via the settings ContentProvider — works at shell UID
+     * without exec() on all API levels and on Samsung SELinux-restricted builds.
+     * [namespace] must be one of "global", "secure", or "system".
+     */
+    private fun putSetting(namespace: String, key: String, value: String): Boolean {
+        return try {
+            val userId = callingUserId()
+            val provider = ActivityManagerApis.getContentProviderExternal(
+                "settings", userId, null, "com.android.shell"
+            ) ?: return false
+            val extras = Bundle().apply { putString("value", value) }
+            IContentProviderUtils.callCompat(
+                provider, null, "settings", "PUT_$namespace", key, extras
+            )
+            true
+        } catch (e: Exception) {
+            Log.w(TAG, "putSetting $namespace/$key failed", e)
+            false
+        }
     }
 
     /**
@@ -62,12 +90,9 @@ class WindowManagerPlusImpl : IWindowManagerPlus.Stub() {
                 }
             }
 
-            // Fallback: Use settings command
+            // Fallback: write setting via ContentProvider (works on Samsung SELinux builds)
             val value = if (enabled) "1" else "0"
-            val process = Runtime.getRuntime().exec(
-                arrayOf("settings", "put", "global", "force_resizable_activities", value)
-            )
-            process.waitFor()
+            putSetting("global", "force_resizable_activities", value)
             Log.d(TAG, "Set force_resizable_activities setting to $value")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to set force resizable for $packageName", e)
@@ -202,31 +227,12 @@ class WindowManagerPlusImpl : IWindowManagerPlus.Stub() {
 
         Log.d(TAG, "Configuring bubble bar: position=$position, visibility=$visibility, size=$size")
 
-        try {
-            // Store bubble bar settings in secure settings
-            val process = Runtime.getRuntime().exec(
-                arrayOf("settings", "put", "secure", "bubble_bar_position", position)
-            )
-            process.waitFor()
+        // Write via ContentProvider — works at shell UID on Samsung SELinux builds
+        putSetting("secure", "bubble_bar_position", position)
+        settings?.getString("visibility")?.let { vis -> putSetting("secure", "bubble_bar_visibility", vis) }
+        settings?.getString("size")?.let { sz -> putSetting("secure", "bubble_bar_size", sz) }
 
-            settings?.getString("visibility")?.let { vis ->
-                val proc = Runtime.getRuntime().exec(
-                    arrayOf("settings", "put", "secure", "bubble_bar_visibility", vis)
-                )
-                proc.waitFor()
-            }
-
-            settings?.getString("size")?.let { sz ->
-                val proc = Runtime.getRuntime().exec(
-                    arrayOf("settings", "put", "secure", "bubble_bar_size", sz)
-                )
-                proc.waitFor()
-            }
-
-            Log.d(TAG, "Bubble bar configuration saved")
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to configure bubble bar", e)
-        }
+        Log.d(TAG, "Bubble bar configuration saved")
     }
 
     /**
@@ -309,26 +315,17 @@ class WindowManagerPlusImpl : IWindowManagerPlus.Stub() {
     }
 
     override fun setImmersiveMode(enabled: Boolean) {
-        try {
-            val value = if (enabled) "full" else "none"
-            // Use 'policy' command if available, otherwise fallback to settings
-            Runtime.getRuntime().exec(arrayOf("settings", "put", "global", "policy_control", "immersive.full=*=$value")).waitFor()
-        } catch (e: Exception) {
-            // Ignore
-        }
+        // Write via ContentProvider — works at shell UID on Samsung SELinux builds
+        val value = if (enabled) "immersive.full=*" else "immersive.none=*"
+        putSetting("global", "policy_control", value)
     }
 
     override fun setDexHighRefreshRate(enabled: Boolean) {
-        try {
-            // Samsung DeX often locks to 60Hz. Bypassing SemRefreshRateManager via settings.
-            val value = if (enabled) "1" else "0"
-            Runtime.getRuntime().exec(arrayOf("settings", "put", "system", "min_refresh_rate", if (enabled) "120.0" else "60.0")).waitFor()
-            Runtime.getRuntime().exec(arrayOf("settings", "put", "system", "peak_refresh_rate", if (enabled) "120.0" else "60.0")).waitFor()
-            // Samsung specific DeX flag
-            Runtime.getRuntime().exec(arrayOf("settings", "put", "global", "dex_force_high_refresh_rate", value)).waitFor()
-        } catch (e: Exception) {
-            // Ignore
-        }
+        // Samsung DeX often locks to 60 Hz; bypass SemRefreshRateManager via settings ContentProvider
+        val rate = if (enabled) "120.0" else "60.0"
+        putSetting("system", "min_refresh_rate", rate)
+        putSetting("system", "peak_refresh_rate", rate)
+        putSetting("global", "dex_force_high_refresh_rate", if (enabled) "1" else "0")
     }
 
     /**

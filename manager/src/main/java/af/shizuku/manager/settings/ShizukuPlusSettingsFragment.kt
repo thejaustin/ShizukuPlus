@@ -6,12 +6,8 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.net.wifi.WifiInfo
 import android.os.Build
 import android.os.Bundle
-import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
@@ -45,7 +41,7 @@ import java.io.OutputStreamWriter
 
 class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
 
-    override fun getTitle(): CharSequence? = "Feature Hub"
+    override fun getTitle(): CharSequence? = getString(R.string.settings_main_nav_feature_hub_title)
 
     // e.message is often null for keystore/cipher exceptions (#315's "Backup failed: null"), and
     // KeyPermanentlyInvalidatedException needs a message explaining it's unrecoverable rather
@@ -431,20 +427,20 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        findPreference<Preference>("binder_firewall_trusted_networks")?.let { pref ->
-            updateTrustedNetworksSummary(pref)
-            pref.setOnPreferenceClickListener {
-                showTrustedNetworksDialog()
-                true
-            }
+        // AutomationService (#435) only runs while at least one of these two lists is non-empty -
+        // start/stop it right here as each list is edited, rather than only checking at app launch,
+        // so the very first (or last) entry takes effect immediately without needing a restart.
+        findPreference<Preference>(KEY_AUTOMATION_TRUSTED_NETWORKS)?.setOnPreferenceChangeListener { _, newValue ->
+            val isConfigured = (newValue as? String).orEmpty().split(",").any { it.isNotBlank() } ||
+                ShizukuSettings.getAutoHidePackagesSet().isNotEmpty()
+            updateAutomationServiceState(isConfigured)
+            true
         }
-
-        findPreference<Preference>("binder_firewall_app_profiles")?.let { pref ->
-            updateAppProfilesSummary(pref)
-            pref.setOnPreferenceClickListener {
-                startActivity(Intent(requireContext(), af.shizuku.manager.automation.AppProfilesActivity::class.java))
-                true
-            }
+        findPreference<Preference>(KEY_AUTOMATION_AUTO_HIDE_PACKAGES)?.setOnPreferenceChangeListener { _, newValue ->
+            val isConfigured = (newValue as? String).orEmpty().split(",").any { it.isNotBlank() } ||
+                ShizukuSettings.getTrustedNetworksSet().isNotEmpty()
+            updateAutomationServiceState(isConfigured)
+            true
         }
 
         findPreference<Preference>("ai_core_plus_enabled")?.setOnPreferenceChangeListener { _, newValue ->
@@ -475,6 +471,11 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
 
         // Initialize all preference dependencies
         updateAllPlusFeatureDependencies()
+
+        // Feature 2 (#461): Apply backup-settings visibility on fragment entry.
+        // The toggle itself lives in Advanced & Diagnostics settings; the preference screen
+        // re-reads the flag here so the setting takes effect without an app restart.
+        applyBackupCategoryVisibility()
 
         // Check for integrated apps and update summaries
         checkAppIntegrations()
@@ -651,6 +652,17 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
         }
     }
 
+    /** Starts or stops AutomationService (#435) to match whether the user has any automation
+     *  list configured, right as they edit either list - see the two listeners above. */
+    private fun updateAutomationServiceState(isConfigured: Boolean) {
+        val context = context ?: return
+        if (isConfigured) {
+            af.shizuku.manager.automation.AutomationService.startIfNeeded(context)
+        } else {
+            af.shizuku.manager.automation.AutomationService.stopIfRunning(context)
+        }
+    }
+
     private fun updateAllPlusFeatureDependencies() {
         val customApiEnabled = ShizukuSettings.isCustomApiEnabled()
         val hideDisabled = ShizukuSettings.isHideDisabledPlusFeaturesEnabled()
@@ -730,121 +742,20 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
 
     override fun onResume() {
         super.onResume()
-        // Refresh the App Profiles summary when returning from AppProfilesActivity.
-        findPreference<Preference>("binder_firewall_app_profiles")?.let { updateAppProfilesSummary(it) }
+        // Re-apply backup category visibility in case the user toggled it in Advanced settings
+        // and navigated back to Feature Hub without recreating the fragment.
+        applyBackupCategoryVisibility()
     }
 
-    private fun updateTrustedNetworksSummary(pref: Preference) {
-        val count = ShizukuSettings.getAutomationTrustedNetworks().size
-        pref.summary = when (count) {
-            0 -> getString(R.string.settings_binder_firewall_trusted_networks_summary_none)
-            1 -> getString(R.string.settings_binder_firewall_trusted_networks_summary_one)
-            else -> getString(R.string.settings_binder_firewall_trusted_networks_summary_many, count)
-        }
+    /**
+     * Shows or hides the entire "Backup & Restore" category in the Feature Hub based on the
+     * [ShizukuSettings.isHideBackupSettingsEnabled] preference (issue #461).
+     */
+    private fun applyBackupCategoryVisibility() {
+        val hide = ShizukuSettings.isHideBackupSettingsEnabled()
+        findPreference<af.shizuku.manager.settings.CollapsiblePreferenceCategory>("category_backup")
+            ?.isVisible = !hide
     }
 
-    private fun updateAppProfilesSummary(pref: Preference) {
-        val json = ShizukuSettings.getAutomationAppProfilesJson()
-        val count = if (json == "{}" || json.length <= 2) 0
-        else try {
-            org.json.JSONObject(json).length()
-        } catch (_: Exception) { 0 }
-        pref.summary = if (count == 0) {
-            getString(R.string.app_profiles_summary_none)
-        } else {
-            getString(R.string.app_profiles_summary_count, count)
-        }
-    }
-
-    private fun getCurrentSsid(): String? {
-        val ctx = context ?: return null
-        return try {
-            val cm = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return null
-            val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return null
-            if (!caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) &&
-                !caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) return null
-            if (Build.VERSION.SDK_INT >= 29) {
-                val ssid = (caps.transportInfo as? WifiInfo)?.ssid ?: return null
-                // Strip surrounding quotes that WifiInfo adds; null out "<unknown ssid>"
-                when {
-                    ssid == "<unknown ssid>" -> null
-                    ssid.startsWith("\"") && ssid.endsWith("\"") && ssid.length >= 2 ->
-                        ssid.substring(1, ssid.length - 1)
-                    else -> ssid
-                }
-            } else {
-                null
-            }
-        } catch (_: Exception) {
-            null
-        }
-    }
-
-    private fun showTrustedNetworksDialog(initialLines: Set<String>? = null) {
-        val ctx = context ?: return
-        val current = initialLines ?: ShizukuSettings.getAutomationTrustedNetworks()
-        val currentSsid = getCurrentSsid()
-
-        val input = EditText(ctx).apply {
-            hint = getString(R.string.binder_firewall_trusted_networks_hint)
-            inputType = android.text.InputType.TYPE_CLASS_TEXT or
-                android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
-            minLines = 3
-            maxLines = 8
-            setText(current.joinToString("\n"))
-            setPadding(
-                (16 * resources.displayMetrics.density).toInt(),
-                (8 * resources.displayMetrics.density).toInt(),
-                (16 * resources.displayMetrics.density).toInt(),
-                (8 * resources.displayMetrics.density).toInt(),
-            )
-        }
-
-        val builder = MaterialAlertDialogBuilder(ctx)
-            .setTitle(R.string.binder_firewall_trusted_networks_title)
-            .setMessage(R.string.binder_firewall_trusted_networks_detail)
-            .setView(input)
-            .setPositiveButton(R.string.binder_firewall_trusted_networks_save) { _, _ ->
-                val lines = input.text.toString()
-                    .lines()
-                    .map { it.trim() }
-                    .filter { it.isNotEmpty() }
-                    .toSet()
-                ShizukuSettings.setAutomationTrustedNetworks(lines)
-                findPreference<Preference>("binder_firewall_trusted_networks")
-                    ?.let { updateTrustedNetworksSummary(it) }
-                // Start AutomationService when rules exist; let it self-stop when empty.
-                val intent = Intent(ctx, AutomationService::class.java)
-                if (ShizukuSettings.hasAnyAutomationRulesConfigured()) {
-                    ctx.startService(intent)
-                } else {
-                    ctx.stopService(intent)
-                }
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-
-        if (currentSsid != null) {
-            builder.setNeutralButton(getString(R.string.binder_firewall_trusted_networks_add_current)) { _, _ ->
-                val existing = input.text.toString()
-                    .lines()
-                    .map { it.trim() }
-                    .filter { it.isNotEmpty() }
-                if (currentSsid in existing) {
-                    Toast.makeText(
-                        ctx,
-                        getString(R.string.binder_firewall_trusted_networks_already_added, currentSsid),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    // Re-open so the user can still Save or edit.
-                    input.post { showTrustedNetworksDialog(existing.toSet()) }
-                } else {
-                    val withNew = (existing + currentSsid).toSet()
-                    // Re-open with the SSID appended so the user sees it before saving.
-                    input.post { showTrustedNetworksDialog(withNew) }
-                }
-            }
-        }
-
-        builder.show()
-    }
 }
+

@@ -11,7 +11,8 @@ data class ServiceStatus(
         // which enforceCallingPermission-gates on the caller being an attached client and can return
         // -1 for a window right after start (or when the manager's own attach races). Basing
         // isRunning on getUid made a healthy, reachable server show as "not running".
-        val running: Boolean = false
+        val running: Boolean = false,
+        val startMethod: String? = null
 ) {
     val isRunning: Boolean
         get() = running

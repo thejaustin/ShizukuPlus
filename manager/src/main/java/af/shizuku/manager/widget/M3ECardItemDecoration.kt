@@ -14,13 +14,13 @@ import af.shizuku.manager.ktx.themeCornerSizePx
  * Base ItemDecoration for Material 3 Expressive card-style lists.
  * Handles background card drawing and dividers with consistent spacing.
  */
-abstract class M3ECardItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
+abstract class M3ECardItemDecoration(protected val context: Context) : RecyclerView.ItemDecoration() {
     protected val cardPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     protected val dividerPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     // Matches every other 28dp/ExtraLarge card in the app (see #333) and follows the Shape
     // Style setting (Modern/Classic/Squircle) instead of a fixed radius.
     protected val cornerRadius = context.themeCornerSizePx(com.google.android.material.R.attr.shapeAppearanceCornerExtraLarge)
-    protected val cardMargin = context.resources.getDimension(R.dimen.m3e_spacing_medium)
+    protected open val cardMargin: Float get() = context.resources.getDimension(R.dimen.m3e_spacing_medium)
     protected val density = context.resources.displayMetrics.density
 
     init {
@@ -38,7 +38,14 @@ abstract class M3ECardItemDecoration(context: Context) : RecyclerView.ItemDecora
 
         for (i in 0 until count) {
             val child = parent.getChildAt(i)
-            if (child.visibility != View.VISIBLE) continue
+            if (child.visibility != View.VISIBLE || !shouldDecorate(child)) {
+                if (currentCardTop != Float.MIN_VALUE && !shouldDecorate(child)) {
+                    drawCard(c, parent, currentCardTop, lastItemBottom)
+                    currentCardTop = Float.MIN_VALUE
+                    lastItemBottom = Float.MIN_VALUE
+                }
+                continue
+            }
 
             if (isHeader(child)) {
                 if (currentCardTop != Float.MIN_VALUE) {
@@ -75,6 +82,7 @@ abstract class M3ECardItemDecoration(context: Context) : RecyclerView.ItemDecora
     }
 
     protected open fun isHeader(view: View): Boolean = false
+    protected open fun shouldDecorate(view: View): Boolean = true
 
     protected open fun getDividerInset(view: View): Float = 56f * density
 

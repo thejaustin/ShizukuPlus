@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingHorizontal="@dimen/m3e_spacing_medium"
+    android:paddingStart="52dp"
+    android:paddingEnd="52dp"
     android:paddingVertical="@dimen/m3e_spacing_medium"
     android:background="?android:attr/selectableItemBackground"
     android:gravity="center_vertical"
@@ -35,6 +36,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/m3e_spacing_large"
+        android:layout_marginEnd="@dimen/m3e_spacing_large"
         android:layout_weight="1"
         android:gravity="center_vertical"
         android:orientation="vertical">

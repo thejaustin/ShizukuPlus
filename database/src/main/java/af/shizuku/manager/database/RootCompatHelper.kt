@@ -2,6 +2,7 @@ package af.shizuku.manager.database
 
 import android.content.Context
 import android.content.pm.PackageManager
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
@@ -14,7 +15,7 @@ object RootCompatHelper {
     fun canAutoSetupInAdbMode(packageName: String): Boolean = packageName in GLOBAL_SETTINGS_APPS
 
     /** Returns true if [packageName] supports Magic Setup in the current privilege mode.
-     *  Pass [rootMode] = true when Shizuku is running as UID 0.
+     *  Pass [rootMode] = true when Shizuku is running as UID 0 or ADB mode (UID 2000).
      *  This is the single source of truth for whether the Magic Setup button should be enabled. */
     fun canAutoSetup(packageName: String, rootMode: Boolean): Boolean =
         packageName in GLOBAL_SETTINGS_APPS || (rootMode && packageName in ROOT_PREFS_APPS)
@@ -34,7 +35,8 @@ object RootCompatHelper {
         "me.piebridge.prevent"  to "prevent_su_path"
     )
 
-    // Apps that store their SU path in shared_prefs; only reachable with UID 0 (root Shizuku).
+    // Apps that store their SU path in shared_prefs; reachable with UID 0 (root Shizuku) or
+    // via privileged shell / run-as in ADB mode.
     // Format: package → Pair(prefs file basename, XML key name)
     private val ROOT_PREFS_APPS = mapOf(
         "com.keramidas.TitaniumBackup"    to Pair("TitaniumBackup-preferences", "suCommand"),
@@ -44,21 +46,12 @@ object RootCompatHelper {
         "com.jrummy.root.browserfree"    to Pair("es_preferences", "su_path"),
         "com.estrongs.android.pop"       to Pair("es_preferences", "su_path"),
         "com.github.machiav3lli.backup"  to Pair("com.github.machiav3lli.backup_preferences", "custom_su_path")
-        // Swift Backup (org.swiftapps.swiftbackup) intentionally has no entry here: reverse-
-        // engineering its 5.1.0 APK found it never reads a custom su-binary path from its own
-        // SharedPreferences - root access goes through libsu's Shell.Builder, which just invokes
-        // plain PATH-resolved "su". There is no su_path/custom_su/suCommand-style key anywhere in
-        // its bytecode for this (or any prior) entry to have matched, so autoSetup() correctly
-        // falls through to the "no automatic path" branch for it. It IS a genuine Shizuku client
-        // (own rikka.shizuku.ShizukuProvider at authority org.swiftapps.swiftbackup.shizuku,
-        // package-agnostic binder handshake) - point users at its own Settings > grant-permissions
-        // flow ("Grant with Root or Shizuku") instead of SU Bridge auto-setup for this app.
     )
 
     /**
      * Automatically configures a root app to use the Shizuku+ SU Bridge.
      * Uses global settings for apps that support it; falls back to direct shared_prefs
-     * editing when Shizuku is running as root (UID 0).
+     * editing when Shizuku is running as root (UID 0) or privileged ADB shell (UID 2000).
      */
     suspend fun autoSetup(context: Context, packageName: String, suPath: String): Boolean = withContext(Dispatchers.IO) {
         if (!isShizukuAvailable()) return@withContext false
@@ -72,8 +65,8 @@ object RootCompatHelper {
                 globalKey != null -> {
                     success = executePrivileged(arrayOf("settings", "put", "global", globalKey, suPath))
                 }
-                prefsEntry != null && isShizukuRoot() -> {
-                    // Root Shizuku (UID 0) can directly edit another app's shared_prefs.
+                prefsEntry != null -> {
+                    // Shizuku (UID 0 root or UID 2000 ADB shell) edits another app's shared_prefs.
                     val (prefsFile, prefsKey) = prefsEntry
                     // Force-stop first: a running app periodically flushes its in-memory
                     // SharedPreferences to disk, which would overwrite the edit we are about to
@@ -83,6 +76,7 @@ object RootCompatHelper {
                     val escapedKey  = escapeSed(prefsKey)
                     val target = "/data/data/$packageName/shared_prefs/$prefsFile.xml"
                     // Replace existing value or append before </map> if key is absent.
+                    // Also try run-as if direct shell access is blocked by permission on non-root.
                     val cmd = """
                         if [ -f '$target' ]; then
                             if grep -q 'name="$escapedKey"' '$target'; then
@@ -90,6 +84,8 @@ object RootCompatHelper {
                             else
                                 sed -i 's|</map>|    <string name="$escapedKey">$escapedPath</string>\n</map>|' '$target'
                             fi
+                        else
+                            run-as $packageName sh -c "if [ -f shared_prefs/$prefsFile.xml ]; then if grep -q 'name=\"$escapedKey\"' shared_prefs/$prefsFile.xml; then sed -i 's|<string name=\"$escapedKey\">.*</string>|<string name=\"$escapedKey\">$escapedPath</string>|' shared_prefs/$prefsFile.xml; else sed -i 's|</map>|    <string name=\"$escapedKey\">$escapedPath</string>\n</map>|' shared_prefs/$prefsFile.xml; fi; fi" 2>/dev/null
                         fi
                     """.trimIndent()
                     success = executePrivileged(arrayOf("sh", "-c", cmd))
@@ -108,7 +104,7 @@ object RootCompatHelper {
 
     private fun isShizukuRoot(): Boolean {
         return try {
-            Shizuku.pingBinder() && Shizuku.getUid() == 0
+            Shizuku.pingBinder() && (Shizuku.getUid() == 0 || Shizuku.getUid() == 2000)
         } catch (e: Exception) {
             false
         }
@@ -176,20 +172,6 @@ object RootCompatHelper {
     suspend fun deployBridgeToTmpDetailed(context: Context): DeployResult = withContext(Dispatchers.IO) {
         if (!isShizukuAvailable()) return@withContext DeployResult(null, "Shizuku binder not available")
 
-        // Android 16+ (API 36) tightened the SELinux policy for the ADB/shell process (uid 2000),
-        // denying writes to /data/local/tmp. Skip all 4 write attempts immediately to avoid a
-        // multi-second stall — each cat > file times out waiting for the shell to report EACCES.
-        // selfTest() already explains this to the user and directs them to the exported path.
-        // (SHIZUKUPLUS-8A/8G/8D — all Android 16 non-rooted devices hitting this.)
-        val serverUid = try { Shizuku.getUid() } catch (_: Exception) { -1 }
-        if (serverUid == 2000 && android.os.Build.VERSION.SDK_INT >= 36) {
-            return@withContext DeployResult(
-                null,
-                "Android 16+ ADB/shell mode: /data/local/tmp is not writable from the shell " +
-                "process (SELinux policy). Use the exported path instead."
-            )
-        }
-
         val dir = "/data/local/tmp"
         // asset name -> octal mode (scripts executable; dex read-only for app_process on A14+)
         val files = listOf(
@@ -216,6 +198,111 @@ object RootCompatHelper {
         } catch (e: Exception) {
             Timber.e(e, "deployBridgeToTmp failed")
             DeployResult(null, e.message ?: e.javaClass.simpleName)
+        }
+    }
+
+    const val ADB_CLEANUP_COMMAND =
+        "adb shell rm -f /data/local/tmp/su /data/local/tmp/rish /data/local/tmp/plus /data/local/tmp/rish_shizuku.dex /data/local/su /data/local/bin/su /data/local/xbin/su"
+
+    /**
+     * Checks whether any SU Bridge or root residue binary is present in known detection paths.
+     */
+    suspend fun isBridgePresentInTmp(): Boolean = withContext(Dispatchers.IO) {
+        val targets = listOf(
+            "/data/local/tmp/su",
+            "/data/local/su",
+            "/data/local/bin/su",
+            "/data/local/xbin/su"
+        )
+        if (targets.any { File(it).exists() }) return@withContext true
+        if (isShizukuAvailable()) {
+            try {
+                val result = ShizukuProcessUtils.runPrivilegedCapture(
+                    arrayOf("sh", "-c", "test -f /data/local/tmp/su || test -f /data/local/su && echo EXISTS"),
+                    joinTimeoutMs = 500
+                )
+                return@withContext result.stdout.contains("EXISTS")
+            } catch (_: Exception) {}
+        }
+        false
+    }
+
+    /**
+     * Removes all SU Bridge artifacts and root residue from /data/local/tmp and /data/local.
+     *
+     * Multi-tier fallback architecture:
+     *  1. Direct unprivileged file deletion.
+     *  2. Privileged Shizuku shell removal.
+     *  3. Direct root shell execution (`su -c rm -f ...`) if Shizuku is stopped but root exists.
+     *  4. In-place zeroing/truncation (`> /data/local/tmp/su && chmod 000`) if unlinking is blocked.
+     */
+    suspend fun cleanupBridgeFromTmp(context: Context? = null): Boolean = withContext(Dispatchers.IO) {
+        val targets = listOf(
+            "/data/local/tmp/su",
+            "/data/local/tmp/rish",
+            "/data/local/tmp/plus",
+            "/data/local/tmp/rish_shizuku.dex",
+            "/data/local/su",
+            "/data/local/bin/su",
+            "/data/local/xbin/su"
+        )
+
+        // Tier 1: Best-effort unprivileged deletion
+        for (path in targets) {
+            try {
+                File(path).delete()
+            } catch (_: Exception) {}
+        }
+
+        // Tier 2: Privileged Shizuku removal
+        if (isShizukuAvailable()) {
+            try {
+                val cmd = arrayOf(
+                    "sh", "-c",
+                    "rm -f ${targets.joinToString(" ")}"
+                )
+                ShizukuProcessUtils.runPrivilegedCapture(cmd, joinTimeoutMs = 1000)
+            } catch (e: Exception) {
+                Timber.w(e, "cleanupBridgeFromTmp Shizuku rm failed")
+            }
+        }
+
+        // Tier 3: Direct root shell fallback (if Shizuku is unavailable or rm failed, but device has root)
+        if (File("/data/local/tmp/su").exists()) {
+            try {
+                val p = Runtime.getRuntime().exec(arrayOf("su", "-c", "rm -f ${targets.joinToString(" ")}"))
+                p.waitFor()
+            } catch (_: Exception) {}
+        }
+
+        // Tier 4: In-place zeroing / truncation and permission stripping if file still exists
+        if (File("/data/local/tmp/su").exists() && isShizukuAvailable()) {
+            try {
+                val truncateCmd = arrayOf(
+                    "sh", "-c",
+                    "> /data/local/tmp/su 2>/dev/null; chmod 000 /data/local/tmp/su 2>/dev/null"
+                )
+                ShizukuProcessUtils.runPrivilegedCapture(truncateCmd, joinTimeoutMs = 500)
+            } catch (_: Exception) {}
+        }
+
+        val stillExists = File("/data/local/tmp/su").exists()
+        val success = !stillExists
+        Timber.i("cleanupBridgeFromTmp finished, su exists=$stillExists, success=$success")
+        success
+    }
+
+    /**
+     * Attempts to force-stop Google Wallet to clear cached attestation state and prompt re-evaluation.
+     */
+    suspend fun refreshGoogleWalletAttestation(context: Context? = null) = withContext(Dispatchers.IO) {
+        if (isShizukuAvailable()) {
+            try {
+                ShizukuProcessUtils.runPrivilegedCapture(
+                    arrayOf("am", "force-stop", "com.google.android.apps.walletnfcrel"),
+                    joinTimeoutMs = 1000
+                )
+            } catch (_: Exception) {}
         }
     }
 
@@ -265,13 +352,9 @@ object RootCompatHelper {
                 val serverUid = try { Shizuku.getUid() } catch (_: Exception) { -1 }
                 val detail = deployResult.failureDetail?.let { "Reason: $it\n\n" } ?: ""
                 val action = if (serverUid == 2000) {
-                    // On Android 16+ the SELinux policy for the shell (ADB) process was tightened
-                    // to deny writes to /data/local/tmp (SHIZUKUPLUS-8A/8G/8D). This is expected
-                    // and the bridge still functions via the user-exported path.
-                    "ADB/shell mode detected. Android 16+ restricts writes to /data/local/tmp from " +
-                        "the shell process — this is expected. The SU Bridge still works via your " +
-                        "exported path. Tap \"Export\" in the compatibility hub and direct root apps " +
-                        "to that path, or switch to root mode for full /data/local/tmp access."
+                    "ADB/shell mode detected. If your device restricts writes to /data/local/tmp from " +
+                        "the shell process, use the exported path instead. Tap \"Export\" in the " +
+                        "compatibility hub and direct root apps to that path, or switch to root mode for full access."
                 } else {
                     "Make sure the Shizuku service is running, then retry."
                 }

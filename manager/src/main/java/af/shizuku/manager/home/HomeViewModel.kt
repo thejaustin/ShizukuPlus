@@ -53,6 +53,15 @@ class HomeViewModel(
             setState { copy(discoveredAdbPort = port) }
         }
         adbMdns = AdbMdns(appContext, AdbMdns.TLS_CONNECT, observer).also { it.start() }
+
+        // Probe loopback ports (5555, lastPort) in the background so 5G/cellular sessions
+        // without Wi-Fi are immediately marked ready without waiting for mDNS discovery.
+        viewModelScope.launch(Dispatchers.IO) {
+            val loopbackPort = af.shizuku.manager.adb.AdbPortProber.findActiveLoopbackPort(appContext)
+            if (loopbackPort in 1..65535) {
+                setState { copy(discoveredAdbPort = loopbackPort) }
+            }
+        }
     }
 
     override fun onCleared() {
@@ -124,7 +133,50 @@ class HomeViewModel(
 
         // pingBinder() above already succeeded, so the service is reachable and running regardless
         // of whether the attach-gated getUid()/getVersion() calls returned valid values.
-        return ServiceStatus(uid, apiVersion, patchVersion, seContext, permissionTest, running = true)
+        val startMethod = detectStartMethod(uid)
+        return ServiceStatus(uid, apiVersion, patchVersion, seContext, permissionTest, running = true, startMethod = startMethod)
+    }
+
+    private fun detectStartMethod(uid: Int): String {
+        if (uid == 0) return "root"
+        if (uid != 2000) return "adb"
+
+        var tcpPort = ""
+        var tlsPort = ""
+        var usbState = ""
+
+        try {
+            tcpPort = android.os.SystemProperties.get("service.adb.tcp.port", "")
+            tlsPort = android.os.SystemProperties.get("service.adb.tls.port", "")
+            usbState = android.os.SystemProperties.get("sys.usb.state", "")
+        } catch (_: Throwable) {
+        }
+
+        if (tcpPort.isEmpty() || tcpPort == "0" || tcpPort == "-1") {
+            try {
+                tcpPort = rikka.shizuku.ShizukuSystemProperties.get("service.adb.tcp.port", "")
+            } catch (_: Throwable) {
+            }
+        }
+        if (tlsPort.isEmpty() || tlsPort == "0" || tlsPort == "-1") {
+            try {
+                tlsPort = rikka.shizuku.ShizukuSystemProperties.get("service.adb.tls.port", "")
+            } catch (_: Throwable) {
+            }
+        }
+        if (usbState.isEmpty()) {
+            try {
+                usbState = rikka.shizuku.ShizukuSystemProperties.get("sys.usb.state", "")
+            } catch (_: Throwable) {
+            }
+        }
+
+        return when {
+            tcpPort.isNotEmpty() && tcpPort != "0" && tcpPort != "-1" -> "adb over TCP ($tcpPort)"
+            tlsPort.isNotEmpty() && tlsPort != "0" && tlsPort != "-1" -> "wireless adb ($tlsPort)"
+            usbState.contains("adb") -> "adb (USB)"
+            else -> "adb"
+        }
     }
 
     /**

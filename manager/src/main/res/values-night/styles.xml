@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Night-mode override: AppTheme follows Theme's night resolution (Base.AppTheme → Dark). -->
     <style name="AppTheme" parent="Theme"/>
+
+    <!-- Dialog-host activities (transparent window, material dialog on top) use dark
+         Material3 tokens in dark mode so dialog surface colors match the system theme. -->
+    <style name="Theme.App.DialogHost" parent="Theme.Material3Expressive.Dark.Shizuku">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!-- Permission-request overlay: dark surface in dark mode. -->
+    <style name="GrantPermissions" parent="Theme.Material3Expressive.Dark.Shizuku">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:colorBackground">?colorBackgroundFloating</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="dialogCornerRadius">@dimen/m3e_spacing_extra_large</item>
+    </style>
 
 </resources>

@@ -1,5 +1,6 @@
 package af.shizuku.core.ui
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,9 @@ import rikka.core.ktx.unsafeLazy
 import timber.log.Timber
 
 abstract class AppBarActivity : AppActivity() {
+
+    /** Axis for window enter/exit transitions. Z = forward/back (root→detail). X = lateral (sibling screens). */
+    protected open val transitionAxis: Int = MaterialSharedAxis.Z
 
     protected val rootView: ViewGroup by unsafeLazy {
         findViewById<View>(R.id.coordinator_root) as? ViewGroup
@@ -28,7 +32,7 @@ abstract class AppBarActivity : AppActivity() {
         // recreateWithoutTransition() call from any AppBarActivity subclass gets a black
         // screen stuck behind these MaterialSharedAxis transitions instead.
         if (!suppressTransitionOnCreate) {
-            val axis = MaterialSharedAxis.X
+            val axis = transitionAxis
             window.enterTransition = MaterialSharedAxis(axis, true)
             window.exitTransition = MaterialSharedAxis(axis, false)
             window.reenterTransition = MaterialSharedAxis(axis, false)
@@ -62,6 +66,15 @@ abstract class AppBarActivity : AppActivity() {
                     )
                     v.setPadding(bars.left, bars.top, bars.right, 0)
                     insets
+                }
+
+                // When blur is enabled the window already has setBackgroundBlurRadius applied
+                // (AppActivity.onCreate). The AppBar's opaque colorBackground blocks it. On API
+                // 31+ make it semi-transparent so the frosted-glass effect is visible (#449).
+                val prefs = createDeviceProtectedStorageContext()
+                    .getSharedPreferences("settings", android.content.Context.MODE_PRIVATE)
+                if (prefs.getBoolean("blur_ui_enabled", false) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    container.background?.mutate()?.alpha = 230 // ~90% opacity
                 }
             } else {
                 Timber.tag("AppBarActivity").w("Toolbar or container not found in layout.")

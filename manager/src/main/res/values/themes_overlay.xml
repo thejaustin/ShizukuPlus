@@ -8,7 +8,9 @@
         <item name="android:colorPrimaryDark">@android:color/black</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="colorSurface">@android:color/black</item>
-        <item name="colorSurfaceContainerLow">?colorSurfaceContainerLowest</item>
+        <item name="colorSurfaceDim">@android:color/black</item>
+        <item name="colorSurfaceContainerLowest">@android:color/black</item>
+        <item name="colorSurfaceContainerLow">@android:color/black</item>
         <!-- Cards/settings groups use colorSurfaceContainerHigh (see home_item_container.xml,
              M3ECardItemDecoration) - dial it down one tone step so AMOLED cards stay close to
              true black instead of inheriting the base theme's full-contrast High tone. -->
@@ -262,7 +264,7 @@
     </style>
     <style name="ShapeAppearance.Modern.Corner.ExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">28dp</item>
+        <item name="cornerSize">32dp</item>
     </style>
     <style name="ThemeOverlay.Shape" parent=""/>
 
@@ -377,6 +379,23 @@
     <style name="ThemeOverlay.Shapes.Standard" parent="ThemeOverlay.Shape.Modern"/>
 
     <!--
+        Sharp / Flat Edges (settings key "rounded_edges_enabled", when turned OFF): removes corner
+        rounding across cards, dialogs, and containers for a clean, sharp-edged aesthetic.
+    -->
+    <style name="ShapeAppearance.Sharp.Corner" parent="ShapeAppearance.Material3.Corner.None">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">0dp</item>
+    </style>
+    <style name="ThemeOverlay.Shape.Sharp">
+        <item name="shapeAppearanceCornerExtraSmall">@style/ShapeAppearance.Sharp.Corner</item>
+        <item name="shapeAppearanceCornerSmall">@style/ShapeAppearance.Sharp.Corner</item>
+        <item name="shapeAppearanceCornerMedium">@style/ShapeAppearance.Sharp.Corner</item>
+        <item name="shapeAppearanceCornerLarge">@style/ShapeAppearance.Sharp.Corner</item>
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.Sharp.Corner</item>
+        <item name="cardCornerRadius">0dp</item>
+    </style>
+
+    <!--
         One UI style theme overlay (settings key "oneui_theme_enabled").
         Deliberately structure-only, not color: extra-large rounded corners, heavier typography,
         and One UI-style preference padding - the app's existing dynamic-color/custom-accent
@@ -424,7 +443,7 @@
         <item name="preferenceTheme">@style/AppTheme.PreferenceThemeOverlay.OneUI</item>
         <!-- Explicit padding assertion (rikka's ThemeOverlay.Rikka.Material3.Preference
              sets these but isn't guaranteed to be applied when we apply at overlay level) -->
-        <item name="android:listPreferredItemPaddingStart">24dp</item>
+        <item name="android:listPreferredItemPaddingStart">16dp</item>
         <item name="android:listPreferredItemPaddingEnd">16dp</item>
     </style>
 

@@ -9,8 +9,7 @@
     android:gravity="center_vertical"
     android:minHeight="52dp"
     android:orientation="horizontal"
-    android:paddingStart="20dp"
-    android:paddingEnd="16dp">
+    android:paddingHorizontal="16dp">
 
     <TextView
         android:id="@android:id/title"

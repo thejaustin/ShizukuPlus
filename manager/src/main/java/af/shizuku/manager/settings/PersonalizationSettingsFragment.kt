@@ -128,27 +128,33 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         shapeStylePreference = requireNotNull(findPreference(KEY_SHAPE_STYLE))
         animationIntensityPreference = requireNotNull(findPreference(KEY_ANIMATION_INTENSITY))
 
-        // Only meaningful for the Two-Tone icon style - recreate() (triggered by iconStylePreference's
-        // own listener below) recalculates this fresh from the persisted value on every style change.
+        // Only meaningful for the Two-Tone icon style — updated dynamically below so the
+        // color-mode row appears/disappears without requiring a fragment recreate.
         iconColorModePreference.isVisible = iconStylePreference.value == "twotone"
 
         expressiveShapesPreference.setOnPreferenceChangeListener { _, _ ->
             applyTheme(requiresRecreate = false)
+            refreshIconStyles()
             true
         }
 
         shapeStylePreference.setOnPreferenceChangeListener { _, _ ->
             applyTheme(requiresRecreate = false)
+            refreshIconStyles()
             true
         }
 
-        iconStylePreference.setOnPreferenceChangeListener { _, _ ->
+        iconStylePreference.setOnPreferenceChangeListener { _, newValue ->
+            // Show/hide the color-mode sub-option immediately rather than on next recreate.
+            iconColorModePreference.isVisible = newValue == "twotone"
             applyTheme(requiresRecreate = false)
+            refreshIconStyles()
             true
         }
 
         iconColorModePreference.setOnPreferenceChangeListener { _, _ ->
             applyTheme(requiresRecreate = false)
+            refreshIconStyles()
             true
         }
 
@@ -165,13 +171,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         val simulatorPref = findPreference<HomeLayoutSimulatorPreference>("home_layout_simulator")
         simulatorPref?.setFragment(this)
 
-        val switchKeys = listOf(
-            "show_start_adb_home",
-            "show_terminal_home",
-            "show_automation_home",
-            "show_activity_log_home",
-            "show_learn_more_home"
-        )
+        val switchKeys = listOf("show_activity_log_home")
 
         for (prefKey in switchKeys) {
             findPreference<TwoStatePreference>(prefKey)?.setOnPreferenceChangeListener { _, newValue ->
@@ -194,6 +194,9 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         // 3. Display settings (edge-to-edge, blur)
         edgeToEdgePreference = requireNotNull(findPreference(KEY_EDGE_TO_EDGE))
         edgeToEdgePreference.isChecked = ShizukuSettings.isEdgeToEdgeEnabled()
+        // Android 15+ (API 35) enforces E2E for targetSdk-35 apps — the toggle has no effect
+        // there, so hide it to avoid confusing users (#483).
+        edgeToEdgePreference.isVisible = Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
         edgeToEdgePreference.setOnPreferenceChangeListener { _, _ ->
             applyTheme(requiresRecreate = false)
             true
@@ -201,14 +204,33 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
         blurUiPreference = requireNotNull(findPreference(KEY_BLUR_UI))
         blurUiPreference.isChecked = ShizukuSettings.isBlurUiEnabled()
+        blurUiPreference.isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
         blurUiPreference.setOnPreferenceChangeListener { _, _ ->
-            applyTheme(requiresRecreate = false)
+            // window.setBackgroundBlurRadius is set in onCreate; a recreate is needed for it to take
+            // effect. The AppBar translucency also needs onPostCreate to re-run (#449).
+            applyTheme(requiresRecreate = true)
             true
         }
 
         oneUiThemePreference = requireNotNull(findPreference(KEY_ONEUI_THEME))
         oneUiThemePreference.isChecked = ShizukuSettings.isOneUiThemeEnabled()
         oneUiThemePreference.setOnPreferenceChangeListener { _, _ ->
+            applyTheme(requiresRecreate = false)
+            true
+        }
+
+        findPreference<TwoStatePreference>(KEY_ROUNDED_EDGES)?.apply {
+            isChecked = ShizukuSettings.isRoundedEdgesEnabled()
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) {
+                    ShizukuSettings.setRoundedEdgesEnabled(newValue)
+                    applyTheme(requiresRecreate = false)
+                }
+                true
+            }
+        }
+
+        findPreference<TwoStatePreference>(KEY_ONE_HANDED_MODE)?.setOnPreferenceChangeListener { _, _ ->
             applyTheme(requiresRecreate = false)
             true
         }

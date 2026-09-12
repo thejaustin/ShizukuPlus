@@ -135,7 +135,10 @@ class FakeAdbClientHandler(
             writeMessage(AdbMessage(AdbProtocol.A_OKAY, localId, remoteId, ByteArray(0)))
 
             val commandArray = if (cmd.isEmpty()) arrayOf("sh") else arrayOf("sh", "-c", cmd)
+            // newProcess() is a Java platform type: null on some chipsets (e.g. MT6833) when the
+            // binder is alive but process spawn fails. Treat null the same as an exception.
             val process = Shizuku.newProcess(commandArray, null, null)
+                ?: throw IllegalStateException("Shizuku.newProcess returned null")
             activeProcesses[localId] = process
 
             // Read stdout

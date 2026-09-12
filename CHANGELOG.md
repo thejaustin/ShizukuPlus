@@ -1,20 +1,37 @@
 # Changelog
 
-All notable changes to ShizukuPlus are documented here.
+All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md](AI_ATTRIBUTIONS.md) for full AI pair-programming provenance and commit mapping.
 
-## [Unreleased]
+## [Unreleased / Build r2436+]
+
+*Co-developed with Antigravity & Claude Code*
 
 ### 🐛 Bug Fixes
 
 #### Server / Service
+- **Fixed Shadow Binder `getPackageUid()` returning 0 (root UID) for hidden packages** instead of -1 (Android's "package not found" sentinel) — apps checking whether a hidden package is installed received UID 0 (system/root) and treated it as installed, or had completely wrong assumptions about the owner. ([#444](https://github.com/thejaustin/ShizukuPlus/issues/444))
+- **Fixed Shadow Binder IPackageManager intercepts matching unrelated Binder calls** when the `TRANSACTION_*` field initialization via reflection fails (rare on unusual vendor ROMs) — the -1 sentinel value used as "not initialized" could accidentally match valid transaction codes on those devices, intercepting calls from unrelated apps and returning spoofed data.
 - **Re-verified the shell/rish consent re-implementation (`32382e89`) across every client type** — rish/shell, root/su, normal app clients, and Dhizuku clients each go through their own already-uid-verified path; no remaining spoofing or persistence gap found. Fixes "Allow always" not persisting ([#420](https://github.com/thejaustin/ShizukuPlus/issues/420)) and the underlying re-implementation request ([#416](https://github.com/thejaustin/ShizukuPlus/issues/416)).
 - Fixed a stale code comment in `ShizukuService.checkCallerPermission()` still describing the deleted notification-based shell-consent flow.
 
 #### Manager App (UI)
+- **Fixed `Shizuku.newProcess()` returning null on certain chipsets (MediaTek MT6833 and others) causing NPE crashes** in the Fake ADB client handler, ADB proxy service, compat hub installer, and the Shizuku stock-server detection — all callers now handle null explicitly with clear error messages. ([#418](https://github.com/thejaustin/ShizukuPlus/issues/418))
+- **Fixed the wireless ADB card missing its icon** — `ic_wadb_24` referenced in the layout but absent from the drawable directory; created the Material Symbols wifi-style vector in the correct 960×960 format. ([#447](https://github.com/thejaustin/ShizukuPlus/issues/447))
+- **Fixed 4 home cards with no press animation** — `AutomationViewHolder`, `ShizukuCompanionViewHolder`, `StartStockShizukuViewHolder`, and `AdbPermissionLimitedViewHolder` were missing `applySpringTouch()`; tap feedback was absent for these cards. ([#450](https://github.com/thejaustin/ShizukuPlus/issues/450))
+- **Fixed App Backup home card ignoring the icon shape style setting** — its icon always showed the default shape regardless of the user's zen/modern/classic/squircle/cut preference.
+- **Fixed the Scripting screen "+" menu item always visible** even when the snippet list was empty — it's now hidden until the first snippet is saved, replaced by the empty state's own action button. ([#437](https://github.com/thejaustin/ShizukuPlus/issues/437))
 - **Fixed authorized-apps count briefly showing "0" on cold start** — `HomeState.grantedAppCount` now starts as `null` (not loaded) instead of `0`, so the home screen shows a loading state instead of a wrong count before the real value arrives. ([#424](https://github.com/thejaustin/ShizukuPlus/issues/424))
+- **Fixed appearance settings (icon style, shape style, expressive shapes) not visually applying until navigating away and back twice** — home screen cards now rebind synchronously on `onResume()` and also respond to a `SharedPreferences` listener while in the back stack, so changes are reflected immediately when returning from Personalization settings.
+- **Fixed Terminal (rish) card hidden when service is not running** — the card was gated on `adbPermission` (service running + full ADB access), making it invisible to new users before they'd ever started the service. It now shows whenever the visibility toggle is on (default), showing a "service not running" disabled state, so users can discover the rish setup option at any time.
+- **Fixed edit mode having no explicit exit control** — the home screen "Arrange Cards" mode previously required users to discover the back gesture to exit; a "Done" button now appears in the top bar action area when edit mode is active. Edit mode title updated to "Arrange Cards" with a shorter hint subtitle.
+- **Fixed Wireless ADB discovery failing silently without Wi-Fi (5G/cellular data & offline)** —
+  - Added `AdbPortProber` to probe local loopback (`127.0.0.1:5555`, cached port) via fast TCP socket connect, enabling instant 1-tap start without Wi-Fi when ADB TCP mode is active.
+  - Fixed `EnvironmentUtils.isWifiRequired()` blocking cellular/5G background auto-reconnect (`AdbStartWorker`) even when port 5555 is already listening.
+  - Added proactive network diagnostic banner and Mobile Hotspot launcher button to `AdbDialogFragment` and `AdbPairDialogFragment` explaining that Android disables mDNS on cellular and guiding users to enable Mobile Hotspot to use Wireless Debugging over 5G.
+  - Added live loopback polling to `AdbDialogFragment` so it automatically connects as soon as port 5555 or hotspot becomes active.
 - **Fixed Watchdog unable to recover from a full process freeze** (Samsung One UI "Sleeping apps" and similar OEM freezers kill the entire manager process on screen lock, taking Watchdog down with it) — added an external `AlarmManager`-based re-arm (`WatchdogAlarmReceiver`, every 15 min) that's dispatched by the system rather than anything inside the frozen process, so it can restart the service even after a full process kill. Mitigation, not a complete fix — see the [Watchdog wiki section](https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#watchdog). ([#415](https://github.com/thejaustin/ShizukuPlus/issues/415), [#417](https://github.com/thejaustin/ShizukuPlus/issues/417))
 - **SU bridge redeploy now also triggers whenever the privileged service starts**, not only on app self-update — covers devices where the service wasn't running yet at update time (Xiaomi/HyperOS, Samsung One UI). Follow-up to [#423](https://github.com/thejaustin/ShizukuPlus/issues/423) (`9dba4bd3`).
-- **Compat Hub install failures now show a specific reason** for insufficient storage and unsupported CPU architecture, on top of the existing signing-conflict detection. Follow-up to [#412](https://github.com/thejaustin/ShizukuPlus/issues/412).
+- **Compat Hub install failures now show a specific reason** for insufficient storage, unsupported CPU architecture, and OEM install blocks (e.g. Samsung Auto Blocker) — unrecognized `pm install` errors now surface the actual failure token in the toast so users can self-diagnose without capturing logcat. Follow-up to [#412](https://github.com/thejaustin/ShizukuPlus/issues/412), [#446](https://github.com/thejaustin/ShizukuPlus/issues/446).
 - **Update download failure notifications now distinguish cause** (insufficient storage, interrupted/unresumable transfer, network/HTTP error) instead of one generic "download failed" message. Follow-up to [#414](https://github.com/thejaustin/ShizukuPlus/issues/414).
 - Fixed two dead in-app help links pointing at wiki pages that no longer exist (`wiki/Setup`, `wiki/Supported-apps`) — now point at real pages/sections.
 - **Fixed the app icon's plus badge being almost entirely invisible on real devices** (confirmed via an on-device Samsung One UI notification-icon screenshot) — it was positioned to match the flat, non-adaptive uploaded image pixel-for-pixel, which sits outside the ~66dp/108dp circular safe zone real adaptive-icon mask/notification-icon compositors apply. A flat unmasked preview never caught this. Repositioned the plus to a spot verified against an actual circular-mask simulation; the cat/hexagon stay at their original scale and position.
@@ -23,6 +40,10 @@ All notable changes to ShizukuPlus are documented here.
 ### ✨ Enhancements
 
 #### UI / UX
+- **Material 3 Expressive (M3E) animation improvements** — home screen card entrances now use `m3_emphasized_decelerate` interpolator with a 0.92→1.0 scale-grow, matching the M3E motion spec. Spring press animations upgraded to `animateToFinalPosition()` with `STIFFNESS_MEDIUM + DAMPING_RATIO_NO_BOUNCY` for smooth mid-animation reversal. App Backup screen introduced as a new home card and detail screen.
+- **Frosted glass AppBar** — when the Blur UI setting is enabled (Settings → Personalization → Frosted Glass Effect), the toolbar container's background is now semi-transparent on Android 12+, letting the window-level blur show through. Previously the opaque AppBar background blocked the blur entirely. ([#449](https://github.com/thejaustin/ShizukuPlus/issues/449))
+- **M3E shape tokens updated** — `ShapeAppearance.Modern.Corner.ExtraLarge` cornerSize raised to 32dp (M3E ExtraLarge standard, up from 28dp).
+- **Detail screens now use Z-axis (forward/back) transitions** instead of X-axis (lateral) — Z-axis (`MaterialSharedAxis.Z`) is the M3E standard for root→detail navigation. Subclasses can override `transitionAxis` to opt into X for truly lateral peer screens.
 - **App icon plus badge repositioned** to match the intended design and separated back out into its own semi-transparent overlay layer (was previously baked into the flattened artwork at the wrong position).
 - **Themed Icons (Material You) now scoped to just the plus badge** rather than the whole icon — the monochrome layer Android re-tints for Themed Icons no longer includes the cat/hexagon, since the platform re-tints the entire monochrome layer as one flat color and there's no way to theme only part of it.
 - **New onboarding step**: "Themed app icon" toggle (defaults on) with a direct link to your launcher's icon-theming settings.
@@ -34,6 +55,8 @@ All notable changes to ShizukuPlus are documented here.
 - Repo description, topics, and homepage updated on GitHub for discoverability.
 
 ## [v13.6.0.r2287 → r2343]
+
+*Co-developed with Claude Code*
 
 ### 🐛 Bug Fixes
 
@@ -78,6 +101,8 @@ All notable changes to ShizukuPlus are documented here.
 
 ## [Unreleased / Build r2248+]
 
+*Co-developed with Claude Code*
+
 ### 🐛 Bug Fixes
 
 #### Server / Service
@@ -112,16 +137,51 @@ All notable changes to ShizukuPlus are documented here.
 
 ## [v13.6.0.r2239]
 
-### Bug Fixes
-- Power-save whitelist re-applied on each `bindApplication` retry.
-- Watchdog scope clarified; RNDIS/Ethernet transport monitored.
-- Binder delivery retried on frozen-app failure with actionable UI feedback.
+*Co-developed with Claude Code*
+
+### 🐛 Bug Fixes
+
+#### Server / Service
+- **Power-save whitelist re-applied on each `bindApplication` retry** — clients on aggressive battery saver OEMs were losing their server connection because the whitelist exemption was granted only at startup, not on each rebind; now re-applied every time a client reconnects.
+- **Binder delivery retried on frozen-app failure with actionable UI feedback** — when a Cached Apps Freezer (Android 12+) thaw takes too long, the retry now shows a dialog explaining why the connection is slow instead of silently failing. (`ad92224b`)
+- **Watchdog scope clarified; RNDIS/Ethernet transport monitored** — the Wi-Fi connectivity check now also watches USB tethering and Ethernet interfaces, so Watchdog auto-reconnect fires over USB ADB, not only over Wi-Fi. (`e2207af1`)
+- **Fixed `newProcess()` dropping the entire boot environment when Magisk mocking is enabled** — `BOOTCLASSPATH`, `ANDROID_DATA`, `ANDROID_ROOT`, etc. were stripped from the child process env when the caller passed `null`, causing spawned `app_process` children to die instantly with `ANDROID_DATA environment variable unset`. ([#410](https://github.com/thejaustin/ShizukuPlus/issues/410))
 
 ## [v13.6.0.r2222]
 
-### Bug Fixes  
-- Shell caller now correctly identified; package name shown in consent notification.
+*Co-developed with Claude Code*
+
+### 🐛 Bug Fixes
+
+#### Server / Service
+- **Shell caller now correctly identified by UID fallback** — when `callingPackage` is absent (as in classic `rish_shizuku.dex`), the caller's UID is resolved via `Os.getuid()` so "Allow always" grants persist correctly. ([#391](https://github.com/thejaustin/ShizukuPlus/issues/391))
+- **Package name shown in shell consent notification** — consent prompt now shows the app's display name instead of "cannot be identified" when the PM lookup succeeds, and falls back to the package name (not a blank) when it does not. ([#398](https://github.com/thejaustin/ShizukuPlus/issues/398))
+- **Shell consent skipped when caller is already authorized** — consent notification no longer fires for apps that already have permanent permission. (`b035b101`)
+- **App display name shown in consent dialog** — replaced raw package ID with the user-visible app label. (`dd77e934`, [#398](https://github.com/thejaustin/ShizukuPlus/issues/398))
+- **Shell consent notification: Allow/Deny action buttons added** — users can now grant or deny directly from the notification shade without launching the dialog. (`bd7898de`)
+- **Shell consent events logged to Activity Log** — every consent grant/deny from rish or ADB is recorded so users can audit shell access history. (`407656e2`)
+- **Allow rish for apps without Shizuku permission in manifest** — apps that call `rish` without pre-declaring the Shizuku permission in their manifest now get a consent prompt instead of an unconditional denial. ([#387](https://github.com/thejaustin/ShizukuPlus/issues/387))
+
+#### Manager App (UI)
+- **Installer NPE cluster fixed** — three null-dereference crashes in the compat hub / APK installer path resolved; dialog height is now responsive on small screens. (`82ab63b5`)
+- **Plain-text backup export added** — backup data can now be exported without encryption for manual inspection/migration. (`f89c4beb`)
+- **OS permissions re-granted for pre-July-19 authorized apps on server start** — apps authorized before the permission-grant overhaul received no OS runtime permission on their next connect; a startup catch-up pass now closes this gap. (`f89c4beb`)
 
 ## [v13.6.0 / r2215]
 
-Initial public release of Shizuku+.
+*Initial public release of Shizuku+*
+
+### ✨ Added
+
+- **Shizuku+ core**: full fork of thedjchi/Shizuku with package `af.shizuku.manager` / `af.shizuku.plus.api` (coexists alongside stock Shizuku)
+- **Material 3 Expressive theme** — `Theme.Material3Expressive` across all screens
+- **Modular home screen** with drag-and-drop reorderable cards (`HomeViewModel` + Mavericks MVI)
+- **Root Compatibility Hub** — dashboard for 60+ root apps; auto-configures them to use the SU Bridge
+- **Wireless ADB pairing** (mDNS discovery) with QR code, PIN, and manual entry modes
+- **Scripting** — save and run privileged shell snippets; auto-run on Shizuku service start
+- **Activity Log** — persistent Room database of Shizuku permission grants/denials
+- **Update channel** — in-app stable and dev/beta APK download and install
+- **Service Doctor** — step-by-step diagnostic tool for common Shizuku startup failures
+- **Sentry crash reporting** (manually initialized; `io.sentry.auto-init=false`)
+- **Dhizuku device-owner mode** support
+- **PixelCopy + decorView overlay** to eliminate the black-screen flash on theme changes (`185b24c0`)

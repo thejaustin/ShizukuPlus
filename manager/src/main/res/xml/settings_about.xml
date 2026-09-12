@@ -23,10 +23,10 @@
             android:defaultValue="false"
             android:dependency="auto_update_enabled" />
 
-        <ListPreference
+        <rikka.preference.SimpleMenuPreference
             android:key="update_channel"
             android:title="@string/settings_update_channel_title"
-            android:summary="%s"
+            app:useSimpleSummaryProvider="true"
             android:icon="@drawable/ic_science_24"
             android:entries="@array/update_channel_entries"
             android:entryValues="@array/update_channel_values"

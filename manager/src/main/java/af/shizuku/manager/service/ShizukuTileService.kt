@@ -1,7 +1,7 @@
 package af.shizuku.manager.service
 
-import android.app.AlertDialog
 import android.app.PendingIntent
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import android.content.Intent
 import android.os.Build
 import android.service.quicksettings.Tile
@@ -13,6 +13,12 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.starter.Starter
 import af.shizuku.manager.utils.ShizukuStateMachine
 import af.shizuku.manager.worker.AdbStartWorker
+import af.shizuku.manager.adb.AdbPortProber
+import af.shizuku.manager.utils.EnvironmentUtils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.work.WorkManager
 import com.topjohnwu.superuser.Shell
 
@@ -70,13 +76,12 @@ class ShizukuTileService : TileService() {
                         openApp()
                     }
                 }
-                ShizukuStateMachine.State.STARTING,
+                ShizukuStateMachine.State.STARTING -> {
+                    Toast.makeText(this, getString(R.string.tile_subtitle_starting), Toast.LENGTH_SHORT).show()
+                    openApp()
+                }
                 ShizukuStateMachine.State.STOPPING -> {
-                    val msg = if (state == ShizukuStateMachine.State.STARTING)
-                        getString(R.string.tile_subtitle_starting)
-                    else
-                        getString(R.string.tile_subtitle_stopping)
-                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.tile_subtitle_stopping), Toast.LENGTH_SHORT).show()
                 }
                 else -> startShizuku()
             }
@@ -90,9 +95,9 @@ class ShizukuTileService : TileService() {
     }
 
     internal fun startShizuku() {
-        ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
-        updateTile()
         if (Shell.isAppGrantedRoot() == true) {
+            ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
+            updateTile()
             Shell.cmd(Starter.internalCommand).submit {
                 if (!it.isSuccess && ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
                     ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
@@ -101,7 +106,30 @@ class ShizukuTileService : TileService() {
                 updateTile()
             }
         } else {
+            val hasWriteSecure = checkSelfPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS) == android.content.pm.PackageManager.PERMISSION_GRANTED
+            val isWifiOk = !EnvironmentUtils.isWifiRequired() || ShizukuSettings.isForceStartWadbEnabled()
+            val hasLoopback = AdbPortProber.isPortOpen(5555, 50) ||
+                (ShizukuSettings.getLastPort() in 1..65535 && AdbPortProber.isPortOpen(ShizukuSettings.getLastPort(), 50))
+
+            if (!hasLoopback && !isWifiOk && !hasWriteSecure) {
+                Toast.makeText(this, R.string.tile_open_app_required, Toast.LENGTH_SHORT).show()
+                openApp()
+                return
+            }
+
+            ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
+            updateTile()
             AdbStartWorker.enqueue(this)
+
+            // Watchdog fallback: if background worker hasn't started the service within 15s,
+            // reset STARTING state so tile doesn't remain frozen in unavailable state.
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(15_000)
+                if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
+                    ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
+                    updateTile()
+                }
+            }
         }
     }
 
@@ -119,7 +147,15 @@ class ShizukuTileService : TileService() {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
-        startActivityAndCollapse(intent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val pi = PendingIntent.getActivity(
+                this, 0, intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            startActivityAndCollapse(pi)
+        } else {
+            startActivityAndCollapse(intent)
+        }
     }
 
     @androidx.annotation.RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -129,7 +165,8 @@ class ShizukuTileService : TileService() {
             getString(R.string.tile_action_stop),
             getString(R.string.tile_action_open_app)
         )
-        val dialog = AlertDialog.Builder(this)
+        val ctx = android.view.ContextThemeWrapper(this, af.shizuku.manager.R.style.Theme)
+        val dialog = MaterialAlertDialogBuilder(ctx)
             .setTitle(R.string.app_name)
             .setItems(items) { _, which ->
                 when (which) {

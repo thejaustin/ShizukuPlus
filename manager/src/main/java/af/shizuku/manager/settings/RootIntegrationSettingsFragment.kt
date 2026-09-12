@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
+import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceGroup
 import androidx.preference.TwoStatePreference
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +13,9 @@ import kotlinx.coroutines.launch
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.ShizukuSettings.Keys.KEY_COMPANION_FALLBACK
+import af.shizuku.manager.database.RootCompatHelper
 import af.shizuku.manager.service.AdbProxyService
+import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.StockShizukuCompat
 import moe.shizuku.server.IShizukuService
 import rikka.shizuku.Shizuku
@@ -25,7 +28,7 @@ import rikka.shizuku.Shizuku
  */
 class RootIntegrationSettingsFragment : BaseSettingsFragment() {
 
-    override fun getTitle(): CharSequence? = "Root & Compatibility"
+    override fun getTitle(): CharSequence? = getString(R.string.settings_main_nav_root_compat_title)
 
     override fun onCreateSettingsPreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_root_integration, rootKey)
@@ -89,10 +92,36 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        findPreference<TwoStatePreference>("su_bridge_enabled")?.setOnPreferenceChangeListener { _, newValue ->
+        findPreference<TwoStatePreference>("su_bridge_enabled")?.setOnPreferenceChangeListener { pref, newValue ->
             if (newValue is Boolean) {
-                preferenceManager.sharedPreferences?.edit()?.putBoolean("su_bridge_enabled", newValue)?.apply()
-                ShizukuSettings.syncAllPlusFeaturesToServer()
+                if (newValue) {
+                    val ctx = context ?: return@setOnPreferenceChangeListener false
+                    com.google.android.material.dialog.MaterialAlertDialogBuilder(ctx)
+                        .setTitle(R.string.su_bridge_warning_wallet_title)
+                        .setMessage(R.string.su_bridge_warning_wallet_message)
+                        .setPositiveButton(R.string.action_continue) { _, _ ->
+                            preferenceManager.sharedPreferences?.edit()?.putBoolean("su_bridge_enabled", true)?.apply()
+                            (pref as? TwoStatePreference)?.isChecked = true
+                            ShizukuSettings.syncAllPlusFeaturesToServer()
+                            val appCtx = context?.applicationContext ?: return@setPositiveButton
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                RootCompatHelper.deployBridgeToTmp(appCtx)
+                            }
+                        }
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show()
+                    return@setOnPreferenceChangeListener false
+                } else {
+                    preferenceManager.sharedPreferences?.edit()?.putBoolean("su_bridge_enabled", false)?.apply()
+                    ShizukuSettings.syncAllPlusFeaturesToServer()
+                    val appCtx = context?.applicationContext
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        if (appCtx != null) {
+                            RootCompatHelper.cleanupBridgeFromTmp(appCtx)
+                        }
+                    }
+                    return@setOnPreferenceChangeListener true
+                }
             }
             true
         }
@@ -116,10 +145,24 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             pref?.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue is Boolean) {
                     if (newValue && key == "bootloader_flash_ota_enabled") {
-                        com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
+                        val ctx = context ?: return@setOnPreferenceChangeListener false
+                        com.google.android.material.dialog.MaterialAlertDialogBuilder(ctx)
                             .setTitle(R.string.ota_flash_danger_title)
                             .setMessage(R.string.ota_flash_danger_message)
                             .setPositiveButton(R.string.ota_flash_danger_confirm) { _, _ ->
+                                preferenceManager.sharedPreferences?.edit()?.putBoolean(key, true)?.apply()
+                                pref.isChecked = true
+                                ShizukuSettings.syncAllPlusFeaturesToServer()
+                            }
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .show()
+                        return@setOnPreferenceChangeListener false
+                    } else if (newValue && key == "root_magisk_mocking_enabled") {
+                        val ctx = context ?: return@setOnPreferenceChangeListener false
+                        com.google.android.material.dialog.MaterialAlertDialogBuilder(ctx)
+                            .setTitle(R.string.su_bridge_warning_wallet_title)
+                            .setMessage(R.string.su_bridge_warning_wallet_message)
+                            .setPositiveButton(R.string.action_continue) { _, _ ->
                                 preferenceManager.sharedPreferences?.edit()?.putBoolean(key, true)?.apply()
                                 pref.isChecked = true
                                 ShizukuSettings.syncAllPlusFeaturesToServer()
@@ -150,13 +193,13 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
         }
         suPathPref?.setOnPreferenceClickListener {
             val presets = arrayOf(
-                "Default (Auto-detect)",
+                getString(R.string.su_path_preset_default),
                 "/system/bin/su (Standard AOSP)",
                 "/system/xbin/su (SuperSU Legacy)",
                 "/sbin/su (Magisk/Custom ROMs)",
                 "/data/adb/ksu/bin/su (KernelSU)",
                 "/data/adb/ap/bin/su (APatch)",
-                "Custom Path..."
+                getString(R.string.su_path_preset_custom)
             )
             val presetValues = arrayOf(
                 "",
@@ -190,24 +233,63 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
         applyModeConstraints()
     }
 
-    // Gray out categories that require root when running in ADB/shell mode (uid 2000).
-    // Only applied when the server is actually running — if uid == -1 (not attached), leave
-    // everything enabled so the user can still configure settings before starting Shizuku.
+    override fun onResume() {
+        super.onResume()
+        applyModeConstraints()
+    }
+
+    /**
+     * Show/hide and enable/disable preferences based on the current connection mode (#433).
+     *
+     * ADB mode (uid 2000): root-only categories (SU Bridge, rootless bridges, mocking/simulation,
+     *   bootloader integration) are grayed out -- they require a root shell to function.
+     *   The ADB connection category gets an explanatory summary.
+     *
+     * Root mode: ADB connection tools (adb_proxy, on_device_adb_tcp, force_start_wadb) are hidden
+     *   since they are meaningless when Shizuku is started by a root process directly.
+     *
+     * When the server is not running (uid == -1) no restrictions are applied so users can still
+     * browse and configure settings before starting Shizuku.
+     */
     private fun applyModeConstraints() {
         val uid = try { Shizuku.getUid() } catch (_: Exception) { -1 }
-        if (uid != 2000) return // root or not running — no restrictions to apply
 
-        val rootOnlyCategories = listOf(
-            "category_su_bridge",
-            "category_root_modules",
-            "category_ghost_bridge",
-            "category_unlocked_bootloader"
-        )
-        for (key in rootOnlyCategories) {
-            findPreference<PreferenceGroup>(key)?.apply {
-                isEnabled = false
-                // Append the mode hint to the category title so users understand why it's grayed.
-                title = "$title (root mode only)"
+        val isRootMode = EnvironmentUtils.isRooted() ||
+            ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ROOT
+
+        when {
+            uid == 2000 -> {
+                // Running in ADB/shell mode -- enable rootless bridges, SU bridge (rish emulation),
+                // and mocking/simulation features so ADB users gain full access.
+                val bridgeCategories = listOf(
+                    "category_su_bridge",
+                    "category_root_modules",
+                    "category_ghost_bridge"
+                )
+                for (key in bridgeCategories) {
+                    findPreference<PreferenceGroup>(key)?.apply {
+                        isEnabled = true
+                    }
+                }
+                findPreference<PreferenceGroup>("category_unlocked_bootloader")?.apply {
+                    isEnabled = isBootloaderUnlocked()
+                }
+                // ADB connection category: keep visible and annotate with mode indicator
+                findPreference<PreferenceCategory>("category_adb_connection")?.apply {
+                    isVisible = true
+                    summary = getString(R.string.settings_mode_indicator_adb)
+                }
+            }
+            isRootMode && uid != -1 -> {
+                // Running in root mode -- hide ADB-specific connection tools (not applicable)
+                findPreference<PreferenceCategory>("category_adb_connection")?.isVisible = false
+            }
+            else -> {
+                // Server not running -- show everything, clear any stale indicator
+                findPreference<PreferenceCategory>("category_adb_connection")?.apply {
+                    isVisible = true
+                    summary = null
+                }
             }
         }
     }

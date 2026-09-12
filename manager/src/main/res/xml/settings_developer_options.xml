@@ -50,7 +50,7 @@
             android:entries="@array/spoof_targets"
             android:entryValues="@array/spoof_targets_values"
             android:defaultValue="pixel_8_pro"
-            android:summary="%s"
+            app:useSimpleSummaryProvider="true"
             android:icon="@drawable/ic_smartphone_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>

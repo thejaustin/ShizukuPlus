@@ -42,6 +42,11 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
     protected var batteryOptimizationContinuation: CancellableContinuation<Boolean>? = null
     private val activeDialogs = mutableListOf<android.app.Dialog>()
 
+    // Drawables captured from preference XML before any icon styling is applied. Re-applying
+    // from originals (not from already-styled drawables) avoids stacked tints when the user
+    // changes icon style while staying on the settings page.
+    private val originalIcons = HashMap<String, android.graphics.drawable.Drawable?>()
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.setStorageDeviceProtected()
         preferenceManager.sharedPreferencesName = ShizukuSettings.NAME
@@ -55,8 +60,46 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         onCreateSettingsPreferences(savedInstanceState, rootKey)
 
         preferenceScreen?.let {
+            captureOriginalIcons(it)
             IconStyleHelper.applyToTree(requireContext(), it)
             fixDeprecatedListPreferenceSummaries(it)
+        }
+    }
+
+    private fun captureOriginalIcons(group: androidx.preference.PreferenceGroup) {
+        for (i in 0 until group.preferenceCount) {
+            val pref = group.getPreference(i)
+            if (pref is androidx.preference.PreferenceGroup) captureOriginalIcons(pref)
+            pref.key?.let { key ->
+                originalIcons[key] = pref.icon?.constantState?.newDrawable()
+            }
+        }
+    }
+
+    /**
+     * Re-applies the current icon style to all preferences from their original (unstyled)
+     * drawables. Safe to call any number of times — always starts from the original, so
+     * repeated calls don't stack tints or wrap LayerDrawables in more LayerDrawables.
+     */
+    fun refreshIconStyles() {
+        val screen = preferenceScreen ?: return
+        val ctx = context ?: return
+        val style = IconStyleHelper.current()
+        val colorMode = IconStyleHelper.currentColorMode()
+        reapplyIconStyles(ctx, screen, style, colorMode)
+    }
+
+    private fun reapplyIconStyles(
+        ctx: Context,
+        group: androidx.preference.PreferenceGroup,
+        style: IconStyleHelper.Style,
+        colorMode: IconStyleHelper.ColorMode
+    ) {
+        for (i in 0 until group.preferenceCount) {
+            val pref = group.getPreference(i)
+            if (pref is androidx.preference.PreferenceGroup) reapplyIconStyles(ctx, pref, style, colorMode)
+            val original = pref.key?.let { originalIcons[it] } ?: continue
+            pref.icon = IconStyleHelper.stylize(ctx, original.mutate(), style, colorMode, pref.key)
         }
     }
 
@@ -145,6 +188,26 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
+            view.post {
+                val lv = listView ?: return@post
+                val interp = android.view.animation.AnimationUtils.loadInterpolator(
+                    lv.context, android.R.interpolator.fast_out_slow_in
+                )
+                for (i in 0 until lv.childCount) {
+                    val child = lv.getChildAt(i) ?: continue
+                    child.alpha = 0f
+                    child.translationY = 12f
+                    child.animate()
+                        .alpha(1f)
+                        .translationY(0f)
+                        .setDuration(ShizukuSettings.scaledAnimationDuration(200))
+                        .setStartDelay(ShizukuSettings.scaledAnimationDuration(i * 25L))
+                        .setInterpolator(interp)
+                        .start()
+                }
+            }
+        }
         setDivider(null)
     }
 
@@ -174,17 +237,24 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             supportsChangeAnimations = false
         }
 
+        val oneHandedTopPx = if (ShizukuSettings.isOneHandedModeEnabled()) {
+            (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
+        } else 0
+        recyclerView.isVerticalScrollBarEnabled = true
         recyclerView.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-        recyclerView.setPadding(cardMarginPx + contentPaddingPx, 0, cardMarginPx + contentPaddingPx, 0)
+        recyclerView.setPadding(cardMarginPx + contentPaddingPx, oneHandedTopPx, cardMarginPx + contentPaddingPx, 0)
         recyclerView.clipToPadding = false
         recyclerView.addItemDecoration(SettingsItemDecoration(context))
 
         ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { _, insets ->
             val systemBarsInsets = insets.getInsets(Type.systemBars() or Type.displayCutout())
             val navBarClearancePx = (72 * context.resources.displayMetrics.density).toInt()
+            val currentOneHandedTop = if (ShizukuSettings.isOneHandedModeEnabled()) {
+                (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
+            } else 0
             recyclerView.setPadding(
                 cardMarginPx + contentPaddingPx + systemBarsInsets.left,
-                recyclerView.paddingTop,
+                currentOneHandedTop,
                 cardMarginPx + contentPaddingPx + systemBarsInsets.right,
                 systemBarsInsets.bottom + navBarClearancePx
             )
@@ -192,6 +262,16 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         }
 
         recyclerView.fixEdgeEffect()
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
+                (activity as? SettingsActivity)?.onPreferenceListScrolled(dy)
+            }
+            override fun onScrollStateChanged(rv: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    (activity as? SettingsActivity)?.onPreferenceListScrollIdle()
+                }
+            }
+        })
         return recyclerView
     }
 
@@ -328,5 +408,16 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             }
             return false
         }
+
+        override fun getDividerInset(view: View): Float {
+            if (isHeader(view)) return 16f * density
+            val iconView = view.findViewById<View>(android.R.id.icon)
+            if (iconView == null || iconView.visibility == View.GONE) {
+                return 16f * density
+            }
+            return 56f * density
+        }
+
+        override fun getDividerEndInset(view: View): Float = 16f * density
     }
 }

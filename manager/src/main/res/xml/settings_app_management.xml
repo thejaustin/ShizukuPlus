@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_swipe"
@@ -12,7 +13,7 @@
             android:entries="@array/swipe_actions"
             android:entryValues="@array/swipe_actions_values"
             android:defaultValue="open_app"
-            android:summary="%s"
+            app:useSimpleSummaryProvider="true"
             android:icon="@drawable/ic_swipe_24" />
 
         <rikka.preference.SimpleMenuPreference
@@ -21,7 +22,7 @@
             android:entries="@array/swipe_actions"
             android:entryValues="@array/swipe_actions_values"
             android:defaultValue="app_info"
-            android:summary="%s"
+            app:useSimpleSummaryProvider="true"
             android:icon="@drawable/ic_swipe_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>

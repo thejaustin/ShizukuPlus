@@ -33,6 +33,8 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
         }
     }
 
+    private var prevBgColor: Int? = null
+
     init {
         cardView.applySpringTouch()
     }
@@ -146,15 +148,76 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
             )
         )
 
-        cardView.setCardBackgroundColor(bgColor)
+        // Animate background color transition when service state changes (running ↔ stopped)
+        val prevBg = prevBgColor
+        prevBgColor = bgColor
+        if (prevBg != null && prevBg != bgColor) {
+            android.animation.ValueAnimator.ofArgb(prevBg, bgColor).apply {
+                duration = af.shizuku.manager.ShizukuSettings.scaledAnimationDuration(450)
+                interpolator = android.view.animation.AccelerateDecelerateInterpolator()
+                addUpdateListener { cardView.setCardBackgroundColor(it.animatedValue as Int) }
+            }.start()
+        } else {
+            cardView.setCardBackgroundColor(bgColor)
+        }
+
+        // Outline: hidden when user disables it. Style toggles between Material (theme roles) and
+        // Status (semantic green/amber/red). Starting state always uses amber regardless of style.
+        if (af.shizuku.manager.ShizukuSettings.isShowStatusCardOutlineEnabled()) {
+            val strokeDp = 2f
+            cardView.strokeWidth = (strokeDp * context.resources.displayMetrics.density + 0.5f).toInt()
+            val useStatusColors = af.shizuku.manager.ShizukuSettings.getStatusCardOutlineStyle() == "status"
+            cardView.strokeColor = when {
+                ok -> if (useStatusColors)
+                    ContextCompat.getColor(context, R.color.status_ok)
+                else
+                    com.google.android.material.color.MaterialColors.getColor(
+                        context, androidx.appcompat.R.attr.colorPrimary,
+                        ContextCompat.getColor(context, R.color.status_ok)
+                    )
+                state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING ->
+                    ContextCompat.getColor(context, R.color.status_starting)
+                else -> if (useStatusColors)
+                    ContextCompat.getColor(context, R.color.status_error)
+                else
+                    com.google.android.material.color.MaterialColors.getColor(
+                        context, androidx.appcompat.R.attr.colorError,
+                        ContextCompat.getColor(context, R.color.status_error)
+                    )
+            }
+        } else {
+            cardView.strokeWidth = 0
+        }
 
         textView.setTextColor(textColor)
         summaryView.setTextColor(textColor)
         logChip.setTextColor(textColor)
+        logChip.chipIconTint = android.content.res.ColorStateList.valueOf(textColor)
         diagnosticsChip.setTextColor(textColor)
+        diagnosticsChip.chipIconTint = android.content.res.ColorStateList.valueOf(textColor)
 
-        // Clean, harmonized status icon tint (pill background matches container, icon uses on-container text tint)
-        af.shizuku.manager.utils.IconStyleHelper.applyToStatusCardIcon(iconView, pillColor = bgColor, tintColor = textColor)
+        // Icon pill uses vivid semantic role colors so it stands out against the card's lighter
+        // container background — matching pill-to-card was invisible in users' issue screenshots.
+        val (iconPillColor, iconOnPillColor) = when {
+            ok -> {
+                com.google.android.material.color.MaterialColors.getColor(
+                    context, R.attr.colorPrimary, android.graphics.Color.TRANSPARENT
+                ) to com.google.android.material.color.MaterialColors.getColor(
+                    context, com.google.android.material.R.attr.colorOnPrimary, android.graphics.Color.WHITE
+                )
+            }
+            state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING -> {
+                ContextCompat.getColor(context, R.color.status_starting) to android.graphics.Color.WHITE
+            }
+            else -> {
+                com.google.android.material.color.MaterialColors.getColor(
+                    context, R.attr.colorError, android.graphics.Color.RED
+                ) to com.google.android.material.color.MaterialColors.getColor(
+                    context, com.google.android.material.R.attr.colorOnError, android.graphics.Color.WHITE
+                )
+            }
+        }
+        af.shizuku.manager.utils.IconStyleHelper.applyToStatusCardIcon(iconView, pillColor = iconPillColor, tintColor = iconOnPillColor)
 
         val isRoot = status.uid == 0
         val apiVersion = status.apiVersion
@@ -164,7 +227,11 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
         } else {
             iconView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_server_error_24))
         }
-        val user = if (isRoot) context.getString(R.string.home_status_service_user_root) else context.getString(R.string.home_status_service_user_adb)
+        val user = when {
+            isRoot -> context.getString(R.string.home_status_service_user_root)
+            !status.startMethod.isNullOrEmpty() -> status.startMethod
+            else -> context.getString(R.string.home_status_service_user_adb)
+        }
         val title = if (ok) {
             context.getString(R.string.home_status_service_is_running, context.getString(R.string.app_name))
         } else {
