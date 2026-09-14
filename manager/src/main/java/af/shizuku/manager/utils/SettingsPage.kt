@@ -212,6 +212,116 @@ sealed class SettingsPage(
         }
     }
 
+    object Oppo {
+        /** Opens ColorOS/OxygenOS per-app battery settings (Auto-Launch + No restrictions toggle). */
+        object BatterySettings : SettingsPage(Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
+            override fun buildIntent(context: Context): Intent {
+                return super.buildIntent(context).apply {
+                    data = android.net.Uri.parse("package:${context.packageName}")
+                }
+            }
+            override fun launch(context: Context) {
+                runCatching {
+                    // ColorOS 14+ / OplusOS — per-app battery optimization page
+                    val intent = Intent().apply {
+                        setClassName("com.oplus.battery", "com.oplus.battery.ui.app_manage.AppPowerManagerActivity")
+                        putExtra("package_name", context.packageName)
+                        flags = defaultFlags
+                    }
+                    context.startActivity(intent)
+                }.recoverCatching {
+                    // ColorOS 13 / older — PhoneManager per-app battery page
+                    val intent = Intent().apply {
+                        setClassName("com.coloros.phonemanager", "com.coloros.phonemanager.feature.battery.PerAppBatteryPowerActivity")
+                        putExtra("package_name", context.packageName)
+                        flags = defaultFlags
+                    }
+                    context.startActivity(intent)
+                }.recoverCatching {
+                    // Older ColorOS action string
+                    val intent = Intent("com.coloros.powermanager.action.APP_POWER_MANAGER").apply {
+                        flags = defaultFlags
+                    }
+                    context.startActivity(intent)
+                }.recoverCatching {
+                    // Last resort: standard app-details page
+                    super.launch(context)
+                }.onFailure { e ->
+                    Timber.tag("SettingsUtils").w("Failed to open Oppo/OnePlus battery settings: ${e.message}")
+                }
+            }
+        }
+    }
+
+    object TCL {
+        /** Opens TCL System Manager's Auto-Start / battery whitelist screen. */
+        object AutoStart : SettingsPage(Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
+            override fun buildIntent(context: Context): Intent {
+                return super.buildIntent(context).apply {
+                    data = android.net.Uri.parse("package:${context.packageName}")
+                }
+            }
+            override fun launch(context: Context) {
+                runCatching {
+                    // TCL System Manager — Auto-start list (T1 / NxtPaper / Revvl)
+                    val intent = Intent().apply {
+                        setClassName("com.tcl.systemmanager", "com.tcl.systemmanager.ui.autorun.AutoRunActivity")
+                        flags = defaultFlags
+                    }
+                    context.startActivity(intent)
+                }.recoverCatching {
+                    // Older TCL path
+                    val intent = Intent().apply {
+                        setClassName("com.tcl.systemmanager", "com.tcl.systemmanager.MainActivity")
+                        flags = defaultFlags
+                    }
+                    context.startActivity(intent)
+                }.recoverCatching {
+                    // Last resort: standard app-details page
+                    super.launch(context)
+                }.onFailure { e ->
+                    Timber.tag("SettingsUtils").w("Failed to open TCL auto-start settings: ${e.message}")
+                }
+            }
+        }
+    }
+
+    object Xiaomi {
+        /** Opens MIUI/HyperOS per-app battery settings (No restrictions toggle + Autostart). */
+        object BatterySettings : SettingsPage(Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
+            override fun buildIntent(context: Context): Intent {
+                return super.buildIntent(context).apply {
+                    data = android.net.Uri.parse("package:${context.packageName}")
+                }
+            }
+            override fun launch(context: Context) {
+                runCatching {
+                    // HyperOS PowerKeeper — direct per-app battery page (most specific)
+                    val intent = Intent().apply {
+                        setClassName("com.miui.powerkeeper", "com.miui.powerkeeper.ui.HoldApplicationsDetailActivity")
+                        putExtra("package_name", context.packageName)
+                        putExtra("package_label", context.getString(af.shizuku.manager.R.string.app_name))
+                        flags = defaultFlags
+                    }
+                    context.startActivity(intent)
+                }.recoverCatching {
+                    // MIUI Security Center — Autostart + battery page fallback
+                    val intent = Intent("miui.intent.action.APP_PERM_EDITOR").apply {
+                        setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity")
+                        putExtra("extra_pkgname", context.packageName)
+                        flags = defaultFlags
+                    }
+                    context.startActivity(intent)
+                }.recoverCatching {
+                    // Standard app-details page — user can navigate to Battery manually
+                    super.launch(context)
+                }.onFailure { e ->
+                    Timber.tag("SettingsUtils").w("Failed to open Xiaomi battery settings: ${e.message}")
+                }
+            }
+        }
+    }
+
     protected val defaultFlags =
         Intent.FLAG_ACTIVITY_NEW_TASK or
         Intent.FLAG_ACTIVITY_NO_HISTORY or

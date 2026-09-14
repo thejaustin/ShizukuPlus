@@ -106,8 +106,9 @@ class AppSpecificProfileRule : AutomationRule {
                 ShizukuSettings.syncAllPlusFeaturesToServer()
             } else if (savedGlobalFirewall != null) {
                 // App has no profile — restore saved global value.
-                Timber.i("AppSpecificProfileRule: foreground=%s (default) restoring binder_firewall=%s", app, savedGlobalFirewall)
-                ShizukuSettings.setBinderFirewallEnabled(savedGlobalFirewall!!)
+                val restored = savedGlobalFirewall ?: return
+                Timber.i("AppSpecificProfileRule: foreground=%s (default) restoring binder_firewall=%s", app, restored)
+                ShizukuSettings.setBinderFirewallEnabled(restored)
                 ShizukuSettings.syncAllPlusFeaturesToServer()
                 savedGlobalFirewall = null
             }

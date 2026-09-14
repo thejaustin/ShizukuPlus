@@ -73,8 +73,9 @@ class PackageGovernorPlusImpl : IPackageGovernorPlus.Stub() {
         }
         // Fallback: pm dump parse
         return try {
-            val output = Runtime.getRuntime().exec(arrayOf("pm", "dump", packageName))
-                .inputStream.bufferedReader().use { it.readText() }
+            val proc = Runtime.getRuntime().exec(arrayOf("pm", "dump", packageName))
+            val output = proc.inputStream.bufferedReader().use { it.readText() }
+            proc.waitFor()
             val granted = mutableListOf<String>()
             var inGrantedSection = false
             for (line in output.lines()) {
@@ -217,9 +218,10 @@ class PackageGovernorPlusImpl : IPackageGovernorPlus.Stub() {
         }
         // Fallback: pm dump parse
         return try {
-            Runtime.getRuntime().exec(arrayOf("pm", "dump", packageName))
-                .inputStream.bufferedReader().use { it.readText() }
-                .lines().any { it.trim() == "suspended=true" }
+            val proc = Runtime.getRuntime().exec(arrayOf("pm", "dump", packageName))
+            val text = proc.inputStream.bufferedReader().use { it.readText() }
+            proc.waitFor()
+            text.lines().any { it.trim() == "suspended=true" }
         } catch (_: Exception) { false }
     }
 
@@ -252,9 +254,10 @@ class PackageGovernorPlusImpl : IPackageGovernorPlus.Stub() {
         }
         // Fallback: pm dump parse
         return try {
-            Runtime.getRuntime().exec(arrayOf("pm", "dump", packageName))
-                .inputStream.bufferedReader().use { it.readText() }
-                .lines().any { it.trim().equals("allowBackup=true", ignoreCase = true) }
+            val proc = Runtime.getRuntime().exec(arrayOf("pm", "dump", packageName))
+            val text = proc.inputStream.bufferedReader().use { it.readText() }
+            proc.waitFor()
+            text.lines().any { it.trim().equals("allowBackup=true", ignoreCase = true) }
         } catch (_: Exception) { false }
     }
 
@@ -270,9 +273,10 @@ class PackageGovernorPlusImpl : IPackageGovernorPlus.Stub() {
         }
         // Fallback: pm dump parse
         return try {
-            Runtime.getRuntime().exec(arrayOf("pm", "dump", packageName))
-                .inputStream.bufferedReader().use { it.readText() }
-                .lines()
+            val proc = Runtime.getRuntime().exec(arrayOf("pm", "dump", packageName))
+            val text = proc.inputStream.bufferedReader().use { it.readText() }
+            proc.waitFor()
+            text.lines()
                 .firstOrNull { it.trim().startsWith("dataDir=") }
                 ?.trim()?.removePrefix("dataDir=")?.trim()
                 ?.takeIf { it.isNotEmpty() }

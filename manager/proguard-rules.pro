@@ -129,6 +129,11 @@
     public static <fields>;
 }
 
+# Play Integrity SDK: factory and request classes accessed reflectively at runtime by the GMS
+# Play Core runtime. Without this rule R8 strips them and requestIntegrityToken() fails with
+# ClassNotFoundException on the first call after installation.
+-keep class com.google.android.play.core.integrity.** { *; }
+
 # Custom View subclasses inflated from XML by class name — R8 must not rename or remove them.
 -keep class af.shizuku.manager.utils.EmptyStateView { public <init>(android.content.Context, android.util.AttributeSet); }
 

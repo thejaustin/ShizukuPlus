@@ -31,7 +31,10 @@ class AppInspectorImpl : IAppInspector.Stub() {
     }
 
     private fun execOutput(vararg args: String): String = try {
-        Runtime.getRuntime().exec(args).inputStream.bufferedReader().readText().trim()
+        val proc = Runtime.getRuntime().exec(args)
+        val out = proc.inputStream.bufferedReader().use { it.readText() }
+        proc.waitFor()
+        out.trim()
     } catch (_: Exception) { "" }
 
     private fun pipeProcess(vararg args: String): ParcelFileDescriptor? = try {
@@ -275,8 +278,9 @@ class AppInspectorImpl : IAppInspector.Stub() {
             val procs = method.invoke(am) as? List<*>
             if (!procs.isNullOrEmpty()) {
                 procs.forEach { p ->
+                    if (p == null) return@forEach
                     try {
-                        val name = p!!.javaClass.getField("processName").get(p) as? String ?: return@forEach
+                        val name = p.javaClass.getField("processName").get(p) as? String ?: return@forEach
                         val pid = p.javaClass.getField("pid").get(p) as? Int ?: return@forEach
                         if (name.contains('.') && !name.startsWith('/')) bundle.putInt(name, pid)
                     } catch (_: Exception) {}

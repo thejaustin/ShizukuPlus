@@ -13,8 +13,6 @@ import android.view.MotionEvent
 import af.shizuku.server.IPrivilegedDataSource
 import af.shizuku.common.compat.Android17Compat
 import af.shizuku.common.util.UserHandleCompat
-import rikka.hidden.compat.ActivityManagerApis
-import rikka.shizuku.server.api.IContentProviderUtils
 
 /**
  * Implements IPrivilegedDataSource entirely through shell commands executed under uid 2000.
@@ -284,7 +282,8 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
         try {
             val binder = ServiceManager.getService("iphonesubinfo") ?: error("no iphonesubinfo")
             val subInfo = Class.forName("com.android.internal.telephony.IPhoneSubInfo\$Stub")
-                .getDeclaredMethod("asInterface", IBinder::class.java).invoke(null, binder)!!
+                .getDeclaredMethod("asInterface", IBinder::class.java).invoke(null, binder)
+                ?: error("asInterface returned null")
             // getImei (API 29+: getImei(slotIndex, pkg); API 22-28: getDeviceId(pkg))
             val imei = subInfo.javaClass.methods.firstNotNullOfOrNull { m ->
                 if (m.name != "getImei" && m.name != "getDeviceId") return@firstNotNullOfOrNull null
@@ -595,14 +594,14 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
                     }
                 }
                 inNetworks && current != null && t.startsWith("preSharedKey:") ->
-                    current!!.putString("psk", t.removePrefix("preSharedKey:").trim())
+                    current?.putString("psk", t.removePrefix("preSharedKey:").trim())
                 inNetworks && current != null && t.startsWith("BSSID:") ->
-                    current!!.putString("bssid", t.removePrefix("BSSID:").trim())
+                    current?.putString("bssid", t.removePrefix("BSSID:").trim())
                 inNetworks && current != null && t.startsWith("KeyMgmt:") ->
-                    current!!.putString("key_mgmt", t.removePrefix("KeyMgmt:").trim())
+                    current?.putString("key_mgmt", t.removePrefix("KeyMgmt:").trim())
                 // Blank line or new major section ends the networks block
                 inNetworks && t.isEmpty() && current != null -> {
-                    result.add(current!!)
+                    current?.let { result.add(it) }
                     current = null
                 }
             }

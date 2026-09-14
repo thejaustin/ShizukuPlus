@@ -137,10 +137,8 @@
     <string name="doctor_check_samsung_battery_protection">Proteção de Bateria Samsung</string>
     <string name="doctor_check_secondary_user">Usuário Secundário / Pasta Segura</string>
     <string name="doctor_check_phantom_process">Eliminador de Processos Fantasma</string>
-    <string name="doctor_tips_title">Dicas de Solução de Problemas</string>
     <string name="doctor_status_manual_check">Requer Verificação Manual</string>
     <string name="doctor_status_detected">Detectado</string>
-    <string name="doctor_status_review">Revisão necessária</string>
     <string name="doctor_tip_samsung_autoblocker"><b>Bloqueador Automático Samsung</b>: Certifique-se de que esteja <b>DESATIVADO</b> ou que "Restrições Máximas" esteja desativado. Ele bloqueia silenciosamente comandos ADB no One UI 7/8+.</string>
     <string name="doctor_tip_oneui_connectivity"><b>Conectividade One UI 7/8</b>: Se o Pareamento sem Fio falhar, tente usar o modo de <b>Tela Dividida</b> com o Shizuku e as Opções do Desenvolvedor abertos simultaneamente.</string>
     <string name="doctor_tip_s22_ultra"><b>Dica para o S22 Ultra</b>: Para um ADB consistente, disque `*#0808#` e selecione `MTP + ADB` caso ocorram quedas de conexão.</string>
@@ -619,36 +617,30 @@ Execute este comando no PC (a depuração USB deve estar ativada):
 
     <!--Diálogo de relatório de bug-->
     <string name="bug_report_dialog_before_reporting">Primeiro, faça o seguinte:</string>
-    <string name="bug_report_dialog_update">Verifique se você está usando a %1$s.</string>
+    <string name="bug_report_dialog_update">Verifique se você está usando a ^1.</string>
     <string name="bug_report_dialog_link_update">versão mais recente</string>
-    <string name="bug_report_dialog_wiki">Leia a %1$s e siga todas as etapas relevantes de solução de problemas.</string>
+    <string name="bug_report_dialog_wiki">Leia a ^1 e siga todas as etapas relevantes de solução de problemas.</string>
     <string name="bug_report_dialog_link_wiki">wiki</string>
-    <string name="bug_report_dialog_issues">Pesquise em todas as %1$s para ver se o seu bug já foi reportado.</string>
+    <string name="bug_report_dialog_issues">Pesquise em todas as ^1 para ver se o seu bug já foi reportado.</string>
     <string name="bug_report_dialog_link_issues">issues existentes</string>
-    <string name="bug_report_dialog_method">Por favor, envie uma issue no %1$s se você tiver uma conta.</string>
+    <string name="bug_report_dialog_method">Por favor, envie uma issue no ^1 se você tiver uma conta.</string>
     <string name="bug_report_dialog_method_2">Caso contrário, você pode enviar um e-mail.</string>
     <string name="bug_report_dialog_button_email">E-mail</string>
 
     <!--Diagnóstico do serviço-->
     <string name="home_service_doctor_title">Diagnóstico do Serviço</string>
     <string name="home_service_doctor_summary">Está com problemas para iniciar o Shizuku? Toque para executar uma verificação de diagnóstico.</string>
-    <string name="doctor_dialog_title">Diagnósticos do Sistema</string>
-    <string name="doctor_check_battery">Otimização de bateria: %1$s</string>
-    <string name="doctor_check_adb">Depuração sem fio: %1$s</string>
-    <string name="doctor_check_root">Acesso root: %1$s</string>
-    <string name="doctor_check_secure_settings">Configurações Seguras: %1$s</string>
-    <string name="doctor_check_permission">Permissão ADB: %1$s</string>
-    <string name="doctor_check_server">Servidor Shizuku: %1$s</string>
-    <string name="doctor_check_background">Limites em segundo plano: %1$s</string>
+    <string name="doctor_check_battery">Otimização de bateria</string>
+    <string name="doctor_check_adb">Depuração sem fio</string>
+    <string name="doctor_check_root">Acesso root</string>
+    <string name="doctor_check_secure_settings">Configurações Seguras</string>
+    <string name="doctor_check_server">Servidor Shizuku</string>
+    <string name="doctor_check_background">Limites em segundo plano</string>
     <string name="doctor_status_ok">OK</string>
     <string name="doctor_status_running">Em execução</string>
     <string name="doctor_status_stopped">Parado</string>
-    <string name="doctor_status_limited">Limitado (ADB Restrito)</string>
-    <string name="doctor_status_restricted">Restrito (Otimização do sistema ativada)</string>
     <string name="doctor_status_not_enabled">Não ativado</string>
     <string name="doctor_status_optimized">Otimizado (Pode encerrar o serviço)</string>
-    <string name="doctor_status_unlocked">Desbloqueado</string>
-    <string name="doctor_status_restricted_bg">Execução em segundo plano restrita</string>
     <string name="doctor_tip_xiaomi">Xiaomi/HyperOS: Ative "Depuração USB (Configurações de Segurança)" nas Opções do Desenvolvedor.</string>
     <string name="doctor_tip_oppo_permission">Oppo/Realme/OnePlus: Desative "Monitoramento de Permissões" nas Opções do Desenvolvedor para evitar que o serviço seja encerrado em segundo plano.</string>
     <string name="doctor_tip_tcl_background">TCL: Certifique-se de que o Shizuku+ esteja adicionado às listas de permissões "Início automático" e "Alto consumo de energia em segundo plano" nas Configurações.</string>

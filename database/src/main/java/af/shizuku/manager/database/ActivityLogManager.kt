@@ -116,13 +116,13 @@ object ActivityLogManager {
     }
     
     private fun loadFromDatabase() {
-        if (dao == null) return
+        val dao = dao ?: return
 
         scope.launch {
             var retryCount = 0
             while (retryCount < 3) {
                 try {
-                    dao!!.getAll().collect { dbLogs ->
+                    dao.getAll().collect { dbLogs ->
                         synchronized(records) {
                             records.clear()
                             dbLogs.forEach { log ->

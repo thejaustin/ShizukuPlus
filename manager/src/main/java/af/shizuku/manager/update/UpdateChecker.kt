@@ -114,9 +114,10 @@ object UpdateChecker {
             // user's channel choice stops making any difference. Explicitly prefer the newest
             // entry flagged prerelease=true within the fetched page, falling back to index 0 only
             // if none of the recent releases are marked as a prerelease.
-            val prerelease = (0 until (arr?.length() ?: 0))
-                .map { arr!!.getJSONObject(it) }
-                .firstOrNull { it.optBoolean("prerelease", false) }
+            val prerelease = arr?.let { a ->
+                (0 until a.length()).map { a.getJSONObject(it) }
+                    .firstOrNull { it.optBoolean("prerelease", false) }
+            }
             val newestOverall = arr?.optJSONObject(0)
             // ...but a stable release is still a valid, newer build for a Dev/Beta user — a
             // prerelease cut before the latest stable shouldn't keep them stuck on an older

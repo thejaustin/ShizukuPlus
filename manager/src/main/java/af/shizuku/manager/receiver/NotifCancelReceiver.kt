@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.work.WorkManager
+import timber.log.Timber
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.receiver.ShizukuReceiverStarter
 import af.shizuku.manager.utils.EnvironmentUtils
@@ -17,13 +18,13 @@ class NotifCancelReceiver : BroadcastReceiver() {
             // WorkManager may throw NoSuchMethodError / NoSuchMethodException / LinkageError or IllegalStateException when
             // called from a BroadcastReceiver context before the app process is fully
             // initialized (e.g. direct boot, process re-creation for receiver only).
-            android.util.Log.w("NotifCancelReceiver", "WorkManager unavailable: ${e.message}")
+            Timber.tag("NotifCancelReceiver").w("WorkManager unavailable: ${e.message}")
         }
         try {
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
             nm?.cancel(ShizukuReceiverStarter.NOTIFICATION_ID)
         } catch (e: Throwable) {
-            android.util.Log.w("NotifCancelReceiver", "Failed to cancel notification: ${e.message}")
+            Timber.tag("NotifCancelReceiver").w("Failed to cancel notification: ${e.message}")
         }
     }
 }

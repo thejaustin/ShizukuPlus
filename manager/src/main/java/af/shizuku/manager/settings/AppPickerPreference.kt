@@ -205,7 +205,7 @@ class AppPickerPreference(context: Context, attrs: AttributeSet?) : Preference(c
                 HapticUtils.success(it)
                 selectedPackages.clear()
                 apps.forEach { it.isChecked = false }
-                adapter.notifyDataSetChanged()
+                adapter.notifyItemRangeChanged(0, adapter.itemCount)
                 updateCounter()
             }
 

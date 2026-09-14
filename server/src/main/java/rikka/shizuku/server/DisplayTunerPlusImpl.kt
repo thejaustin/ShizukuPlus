@@ -120,8 +120,9 @@ class DisplayTunerPlusImpl : IDisplayTunerPlus.Stub() {
         }
         // Fallback: wm size output parse
         return try {
-            val output = Runtime.getRuntime().exec(arrayOf("wm", "size"))
-                .inputStream.bufferedReader().use { it.readText() }
+            val proc = Runtime.getRuntime().exec(arrayOf("wm", "size"))
+            val output = proc.inputStream.bufferedReader().use { it.readText() }
+            proc.waitFor()
             var hasOverride = false
             for (line in output.lines()) {
                 val lower = line.lowercase()
@@ -162,8 +163,9 @@ class DisplayTunerPlusImpl : IDisplayTunerPlus.Stub() {
         }
         // Fallback: wm density parse
         return try {
-            val output = Runtime.getRuntime().exec(arrayOf("wm", "density"))
-                .inputStream.bufferedReader().use { it.readText() }
+            val proc = Runtime.getRuntime().exec(arrayOf("wm", "density"))
+            val output = proc.inputStream.bufferedReader().use { it.readText() }
+            proc.waitFor()
             var density = -1
             for (line in output.lines()) {
                 val lower = line.lowercase()
@@ -185,9 +187,10 @@ class DisplayTunerPlusImpl : IDisplayTunerPlus.Stub() {
             Log.w(TAG, "getInitialDisplayDensity IPC failed, falling back to exec", e)
         }
         return try {
-            Runtime.getRuntime().exec(arrayOf("wm", "density"))
-                .inputStream.bufferedReader().use { it.readText() }
-                .lines()
+            val proc = Runtime.getRuntime().exec(arrayOf("wm", "density"))
+            val text = proc.inputStream.bufferedReader().use { it.readText() }
+            proc.waitFor()
+            text.lines()
                 .firstOrNull { it.lowercase().startsWith("physical") }
                 ?.substringAfterLast(":")?.trim()?.toIntOrNull() ?: -1
         } catch (_: Exception) { -1 }

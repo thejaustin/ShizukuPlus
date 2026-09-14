@@ -2,20 +2,12 @@ package af.shizuku.manager
 
 import android.os.Bundle
 import androidx.core.os.bundleOf
-import kotlinx.coroutines.android.asCoroutineDispatcher
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.TimeoutCancellationException
 import af.shizuku.api.BinderContainer
 import af.shizuku.manager.utils.Logger.LOGGER
 import af.shizuku.manager.utils.ShizukuStateMachine
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuApiConstants.USER_SERVICE_ARG_TOKEN
 import rikka.shizuku.ShizukuProvider
-import rikka.shizuku.server.ktx.workerHandler
 
 class ShizukuManagerProvider : ShizukuProvider() {
 

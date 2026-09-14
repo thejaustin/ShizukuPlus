@@ -122,16 +122,17 @@ object StockShizukuCompat {
             // newProcess() is a Java platform type: null on some chipsets when spawn fails.
             process = rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", "ps -A | grep shizuku_server"), null, null)
                 ?: return false
-            val reader = java.io.BufferedReader(java.io.InputStreamReader(process.inputStream))
-            var line: String?
-            var isOriginal = false
-            while (reader.readLine().also { line = it } != null) {
-                if (line?.contains("moe.shizuku.privileged.api") == true) {
-                    isOriginal = true
-                    break
+            java.io.BufferedReader(java.io.InputStreamReader(process.inputStream)).use { reader ->
+                var line: String?
+                var isOriginal = false
+                while (reader.readLine().also { line = it } != null) {
+                    if (line?.contains("moe.shizuku.privileged.api") == true) {
+                        isOriginal = true
+                        break
+                    }
                 }
+                isOriginal
             }
-            isOriginal
         } catch (e: Exception) {
             // If the stock server is running but the stock manager is uninstalled,
             // ANY call to the server will throw this specific exception because the server

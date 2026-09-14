@@ -4,7 +4,6 @@ import af.shizuku.manager.BuildConfig
 import android.app.Application
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.work.Configuration
@@ -89,7 +88,7 @@ class ShizukuApplication : Application(), Configuration.Provider {
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
-            .setMinimumLoggingLevel(if (BuildConfig.DEBUG) Log.DEBUG else Log.INFO)
+            .setMinimumLoggingLevel(if (BuildConfig.DEBUG) android.util.Log.DEBUG else android.util.Log.INFO)
             .setTaskExecutor(workManagerTaskExecutor)
             .build()
 
@@ -644,7 +643,7 @@ class ShizukuApplication : Application(), Configuration.Provider {
                         startService(liveServiceIntent)
                     }
                 } catch (e: Exception) {
-                    android.util.Log.w("ShizukuApplication", "Failed to start ShizukuLiveService", e)
+                    Timber.w(e, "Failed to start ShizukuLiveService")
                 }
             }
         } catch (e: Throwable) {

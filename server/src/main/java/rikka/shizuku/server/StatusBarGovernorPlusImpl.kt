@@ -119,8 +119,10 @@ class StatusBarGovernorPlusImpl : IStatusBarGovernorPlus.Stub() {
         if (result.isNotEmpty()) return result
         // Fallback: settings get exec
         return try {
-            Runtime.getRuntime().exec(arrayOf("settings", "get", "secure", TILES_KEY))
-                .inputStream.bufferedReader().use { it.readText().trim() }
+            val proc = Runtime.getRuntime().exec(arrayOf("settings", "get", "secure", TILES_KEY))
+            val text = proc.inputStream.bufferedReader().use { it.readText() }
+            proc.waitFor()
+            text.trim()
         } catch (_: Exception) { "" }
     }
 

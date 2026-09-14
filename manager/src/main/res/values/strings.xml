@@ -154,14 +154,23 @@
     <!-- Service Doctor -->
     <string name="snackbar_samsung_auto_blocker">Samsung Auto Blocker may block ADB on One UI 7/8. Check Security settings.</string>
     <string name="snackbar_action_check">Check</string>
+    <string name="doctor_check_accessibility">ADB Pairing Accessibility Service</string>
     <string name="doctor_check_samsung_autoblocker">Samsung Auto Blocker</string>
     <string name="doctor_check_samsung_battery_protection">Samsung Battery Protection</string>
+    <string name="doctor_check_samsung_max_restrictions">Maximum Restrictions (One UI 8+)</string>
     <string name="doctor_check_secondary_user">Secondary User / Secure Folder</string>
     <string name="doctor_check_phantom_process">Phantom Process Killer</string>
-    <string name="doctor_tips_title">Troubleshooting Tips</string>
+    <string name="doctor_check_su_bridge_a16">SU Bridge (Android 16+ ADB)</string>
     <string name="doctor_status_manual_check">Needs Manual Check</string>
     <string name="doctor_status_detected">Detected</string>
-    <string name="doctor_status_review">Review required</string>
+    <string name="doctor_status_fix_available">Fix Available</string>
+    <string name="doctor_status_autoblocker_on">Enabled (Turn OFF)</string>
+    <string name="doctor_status_samsung_max_restrictions_on">Enabled (Must be OFF)</string>
+    <string name="doctor_status_samsung_sleeping_apps">Review required (Check Sleeping Apps)</string>
+    <string name="doctor_status_su_bridge_path_set">exported path set</string>
+    <string name="doctor_status_su_bridge_no_path">Exported path not configured</string>
+    <string name="doctor_tip_oneui8_max_restrictions">One UI 8+: \'Maximum Restrictions\' in Auto Blocker disables ADB. Turn it off to use Shizuku.</string>
+    <string name="doctor_tip_su_bridge_a16">Android 16+ restricts /data/local/tmp writes from the ADB shell. Open the Root Compat Hub and tap \"Export\" to set a SU Bridge path that works on your device.</string>
     <string name="doctor_tip_samsung_autoblocker"><b>Samsung Auto Blocker</b>: Ensure it is turned <b>OFF</b> or that \'Maximum Restrictions\' is disabled. It silently blocks ADB commands on One UI 7/8+.</string>
     <string name="doctor_tip_oneui_connectivity"><b>One UI 7/8 Connectivity</b>: If Wireless Pairing fails, try using <b>Split Screen mode</b> with Shizuku+ and Developer Options open simultaneously.</string>
     <string name="doctor_tip_s22_ultra"><b>S22 Ultra Tip</b>: For consistent ADB, dial `*#0808#` and select `MTP + ADB` if you encounter connection drops.</string>
@@ -645,41 +654,49 @@
 
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">First, please do the following:</string>
-    <string name="bug_report_dialog_update">Check that you are using the %1$s.</string>
+    <string name="bug_report_dialog_update">Check that you are using the ^1.</string>
     <string name="bug_report_dialog_link_update">latest version</string>
-    <string name="bug_report_dialog_wiki">Read the %1$s and follow all relevant troubleshooting steps.</string>
+    <string name="bug_report_dialog_wiki">Read the ^1 and follow all relevant troubleshooting steps.</string>
     <string name="bug_report_dialog_link_wiki">wiki</string>
-    <string name="bug_report_dialog_issues">Search through all %1$s to see if your bug has already been reported.</string>
+    <string name="bug_report_dialog_issues">Search through all ^1 to see if your bug has already been reported.</string>
     <string name="bug_report_dialog_link_issues">existing issues</string>
-    <string name="bug_report_dialog_method">Please submit an issue on %1$s if you have an account.</string>
+    <string name="bug_report_dialog_method">Please submit an issue on ^1 if you have an account.</string>
     <string name="bug_report_dialog_method_2">Otherwise, you can send an email.</string>
     <string name="bug_report_dialog_button_email">Email</string>
 
     <!-- Service Doctor -->
     <string name="home_service_doctor_title">Service Doctor</string>
     <string name="home_service_doctor_summary">Having trouble starting Shizuku+? Tap to run a diagnostic check.</string>
-    <string name="doctor_dialog_title">System Diagnostics</string>
-    <string name="doctor_check_battery">Battery optimization: %1$s</string>
-    <string name="doctor_check_adb">Wireless debugging: %1$s</string>
-    <string name="doctor_check_root">Root access: %1$s</string>
-    <string name="doctor_check_secure_settings">Secure Settings: %1$s</string>
-    <string name="doctor_check_permission">ADB permission: %1$s</string>
-    <string name="doctor_check_server">Shizuku+ server: %1$s</string>
-    <string name="doctor_check_background">Background limits: %1$s</string>
+    <string name="doctor_check_battery">Battery optimization</string>
+    <string name="doctor_check_adb">Wireless debugging</string>
+    <string name="doctor_check_root">Root access</string>
+    <string name="doctor_check_secure_settings">Secure Settings</string>
+    <string name="doctor_check_server">Shizuku+ server</string>
+    <string name="doctor_check_background">Background limits</string>
     <string name="doctor_status_ok">OK</string>
     <string name="doctor_status_running">Running</string>
     <string name="doctor_status_stopped">Stopped</string>
-    <string name="doctor_status_limited">Limited (Restricted ADB)</string>
-    <string name="doctor_status_restricted">Restricted (System optimization enabled)</string>
     <string name="doctor_status_not_enabled">Not enabled</string>
     <string name="doctor_status_optimized">Optimized (May kill service)</string>
-    <string name="doctor_status_unlocked">Unlocked</string>
-    <string name="doctor_status_restricted_bg">Restricted background execution</string>
+    <string name="doctor_check_xiaomi_adb">Xiaomi/HyperOS USB Debugging (Security Settings)</string>
+    <string name="doctor_status_xiaomi_adb_unknown">Enable in Developer Options</string>
     <string name="doctor_tip_xiaomi">Xiaomi/HyperOS: Enable "USB Debugging (Security Settings)" in Developer Options.</string>
+    <string name="doctor_check_xiaomi_autostart">Xiaomi/HyperOS Autostart</string>
+    <string name="doctor_status_xiaomi_autostart_unknown">Grant Autostart to keep service alive</string>
+    <string name="doctor_tip_xiaomi_battery"><b>HyperOS Battery</b>: Open Battery settings and set Shizuku+ to <b>No restrictions</b>. HyperOS kills background processes at its Doze interval (~30 min) unless this is set.</string>
+    <string name="doctor_check_oppo_permission">ColorOS/OxygenOS Permission Monitoring</string>
     <string name="doctor_tip_oppo_permission">Oppo/Realme/OnePlus: Disable "Permission Monitoring" in Developer Options to prevent background service kills.</string>
+    <string name="doctor_check_oppo_battery">ColorOS/OxygenOS Auto-Launch</string>
+    <string name="doctor_status_oppo_battery_unknown">Enable Auto-Launch to keep service alive</string>
+    <string name="doctor_tip_oppo_battery"><b>ColorOS Auto-Launch</b>: Tap Fix to open battery settings. Enable <b>Auto-Launch</b> and set Shizuku+ to <b>No restrictions</b> to prevent ColorOS from killing the background service.</string>
+    <string name="doctor_check_tcl_autostart">TCL Auto-Start</string>
+    <string name="doctor_status_tcl_autostart_unknown">Add to Auto-Start allowlist</string>
     <string name="doctor_tip_tcl_background">TCL: Ensure Shizuku+ is added to "Auto-start" and "High background power consumption" allowlists in Settings.</string>
     <string name="doctor_tip_battery">Disable battery optimization for Shizuku+ to prevent it from being killed in the background.</string>
+    <string name="doctor_tip_background_restricted"><b>Background Restricted</b>: Android has placed Shizuku+ in background-restricted mode. Go to App Info → Battery → and set to Unrestricted to restore service reliability.</string>
     <string name="doctor_tip_adb">Wireless debugging must be active for Shizuku+ to start in non-root mode after a reboot.</string>
+    <string name="doctor_check_local_network">Local Network Access</string>
+    <string name="doctor_tip_local_network"><b>Local Network Access (%1$s)</b>: Android 16/17 requires this permission to discover and connect to the wireless-debugging service. Without it Shizuku+ silently fails to start in ADB mode. Tap Fix to grant it.</string>
     <string name="doctor_button_fix">Fix</string>
     <string name="doctor_check_wallet_integrity">Google Wallet &amp; Play Integrity</string>
     <string name="doctor_wallet_ok">Passes Integrity (No Root Residue)</string>
@@ -688,9 +705,17 @@
     <string name="doctor_wallet_risk_busybox">Security Risk (BusyBox Mocking active)</string>
     <string name="doctor_wallet_risk_spoof">Attestation Risk (Device Spoofing active)</string>
     <string name="doctor_tip_wallet_integrity">Google Wallet &amp; Banking Apps: Detected root artifacts or active Magisk/BusyBox mocking cause "Device doesn\'t meet security standards" errors. Run the one-tap fix to purge su binaries and restore compliance.</string>
-    <string name="doctor_fix_wallet_success">Security cleaned! Removed su binaries and disabled root mocking. If Google Wallet still alerts, clear cache for Google Play Services.</string>
+    <!--
+      Three recovery outcomes — shown after the 1-tap wallet fix runs.
+      ROOT:        Shizuku uid=0 — verdict files deleted, immediate recovery expected.
+      ADB_MODE:    Shizuku uid=2000 — can\'t touch GMS data dir; best-effort steps taken.
+      NO_SHIZUKU:  Shizuku wasn\'t running; only unprivileged Wallet stop was possible.
+    -->
+    <string name="doctor_fix_wallet_success">Done. Running as root — the Play Integrity verdict files were deleted directly from GMS. Open Google Wallet; it should work immediately.</string>
+    <string name="doctor_fix_wallet_success_adb_mode">Done. Shizuku is running in ADB shell mode, so the Play Integrity verdict file on disk can\'t be deleted (only root can touch GMS\'s data directory).\n\nWhat was done instead:\n• DroidGuard process killed (clears in-memory verdict)\n• GMS stopped\n• Play Integrity TTL override attempted (prompts GMS to re-attest immediately)\n• Fresh attestation warmup requested (triggers DroidGuard re-evaluation with clean device)\n• Wallet data cleared (forces a new integrity request with a fresh nonce)\n• NFC payment routing re-confirmed\n\nTry opening Wallet now — it should recover immediately. If still blocked, tap \"Clear Play Services Data\" below for guaranteed immediate recovery (you\'ll need to sign back into Google afterward).</string>
+    <string name="doctor_fix_wallet_success_no_shizuku">Done. Shizuku wasn\'t running, so only Wallet itself could be stopped — GMS\'s cached Play Integrity verdict is still intact.\n\nWallet should recover on its own within ~1 hour as the verdict expires naturally. For immediate recovery, tap \"Clear Play Services Data\" below (you\'ll need to sign back into Google afterward).\n\nTo avoid this next time, make sure Shizuku is running before disabling root features — it enables a more thorough cleanup.</string>
     <string name="doctor_fix_wallet_failed">Unable to delete root binaries automatically. You can copy the ADB command below to remove them manually via terminal.</string>
-    <string name="doctor_action_clear_gms_cache">Clear Play Services Cache</string>
+    <string name="doctor_action_clear_gms_cache">Clear Play Services Data</string>
     <string name="doctor_action_open_wallet">Open Google Wallet</string>
     <string name="doctor_action_copy_adb_cmd">Copy ADB Command</string>
     <string name="doctor_adb_cmd_copied">ADB cleanup command copied to clipboard</string>

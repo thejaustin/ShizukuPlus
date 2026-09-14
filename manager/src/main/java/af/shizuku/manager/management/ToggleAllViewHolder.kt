@@ -49,7 +49,7 @@ class ToggleAllViewHolder(private val binding: AppListToggleAllBinding) : BaseVi
             withContext(Dispatchers.Main) {
                 switchWidget.isEnabled = true
                 switchWidget.isChecked = makeEnabled
-                adapter.notifyDataSetChanged()
+                adapter.notifyItemRangeChanged(0, adapter.itemCount)
             }
         }
     }

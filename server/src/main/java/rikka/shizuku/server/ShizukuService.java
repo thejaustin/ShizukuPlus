@@ -2602,6 +2602,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 extra.putParcelable("af.shizuku.plus.api.intent.extra.BINDER", new af.shizuku.api.BinderContainer(binder));
                 extra.putParcelable("rikka.shizuku.intent.extra.BINDER", new rikka.shizuku.BinderContainer(binder));
             }
+            // rikka key omitted for non-managers: standard third-party apps compiled against
+            // dev.rikka.shizuku:provider (Maven) have rikka.shizuku.BinderContainer ProGuard-stripped
+            // (moe.shizuku.api.BinderContainer is the only kept class). Including the rikka key
+            // triggers ClassNotFoundException / BadParcelableException inside Bundle.unparcel(), which
+            // invalidates the entire bundle — including the moe key — on Android 11 (#446, #389).
             extra.putParcelable("moe.shizuku.privileged.api.intent.extra.BINDER", new moe.shizuku.api.BinderContainer(binder));
             extra.putBinder("binder", binder);
 

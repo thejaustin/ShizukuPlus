@@ -90,7 +90,6 @@ class HomeAdapter(
                 hiddenSet.add(cardId.toString())
             }
             ShizukuSettings.setHiddenHomeCards(hiddenSet)
-            HomeEditMode.exit()
             updateData()
         }
     }

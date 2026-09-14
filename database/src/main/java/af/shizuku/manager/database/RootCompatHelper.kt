@@ -2,7 +2,13 @@ package af.shizuku.manager.database
 
 import android.content.Context
 import android.content.pm.PackageManager
+import com.google.android.gms.tasks.Tasks
+import com.google.android.play.core.integrity.IntegrityManagerFactory
+import com.google.android.play.core.integrity.IntegrityTokenRequest
 import java.io.File
+import java.util.UUID
+import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
@@ -293,16 +299,229 @@ object RootCompatHelper {
     }
 
     /**
-     * Attempts to force-stop Google Wallet to clear cached attestation state and prompt re-evaluation.
+     * Describes what level of Play Integrity refresh was achieved.
+     * Callers use this to show appropriate follow-up messaging and recovery options.
      */
-    suspend fun refreshGoogleWalletAttestation(context: Context? = null) = withContext(Dispatchers.IO) {
-        if (isShizukuAvailable()) {
+    enum class WalletRefreshResult {
+        /**
+         * Shizuku root (uid 0): GMS DroidGuard/integrity verdict files deleted directly.
+         * Wallet should recover on next launch with no further user action needed.
+         */
+        CACHE_CLEARED_ROOT,
+        /**
+         * Shizuku ADB shell (uid 2000): GMS data dir is SELinux-protected and unwritable by
+         * shell, so the verdict file is still on disk. Best-effort steps taken:
+         *   1. DroidGuard process (com.google.android.gms.unstable) force-stopped — clears
+         *      in-memory verdict state so GMS must re-read or re-attest on next start.
+         *   2. GMS core force-stopped.
+         *   3. Wallet data cleared (pm clear) — forces Wallet to make a fresh Play Integrity
+         *      API call on next launch rather than re-using its own cached result.
+         *   4. NFC payment component re-asserted — pm clear on Wallet doesn't wipe this
+         *      setting, but we write it explicitly as a safeguard.
+         * Wallet may recover immediately (disk verdict can be re-evaluated after a cold
+         * DroidGuard start). If still blocked, the verdict expires on TTL (~1 hour typical)
+         * or the user can clear GMS data for guaranteed immediate recovery.
+         */
+        WALLET_CLEARED_PROCESSES_KILLED,
+        /** Shizuku not available. Only unprivileged Wallet force-stop attempted. */
+        FORCE_STOPPED_ONLY,
+    }
+
+    /**
+     * Best-effort Play Integrity verdict refresh after su bridge cleanup.
+     *
+     * Play Integrity verdicts live in GMS's DATA directory (not cache), owned by GMS's UID
+     * and guarded by SELinux. A "compromised" verdict from when the su bridge was present
+     * persists through process restarts until its TTL expires or the files are deleted.
+     *
+     * Confirmed no-ops (tested on Android 16, intentionally omitted):
+     *  - `pm clear-cache`: removed from Android 10+, returns "Unknown command" with exit 0.
+     *  - `com.google.android.gms.INITIALIZE` broadcast: result=0, no registered receivers.
+     *
+     * What each mode actually does:
+     *  - Root (uid 0): deletes verdict files directly → immediate recovery.
+     *  - ADB shell (uid 2000): clears Wallet data + kills DroidGuard + kills GMS → gives
+     *    Wallet the best chance at a fresh cold-start re-attestation; manual GMS data clear
+     *    available as guaranteed fallback.
+     *  - No Shizuku: unprivileged Wallet force-stop only.
+     */
+    suspend fun refreshGoogleWalletAttestation(context: Context? = null): WalletRefreshResult = withContext(Dispatchers.IO) {
+        if (!isShizukuAvailable()) {
+            try { Runtime.getRuntime().exec(arrayOf("am", "force-stop", "com.google.android.apps.walletnfcrel")).waitFor() } catch (_: Exception) {}
+            return@withContext WalletRefreshResult.FORCE_STOPPED_ONLY
+        }
+
+        val shizukuUid = try { Shizuku.getUid() } catch (_: Exception) { -1 }
+        val isRoot = shizukuUid == 0
+
+        // Root path: delete verdict files directly.
+        val cacheCleared = if (isRoot) clearPlayIntegrityCacheAsRoot() else false
+
+        // Kill DroidGuard first (the isolated process holding in-memory verdict state),
+        // then GMS core. Order matters — killing unstable before GMS core prevents GMS
+        // from restarting unstable immediately during its own teardown.
+        try {
+            ShizukuProcessUtils.runPrivilegedCapture(
+                arrayOf("am", "force-stop", "com.google.android.gms.unstable"),
+                joinTimeoutMs = 1500
+            )
+        } catch (_: Exception) {}
+        try {
+            ShizukuProcessUtils.runPrivilegedCapture(
+                arrayOf("am", "force-stop", "com.google.android.gms"),
+                joinTimeoutMs = 1500
+            )
+        } catch (_: Exception) {}
+
+        // ADB-mode extra steps: attempt to force a fresh DroidGuard evaluation before
+        // clearing Wallet, so GMS has a clean result cached by the time Wallet launches.
+        if (!isRoot) {
+            // Best-effort: tell GMS to treat its verdict cache as expired immediately.
+            // Key names are not published; unknown keys are silently ignored.
+            attemptGservicesTtlOverride()
+            // Wait briefly for GMS to finish starting up after force-stop, then trigger
+            // a Play Integrity request. If GMS re-runs DroidGuard on cold start (which it
+            // typically does), this caches a fresh "clean" result before Wallet launches.
+            delay(800)
+            if (context != null) attemptPlayIntegrityWarmup(context)
+            // Clear Wallet's own data so it calls Play Integrity with a fresh nonce
+            // and cannot replay a cached stale result. Re-assert NFC routing as safeguard.
+            // Confirmed via ADB: pm clear on Wallet succeeds as shell uid 2000, and does NOT
+            // wipe nfc_payment_default_component (safe to do without losing tap-to-pay routing).
+            try {
+                ShizukuProcessUtils.runPrivilegedCapture(
+                    arrayOf("pm", "clear", "com.google.android.apps.walletnfcrel"),
+                    joinTimeoutMs = 3000
+                )
+            } catch (_: Exception) {}
+            try {
+                ShizukuProcessUtils.runPrivilegedCapture(
+                    arrayOf("settings", "put", "secure", "nfc_payment_default_component",
+                        "com.google.android.gms/com.google.android.gms.tapandpay.hce.service.TpHceService"),
+                    joinTimeoutMs = 1000
+                )
+            } catch (_: Exception) {}
+        } else {
+            // Root path: also force-stop Wallet after file deletion.
             try {
                 ShizukuProcessUtils.runPrivilegedCapture(
                     arrayOf("am", "force-stop", "com.google.android.apps.walletnfcrel"),
                     joinTimeoutMs = 1000
                 )
             } catch (_: Exception) {}
+        }
+
+        when {
+            cacheCleared -> WalletRefreshResult.CACHE_CLEARED_ROOT
+            else -> WalletRefreshResult.WALLET_CLEARED_PROCESSES_KILLED
+        }
+    }
+
+    /**
+     * Deletes GMS's Play Integrity / DroidGuard verdict cache files. Only callable as root
+     * (uid 0) — the shell uid (2000) cannot access GMS's data directory.
+     *
+     * GMS stores verdict state across two locations:
+     *  - databases/droidguard*        — SQLite files for hardware attestation blobs
+     *  - files/dg_cache*, files/play_integrity* — flat-file verdict caches
+     *
+     * Deliberately avoids accounts.db, gaia/, and token-store paths so Google account
+     * auth survives the wipe. GMS is force-stopped first to release file locks.
+     *
+     * Returns true only if at least one target file/dir was successfully deleted — a false
+     * positive (returning true when nothing was deleted) is worse than a false negative here
+     * because callers show "Wallet should recover immediately" on CACHE_CLEARED_ROOT.
+     */
+    private suspend fun clearPlayIntegrityCacheAsRoot(): Boolean = withContext(Dispatchers.IO) {
+        try {
+            // GMS must be stopped before we touch its databases to avoid corruption.
+            ShizukuProcessUtils.runPrivilegedCapture(
+                arrayOf("am", "force-stop", "com.google.android.gms"),
+                joinTimeoutMs = 2000
+            )
+            val gms = "/data/data/com.google.android.gms"
+            // Probe whether root can actually read the dir before claiming success.
+            // If this ls fails the rm commands will too — return false rather than lying.
+            val probe = ShizukuProcessUtils.runPrivilegedCapture(
+                arrayOf("sh", "-c", "ls $gms/databases/ > /dev/null 2>&1 && echo READABLE"),
+                joinTimeoutMs = 1000
+            )
+            if (!probe.stdout.contains("READABLE")) {
+                Timber.w("clearPlayIntegrityCacheAsRoot: GMS databases dir not readable — uid may not be 0")
+                return@withContext false
+            }
+            val cmd = """
+                deleted=0
+                for target in \
+                    "$gms/databases/droidguard" \
+                    "$gms/databases/droidguard-journal" \
+                    "$gms/databases/droidguard-shm" \
+                    "$gms/databases/droidguard-wal" \
+                    "$gms/files/dg_cache" \
+                    "$gms/files/play_integrity"; do
+                    if [ -e "${'$'}target" ]; then
+                        rm -rf "${'$'}target" && deleted=$((deleted+1))
+                    fi
+                done
+                echo "DELETED:${'$'}deleted"
+            """.trimIndent()
+            val result = ShizukuProcessUtils.runPrivilegedCapture(
+                arrayOf("sh", "-c", cmd),
+                joinTimeoutMs = 4000
+            )
+            val deleted = Regex("DELETED:(\\d+)").find(result.stdout)?.groupValues?.get(1)?.toIntOrNull() ?: 0
+            Timber.i("clearPlayIntegrityCacheAsRoot: deleted $deleted integrity cache entries")
+            deleted > 0
+        } catch (e: Exception) {
+            Timber.w(e, "clearPlayIntegrityCacheAsRoot failed")
+            false
+        }
+    }
+
+    /**
+     * Broadcasts GSERVICES_OVERRIDE with candidate Play Integrity TTL keys set to 1ms.
+     * Causes GMS to treat its verdict cache as immediately expired on next start.
+     * Key names are not published by Google; unknown keys are silently ignored, so
+     * this is safe to call even if none of the candidate names are correct.
+     */
+    private suspend fun attemptGservicesTtlOverride() {
+        try {
+            val cmd = """
+                am broadcast -a com.google.gservices.intent.action.GSERVICES_OVERRIDE \
+                    --es play_integrity_verdict_ttl_ms 1 2>/dev/null
+                am broadcast -a com.google.gservices.intent.action.GSERVICES_OVERRIDE \
+                    --es play_integrity_token_ttl_ms 1 2>/dev/null
+                am broadcast -a com.google.gservices.intent.action.GSERVICES_OVERRIDE \
+                    --es droidguard_token_ttl_secs 1 2>/dev/null
+            """.trimIndent()
+            ShizukuProcessUtils.runPrivilegedCapture(arrayOf("sh", "-c", cmd), joinTimeoutMs = 1500)
+        } catch (_: Exception) {}
+    }
+
+    /**
+     * Requests a Play Integrity token from GMS. Even if the request fails (ShizukuPlus is
+     * a sideloaded app, so app-integrity won't pass), calling this forces GMS to re-run
+     * DroidGuard against the current device state. With su binaries already removed,
+     * the resulting device-integrity verdict should be "clean" and gets cached to disk —
+     * overwriting the old "compromised" verdict before Wallet launches.
+     *
+     * Blocking — must be called from [Dispatchers.IO].
+     */
+    private fun attemptPlayIntegrityWarmup(context: Context): Boolean {
+        return try {
+            val manager = IntegrityManagerFactory.create(context)
+            val request = IntegrityTokenRequest.builder()
+                .setNonce(UUID.randomUUID().toString())
+                .build()
+            Tasks.await(manager.requestIntegrityToken(request), 5, TimeUnit.SECONDS)
+            Timber.i("refreshGoogleWalletAttestation: Play Integrity warmup call succeeded")
+            true
+        } catch (e: Exception) {
+            // Expected if GMS is still starting up after force-stop, or on a device
+            // where the Play Integrity API is not available. Either way, not an error —
+            // the force-stop + fresh nonce path (pm clear Wallet) still applies.
+            Timber.i("refreshGoogleWalletAttestation: Play Integrity warmup: ${e.javaClass.simpleName}")
+            false
         }
     }
 

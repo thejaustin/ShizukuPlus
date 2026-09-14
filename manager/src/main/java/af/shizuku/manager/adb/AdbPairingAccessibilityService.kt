@@ -4,12 +4,9 @@ import af.shizuku.manager.R
 import android.accessibilityservice.AccessibilityService
 import android.view.accessibility.AccessibilityEvent
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import android.widget.Toast
 import android.provider.Settings
 import timber.log.Timber
-import android.content.ActivityNotFoundException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

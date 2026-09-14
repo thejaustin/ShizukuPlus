@@ -24,6 +24,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil3.load
@@ -362,10 +363,23 @@ class RootCompatibilityActivity : AppBarActivity() {
         private var lastAnimatedPosition = -1
 
         fun updateItems(newItems: List<ListItem>) {
+            val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                override fun getOldListSize() = items.size
+                override fun getNewListSize() = newItems.size
+                override fun areItemsTheSame(o: Int, n: Int): Boolean {
+                    val old = items[o]; val new = newItems[n]
+                    if (old::class != new::class) return false
+                    return when (old) {
+                        is ListItem.Header -> old.title == (new as ListItem.Header).title
+                        is ListItem.App -> old.packageName == (new as ListItem.App).packageName
+                    }
+                }
+                override fun areContentsTheSame(o: Int, n: Int) = items[o] == newItems[n]
+            })
             items.clear()
             items.addAll(newItems)
             lastAnimatedPosition = -1
-            notifyDataSetChanged()
+            diff.dispatchUpdatesTo(this)
         }
 
         private val TYPE_HEADER = 0

@@ -1,9 +1,7 @@
 package af.shizuku.manager.adb
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
-import android.util.Base64
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuRemoteProcess
 import timber.log.Timber
@@ -11,7 +9,6 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.net.Socket
 import java.security.Signature
-import java.security.interfaces.RSAPublicKey
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -54,7 +51,10 @@ class FakeAdbClientHandler(
             msg = readMessage()
             if (msg.command == AdbProtocol.A_AUTH) {
                 if (msg.arg0 == AdbProtocol.ADB_AUTH_SIGNATURE) {
-                    val signature = msg.data!!
+                    val signature = msg.data ?: run {
+                        Timber.tag(TAG).w("AUTH_SIGNATURE with null data — ignoring")
+                        continue
+                    }
                     if (verifySignature(token, signature)) {
                         authenticated = true
                         writeMessage(AdbMessage(AdbProtocol.A_CNXN, AdbProtocol.A_VERSION, AdbProtocol.A_MAXDATA, "device::"))
@@ -64,7 +64,11 @@ class FakeAdbClientHandler(
                         writeMessage(AdbMessage(AdbProtocol.A_AUTH, AdbProtocol.ADB_AUTH_TOKEN, 0, token))
                     }
                 } else if (msg.arg0 == AdbProtocol.ADB_AUTH_RSAPUBLICKEY) {
-                    val pubKeyStr = String(msg.data!!).trimEnd('\u0000')
+                    val rawKeyData = msg.data ?: run {
+                        Timber.tag(TAG).w("AUTH_RSAPUBLICKEY with null data — ignoring")
+                        continue
+                    }
+                    val pubKeyStr = String(rawKeyData).trimEnd('\u0000')
                     Timber.tag(TAG).i("Received public key: $pubKeyStr")
 
                     if (isKeyAuthorized(pubKeyStr)) {
@@ -96,22 +100,29 @@ class FakeAdbClientHandler(
             when (msg.command) {
                 AdbProtocol.A_OPEN -> {
                     val remoteId = msg.arg0
-                    val destination = String(msg.data!!).trimEnd('\u0000')
-                    if (destination.startsWith("shell:")) {
-                        val cmd = destination.substring(6)
-                        startShellProcess(remoteId, cmd)
-                    } else {
-                        Timber.tag(TAG).w("Unsupported destination: $destination")
+                    val rawData = msg.data
+                    if (rawData == null) {
+                        Timber.tag(TAG).w("A_OPEN with null data — closing channel")
                         writeMessage(AdbMessage(AdbProtocol.A_CLSE, 0, remoteId, ByteArray(0)))
+                    } else {
+                        val destination = String(rawData).trimEnd('\u0000')
+                        if (destination.startsWith("shell:")) {
+                            val cmd = destination.substring(6)
+                            startShellProcess(remoteId, cmd)
+                        } else {
+                            Timber.tag(TAG).w("Unsupported destination: $destination")
+                            writeMessage(AdbMessage(AdbProtocol.A_CLSE, 0, remoteId, ByteArray(0)))
+                        }
                     }
                 }
                 AdbProtocol.A_WRTE -> {
                     val localId = msg.arg0
                     val remoteId = msg.arg1
+                    val writeData = msg.data
                     val process = activeProcesses[localId]
-                    if (process != null) {
+                    if (process != null && writeData != null) {
                         try {
-                            process.outputStream.write(msg.data!!)
+                            process.outputStream.write(writeData)
                             process.outputStream.flush()
                             writeMessage(AdbMessage(AdbProtocol.A_OKAY, localId, remoteId, ByteArray(0)))
                         } catch (e: Exception) {

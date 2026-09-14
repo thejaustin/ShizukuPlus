@@ -2,6 +2,7 @@ package af.shizuku.manager.settings
 
 import android.content.Context
 import android.content.res.XmlResourceParser
+import timber.log.Timber
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import org.xmlpull.v1.XmlPullParser
@@ -72,7 +73,7 @@ object SettingsSearchEngine {
                     eventType = parser.next()
                 }
             } catch (e: Exception) {
-                android.util.Log.w("SettingsSearchEngine", "Failed to index preferences from XML", e)
+                Timber.tag("SettingsSearchEngine").w(e, "Failed to index preferences from XML")
             }
         }
         indexedItems = items

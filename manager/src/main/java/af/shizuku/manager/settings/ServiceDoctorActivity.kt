@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +26,7 @@ import kotlinx.coroutines.withContext
 import af.shizuku.manager.R
 import af.shizuku.manager.ktx.themeColor
 import af.shizuku.manager.adb.AdbPairingAccessibilityService
+import af.shizuku.manager.adb.LocalNetworkPermission
 import af.shizuku.core.ui.AppBarActivity
 import af.shizuku.manager.databinding.ActivityServiceDoctorBinding
 import af.shizuku.manager.databinding.ItemDoctorCheckBinding
@@ -45,6 +47,10 @@ class ServiceDoctorActivity : AppBarActivity() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     private val batteryOptimizationListener = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        runDiagnostics()
+    }
+
+    private val localNetworkPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
         runDiagnostics()
     }
 
@@ -94,7 +100,7 @@ class ServiceDoctorActivity : AppBarActivity() {
         // 1. Battery Optimization
         val isIgnoring = SettingsHelper.isIgnoringBatteryOptimizations(this)
         checks.add(DoctorCheck(
-            getString(R.string.doctor_check_battery, ""),
+            getString(R.string.doctor_check_battery),
             if (isIgnoring) getString(R.string.doctor_status_ok) else getString(R.string.doctor_status_optimized),
             isIgnoring,
             onFix = if (!isIgnoring) { { SettingsHelper.requestIgnoreBatteryOptimizations(this, batteryOptimizationListener) } } else null
@@ -105,16 +111,34 @@ class ServiceDoctorActivity : AppBarActivity() {
         val adbPort = EnvironmentUtils.getAdbTcpPort()
         val adbOk = adbPort > 0
         checks.add(DoctorCheck(
-            getString(R.string.doctor_check_adb, ""),
+            getString(R.string.doctor_check_adb),
             if (adbOk) "${getString(R.string.doctor_status_ok)} ($adbPort)" else getString(R.string.doctor_status_not_enabled),
             adbOk
         ))
         if (!adbOk && !EnvironmentUtils.isRooted()) tips.add("• " + getString(R.string.doctor_tip_adb))
 
+        // 2b. Local Network Permission (Android 16+ / 17+)
+        // ACCESS_LOCAL_NETWORK (API 37) and NEARBY_WIFI_DEVICES (API 36) gate mDNS discovery of
+        // the wireless-debugging service. Without them Shizuku silently fails to start in ADB mode.
+        if (Build.VERSION.SDK_INT >= 36) {
+            val lnpGranted = LocalNetworkPermission.granted(this)
+            val lnpPermName = if (Build.VERSION.SDK_INT >= 37) "ACCESS_LOCAL_NETWORK" else "NEARBY_WIFI_DEVICES"
+            checks.add(DoctorCheck(
+                getString(R.string.doctor_check_local_network),
+                if (lnpGranted) getString(R.string.doctor_status_ok) else getString(R.string.doctor_status_not_enabled),
+                lnpGranted,
+                onFix = if (!lnpGranted) { {
+                    val perm = LocalNetworkPermission.required()
+                    if (perm != null) localNetworkPermissionLauncher.launch(perm)
+                } } else null
+            ))
+            if (!lnpGranted) tips.add("• " + getString(R.string.doctor_tip_local_network, lnpPermName))
+        }
+
         // 3. Root
         val isRooted = EnvironmentUtils.isRooted()
         checks.add(DoctorCheck(
-            getString(R.string.doctor_check_root, ""),
+            getString(R.string.doctor_check_root),
             if (isRooted) getString(R.string.doctor_status_ok) else getString(R.string.doctor_status_not_enabled),
             isRooted
         ))
@@ -122,7 +146,7 @@ class ServiceDoctorActivity : AppBarActivity() {
         // 4. Shizuku Server
         val isRunning = ShizukuStateMachine.isRunning()
         checks.add(DoctorCheck(
-            getString(R.string.doctor_check_server, ""),
+            getString(R.string.doctor_check_server),
             if (isRunning) getString(R.string.doctor_status_running) else getString(R.string.doctor_status_stopped),
             isRunning
         ))
@@ -130,7 +154,7 @@ class ServiceDoctorActivity : AppBarActivity() {
         // 5. Secure Settings (WRITE_SECURE_SETTINGS)
         val hasSecureSettings = SettingsHelper.hasWriteSecureSettings(this)
         checks.add(DoctorCheck(
-            getString(R.string.doctor_check_secure_settings, ""),
+            getString(R.string.doctor_check_secure_settings),
             if (hasSecureSettings) getString(R.string.doctor_status_ok) else getString(R.string.doctor_status_not_enabled),
             hasSecureSettings,
             onFix = if (!hasSecureSettings) { { SettingsHelper.promptWriteSecureSettings(this) } } else null
@@ -139,7 +163,7 @@ class ServiceDoctorActivity : AppBarActivity() {
         // 5b. Accessibility (for AI automation features)
         val isAccessibilityEnabled = SettingsHelper.isAccessibilityServiceEnabled(this, AdbPairingAccessibilityService::class.java)
         checks.add(DoctorCheck(
-            "Accessibility Service",
+            getString(R.string.doctor_check_accessibility),
             if (isAccessibilityEnabled) getString(R.string.doctor_status_ok) else getString(R.string.doctor_status_not_enabled),
             isAccessibilityEnabled,
             onFix = if (!isAccessibilityEnabled) { { SettingsPage.Accessibility.launch(this) } } else null
@@ -149,7 +173,7 @@ class ServiceDoctorActivity : AppBarActivity() {
         val isHardeningActive = isIgnoring && hasSecureSettings
         checks.add(DoctorCheck(
             getString(R.string.doctor_check_device_hardening),
-            if (isHardeningActive) getString(R.string.doctor_status_ok) else "Fix Available",
+            if (isHardeningActive) getString(R.string.doctor_status_ok) else getString(R.string.doctor_status_fix_available),
             isHardeningActive,
             onFix = if (!isHardeningActive) { {
                 serviceScope.launch {
@@ -203,12 +227,20 @@ class ServiceDoctorActivity : AppBarActivity() {
                             }
                             af.shizuku.manager.ShizukuSettings.syncAllPlusFeaturesToServer()
 
-                            RootCompatHelper.refreshGoogleWalletAttestation(this@ServiceDoctorActivity)
+                            val refreshResult = RootCompatHelper.refreshGoogleWalletAttestation(this@ServiceDoctorActivity)
 
                             if (cleaned) {
+                                val successMsg = when (refreshResult) {
+                                    RootCompatHelper.WalletRefreshResult.CACHE_CLEARED_ROOT ->
+                                        getString(R.string.doctor_fix_wallet_success)
+                                    RootCompatHelper.WalletRefreshResult.WALLET_CLEARED_PROCESSES_KILLED ->
+                                        getString(R.string.doctor_fix_wallet_success_adb_mode)
+                                    RootCompatHelper.WalletRefreshResult.FORCE_STOPPED_ONLY ->
+                                        getString(R.string.doctor_fix_wallet_success_no_shizuku)
+                                }
                                 MaterialAlertDialogBuilder(this@ServiceDoctorActivity)
                                     .setTitle(R.string.doctor_check_wallet_integrity)
-                                    .setMessage(R.string.doctor_fix_wallet_success)
+                                    .setMessage(successMsg)
                                     .setPositiveButton(R.string.doctor_action_open_wallet) { _, _ ->
                                         try {
                                             val pm = packageManager
@@ -217,16 +249,22 @@ class ServiceDoctorActivity : AppBarActivity() {
                                         } catch (_: Exception) {}
                                         runDiagnostics()
                                     }
-                                    .setNeutralButton(R.string.doctor_action_clear_gms_cache) { _, _ ->
-                                        try {
-                                            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                                data = android.net.Uri.parse("package:com.google.android.gms")
+                                    .apply {
+                                        // Show the GMS data clear shortcut whenever root didn't
+                                        // delete the files — it's the guaranteed immediate fallback.
+                                        if (refreshResult != RootCompatHelper.WalletRefreshResult.CACHE_CLEARED_ROOT) {
+                                            setNeutralButton(R.string.doctor_action_clear_gms_cache) { _, _ ->
+                                                try {
+                                                    val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                                        data = android.net.Uri.parse("package:com.google.android.gms")
+                                                    }
+                                                    startActivity(intent)
+                                                } catch (e: Exception) {
+                                                    Timber.w(e, "Could not open GMS settings")
+                                                }
+                                                runDiagnostics()
                                             }
-                                            startActivity(intent)
-                                        } catch (e: Exception) {
-                                            Timber.w(e, "Could not open GMS settings")
                                         }
-                                        runDiagnostics()
                                     }
                                     .show()
                             } else {
@@ -252,28 +290,52 @@ class ServiceDoctorActivity : AppBarActivity() {
             tips.add("• " + getString(R.string.doctor_tip_wallet_integrity))
         }
 
-        // 6. Xiaomi Restricted ADB
+        // 6. Xiaomi Restricted ADB + HyperOS background kill
         if (EnvironmentUtils.isXiaomi()) {
             checks.add(DoctorCheck(
-                getString(R.string.doctor_check_permission, ""),
-                getString(R.string.doctor_status_limited),
-                false
+                getString(R.string.doctor_check_xiaomi_adb),
+                getString(R.string.doctor_status_xiaomi_adb_unknown),
+                false,
+                onFix = { SettingsPage.Developer.Options.launch(this) }
+            ))
+            // HyperOS kills background processes at the Doze interval unless the app has
+            // "No restrictions" set in PowerKeeper. Provide a direct deep-link to that page.
+            checks.add(DoctorCheck(
+                getString(R.string.doctor_check_xiaomi_autostart),
+                getString(R.string.doctor_status_xiaomi_autostart_unknown),
+                false,
+                onFix = { SettingsPage.Xiaomi.BatterySettings.launch(this) }
             ))
             tips.add("• " + getString(R.string.doctor_tip_xiaomi))
+            tips.add("• " + getString(R.string.doctor_tip_xiaomi_battery))
         }
 
         // 6b. Oppo/OnePlus Restricted ADB (ColorOS/OxygenOS)
         if (EnvironmentUtils.isOppo() || EnvironmentUtils.isOnePlus()) {
             checks.add(DoctorCheck(
-                getString(R.string.doctor_check_permission, ""),
+                getString(R.string.doctor_check_oppo_permission),
                 getString(R.string.doctor_status_manual_check),
-                false
+                false,
+                onFix = { SettingsPage.Developer.Options.launch(this) }
+            ))
+            checks.add(DoctorCheck(
+                getString(R.string.doctor_check_oppo_battery),
+                getString(R.string.doctor_status_oppo_battery_unknown),
+                false,
+                onFix = { SettingsPage.Oppo.BatterySettings.launch(this) }
             ))
             tips.add("• " + getString(R.string.doctor_tip_oppo_permission))
+            tips.add("• " + getString(R.string.doctor_tip_oppo_battery))
         }
 
         // 6c. TCL Device Polish
         if (EnvironmentUtils.isTCL()) {
+            checks.add(DoctorCheck(
+                getString(R.string.doctor_check_tcl_autostart),
+                getString(R.string.doctor_status_tcl_autostart_unknown),
+                false,
+                onFix = { SettingsPage.TCL.AutoStart.launch(this) }
+            ))
             tips.add("• " + getString(R.string.doctor_tip_tcl_background))
         }
 
@@ -283,7 +345,7 @@ class ServiceDoctorActivity : AppBarActivity() {
             val isAutoBlockerOff = SettingsHelper.isSamsungAutoBlockerDisabled(this)
             checks.add(DoctorCheck(
                 getString(R.string.doctor_check_samsung_autoblocker),
-                if (isAutoBlockerOff) getString(R.string.doctor_status_ok) else "Enabled (Turn OFF)",
+                if (isAutoBlockerOff) getString(R.string.doctor_status_ok) else getString(R.string.doctor_status_autoblocker_on),
                 isAutoBlockerOff,
                 onFix = if (!isAutoBlockerOff || oneUi >= 6) { { SettingsPage.Samsung.AutoBlocker.launch(this) } } else null
             ))
@@ -292,8 +354,8 @@ class ServiceDoctorActivity : AppBarActivity() {
             if (oneUi >= 8) {
                 val isMaxRestrictionsOff = SettingsHelper.isSamsungMaxRestrictionsDisabled(this)
                 checks.add(DoctorCheck(
-                    "Maximum Restrictions (One UI 8)",
-                    if (isMaxRestrictionsOff) getString(R.string.doctor_status_ok) else "Enabled (Must be OFF)",
+                    getString(R.string.doctor_check_samsung_max_restrictions),
+                    if (isMaxRestrictionsOff) getString(R.string.doctor_status_ok) else getString(R.string.doctor_status_samsung_max_restrictions_on),
                     isMaxRestrictionsOff,
                     onFix = if (!isMaxRestrictionsOff) { { SettingsPage.Samsung.AutoBlocker.launch(this) } } else null
                 ))
@@ -307,7 +369,7 @@ class ServiceDoctorActivity : AppBarActivity() {
             // process because the freeze kills it too).
             checks.add(DoctorCheck(
                 getString(R.string.doctor_check_samsung_battery_protection),
-                getString(R.string.doctor_status_review) + " (Check Sleeping Apps)",
+                getString(R.string.doctor_status_samsung_sleeping_apps),
                 false,
                 onFix = { SettingsPage.Samsung.BackgroundUsageLimits.launch(this) }
             ))
@@ -315,7 +377,7 @@ class ServiceDoctorActivity : AppBarActivity() {
             if (oneUi >= 6) {
                 tips.add("• " + getString(R.string.doctor_tip_samsung_autoblocker))
                 if (oneUi >= 8) {
-                    tips.add("• One UI 8: 'Maximum Restrictions' in Auto Blocker disables ADB. Turn it off to use Shizuku.")
+                    tips.add("• " + getString(R.string.doctor_tip_oneui8_max_restrictions))
                 }
                 tips.add("• " + getString(R.string.doctor_tip_oneui_connectivity))
                 tips.add("• " + getString(R.string.doctor_tip_s22_ultra))
@@ -341,28 +403,31 @@ class ServiceDoctorActivity : AppBarActivity() {
             if (isAdbMode) {
                 val hasExportedPath = af.shizuku.manager.ShizukuSettings.getExportDirUri() != null
                 checks.add(DoctorCheck(
-                    "SU Bridge (Android 16+ ADB)",
-                    if (hasExportedPath) getString(R.string.doctor_status_ok) + " — exported path set"
-                    else "Exported path not configured",
+                    getString(R.string.doctor_check_su_bridge_a16),
+                    if (hasExportedPath) getString(R.string.doctor_status_ok) + " — " + getString(R.string.doctor_status_su_bridge_path_set)
+                    else getString(R.string.doctor_status_su_bridge_no_path),
                     hasExportedPath,
                     onFix = if (!hasExportedPath) { {
                         startActivity(android.content.Intent(this, RootCompatibilityActivity::class.java))
                     } } else null
                 ))
                 if (!hasExportedPath) {
-                    tips.add("• Android 16+ restricts /data/local/tmp writes from the ADB shell. " +
-                        "Open the Root Compat Hub and tap \"Export\" to set a SU Bridge path that works on your device.")
+                    tips.add("• " + getString(R.string.doctor_tip_su_bridge_a16))
                 }
             }
         }
 
-        // 9. Background Limits (Android 14+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        // 9. Background Limits (Android 9+ — isBackgroundRestricted() available since API 28)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val am = getSystemService(android.app.ActivityManager::class.java)
+            val isRestricted = am?.isBackgroundRestricted == true
             checks.add(DoctorCheck(
-                getString(R.string.doctor_check_background, ""),
-                getString(R.string.doctor_status_ok),
-                true
+                getString(R.string.doctor_check_background),
+                if (isRestricted) getString(R.string.doctor_status_optimized) else getString(R.string.doctor_status_ok),
+                !isRestricted,
+                onFix = if (isRestricted) { { SettingsHelper.requestIgnoreBatteryOptimizations(this, batteryOptimizationListener) } } else null
             ))
+            if (isRestricted) tips.add("• " + getString(R.string.doctor_tip_background_restricted))
         }
 
         // 10. Phantom Process Killer (Android 12+)
@@ -448,8 +513,14 @@ class ServiceDoctorActivity : AppBarActivity() {
         private var items = emptyList<DoctorCheck>()
 
         fun submitList(newItems: List<DoctorCheck>) {
+            val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                override fun getOldListSize() = items.size
+                override fun getNewListSize() = newItems.size
+                override fun areItemsTheSame(o: Int, n: Int) = items[o].title == newItems[n].title
+                override fun areContentsTheSame(o: Int, n: Int) = items[o] == newItems[n]
+            })
             items = newItems
-            notifyDataSetChanged()
+            diff.dispatchUpdatesTo(this)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CheckViewHolder {

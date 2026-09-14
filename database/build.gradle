@@ -48,6 +48,7 @@ dependencies {
     implementation libs.timber
     implementation libs.kotlinx.coroutines.core
     implementation libs.kotlinx.serialization.json
+    implementation libs.play.integrity
 
     testImplementation libs.kotestJunit5
     testImplementation libs.robolectric

@@ -246,7 +246,7 @@ open class ApplicationManagementActivity : AppBarActivity(), AppViewHolder.Callb
             when (item.itemId) {
                 10 -> { // Select all
                     viewModel.packages.value?.data?.forEach { adapter.selectedPackages.add(it.packageName) }
-                    adapter.notifyDataSetChanged()
+                    adapter.notifyItemRangeChanged(0, adapter.itemCount)
                 }
                 11 -> { // Grant all
                     adapter.selectedPackages.toList().forEach { pkg ->

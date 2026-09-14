@@ -17,22 +17,23 @@ class StorageProxyImpl : IStorageProxy.Stub() {
     private val serverUid: Int by lazy { android.system.Os.getuid() }
 
     override fun openFile(path: String?, mode: Int): ParcelFileDescriptor? {
+        val path = path ?: return null
         if (!InputValidationUtils.isSafePath(path)) return null
         return try {
             try {
-                ParcelFileDescriptor.open(File(path!!), mode)
+                ParcelFileDescriptor.open(File(path), mode)
             } catch (e: Exception) {
                 // Android 13+ (API 33) progressively restricts /Android/data and /Android/obb to the owning
                 // app's UID; Android 16 (API 36) + OneUI 8 tightened it further. The shell-pipe fallback
                 // works from API 33 onwards — not just the API 36+ check that was here before.
-                if (android.os.Build.VERSION.SDK_INT >= 33 && (path!!.contains("/Android/data") || path.contains("/Android/obb"))) {
+                if (android.os.Build.VERSION.SDK_INT >= 33 && (path.contains("/Android/data") || path.contains("/Android/obb"))) {
                     return openViaShellPipe(arrayOf("sh", "-c", "cat \"$1\"", "sh", path))
                 }
                 // ADB mode (UID 2000): /data/data/<pkg>/ is owned by the app UID, but `run-as`
                 // lets the shell impersonate the target app if it is debuggable. Only attempt
                 // this when direct open already failed — no-op for non-debuggable or root mode.
                 if (serverUid == 2000 &&
-                    (path!!.startsWith("/data/data/") || path.startsWith("/data/user/"))) {
+                    (path.startsWith("/data/data/") || path.startsWith("/data/user/"))) {
                     val pkg = extractPackageName(path)
                     if (pkg != null) {
                         return openViaShellPipe(arrayOf("run-as", pkg, "cat", path))
@@ -89,8 +90,9 @@ class StorageProxyImpl : IStorageProxy.Stub() {
     }
 
     override fun exists(path: String?): Boolean {
+        val path = path ?: return false
         if (!InputValidationUtils.isSafePath(path)) return false
-        val file = File(path!!)
+        val file = File(path)
         if (file.exists()) return true
         if (path.contains("/Android/data") || path.contains("/Android/obb")) {
             return try {
@@ -101,8 +103,9 @@ class StorageProxyImpl : IStorageProxy.Stub() {
     }
 
     override fun delete(path: String?): Boolean {
+        val path = path ?: return false
         if (!InputValidationUtils.isSafePath(path)) return false
-        val file = File(path!!)
+        val file = File(path)
         if (file.delete()) return true
         if (path.contains("/Android/data") || path.contains("/Android/obb")) {
             return try {
@@ -113,14 +116,16 @@ class StorageProxyImpl : IStorageProxy.Stub() {
     }
 
     override fun listFiles(path: String?): List<String> {
+        val path = path ?: return emptyList()
         if (!InputValidationUtils.isSafePath(path)) return emptyList()
-        val direct = File(path!!).list()
+        val direct = File(path).list()
         if (!direct.isNullOrEmpty()) return direct.toList()
         if (path.contains("/Android/data") || path.contains("/Android/obb")) {
             return try {
-                Runtime.getRuntime().exec(arrayOf("sh", "-c", "ls -1 \"$1\"", "sh", path))
-                    .inputStream.bufferedReader().readLines()
-                    .filter { it.isNotBlank() }
+                val proc = Runtime.getRuntime().exec(arrayOf("sh", "-c", "ls -1 \"$1\"", "sh", path))
+                val lines = proc.inputStream.bufferedReader().use { it.readLines() }
+                proc.waitFor()
+                lines.filter { it.isNotBlank() }
             } catch (_: Exception) { emptyList() }
         }
         // For /data/data/<pkg>/ paths (ADB mode, debuggable apps only)
@@ -128,9 +133,10 @@ class StorageProxyImpl : IStorageProxy.Stub() {
             (path.startsWith("/data/data/") || path.startsWith("/data/user/"))) {
             val pkg = extractPackageName(path) ?: return emptyList()
             return try {
-                Runtime.getRuntime().exec(arrayOf("run-as", pkg, "ls", path))
-                    .inputStream.bufferedReader().readLines()
-                    .filter { it.isNotBlank() }
+                val proc = Runtime.getRuntime().exec(arrayOf("run-as", pkg, "ls", path))
+                val lines = proc.inputStream.bufferedReader().use { it.readLines() }
+                proc.waitFor()
+                lines.filter { it.isNotBlank() }
             } catch (_: Exception) { emptyList() }
         }
         return emptyList()
@@ -138,17 +144,19 @@ class StorageProxyImpl : IStorageProxy.Stub() {
 
     override fun getFileInfo(path: String?): Bundle {
         val bundle = Bundle()
-        if (InputValidationUtils.isSafePath(path)) {
-            val file = File(path!!)
+        val safePath = if (!path.isNullOrEmpty() && InputValidationUtils.isSafePath(path)) path else null
+        if (safePath != null) {
+            val file = File(safePath)
             if (file.exists()) {
                 bundle.putBoolean("exists", true)
                 bundle.putLong("size", file.length())
                 bundle.putLong("lastModified", file.lastModified())
                 bundle.putBoolean("isDirectory", file.isDirectory)
-            } else if (path.contains("/Android/data") || path.contains("/Android/obb")) {
+            } else if (safePath.contains("/Android/data") || safePath.contains("/Android/obb")) {
                 try {
-                    val proc = Runtime.getRuntime().exec(arrayOf("sh", "-c", "stat -c '%s %Y %F' \"$1\" 2>/dev/null", "sh", path))
-                    val out = proc.inputStream.bufferedReader().readLine()
+                    val proc = Runtime.getRuntime().exec(arrayOf("sh", "-c", "stat -c '%s %Y %F' \"$1\" 2>/dev/null", "sh", safePath))
+                    val out = proc.inputStream.bufferedReader().use { it.readLine() }
+                    proc.waitFor()
                     if (!out.isNullOrBlank()) {
                         val parts = out.trim().split(" ")
                         if (parts.size >= 2) {
@@ -171,8 +179,9 @@ class StorageProxyImpl : IStorageProxy.Stub() {
     }
 
     override fun mkdir(path: String?): Boolean {
+        val path = path ?: return false
         if (!InputValidationUtils.isSafePath(path)) return false
-        val file = File(path!!)
+        val file = File(path)
         if (file.mkdirs()) return true
         if (path.contains("/Android/data") || path.contains("/Android/obb")) {
             return try {
@@ -183,17 +192,19 @@ class StorageProxyImpl : IStorageProxy.Stub() {
     }
 
     override fun copyFile(srcPath: String?, destPath: String?): Boolean {
+        val srcPath = srcPath ?: return false
+        val destPath = destPath ?: return false
         if (!InputValidationUtils.isSafePath(srcPath) || !InputValidationUtils.isSafePath(destPath)) return false
         return try {
-            File(srcPath!!).inputStream().use { src ->
-                File(destPath!!).outputStream().use { dst -> src.copyTo(dst) }
+            File(srcPath).inputStream().use { src ->
+                File(destPath).outputStream().use { dst -> src.copyTo(dst) }
             }
             true
         } catch (_: Exception) {
-            if (srcPath!!.contains("/Android/data") || srcPath.contains("/Android/obb") ||
-                destPath!!.contains("/Android/data") || destPath.contains("/Android/obb")) {
+            if (srcPath.contains("/Android/data") || srcPath.contains("/Android/obb") ||
+                destPath.contains("/Android/data") || destPath.contains("/Android/obb")) {
                 return try {
-                    Runtime.getRuntime().exec(arrayOf("sh", "-c", "cp -rf \"$1\" \"$2\"", "sh", srcPath, destPath!!)).waitFor() == 0
+                    Runtime.getRuntime().exec(arrayOf("sh", "-c", "cp -rf \"$1\" \"$2\"", "sh", srcPath, destPath)).waitFor() == 0
                 } catch (_: Exception) { false }
             }
             // For /data/data/<pkg>/ paths, fall back to run-as cp
@@ -201,7 +212,7 @@ class StorageProxyImpl : IStorageProxy.Stub() {
                 (srcPath.startsWith("/data/data/") || srcPath.startsWith("/data/user/"))) {
                 val pkg = extractPackageName(srcPath) ?: return false
                 return try {
-                    Runtime.getRuntime().exec(arrayOf("run-as", pkg, "cp", srcPath, destPath!!))
+                    Runtime.getRuntime().exec(arrayOf("run-as", pkg, "cp", srcPath, destPath))
                         .waitFor() == 0
                 } catch (_: Exception) { false }
             }
@@ -239,8 +250,8 @@ class StorageProxyImpl : IStorageProxy.Stub() {
     }
 
     override fun tarDirectory(dirPath: String?, packageContext: String?): ParcelFileDescriptor? {
-        if (!InputValidationUtils.isSafePath(dirPath)) return null
-        val dir = dirPath!!
+        val dir = dirPath ?: return null
+        if (!InputValidationUtils.isSafePath(dir)) return null
         return if (!packageContext.isNullOrBlank() && serverUid == 2000 &&
             (dir.startsWith("/data/data/") || dir.startsWith("/data/user/"))) {
             // run-as <pkg> tar for debuggable-app data directories
@@ -255,8 +266,8 @@ class StorageProxyImpl : IStorageProxy.Stub() {
         packageContext: String?,
         tarPfd: ParcelFileDescriptor?
     ): Boolean {
-        if (!InputValidationUtils.isSafePath(destDirPath) || tarPfd == null) return false
-        val dir = destDirPath!!
+        val dir = destDirPath ?: return false
+        if (!InputValidationUtils.isSafePath(dir) || tarPfd == null) return false
         val cmd = if (!packageContext.isNullOrBlank() && serverUid == 2000 &&
             (dir.startsWith("/data/data/") || dir.startsWith("/data/user/"))) {
             arrayOf("run-as", packageContext, "tar", "-xf", "-", "-C", dir)

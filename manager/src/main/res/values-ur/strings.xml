@@ -135,10 +135,8 @@
     <string name="doctor_check_samsung_battery_protection">Samsung Battery Protection</string>
     <string name="doctor_check_secondary_user">ثانوی صارف / Secure Folder</string>
     <string name="doctor_check_phantom_process">Phantom Process Killer</string>
-    <string name="doctor_tips_title">مسائل حل کرنے کے طریقے</string>
     <string name="doctor_status_manual_check">دستی جانچ درکار ہے</string>
     <string name="doctor_status_detected">پتہ چل گیا</string>
-    <string name="doctor_status_review">جائزہ درکار ہے</string>
     <string name="doctor_tip_samsung_autoblocker"><![CDATA[<b>Samsung Auto Blocker</b>: یقینی بنائیں کہ یہ <b>OFF</b> ہے یا <b>Maximum Restrictions</b> غیر فعال ہے۔ یہ One UI 7/8+ پر ADB کمانڈز کو خاموشی سے بلاک کرتا ہے۔]]></string>
     <string name="doctor_tip_oneui_connectivity"><![CDATA[<b>One UI 7/8 Connectivity</b>: اگر Wireless Pairing ناکام ہو تو Shizuku اور Developer Options کو بیک وقت کھلا رکھنے کے لیے <b>Split Screen mode</b> آزمائیں۔]]></string>
     <string name="doctor_tip_s22_ultra"><![CDATA[<b>S22 Ultra Tip</b>: مستحکم ADB کے لیے dial `*#0808#` کریں اور اگر کنکشن بار بار ٹوٹے تو `MTP + ADB` منتخب کریں۔]]></string>
@@ -597,36 +595,30 @@
 
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">رپورٹ کرنے سے پہلے درج ذیل کریں:</string>
-    <string name="bug_report_dialog_update">یقینی بنائیں کہ آپ %1$s استعمال کر رہے ہیں۔</string>
+    <string name="bug_report_dialog_update">یقینی بنائیں کہ آپ ^1 استعمال کر رہے ہیں۔</string>
     <string name="bug_report_dialog_link_update">تازہ ترین ورژن</string>
-    <string name="bug_report_dialog_wiki">%1$s پڑھیں اور تمام متعلقہ troubleshooting steps پر عمل کریں۔</string>
+    <string name="bug_report_dialog_wiki">^1 پڑھیں اور تمام متعلقہ troubleshooting steps پر عمل کریں۔</string>
     <string name="bug_report_dialog_link_wiki">wiki</string>
-    <string name="bug_report_dialog_issues">تمام %1$s تلاش کریں تاکہ دیکھ سکیں کہ آپ کا bug پہلے رپورٹ تو نہیں ہو چکا۔</string>
+    <string name="bug_report_dialog_issues">تمام ^1 تلاش کریں تاکہ دیکھ سکیں کہ آپ کا bug پہلے رپورٹ تو نہیں ہو چکا۔</string>
     <string name="bug_report_dialog_link_issues">موجودہ مسائل</string>
-    <string name="bug_report_dialog_method">اگر اکاؤنٹ ہے تو %1$s پر issue جمع کریں۔</string>
+    <string name="bug_report_dialog_method">اگر اکاؤنٹ ہے تو ^1 پر issue جمع کریں۔</string>
     <string name="bug_report_dialog_method_2">ورنہ آپ email بھیج سکتے ہیں۔</string>
     <string name="bug_report_dialog_button_email">Email</string>
 
     <!-- Service Doctor -->
     <string name="home_service_doctor_title">Service Doctor</string>
     <string name="home_service_doctor_summary">Shizuku شروع کرنے میں مشکل ہو رہی ہے؟ diagnostic check چلانے کے لیے ٹیپ کریں۔</string>
-    <string name="doctor_dialog_title">System Diagnostics</string>
-    <string name="doctor_check_battery">Battery optimization: %1$s</string>
-    <string name="doctor_check_adb">Wireless debugging: %1$s</string>
-    <string name="doctor_check_root">Root access: %1$s</string>
-    <string name="doctor_check_secure_settings">Secure Settings: %1$s</string>
-    <string name="doctor_check_permission">ADB اجازت: %1$s</string>
-    <string name="doctor_check_server">Shizuku server: %1$s</string>
-    <string name="doctor_check_background">Background limits: %1$s</string>
+    <string name="doctor_check_battery">Battery optimization</string>
+    <string name="doctor_check_adb">Wireless debugging</string>
+    <string name="doctor_check_root">Root access</string>
+    <string name="doctor_check_secure_settings">Secure Settings</string>
+    <string name="doctor_check_server">Shizuku server</string>
+    <string name="doctor_check_background">Background limits</string>
     <string name="doctor_status_ok">ٹھیک ہے</string>
     <string name="doctor_status_running">چل رہا ہے</string>
     <string name="doctor_status_stopped">بند ہے</string>
-    <string name="doctor_status_limited">محدود (Restricted ADB)</string>
-    <string name="doctor_status_restricted">محدود (System optimization فعال)</string>
     <string name="doctor_status_not_enabled">فعال نہیں</string>
     <string name="doctor_status_optimized">Optimized (سروس بند ہو سکتی ہے)</string>
-    <string name="doctor_status_unlocked">Unlocked</string>
-    <string name="doctor_status_restricted_bg">Restricted background execution</string>
     <string name="doctor_tip_xiaomi">Xiaomi/HyperOS: Developer Options میں "USB Debugging (Security Settings)" فعال کریں۔</string>
     <string name="doctor_tip_oppo_permission">Oppo/Realme/OnePlus: background service کے بند ہونے سے بچانے کے لیے Developer Options میں "Permission Monitoring" غیر فعال کریں۔</string>
     <string name="doctor_tip_tcl_background">TCL: Settings میں Shizuku+ کو "Auto-start" اور "High background power consumption" allowlists میں شامل کریں۔</string>

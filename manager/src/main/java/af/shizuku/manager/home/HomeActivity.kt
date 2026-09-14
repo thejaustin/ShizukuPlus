@@ -330,7 +330,7 @@ open class HomeActivity : AppActivity(), MavericksView {
                             val statusCard = view.findViewHolderForAdapterPosition(0)?.itemView
                             val cx = view.width / 2
                             val cy = statusCard?.let { it.top + it.height / 2 } ?: 100
-                            val finalRadius = Math.hypot(view.width.toDouble(), view.height.toDouble()).toFloat()
+                            val finalRadius = kotlin.math.hypot(view.width.toDouble(), view.height.toDouble()).toFloat()
 
                             // OneUI 8+ uses more "elastic" easing (0.22, 1, 0.36, 1)
                             val interpolator = if (EnvironmentUtils.isOneUi8())

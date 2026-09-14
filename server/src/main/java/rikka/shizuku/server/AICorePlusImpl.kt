@@ -114,8 +114,9 @@ class AICorePlusImpl(
                     try { inputShellProcess?.exitValue() } catch (e: IllegalThreadStateException) { /* Alive */ }
                 }
                 if (inputShellProcess == null) {
-                    inputShellProcess = Runtime.getRuntime().exec("sh")
-                    inputShellWriter = java.io.OutputStreamWriter(inputShellProcess!!.outputStream)
+                    val proc = Runtime.getRuntime().exec("sh")
+                    inputShellProcess = proc
+                    inputShellWriter = java.io.OutputStreamWriter(proc.outputStream)
                 }
                 inputShellWriter?.write("$cmd\n")
                 inputShellWriter?.flush()
@@ -154,7 +155,7 @@ class AICorePlusImpl(
         return try {
             // argv exec avoids the persistent `sh` pipe so untrusted text can't break out of shell quoting
             automationBridge?.simulateText(text) ?: run {
-                Runtime.getRuntime().exec(arrayOf("input", "text", text))
+                Runtime.getRuntime().exec(arrayOf("input", "text", text)).waitFor()
                 true
             }
         } catch (e: Exception) {
