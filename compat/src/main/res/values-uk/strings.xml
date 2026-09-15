@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shizuku (Хаб сумісності)</string>
+    <string name="permission_group_label">Shizuku (Сумісність)</string>
+    <string name="permission_group_description">Дозволи сумісності Shizuku</string>
+    <string name="permission_label">Дозволити додатку доступ до Shizuku</string>
+    <string name="permission_description">Потрібно для додатків, які строго перевіряють оригінальну назву пакета Shizuku.</string>
+</resources>
