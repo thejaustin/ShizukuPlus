@@ -103,7 +103,7 @@ class AICorePlusService : AccessibilityService() {
             } catch (e: Exception) {
                 Timber.e(e, "Failed to stream hierarchy")
             }
-        }.start()
+        }.also { it.isDaemon = true }.start()
 
         return readFd
     }

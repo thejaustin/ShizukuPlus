@@ -148,8 +148,12 @@ class WindowManagerPlusImpl : IWindowManagerPlus.Stub() {
                 val process = Runtime.getRuntime().exec(
                     arrayOf("am", "task", "lock", taskId.toString())
                 )
-                process.waitFor()
-                Log.d(TAG, "Locked task $taskId using am command")
+                try {
+                    process.waitFor()
+                    Log.d(TAG, "Locked task $taskId using am command")
+                } finally {
+                    process.destroy()
+                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to pin task $taskId to region", e)
@@ -307,8 +311,12 @@ class WindowManagerPlusImpl : IWindowManagerPlus.Stub() {
             val process = Runtime.getRuntime().exec(
                 arrayOf("cmd", "window", "set-always-on-top", taskId.toString(), state)
             )
-            process.waitFor()
-            Log.d(TAG, "Executed cmd window command for always-on-top")
+            try {
+                process.waitFor()
+                Log.d(TAG, "Executed cmd window command for always-on-top")
+            } finally {
+                process.destroy()
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to set always-on-top for task $taskId", e)
         }

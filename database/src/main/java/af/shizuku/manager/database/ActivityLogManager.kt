@@ -379,11 +379,19 @@ object ActivityLogManager {
                 when (method) {
                     "recover" -> {
                         val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", "sqlite3 ${backupFile.absolutePath} '.recover' | sqlite3 ${newDbFile.absolutePath}"))
-                        if (process.waitFor() == 0) "Recovery successful via SQLite .recover" else "SQLite .recover failed."
+                        try {
+                            if (process.waitFor() == 0) "Recovery successful via SQLite .recover" else "SQLite .recover failed."
+                        } finally {
+                            process.destroy()
+                        }
                     }
                     "dump" -> {
                         val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", "sqlite3 ${backupFile.absolutePath} '.dump' | sqlite3 ${newDbFile.absolutePath}"))
-                        if (process.waitFor() == 0) "Recovery successful via SQLite .dump" else "SQLite .dump failed."
+                        try {
+                            if (process.waitFor() == 0) "Recovery successful via SQLite .dump" else "SQLite .dump failed."
+                        } finally {
+                            process.destroy()
+                        }
                     }
                     "raw_text_extraction" -> {
                         // Raw binary scraping for partial recovery of readable text logs

@@ -277,7 +277,7 @@ object RootCompatHelper {
         if (File("/data/local/tmp/su").exists()) {
             try {
                 val p = Runtime.getRuntime().exec(arrayOf("su", "-c", "rm -f ${targets.joinToString(" ")}"))
-                p.waitFor()
+                try { p.waitFor() } finally { p.destroy() }
             } catch (_: Exception) {}
         }
 
@@ -603,14 +603,18 @@ object RootCompatHelper {
         val appExec = try {
             val p = Runtime.getRuntime().exec(arrayOf("sh", "$tmpDir/su", "-c",
                 "echo APP_OK; grep -m1 '^Uid:' /proc/self/status"))
-            val out = p.inputStream.bufferedReader().readText()
-            val err = p.errorStream.bufferedReader().readText()
-            p.waitFor()
-            if (out.contains("APP_OK")) {
-                val auid = Regex("Uid:\\s+(\\d+)").find(out)?.groupValues?.get(1)?.toIntOrNull()
-                "✅ ran end-to-end (uid ${auid ?: "?"})"
-            } else {
-                "⚠️ didn't round-trip — an exec-style app may fail here:\n${(out + err).trim().take(220)}"
+            try {
+                val out = p.inputStream.bufferedReader().readText()
+                val err = p.errorStream.bufferedReader().readText()
+                p.waitFor()
+                if (out.contains("APP_OK")) {
+                    val auid = Regex("Uid:\\s+(\\d+)").find(out)?.groupValues?.get(1)?.toIntOrNull()
+                    "✅ ran end-to-end (uid ${auid ?: "?"})"
+                } else {
+                    "⚠️ didn't round-trip — an exec-style app may fail here:\n${(out + err).trim().take(220)}"
+                }
+            } finally {
+                p.destroy()
             }
         } catch (e: Exception) {
             "⚠️ blocked on this device (likely SELinux): ${e.message?.take(160)}"

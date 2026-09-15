@@ -45,14 +45,14 @@ object ShizukuProcessUtils {
                 } catch (e: Exception) {
                     Timber.v(e, "runPrivilegedCapture: stdout drain failed")
                 }
-            }
+            }.also { it.isDaemon = true }
             val errT = Thread {
                 try {
                     process.errorStream.bufferedReader().use { err.append(it.readText()) }
                 } catch (e: Exception) {
                     Timber.v(e, "runPrivilegedCapture: stderr drain failed")
                 }
-            }
+            }.also { it.isDaemon = true }
             outT.start(); errT.start()
             if (writeStdin != null) {
                 writeStdin(process.outputStream)

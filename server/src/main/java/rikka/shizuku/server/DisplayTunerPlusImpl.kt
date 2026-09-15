@@ -121,34 +121,38 @@ class DisplayTunerPlusImpl : IDisplayTunerPlus.Stub() {
         // Fallback: wm size output parse
         return try {
             val proc = Runtime.getRuntime().exec(arrayOf("wm", "size"))
-            val output = proc.inputStream.bufferedReader().use { it.readText() }
-            proc.waitFor()
-            var hasOverride = false
-            for (line in output.lines()) {
-                val lower = line.lowercase()
-                val rawPair = line.substringAfterLast(":").trim()
-                val parts = rawPair.split("x")
-                if (parts.size != 2) continue
-                val w = parts[0].trim().toIntOrNull() ?: continue
-                val h = parts[1].trim().toIntOrNull() ?: continue
-                when {
-                    lower.startsWith("physical") -> {
-                        bundle.putInt("physical_width", w)
-                        bundle.putInt("physical_height", h)
-                        if (!bundle.containsKey("width")) {
+            try {
+                val output = proc.inputStream.bufferedReader().use { it.readText() }
+                proc.waitFor()
+                var hasOverride = false
+                for (line in output.lines()) {
+                    val lower = line.lowercase()
+                    val rawPair = line.substringAfterLast(":").trim()
+                    val parts = rawPair.split("x")
+                    if (parts.size != 2) continue
+                    val w = parts[0].trim().toIntOrNull() ?: continue
+                    val h = parts[1].trim().toIntOrNull() ?: continue
+                    when {
+                        lower.startsWith("physical") -> {
+                            bundle.putInt("physical_width", w)
+                            bundle.putInt("physical_height", h)
+                            if (!bundle.containsKey("width")) {
+                                bundle.putInt("width", w)
+                                bundle.putInt("height", h)
+                            }
+                        }
+                        lower.startsWith("override") -> {
                             bundle.putInt("width", w)
                             bundle.putInt("height", h)
+                            hasOverride = true
                         }
                     }
-                    lower.startsWith("override") -> {
-                        bundle.putInt("width", w)
-                        bundle.putInt("height", h)
-                        hasOverride = true
-                    }
                 }
+                bundle.putInt("has_override", if (hasOverride) 1 else 0)
+                bundle
+            } finally {
+                proc.destroy()
             }
-            bundle.putInt("has_override", if (hasOverride) 1 else 0)
-            bundle
         } catch (_: Exception) { bundle }
     }
 
@@ -164,16 +168,20 @@ class DisplayTunerPlusImpl : IDisplayTunerPlus.Stub() {
         // Fallback: wm density parse
         return try {
             val proc = Runtime.getRuntime().exec(arrayOf("wm", "density"))
-            val output = proc.inputStream.bufferedReader().use { it.readText() }
-            proc.waitFor()
-            var density = -1
-            for (line in output.lines()) {
-                val lower = line.lowercase()
-                val value = line.substringAfterLast(":").trim().toIntOrNull() ?: continue
-                if (lower.startsWith("physical") && density == -1) density = value
-                if (lower.startsWith("override")) density = value
+            try {
+                val output = proc.inputStream.bufferedReader().use { it.readText() }
+                proc.waitFor()
+                var density = -1
+                for (line in output.lines()) {
+                    val lower = line.lowercase()
+                    val value = line.substringAfterLast(":").trim().toIntOrNull() ?: continue
+                    if (lower.startsWith("physical") && density == -1) density = value
+                    if (lower.startsWith("override")) density = value
+                }
+                density
+            } finally {
+                proc.destroy()
             }
-            density
         } catch (_: Exception) { -1 }
     }
 
@@ -188,11 +196,15 @@ class DisplayTunerPlusImpl : IDisplayTunerPlus.Stub() {
         }
         return try {
             val proc = Runtime.getRuntime().exec(arrayOf("wm", "density"))
-            val text = proc.inputStream.bufferedReader().use { it.readText() }
-            proc.waitFor()
-            text.lines()
-                .firstOrNull { it.lowercase().startsWith("physical") }
-                ?.substringAfterLast(":")?.trim()?.toIntOrNull() ?: -1
+            try {
+                val text = proc.inputStream.bufferedReader().use { it.readText() }
+                proc.waitFor()
+                text.lines()
+                    .firstOrNull { it.lowercase().startsWith("physical") }
+                    ?.substringAfterLast(":")?.trim()?.toIntOrNull() ?: -1
+            } finally {
+                proc.destroy()
+            }
         } catch (_: Exception) { -1 }
     }
 }

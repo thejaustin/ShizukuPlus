@@ -74,7 +74,7 @@ object ShizukuStateMachine {
         // skipping listener/broadcast side effects for a transition that did occur.
         var computed: State? = null
         val oldState = state.getAndUpdate { current -> transform(current).also { computed = it } }
-        val newState = computed!!
+        val newState = computed ?: error("getAndUpdate lambda must always execute synchronously")
         if(oldState != newState) {
             listeners.forEach { it(newState) }
             Timber.tag("ShizukuStateMachine").d(newState.toString())

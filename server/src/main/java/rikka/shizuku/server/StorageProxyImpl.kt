@@ -73,12 +73,16 @@ class StorageProxyImpl : IStorageProxy.Stub() {
             Thread {
                 try {
                     val proc = Runtime.getRuntime().exec(cmd)
-                    proc.inputStream.use { src ->
-                        ParcelFileDescriptor.AutoCloseOutputStream(writeSide).use { dst ->
-                            src.copyTo(dst)
+                    try {
+                        proc.inputStream.use { src ->
+                            ParcelFileDescriptor.AutoCloseOutputStream(writeSide).use { dst ->
+                                src.copyTo(dst)
+                            }
                         }
+                        proc.waitFor()
+                    } finally {
+                        proc.destroy()
                     }
-                    proc.waitFor()
                 } catch (_: Exception) {
                     try { writeSide.close() } catch (_: Exception) {}
                 }
@@ -123,9 +127,13 @@ class StorageProxyImpl : IStorageProxy.Stub() {
         if (path.contains("/Android/data") || path.contains("/Android/obb")) {
             return try {
                 val proc = Runtime.getRuntime().exec(arrayOf("sh", "-c", "ls -1 \"$1\"", "sh", path))
-                val lines = proc.inputStream.bufferedReader().use { it.readLines() }
-                proc.waitFor()
-                lines.filter { it.isNotBlank() }
+                try {
+                    val lines = proc.inputStream.bufferedReader().use { it.readLines() }
+                    proc.waitFor()
+                    lines.filter { it.isNotBlank() }
+                } finally {
+                    proc.destroy()
+                }
             } catch (_: Exception) { emptyList() }
         }
         // For /data/data/<pkg>/ paths (ADB mode, debuggable apps only)
@@ -134,9 +142,13 @@ class StorageProxyImpl : IStorageProxy.Stub() {
             val pkg = extractPackageName(path) ?: return emptyList()
             return try {
                 val proc = Runtime.getRuntime().exec(arrayOf("run-as", pkg, "ls", path))
-                val lines = proc.inputStream.bufferedReader().use { it.readLines() }
-                proc.waitFor()
-                lines.filter { it.isNotBlank() }
+                try {
+                    val lines = proc.inputStream.bufferedReader().use { it.readLines() }
+                    proc.waitFor()
+                    lines.filter { it.isNotBlank() }
+                } finally {
+                    proc.destroy()
+                }
             } catch (_: Exception) { emptyList() }
         }
         return emptyList()
@@ -155,17 +167,21 @@ class StorageProxyImpl : IStorageProxy.Stub() {
             } else if (safePath.contains("/Android/data") || safePath.contains("/Android/obb")) {
                 try {
                     val proc = Runtime.getRuntime().exec(arrayOf("sh", "-c", "stat -c '%s %Y %F' \"$1\" 2>/dev/null", "sh", safePath))
-                    val out = proc.inputStream.bufferedReader().use { it.readLine() }
-                    proc.waitFor()
-                    if (!out.isNullOrBlank()) {
-                        val parts = out.trim().split(" ")
-                        if (parts.size >= 2) {
-                            bundle.putBoolean("exists", true)
-                            bundle.putLong("size", parts[0].toLongOrNull() ?: 0L)
-                            bundle.putLong("lastModified", (parts[1].toLongOrNull() ?: 0L) * 1000)
-                            bundle.putBoolean("isDirectory", out.contains("directory", ignoreCase = true))
-                            return bundle
+                    try {
+                        val out = proc.inputStream.bufferedReader().use { it.readLine() }
+                        proc.waitFor()
+                        if (!out.isNullOrBlank()) {
+                            val parts = out.trim().split(" ")
+                            if (parts.size >= 2) {
+                                bundle.putBoolean("exists", true)
+                                bundle.putLong("size", parts[0].toLongOrNull() ?: 0L)
+                                bundle.putLong("lastModified", (parts[1].toLongOrNull() ?: 0L) * 1000)
+                                bundle.putBoolean("isDirectory", out.contains("directory", ignoreCase = true))
+                                return bundle
+                            }
                         }
+                    } finally {
+                        proc.destroy()
                     }
                 } catch (_: Exception) {}
                 bundle.putBoolean("exists", false)

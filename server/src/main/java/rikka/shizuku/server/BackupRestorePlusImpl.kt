@@ -38,13 +38,18 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
 
     private fun exec(vararg args: String): String = try {
         val proc = Runtime.getRuntime().exec(args)
-        val out = proc.inputStream.bufferedReader().readText().trim()
-        proc.waitFor()
-        out
+        try {
+            val out = proc.inputStream.bufferedReader().readText().trim()
+            proc.waitFor()
+            out
+        } finally {
+            proc.destroy()
+        }
     } catch (_: Exception) { "" }
 
     private fun execExit(vararg args: String): Int = try {
-        Runtime.getRuntime().exec(args).waitFor()
+        val proc = Runtime.getRuntime().exec(args)
+        try { proc.waitFor() } finally { proc.destroy() }
     } catch (_: Exception) { -1 }
 
     private fun pipe(vararg args: String): ParcelFileDescriptor? = try {
@@ -52,12 +57,16 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
         Thread {
             try {
                 val proc = Runtime.getRuntime().exec(args)
-                proc.inputStream.use { src ->
-                    ParcelFileDescriptor.AutoCloseOutputStream(writeSide).use { dst ->
-                        src.copyTo(dst)
+                try {
+                    proc.inputStream.use { src ->
+                        ParcelFileDescriptor.AutoCloseOutputStream(writeSide).use { dst ->
+                            src.copyTo(dst)
+                        }
                     }
+                    proc.waitFor()
+                } finally {
+                    proc.destroy()
                 }
-                proc.waitFor()
             } catch (_: Exception) {
                 try { writeSide.close() } catch (_: Exception) {}
             }

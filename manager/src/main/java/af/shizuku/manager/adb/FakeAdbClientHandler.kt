@@ -180,7 +180,7 @@ class FakeAdbClientHandler(
                 process.destroy()
                 activeProcesses.remove(localId)
                 writeMessage(AdbMessage(AdbProtocol.A_CLSE, localId, remoteId, ByteArray(0)))
-            }.start()
+            }.also { it.isDaemon = true }.start()
 
         } catch (e: Exception) {
             Timber.tag(TAG).e(e, "Failed to start shell process")

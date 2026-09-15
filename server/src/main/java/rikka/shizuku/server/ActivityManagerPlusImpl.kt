@@ -146,9 +146,13 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
         // Fallback: pm list packages -d lists only disabled packages
         return try {
             val proc = Runtime.getRuntime().exec(arrayOf("pm", "list", "packages", "-d", packageName))
-            val text = proc.inputStream.bufferedReader().use { it.readText() }
-            proc.waitFor()
-            text.contains(packageName)
+            try {
+                val text = proc.inputStream.bufferedReader().use { it.readText() }
+                proc.waitFor()
+                text.contains(packageName)
+            } finally {
+                proc.destroy()
+            }
         } catch (e: Exception) { false }
     }
 
@@ -176,7 +180,8 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
             }
         } catch (_: Exception) {}
         try {
-            Runtime.getRuntime().exec(arrayOf("am", "set-process-limit", limit.toString())).waitFor()
+            val proc = Runtime.getRuntime().exec(arrayOf("am", "set-process-limit", limit.toString()))
+            try { proc.waitFor() } finally { proc.destroy() }
         } catch (_: Exception) {}
     }
 
@@ -204,9 +209,13 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
         // Fallback: ps -A (may be blocked by SELinux on Samsung OneUI 8)
         return try {
             val proc = Runtime.getRuntime().exec(arrayOf("ps", "-A", "-o", "NAME,RSS,PID"))
-            val lines = proc.inputStream.bufferedReader().use { it.readLines() }
-            proc.waitFor()
-            lines
+            try {
+                val lines = proc.inputStream.bufferedReader().use { it.readLines() }
+                proc.waitFor()
+                lines
+            } finally {
+                proc.destroy()
+            }
         } catch (e: Exception) {
             emptyList()
         }
@@ -252,7 +261,8 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
         }
         // Fallback: pm clear-cache (Android 13+) — targets the specific package
         return try {
-            Runtime.getRuntime().exec(arrayOf("pm", "clear-cache", "--user", "0", packageName)).waitFor() == 0
+            val proc = Runtime.getRuntime().exec(arrayOf("pm", "clear-cache", "--user", "0", packageName))
+            try { proc.waitFor() == 0 } finally { proc.destroy() }
         } catch (_: Exception) { false }
     }
 
@@ -273,7 +283,8 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
             Log.w(TAG, "clearAppData IPC failed for $packageName, falling back to exec", e)
         }
         return try {
-            Runtime.getRuntime().exec(arrayOf("pm", "clear", "--user", "0", packageName)).waitFor() == 0
+            val proc = Runtime.getRuntime().exec(arrayOf("pm", "clear", "--user", "0", packageName))
+            try { proc.waitFor() == 0 } finally { proc.destroy() }
         } catch (e: Exception) { false }
     }
 }

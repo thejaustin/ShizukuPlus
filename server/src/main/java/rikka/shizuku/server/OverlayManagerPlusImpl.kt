@@ -60,12 +60,16 @@ class OverlayManagerPlusImpl : IOverlayManagerPlus.Stub() {
             val cmd = arrayOf("cmd", "overlay", *args)
             Log.d(TAG, "runOverlayCmd: ${cmd.joinToString(" ")}")
             val proc = Runtime.getRuntime().exec(cmd)
-            val exit = proc.waitFor()
-            if (exit != 0) {
-                val err = proc.errorStream.bufferedReader().readText().trim()
-                Log.w(TAG, "runOverlayCmd exit=$exit stderr=$err")
+            try {
+                val exit = proc.waitFor()
+                if (exit != 0) {
+                    val err = proc.errorStream.bufferedReader().readText().trim()
+                    Log.w(TAG, "runOverlayCmd exit=$exit stderr=$err")
+                }
+                exit == 0
+            } finally {
+                proc.destroy()
             }
-            exit == 0
         } catch (e: Exception) {
             Log.e(TAG, "runOverlayCmd failed: ${args.joinToString(" ")}", e)
             false
@@ -80,9 +84,13 @@ class OverlayManagerPlusImpl : IOverlayManagerPlus.Stub() {
             val cmd = arrayOf("cmd", "overlay", *args)
             Log.d(TAG, "runOverlayCmdOutput: ${cmd.joinToString(" ")}")
             val proc = Runtime.getRuntime().exec(cmd)
-            val out = proc.inputStream.bufferedReader().readText()
-            proc.waitFor()
-            out
+            try {
+                val out = proc.inputStream.bufferedReader().readText()
+                proc.waitFor()
+                out
+            } finally {
+                proc.destroy()
+            }
         } catch (e: Exception) {
             Log.e(TAG, "runOverlayCmdOutput failed: ${args.joinToString(" ")}", e)
             null
