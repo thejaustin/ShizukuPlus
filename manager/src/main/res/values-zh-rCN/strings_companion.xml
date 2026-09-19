@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="companion_conflict_title">检测到原版 Shizuku</string>
+    <string name="companion_conflict_description">原版 Shizuku 与 Shizuku+ 同时安装可能导致权限冲突和应用崩溃。为确保 Shizuku+ 正常运行，请卸载或禁用原版 Shizuku。\n\n您可以通过以下方式处理：\n1. 设置 -&gt; 应用 -&gt; Shizuku -&gt; 禁用/卸载\n2. 使用下方按钮（需要 Shizuku+ 服务正在运行）\n3. ADB：adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_action_disable">禁用原版 Shizuku</string>
+    <string name="companion_action_uninstall">卸载原版 Shizuku</string>
+    <string name="companion_disable_success">已成功禁用原版 Shizuku。</string>
+    <string name="companion_disable_failure">无法禁用原版 Shizuku。请确认 Shizuku+ 正在运行，或手动使用 ADB 处理。</string>
+    <string name="companion_action_disabling">正在禁用…</string>
+    <string name="compat_hub_installed_title">兼容中心已安装</string>
+    <string name="compat_hub_installed_desc">第三方应用（例如 SwiftBackup）现在可以无缝识别 Shizuku+。</string>
+    <string name="compat_hub_missing_title">需要兼容中心</string>
+    <string name="compat_hub_missing_desc">显式检查原版 Shizuku 的第三方应用无法识别 Shizuku+。安装轻量级兼容中心后，这些应用即可检测到 Shizuku+。</string>
+    <string name="compat_hub_install_btn">安装兼容中心</string>
+    <string name="compat_hub_installing">正在安装…</string>
+    <string name="compat_hub_install_success">兼容中心已成功安装！</string>
+    <string name="compat_hub_install_fail">安装失败。请确认 Shizuku+ 正在运行或 Root 权限可用。</string>
+    <string name="compat_hub_install_fail_detail">安装失败：%1$s</string>
+    <string name="compat_hub_install_fail_restricted">无法安装：被设备限制阻止（如三星自动拦截器）。请在“设置 → 安全 → 自动拦截器”中关闭此功能后重试。</string>
+    <string name="compat_hub_install_signature_conflict">无法安装：设备上已有包名为 moe.shizuku.privileged.api 的其他应用（如原版 Shizuku），且签名不兼容。请先卸载该应用。</string>
+    <string name="compat_hub_install_fail_storage">无法安装：设备可用存储空间不足。</string>
+    <string name="compat_hub_install_fail_abi">无法安装：兼容中心不支持此设备的 CPU 架构。</string>
+    <string name="compat_hub_install_manual_launched">正在打开安装程序，请按屏幕提示完成安装。</string>
+    <string name="compat_hub_install_fail_newprocess">此设备限制了 Shizuku 创建进程的 API。正在打开系统安装程序，请在提示时点按“安装”。</string>
+</resources>
