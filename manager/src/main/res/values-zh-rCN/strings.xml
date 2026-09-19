@@ -47,7 +47,7 @@
     <string name="home_adb_description"><![CDATA[未 Root 的设备需要通过 ADB 启动 Shizuku（需连接电脑），每次设备重启后都要重新操作。请先<b><a href=\"%1$s\">阅读帮助</a></b>。]]></string>
     <string name="home_adb_button_view_help">阅读帮助</string>
     <string name="home_adb_button_view_command">查看命令</string>
-    <string name="home_adb_dialog_view_command_message"><![CDATA[<font face="monospace">%1$s</font><br><br>* 还有一些其他注意事项，请确认你已阅读帮助。]]></string>
+    <string name="home_adb_dialog_view_command_message"><![CDATA[<font face="monospace">%1$s</font><br><br>* 还有一些其他注意事项，请确认您已阅读帮助。]]></string>
     <string name="home_adb_dialog_view_command_copy_button">复制</string>
     <string name="home_adb_dialog_view_command_button_send">发送</string>
     <!-- Home - Wireless Adb -->
@@ -132,7 +132,7 @@
     <string name="terminal_tutorial_1">将文件导出到新文件夹。</string>
     <string name="terminal_tutorial_1_description">将导出两个文件： %1$s 和 %2$s。如果所选文件夹中已存在这些文件，则会将其删除。</string>
     <string name="terminal_export_files">导出文件</string>
-    <string name="terminal_tutorial_2">使用终端应用程序将文件复制到其私有文件目录。</string>
+    <string name="terminal_tutorial_2">使用终端应用将文件复制到其私有文件目录。</string>
     <string name="terminal_tutorial_2_description">提示：如果终端应用的主目录（~）位于其私有文件目录中，将文件放入主目录后，即可直接运行 %1$s，无需输入路径。\n\n否则，可以在终端应用的 %3$s 配置文件中，为 %2$s 创建别名。</string>
     <string name="terminal_tutorial_3">打开 Shell 或运行 Shizuku+ 命令：</string>
     <string name="rish_description"><![CDATA[使用 %1$s，即可在任意终端应用中运行 Shell 命令。<p>点按以了解使用方法。]]></string>
@@ -525,7 +525,7 @@
     <string name="diagnostics_copy_command">复制命令</string>
     <string name="diagnostics_command_copied">命令已复制</string>
     <string name="diagnostics_disable_title">禁用诊断？</string>
-    <string name="diagnostics_disable_message">这会隐藏诊断警告面板。你可以随时从高级设置中重新启用。</string>
+    <string name="diagnostics_disable_message">这会隐藏诊断警告面板。您可以随时从高级设置中重新启用。</string>
     <string name="diagnostics_disable_confirm">关闭</string>
     <string name="diagnostics_action_required">需要操作</string>
     <string name="diagnostics_disable_button">关闭诊断</string>
@@ -892,7 +892,7 @@
     <string name="update_install_now">立即安装</string>
     <string name="update_download_failed_title">下载失败</string>
     <string name="update_download_failed_message">下载更新失败。请再试一次。</string>
-    <string name="update_download_failed_storage">存储空间不足，无法下载更新。</string>
+    <string name="update_download_failed_storage">可用存储空间不足，无法下载更新。</string>
     <string name="update_download_failed_cannot_resume">下载中断后无法继续，请重试。</string>
     <string name="update_download_failed_http">网络错误导致下载中断。请检查连接后重试。</string>
     <string name="migration_dialog_title">重要提示：需要重新安装</string>
