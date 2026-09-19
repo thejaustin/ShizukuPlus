@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shizuku（兼容中心）</string>
+    <string name="permission_group_label">Shizuku（兼容）</string>
+    <string name="permission_group_description">Shizuku 兼容权限</string>
+    <string name="permission_label">允许应用访问 Shizuku</string>
+    <string name="permission_description">供严格校验原版 Shizuku 包名的应用使用。</string>
+</resources>
