@@ -52,5 +52,13 @@ subprojects {
                 targetCompatibility = JavaVersion.VERSION_21
             }
         }
+        repositories {
+            maven { url 'https://jitpack.io' }
+}
+
+        dependencies {
+            implementation 'com.github.thejaustin:Shizuku+-API:13.2.0-plus'
+}
     }
 }
+
