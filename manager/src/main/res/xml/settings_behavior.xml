@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_startup"
-        android:title="Startup &amp; Recovery"
+        android:title="@string/settings_behavior_category_startup"
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
@@ -20,8 +21,8 @@
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="auto_reconnect_mdns"
-            android:title="Intelligent Auto-Reconnect"
-            android:summary="Automatically restart the server when the app opens if a wireless ADB port is already active. Off by default."
+            android:title="@string/settings_auto_reconnect_mdns"
+            android:summary="@string/settings_auto_reconnect_mdns_summary"
             android:defaultValue="false"
             android:icon="@drawable/ic_server_restart" />
 
@@ -35,8 +36,8 @@
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:key="category_network"
-        android:title="Network"
+        android:key="category_network_activity"
+        android:title="@string/settings_behavior_category_network_activity"
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
@@ -49,14 +50,8 @@
             android:key="tcp_port"
             android:title="@string/settings_tcp_port"
             android:icon="@drawable/ic_lan_24"
-            android:inputType="number" />
-
-    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
-
-    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:key="category_activity"
-        android:title="Activity &amp; Status"
-        android:defaultValue="true">
+            android:inputType="number"
+            app:useSimpleSummaryProvider="true" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="auto_disable_usb_debugging"
@@ -70,6 +65,49 @@
             android:summary="@string/settings_live_activity_summary"
             android:icon="@drawable/ic_bolt_24"
             android:defaultValue="true" />
+
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_updates"
+        android:title="@string/settings_update_category"
+        android:defaultValue="true">
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="auto_update_enabled"
+            android:title="@string/settings_auto_update_title"
+            android:summary="@string/settings_auto_update_summary"
+            android:icon="@drawable/ic_update_24"
+            android:defaultValue="true" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="auto_install_enabled"
+            android:title="@string/settings_auto_install_title"
+            android:summary="@string/settings_auto_install_summary"
+            android:icon="@drawable/ic_install_24"
+            android:defaultValue="false"
+            android:dependency="auto_update_enabled" />
+
+        <rikka.preference.SimpleMenuPreference
+            android:key="update_channel"
+            android:title="@string/settings_update_channel_title"
+            app:useSimpleSummaryProvider="true"
+            android:icon="@drawable/ic_science_24"
+            android:entries="@array/update_channel_entries"
+            android:entryValues="@array/update_channel_values"
+            android:defaultValue="stable" />
+
+        <Preference
+            android:key="check_for_update"
+            android:title="@string/settings_check_for_update_title"
+            android:summary="@string/settings_check_for_update_summary"
+            android:icon="@drawable/ic_refresh_24" />
+
+        <Preference
+            android:key="last_check_time"
+            android:title="@string/settings_last_check_title"
+            android:summary=""
+            android:icon="@drawable/ic_history_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 

@@ -3,7 +3,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_diagnostics"
-        android:title="Diagnostics"
+        android:title="@string/settings_advanced_category_diagnostics"
         android:defaultValue="true">
 
         <Preference
@@ -14,8 +14,8 @@
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="diagnostics_enabled"
-            android:title="Settings Diagnostics"
-            android:summary="Scan configurations for conflicts and anomalies proactively"
+            android:title="@string/settings_diagnostics_enabled"
+            android:summary="@string/settings_diagnostics_enabled_summary"
             android:icon="@drawable/ic_warning_24"
             android:defaultValue="true" />
 
@@ -44,11 +44,21 @@
             android:summary="@string/scripting_summary"
             android:icon="@drawable/ic_code_24" />
 
+        <Preference
+            android:key="help"
+            android:title="@string/settings_help"
+            android:icon="@drawable/ic_help_outline_24" />
+
+        <Preference
+            android:key="report_bug"
+            android:title="@string/settings_report_bug"
+            android:icon="@drawable/ic_warning_24" />
+
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_adb_tools"
-        android:title="ADB Tools"
+        android:title="@string/settings_advanced_category_adb_tools"
         android:defaultValue="false">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
@@ -82,23 +92,6 @@
             android:title="@string/settings_reset_adb_keys"
             android:summary="@string/settings_reset_adb_keys_summary"
             android:icon="@drawable/ic_autorenew" />
-
-    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
-
-    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:key="category_help"
-        android:title="Help &amp; Recovery"
-        android:defaultValue="false">
-
-        <Preference
-            android:key="help"
-            android:title="@string/settings_help"
-            android:icon="@drawable/ic_help_outline_24" />
-
-        <Preference
-            android:key="report_bug"
-            android:title="@string/settings_report_bug"
-            android:icon="@drawable/ic_warning_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 

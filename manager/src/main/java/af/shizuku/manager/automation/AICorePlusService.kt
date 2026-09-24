@@ -267,6 +267,8 @@ class AICorePlusService : AccessibilityService() {
             // Add current foreground activity info if possible
             rootInActiveWindow?.let { root ->
                 putString("foreground_package", root.packageName?.toString())
+                @Suppress("DEPRECATION")
+                root.recycle()
             }
         }
     }

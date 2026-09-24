@@ -56,8 +56,14 @@ class UpdateManager(private val context: Context) {
      * @param downloadUrl URL to download the APK from
      * @param versionName Version name for display
      */
+    // True when the download was started by the user explicitly (manual check in Settings),
+    // as opposed to the automatic daily-check dialog in HomeActivity. Affects whether
+    // onDownloadComplete aborts silently when isAutoUpdateEnabled() has since been turned off.
+    private var isManualDownload = false
+
     @SuppressLint("Range")
-    fun downloadUpdate(downloadUrl: String, versionName: String) {
+    fun downloadUpdate(downloadUrl: String, versionName: String, manual: Boolean = false) {
+        isManualDownload = manual
         createNotificationChannel()
 
         // Callers invoke this from a UI click handler; the file-exists check, delete, and
@@ -207,6 +213,13 @@ class UpdateManager(private val context: Context) {
     private fun onDownloadComplete(file: File, versionName: String) {
         // Remove progress notification
         notificationManager.cancel(NOTIFICATION_ID)
+
+        // If the user disabled auto-update after this download started (and this wasn't a
+        // manual check), silently discard the downloaded file rather than prompting to install.
+        if (!isManualDownload && !ShizukuSettings.isAutoUpdateEnabled()) {
+            file.delete()
+            return
+        }
 
         if (ShizukuSettings.isAutoInstallEnabled()) {
             scope.launch {

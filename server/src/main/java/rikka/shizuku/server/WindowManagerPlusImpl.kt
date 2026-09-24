@@ -10,6 +10,7 @@ import af.shizuku.server.IWindowManagerPlus
 import af.shizuku.common.util.UserHandleCompat
 import rikka.hidden.compat.ActivityManagerApis
 import rikka.shizuku.server.api.IContentProviderUtils
+import rikka.shizuku.server.util.ShellExecutor
 
 /**
  * Implementation of WindowManagerPlus using Android's window management APIs.
@@ -145,15 +146,8 @@ class WindowManagerPlusImpl : IWindowManagerPlus.Stub() {
 
             // Fallback: Use am command
             if (region != null) {
-                val process = Runtime.getRuntime().exec(
-                    arrayOf("am", "task", "lock", taskId.toString())
-                )
-                try {
-                    process.waitFor()
-                    Log.d(TAG, "Locked task $taskId using am command")
-                } finally {
-                    process.destroy()
-                }
+                ShellExecutor.execBool("am", "task", "lock", taskId.toString())
+                Log.d(TAG, "Locked task $taskId using am command")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to pin task $taskId to region", e)
@@ -308,15 +302,8 @@ class WindowManagerPlusImpl : IWindowManagerPlus.Stub() {
 
             // Fallback: Try cmd window command (may not work on all devices)
             val state = if (enabled) "true" else "false"
-            val process = Runtime.getRuntime().exec(
-                arrayOf("cmd", "window", "set-always-on-top", taskId.toString(), state)
-            )
-            try {
-                process.waitFor()
-                Log.d(TAG, "Executed cmd window command for always-on-top")
-            } finally {
-                process.destroy()
-            }
+            ShellExecutor.execBool("cmd", "window", "set-always-on-top", taskId.toString(), state)
+            Log.d(TAG, "Executed cmd window command for always-on-top")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to set always-on-top for task $taskId", e)
         }

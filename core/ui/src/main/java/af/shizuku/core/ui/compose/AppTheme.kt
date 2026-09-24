@@ -205,6 +205,8 @@ fun AppTheme(
     // Belt-and-suspenders: ThemeOverlay.Black (applied via onApplyUserThemeResource) already
     // forces colorSurface/android:colorBackground to black, so this should be redundant with the
     // read above - kept in case a future overlay change misses one of the two attributes.
+    // All surface-container tones are pure black (#496: near-black values like #0D0D0D are visibly
+    // grey on high-contrast OLEDs; AMOLED users expect zero pixels lit in backgrounds).
     if (darkTheme && isBlackNightTheme) {
         colorScheme = colorScheme.copy(
             background = Color.Black,
@@ -212,12 +214,9 @@ fun AppTheme(
             surfaceDim = Color.Black,
             surfaceContainerLowest = Color.Black,
             surfaceContainerLow = Color.Black,
-            // Extend to the full surface-container tone scale so components that draw
-            // from surfaceContainer* (SearchBar suggestion pane, settings-search card,
-            // bottom sheets, etc.) also render black in AMOLED mode (#496).
-            surfaceContainer = Color(0xFF0A0A0A),
-            surfaceContainerHigh = Color(0xFF0D0D0D),
-            surfaceContainerHighest = Color(0xFF111111),
+            surfaceContainer = Color.Black,
+            surfaceContainerHigh = Color.Black,
+            surfaceContainerHighest = Color.Black,
         )
     }
 

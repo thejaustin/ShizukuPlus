@@ -3,18 +3,27 @@ package rikka.shizuku.server
 import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
+import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import af.shizuku.server.IStorageProxy
 import af.shizuku.common.util.UserHandleCompat
 import rikka.hidden.compat.ActivityManagerApis
 import rikka.shizuku.server.util.InputValidationUtils
+import rikka.shizuku.server.util.BinderCallLogger
+import rikka.shizuku.server.util.ShellExecutor
 import java.io.File
 
 class StorageProxyImpl : IStorageProxy.Stub() {
 
     // Cached once per process — getuid() is a syscall, not a field.
     private val serverUid: Int by lazy { android.system.Os.getuid() }
+
+    override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
+        BinderCallLogger.log(Log.isLoggable("BinderCall", Log.INFO),
+            IStorageProxy.Stub::class.java, code, Binder.getCallingUid())
+        return super.onTransact(code, data, reply, flags)
+    }
 
     override fun openFile(path: String?, mode: Int): ParcelFileDescriptor? {
         val path = path ?: return null
@@ -99,9 +108,7 @@ class StorageProxyImpl : IStorageProxy.Stub() {
         val file = File(path)
         if (file.exists()) return true
         if (path.contains("/Android/data") || path.contains("/Android/obb")) {
-            return try {
-                Runtime.getRuntime().exec(arrayOf("sh", "-c", "[ -e \"$1\" ]", "sh", path)).waitFor() == 0
-            } catch (_: Exception) { false }
+            return ShellExecutor.execBool("sh", "-c", "[ -e \"$1\" ]", "sh", path)
         }
         return false
     }
@@ -112,9 +119,7 @@ class StorageProxyImpl : IStorageProxy.Stub() {
         val file = File(path)
         if (file.delete()) return true
         if (path.contains("/Android/data") || path.contains("/Android/obb")) {
-            return try {
-                Runtime.getRuntime().exec(arrayOf("sh", "-c", "rm -rf \"$1\"", "sh", path)).waitFor() == 0
-            } catch (_: Exception) { false }
+            return ShellExecutor.execBool("sh", "-c", "rm -rf \"$1\"", "sh", path)
         }
         return false
     }
@@ -125,31 +130,15 @@ class StorageProxyImpl : IStorageProxy.Stub() {
         val direct = File(path).list()
         if (!direct.isNullOrEmpty()) return direct.toList()
         if (path.contains("/Android/data") || path.contains("/Android/obb")) {
-            return try {
-                val proc = Runtime.getRuntime().exec(arrayOf("sh", "-c", "ls -1 \"$1\"", "sh", path))
-                try {
-                    val lines = proc.inputStream.bufferedReader().use { it.readLines() }
-                    proc.waitFor()
-                    lines.filter { it.isNotBlank() }
-                } finally {
-                    proc.destroy()
-                }
-            } catch (_: Exception) { emptyList() }
+            return ShellExecutor.exec("sh", "-c", "ls -1 \"$1\"", "sh", path)
+                .lines().filter { it.isNotBlank() }
         }
         // For /data/data/<pkg>/ paths (ADB mode, debuggable apps only)
         if (serverUid == 2000 &&
             (path.startsWith("/data/data/") || path.startsWith("/data/user/"))) {
             val pkg = extractPackageName(path) ?: return emptyList()
-            return try {
-                val proc = Runtime.getRuntime().exec(arrayOf("run-as", pkg, "ls", path))
-                try {
-                    val lines = proc.inputStream.bufferedReader().use { it.readLines() }
-                    proc.waitFor()
-                    lines.filter { it.isNotBlank() }
-                } finally {
-                    proc.destroy()
-                }
-            } catch (_: Exception) { emptyList() }
+            return ShellExecutor.exec("run-as", pkg, "ls", path)
+                .lines().filter { it.isNotBlank() }
         }
         return emptyList()
     }
@@ -165,25 +154,18 @@ class StorageProxyImpl : IStorageProxy.Stub() {
                 bundle.putLong("lastModified", file.lastModified())
                 bundle.putBoolean("isDirectory", file.isDirectory)
             } else if (safePath.contains("/Android/data") || safePath.contains("/Android/obb")) {
-                try {
-                    val proc = Runtime.getRuntime().exec(arrayOf("sh", "-c", "stat -c '%s %Y %F' \"$1\" 2>/dev/null", "sh", safePath))
-                    try {
-                        val out = proc.inputStream.bufferedReader().use { it.readLine() }
-                        proc.waitFor()
-                        if (!out.isNullOrBlank()) {
-                            val parts = out.trim().split(" ")
-                            if (parts.size >= 2) {
-                                bundle.putBoolean("exists", true)
-                                bundle.putLong("size", parts[0].toLongOrNull() ?: 0L)
-                                bundle.putLong("lastModified", (parts[1].toLongOrNull() ?: 0L) * 1000)
-                                bundle.putBoolean("isDirectory", out.contains("directory", ignoreCase = true))
-                                return bundle
-                            }
-                        }
-                    } finally {
-                        proc.destroy()
+                val out = ShellExecutor.exec("sh", "-c", "stat -c '%s %Y %F' \"$1\" 2>/dev/null", "sh", safePath)
+                    .lines().firstOrNull { it.isNotBlank() }
+                if (!out.isNullOrBlank()) {
+                    val parts = out.trim().split(" ")
+                    if (parts.size >= 2) {
+                        bundle.putBoolean("exists", true)
+                        bundle.putLong("size", parts[0].toLongOrNull() ?: 0L)
+                        bundle.putLong("lastModified", (parts[1].toLongOrNull() ?: 0L) * 1000)
+                        bundle.putBoolean("isDirectory", out.contains("directory", ignoreCase = true))
+                        return bundle
                     }
-                } catch (_: Exception) {}
+                }
                 bundle.putBoolean("exists", false)
             } else {
                 bundle.putBoolean("exists", false)
@@ -200,9 +182,7 @@ class StorageProxyImpl : IStorageProxy.Stub() {
         val file = File(path)
         if (file.mkdirs()) return true
         if (path.contains("/Android/data") || path.contains("/Android/obb")) {
-            return try {
-                Runtime.getRuntime().exec(arrayOf("sh", "-c", "mkdir -p \"$1\"", "sh", path)).waitFor() == 0
-            } catch (_: Exception) { false }
+            return ShellExecutor.execBool("sh", "-c", "mkdir -p \"$1\"", "sh", path)
         }
         return false
     }
@@ -219,18 +199,13 @@ class StorageProxyImpl : IStorageProxy.Stub() {
         } catch (_: Exception) {
             if (srcPath.contains("/Android/data") || srcPath.contains("/Android/obb") ||
                 destPath.contains("/Android/data") || destPath.contains("/Android/obb")) {
-                return try {
-                    Runtime.getRuntime().exec(arrayOf("sh", "-c", "cp -rf \"$1\" \"$2\"", "sh", srcPath, destPath)).waitFor() == 0
-                } catch (_: Exception) { false }
+                return ShellExecutor.execBool("sh", "-c", "cp -rf \"$1\" \"$2\"", "sh", srcPath, destPath)
             }
             // For /data/data/<pkg>/ paths, fall back to run-as cp
             if (serverUid == 2000 &&
                 (srcPath.startsWith("/data/data/") || srcPath.startsWith("/data/user/"))) {
                 val pkg = extractPackageName(srcPath) ?: return false
-                return try {
-                    Runtime.getRuntime().exec(arrayOf("run-as", pkg, "cp", srcPath, destPath))
-                        .waitFor() == 0
-                } catch (_: Exception) { false }
+                return ShellExecutor.execBool("run-as", pkg, "cp", srcPath, destPath)
             }
             false
         }
@@ -270,8 +245,8 @@ class StorageProxyImpl : IStorageProxy.Stub() {
         if (!InputValidationUtils.isSafePath(dir)) return null
         return if (InputValidationUtils.isValidPackageName(packageContext) && serverUid == 2000 &&
             (dir.startsWith("/data/data/") || dir.startsWith("/data/user/"))) {
-            // run-as <pkg> tar for debuggable-app data directories
-            openViaShellPipe(arrayOf("run-as", packageContext, "tar", "-czf", "-", "-C", dir, "."))
+            // run-as <pkg> tar for debuggable-app data directories; isValidPackageName guards non-null
+            openViaShellPipe(arrayOf("run-as", packageContext!!, "tar", "-czf", "-", "-C", dir, "."))
         } else {
             openViaShellPipe(arrayOf("tar", "-czf", "-", "-C", dir, "."))
         }
@@ -286,7 +261,7 @@ class StorageProxyImpl : IStorageProxy.Stub() {
         if (!InputValidationUtils.isSafePath(dir) || tarPfd == null) return false
         val cmd = if (InputValidationUtils.isValidPackageName(packageContext) && serverUid == 2000 &&
             (dir.startsWith("/data/data/") || dir.startsWith("/data/user/"))) {
-            arrayOf("run-as", packageContext, "tar", "-xf", "-", "-C", dir)
+            arrayOf("run-as", packageContext!!, "tar", "-xf", "-", "-C", dir)
         } else {
             arrayOf("tar", "-xf", "-", "-C", dir)
         }

@@ -53,7 +53,8 @@
                 android:layout_width="8dp"
                 android:layout_height="8dp"
                 android:layout_marginEnd="12dp"
-                android:background="@drawable/shape_status_indicator" />
+                android:background="@drawable/shape_status_indicator"
+                android:importantForAccessibility="no" />
 
             <TextView
                 android:id="@android:id/text1"

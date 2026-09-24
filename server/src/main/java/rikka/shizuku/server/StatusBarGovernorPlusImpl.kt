@@ -10,6 +10,7 @@ import af.shizuku.server.IStatusBarGovernorPlus
 import af.shizuku.common.util.UserHandleCompat
 import rikka.hidden.compat.ActivityManagerApis
 import rikka.shizuku.server.api.IContentProviderUtils
+import rikka.shizuku.server.util.ShellExecutor
 
 class StatusBarGovernorPlusImpl : IStatusBarGovernorPlus.Stub() {
 
@@ -29,10 +30,6 @@ class StatusBarGovernorPlusImpl : IStatusBarGovernorPlus.Stub() {
     }
 
     private fun callingUserId() = UserHandleCompat.getUserId(Binder.getCallingUid())
-
-    private fun exec(vararg args: String): Boolean = try {
-        Runtime.getRuntime().exec(args).waitFor() == 0
-    } catch (_: Exception) { false }
 
     private fun putSecureSetting(key: String, value: String): Boolean {
         return try {
@@ -78,7 +75,7 @@ class StatusBarGovernorPlusImpl : IStatusBarGovernorPlus.Stub() {
         } catch (e: Exception) {
             Log.w(TAG, "disableExpansion IPC failed, falling back to exec", e)
         }
-        return exec("cmd", "statusbar", "send-disable-flag", "statusbar-expansion")
+        return ShellExecutor.execBool("cmd", "statusbar", "send-disable-flag", "statusbar-expansion")
     }
 
     override fun enableExpansion(): Boolean {
@@ -93,7 +90,7 @@ class StatusBarGovernorPlusImpl : IStatusBarGovernorPlus.Stub() {
         } catch (e: Exception) {
             Log.w(TAG, "enableExpansion IPC failed, falling back to exec", e)
         }
-        return exec("cmd", "statusbar", "send-disable-flag", "none")
+        return ShellExecutor.execBool("cmd", "statusbar", "send-disable-flag", "none")
     }
 
     override fun clickTile(component: String?): Boolean {
@@ -110,7 +107,7 @@ class StatusBarGovernorPlusImpl : IStatusBarGovernorPlus.Stub() {
         } catch (e: Exception) {
             Log.w(TAG, "clickTile IPC failed for $component, falling back to exec", e)
         }
-        return exec("cmd", "statusbar", "click-tile", component)
+        return ShellExecutor.execBool("cmd", "statusbar", "click-tile", component)
     }
 
     override fun getCurrentTiles(): String {
@@ -118,16 +115,7 @@ class StatusBarGovernorPlusImpl : IStatusBarGovernorPlus.Stub() {
         val result = getSecureSetting(TILES_KEY)
         if (result.isNotEmpty()) return result
         // Fallback: settings get exec
-        return try {
-            val proc = Runtime.getRuntime().exec(arrayOf("settings", "get", "secure", TILES_KEY))
-            try {
-                val text = proc.inputStream.bufferedReader().use { it.readText() }
-                proc.waitFor()
-                text.trim()
-            } finally {
-                proc.destroy()
-            }
-        } catch (_: Exception) { "" }
+        return ShellExecutor.exec("settings", "get", "secure", TILES_KEY)
     }
 
     override fun setTiles(tileList: String?): Boolean {
@@ -135,7 +123,7 @@ class StatusBarGovernorPlusImpl : IStatusBarGovernorPlus.Stub() {
         // Primary: secure settings ContentProvider PUT — no exec needed
         if (putSecureSetting(TILES_KEY, tileList)) return true
         // Fallback: cmd statusbar set-tiles exec
-        return exec("cmd", "statusbar", "set-tiles", tileList)
+        return ShellExecutor.execBool("cmd", "statusbar", "set-tiles", tileList)
     }
 
     override fun collapse(): Boolean {
@@ -149,7 +137,7 @@ class StatusBarGovernorPlusImpl : IStatusBarGovernorPlus.Stub() {
         } catch (e: Exception) {
             Log.w(TAG, "collapse IPC failed, falling back to exec", e)
         }
-        return exec("cmd", "statusbar", "collapse")
+        return ShellExecutor.execBool("cmd", "statusbar", "collapse")
     }
 
     override fun expandSettings(): Boolean {
@@ -168,7 +156,7 @@ class StatusBarGovernorPlusImpl : IStatusBarGovernorPlus.Stub() {
         } catch (e: Exception) {
             Log.w(TAG, "expandSettings IPC failed, falling back to exec", e)
         }
-        return exec("cmd", "statusbar", "expand-settings")
+        return ShellExecutor.execBool("cmd", "statusbar", "expand-settings")
     }
 
     override fun addTile(tileSpec: String?): Boolean {

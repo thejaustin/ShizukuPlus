@@ -4,6 +4,7 @@ import android.os.IBinder
 import android.os.ServiceManager
 import android.util.Log
 import af.shizuku.server.IDeviceControlPlus
+import rikka.shizuku.server.util.ShellExecutor
 
 /**
  * Implements IDeviceControlPlus using shell commands and Binder IPC available to uid 2000.
@@ -24,35 +25,9 @@ class DeviceControlPlusImpl : IDeviceControlPlus.Stub() {
         private val VALID_STREAMS = 0..5
     }
 
-    private fun exec(vararg args: String): String = try {
-        val proc = Runtime.getRuntime().exec(args)
-        try {
-            val out = proc.inputStream.bufferedReader().readText().trim()
-            proc.waitFor()
-            out
-        } finally {
-            proc.destroy()
-        }
-    } catch (e: Exception) {
-        Log.w(TAG, "exec failed: ${args.joinToString(" ")}", e)
-        ""
-    }
-
-    private fun execBool(vararg args: String): Boolean = try {
-        val proc = Runtime.getRuntime().exec(args)
-        try {
-            proc.waitFor() == 0
-        } finally {
-            proc.destroy()
-        }
-    } catch (e: Exception) {
-        Log.w(TAG, "execBool failed: ${args.joinToString(" ")}", e)
-        false
-    }
-
     private fun settingsPut(namespace: String, key: String, value: String): Boolean {
         if (namespace !in VALID_NAMESPACES) return false
-        return execBool("settings", "put", namespace, key, value)
+        return ShellExecutor.execBool("settings", "put", namespace, key, value)
     }
 
     // ── Connectivity ──────────────────────────────────────────────────────────
@@ -63,28 +38,28 @@ class DeviceControlPlusImpl : IDeviceControlPlus.Stub() {
         if (ok) {
             // Broadcast so telephony/WiFi radios react immediately
             val state = if (enabled) "true" else "false"
-            exec("am", "broadcast", "-a", "android.intent.action.AIRPLANE_MODE", "--ez", "state", state)
+            ShellExecutor.exec("am", "broadcast", "-a", "android.intent.action.AIRPLANE_MODE", "--ez", "state", state)
         }
         return ok
     }
 
     override fun setWifiEnabled(enabled: Boolean): Boolean =
-        execBool("svc", "wifi", if (enabled) "enable" else "disable")
+        ShellExecutor.execBool("svc", "wifi", if (enabled) "enable" else "disable")
 
     override fun setBluetoothEnabled(enabled: Boolean): Boolean =
-        execBool("svc", "bluetooth", if (enabled) "enable" else "disable")
+        ShellExecutor.execBool("svc", "bluetooth", if (enabled) "enable" else "disable")
 
     override fun setMobileDataEnabled(enabled: Boolean): Boolean =
-        execBool("svc", "data", if (enabled) "enable" else "disable")
+        ShellExecutor.execBool("svc", "data", if (enabled) "enable" else "disable")
 
     override fun setNfcEnabled(enabled: Boolean): Boolean =
-        execBool("svc", "nfc", if (enabled) "enable" else "disable")
+        ShellExecutor.execBool("svc", "nfc", if (enabled) "enable" else "disable")
 
     // ── USB ───────────────────────────────────────────────────────────────────
 
     override fun setUsbFunction(function: String?): Boolean {
         if (function == null || function !in VALID_USB_FUNCTIONS) return false
-        return execBool("svc", "usb", "setFunctions", function)
+        return ShellExecutor.execBool("svc", "usb", "setFunctions", function)
     }
 
     // ── Power ─────────────────────────────────────────────────────────────────
@@ -92,14 +67,14 @@ class DeviceControlPlusImpl : IDeviceControlPlus.Stub() {
     override fun reboot(reason: String?): Boolean {
         if (reason != null && reason !in VALID_REBOOT_REASONS) return false
         return if (reason.isNullOrEmpty()) {
-            execBool("reboot")
+            ShellExecutor.execBool("reboot")
         } else {
-            execBool("reboot", reason)
+            ShellExecutor.execBool("reboot", reason)
         }
     }
 
     override fun shutdown(): Boolean =
-        execBool("svc", "power", "shutdown")
+        ShellExecutor.execBool("svc", "power", "shutdown")
 
     // ── Display ───────────────────────────────────────────────────────────────
 
@@ -137,7 +112,7 @@ class DeviceControlPlusImpl : IDeviceControlPlus.Stub() {
             Log.d(TAG, "setStreamVolume binder failed, trying media command", e)
         }
         // Fallback: media volume command (Android 11+)
-        return execBool("media", "volume", "--stream", stream.toString(), "--set", level.toString())
+        return ShellExecutor.execBool("media", "volume", "--stream", stream.toString(), "--set", level.toString())
     }
 
     override fun getStreamVolume(stream: Int): Int {
@@ -152,7 +127,7 @@ class DeviceControlPlusImpl : IDeviceControlPlus.Stub() {
         } catch (e: Exception) {
             Log.d(TAG, "getStreamVolume binder failed, trying media command", e)
         }
-        val out = exec("media", "volume", "--stream", stream.toString(), "--get")
+        val out = ShellExecutor.exec("media", "volume", "--stream", stream.toString(), "--get")
         // Output: "volume is X" or "Current volume: X"
         return Regex("""(\d+)""").find(out)?.groupValues?.get(1)?.toIntOrNull() ?: -1
     }
@@ -183,7 +158,7 @@ class DeviceControlPlusImpl : IDeviceControlPlus.Stub() {
     override fun getSetting(namespace: String?, key: String?): String? {
         if (namespace == null || key == null) return null
         if (namespace !in VALID_NAMESPACES) return null
-        val out = exec("settings", "get", namespace, key)
+        val out = ShellExecutor.exec("settings", "get", namespace, key)
         return if (out == "null" || out.isEmpty()) null else out
     }
 }

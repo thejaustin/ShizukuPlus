@@ -53,12 +53,21 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
         val ok = status.isRunning
         val state = af.shizuku.manager.utils.ShizukuStateMachine.get()
 
-        // Live Status Indicator
+        // Live Status Indicator — ok/error use M3 theme tokens so the dot respects dynamic color
+        // and custom accents; starting stays amber (no standard M3 "warning" token, and amber is
+        // universally understood as "in progress" regardless of active theme).
         statusIndicator.backgroundTintList = android.content.res.ColorStateList.valueOf(
             when {
-                ok -> ContextCompat.getColor(context, R.color.status_ok)
-                state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING -> ContextCompat.getColor(context, R.color.status_starting)
-                else -> ContextCompat.getColor(context, R.color.status_error)
+                ok -> com.google.android.material.color.MaterialColors.getColor(
+                    context, androidx.appcompat.R.attr.colorPrimary,
+                    ContextCompat.getColor(context, R.color.status_ok)
+                )
+                state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING ->
+                    ContextCompat.getColor(context, R.color.status_starting)
+                else -> com.google.android.material.color.MaterialColors.getColor(
+                    context, androidx.appcompat.R.attr.colorError,
+                    ContextCompat.getColor(context, R.color.status_error)
+                )
             }
         )
 

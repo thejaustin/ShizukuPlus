@@ -26,4 +26,4 @@ object MigrationHelper {
             false
         }
     }
-
+}

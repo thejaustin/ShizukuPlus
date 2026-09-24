@@ -53,12 +53,11 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                 true
             }
         }
-        findPreference<Preference>("launch_stock_shizuku")?.apply {
-            isVisible = StockShizukuCompat.isInstalled(requireContext())
-            setOnPreferenceClickListener {
-                StockShizukuCompat.launch(it.context)
-                true
-            }
+        findPreference<CollapsiblePreferenceCategory>("category_stock_shizuku_compat")
+            ?.setChildAvailable("launch_stock_shizuku", StockShizukuCompat.isInstalled(requireContext()))
+        findPreference<Preference>("launch_stock_shizuku")?.setOnPreferenceClickListener {
+            StockShizukuCompat.launch(it.context)
+            true
         }
 
         findPreference<TwoStatePreference>("adb_proxy_enabled")?.setOnPreferenceChangeListener { _, newValue ->
@@ -187,7 +186,18 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
 
         // Preset SU Path Picker helper
         val suPathPref = findPreference<androidx.preference.EditTextPreference>("custom_su_path")
-        suPathPref?.setOnPreferenceChangeListener { _, _ ->
+        suPathPref?.setOnPreferenceChangeListener { _, newValue ->
+            val path = (newValue as? String).orEmpty().trim()
+            // Empty = reset to default (always valid). Non-empty must be an absolute path
+            // using only safe characters to prevent shell metacharacter injection.
+            if (path.isNotEmpty() && !path.matches(Regex("^/[a-zA-Z0-9_./\\-]+$"))) {
+                Toast.makeText(
+                    context,
+                    getString(R.string.su_path_invalid),
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnPreferenceChangeListener false
+            }
             ShizukuSettings.syncAllPlusFeaturesToServer()
             true
         }
@@ -295,15 +305,10 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun isBootloaderUnlocked(): Boolean {
-        fun readProp(prop: String): String? = try {
-            val p = Runtime.getRuntime().exec(arrayOf("getprop", prop))
-            try {
-                val result = java.io.BufferedReader(java.io.InputStreamReader(p.inputStream)).use { it.readLine() }
-                p.waitFor()
-                result
-            } finally {
-                p.destroy()
-            }
+        fun readProp(key: String): String? = try {
+            Class.forName("android.os.SystemProperties")
+                .getMethod("get", String::class.java, String::class.java)
+                .invoke(null, key, "") as? String
         } catch (_: Exception) { null }
         return readProp("ro.boot.flash.locked") == "0" ||
                readProp("ro.boot.verifiedbootstate") == "orange"

@@ -110,8 +110,12 @@ class AICorePlusImpl(
     private fun injectInput(cmd: String): Boolean {
         return try {
             synchronized(this) {
-                if (inputShellProcess == null) { // Simple alive check
-                    try { inputShellProcess?.exitValue() } catch (_: IllegalThreadStateException) { /* Alive */ }
+                if (inputShellProcess != null) { // If a process exists, check if it's still alive
+                    try {
+                        inputShellProcess!!.exitValue() // succeeds → process has died
+                        inputShellProcess = null
+                        inputShellWriter = null
+                    } catch (_: IllegalThreadStateException) { /* Still running */ }
                 }
                 if (inputShellProcess == null) {
                     val proc = Runtime.getRuntime().exec("sh")

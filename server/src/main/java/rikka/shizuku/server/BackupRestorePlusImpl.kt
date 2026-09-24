@@ -15,6 +15,7 @@ import af.shizuku.common.util.UserHandleCompat
 import rikka.hidden.compat.ActivityManagerApis
 import rikka.shizuku.server.api.IContentProviderUtils
 import rikka.shizuku.server.util.InputValidationUtils
+import rikka.shizuku.server.util.ShellExecutor
 import java.io.File
 import java.io.InputStream
 
@@ -37,22 +38,6 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
     }
 
     private fun callingUserId() = UserHandleCompat.getUserId(Binder.getCallingUid())
-
-    private fun exec(vararg args: String): String = try {
-        val proc = Runtime.getRuntime().exec(args)
-        try {
-            val out = proc.inputStream.bufferedReader().readText().trim()
-            proc.waitFor()
-            out
-        } finally {
-            proc.destroy()
-        }
-    } catch (_: Exception) { "" }
-
-    private fun execExit(vararg args: String): Int = try {
-        val proc = Runtime.getRuntime().exec(args)
-        try { proc.waitFor() } finally { proc.destroy() }
-    } catch (_: Exception) { -1 }
 
     // Reads and discards a stream on a daemon thread, so a chatty child process can't
     // fill its stderr/stdout pipe buffer and deadlock the copy we actually care about.
@@ -123,14 +108,14 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
         // Fallback: pm list packages — get disabled set once for isFrozen, versionName/allowBackup
         // are unavailable without per-package queries in this path so left as safe defaults.
         val disabledPkgs = try {
-            exec("pm", "list", "packages", "-d").lines()
+            ShellExecutor.exec("pm", "list", "packages", "-d").lines()
                 .map { it.removePrefix("package:").trim() }.toHashSet()
         } catch (_: Exception) { emptySet<String>() }
         val args = if (includeSystem)
             arrayOf("pm", "list", "packages", "-f", "--show-versioncode")
         else
             arrayOf("pm", "list", "packages", "-f", "--show-versioncode", "-3")
-        val output = exec(*args)
+        val output = ShellExecutor.exec(*args)
         val result = mutableListOf<Bundle>()
         for (line in output.lines()) {
             val pkgSection = line.removePrefix("package:").trim()
@@ -171,7 +156,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             Log.w(TAG, "getApkPaths IPC failed for $packageName, falling back", e)
         }
         // Fallback: pm path parse
-        return exec("pm", "path", packageName).lines()
+        return ShellExecutor.exec("pm", "path", packageName).lines()
             .filter { it.startsWith("package:") }
             .map { it.removePrefix("package:").trim() }
     }
@@ -191,7 +176,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
     override fun getAppDataSize(packageName: String?): Bundle {
         val b = Bundle()
         if (packageName.isNullOrBlank()) return b
-        val dump = exec("dumpsys", "diskstats")
+        val dump = ShellExecutor.exec("dumpsys", "diskstats")
         val line = dump.lines().find { it.contains("Package: $packageName ") } ?: return b
         fun extractBytes(label: String): Long {
             return Regex("$label: (\\d+)").find(line)?.groupValues?.get(1)?.toLongOrNull() ?: -1L
@@ -212,7 +197,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             true
         } catch (e: Exception) {
             Log.w(TAG, "forceStop IPC failed for $packageName, falling back", e)
-            execExit("am", "force-stop", packageName) == 0
+            ShellExecutor.execCode("am", "force-stop", packageName) == 0
         }
     }
 
@@ -224,17 +209,24 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             val pm = packageManagerService() ?: error("no package service")
             val latch = java.util.concurrent.CountDownLatch(1)
             val succeeded = java.util.concurrent.atomic.AtomicBoolean(false)
-            val stubClass = Class.forName("android.content.pm.IPackageDataObserver\$Stub")
-            val observer = java.lang.reflect.Proxy.newProxyInstance(
-                stubClass.classLoader,
-                arrayOf(Class.forName("android.content.pm.IPackageDataObserver"), IBinder::class.java)
-            ) { _, method, args ->
-                if (method.name == "onRemoveCompleted") {
-                    // signature: onRemoveCompleted(String packageName, boolean succeeded)
-                    succeeded.set(args?.getOrNull(1) as? Boolean ?: false)
-                    latch.countDown()
+            // Parcel.writeStrongBinder() requires a real android.os.Binder — Proxy.newProxyInstance
+            // implementing IBinder can't be marshaled cross-process, causing the call to throw.
+            // IPackageDataObserver: onRemoveCompleted(String packageName, boolean succeeded) at FIRST_CALL_TRANSACTION.
+            val observer = object : android.os.Binder() {
+                init { attachInterface(null, "android.content.pm.IPackageDataObserver") }
+                override fun onTransact(code: Int, data: android.os.Parcel, reply: android.os.Parcel?, flags: Int): Boolean {
+                    return when (code) {
+                        IBinder.FIRST_CALL_TRANSACTION -> {
+                            data.enforceInterface("android.content.pm.IPackageDataObserver")
+                            data.readString() // packageName (unused)
+                            succeeded.set(data.readInt() != 0) // boolean succeeded
+                            latch.countDown()
+                            reply?.writeNoException()
+                            true
+                        }
+                        else -> super.onTransact(code, data, reply, flags)
+                    }
                 }
-                null
             }
             val method = pm.javaClass.methods.firstOrNull { it.name == "clearApplicationUserData" }
                 ?: error("clearApplicationUserData not found")
@@ -245,7 +237,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
         } catch (e: Exception) {
             Log.w(TAG, "clearAppData IPC failed for $packageName, falling back", e)
         }
-        return execExit("pm", "clear", packageName) == 0
+        return ShellExecutor.execCode("pm", "clear", packageName) == 0
     }
 
     // ── ADB Backup / Restore ──────────────────────────────────────────────────
@@ -319,7 +311,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
     // ── Streaming APK Install ─────────────────────────────────────────────────
 
     override fun createInstallSession(packageName: String?): Int {
-        val output = exec("pm", "install-create", "-g")
+        val output = ShellExecutor.exec("pm", "install-create", "-g")
         val match = Regex("\\[(\\d+)]").find(output)
         return match?.groupValues?.get(1)?.toIntOrNull() ?: -1
     }
@@ -348,12 +340,12 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
 
     override fun commitInstallSession(sessionId: Int): Boolean {
         if (sessionId < 0) return false
-        return execExit("pm", "install-commit", sessionId.toString()) == 0
+        return ShellExecutor.execCode("pm", "install-commit", sessionId.toString()) == 0
     }
 
     override fun abandonInstallSession(sessionId: Int) {
         if (sessionId < 0) return
-        try { Runtime.getRuntime().exec(arrayOf("pm", "install-abandon", sessionId.toString())).waitFor() } catch (_: Exception) {}
+        ShellExecutor.execCode("pm", "install-abandon", sessionId.toString())
     }
 
     // ── Permission State ──────────────────────────────────────────────────────
@@ -378,7 +370,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             Log.w(TAG, "getPermissionState IPC failed for $packageName, falling back", e)
         }
         // Fallback: pm dump parse
-        val output = exec("pm", "dump", packageName)
+        val output = ShellExecutor.exec("pm", "dump", packageName)
         val result = mutableListOf<Bundle>()
         var inGranted = false; var inRequested = false
         val granted = mutableSetOf<String>()
@@ -414,7 +406,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
                 Android17Compat.grantRuntimePermission(packageName, name, userId)
                 count++
             } catch (_: Exception) {
-                if (execExit("pm", "grant", packageName, name) == 0) count++
+                if (ShellExecutor.execCode("pm", "grant", packageName, name) == 0) count++
             }
         }
         return count
@@ -423,18 +415,18 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
     // ── BackupManager (bmgr) ──────────────────────────────────────────────────
 
     override fun isBackupEnabled(): Boolean {
-        val out = exec("bmgr", "enabled")
+        val out = ShellExecutor.exec("bmgr", "enabled")
         return out.contains("enabled") && !out.contains("disabled")
     }
 
     override fun requestBmgrBackup(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
-        return execExit("bmgr", "backup", packageName) == 0
+        return ShellExecutor.execCode("bmgr", "backup", packageName) == 0
     }
 
     override fun listBmgrBackupSets(): List<Bundle> {
         val result = mutableListOf<Bundle>()
-        for (line in exec("bmgr", "list", "sets").lines()) {
+        for (line in ShellExecutor.exec("bmgr", "list", "sets").lines()) {
             val t = line.trim()
             if (t.isEmpty()) continue
             val parts = t.split("\\s+".toRegex(), 2)
@@ -445,7 +437,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
     }
 
     override fun getActiveBackupTransport(): String {
-        return exec("bmgr", "list", "transports").lines()
+        return ShellExecutor.exec("bmgr", "list", "transports").lines()
             .firstOrNull { it.trimStart().startsWith("*") }
             ?.trim()?.removePrefix("*")?.trim() ?: ""
     }
@@ -458,7 +450,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             "global", "secure", "system" -> namespace.lowercase()
             else -> return b
         }
-        for (line in exec("settings", "list", ns).lines()) {
+        for (line in ShellExecutor.exec("settings", "list", ns).lines()) {
             val eq = line.indexOf('=')
             if (eq > 0) b.putString(line.substring(0, eq).trim(), line.substring(eq + 1))
         }
@@ -495,7 +487,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
         // Fallback: settings put exec
         for (key in settings.keySet()) {
             val value = settings.getString(key) ?: continue
-            if (execExit("settings", "put", ns, key, value) == 0) count++
+            if (ShellExecutor.execCode("settings", "put", ns, key, value) == 0) count++
         }
         return count
     }
@@ -565,7 +557,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             Log.w(TAG, "getPackageMetadata IPC failed for $packageName, falling back", e)
         }
         // Fallback: pm dump parse
-        val dump = exec("pm", "dump", packageName)
+        val dump = ShellExecutor.exec("pm", "dump", packageName)
         if (dump.isBlank()) return b
         for (line in dump.lines()) {
             val t = line.trim()
@@ -636,14 +628,14 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
         if (packageName.isNullOrBlank()) return false
         // COMPONENT_ENABLED_STATE_DISABLED_USER = 3
         if (setApplicationEnabledSetting(packageName, 3)) return true
-        return execExit("pm", "disable-user", "--user", "0", packageName) == 0
+        return ShellExecutor.execCode("pm", "disable-user", "--user", "0", packageName) == 0
     }
 
     override fun unfreezeApp(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
         // COMPONENT_ENABLED_STATE_DEFAULT = 0
         if (setApplicationEnabledSetting(packageName, 0)) return true
-        return execExit("pm", "enable", "--user", "0", packageName) == 0
+        return ShellExecutor.execCode("pm", "enable", "--user", "0", packageName) == 0
     }
 
     override fun isAppFrozen(packageName: String?): Boolean {
@@ -656,7 +648,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             Log.w(TAG, "isAppFrozen IPC failed for $packageName, falling back", e)
         }
         // Fallback: pm dump parse — "enabled=3" = DISABLED_USER, "enabled=2" = DISABLED
-        return exec("pm", "dump", packageName).lines().any { line ->
+        return ShellExecutor.exec("pm", "dump", packageName).lines().any { line ->
             val t = line.trim()
             t.startsWith("enabled=") && (t.contains("=3") || t.contains("=2"))
         }
@@ -705,7 +697,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
                 if (inserted) { count++; continue }
             }
             // Fallback: content insert exec
-            val result = execExit(
+            val result = ShellExecutor.execCode(
                 "content", "insert", "--uri", "content://sms",
                 "--bind", "address:s:$address", "--bind", "body:s:$body",
                 "--bind", "date:l:$date", "--bind", "type:i:$type", "--bind", "read:i:$read"
@@ -724,7 +716,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             true
         } catch (e: Exception) {
             Log.w(TAG, "revokeRuntimePermission IPC failed for $packageName/$permission, falling back", e)
-            execExit("pm", "revoke", packageName, permission) == 0
+            ShellExecutor.execCode("pm", "revoke", packageName, permission) == 0
         }
     }
 
@@ -735,7 +727,7 @@ class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
             true
         } catch (e: Exception) {
             Log.w(TAG, "grantRuntimePermission IPC failed for $packageName/$permission, falling back", e)
-            execExit("pm", "grant", packageName, permission) == 0
+            ShellExecutor.execCode("pm", "grant", packageName, permission) == 0
         }
     }
 }

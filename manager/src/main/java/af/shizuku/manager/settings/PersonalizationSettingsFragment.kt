@@ -156,6 +156,16 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
+        findPreference<Preference>("home_card_corner_style")?.setOnPreferenceChangeListener { _, _ ->
+            applyTheme(requiresRecreate = false)
+            true
+        }
+
+        findPreference<Preference>("settings_card_corner_style")?.setOnPreferenceChangeListener { _, _ ->
+            applyTheme(requiresRecreate = false)
+            true
+        }
+
         expressiveAnimationsPreference.setOnPreferenceChangeListener { _, _ ->
             applyTheme(requiresRecreate = false)
             true

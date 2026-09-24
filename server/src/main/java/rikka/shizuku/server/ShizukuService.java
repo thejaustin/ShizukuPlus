@@ -2468,7 +2468,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
         if (isFeatureEnabled("binder_logging")) {
-            LOGGER.i("Binder transaction: code=%d, calling uid=%d, flags=%d", code, Binder.getCallingUid(), flags);
+            // Resolve the method name from the AIDL-generated TRANSACTION_* constant via reflection.
+            rikka.shizuku.server.util.BinderCallLogger.log(
+                true, moe.shizuku.server.IShizukuService.Stub.class, code, Binder.getCallingUid()
+            );
         }
         // enforceInterface() only validates the AIDL descriptor token, not caller identity — every
         // branch here additionally needs enforceCallingPermission(), matching every other exposed

@@ -52,8 +52,8 @@ class AutomationService : Service() {
 
     companion object {
         private const val NOTIFICATION_CHANNEL_ID = "automation_service"
-        // 1001/1002 are taken by WatchdogService — use a distinct ID to avoid foreground-token conflicts
-        private const val NOTIFICATION_ID = 1003
+        // 1001/1002 are taken by WatchdogService; 1003 is taken by WatchdogWorker heal — use 1004
+        private const val NOTIFICATION_ID = 1004
 
         /** Starts the service (and its notification/polling) - only call when the caller has
          *  already confirmed the user actually configured something (#435); this itself does not

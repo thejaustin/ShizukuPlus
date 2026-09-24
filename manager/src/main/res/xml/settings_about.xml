@@ -2,59 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Section 1: Updates & Channels -->
-    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:key="category_auto_update"
-        android:title="@string/settings_update_category"
-        android:defaultValue="true">
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="auto_update_enabled"
-            android:title="@string/settings_auto_update_title"
-            android:summary="@string/settings_auto_update_summary"
-            android:icon="@drawable/ic_update_24"
-            android:defaultValue="true" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="auto_install_enabled"
-            android:title="@string/settings_auto_install_title"
-            android:summary="@string/settings_auto_install_summary"
-            android:icon="@drawable/ic_install_24"
-            android:defaultValue="false"
-            android:dependency="auto_update_enabled" />
-
-        <rikka.preference.SimpleMenuPreference
-            android:key="update_channel"
-            android:title="@string/settings_update_channel_title"
-            app:useSimpleSummaryProvider="true"
-            android:icon="@drawable/ic_science_24"
-            android:entries="@array/update_channel_entries"
-            android:entryValues="@array/update_channel_values"
-            android:defaultValue="stable"
-            android:dependency="auto_update_enabled" />
-
-    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
-
-    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:key="category_manual_check"
-        android:title="@string/settings_update_manual_category"
-        android:defaultValue="true">
-
-        <Preference
-            android:key="check_for_update"
-            android:title="@string/settings_check_for_update_title"
-            android:summary="@string/settings_check_for_update_summary"
-            android:icon="@drawable/ic_refresh_24" />
-
-        <Preference
-            android:key="last_check_time"
-            android:title="@string/settings_last_check_title"
-            android:summary=""
-            android:icon="@drawable/ic_history_24" />
-
-    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
-
-    <!-- Section 2: Version & Info -->
+    <!-- Version & Info -->
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:title="@string/settings_about"
         android:key="category_about_info"

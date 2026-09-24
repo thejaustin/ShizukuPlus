@@ -66,22 +66,21 @@ class DhizukuProvider : ContentProvider() {
             if (!ShizukuSettings.isDhizukuModeEnabled()) return false
 
             if (code == FIRST_CALL_TRANSACTION + 10) { // TRANSACT_CODE_REMOTE_BINDER
-                try {
-                    data.enforceInterface("com.rosan.dhizuku.server")
-                } catch (_: SecurityException) {
-                    try {
-                        data.setDataPosition(0)
-                        data.enforceInterface("com.rosan.dhizuku.aidl.IDhizuku")
-                    } catch (_: SecurityException) {
-                        data.setDataPosition(0)
-                        try { data.enforceInterface("com.rosan.dhizuku.IDhizuku") } catch (_: SecurityException) {}
-                    }
-                }
-                // Unlike the interface-token check above, this doesn't verify caller identity - without
-                // isCallerAuthorized() any installed app could relay an arbitrary transact() call through
-                // this process's identity onto a binder of its own choosing (confused-deputy).
+                // Security gate first — only authorized callers may relay transactions.
                 if (!isCallerAuthorized()) return false
-                val targetBinder = data.readStrongBinder()
+
+                // Dhizuku clients may write any of several interface descriptor variants
+                // ("com.rosan.dhizuku.server", "com.rosan.dhizuku.aidl.IDhizuku", etc.).
+                // Samsung Knox on Android 16 intercepts enforceInterface() and may throw
+                // *before* consuming the descriptor string, leaving the parcel position at 0
+                // instead of advancing past the descriptor. If we then called readStrongBinder()
+                // we'd be reading the descriptor bytes as a binder — corrupt relay.
+                // Skipping with readString() is safe here: the authorization check above already
+                // guards the relay; the descriptor is Dhizuku-internal bookkeeping, not a
+                // security boundary.
+                data.setDataPosition(0)
+                data.readString() // consume/skip the interface descriptor token
+                val targetBinder = data.readStrongBinder() ?: return false
                 val targetCode = data.readInt()
                 val targetFlags = data.readInt()
                 return targetBinder.transact(targetCode, data, reply, targetFlags)

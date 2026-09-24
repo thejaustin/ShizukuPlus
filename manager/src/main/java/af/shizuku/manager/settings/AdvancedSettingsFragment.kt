@@ -85,9 +85,8 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        findPreference<TwoStatePreference>(KEY_LEGACY_PAIRING)?.apply {
-            isVisible = !EnvironmentUtils.isTelevision()
-        }
+        findPreference<CollapsiblePreferenceCategory>("category_adb_tools")
+            ?.setChildAvailable(KEY_LEGACY_PAIRING, !EnvironmentUtils.isTelevision())
 
         findPreference<Preference>(KEY_HELP)?.setOnPreferenceClickListener {
             CustomTabsHelper.launchUrlOrCopy(context, context.getString(R.string.help_url))

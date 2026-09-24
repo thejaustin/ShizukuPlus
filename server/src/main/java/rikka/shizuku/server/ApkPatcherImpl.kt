@@ -8,6 +8,8 @@ import android.util.Log
 import af.shizuku.server.IApkPatcher
 import af.shizuku.common.compat.Android17Compat
 import af.shizuku.common.util.UserHandleCompat
+import rikka.shizuku.server.util.InputValidationUtils
+import rikka.shizuku.server.util.ShellExecutor
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
@@ -22,22 +24,6 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
 
     // pkg → list of saved original APK paths (base first, then splits)
     private val sessions = ConcurrentHashMap<String, List<String>>()
-
-    private fun exec(vararg args: String): String = try {
-        val proc = Runtime.getRuntime().exec(args)
-        try {
-            val out = proc.inputStream.bufferedReader().readText().trim()
-            proc.waitFor()
-            out
-        } finally {
-            proc.destroy()
-        }
-    } catch (_: Exception) { "" }
-
-    private fun execCode(vararg args: String): Int = try {
-        val proc = Runtime.getRuntime().exec(args)
-        try { proc.waitFor() } finally { proc.destroy() }
-    } catch (_: Exception) { -1 }
 
     private fun pipe(vararg args: String): ParcelFileDescriptor? = try {
         val (readSide, writeSide) = ParcelFileDescriptor.createPipe()
@@ -90,16 +76,24 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
             val pm = packageManagerService() ?: error("no package service")
             val latch = CountDownLatch(1)
             var result = -1
-            val stubClass = Class.forName("android.content.pm.IPackageDeleteObserver\$Stub")
-            val observer = java.lang.reflect.Proxy.newProxyInstance(
-                stubClass.classLoader,
-                arrayOf(Class.forName("android.content.pm.IPackageDeleteObserver"), IBinder::class.java)
-            ) { _, method, args ->
-                if (method.name == "packageDeleted") {
-                    result = (args?.getOrNull(1) as? Int) ?: -1
-                    latch.countDown()
+            // Parcel.writeStrongBinder() requires a real android.os.Binder — Proxy.newProxyInstance
+            // implementing IBinder can't be marshaled cross-process and causes the call to throw.
+            // IPackageDeleteObserver: packageDeleted(String packageName, int returnCode) at FIRST_CALL_TRANSACTION.
+            val observer = object : android.os.Binder() {
+                init { attachInterface(null, "android.content.pm.IPackageDeleteObserver") }
+                override fun onTransact(code: Int, data: android.os.Parcel, reply: android.os.Parcel?, flags: Int): Boolean {
+                    return when (code) {
+                        IBinder.FIRST_CALL_TRANSACTION -> {
+                            data.enforceInterface("android.content.pm.IPackageDeleteObserver")
+                            data.readString() // packageName (unused)
+                            result = data.readInt()
+                            latch.countDown()
+                            reply?.writeNoException()
+                            true
+                        }
+                        else -> super.onTransact(code, data, reply, flags)
+                    }
                 }
-                null
             }
             val invoked = pm.javaClass.methods
                 .filter { it.name == "deletePackageAsUser" }
@@ -121,7 +115,7 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
         } catch (e: Exception) {
             Log.w(TAG, "uninstallKeepData IPC failed for $packageName, falling back to exec", e)
         }
-        return execCode("pm", "uninstall", "--user", "0", "-k", packageName) == 0
+        return ShellExecutor.execCode("pm", "uninstall", "--user", "0", "-k", packageName) == 0
     }
 
     private fun findAllApks(packageName: String): List<String> {
@@ -138,7 +132,7 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
             Log.w(TAG, "findAllApks IPC failed for $packageName, falling back", e)
         }
         // Fallback: pm path exec
-        val out = exec("pm", "path", packageName)
+        val out = ShellExecutor.exec("pm", "path", packageName)
         return out.lines()
             .filter { it.startsWith("package:") }
             .map { it.removePrefix("package:").trim() }
@@ -162,7 +156,7 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
             add("pm"); add("install-create")
             if (grantPerms) add("-g")
         }
-        val sessionOut = exec(*sessionArgs.toTypedArray())
+        val sessionOut = ShellExecutor.exec(*sessionArgs.toTypedArray())
         val sessionId = Regex("\\[(\\d+)]").find(sessionOut)?.groupValues?.get(1)?.toIntOrNull()
             ?: return false
 
@@ -173,12 +167,12 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
                 fileName.contains("_dbg_")  -> fileName.substringAfter("_dbg_")
                 else                        -> fileName
             }
-            if (execCode("pm", "install-write", sessionId.toString(), splitName, path) != 0) {
-                execCode("pm", "install-abandon", sessionId.toString())
+            if (ShellExecutor.execCode("pm", "install-write", sessionId.toString(), splitName, path) != 0) {
+                ShellExecutor.execCode("pm", "install-abandon", sessionId.toString())
                 return false
             }
         }
-        return execCode("pm", "install-commit", sessionId.toString()) == 0
+        return ShellExecutor.execCode("pm", "install-commit", sessionId.toString()) == 0
     }
 
     // IPC-based install via IPackageInstaller. Uses a raw Binder to implement
@@ -327,6 +321,7 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
 
     override fun prepareTempDebug(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
+        if (!InputValidationUtils.isValidPackageName(packageName)) return false
         if (sessions.containsKey(packageName)) return true
 
         val apkPaths = findAllApks(packageName)
@@ -343,7 +338,7 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
                 File(path).copyTo(File(dest), overwrite = true)
             } catch (e: Exception) {
                 Log.w(TAG, "copyTo failed for $path, falling back to exec cp", e)
-                if (execCode("cp", path, dest) != 0) {
+                if (ShellExecutor.execCode("cp", path, dest) != 0) {
                     origPaths.forEach { File(it).delete() }
                     return false
                 }
@@ -395,12 +390,14 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
 
     override fun streamDataDir(packageName: String?): ParcelFileDescriptor? {
         if (packageName.isNullOrBlank()) return null
+        if (!InputValidationUtils.isValidPackageName(packageName)) return null
         if (!sessions.containsKey(packageName)) return null
         return pipe("run-as", packageName, "tar", "-czf", "-", "-C", "/data/data/$packageName", ".")
     }
 
     override fun restoreDataDir(packageName: String?, tarStream: ParcelFileDescriptor?): Boolean {
         if (packageName.isNullOrBlank() || tarStream == null) return false
+        if (!InputValidationUtils.isValidPackageName(packageName)) return false
         if (!sessions.containsKey(packageName)) return false
         return pipeFrom(tarStream, "run-as", packageName, "tar", "-xzf", "-", "-C", "/data/data/$packageName")
     }

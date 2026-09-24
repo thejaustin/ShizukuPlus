@@ -15,7 +15,9 @@ class ThemeDelegateImpl : ThemeDelegate {
             ShizukuSettings.isRoundedEdgesEnabled() +
             ShizukuSettings.isExpressiveShapesEnabled() + ShizukuSettings.getShapeStyle() +
             ShizukuSettings.getIconStyle() + ShizukuSettings.getIconColorMode() +
-            ShizukuSettings.isOneUiThemeEnabled() + ShizukuSettings.isOneHandedModeEnabled()
+            ShizukuSettings.isOneUiThemeEnabled() + ShizukuSettings.isOneHandedModeEnabled() +
+            ShizukuSettings.isBoldTypographyEnabled() + ShizukuSettings.isExpandedHeadersEnabled() +
+            ShizukuSettings.getCornerRoundingOverride()
     }
 
     override fun isUsingSystemColor(): Boolean {
@@ -67,11 +69,29 @@ class ThemeDelegateImpl : ThemeDelegate {
             }
         }
 
+        // Bold typography overlay applied before One UI so One UI's values win when both are on.
+        if (ShizukuSettings.isBoldTypographyEnabled()) {
+            theme.applyStyle(R.style.ThemeOverlay_Typography_Bold, true)
+        }
+
         // One UI theme overlay is structure-only (shapes/typography, see themes_overlay.xml) -
         // no color attrs, so it composes with whichever color source (dynamic/custom accent/
         // default) was applied above instead of competing with it, and needs no day/night variant.
         if (ShizukuSettings.isOneUiThemeEnabled()) {
             theme.applyStyle(R.style.ThemeOverlay_OneUI, true)
+        }
+
+        // Corner rounding overlay applied last so it wins over both shape_style and One UI corners.
+        // "default" = Modern's 32dp ExtraLarge (already set by shape overlay); "system" = no overlay.
+        val cornerOverlayRes = when (ShizukuSettings.getCornerRoundingOverride()) {
+            "gentle"   -> R.style.ThemeOverlay_CornerRounding_Gentle
+            "standard" -> R.style.ThemeOverlay_CornerRounding_Standard
+            "large"    -> R.style.ThemeOverlay_CornerRounding_Large
+            "maximum"  -> R.style.ThemeOverlay_CornerRounding_Maximum
+            else -> 0
+        }
+        if (cornerOverlayRes != 0) {
+            theme.applyStyle(cornerOverlayRes, true)
         }
 
         theme.applyStyle(ThemeHelper.getThemeStyleRes(context), true)

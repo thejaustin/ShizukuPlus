@@ -64,29 +64,28 @@ fun DeviceControlScreen(onBackClick: () -> Unit) {
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
             try {
-                val dc = ShizukuPlusAPI.DeviceControl
-                val airplaneV = dc.getSetting("global", "airplane_mode_on") == "1"
+                val airplaneV = ShizukuPlusAPI.DeviceControl.getSetting("global", "airplane_mode_on") == "1"
                 // wifi_on: 0=off, 1=on (Settings.Global)
-                val wifiV = dc.getSetting("global", "wifi_on") == "1"
+                val wifiV = ShizukuPlusAPI.DeviceControl.getSetting("global", "wifi_on") == "1"
                 // bluetooth_on: 0=off, 1=on
-                val bluetoothV = dc.getSetting("global", "bluetooth_on") == "1"
+                val bluetoothV = ShizukuPlusAPI.DeviceControl.getSetting("global", "bluetooth_on") == "1"
                 // mobile_data: 0=off, 1=on
-                val mobileDataV = dc.getSetting("global", "mobile_data") == "1"
+                val mobileDataV = ShizukuPlusAPI.DeviceControl.getSetting("global", "mobile_data") == "1"
                 // nfc_on is in secure namespace on most Android versions
-                val nfcV = dc.getSetting("secure", "nfc_on") == "1"
-                val dnsModeV = dc.getSetting("global", "private_dns_mode") ?: "opportunistic"
-                val dnsHostnameV = dc.getSetting("global", "private_dns_specifier") ?: ""
+                val nfcV = ShizukuPlusAPI.DeviceControl.getSetting("secure", "nfc_on") == "1"
+                val dnsModeV = ShizukuPlusAPI.DeviceControl.getSetting("global", "private_dns_mode") ?: "opportunistic"
+                val dnsHostnameV = ShizukuPlusAPI.DeviceControl.getSetting("global", "private_dns_specifier") ?: ""
 
-                val autoBrightnessV = dc.getSetting("system", "screen_brightness_mode") == "1"
-                val brightnessV = dc.getSetting("system", "screen_brightness")?.toIntOrNull() ?: 128
-                val screenTimeoutMsV = dc.getSetting("system", "screen_off_timeout")?.toIntOrNull() ?: 60000
-                val autoRotateV = dc.getSetting("system", "accelerometer_rotation") == "1"
-                val animationsV = dc.getSetting("global", "window_animation_scale") != "0.0"
-                val fontScaleV = dc.getSetting("system", "font_scale")?.toFloatOrNull() ?: 1.0f
+                val autoBrightnessV = ShizukuPlusAPI.DeviceControl.getSetting("system", "screen_brightness_mode") == "1"
+                val brightnessV = ShizukuPlusAPI.DeviceControl.getSetting("system", "screen_brightness")?.toIntOrNull() ?: 128
+                val screenTimeoutMsV = ShizukuPlusAPI.DeviceControl.getSetting("system", "screen_off_timeout")?.toIntOrNull() ?: 60000
+                val autoRotateV = ShizukuPlusAPI.DeviceControl.getSetting("system", "accelerometer_rotation") == "1"
+                val animationsV = ShizukuPlusAPI.DeviceControl.getSetting("global", "window_animation_scale") != "0.0"
+                val fontScaleV = ShizukuPlusAPI.DeviceControl.getSetting("system", "font_scale")?.toFloatOrNull() ?: 1.0f
 
-                val volumeMediaV = dc.getStreamVolume(STREAM_MUSIC).coerceIn(0, VOLUME_MAX)
-                val volumeRingV = dc.getStreamVolume(STREAM_RING).coerceIn(0, VOLUME_MAX)
-                val volumeAlarmV = dc.getStreamVolume(STREAM_ALARM).coerceIn(0, VOLUME_MAX)
+                val volumeMediaV = ShizukuPlusAPI.DeviceControl.getStreamVolume(STREAM_MUSIC).coerceIn(0, VOLUME_MAX)
+                val volumeRingV = ShizukuPlusAPI.DeviceControl.getStreamVolume(STREAM_RING).coerceIn(0, VOLUME_MAX)
+                val volumeAlarmV = ShizukuPlusAPI.DeviceControl.getStreamVolume(STREAM_ALARM).coerceIn(0, VOLUME_MAX)
 
                 withContext(Dispatchers.Main) {
                     airplane = airplaneV

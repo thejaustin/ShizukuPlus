@@ -15,23 +15,13 @@ import android.view.MotionEvent
 import af.shizuku.server.IPrivilegedDataSource
 import af.shizuku.common.compat.Android17Compat
 import af.shizuku.common.util.UserHandleCompat
+import rikka.shizuku.server.util.ShellExecutor
 
 /**
  * Implements IPrivilegedDataSource entirely through shell commands executed under uid 2000.
  * No Android Context is required — uid 2000 can reach all data through ADB-accessible APIs.
  */
 class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
-
-    private fun exec(vararg args: String): String = try {
-        val proc = Runtime.getRuntime().exec(args)
-        try {
-            val out = proc.inputStream.bufferedReader().readText().trim()
-            proc.waitFor()
-            out
-        } finally {
-            proc.destroy()
-        }
-    } catch (_: Exception) { "" }
 
     private fun pipeProcess(vararg args: String): ParcelFileDescriptor? = try {
         val (readSide, writeSide) = ParcelFileDescriptor.createPipe()
@@ -113,19 +103,15 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
         } catch (e: Exception) {
             Log.w("PrivilegedDataSource", "injectTap IPC failed, falling back to exec", e)
         }
-        return try {
-            Runtime.getRuntime().exec(arrayOf("input", "tap", x.toString(), y.toString())).waitFor() == 0
-        } catch (_: Exception) { false }
+        return ShellExecutor.execBool("input", "tap", x.toString(), y.toString())
     }
 
     override fun injectText(text: String?): Boolean {
         if (text.isNullOrEmpty()) return false
         // Text→key-event mapping is complex; keep exec path (spaces encoded as %s per input convention).
         // Falls back gracefully on Samsung SELinux where exec is blocked.
-        return try {
-            val escaped = text.replace(" ", "%s")
-            Runtime.getRuntime().exec(arrayOf("input", "text", escaped)).waitFor() == 0
-        } catch (_: Exception) { false }
+        val escaped = text.replace(" ", "%s")
+        return ShellExecutor.execBool("input", "text", escaped)
     }
 
     override fun injectSwipe(startX: Int, startY: Int, endX: Int, endY: Int, durationMs: Int): Boolean {
@@ -159,14 +145,12 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
         } catch (e: Exception) {
             Log.w("PrivilegedDataSource", "injectSwipe IPC failed, falling back to exec", e)
         }
-        return try {
-            Runtime.getRuntime().exec(arrayOf(
-                "input", "swipe",
-                startX.toString(), startY.toString(),
-                endX.toString(), endY.toString(),
-                durationMs.coerceAtLeast(1).toString()
-            )).waitFor() == 0
-        } catch (_: Exception) { false }
+        return ShellExecutor.execBool(
+            "input", "swipe",
+            startX.toString(), startY.toString(),
+            endX.toString(), endY.toString(),
+            durationMs.coerceAtLeast(1).toString()
+        )
     }
 
     override fun injectKeyEvent(keyCode: Int): Boolean {
@@ -180,9 +164,7 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
         } catch (e: Exception) {
             Log.w("PrivilegedDataSource", "injectKeyEvent IPC failed, falling back to exec", e)
         }
-        return try {
-            Runtime.getRuntime().exec(arrayOf("input", "keyevent", keyCode.toString())).waitFor() == 0
-        } catch (_: Exception) { false }
+        return ShellExecutor.execBool("input", "keyevent", keyCode.toString())
     }
 
     // ── SMS (READ_SMS — SYSTEM_FIXED) ─────────────────────────────────────────
@@ -196,7 +178,7 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
             else     -> "content://sms/inbox"
         }
         val limit = maxCount.coerceIn(1, 500)
-        val output = exec(
+        val output = ShellExecutor.exec(
             "content", "query", "--uri", uriPath,
             "--projection", "address:body:date:read:type",
             "--sort", "date DESC",
@@ -247,7 +229,7 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
 
     override fun getContacts(maxCount: Int): List<Bundle> {
         val limit = maxCount.coerceIn(1, 1000)
-        val output = exec(
+        val output = ShellExecutor.exec(
             "content", "query",
             "--uri", "content://com.android.contacts/data/phones",
             "--projection", "display_name:data1:data4",
@@ -267,7 +249,7 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
 
     override fun getCallLog(maxCount: Int): List<Bundle> {
         val limit = maxCount.coerceIn(1, 500)
-        val output = exec(
+        val output = ShellExecutor.exec(
             "content", "query",
             "--uri", "content://call_log/calls",
             "--projection", "number:type:duration:date:cached_name",
@@ -328,7 +310,7 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
         } catch (e: Exception) {
             Log.w("PrivilegedDataSource", "getPhoneInfo IPC failed, falling back to dumpsys", e)
             // Fallback: parse dumpsys telephony.registry (works when exec is available)
-            val dump = exec("dumpsys", "telephony.registry")
+            val dump = ShellExecutor.exec("dumpsys", "telephony.registry")
             for (line in dump.lines()) {
                 val t = line.trim()
                 when {
@@ -348,7 +330,7 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
 
     override fun getCalendarEvents(maxCount: Int): List<Bundle> {
         val limit = maxCount.coerceIn(1, 500)
-        val output = exec(
+        val output = ShellExecutor.exec(
             "content", "query",
             "--uri", "content://com.android.calendar/events",
             "--projection", "title:description:dtstart:dtend:eventLocation",
@@ -408,7 +390,7 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
             Log.w("PrivilegedDataSource", "getAccounts IPC failed, falling back to exec", e)
         }
         val result = mutableListOf<Bundle>()
-        val dump = exec("dumpsys", "account")
+        val dump = ShellExecutor.exec("dumpsys", "account")
         val accountRegex = Regex("""Account \{name=([^,]+), type=([^}]+)\}""")
         for (match in accountRegex.findAll(dump)) {
             val b = Bundle()
@@ -463,7 +445,7 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
             Log.w("PrivilegedDataSource", "getLastKnownLocation IPC failed, falling back to exec", e)
         }
         // Fallback: dumpsys location parse
-        val dump = exec("dumpsys", "location")
+        val dump = ShellExecutor.exec("dumpsys", "location")
         val locRegex = Regex("""(\w+): Location\[\w+ ([-\d.]+),([-\d.]+) hAcc=([\d.]+)""")
         val match = locRegex.find(dump) ?: return b
         b.putString("provider", match.groupValues[1])
@@ -511,7 +493,7 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
         }
         return try {
             val modeArg = when (mode.lowercase()) { "allow" -> "allow"; "ignore", "deny" -> "ignore"; else -> "default" }
-            Runtime.getRuntime().exec(arrayOf("appops", "set", packageName, op, modeArg)).waitFor() == 0
+            ShellExecutor.execBool("appops", "set", packageName, op, modeArg)
         } catch (_: Exception) { false }
     }
 
@@ -543,7 +525,7 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
         } catch (e: Exception) {
             Log.w("PrivilegedDataSource", "getAppOpsMode IPC failed for $packageName/$op, falling back", e)
         }
-        val output = exec("appops", "get", packageName, op)
+        val output = ShellExecutor.exec("appops", "get", packageName, op)
         val raw = output.substringAfterLast(":").trim().lowercase()
         return when {
             raw.contains("allow")   -> "allow"
@@ -577,16 +559,14 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
             Log.w("PrivilegedDataSource", "dismissKeyguard IPC failed, falling back to exec", e)
         }
         // Fallback: wm dismiss-keyguard exec
-        return try {
-            Runtime.getRuntime().exec(arrayOf("wm", "dismiss-keyguard")).waitFor() == 0
-        } catch (_: Exception) { false }
+        return ShellExecutor.execBool("wm", "dismiss-keyguard")
     }
 
     // ── WiFi (READ_WIFI_CREDENTIAL — install permission) ─────────────────────
 
     override fun getSavedWifiNetworks(): List<Bundle> {
         val result = mutableListOf<Bundle>()
-        val dump = exec("dumpsys", "wifi")
+        val dump = ShellExecutor.exec("dumpsys", "wifi")
         // Look for the configured networks section. Format varies by Android version:
         //   WifiConfiguration: SSID: "MyNetwork", ...
         //   preSharedKey: <key>
@@ -648,11 +628,10 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
         } catch (e: Exception) {
             Log.w("PrivilegedDataSource", "getClipboard IPC failed, falling back to exec", e)
         }
-        return exec("cmd", "clipboard", "get-text")
+        return ShellExecutor.exec("cmd", "clipboard", "get-text")
     }
 
-    override fun setClipboard(text: String?): Boolean {
-        if (text == null) return false
+    override fun setClipboard(text: String): Boolean {
         val userId = UserHandleCompat.getUserId(Binder.getCallingUid())
         // Primary: IClipboard.setPrimaryClip — works at shell UID on all Android versions.
         // ClipData is a public API so we can instantiate it directly.
@@ -681,15 +660,12 @@ class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
         }
         // Fallback: cmd clipboard set-text (Android 13+, API 33)
         if (Build.VERSION.SDK_INT >= 33) {
-            return try {
-                val proc = Runtime.getRuntime().exec(arrayOf("cmd", "clipboard", "set-text", text))
-                proc.waitFor() == 0
-            } catch (_: Exception) { false }
+            return ShellExecutor.execBool("cmd", "clipboard", "set-text", text)
         }
         return false
     }
 
     // ── Notifications (DUMP — install permission) ─────────────────────────────
 
-    override fun getNotifications(): String = exec("dumpsys", "notification", "--noredact")
+    override fun getNotifications(): String = ShellExecutor.exec("dumpsys", "notification", "--noredact")
 }

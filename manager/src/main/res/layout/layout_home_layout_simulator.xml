@@ -60,12 +60,14 @@
                 android:background="@drawable/shape_node_inactive"
                 android:gravity="center_vertical"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:contentDescription="@string/accessibility_sim_toggle_adb">
                 <ImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_adb_24"
-                    android:tint="?colorOnSurfaceVariant" />
+                    android:tint="?colorOnSurfaceVariant"
+                    android:importantForAccessibility="no" />
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -79,7 +81,8 @@
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:src="@drawable/ic_visibility_24"
-                    android:tint="?colorOnSurfaceVariant" />
+                    android:tint="?colorOnSurfaceVariant"
+                    android:importantForAccessibility="no" />
             </LinearLayout>
 
             <!-- Block 2: Terminal -->
@@ -93,12 +96,14 @@
                 android:background="@drawable/shape_node_inactive"
                 android:gravity="center_vertical"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:contentDescription="@string/accessibility_sim_toggle_terminal">
                 <ImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_terminal_24"
-                    android:tint="?colorOnSurfaceVariant" />
+                    android:tint="?colorOnSurfaceVariant"
+                    android:importantForAccessibility="no" />
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -112,7 +117,8 @@
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:src="@drawable/ic_visibility_24"
-                    android:tint="?colorOnSurfaceVariant" />
+                    android:tint="?colorOnSurfaceVariant"
+                    android:importantForAccessibility="no" />
             </LinearLayout>
 
             <!-- Block 3: Automation -->
@@ -126,12 +132,14 @@
                 android:background="@drawable/shape_node_inactive"
                 android:gravity="center_vertical"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:contentDescription="@string/accessibility_sim_toggle_automation">
                 <ImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_integration_instructions_24"
-                    android:tint="?colorOnSurfaceVariant" />
+                    android:tint="?colorOnSurfaceVariant"
+                    android:importantForAccessibility="no" />
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -145,7 +153,8 @@
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:src="@drawable/ic_visibility_24"
-                    android:tint="?colorOnSurfaceVariant" />
+                    android:tint="?colorOnSurfaceVariant"
+                    android:importantForAccessibility="no" />
             </LinearLayout>
 
             <!-- Block 4: Activity Log -->
@@ -159,12 +168,14 @@
                 android:background="@drawable/shape_node_inactive"
                 android:gravity="center_vertical"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:contentDescription="@string/accessibility_sim_toggle_activity_log">
                 <ImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_article_24"
-                    android:tint="?colorOnSurfaceVariant" />
+                    android:tint="?colorOnSurfaceVariant"
+                    android:importantForAccessibility="no" />
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -178,7 +189,8 @@
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:src="@drawable/ic_visibility_24"
-                    android:tint="?colorOnSurfaceVariant" />
+                    android:tint="?colorOnSurfaceVariant"
+                    android:importantForAccessibility="no" />
             </LinearLayout>
 
             <!-- Block 5: Learn More -->
@@ -191,12 +203,14 @@
                 android:background="@drawable/shape_node_inactive"
                 android:gravity="center_vertical"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:contentDescription="@string/accessibility_sim_toggle_learn_more">
                 <ImageView
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_outline_info_24"
-                    android:tint="?colorOnSurfaceVariant" />
+                    android:tint="?colorOnSurfaceVariant"
+                    android:importantForAccessibility="no" />
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -210,7 +224,8 @@
                     android:layout_width="14dp"
                     android:layout_height="14dp"
                     android:src="@drawable/ic_visibility_24"
-                    android:tint="?colorOnSurfaceVariant" />
+                    android:tint="?colorOnSurfaceVariant"
+                    android:importantForAccessibility="no" />
             </LinearLayout>
 
         </LinearLayout>

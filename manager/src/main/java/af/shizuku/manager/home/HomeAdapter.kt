@@ -246,6 +246,23 @@ class HomeAdapter(
 
         super.onBindViewHolder(holder, position)
 
+        // Apply per-card corner style override
+        val homeCornerStyle = ShizukuSettings.getPreferences().getString("home_card_corner_style", "global") ?: "global"
+        if (homeCornerStyle != "global") {
+            val card = holder.itemView as? com.google.android.material.card.MaterialCardView
+            if (card != null) {
+                val density = card.context.resources.displayMetrics.density
+                card.radius = when (homeCornerStyle) {
+                    "sharp" -> 0f
+                    "rounded" -> 12f * density
+                    "large" -> 24f * density
+                    "squircle" -> 28f * density
+                    "xlarge" -> 36f * density
+                    else -> card.radius
+                }
+            }
+        }
+
         // M3E entrance animation — only on first appearance per card id, not every recycle.
         if (!animatedIds.add(id)) {
             holder.itemView.alpha = 1f

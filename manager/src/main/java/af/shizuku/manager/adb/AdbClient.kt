@@ -87,7 +87,7 @@ class AdbClient(
 
                 message = read()
             } else if (message.command == A_AUTH) {
-                if (message.command != A_AUTH && message.arg0 != ADB_AUTH_TOKEN) error("not A_AUTH ADB_AUTH_TOKEN")
+                if (message.arg0 != ADB_AUTH_TOKEN) error("not A_AUTH ADB_AUTH_TOKEN")
                 write(A_AUTH, ADB_AUTH_SIGNATURE, 0, key.sign(message.data))
 
                 message = read()

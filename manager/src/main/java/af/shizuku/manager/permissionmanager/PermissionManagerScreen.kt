@@ -94,7 +94,7 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
         withContext(Dispatchers.IO) {
             val packages = pm.getInstalledPackages(0)
             val list = packages.mapNotNull { pi ->
-                val label = try { pm.getApplicationLabel(pi.applicationInfo).toString() } catch (_: Exception) { pi.packageName }
+                val label = try { pm.getApplicationLabel(pi.applicationInfo ?: return@mapNotNull null).toString() } catch (_: Exception) { pi.packageName }
                 AppItem(pi.packageName, label)
             }.sortedBy { it.label.lowercase() }
             allApps = list
@@ -146,11 +146,12 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
                 isLoading = isLoadingPerms,
                 paddingValues = paddingValues,
                 onToggle = { perm, grant ->
+                    val app = selectedApp ?: return@onToggle
                     scope.launch(Dispatchers.IO) {
                         val ok = if (grant) {
-                            ShizukuPlusAPI.PackageGovernor.grantPermission(selectedApp!!.packageName, perm.name)
+                            ShizukuPlusAPI.PackageGovernor.grantPermission(app.packageName, perm.name)
                         } else {
-                            ShizukuPlusAPI.PackageGovernor.revokePermission(selectedApp!!.packageName, perm.name)
+                            ShizukuPlusAPI.PackageGovernor.revokePermission(app.packageName, perm.name)
                         }
                         if (ok) {
                             withContext(Dispatchers.Main) {

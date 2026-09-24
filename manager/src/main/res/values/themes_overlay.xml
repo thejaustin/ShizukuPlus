@@ -3,6 +3,10 @@
     <style name="ThemeOverlay"/>
     <style name="ThemeOverlay.Accent" parent=""/>
 
+    <!-- AMOLED / Black Night overlay — every surface and container level forced to pure black
+         so OLED panels light zero pixels for any app background. (#496: near-black values like
+         #0D0D0D are still visibly grey on high-contrast OLEDs and break the "pure AMOLED" look.
+         Elevation is communicated via icon/text contrast rather than tonal lift in this mode.) -->
     <style name="ThemeOverlay.Black">
         <item name="android:colorPrimary">@android:color/black</item>
         <item name="android:colorPrimaryDark">@android:color/black</item>
@@ -11,23 +15,9 @@
         <item name="colorSurfaceDim">@android:color/black</item>
         <item name="colorSurfaceContainerLowest">@android:color/black</item>
         <item name="colorSurfaceContainerLow">@android:color/black</item>
-        <!-- Mid-tone container: explicit near-black rather than relying on ?attr forwarding.
-             ?colorSurfaceContainer was resolving to the base M3 dark palette value (~#1D1D22)
-             because colorSurfaceContainer itself wasn't declared in this overlay. Now all six
-             container/surface tones are pinned, so the SearchBar suggestion pane (Highest),
-             settings-search card header (High), and home cards (High) all stay near-black. -->
-        <item name="colorSurfaceContainer">#0A0A0A</item>
-        <!-- Cards/settings groups (home_item_container.xml, M3ECardItemDecoration) and the
-             SearchBar input field use High. One tone step above Container so cards read as
-             slightly elevated without breaking the AMOLED appearance.
-             Value kept in sync with AppTheme.kt colorScheme.copy(surfaceContainerHigh). -->
-        <item name="colorSurfaceContainerHigh">#0D0D0D</item>
-        <!-- SearchBar suggestion pane + edit-mode drag/remove chip uses Highest.
-             Both icons inside the chip (ic_drag_handle, ic_close_24) are tinted independently
-             via colorControlNormal/colorError, so they stay visible even if this background
-             blends into the card behind it.
-             Value kept in sync with AppTheme.kt colorScheme.copy(surfaceContainerHighest). -->
-        <item name="colorSurfaceContainerHighest">#111111</item>
+        <item name="colorSurfaceContainer">@android:color/black</item>
+        <item name="colorSurfaceContainerHigh">@android:color/black</item>
+        <item name="colorSurfaceContainerHighest">@android:color/black</item>
     </style>
 
     <style name="ThemeOverlay.DynamicColors.Light" parent="ThemeOverlay.Material3.DynamicColors.Light.Shizuku"/>
@@ -463,6 +453,57 @@
     <style name="TextAppearance.OneUI.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
         <item name="android:textSize">17sp</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <!--
+        Bold Typography overlay (settings key "bold_typography").
+        Applies heavier font weights for headings/titles independently of the full One UI overlay,
+        so users can have bold typography without the One UI shape + preferenceTheme changes.
+        Applied before ThemeOverlay.OneUI so One UI's values win when both are on.
+    -->
+    <style name="ThemeOverlay.Typography.Bold" parent="">
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.OneUI.HeadlineLarge</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.OneUI.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.OneUI.TitleMedium</item>
+    </style>
+
+    <!--
+        Corner Rounding overrides (settings key "corner_rounding_override").
+        Each overlay only patches shapeAppearanceCornerExtraLarge — cards, bottom sheets, and
+        dialogs use the chosen size while smaller corner tokens stay proportional to the active
+        shape_style. "default" (32dp) = ThemeOverlay.Shape.Modern's ExtraLarge already applied,
+        no extra overlay needed. "system" = no overlay, base M3/M3Expressive tokens used.
+    -->
+    <style name="ShapeAppearance.CornerRounding.Gentle.ExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
+    </style>
+    <style name="ThemeOverlay.CornerRounding.Gentle" parent="">
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.CornerRounding.Gentle.ExtraLarge</item>
+    </style>
+
+    <style name="ShapeAppearance.CornerRounding.Standard.ExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">28dp</item>
+    </style>
+    <style name="ThemeOverlay.CornerRounding.Standard" parent="">
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.CornerRounding.Standard.ExtraLarge</item>
+    </style>
+
+    <style name="ShapeAppearance.CornerRounding.Large.ExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">36dp</item>
+    </style>
+    <style name="ThemeOverlay.CornerRounding.Large" parent="">
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.CornerRounding.Large.ExtraLarge</item>
+    </style>
+
+    <style name="ShapeAppearance.CornerRounding.Maximum.ExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">44dp</item>
+    </style>
+    <style name="ThemeOverlay.CornerRounding.Maximum" parent="">
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.CornerRounding.Maximum.ExtraLarge</item>
     </style>
 
 </resources>

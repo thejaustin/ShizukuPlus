@@ -745,7 +745,7 @@ open class HomeActivity : AppActivity(), MavericksView {
             builder.setPositiveButton(R.string.update_download) { _, _ ->
                 activeUpdateManager?.cancel()
                 activeUpdateManager = UpdateManager(this).also {
-                    it.downloadUpdate(updateInfo.downloadUrl, updateInfo.versionName)
+                    it.downloadUpdate(updateInfo.downloadUrl, updateInfo.versionName, manual = true)
                 }
             }
         }

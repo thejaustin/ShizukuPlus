@@ -22,8 +22,6 @@
     <string name="settings_icon_style_summary">Оберіть візуальний стиль для системних іконок</string>
     <string name="settings_shape_style">Стиль форми контейнера</string>
     <string name="settings_shape_style_summary">Налаштувати округлення кутів карток та діалогів</string>
-    <string name="settings_rounded_edges">Округлі краї</string>
-    <string name="settings_rounded_edges_summary">Використовувати округлі кути для карток та контейнерів діалогів</string>
     <string name="settings_animation_intensity">Інтенсивність анімації</string>
     <string name="settings_animation_intensity_summary">Налаштувати швидкість та «пружність» переходів інтерфейсу</string>
 
@@ -39,6 +37,21 @@
     <string name="settings_oneui_theme_summary">Відповідає мові дизайну Samsung One UI — великі закруглені кути та жирний шрифт. Колір залишається без змін; для цього використовуйте Material You або власний акцент вище.</string>
     <string name="settings_one_handed_mode">Режим керування однією рукою</string>
     <string name="settings_one_handed_mode_summary">Зсунути інтерактивний контент до нижньої частини екрана для зручного доступу великим пальцем</string>
+
+    <!-- UI Settings - Typography & Layout -->
+    <string name="settings_bold_typography">Жирна типографіка</string>
+    <string name="settings_bold_typography_summary">Використовувати більш насичені шрифти для заголовків та назв</string>
+    <string name="settings_expanded_headers">Розширені заголовки розділів</string>
+    <string name="settings_expanded_headers_summary">Використовувати високі заголовки, що згортаються, на екранах налаштувань</string>
+
+    <!-- UI Settings - Corner Rounding -->
+    <string name="settings_corner_rounding_override">Округлення кутів</string>
+
+    <!-- UI Settings - System-following -->
+    <string name="settings_follow_system_animations">Слідувати системним анімаціям</string>
+    <string name="settings_follow_system_animations_summary">Враховувати системне налаштування швидкості анімації з параметрів розробника</string>
+    <string name="settings_follow_system_haptics">Слідувати системним налаштуванням тактильного відгуку</string>
+    <string name="settings_follow_system_haptics_summary">Вимикати тактильний відгук у додатку, якщо в системі вимкнено тактильний відгук</string>
 
     <string-array name="icon_styles">
         <item>Стандартний (Залитий)</item>
@@ -92,15 +105,6 @@
         <item>3</item>
     </string-array>
 
-    <string-array name="status_card_outline_styles">
-        <item>Material (колір теми)</item>
-        <item>Зелений / Червоний (колір статусу)</item>
-    </string-array>
-    <string-array name="status_card_outline_styles_value">
-        <item>material</item>
-        <item>status</item>
-    </string-array>
-
     <string name="home_status_service_running_tile_sublabel">Працює</string>
     <string name="home_status_service_stopped_tile_sublabel">Зупинено</string>
 
@@ -133,12 +137,6 @@
     <string name="dialog_adb_discovery">Пошук сервісу бездротового налагодження</string>
     <string name="dialog_adb_discovery_message">Будь ласка, увімкніть \"Бездротове налагодження\" в \"Параметрах розробника\". \"Бездротове налагодження\" автоматично вимикається при зміні мереж.\n\nЗверніть увагу, не вимикайте \"Параметри розробника\" чи \"Налагодження USB\", інакше Shizuku буде зупинено.</string>
     <string name="dialog_adb_discovery_message_toggle_wireless_debugging">Будь ласка, спробуйте вимкнути та увімкнути \"Бездротове налагодження\", якщо пошук продовжується.</string>
-    <string name="dialog_adb_wifi_disconnected_warning"><![CDATA[<b>Wi-Fi відключено.</b><br>Android не може знайти бездротове налагодження через мобільні дані (5G/LTE).]]></string>
-    <string name="dialog_adb_hotspot_tip"><![CDATA[💡 <b>Порада:</b> Увімкніть <b>Мобільну точку доступу</b> на телефоні, щоб увімкнути бездротове налагодження без мережі Wi-Fi, або підключіться через локальний порт 5555.]]></string>
-    <string name="dialog_adb_samsung_hotspot_warning"><![CDATA[💡 <b>Примітка для Samsung:</b> One UI вимикає бездротове налагодження, коли активна Мобільна точка доступу. Підключіться до точки доступу Wi-Fi іншого пристрою (можна без інтернету) або виконайте <code>adb tcpip 5555</code> через USB один раз.]]></string>
-    <string name="dialog_adb_open_hotspot">Налаштування мобільної точки доступу</string>
-    <string name="dialog_adb_probing_loopback">Перевірка локального порту (127.0.0.1:5555)...</string>
-    <string name="dialog_adb_loopback_found">Знайдено активну службу ADB на порту %1$d! Підключення...</string>
     <string name="dialog_adb_port">Порт</string>
     <string name="dialog_adb_invalid_port">Порт – це ціле число від 1 до 65535.</string>
     <string name="adb_pairing">Створення пари</string>
@@ -153,25 +151,12 @@
     <string name="dialog_adb_pairing_accessibility_permission">На Android 14 встановлення/оновлення Shizuku за допомогою інсталятора пакетів скасовує дозвіл %1$s, який потрібен для ввімкнення служби доступності для створення пари.\n\nЩоб надати його, виконайте таку команду ADB:\n\n%2$s\n\nПісля виконання команди ви можете продовжити процес створення пари.\n\nПримітка: ви можете обійти це, встановивши/оновивши Shizuku за допомогою ADB.</string>
 
     <!-- Service Doctor -->
-    <string name="snackbar_samsung_auto_blocker">Samsung Auto Blocker може блокувати ADB на One UI 7/8. Перевірте налаштування безпеки.</string>
-    <string name="snackbar_action_check">Перевірити</string>
-    <string name="doctor_check_accessibility">Служба доступності для створення пари ADB</string>
     <string name="doctor_check_samsung_autoblocker">Samsung Auto Blocker</string>
     <string name="doctor_check_samsung_battery_protection">Захист батареї Samsung</string>
-    <string name="doctor_check_samsung_max_restrictions">Максимальні обмеження (One UI 8+)</string>
     <string name="doctor_check_secondary_user">Другий користувач / Захищена папка</string>
     <string name="doctor_check_phantom_process">Вбивця фантомних процесів</string>
-    <string name="doctor_check_su_bridge_a16">SU-міст (ADB Android 16+)</string>
     <string name="doctor_status_manual_check">Потребує ручної перевірки</string>
     <string name="doctor_status_detected">Виявлено</string>
-    <string name="doctor_status_fix_available">Доступне виправлення</string>
-    <string name="doctor_status_autoblocker_on">Увімкнено (Вимкніть)</string>
-    <string name="doctor_status_samsung_max_restrictions_on">Увімкнено (Має бути вимкнено)</string>
-    <string name="doctor_status_samsung_sleeping_apps">Потрібна перевірка (Перевірте сплячі додатки)</string>
-    <string name="doctor_status_su_bridge_path_set">Експортований шлях встановлено</string>
-    <string name="doctor_status_su_bridge_no_path">Експортований шлях не налаштовано</string>
-    <string name="doctor_tip_oneui8_max_restrictions">One UI 8+: «Максимальні обмеження» в Auto Blocker вимикають ADB. Вимкніть їх, щоб використовувати Shizuku.</string>
-    <string name="doctor_tip_su_bridge_a16">Android 16+ обмежує запис у /data/local/tmp з оболонки ADB. Відкрийте Хаб сумісності Root і натисніть \"Експортувати\", щоб встановити шлях SU-моста, який працюватиме на вашому пристрої.</string>
     <string name="doctor_tip_samsung_autoblocker"><b>Samsung Auto Blocker</b>: Переконайтеся, що його <b>ВИМКНЕНО</b> або що \'Максимальні обмеження\' вимкнено. Він непомітно блокує команди ADB на One UI 7/8+.</string>
     <string name="doctor_tip_oneui_connectivity"><b>Підключення One UI 7/8</b>: Якщо бездротове створення пари не працює, спробуйте використати <b>режим розділеного екрана</b> з одночасно відкритими Shizuku та Параметрами розробника.</string>
     <string name="doctor_tip_s22_ultra"><b>Порада для S22 Ultra</b>: Для стабільного ADB наберіть `*#0808#` і виберіть `MTP + ADB`, якщо виникають розриви з\'єднання.</string>
@@ -372,10 +357,6 @@
     <string name="settings_use_system_color">Використовувати системний колір теми</string>
     <string name="settings_watchdog">Сторожовий пес (Watchdog)</string>
     <string name="settings_watchdog_summary">Автоматично перезапускати Shizuku після збою або непередбаченої зупинки. Не може перепідключитися при відключенні базової мережі (наприклад, кабель USB від\'єднано під час використання RNDIS/USB ADB).</string>
-    <string name="settings_device_hardening">Захист пристрою та підтримка активності</string>
-    <string name="settings_device_hardening_summary">Звільнити Shizuku та термінальні клієнти від Doze, автонадання WRITE_SECURE_SETTINGS та синхронізація бінарників запуску</string>
-    <string name="doctor_check_device_hardening">Захист пристрою та виключення з Doze</string>
-    <string name="device_hardening_applied">Оптимізації захисту пристрою та Doze застосовано</string>
     <string name="settings_tcp_mode">Режим TCP</string>
     <string name="settings_tcp_mode_summary">Дозволяє Shizuku перезапускатися без Wi-Fi. (Shizuku має бути успішно запущено хоча б раз після перезавантаження)</string>
     <string name="settings_tcp_mode_dialog_close_port">TCP порт буде закрито негайно. Вам знадобиться Wi-Fi, щоб знову увімкнути режим TCP. Продовжити?</string>
@@ -838,10 +819,10 @@
     <string name="settings_main_nav_app_interactions_title">Взаємодія з додатками</string>
     <string name="settings_main_nav_app_interactions_summary">Жести, дії при довгому натисканні та перевірка встановлення</string>
     <string name="settings_main_nav_startup_behavior_title">Запуск та поведінка</string>
-    <string name="settings_main_nav_startup_behavior_summary">Опції завантаження, сторожовий пес, мережа та статус активності</string>
+    <string name="settings_main_nav_startup_behavior_summary">Запуск, мережа, активність та оновлення</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Розширені та діагностика</string>
     <string name="settings_main_nav_advanced_diagnostics_summary">Журнали, інструменти ADB та усунення несправностей</string>
-    <string name="settings_main_nav_about_summary">Версія, ліцензії та оновлення</string>
+    <string name="settings_main_nav_about_summary">Версія, ліцензії та параметри розробника</string>
     <string name="settings_accent_violet_applied">Північно-фіолетовий застосовано</string>
     <string name="settings_accent_green_applied">Лісовий зелений застосовано</string>
     <string name="settings_accent_crimson_applied">Багряна троянда застосовано</string>
@@ -930,8 +911,34 @@
     <string name="empty_state_title_hidden_apps">Немає прихованих додатків</string>
     <string name="empty_state_description_hidden_apps">Додатки, які ви приховуєте зі списку керування, з\'являться тут.</string>
 
+    <!-- Settings category titles -->
+    <string name="settings_behavior_category_network_activity">Мережа та активність</string>
+    <string name="settings_advanced_category_diagnostics">Діагностика</string>
+    <string name="settings_advanced_category_adb_tools">Інструменти ADB</string>
+    <string name="settings_app_management_category_gestures">Жести та дії</string>
+    <string name="settings_app_management_category_verified_install">Перевірене встановлення</string>
+    <string name="settings_personalization_category_color_theme">Колір та тема</string>
+    <string name="settings_personalization_category_shape_style">Форма та стиль іконок</string>
+    <string name="settings_personalization_category_motion_display">Рух та дисплей</string>
+    <string name="settings_personalization_category_home_screen">Головний екран</string>
+    <string name="settings_personalization_category_language">Мова</string>
+    <string name="settings_plus_category_connectivity">Мережа та підключення</string>
+    <string name="settings_plus_category_system_performance">Система та продуктивність</string>
+    <string name="settings_plus_category_security_access">Безпека та доступ</string>
+    <string name="settings_plus_category_backup_restore">Резервна копія та відновлення</string>
+    <string name="settings_root_category_adb_connection">ADB підключення</string>
+    <string name="settings_root_category_stock_compat">Сумісність зі стоковим Shizuku</string>
+    <string name="settings_root_category_su_bridge">Конфігурація SU Bridge</string>
+    <string name="settings_root_category_rootless_bridges">Беруткові мости</string>
+    <string name="settings_root_category_mocking">Імітація та симуляція</string>
+    <string name="settings_root_category_bootloader">Інтеграція завантажувача</string>
+    <string name="settings_developer_category_debug">Відлагодження та діагностика</string>
+    <string name="settings_plus_category_device_owner_tools">Інструменти власника пристрою</string>
+    <string name="settings_auto_reconnect_mdns">Інтелектуальне автопідключення</string>
+    <string name="settings_auto_reconnect_mdns_summary">Автоматично перезапускати сервер при відкритті додатка якщо порт бездротового ADB вже активний</string>
+
     <!-- Update Settings -->
-    <string name="settings_update_category">Автоматичне оновлення</string>
+    <string name="settings_update_category">Оновлення</string>
     <string name="settings_update_title">Оновлення</string>
     <string name="settings_update_summary">Перевірка наявності оновлень та налаштування автооновлення</string>
     
@@ -950,7 +957,7 @@
     <string name="update_channel_dev">Dev / Попередній випуск</string>
     <string name="update_channel_dev_warning_title">Перейти на канал Dev?</string>
     <string name="update_channel_dev_warning_message">Випуски Dev збираються з найостанніших змін коду і можуть містити баги, збої або критичні зміни. Використовуйте цей канал лише якщо хочете протестувати нові функції завчасно.\n\nВи зможете повернутися на Стабільний канал у будь-який момент.</string>
-    <string name="settings_update_manual_category">Оновлення вручну</string>
+
     <string name="settings_check_for_update_title">Перевірити наявність оновлення</string>
     <string name="settings_check_for_update_summary">Перевірити наявність нової версії власноруч</string>
     <string name="settings_current_version_title">Поточна версія</string>

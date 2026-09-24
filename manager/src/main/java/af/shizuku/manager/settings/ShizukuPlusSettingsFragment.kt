@@ -215,7 +215,7 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
 
         // Clear Device Owner button — only visible when app holds DO status
         val clearDoPref = findPreference<Preference>("clear_device_owner")
-        clearDoPref?.isVisible = isDeviceOwnerActive(requireContext())
+        clearDoPref?.let { setChildAvailable(it, isDeviceOwnerActive(requireContext())) }
         clearDoPref?.setOnPreferenceClickListener {
             val ctx = context ?: return@setOnPreferenceClickListener true
             showClearDeviceOwnerDialog(ctx)
@@ -530,7 +530,7 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
         val baseSummary = getString(R.string.settings_dhizuku_mode_summary)
         pref.summary = "$statusLine\n\n$baseSummary"
         // Show/hide the Clear Owner button based on active status
-        findPreference<Preference>("clear_device_owner")?.isVisible = active
+        findPreference<Preference>("clear_device_owner")?.let { setChildAvailable(it, active) }
     }
 
     private fun showClearDeviceOwnerDialog(ctx: Context) {
@@ -711,13 +711,25 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
         }
     }
 
+    private fun setChildAvailable(pref: Preference, available: Boolean) {
+        val key = pref.key ?: return
+        (pref.parent as? CollapsiblePreferenceCategory)?.setChildAvailable(key, available)
+            ?: run { pref.isVisible = available }
+    }
+
     private fun updatePreferenceDependency(prefKey: String, parentEnabled: Boolean, hideIfDisabled: Boolean = false) {
-        findPreference<Preference>(prefKey)?.apply {
-            isEnabled = parentEnabled
-            if (this is TwoStatePreference && !parentEnabled) {
-                isChecked = false
+        findPreference<Preference>(prefKey)?.let { pref ->
+            pref.isEnabled = parentEnabled
+            if (pref is TwoStatePreference && !parentEnabled) {
+                pref.isChecked = false
             }
-            isVisible = if (hideIfDisabled) parentEnabled else true
+            val shouldBeVisible = if (hideIfDisabled) parentEnabled else true
+            val category = pref.parent as? CollapsiblePreferenceCategory
+            if (category != null) {
+                category.setChildAvailable(prefKey, shouldBeVisible)
+            } else {
+                pref.isVisible = shouldBeVisible
+            }
         }
     }
 

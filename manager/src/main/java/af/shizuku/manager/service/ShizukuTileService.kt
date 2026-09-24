@@ -19,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import androidx.work.WorkManager
 import com.topjohnwu.superuser.Shell
 
@@ -108,26 +109,30 @@ class ShizukuTileService : TileService() {
         } else {
             val hasWriteSecure = checkSelfPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS) == android.content.pm.PackageManager.PERMISSION_GRANTED
             val isWifiOk = !EnvironmentUtils.isWifiRequired() || ShizukuSettings.isForceStartWadbEnabled()
-            val hasLoopback = AdbPortProber.isPortOpen(5555, 50) ||
-                (ShizukuSettings.getLastPort() in 1..65535 && AdbPortProber.isPortOpen(ShizukuSettings.getLastPort(), 50))
+            // Port probes are blocking I/O — move them off the main thread
+            CoroutineScope(Dispatchers.IO).launch {
+                val hasLoopback = AdbPortProber.isPortOpen(5555, 50) ||
+                    (ShizukuSettings.getLastPort() in 1..65535 && AdbPortProber.isPortOpen(ShizukuSettings.getLastPort(), 50))
+                withContext(Dispatchers.Main) {
+                    if (!hasLoopback && !isWifiOk && !hasWriteSecure) {
+                        Toast.makeText(this@ShizukuTileService, R.string.tile_open_app_required, Toast.LENGTH_SHORT).show()
+                        openApp()
+                        return@withContext
+                    }
 
-            if (!hasLoopback && !isWifiOk && !hasWriteSecure) {
-                Toast.makeText(this, R.string.tile_open_app_required, Toast.LENGTH_SHORT).show()
-                openApp()
-                return
-            }
-
-            ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
-            updateTile()
-            AdbStartWorker.enqueue(this)
-
-            // Watchdog fallback: if background worker hasn't started the service within 15s,
-            // reset STARTING state so tile doesn't remain frozen in unavailable state.
-            CoroutineScope(Dispatchers.Main).launch {
-                delay(15_000)
-                if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
-                    ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
+                    ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
                     updateTile()
+                    AdbStartWorker.enqueue(this@ShizukuTileService)
+
+                    // Watchdog fallback: if background worker hasn't started the service within 15s,
+                    // reset STARTING state so tile doesn't remain frozen in unavailable state.
+                    CoroutineScope(Dispatchers.Main).launch {
+                        delay(15_000)
+                        if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
+                            ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
+                            updateTile()
+                        }
+                    }
                 }
             }
         }

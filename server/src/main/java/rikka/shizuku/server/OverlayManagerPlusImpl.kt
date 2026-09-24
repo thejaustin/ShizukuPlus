@@ -7,6 +7,7 @@ import android.os.ServiceManager
 import android.util.Log
 import af.shizuku.server.IOverlayManagerPlus
 import af.shizuku.common.util.UserHandleCompat
+import rikka.shizuku.server.util.ShellExecutor
 
 /**
  * Overlay Bridge implementation — provides [IOverlayManagerPlus] to Hex Installer
@@ -56,45 +57,21 @@ class OverlayManagerPlusImpl : IOverlayManagerPlus.Stub() {
      * Example: runOverlayCmd("enable", "--user", "0", packageName)
      */
     private fun runOverlayCmd(vararg args: String): Boolean {
-        return try {
-            val cmd = arrayOf("cmd", "overlay", *args)
-            Log.d(TAG, "runOverlayCmd: ${cmd.joinToString(" ")}")
-            val proc = Runtime.getRuntime().exec(cmd)
-            try {
-                val exit = proc.waitFor()
-                if (exit != 0) {
-                    val err = proc.errorStream.bufferedReader().readText().trim()
-                    Log.w(TAG, "runOverlayCmd exit=$exit stderr=$err")
-                }
-                exit == 0
-            } finally {
-                proc.destroy()
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "runOverlayCmd failed: ${args.joinToString(" ")}", e)
-            false
-        }
+        val cmd = arrayOf("cmd", "overlay", *args)
+        Log.d(TAG, "runOverlayCmd: ${cmd.joinToString(" ")}")
+        val ok = ShellExecutor.execBool(*cmd)
+        if (!ok) Log.w(TAG, "runOverlayCmd failed: ${args.joinToString(" ")}")
+        return ok
     }
 
     /**
      * Capture stdout from a `cmd overlay` subcommand, or null on failure.
      */
     private fun runOverlayCmdOutput(vararg args: String): String? {
-        return try {
-            val cmd = arrayOf("cmd", "overlay", *args)
-            Log.d(TAG, "runOverlayCmdOutput: ${cmd.joinToString(" ")}")
-            val proc = Runtime.getRuntime().exec(cmd)
-            try {
-                val out = proc.inputStream.bufferedReader().readText()
-                proc.waitFor()
-                out
-            } finally {
-                proc.destroy()
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "runOverlayCmdOutput failed: ${args.joinToString(" ")}", e)
-            null
-        }
+        val cmd = arrayOf("cmd", "overlay", *args)
+        Log.d(TAG, "runOverlayCmdOutput: ${cmd.joinToString(" ")}")
+        val out = ShellExecutor.exec(*cmd)
+        return out.ifEmpty { null }
     }
 
     // -------------------------------------------------------------------------

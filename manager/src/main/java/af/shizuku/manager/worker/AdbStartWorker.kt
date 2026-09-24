@@ -23,6 +23,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import af.shizuku.manager.MainActivity
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.adb.AdbMdns
@@ -80,6 +81,24 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
 
             val savedPort = ShizukuSettings.getLastPort()
             val isWifiOk = !EnvironmentUtils.isWifiRequired() || ShizukuSettings.isForceStartWadbEnabled()
+
+            // force_start_wadb fast-path: probe the default ADB TCP port when no port is already
+            // known from the system. Handles devices (e.g. Vivo/FunTouchOS) that block mDNS
+            // multicast — if adbd is already listening via persist.adb.tcp.port from a prior
+            // session, we connect directly without going through mDNS discovery.
+            if (ShizukuSettings.isForceStartWadbEnabled() && tcpPort <= 0 && savedPort <= 0) {
+                val probePort = ShizukuSettings.getTcpPort().takeIf { it in 1..65535 } ?: 5555
+                if (AdbPortProber.isPortOpen(probePort, 400)) {
+                    AdbStarter.startAdb(applicationContext, probePort)
+                    Starter.waitForBinder()
+                    ActivityLogManager.log("Shizuku", applicationContext.packageName,
+                        "Service started via force_start_wadb TCP probe on port $probePort")
+                    val nm = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+                    nm.cancel(ShizukuReceiverStarter.NOTIFICATION_ID)
+                    return Result.success()
+                }
+            }
+
             val port = when {
                 tcpPort > 0 && isWifiOk -> tcpPort
                 savedPort > 0 && isWifiOk && runAttemptCount == 0 -> savedPort
@@ -213,8 +232,11 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
             if (ShizukuStateMachine.update() == ShizukuStateMachine.State.RUNNING) {
                 return Result.success()
             } else {
-                // Show a more informative message when mDNS discovery timed out so users
-                // aren't left wondering why the "waiting for WiFi" message appears on WiFi.
+                // After repeated mDNS timeouts, suggest TCP Mode — the device may be
+                // blocking multicast (common on Vivo/FunTouchOS and some corporate Wi-Fi).
+                if (e is TimeoutException && runAttemptCount >= 2) {
+                    showMdnsBlockedSuggestion(applicationContext)
+                }
                 val retryState = if (e is TimeoutException) WorkerState.AWAITING_DISCOVERY else WorkerState.AWAITING_RETRY
                 updateNotification(applicationContext, retryState)
                 return Result.retry()
@@ -232,6 +254,32 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
         this is SecurityException ->
             context.getString(R.string.wadb_error_not_authorized)
         else -> context.getString(R.string.wadb_error_generic_short)
+    }
+
+    private fun showMdnsBlockedSuggestion(context: Context) {
+        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            nm.createNotificationChannel(
+                NotificationChannel(CHANNEL_ID, context.getString(R.string.wadb_notification_title),
+                    NotificationManager.IMPORTANCE_DEFAULT)
+            )
+        }
+        val openAppIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+        val pi = PendingIntent.getActivity(context, 20, openAppIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification_icon)
+            .setContentTitle(context.getString(R.string.wadb_mdns_blocked_title))
+            .setContentText(context.getString(R.string.wadb_mdns_blocked_text))
+            .setStyle(NotificationCompat.BigTextStyle()
+                .bigText(context.getString(R.string.wadb_mdns_blocked_text)))
+            .setContentIntent(pi)
+            .addAction(0, context.getString(R.string.wadb_mdns_switch_tcp_action), pi)
+            .setAutoCancel(true)
+            .build()
+        nm.notify(NOTIFICATION_ID_MDNS_BLOCKED, notification)
     }
 
     private fun showErrorNotification(context: Context, e: Exception) {
@@ -297,5 +345,6 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
         }
         const val CHANNEL_ID = "AdbStartWorker"
         const val NOTIFICATION_ID = 1448
+        private const val NOTIFICATION_ID_MDNS_BLOCKED = 1449
     }
 }

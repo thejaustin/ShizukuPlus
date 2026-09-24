@@ -60,12 +60,6 @@
             android:icon="@drawable/ic_medical_services_24"
             android:fragment="af.shizuku.manager.settings.AdvancedSettingsFragment" />
 
-    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
-
-    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:title="@string/settings_about"
-        app:collapsible="false">
-
         <Preference
             android:key="nav_about"
             android:title="@string/settings_about"

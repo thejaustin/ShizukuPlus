@@ -10,6 +10,8 @@ import af.shizuku.common.compat.Android17Compat
 import af.shizuku.common.util.UserHandleCompat
 import rikka.hidden.compat.ActivityManagerApis
 import rikka.shizuku.server.api.IContentProviderUtils
+import rikka.shizuku.server.util.InputValidationUtils
+import rikka.shizuku.server.util.ShellExecutor
 
 class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
 
@@ -73,17 +75,16 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
             Log.w(TAG, "setAppStandbyBucket IPC failed, falling back to exec", e)
         }
         // Fallback: am set-standby-bucket
-        return try {
-            val bucketStr = when (bucket) {
-                10 -> "active"
-                20 -> "working_set"
-                30 -> "frequent"
-                40 -> "rare"
-                45, 50 -> "restricted"
-                else -> bucket.toString()
-            }
-            Runtime.getRuntime().exec(arrayOf("am", "set-standby-bucket", packageName, bucketStr)).waitFor() == 0
-        } catch (_: Exception) { false }
+        if (!InputValidationUtils.isValidPackageName(packageName)) return false
+        val bucketStr = when (bucket) {
+            10 -> "active"
+            20 -> "working_set"
+            30 -> "frequent"
+            40 -> "rare"
+            45, 50 -> "restricted"
+            else -> bucket.toString()
+        }
+        return ShellExecutor.execBool("am", "set-standby-bucket", packageName, bucketStr)
     }
 
     override fun killAllBackgroundProcesses(): Boolean {
@@ -97,9 +98,7 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
         } catch (e: Exception) {
             Log.w(TAG, "killAllBackgroundProcesses IPC failed, falling back to exec", e)
         }
-        return try {
-            Runtime.getRuntime().exec(arrayOf("am", "kill-all")).waitFor() == 0
-        } catch (_: Exception) { false }
+        return ShellExecutor.execBool("am", "kill-all")
     }
 
     private fun setApplicationEnabledSetting(packageName: String, state: Int): Boolean {
@@ -120,18 +119,16 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
         if (packageName == null) return false
         // COMPONENT_ENABLED_STATE_DISABLED_USER = 3 — user-level disable, reversible
         if (setApplicationEnabledSetting(packageName, 3)) return true
-        return try {
-            Runtime.getRuntime().exec(arrayOf("pm", "disable-user", "--user", "0", packageName)).waitFor() == 0
-        } catch (_: Exception) { false }
+        if (!InputValidationUtils.isValidPackageName(packageName)) return false
+        return ShellExecutor.execBool("pm", "disable-user", "--user", "0", packageName)
     }
 
     override fun unfreezeApp(packageName: String?): Boolean {
         if (packageName == null) return false
         // COMPONENT_ENABLED_STATE_DEFAULT = 0 — restore manifest-declared state
         if (setApplicationEnabledSetting(packageName, 0)) return true
-        return try {
-            Runtime.getRuntime().exec(arrayOf("pm", "enable", "--user", "0", packageName)).waitFor() == 0
-        } catch (_: Exception) { false }
+        if (!InputValidationUtils.isValidPackageName(packageName)) return false
+        return ShellExecutor.execBool("pm", "enable", "--user", "0", packageName)
     }
 
     override fun isAppFrozen(packageName: String?): Boolean {
@@ -144,16 +141,8 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
             Log.w(TAG, "isAppFrozen IPC failed for $packageName, falling back", e)
         }
         // Fallback: pm list packages -d lists only disabled packages
-        return try {
-            val proc = Runtime.getRuntime().exec(arrayOf("pm", "list", "packages", "-d", packageName))
-            try {
-                val text = proc.inputStream.bufferedReader().use { it.readText() }
-                proc.waitFor()
-                text.contains(packageName)
-            } finally {
-                proc.destroy()
-            }
-        } catch (_: Exception) { false }
+        if (!InputValidationUtils.isValidPackageName(packageName)) return false
+        return ShellExecutor.exec("pm", "list", "packages", "-d", packageName).contains(packageName)
     }
 
     override fun setAppProcessLimit(limit: Int) {
@@ -179,10 +168,7 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
                 IContentProviderUtils.callCompat(provider, null, "settings", "PUT_global", "max_phantom_processes", extras)
             }
         } catch (_: Exception) {}
-        try {
-            val proc = Runtime.getRuntime().exec(arrayOf("am", "set-process-limit", limit.toString()))
-            try { proc.waitFor() } finally { proc.destroy() }
-        } catch (_: Exception) {}
+        ShellExecutor.execCode("am", "set-process-limit", limit.toString())
     }
 
     override fun getRunningProcesses(): List<String> {
@@ -207,34 +193,27 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
             Log.w(TAG, "getRunningAppProcesses IPC failed, falling back to exec", e)
         }
         // Fallback: ps -A (may be blocked by SELinux on Samsung OneUI 8)
-        return try {
-            val proc = Runtime.getRuntime().exec(arrayOf("ps", "-A", "-o", "NAME,RSS,PID"))
-            try {
-                val lines = proc.inputStream.bufferedReader().use { it.readLines() }
-                proc.waitFor()
-                lines
-            } finally {
-                proc.destroy()
-            }
-        } catch (_: Exception) {
-            emptyList()
-        }
+        return ShellExecutor.exec("ps", "-A", "-o", "NAME,RSS,PID").lines()
     }
 
-    private fun createPackageDataObserver(latch: java.util.concurrent.CountDownLatch): IBinder? {
-        return try {
-            val stubClass = Class.forName("android.content.pm.IPackageDataObserver\$Stub")
-            java.lang.reflect.Proxy.newProxyInstance(
-                stubClass.classLoader,
-                arrayOf(Class.forName("android.content.pm.IPackageDataObserver"), IBinder::class.java)
-            ) { _, method, _ ->
-                if (method.name == "onRemoveCompleted") {
-                    latch.countDown()
+    private fun createPackageDataObserver(latch: java.util.concurrent.CountDownLatch): IBinder {
+        // Parcel.writeStrongBinder() requires a real android.os.Binder subclass — a
+        // Proxy.newProxyInstance implementing IBinder cannot be marshaled cross-process and
+        // causes the pm IPC call to throw, silently always falling through to the exec fallback.
+        // IPackageDataObserver has one method (onRemoveCompleted) at FIRST_CALL_TRANSACTION.
+        return object : android.os.Binder() {
+            init { attachInterface(null, "android.content.pm.IPackageDataObserver") }
+            override fun onTransact(code: Int, data: android.os.Parcel, reply: android.os.Parcel?, flags: Int): Boolean {
+                return when (code) {
+                    IBinder.FIRST_CALL_TRANSACTION -> { // onRemoveCompleted(String packageName, boolean succeeded)
+                        data.enforceInterface("android.content.pm.IPackageDataObserver")
+                        latch.countDown()
+                        reply?.writeNoException()
+                        true
+                    }
+                    else -> super.onTransact(code, data, reply, flags)
                 }
-                null
-            } as? IBinder
-        } catch (_: Exception) {
-            null
+            }
         }
     }
 
@@ -260,10 +239,8 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
             Log.w(TAG, "clearAppCache IPC failed for $packageName, falling back to exec", e)
         }
         // Fallback: pm clear-cache (Android 13+) — targets the specific package
-        return try {
-            val proc = Runtime.getRuntime().exec(arrayOf("pm", "clear-cache", "--user", "0", packageName))
-            try { proc.waitFor() == 0 } finally { proc.destroy() }
-        } catch (_: Exception) { false }
+        if (!InputValidationUtils.isValidPackageName(packageName)) return false
+        return ShellExecutor.execBool("pm", "clear-cache", "--user", "0", packageName)
     }
 
     override fun clearAppData(packageName: String?): Boolean {
@@ -282,9 +259,7 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
         } catch (e: Exception) {
             Log.w(TAG, "clearAppData IPC failed for $packageName, falling back to exec", e)
         }
-        return try {
-            val proc = Runtime.getRuntime().exec(arrayOf("pm", "clear", "--user", "0", packageName))
-            try { proc.waitFor() == 0 } finally { proc.destroy() }
-        } catch (_: Exception) { false }
+        if (!InputValidationUtils.isValidPackageName(packageName)) return false
+        return ShellExecutor.execBool("pm", "clear", "--user", "0", packageName)
     }
 }

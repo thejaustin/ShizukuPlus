@@ -4,7 +4,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_color_theme"
-        android:title="Color &amp; Theme"
+        android:title="@string/settings_personalization_category_color_theme"
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.IntegerSimpleMenuPreference
@@ -28,11 +28,11 @@
 
         <rikka.preference.SimpleMenuPreference
             android:key="custom_accent"
-            android:title="Custom Accent Color"
-            android:summary="Choose a color when Dynamic Color is off"
+            android:title="@string/settings_custom_accent_title"
             android:defaultValue="DEFAULT"
             android:entries="@array/custom_accents"
             android:entryValues="@array/custom_accents_values"
+            app:useSimpleSummaryProvider="true"
             android:icon="@drawable/ic_palette_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
@@ -47,14 +47,27 @@
             android:title="@string/settings_one_handed_mode"
             android:summary="@string/settings_one_handed_mode_summary"
             android:defaultValue="false"
-            android:dependency="oneui_theme_enabled"
             android:icon="@drawable/ic_smartphone_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="bold_typography"
+            android:title="@string/settings_bold_typography"
+            android:summary="@string/settings_bold_typography_summary"
+            android:defaultValue="false"
+            android:icon="@drawable/ic_format_bold_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="expanded_headers_enabled"
+            android:title="@string/settings_expanded_headers"
+            android:summary="@string/settings_expanded_headers_summary"
+            android:defaultValue="false"
+            android:icon="@drawable/ic_outline_expand_more_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_shape_style"
-        android:title="Shape &amp; Icon Style"
+        android:title="@string/settings_personalization_category_shape_style"
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
@@ -99,12 +112,46 @@
             android:entryValues="@array/icon_color_modes_value"
             android:icon="@drawable/ic_palette_24" />
 
+        <rikka.preference.SimpleMenuPreference
+            android:key="corner_rounding_override"
+            android:title="@string/settings_corner_rounding_override"
+            app:useSimpleSummaryProvider="true"
+            android:defaultValue="default"
+            android:entries="@array/corner_rounding_entries"
+            android:entryValues="@array/corner_rounding_values"
+            android:icon="@drawable/ic_window_24" />
+
+        <rikka.preference.SimpleMenuPreference
+            android:key="home_card_corner_style"
+            android:title="@string/settings_home_card_shape"
+            app:useSimpleSummaryProvider="true"
+            android:defaultValue="global"
+            android:entries="@array/corner_style_entries"
+            android:entryValues="@array/corner_style_values"
+            android:icon="@drawable/ic_window_24" />
+
+        <rikka.preference.SimpleMenuPreference
+            android:key="settings_card_corner_style"
+            android:title="@string/settings_settings_card_shape"
+            app:useSimpleSummaryProvider="true"
+            android:defaultValue="global"
+            android:entries="@array/corner_style_entries"
+            android:entryValues="@array/corner_style_values"
+            android:icon="@drawable/ic_window_24" />
+
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:key="category_motion"
-        android:title="Motion"
+        android:key="category_motion_display"
+        android:title="@string/settings_personalization_category_motion_display"
         android:defaultValue="true">
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="follow_system_animations"
+            android:title="@string/settings_follow_system_animations"
+            android:summary="@string/settings_follow_system_animations_summary"
+            android:defaultValue="false"
+            android:icon="@drawable/ic_settings_suggest_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="expressive_animations"
@@ -128,14 +175,14 @@
             android:title="@string/settings_haptic_feedback"
             android:summary="@string/settings_haptic_feedback_summary"
             android:defaultValue="true"
-            android:icon="@drawable/ic_bolt_24" />
+            android:icon="@drawable/ic_vibration_24" />
 
-    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
-
-    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:key="category_display"
-        android:title="@string/settings_display_category"
-        android:defaultValue="true">
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="follow_system_haptics"
+            android:title="@string/settings_follow_system_haptics"
+            android:summary="@string/settings_follow_system_haptics_summary"
+            android:defaultValue="false"
+            android:icon="@drawable/ic_vibration_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="edge_to_edge_enabled"
@@ -155,7 +202,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_home_screen"
-        android:title="Home Screen"
+        android:title="@string/settings_personalization_category_home_screen"
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
@@ -192,7 +239,7 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_language"
-        android:title="Language"
+        android:title="@string/settings_personalization_category_language"
         android:defaultValue="false">
 
         <rikka.preference.SimpleMenuPreference

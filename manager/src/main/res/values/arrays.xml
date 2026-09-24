@@ -68,6 +68,42 @@
     </string-array>
 
 
+    <string-array name="corner_style_entries">
+        <item>@string/corner_style_global</item>
+        <item>@string/corner_style_sharp</item>
+        <item>@string/corner_style_rounded</item>
+        <item>@string/corner_style_large</item>
+        <item>@string/corner_style_squircle</item>
+        <item>@string/corner_style_extra_large</item>
+    </string-array>
+
+    <string-array name="corner_style_values">
+        <item>global</item>
+        <item>sharp</item>
+        <item>rounded</item>
+        <item>large</item>
+        <item>squircle</item>
+        <item>xlarge</item>
+    </string-array>
+
+    <string-array name="corner_rounding_entries">
+        <item>Enhanced — 32dp (Default)</item>
+        <item>Gentle — 20dp</item>
+        <item>Standard M3 — 28dp</item>
+        <item>Large — 36dp</item>
+        <item>Maximum — 44dp</item>
+        <item>System Default</item>
+    </string-array>
+
+    <string-array name="corner_rounding_values">
+        <item>default</item>
+        <item>gentle</item>
+        <item>standard</item>
+        <item>large</item>
+        <item>maximum</item>
+        <item>system</item>
+    </string-array>
+
     <string-array name="update_channel_entries">
         <item>@string/update_channel_stable</item>
         <item>@string/update_channel_dev</item>
