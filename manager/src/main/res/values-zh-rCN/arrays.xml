@@ -1,31 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="animation_intensities">
-        <item>无</item>
-        <item>轻微</item>
-        <item>标准</item>
-        <item>丰富</item>
-    </string-array>
-    <string-array name="icon_color_modes">
-        <item>无彩色（单色）</item>
-        <item>统一颜色</item>
-        <item>每个图标使用不同颜色</item>
-    </string-array>
-    <string-array name="icon_styles">
-        <item>标准（填充）</item>
-        <item>描边</item>
-        <item>双色</item>
-    </string-array>
-    <string-array name="shape_styles">
-        <item>禅意（叶片/水滴）</item>
-        <item>现代（Material 3）</item>
-        <item>经典（Material 2）</item>
-        <item>自然（超椭圆）</item>
-        <item>切角（棱角）</item>
-    </string-array>
-    <string-array name="status_card_outline_styles">
-        <item>Material（主题色）</item>
-        <item>绿色 / 红色（状态色）</item>
+    <string-array name="corner_rounding_entries">
+        <item>增强 — 32dp（默认）</item>
+        <item>轻柔 — 20dp</item>
+        <item>标准 M3 — 28dp</item>
+        <item>大 — 36dp</item>
+        <item>最大 — 44dp</item>
+        <item>系统默认</item>
     </string-array>
     <string-array name="custom_accents">
         <item>标准蓝（默认）</item>
