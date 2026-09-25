@@ -143,7 +143,7 @@
     <string name="settings_start_on_boot_summary">需要 Android 11+ 或 Root 权限</string>
     <string name="settings_start_on_boot_bug">由于 Android 11-12 存在缺陷，无线调试不会保存已授权的网络。\n\n每次设备重启后，都需要在弹出的授权对话框中点按“允许”，重新授权当前网络。</string>
     <string name="settings_use_system_color">使用系统主题颜色</string>
-    <string name="settings_watchdog">Watchdog</string>
+    <string name="settings_watchdog">看门狗</string>
     <string name="settings_watchdog_summary">Shizuku+ 崩溃或意外停止后自动重启服务。底层网络断开时无法重新连接（例如使用 RNDIS/USB ADB 时拔出 USB 线）。</string>
     <string name="settings_tcp_mode">TCP 模式</string>
     <string name="settings_tcp_mode_summary">允许 Shizuku+ 在未连接 Wi-Fi 时重启（设备重启后须已启动过一次 Shizuku+）</string>
@@ -184,7 +184,7 @@
     <string name="bug_report_dialog_button_email">电子邮件</string>
     <!-- Snackbar -->
     <string name="snackbar_invalid_port">端口必须介于 1 和 65535 之间</string>
-    <string name="snackbar_battery_optimization_home">要使开机启动和 Watchdog 正常工作，必须关闭电池优化。</string>
+    <string name="snackbar_battery_optimization_home">要使开机启动和 看门狗 正常工作，必须关闭电池优化。</string>
     <string name="snackbar_battery_optimization_settings">请禁用电池优化功能以使用此功能。</string>
     <string name="snackbar_action_fix">修复</string>
     <!-- Toast -->
@@ -245,11 +245,11 @@
     <string name="wadb_permission_error_notification_content">Shizuku 需要 WRITE_SECURE_SETTINGS
         权限才能开机启动。点击了解如何授予此权限。</string>
     <string name="wadb_notification_channel">ADB 自动启动服务</string>
-    <!-- Watchdog -->
-    <string name="watchdog_running">Watchdog 正在运行</string>
+    <!-- 看门狗 -->
+    <string name="watchdog_running">看门狗 正在运行</string>
     <string name="watchdog_turn_off">关闭</string>
     <string name="watchdog_shizuku_crashed_title">Shizuku 最近崩溃了</string>
-    <string name="watchdog_shizuku_crashed_text">Watchdog 已重启服务。点按可查看有助于避免再次崩溃的解决方法。</string>
+    <string name="watchdog_shizuku_crashed_text">看门狗 已重启服务。点按可查看有助于避免再次崩溃的解决方法。</string>
     <string name="watchdog_shizuku_crashed_action_turn_off_alerts">关闭提醒</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">无法启动浏览器</string>
@@ -286,7 +286,7 @@
     <string name="root_hub_path_copied">SU 路径已复制到剪贴板</string>
     <string name="root_hub_no_export">未设置 SU 路径。请先在主页导出 Shizuku 文件。</string>
     
-    <string name="settings_nav_behavior_summary">开机启动、Watchdog 和 TCP 模式</string>
+    <string name="settings_nav_behavior_summary">开机启动、看门狗 和 TCP 模式</string>
     <string name="settings_nav_shizuku_plus_summary">增强型 API、Shell 拦截器等</string>
     <string name="settings_nav_ui_summary">主题、颜色、语言</string>
     <string name="settings_nav_app_management_summary">滑动和长按操作</string>
@@ -854,7 +854,7 @@
     <string name="settings_main_nav_app_interactions_title">应用交互</string>
     <string name="settings_main_nav_app_interactions_summary">手势、长按操作和安装验证</string>
     <string name="settings_main_nav_startup_behavior_title">启动与行为</string>
-    <string name="settings_main_nav_startup_behavior_summary">开机选项、Watchdog、网络、活动和更新</string>
+    <string name="settings_main_nav_startup_behavior_summary">开机选项、看门狗、网络、活动和更新</string>
     <string name="settings_main_nav_advanced_diagnostics_title">高级与诊断</string>
     <string name="settings_main_nav_advanced_diagnostics_summary">日志、ADB 工具和故障排查</string>
     <string name="settings_main_nav_about_summary">版本、许可证和开发者选项</string>

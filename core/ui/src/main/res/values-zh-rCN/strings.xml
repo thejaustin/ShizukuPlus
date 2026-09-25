@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Only keys that are not redefined by the manager module, which
+         provides its own zh-rCN copies for every other shared key. -->
+    <string name="doctor_tips_title">故障排查提示</string>
+    <string name="app_management_item_summary_shizuku_aware">原生支持 Shizuku</string>
+</resources>
