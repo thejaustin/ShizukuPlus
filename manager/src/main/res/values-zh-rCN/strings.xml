@@ -579,6 +579,8 @@
     <string name="settings_samsung_uid_escalation">三星系统 UID 提权</string>
     <string name="settings_samsung_uid_escalation_summary">尝试通过未修补三星设备上的特定漏洞（由 pascua28 发现）提权至 UID 1000（系统）。请自行承担风险。</string>
     <string name="settings_display_tuner_plus_title">显示调节器</string>
+    <string name="settings_device_control_home_title">设备控制主页卡片</string>
+    <string name="settings_device_control_home_summary">在主屏幕显示设备控制卡片。可特权控制 Wi-Fi、蓝牙、移动数据、显示、音频与电源。实验性功能——在部分设备上可能出现意外行为。</string>
     <string name="settings_plus_app_found">检测到集成应用：%1$s。点按以进行设置。</string>
     <string name="settings_plus_app_setup_title">设置集成</string>
     <string name="settings_plus_app_open">打开应用</string>
