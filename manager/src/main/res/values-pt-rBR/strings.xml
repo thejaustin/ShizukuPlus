@@ -1614,4 +1614,8 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="wadb_mdns_blocked_title">Descoberta mDNS falhando repetidamente</string>
     <string name="wadb_mdns_blocked_text">A descoberta de porta continua expirando. Seu dispositivo pode estar bloqueando o tráfego multicast (comum em Vivo/FunTouchOS). Tente ativar o Modo TCP nas configurações para uma conexão confiável sem Wi-Fi.</string>
     <string name="wadb_mdns_switch_tcp_action">Abrir configurações TCP</string>
+
+    <!-- Device Control home card (Feature Hub → Experimental) -->
+    <string name="settings_device_control_home_title">Card de Controle do Dispositivo</string>
+    <string name="settings_device_control_home_summary">Exibir o card de Controle do Dispositivo na tela inicial. Permite controle privilegiado de Wi-Fi, Bluetooth, Dados Móveis, tela, áudio e energia. Experimental — pode causar comportamento inesperado em alguns dispositivos.</string>
 </resources>

@@ -2,6 +2,20 @@
 
 All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md](AI_ATTRIBUTIONS.md) for full AI pair-programming provenance and commit mapping.
 
+## [Unreleased — post-v14.0.0]
+
+### 🎨 UI / Visual Polish
+- **Reduced app-list horizontal padding from 52dp to 16dp (phone) / 24dp (tablet)** — items now extend naturally toward bezels matching Material3 and Samsung One UI spec; applies to every row in the Managed Apps screen, the Toggle-All card, the search field, and the filter chip strip.
+- **Fixed section-group headers misaligned with list items** — `list_section_header.xml` used an asymmetric `paddingStart=4dp` / `paddingEnd=16dp`; both are now `@dimen/margin_horizontal` so header labels align with the icon leading edge on Root Compatibility, Device Control, and Permission Manager screens.
+
+### 🔧 Features
+- **Device Control home card is now off by default and gated behind an experimental toggle** in Feature Hub → Experimental. Enabling shows a confirmation dialog; disabling works immediately. The card was always hidden for users until they explicitly opt in.
+- **App Backup home card is now hidden by default** — it opts out of the generic hidden-card set and instead uses a dedicated `show_backup_home` boolean that starts `false`. The card appears in Home edit mode with an eye toggle, and the "Restore cards" bulk-restore action re-enables it. Not experimental-gated.
+- **Feature Hub "Experimental" section is no longer permanently hidden** — `android:visible="false"` on `category_developer` in `settings_shizuku_plus.xml` was preventing ALL experimental features from being reachable. Removed that attribute so developers and testers can access Window Manager+, AI Bridge, Display Tuner, Device Control, and all other experimental toggles without a separate developer-options workaround.
+
+### 🐛 Bug Fixes
+- **Fixed Device Control home card not appearing immediately after being enabled in Feature Hub** — `HomeActivity`'s `SharedPreferences` listener was missing `KEY_DEVICE_CONTROL_HOME_ENABLED`, so navigating back from Settings did not trigger a home-list refresh. Card now appears as soon as the toggle is flipped.
+
 ## [v14.0.0 — Stable Release / Build r2664]
 
 *Co-developed with Antigravity & Claude Code*

@@ -1594,4 +1594,8 @@
     <string name="wadb_mdns_blocked_title">mDNS-виявлення постійно дає збій</string>
     <string name="wadb_mdns_blocked_text">Виявлення порту постійно перевищує час очікування. Можливо, ваш пристрій блокує multicast-трафік (поширено на Vivo/FunTouchOS). Спробуйте ввімкнути TCP-режим у налаштуваннях для надійного підключення без Wi-Fi.</string>
     <string name="wadb_mdns_switch_tcp_action">Відкрити налаштування TCP</string>
+
+    <!-- Device Control home card (Feature Hub → Experimental) -->
+    <string name="settings_device_control_home_title">Картка керування пристроєм</string>
+    <string name="settings_device_control_home_summary">Показати картку керування пристроєм на головному екрані. Дозволяє привілейоване керування Wi-Fi, Bluetooth, мобільними даними, дисплеєм, звуком та живленням. Експериментальна функція — може спричинити непередбачувану поведінку на деяких пристроях.</string>
 </resources>

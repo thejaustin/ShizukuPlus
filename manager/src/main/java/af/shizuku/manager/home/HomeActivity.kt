@@ -117,7 +117,8 @@ open class HomeActivity : AppActivity(), MavericksView {
             ShizukuSettings.Keys.KEY_SHOW_LEARN_MORE_HOME,
             ShizukuSettings.Keys.KEY_SHOW_ACTIVITY_LOG_HOME,
             ShizukuSettings.Keys.KEY_SHOW_START_ADB_HOME,
-            ShizukuSettings.Keys.KEY_SHOW_BACKUP_HOME -> adapter.updateData()
+            ShizukuSettings.Keys.KEY_SHOW_BACKUP_HOME,
+            ShizukuSettings.Keys.KEY_DEVICE_CONTROL_HOME_ENABLED -> adapter.updateData()
             ShizukuSettings.Keys.KEY_ONE_HANDED_MODE,
             ShizukuSettings.Keys.KEY_ONEUI_THEME -> {
                 isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
