@@ -78,13 +78,19 @@ class HomeAdapter(
         setHasStableIds(true)
         HomeEditMode.onChanged = { updateData() }
         HomeEditMode.removeCardCallback = { cardId ->
-            val hiddenSet = ShizukuSettings.getHiddenHomeCards().toMutableSet()
-            if (cardId.toString() in hiddenSet) {
-                hiddenSet.remove(cardId.toString())
+            if (cardId == ID_BACKUP) {
+                // Backup uses its own opt-in flag rather than the generic hidden set, so that
+                // it starts hidden by default without polluting the hidden set for all users.
+                ShizukuSettings.setBackupCardVisible(!ShizukuSettings.isBackupCardVisible())
             } else {
-                hiddenSet.add(cardId.toString())
+                val hiddenSet = ShizukuSettings.getHiddenHomeCards().toMutableSet()
+                if (cardId.toString() in hiddenSet) {
+                    hiddenSet.remove(cardId.toString())
+                } else {
+                    hiddenSet.add(cardId.toString())
+                }
+                ShizukuSettings.setHiddenHomeCards(hiddenSet)
             }
-            ShizukuSettings.setHiddenHomeCards(hiddenSet)
             updateData()
         }
     }
@@ -97,8 +103,8 @@ class HomeAdapter(
      * toggle, contradicting what the button said it would do.
      */
     fun restoreAllCards() {
-        if (ShizukuSettings.getHiddenHomeCards().isEmpty()) return
         ShizukuSettings.setHiddenHomeCards(emptySet())
+        ShizukuSettings.setBackupCardVisible(true)
         updateData()
     }
 
@@ -212,8 +218,10 @@ class HomeAdapter(
                 ID_START_ADB -> if (isEditMode || isPrimaryUser)
                     addItem(StartAdbViewHolder.CREATOR, null, id)
                 ID_AUTOMATION -> addItem(AutomationViewHolder.CREATOR, null, id)
-                ID_BACKUP -> addItem(AppBackupViewHolder.CREATOR, status, id)
-                ID_DEVICE_CONTROL -> addItem(DeviceControlViewHolder.CREATOR, status, id)
+                ID_BACKUP -> if (isEditMode || ShizukuSettings.isBackupCardVisible())
+                    addItem(AppBackupViewHolder.CREATOR, status, id)
+                ID_DEVICE_CONTROL -> if (ShizukuSettings.isDeviceControlHomeEnabled())
+                    addItem(DeviceControlViewHolder.CREATOR, status, id)
                 ID_PERMISSION_MANAGER -> addItem(PermissionManagerViewHolder.CREATOR, status, id)
                 ID_LEARN_MORE -> addItem(LearnMoreViewHolder.CREATOR, null, id)
                 ID_COMPANION -> {
@@ -234,11 +242,17 @@ class HomeAdapter(
     override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
         val id = getItemId(position)
         val hidden = ShizukuSettings.getHiddenHomeCards()
-        holder.itemView.tag = id.toString() in hidden
+        holder.itemView.tag = when (id) {
+            ID_BACKUP -> !ShizukuSettings.isBackupCardVisible()
+            else -> id.toString() in hidden
+        }
 
         val removeBtn = holder.itemView.findViewById<android.widget.ImageButton>(R.id.remove_btn)
         if (removeBtn != null) {
-            val isHidden = id.toString() in hidden
+            val isHidden = when (id) {
+                ID_BACKUP -> !ShizukuSettings.isBackupCardVisible()
+                else -> id.toString() in hidden
+            }
             val iconRes = if (isHidden) R.drawable.ic_visibility_off_24 else R.drawable.ic_visibility_24
             removeBtn.setImageResource(iconRes)
             removeBtn.setOnClickListener { HomeEditMode.removeCardCallback?.invoke(id) }

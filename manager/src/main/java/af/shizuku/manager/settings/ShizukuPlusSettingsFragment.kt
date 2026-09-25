@@ -474,6 +474,23 @@ class ShizukuPlusSettingsFragment : BaseSettingsFragment() {
             true
         }
 
+        findPreference<TwoStatePreference>("device_control_home_enabled")?.apply {
+            isChecked = ShizukuSettings.isDeviceControlHomeEnabled()
+            setOnPreferenceChangeListener { _, newValue ->
+                val enabled = newValue as? Boolean ?: false
+                if (enabled) {
+                    showExperimentalWarning("device_control_home_enabled") {
+                        ShizukuSettings.setDeviceControlHomeEnabled(true)
+                        findPreference<TwoStatePreference>("device_control_home_enabled")?.isChecked = true
+                    }
+                    false
+                } else {
+                    ShizukuSettings.setDeviceControlHomeEnabled(false)
+                    true
+                }
+            }
+        }
+
         // Initialize all preference dependencies
         updateAllPlusFeatureDependencies()
 

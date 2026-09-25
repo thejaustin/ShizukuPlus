@@ -84,6 +84,7 @@ public class ShizukuSettings {
         // Home card extras (Shizuku+ additions)
         public static final String KEY_SHOW_START_ADB_HOME = "show_start_adb_home";
         public static final String KEY_SHOW_BACKUP_HOME = "show_backup_home";
+        public static final String KEY_DEVICE_CONTROL_HOME_ENABLED = "device_control_home_enabled";
         public static final String KEY_CARD_ORDER = "home_card_order";
         public static final String KEY_HIDDEN_HOME_CARDS = "hidden_home_cards";
 
@@ -1177,6 +1178,28 @@ public class ShizukuSettings {
     public static void setHiddenHomeCards(java.util.Set<String> hidden) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putStringSet(Keys.KEY_HIDDEN_HOME_CARDS, hidden).apply();
+    }
+
+    /** Whether the App Backup home card is visible. Off by default — users opt in via edit mode. */
+    public static boolean isBackupCardVisible() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_SHOW_BACKUP_HOME, false);
+    }
+
+    public static void setBackupCardVisible(boolean visible) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_SHOW_BACKUP_HOME, visible).apply();
+    }
+
+    /** Whether the Device Control home card is enabled (experimental, off by default). */
+    public static boolean isDeviceControlHomeEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_DEVICE_CONTROL_HOME_ENABLED, false);
+    }
+
+    public static void setDeviceControlHomeEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_DEVICE_CONTROL_HOME_ENABLED, enabled).apply();
     }
 
     @Nullable

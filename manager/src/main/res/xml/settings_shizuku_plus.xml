@@ -226,8 +226,15 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_developer"
         android:title="@string/settings_plus_category_experimental"
-        android:visible="false"
         android:defaultValue="false">
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="device_control_home_enabled"
+            android:title="@string/settings_device_control_home_title"
+            android:summary="@string/settings_device_control_home_summary"
+            android:icon="@drawable/ic_devices_24"
+            android:defaultValue="false"
+            app:badgeType="experimental" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="window_manager_plus_enabled"

@@ -513,6 +513,8 @@
     <string name="settings_samsung_uid_escalation">Samsung System UID Escalation</string>
     <string name="settings_samsung_uid_escalation_summary">Attempt to escalate to UID 1000 (system) using an exploit specific to unpatched Samsung devices (by pascua28). Use at your own risk.</string>
     <string name="settings_display_tuner_plus_title">Display Tuner</string>
+    <string name="settings_device_control_home_title">Device Control Home Card</string>
+    <string name="settings_device_control_home_summary">Show the Device Control card on the home screen. Allows privileged control of Wi-Fi, Bluetooth, Mobile Data, display, audio, and power. Experimental — may cause unexpected behavior on some devices.</string>
 
     <string name="settings_plus_app_found">Integrated app detected: %1$s. Tap for setup.</string>
     <string name="settings_plus_app_setup_title">Setup Integration</string>
