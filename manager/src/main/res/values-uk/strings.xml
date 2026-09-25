@@ -1415,4 +1415,183 @@
     <string name="package_identity_info_detail">MDM та корпоративні системи виявлення root часто сканують відомі назви пакетів (af.shizuku.manager). Справжня рандомізація назви пакета — як у Shevery — вимагає перевстановлення додатка з іншим applicationId, вбудованим в APK на етапі збирання. Менеджер не може перейменувати себе під час роботи.\n\nПлани на майбутнє: майбутній робочий процес CI «Зберіть власний» дозволить згенерувати APK з власною назвою. До того часу це налаштування лише зберігає відображувану назву. Для обходу MDM зараз використовуйте Прихований режим, щоб прибрати іконку запуску.</string>
     <string name="settings_package_identity_current">Поточний пакет: %1$s</string>
     <string name="settings_package_identity_roadmap">Повне перейменування під час роботи потребує власної збірки — див. issue #469</string>
+
+    <!-- Accessibility descriptions for home card simulator toggles -->
+    <string name="accessibility_sim_toggle_activity_log">Увімкнути/вимкнути карточку журналу активності</string>
+    <string name="accessibility_sim_toggle_adb">Увімкнути/вимкнути карточку запуску ADB</string>
+    <string name="accessibility_sim_toggle_automation">Увімкнути/вимкнути карточку автоматизації</string>
+    <string name="accessibility_sim_toggle_learn_more">Увімкнути/вимкнути карточку «Дізнатися більше»</string>
+    <string name="accessibility_sim_toggle_terminal">Увімкнути/вимкнути карточку термінала</string>
+
+    <!-- Backup -->
+    <string name="backup_action_restore">Відновити</string>
+    <string name="backup_badge_no_backup">no-backup</string>
+    <string name="backup_batch_complete">Збережено %1$d застос. до %3$s (%2$d не вдалося)</string>
+    <string name="backup_error_key_invalidated_backup">екран блокування або біометрія вашого пристрою змінились після створення ключа шифрування цієї резервної копії, що остаточно анулює її за задумом. Будь ласка, спробуйте ще раз, щоб згенерувати новий ключ.</string>
+    <string name="backup_error_key_invalidated_restore">екран блокування або біометрія вашого пристрою змінились після створення ключа шифрування цієї резервної копії, що остаточно анулює її за задумом. Цю резервну копію більше неможливо розшифрувати.</string>
+    <string name="backup_error_prefix_backup_failed">Помилка резервного копіювання</string>
+    <string name="backup_error_prefix_restore_failed">Помилка відновлення</string>
+    <string name="backup_error_wrong_install">не вдалося розшифрувати цю резервну копію. Скоріш за все, вона була створена іншою інсталяцією Shizuku+ — резервні копії шифруються окремо для кожної інсталяції та не можуть бути відновлені після перевстановлення або очищення даних застосунку.</string>
+    <string name="backup_menu_backup_all">Зберегти всі застосунки</string>
+    <string name="backup_menu_search">Пошук застосунків</string>
+    <string name="backup_menu_show_system">Показати системні застосунки</string>
+    <string name="backup_restore_complete">Відновлено зовнішні дані для %1$s</string>
+    <string name="backup_restored_restart_hint">Налаштування відновлено. Перезапустіть, щоб застосувати зміни теми/мови.</string>
+    <string name="backup_restored_restart_now">Перезапустити</string>
+
+    <!-- Corner style options -->
+    <string name="corner_style_extra_large">Дуже великий</string>
+    <string name="corner_style_global">Слідувати глобальному налаштуванню</string>
+    <string name="corner_style_large">Великий заокруглений</string>
+    <string name="corner_style_rounded">Заокруглений (M3)</string>
+    <string name="corner_style_sharp">Гострий / Плаский</string>
+    <string name="corner_style_squircle">Сквіркль</string>
+
+    <!-- Device Control -->
+    <string name="home_device_control_title">Керування пристроєм</string>
+    <string name="home_device_control_summary">Підключення, дисплей, звук і живлення</string>
+    <string name="device_control_section_connectivity">Підключення</string>
+    <string name="device_control_section_display">Дисплей</string>
+    <string name="device_control_section_audio">Звук</string>
+    <string name="device_control_section_power">Живлення</string>
+    <string name="device_control_section_system">Зовнішній вигляд системи</string>
+    <string name="device_control_airplane_mode">Режим польоту</string>
+    <string name="device_control_wifi">Wi-Fi</string>
+    <string name="device_control_bluetooth">Bluetooth</string>
+    <string name="device_control_mobile_data">Мобільні дані</string>
+    <string name="device_control_nfc">NFC</string>
+    <string name="device_control_auto_brightness">Автояскравість</string>
+    <string name="device_control_brightness">Яскравість: %1$d</string>
+    <string name="device_control_auto_rotate">Автоповорот</string>
+    <string name="device_control_screen_timeout">Час вимкнення екрана</string>
+    <string name="device_control_font_scale">Масштаб шрифту: %1$s×</string>
+    <string name="device_control_animations">Системні анімації</string>
+    <string name="device_control_volume_media">Гучність медіа: %1$d</string>
+    <string name="device_control_volume_ring">Гучність дзвінка: %1$d</string>
+    <string name="device_control_volume_alarm">Гучність будильника: %1$d</string>
+    <string name="device_control_private_dns">Приватний DNS</string>
+    <string name="device_control_dns_apply">Застосувати</string>
+    <string name="device_control_dns_auto">Авто</string>
+    <string name="device_control_dns_off">Вимкнено</string>
+    <string name="device_control_dns_custom">Власний</string>
+    <string name="device_control_dns_hostname_label">Ім\'я хоста DNS</string>
+    <string name="device_control_reboot">Перезавантажити</string>
+    <string name="device_control_reboot_title">Перезавантажити пристрій</string>
+    <string name="device_control_reboot_confirm">Ви впевнені, що хочете перезавантажити пристрій?</string>
+    <string name="device_control_shutdown">Вимкнути</string>
+    <string name="device_control_shutdown_title">Вимкнути пристрій</string>
+    <string name="device_control_shutdown_confirm">Ви впевнені, що хочете вимкнути пристрій?</string>
+
+    <!-- Help dialogs -->
+    <string name="help_stealth_mode_title">Режим невидимості</string>
+    <string name="help_stealth_mode_detail">Перехоплює запити PackageManager на рівні Binder та повертає «не встановлено» для пакетів ShizukuPlus та Shizuku. Застосунки, що використовують PM для виявлення root-інструментів (банківські застосунки, перевірки DRM), не знайдуть їх. Примітка: це лише приховує їх від запитів PackageManager — режим розробника та USB-налагодження все одно видимі для застосунків, що перевіряють параметри Android безпосередньо.</string>
+    <string name="help_root_build_prop_title">Про перенаправлення build.prop</string>
+    <string name="help_root_build_prop_detail">Цей модуль автоматично копіює оригінальний build.prop до шляху, доступного для запису, та перенаправляє всі записи до нього, дозволяючи налаштовувати системні значення без root.</string>
+    <string name="help_root_iptables_title">Про імітацію брандмауера</string>
+    <string name="help_root_iptables_detail">Імітує успішне виконання команд iptables, коли обмеження без root не дозволяють встановити реальні правила, дозволяючи брандмауерам продовжувати роботу.</string>
+
+    <!-- Home screen summaries -->
+    <string name="home_backup_summary_with_dir">Зберігає до %1$s</string>
+    <string name="home_permission_manager_title">Менеджер дозволів</string>
+    <string name="home_permission_manager_summary">Надавайте дозволи рівня оболонки будь-якому застосунку без root</string>
+
+    <!-- Navigation -->
+    <string name="nav_back">Назад</string>
+
+    <!-- Permission Manager -->
+    <string name="permission_manager_search_hint">Пошук застосунків…</string>
+    <string name="permission_manager_section_runtime">Дозволи середовища виконання</string>
+    <string name="permission_manager_section_privileged">Привілейовані дозволи (надаються оболонкою)</string>
+    <string name="permission_manager_privileged_note">Ці дозволи зазвичай обмежені системними або root-застосунками, але можуть бути надані процесом оболонки ADB. Корисно для застосунків резервного копіювання (Neo Backup, Swift Backup), яким потрібен доступ DUMP, READ_LOGS або подібний.</string>
+    <string name="permission_manager_no_apps">Застосунки не знайдено</string>
+    <string name="permission_manager_no_permissions">Немає оголошених дозволів середовища виконання або привілейованих</string>
+
+    <!-- Settings: Plus features -->
+    <string name="settings_amoled_plus">AMOLED+</string>
+    <string name="settings_amoled_plus_summary">Зробити всі картки та поверхні чисто чорними, щоб вони зливалися з панеллю</string>
+    <string name="settings_custom_accent_title">Власний акцентний колір</string>
+    <string name="settings_plus_category_experimental">Експериментальне</string>
+    <string name="settings_home_card_shape">Кути карток головного екрана</string>
+    <string name="settings_home_card_shape_summary">Перевизначити стиль кутів для карток головного екрана незалежно від глобального налаштування</string>
+    <string name="settings_settings_card_shape">Кути карток налаштувань</string>
+    <string name="settings_settings_card_shape_summary">Перевизначити стиль кутів для згортальних заголовків секцій налаштувань</string>
+    <string name="settings_behavior_category_startup">Запуск та відновлення</string>
+    <string name="settings_backup_settings">Резервне копіювання налаштувань</string>
+    <string name="settings_backup_settings_summary">Експортуйте конфігурації та покращення безпечно за допомогою біометричного шифрування.</string>
+    <string name="settings_restore_settings">Відновити налаштування</string>
+    <string name="settings_restore_settings_summary">Відновіть конфігурації з зашифрованої резервної копії.</string>
+    <string name="settings_diagnostics_enabled">Діагностика налаштувань</string>
+    <string name="settings_diagnostics_enabled_summary">Проактивно сканувати конфігурації на наявність конфліктів та аномалій</string>
+    <string name="settings_keystore_fallback">Програмний резерв KeyStore</string>
+    <string name="settings_keystore_fallback_summary">Кешувати RSA-ключ ADB, зашифрований програмним AES-ключем, коли апаратний KeyStore недоступний (напр., Samsung Knox). Зменшує запити на з\'єднання, але знижує безпеку.</string>
+
+    <!-- Settings: Governor modules -->
+    <string name="settings_network_governor_plus_title">DNS Governor</string>
+    <string name="settings_activity_manager_plus_title">Керування процесами</string>
+    <string name="settings_package_governor_plus_title">Package Governor</string>
+    <string name="settings_status_bar_governor_plus_title">Керування статусним рядком</string>
+    <string name="settings_display_tuner_plus_title">Налаштування дисплея</string>
+    <string name="settings_continuity_bridge_title">Continuity Bridge</string>
+    <string name="settings_avf_manager_title">Менеджер ВМ</string>
+
+    <!-- Settings: Root compatibility -->
+    <string name="settings_custom_su_path">Власний шлях SU</string>
+    <string name="settings_custom_su_path_summary">Шлях, який SU Bridge надає як бінарний файл \'su\'. Залиште порожнім для автовизначення зі стандартних місць.</string>
+    <string name="settings_root_build_prop_redirect">Перенаправлення build.prop</string>
+    <string name="settings_root_build_prop_redirect_summary">Перенаправити модифікації системних властивостей build до записуваного проксі-файлу без root</string>
+    <string name="settings_root_iptables_mocking">Імітація успіху брандмауера</string>
+    <string name="settings_root_iptables_mocking_summary">Перехоплювати та імітувати успіх для правил iptables, коли локальні дозволи netfilter недоступні</string>
+    <string name="settings_root_kernel_ghosting">Ghosting драйверів ядра</string>
+    <string name="settings_root_kernel_ghosting_summary">[Розробник] Приховано імітувати успіх для команд insmod/rmmod без завантаження модулів ядра.</string>
+    <string name="settings_root_partition_ghosting">Ghosting прошивки розділів</string>
+    <string name="settings_root_partition_ghosting_summary">[Розробник] Перехоплювати та імітувати операції \'dd\', що впливають на /dev/block/. Запобігає збою ROM-прошивальників, нічого не роблячи.</string>
+    <string name="settings_root_power_ghosting">Ghosting стану живлення</string>
+    <string name="settings_root_power_ghosting_summary">[Розробник] Перехоплювати команди перезавантаження, відновлення та м\'якого перезавантаження та тихо ігнорувати їх, щоб запобігти небажаним перезапускам пристрою.</string>
+    <string name="settings_overlay_fs_proxy">Ghosting системи OverlayFS</string>
+    <string name="settings_overlay_fs_proxy_summary">[Розробник] Бездоганне монтування віртуальних оверлейних файлових систем для імітації rw /system для root-застосунків. Попередження: Дуже експериментально.</string>
+
+    <!-- Settings: Samsung / DHizuku -->
+    <string name="settings_samsung_uid_escalation">Ескалація Samsung System UID</string>
+    <string name="settings_samsung_uid_escalation_summary">Спроба ескалації до UID 1000 (system) з використанням експлойту, специфічного для непатчених пристроїв Samsung (автор pascua28). Використовуйте на свій страх і ризик.</string>
+    <string name="settings_dhizuku_screencap_lockdown">Блокування захоплення екрана</string>
+    <string name="settings_dhizuku_screencap_lockdown_summary">Вимкнути знімки екрана та записи екрана глобально на всьому пристрої</string>
+    <string name="settings_dhizuku_usb_lockdown">Блокування даних USB</string>
+    <string name="settings_dhizuku_usb_lockdown_summary">Заборонити передачу файлів по USB (MTP) та фізично захистити пристрій</string>
+    <string name="settings_dhizuku_suspended_packages">Призупинені застосунки</string>
+    <string name="settings_dhizuku_suspended_packages_summary">Виберіть застосунки для заморозки та повного блокування від запуску</string>
+
+    <!-- Settings: AI & NPU -->
+    <string name="settings_ai_core_master">AI Core Master</string>
+    <string name="settings_ai_core_master_summary">Увімкнути привілейовані операції AI: планування NPU та доступ до ієрархії вікон</string>
+    <string name="settings_ai_bridge_npu_title">AI Bridge та NPU</string>
+    <string name="settings_npu_acceleration">Прискорення NPU</string>
+    <string name="settings_npu_acceleration_summary">Делегувати завдання AI-виведення нейронному процесору пристрою, якщо доступний</string>
+    <string name="settings_ai_automation_experimental">Експериментальна AI-автоматизація</string>
+    <string name="settings_ai_automation_experimental_summary">Увімкнути імітацію жестів, захоплення пікселів та введення тексту для автоматизації на основі AI</string>
+    <string name="settings_window_crawler">Сканер ієрархії вікон</string>
+    <string name="settings_window_crawler_summary">Дозволити AI-автоматизації зчитувати ієрархію вікна без Служб доступності</string>
+
+    <!-- Settings: Bootloader -->
+    <string name="settings_bootloader_fastbootd">Перехід до FastbootD</string>
+    <string name="settings_bootloader_fastbootd_summary">Перезапустити безпосередньо в fastbootd user space з оболонки Shizuku</string>
+    <string name="settings_bootloader_flash_ota">Системне завантаження OTA</string>
+    <string name="settings_bootloader_flash_ota_summary">Прошити OTA-завантаження до неактивного слота без root або кастомного відновлення</string>
+
+    <!-- Settings: APK verification -->
+    <string name="settings_verify_apk_local_title">Локальне зіставлення підписів</string>
+    <string name="settings_verify_apk_local_summary">Перевіряти, що оновлення відповідають підпису встановленого застосунку. Швидко та повністю офлайн.</string>
+    <string name="settings_verify_apk_fdroid_title">Індекс F-Droid / IzzyOnDroid</string>
+    <string name="settings_verify_apk_fdroid_summary">Перевіряти хеші APK локально на основі перевірених відкритих метаданих.</string>
+    <string name="settings_verify_apk_virustotal_title">Сканування VirusTotal</string>
+    <string name="settings_verify_apk_virustotal_summary">Сканувати хеші APK через VirusTotal перед встановленням. Потрібен API-ключ.</string>
+    <string name="settings_verify_apk_pithus_title">Розвідка загроз Pithus</string>
+    <string name="settings_verify_apk_pithus_summary">Перевіряти хеші через Pithus для виявлення ознак шкідливого ПЗ.</string>
+
+    <!-- SU path validation -->
+    <string name="su_path_invalid">Неприпустимий шлях. Має бути абсолютним шляхом (починається з /), що містить лише літери, цифри, слеші, підкреслення, крапки та дефіси.</string>
+
+    <!-- Wireless ADB / mDNS -->
+    <string name="wadb_mdns_blocked_title">mDNS-виявлення постійно дає збій</string>
+    <string name="wadb_mdns_blocked_text">Виявлення порту постійно перевищує час очікування. Можливо, ваш пристрій блокує multicast-трафік (поширено на Vivo/FunTouchOS). Спробуйте ввімкнути TCP-режим у налаштуваннях для надійного підключення без Wi-Fi.</string>
+    <string name="wadb_mdns_switch_tcp_action">Відкрити налаштування TCP</string>
 </resources>

@@ -98,6 +98,7 @@ open class HomeActivity : AppActivity(), MavericksView {
     private var isOneHanded by mutableStateOf(ShizukuSettings.isOneHandedModeEnabled())
     private var isOneUi by mutableStateOf(ShizukuSettings.isOneUiThemeEnabled())
     private var isRoundedEdges by mutableStateOf(ShizukuSettings.isRoundedEdgesEnabled())
+    private var isAmoledPlus by mutableStateOf(ShizukuSettings.isAmoledPlusEnabled())
 
     // Strong reference required — SharedPreferences holds listeners weakly, so an inline lambda
     // would be eligible for GC immediately after registerOnSharedPreferenceChangeListener returns.
@@ -121,6 +122,9 @@ open class HomeActivity : AppActivity(), MavericksView {
             ShizukuSettings.Keys.KEY_ONEUI_THEME -> {
                 isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
                 isOneUi = ShizukuSettings.isOneUiThemeEnabled()
+            }
+            ShizukuSettings.Keys.KEY_AMOLED_PLUS -> {
+                isAmoledPlus = ShizukuSettings.isAmoledPlusEnabled()
             }
         }
     }
@@ -218,6 +222,7 @@ open class HomeActivity : AppActivity(), MavericksView {
             af.shizuku.core.ui.compose.AppTheme(
                 darkTheme = androidx.compose.foundation.isSystemInDarkTheme(),
                 isBlackNightTheme = af.shizuku.manager.app.ThemeHelper.isBlackNightTheme(context),
+                isAmoledPlus = isAmoledPlus,
                 isOneUi = isOneUi,
                 isRoundedEdges = isRoundedEdges
             ) {

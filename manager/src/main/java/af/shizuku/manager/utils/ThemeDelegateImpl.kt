@@ -17,7 +17,7 @@ class ThemeDelegateImpl : ThemeDelegate {
             ShizukuSettings.getIconStyle() + ShizukuSettings.getIconColorMode() +
             ShizukuSettings.isOneUiThemeEnabled() + ShizukuSettings.isOneHandedModeEnabled() +
             ShizukuSettings.isBoldTypographyEnabled() + ShizukuSettings.isExpandedHeadersEnabled() +
-            ShizukuSettings.getCornerRoundingOverride()
+            ShizukuSettings.getCornerRoundingOverride() + ShizukuSettings.isAmoledPlusEnabled()
     }
 
     override fun isUsingSystemColor(): Boolean {

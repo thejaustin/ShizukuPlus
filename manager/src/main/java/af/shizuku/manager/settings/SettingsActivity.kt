@@ -53,6 +53,7 @@ class SettingsActivity : AppActivity(), PreferenceFragmentCompat.OnPreferenceSta
             val tv = themeVersion
             af.shizuku.core.ui.compose.AppTheme(
                 isBlackNightTheme = af.shizuku.manager.app.ThemeHelper.isBlackNightTheme(this),
+                isAmoledPlus = af.shizuku.manager.ShizukuSettings.isAmoledPlusEnabled(),
                 isOneUi = af.shizuku.manager.ShizukuSettings.isOneUiThemeEnabled(),
                 isRoundedEdges = af.shizuku.manager.ShizukuSettings.isRoundedEdgesEnabled(),
                 themeVersion = tv

@@ -33,6 +33,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
     private lateinit var nightModePreference: IntegerSimpleMenuPreference
     private lateinit var blackNightThemePreference: TwoStatePreference
+    private lateinit var amoledPlusPreference: TwoStatePreference
     private lateinit var useSystemColorPreference: TwoStatePreference
     private lateinit var customAccentPreference: Preference
     private lateinit var languagePreference: ListPreference
@@ -54,6 +55,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         // 1. Theme and Color Controls
         nightModePreference = requireNotNull(findPreference(KEY_NIGHT_MODE))
         blackNightThemePreference = requireNotNull(findPreference(KEY_BLACK_NIGHT_THEME))
+        amoledPlusPreference = requireNotNull(findPreference(KEY_AMOLED_PLUS))
         useSystemColorPreference = requireNotNull(findPreference(KEY_USE_SYSTEM_COLOR))
         customAccentPreference = requireNotNull(findPreference("custom_accent"))
 
@@ -81,6 +83,15 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                         applyTheme(requiresRecreate = false)
                     true
                 }
+            }
+        }
+
+        amoledPlusPreference.apply {
+            isChecked = ShizukuSettings.isAmoledPlusEnabled()
+            setOnPreferenceChangeListener { _, _ ->
+                if (ResourceUtils.isNightMode(context.resources.configuration))
+                    applyTheme(requiresRecreate = false)
+                true
             }
         }
 

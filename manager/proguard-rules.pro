@@ -77,6 +77,34 @@
     public <init>();
 }
 
+# Keep custom Preference subclasses instantiated by class name from XML preference screens.
+# Without these keeps R8 renames or removes the two-arg constructors and inflating the
+# preference screen throws ClassNotFoundException / NoSuchMethodException at runtime.
+-keep class af.shizuku.manager.settings.CollapsiblePreferenceCategory {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep class af.shizuku.manager.settings.GrayableIconSwitchPreference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep class af.shizuku.manager.settings.IntegerSimpleMenuPreference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep class af.shizuku.manager.settings.HomeLayoutSimulatorPreference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep class af.shizuku.manager.settings.PlusNavPreference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep class af.shizuku.manager.settings.PlusFeaturePreference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep class af.shizuku.manager.settings.DiagnosticsDashboardPreference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+-keep class af.shizuku.manager.settings.AppPickerPreference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+
 # Keep WorkManager workers instantiated by name via reflection.
 # Both RemoteDbSyncWorker and AdbStartWorker must maintain their class names.
 -keep class * extends androidx.work.ListenableWorker {

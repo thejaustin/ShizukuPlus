@@ -1,9 +1,5 @@
 <div align="center">
 
-I've finished moving my development environment and am now on a new device! Goodbye S22 Ultra, Hello S26 Ultra!
-
-Please keep submitting issues you're experiencing, and feel free to open pull requests if you think you can help improve the codebase! I'm looking for contributors and collaborators to keep the vision alive and stabilize the project, so feel free to reach out!
-
 # Shizuku+
 
 The advanced privileged-process manager for Android.
@@ -17,6 +13,8 @@ Shizuku lets normal apps use system-level APIs directly via a privileged process
 [![Latest Release](https://img.shields.io/github/v/release/thejaustin/ShizukuPlus?style=for-the-badge&color=3060bf&labelColor=204080&label=Latest)](https://github.com/thejaustin/ShizukuPlus/releases/latest)
 
 </div>
+
+> **Contributors welcome!** If you've found a bug or want to improve the codebase, please open an issue or pull request — the project is actively looking for contributors and collaborators.
 
 ## ⬇️ Download
 
@@ -156,6 +154,34 @@ Full license texts and per-library details: [OPEN_SOURCE_LICENSES.md](OPEN_SOURC
 ## 📃 License
 
 [Apache 2.0](LICENSE)
+
+### Contributors
+
+Thank you to everyone who has contributed code, translations, and testing to Shizuku+:
+
+**Code Contributors**
+
+| Contributor | Contribution |
+|-------------|--------------|
+| [thejaustin](https://github.com/thejaustin) | Project founder & primary maintainer — all core Plus features, UI/UX, and infrastructure |
+| [thedjchi](https://github.com/thedjchi) | Intermediate fork base; Android 17 (SDK 37) compatibility groundwork |
+| [Kevin Doremy](https://github.com/doremylover) | Dead code removal, unused import cleanup, layout & class refactoring |
+| [Ryfter](https://github.com/Ryfter) | mDNS timeout improvements, FGS subtype refactoring, notification UX |
+| [vvb2060](https://github.com/vvb2060) | AGP build system updates, LTO optimization, license clarifications |
+| [Haruue Icymoon](https://github.com/haruue) | Documentation & README improvements |
+
+**Translation Contributors**
+
+| Language | Contributor |
+|----------|-------------|
+| Brazilian Portuguese | [odorizzioficial](https://github.com/odorizzioficial) |
+| French | [Ryfter](https://github.com/Ryfter), [T. Clement](https://github.com/thibaultclement) |
+| Vietnamese | [ThePrimalPea](https://github.com/ThePrimalPea) |
+| Filipino | [IverCoder](https://github.com/IverCoder) |
+| Italian | [Dany-coder778](https://github.com/Dany-coder778) |
+| Japanese | [MES-mitutti](https://github.com/MES-mitutti) |
+
+*Plus many more via community translation through Weblate — thank you to all translators!*
 
 ### Acknowledgments
 - Special thanks to **AkayamiShurui42** for the proactive security research and stability patches (Reference: #239).

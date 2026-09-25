@@ -241,7 +241,9 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
         } else 0
         recyclerView.isVerticalScrollBarEnabled = true
-        recyclerView.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+        val pageBgValue = TypedValue()
+        context.theme.resolveAttribute(R.attr.colorSurfaceContainerLow, pageBgValue, true)
+        recyclerView.setBackgroundColor(pageBgValue.data)
         recyclerView.setPadding(cardMarginPx + contentPaddingPx, oneHandedTopPx, cardMarginPx + contentPaddingPx, 0)
         recyclerView.clipToPadding = false
         recyclerView.addItemDecoration(SettingsItemDecoration(context))
@@ -388,36 +390,16 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             val pos = parent.getChildAdapterPosition(view)
             if (pos == RecyclerView.NO_POSITION) return
 
-            // Add space above category headers for M3E spacing
             if (view.tag == "category_header") {
+                // Space above each category header for M3E group separation
                 outRect.top = (12 * density).toInt()
+            } else {
+                // 2dp gap below every item in a group — shows the page background between
+                // segments so groups look like the M3E segmented-list pattern (Chrome/Settings).
+                outRect.bottom = (2 * density).toInt()
             }
         }
 
         override fun isHeader(view: View): Boolean = view.tag == "category_header"
-
-        // A row gets a divider under it only when another row in the SAME card follows it -
-        // i.e. the next visible child isn't a header (which starts a new card) and isn't absent
-        // (end of the list). This is what actually groups rows into one Chrome-style card instead
-        // of just drawing a background behind them with no internal separation.
-        override fun shouldDrawDivider(parent: RecyclerView, index: Int, count: Int): Boolean {
-            for (i in index + 1 until count) {
-                val next = parent.getChildAt(i) ?: continue
-                if (next.visibility != View.VISIBLE) continue
-                return !isHeader(next)
-            }
-            return false
-        }
-
-        override fun getDividerInset(view: View): Float {
-            if (isHeader(view)) return 16f * density
-            val iconView = view.findViewById<View>(android.R.id.icon)
-            if (iconView == null || iconView.visibility == View.GONE) {
-                return 16f * density
-            }
-            return 56f * density
-        }
-
-        override fun getDividerEndInset(view: View): Float = 16f * density
     }
 }

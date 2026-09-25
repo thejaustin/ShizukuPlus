@@ -12,12 +12,15 @@ import androidx.compose.ui.platform.LocalContext
 class PermissionManagerActivity : AppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        // AppActivity.onCreate() already calls enableEdgeToEdge() — repeating
+        // setDecorFitsSystemWindows here causes inconsistent window state and the same
+        // Explode-transition crash seen in HomeActivity/SettingsActivity (#483, #529).
         setContent {
             val context = LocalContext.current
             AppTheme(
                 darkTheme = isSystemInDarkTheme(),
                 isBlackNightTheme = ThemeHelper.isBlackNightTheme(context),
+                isAmoledPlus = ShizukuSettings.isAmoledPlusEnabled(),
                 isOneUi = ShizukuSettings.isOneUiThemeEnabled(),
                 isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled()
             ) {

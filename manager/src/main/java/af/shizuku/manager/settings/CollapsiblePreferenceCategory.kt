@@ -74,7 +74,10 @@ class CollapsiblePreferenceCategory @JvmOverloads constructor(
         // Cancel any in-flight animator before snapping to current state on rebind —
         // otherwise a running ViewPropertyAnimator takes priority over the direct rotation setter
         // and can leave the arrow pointing the wrong way for the actual expanded state.
+        // ViewPropertyAnimator.cancel() does NOT fire withEndAction, so we must reset isAnimating
+        // manually here — otherwise a mid-animation rebind leaves it stuck at true forever.
         arrow?.animate()?.cancel()
+        isAnimating = false
         arrow?.rotation = if (expanded) 180f else 0f
         updateExpandedStateDescription(holder.itemView)
 

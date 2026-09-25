@@ -34,3 +34,6 @@ build_failure.log
 check.log
 smoke-test.log
 ktlint
+
+# Local build output — compat.apk is built by CI and should not be committed
+manager/src/main/assets/compat.apk

@@ -49,6 +49,11 @@ fun HomeScreen(
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp.dp
 
+    // Status bar height — must be included in the Surface height so content sits below it,
+    // not behind it. The inner Box gets windowInsetsPadding(statusBars) to push all content
+    // (icons, title) below the status bar without shrinking the available content area.
+    val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+
     // When one-handed or One UI: expanded viewing area occupies ~36% of screen height,
     // letting the thumb reach the interaction zone below. Otherwise stay at a flat 64dp bar.
     val expandedHeight = if (isOneHanded || isOneUi) {
@@ -59,8 +64,10 @@ fun HomeScreen(
     val collapsedHeight = 64.dp
 
     val density = LocalDensity.current
-    val expandedHeightPx = with(density) { expandedHeight.toPx() }
-    val collapsedHeightPx = with(density) { collapsedHeight.toPx() }
+    // Include status bar in the px values so the offset limit is calculated against the full
+    // on-screen bar height (content + status bar), keeping collapse math correct.
+    val expandedHeightPx = with(density) { (expandedHeight + statusBarPadding).toPx() }
+    val collapsedHeightPx = with(density) { (collapsedHeight + statusBarPadding).toPx() }
     val heightOffsetLimit = -(expandedHeightPx - collapsedHeightPx)
 
     val topAppBarState = rememberTopAppBarState()
@@ -72,7 +79,6 @@ fun HomeScreen(
         }
     }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
-
     // Snap fully open or fully closed when the user lifts their finger.
     val isScrollIdle = remember { mutableStateOf(true) }
     LaunchedEffect(isScrollIdle.value) {
@@ -83,7 +89,7 @@ fun HomeScreen(
                 val target = if (fraction >= 0.5f) state.heightOffsetLimit else 0f
                 Animatable(state.heightOffset).animateTo(
                     target,
-                    spring(stiffness = Spring.StiffnessMediumLow)
+                    spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMedium)
                 ) { state.heightOffset = value }
             }
         }
@@ -100,17 +106,21 @@ fun HomeScreen(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(expandedHeight + with(density) { scrollBehavior.state.heightOffset.toDp() }),
-                color = if (fraction > 0.85f) {
+                    .height(expandedHeight + statusBarPadding + with(density) { scrollBehavior.state.heightOffset.toDp() }),
+                color = run {
+                    val barAlpha = ((fraction - 0.6f) / 0.35f).coerceIn(0f, 1f)
                     if (ShizukuSettings.isBlurUiEnabled())
-                        MaterialTheme.colorScheme.surface.copy(alpha = 0.82f)
+                        MaterialTheme.colorScheme.surface.copy(alpha = 0.82f * barAlpha)
                     else
-                        MaterialTheme.colorScheme.surfaceContainer
-                } else {
-                    Color.Transparent
+                        MaterialTheme.colorScheme.surfaceContainer.copy(alpha = barAlpha)
                 }
             ) {
-                Box(modifier = Modifier.fillMaxSize()) {
+                // Use pre-computed statusBarPadding (captured before the Scaffold) rather than
+                // windowInsetsPadding(WindowInsets.statusBars) inside the topBar slot. Scaffold
+                // in Material3 1.4+ consumes contentWindowInsets before composing its slots, so
+                // WindowInsets.statusBars inside the topBar returns 0, hiding the action buttons
+                // behind the status bar on Android 17+ (#528).
+                Box(modifier = Modifier.fillMaxSize().padding(top = statusBarPadding)) {
                     // Action icons pinned at top-end inside the 64dp collapsed row
                     Row(
                         modifier = Modifier
@@ -153,7 +163,7 @@ fun HomeScreen(
                     // horizontalBias: 0 = center, -1 = start.
                     val horizontalBias = -curvedFraction
                     val startPadding = lerp(start = 24.dp, stop = 20.dp, fraction = curvedFraction)
-                    val endPadding = lerp(start = 24.dp, stop = 140.dp, fraction = curvedFraction)
+                    val endPadding = lerp(start = 24.dp, stop = 160.dp, fraction = curvedFraction)
                     val titleFontSize = lerp(
                         start = if (isOneUi) 32.sp else 28.sp,
                         stop = 20.sp,
@@ -176,7 +186,7 @@ fun HomeScreen(
                             .padding(
                                 start = startPadding,
                                 end = endPadding,
-                                top = if (curvedFraction > 0.8f) 0.dp else 24.dp
+                                top = lerp(start = 24.dp, stop = 0.dp, fraction = curvedFraction)
                             ),
                         contentAlignment = BiasAlignment(horizontalBias, 0f)
                     ) {
@@ -212,8 +222,19 @@ fun HomeScreen(
             }
         }
     ) { innerPadding ->
+        // innerPadding.top decreases as the bar collapses during scroll. Using it directly
+        // causes recyclerViewProvider to call setPadding with shrinking values every frame,
+        // which fights the RecyclerView's own scroll and pulls content upward mid-scroll.
+        // Fix: track the maximum top seen — that's the fully-expanded bar height + insets,
+        // which is the correct permanent RecyclerView top padding. It only rises (never drops
+        // during scroll), so the RecyclerView padding is stable once the bar is first rendered.
+        val stableTop = remember(expandedHeight) { mutableStateOf(0.dp) }
+        SideEffect {
+            val t = innerPadding.calculateTopPadding()
+            if (t > stableTop.value) stableTop.value = t
+        }
         val adjustedPadding = PaddingValues(
-            top = innerPadding.calculateTopPadding(),
+            top = stableTop.value,
             bottom = innerPadding.calculateBottomPadding() + 72.dp
         )
         AnimatedGradientBackground {

@@ -175,6 +175,9 @@ public class ShizukuSettings {
         public static final String KEY_SHOW_STATUS_CARD_OUTLINE = "show_status_card_outline";
         public static final String KEY_STATUS_CARD_OUTLINE_STYLE = "status_card_outline_style";
 
+        // AMOLED+ (Shizuku+ additions)
+        public static final String KEY_AMOLED_PLUS = "amoled_plus_enabled";
+
         // Companion Mode (Shizuku+ additions)
         public static final String KEY_COMPANION_MODE = "companion_mode";
         public static final String KEY_COMPANION_FALLBACK = "companion_fallback";
@@ -294,6 +297,10 @@ public class ShizukuSettings {
 
     public static boolean isBlurUiEnabled() {
         return getPreferences().getBoolean(Keys.KEY_BLUR_UI, false);
+    }
+
+    public static boolean isAmoledPlusEnabled() {
+        return getPreferences().getBoolean(Keys.KEY_AMOLED_PLUS, false);
     }
 
     public static boolean isOneUiThemeEnabled() {

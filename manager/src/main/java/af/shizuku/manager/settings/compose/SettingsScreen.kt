@@ -64,7 +64,6 @@ fun SettingsScreen(
     val isDarkTheme = isSystemInDarkTheme()
     val isBlackTheme = isDarkTheme && af.shizuku.manager.app.ThemeHelper.isBlackNightTheme(context)
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-
     LaunchedEffect(Unit) { onScrollStateCreated(scrollBehavior.state) }
     LaunchedEffect(isScrollIdle) {
         if (isScrollIdle) {
@@ -73,7 +72,7 @@ fun SettingsScreen(
             if (fraction > 0.001f && fraction < 0.999f) {
                 val target = if (fraction >= 0.5f) state.heightOffsetLimit else 0f
                 Animatable(state.heightOffset).animateTo(
-                    target, spring(stiffness = Spring.StiffnessMediumLow)
+                    target, spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMedium)
                 ) { state.heightOffset = value }
             }
         }

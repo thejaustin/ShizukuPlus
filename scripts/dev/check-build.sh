@@ -4,4 +4,4 @@
 # break compilation without paying for the full APK pipeline.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
-./gradlew :manager:compileReleaseKotlin :manager:compileReleaseJavaWithJavac "$@"
+bash gradlew :manager:compileShizukuplusReleaseKotlin :manager:compileShizukuplusReleaseJavaWithJavac "$@"

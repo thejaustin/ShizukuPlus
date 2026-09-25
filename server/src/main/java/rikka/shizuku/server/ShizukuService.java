@@ -228,10 +228,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
             // 3. Raise max_phantom_processes to INT_MAX.
             //    Replaces `device_config put activity_manager max_phantom_processes 2147483647`.
+            //    Uses reflection (no direct class reference) so ART on API < 29 does not throw
+            //    NoClassDefFoundError during class verification (#527).
             try {
-                android.provider.DeviceConfig.setProperty(
-                        "activity_manager", "max_phantom_processes",
-                        "2147483647", /* makeDefault= */ false);
+                Class<?> dc = Class.forName("android.provider.DeviceConfig");
+                java.lang.reflect.Method setProperty = dc.getMethod("setProperty",
+                        String.class, String.class, String.class, boolean.class);
+                setProperty.invoke(null, "activity_manager", "max_phantom_processes",
+                        "2147483647", false);
             } catch (Exception e) {
                 LOGGER.w("phantom killer: DeviceConfig setProperty failed", e);
             }

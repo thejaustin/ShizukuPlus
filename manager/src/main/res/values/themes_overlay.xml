@@ -3,10 +3,9 @@
     <style name="ThemeOverlay"/>
     <style name="ThemeOverlay.Accent" parent=""/>
 
-    <!-- AMOLED / Black Night overlay — every surface and container level forced to pure black
-         so OLED panels light zero pixels for any app background. (#496: near-black values like
-         #0D0D0D are still visibly grey on high-contrast OLEDs and break the "pure AMOLED" look.
-         Elevation is communicated via icon/text contrast rather than tonal lift in this mode.) -->
+    <!-- AMOLED / Black Night overlay — background and base surfaces are pure black; elevated
+         containers use subtle near-black tones so cards, dialogs, and sheets have visible
+         depth without wasting pixels on a fully white-lit background. -->
     <style name="ThemeOverlay.Black">
         <item name="android:colorPrimary">@android:color/black</item>
         <item name="android:colorPrimaryDark">@android:color/black</item>
@@ -14,6 +13,16 @@
         <item name="colorSurface">@android:color/black</item>
         <item name="colorSurfaceDim">@android:color/black</item>
         <item name="colorSurfaceContainerLowest">@android:color/black</item>
+        <item name="colorSurfaceContainerLow">#0D0D0D</item>
+        <item name="colorSurfaceContainer">#111111</item>
+        <item name="colorSurfaceContainerHigh">#141414</item>
+        <item name="colorSurfaceContainerHighest">#1A1A1A</item>
+    </style>
+
+    <!-- AMOLED+ overlay — extends AMOLED by also forcing all elevated surface container
+         tokens to pure black so cards blend completely with the background. Enable via the
+         "AMOLED+" toggle in Personalization; requires AMOLED Night mode to be active. -->
+    <style name="ThemeOverlay.Black.Plus" parent="ThemeOverlay.Black">
         <item name="colorSurfaceContainerLow">@android:color/black</item>
         <item name="colorSurfaceContainer">@android:color/black</item>
         <item name="colorSurfaceContainerHigh">@android:color/black</item>

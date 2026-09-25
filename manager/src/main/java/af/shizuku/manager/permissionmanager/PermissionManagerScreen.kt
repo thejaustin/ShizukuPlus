@@ -146,21 +146,23 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
                 isLoading = isLoadingPerms,
                 paddingValues = paddingValues,
                 onToggle = { perm, grant ->
-                    val app = selectedApp ?: return@onToggle
-                    scope.launch(Dispatchers.IO) {
-                        val ok = if (grant) {
-                            ShizukuPlusAPI.PackageGovernor.grantPermission(app.packageName, perm.name)
-                        } else {
-                            ShizukuPlusAPI.PackageGovernor.revokePermission(app.packageName, perm.name)
-                        }
-                        if (ok) {
-                            withContext(Dispatchers.Main) {
-                                appPerms = appPerms.map {
-                                    if (it.name == perm.name) it.copy(isGranted = grant) else it
-                                }
+                    val app = selectedApp
+                    if (app != null) {
+                        scope.launch(Dispatchers.IO) {
+                            val ok = if (grant) {
+                                ShizukuPlusAPI.PackageGovernor.grantPermission(app.packageName, perm.name)
+                            } else {
+                                ShizukuPlusAPI.PackageGovernor.revokePermission(app.packageName, perm.name)
                             }
-                        } else {
-                            Timber.w("PermissionManager: toggle failed for ${perm.name}")
+                            if (ok) {
+                                withContext(Dispatchers.Main) {
+                                    appPerms = appPerms.map {
+                                        if (it.name == perm.name) it.copy(isGranted = grant) else it
+                                    }
+                                }
+                            } else {
+                                Timber.w("PermissionManager: toggle failed for ${perm.name}")
+                            }
                         }
                     }
                 }

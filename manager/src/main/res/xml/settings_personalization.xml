@@ -22,6 +22,14 @@
             android:icon="@drawable/ic_bedtime_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="amoled_plus_enabled"
+            android:title="@string/settings_amoled_plus"
+            android:summary="@string/settings_amoled_plus_summary"
+            android:defaultValue="false"
+            android:dependency="black_night_theme"
+            android:icon="@drawable/ic_bedtime_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="use_system_color"
             android:title="@string/settings_use_system_color"
             android:icon="@drawable/ic_palette_24" />

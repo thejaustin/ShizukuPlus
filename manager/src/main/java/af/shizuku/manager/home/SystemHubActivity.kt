@@ -13,12 +13,15 @@ import af.shizuku.manager.home.compose.SystemHubScreen
 class SystemHubActivity : AppActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        // AppActivity.onCreate() already calls enableEdgeToEdge() — repeating
+        // setDecorFitsSystemWindows here causes inconsistent window state during Explode
+        // transitions and crashes on Android 16+ (#483, #529).
         setContent {
             val context = LocalContext.current
             AppTheme(
                 darkTheme = isSystemInDarkTheme(),
                 isBlackNightTheme = ThemeHelper.isBlackNightTheme(context),
+                isAmoledPlus = ShizukuSettings.isAmoledPlusEnabled(),
                 isOneUi = ShizukuSettings.isOneUiThemeEnabled(),
                 isRoundedEdges = ShizukuSettings.isRoundedEdgesEnabled()
             ) {

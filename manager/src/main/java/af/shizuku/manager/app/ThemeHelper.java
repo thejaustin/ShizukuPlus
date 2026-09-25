@@ -17,6 +17,7 @@ public class ThemeHelper {
 
     private static final String THEME_DEFAULT = "DEFAULT";
     private static final String THEME_BLACK = "BLACK";
+    private static final String THEME_BLACK_PLUS = "BLACK_PLUS";
 
     public static boolean isBlackNightTheme(Context context) {
         return ShizukuSettings.getPreferences().getBoolean(ShizukuSettings.Keys.KEY_BLACK_NIGHT_THEME, EnvironmentUtils.isWatch());
@@ -29,8 +30,9 @@ public class ThemeHelper {
 
     public static String getTheme(Context context) {
         if (isBlackNightTheme(context)
-                && ResourceUtils.isNightMode(context.getResources().getConfiguration()))
-            return THEME_BLACK;
+                && ResourceUtils.isNightMode(context.getResources().getConfiguration())) {
+            return ShizukuSettings.isAmoledPlusEnabled() ? THEME_BLACK_PLUS : THEME_BLACK;
+        }
 
         return ShizukuSettings.getPreferences().getString(ShizukuSettings.Keys.KEY_LIGHT_THEME, THEME_DEFAULT);
     }
@@ -38,6 +40,8 @@ public class ThemeHelper {
     @StyleRes
     public static int getThemeStyleRes(Context context) {
         switch (getTheme(context)) {
+            case THEME_BLACK_PLUS:
+                return R.style.ThemeOverlay_Black_Plus;
             case THEME_BLACK:
                 return R.style.ThemeOverlay_Black;
             case THEME_DEFAULT:

@@ -20,7 +20,7 @@ def getGitCommitCount() {
 }
 
 def gitCommitCount = getGitCommitCount()
-def baseVersionName = "13.6.0"
+def baseVersionName = "14.0.0"
 ext {
     versionCode = gitCommitCount
     versionName = "Shizuku+ ${baseVersionName}.r${gitCommitCount}"
@@ -41,11 +41,11 @@ subprojects {
 
     plugins.withId("com.android.base") {
         android {
-            compileSdk = 35
-            buildToolsVersion = "35.0.0"
+            compileSdk = 37
+            buildToolsVersion = "36.0.0"
             defaultConfig {
                 minSdk = 24
-                targetSdk = 35
+                targetSdk = 36
             }
             compileOptions {
                 sourceCompatibility = JavaVersion.VERSION_21
