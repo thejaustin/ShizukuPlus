@@ -245,7 +245,7 @@
     <string name="wadb_permission_error_notification_content">Shizuku 需要 WRITE_SECURE_SETTINGS
         权限才能开机启动。点击了解如何授予此权限。</string>
     <string name="wadb_notification_channel">ADB 自动启动服务</string>
-    <!-- 看门狗 -->
+    <!-- Watchdog -->
     <string name="watchdog_running">看门狗 正在运行</string>
     <string name="watchdog_turn_off">关闭</string>
     <string name="watchdog_shizuku_crashed_title">Shizuku 最近崩溃了</string>
@@ -556,11 +556,11 @@
     <string name="settings_status_bar_governor_plus_title">状态栏控制</string>
     <string name="settings_package_governor_plus_title">应用包管理器</string>
     <string name="settings_avf_manager_title">虚拟机管理器</string>
-    <string name="settings_dhizuku_screencap_lockdown">屏幕捕获锁定</string>
-    <string name="settings_dhizuku_screencap_lockdown_summary">在全设备范围内禁用截屏和屏幕录制</string>
+    <string name="settings_dhizuku_screencap_lockdown">截图和录屏锁定</string>
+    <string name="settings_dhizuku_screencap_lockdown_summary">在全设备范围内禁用截图和录屏</string>
     <string name="settings_dhizuku_usb_lockdown">USB 数据锁定</string>
     <string name="settings_dhizuku_usb_lockdown_summary">禁止 USB 文件传输（MTP），并在物理层面保护设备</string>
-    <string name="settings_dhizuku_suspended_packages">已挂起的应用</string>
+    <string name="settings_dhizuku_suspended_packages">已暂停的应用</string>
     <string name="settings_dhizuku_suspended_packages_summary">选择要冻结并彻底禁止运行的应用</string>
     <string name="settings_backup_settings">备份设置</string>
     <string name="settings_backup_settings_summary">使用生物识别加密安全地导出您的配置与增强功能。</string>
