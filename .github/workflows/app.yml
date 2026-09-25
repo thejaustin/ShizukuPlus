@@ -405,7 +405,7 @@ jobs:
           # build the headline major == the era major, so a single callout is correct here. When you
           # bump this, also re-run scripts/backfill_majors.py (add the new major to its MAJORS list)
           # so older release pages show BOTH this headline and the major of their own era.
-          MAJOR_RELEASE="v14.0.0.r2660"
+          MAJOR_RELEASE="v14.0.0.r2664"
           MAJOR_DESC="Shizuku+ 14 — Material 3 Expressive UI overhaul (animated headers, One UI 9 style, tonal theming), full compileSdk 37 / AGP 9.4 / Gradle 9.7 upgrade, Android 17 QPR1 ADB fix, 100% Ukrainian + Brazilian Portuguese localizations, Watchdog WorkManager revival, SU bridge real framework operations, and 30+ bug fixes across server, manager, and Plus APIs."
 
           # Most recent CRITICAL FIX to spotlight — a distinct, lower tier from MAJOR_RELEASE

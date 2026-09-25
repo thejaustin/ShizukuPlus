@@ -177,6 +177,20 @@
 -dontwarn io.sentry.compose.**
 -dontwarn androidx.compose.**
 
+# android.hardware.fingerprint.FingerprintManager and its inner classes were removed from
+# the compileSdk 37 stub library (Android 17). biometric:1.2.0-alpha05 references them via
+# FingerprintManagerCompat; the compat layer gates on SDK_INT and uses BiometricPrompt
+# instead, so these references are never reached at runtime on API 28+ devices.
+-dontwarn android.hardware.fingerprint.**
+
+# androidx.window.extensions and androidx.window.sidecar are OEM extension interfaces
+# that are provided by device vendors at runtime via ServiceLoader/reflection, not by
+# the framework stub or the Jetpack AAR. AGP 9.4 / R8 9.4 strict mode requires explicit
+# dontwarn for all transitive missing classes; these are never invoked via reflection-only
+# paths that the ProGuard keep rules already guard.
+-dontwarn androidx.window.extensions.**
+-dontwarn androidx.window.sidecar.**
+
 -allowaccessmodification
 #-repackageclasses rikka.shizuku
 -keepattributes SourceFile,LineNumberTable

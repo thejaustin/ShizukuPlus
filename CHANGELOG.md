@@ -2,7 +2,7 @@
 
 All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md](AI_ATTRIBUTIONS.md) for full AI pair-programming provenance and commit mapping.
 
-## [v14.0.0 — Stable Release / Build r2658+]
+## [v14.0.0 — Stable Release / Build r2664]
 
 *Co-developed with Antigravity & Claude Code*
 
