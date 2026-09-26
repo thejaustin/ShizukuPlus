@@ -60,6 +60,7 @@ object AdbStarter {
 
         try {
             ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
+            Timber.tag(TAG).i("startAdb: initiating connection on port %d", port)
             log?.invoke("Starting with wireless adb...\n")
 
             withContext(Dispatchers.IO) {
@@ -76,6 +77,7 @@ object AdbStarter {
                     if (tcpPort !in 1..65535) {
                         Timber.tag(TAG).w("TCP mode enabled but stored TCP port is invalid ($tcpPort) — skipping TCP redirect")
                     } else {
+                        Timber.tag(TAG).d("Switching ADB from port %d to TCP port %d", activePort, tcpPort)
                         log?.invoke("Connecting on port $activePort...")
 
                         AdbClient("127.0.0.1", activePort, key).use { client ->
@@ -92,18 +94,22 @@ object AdbStarter {
                     }
                 }
 
+                Timber.tag(TAG).i("Connecting to ADB daemon at 127.0.0.1:%d", activePort)
                 log?.invoke("Connecting on port $activePort...")
 
                 AdbClient("127.0.0.1", activePort, key).use { client ->
                     connectWithRetry(client)
+                    Timber.tag(TAG).i("Connected to ADB at 127.0.0.1:%d; deploying starter command", activePort)
                     log?.invoke("Successfully connected on port $activePort...\n")
                     client.runCommand("shell:${Starter.internalCommand}")
                     ShizukuSettings.setLastPort(activePort)
                     ActivityLogManager.log("Shizuku", context.packageName, "Service started via ADB on port $activePort")
                     ShizukuStateMachine.update()
+                    Timber.tag(TAG).i("Shizuku service started successfully via ADB on port %d", activePort)
                 }
             }
         } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "startAdb failed on port %d: %s", port, e.message)
             if (e is SSLException && (e.message?.contains("protocol version") == true || e is javax.net.ssl.SSLProtocolException)) {
                 withContext(Dispatchers.Main) {
                     val activity = context.getActivity()
@@ -179,9 +185,12 @@ object AdbStarter {
                     delay(delayTime)
                     delayTime = (delayTime * 1.5).toLong().coerceAtMost(3000L) // Exponential backoff up to 3s
                 }
+                Timber.tag(TAG).d("Connecting to ADB attempt %d/%d (port=%d)", attempt, maxAttempts, client.port)
                 client.connect()
+                Timber.tag(TAG).d("Connected successfully on attempt %d", attempt)
                 break
             } catch (e: Exception) {
+                Timber.tag(TAG).w(e, "Connection attempt %d/%d failed: %s", attempt, maxAttempts, e.message)
                 if (
                     attempt == maxAttempts ||
                     e is CancellationException

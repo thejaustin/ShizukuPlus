@@ -4,7 +4,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_diagnostics"
         android:title="@string/settings_advanced_category_diagnostics"
-        android:icon="@drawable/ic_medical_services_24"
         android:defaultValue="true">
 
         <Preference
@@ -60,7 +59,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_adb_tools"
         android:title="@string/settings_advanced_category_adb_tools"
-        android:icon="@drawable/ic_adb_24"
         android:defaultValue="false">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference

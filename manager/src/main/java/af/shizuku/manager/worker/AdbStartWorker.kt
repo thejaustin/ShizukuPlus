@@ -41,6 +41,10 @@ import af.shizuku.manager.utils.ShizukuStateMachine
 class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         try {
+            timber.log.Timber.tag("AdbStartWorker").i(
+                "doWork: runAttempt=%d, isAdbEnabled=%s, tcpMode=%s",
+                runAttemptCount, EnvironmentUtils.isAdbEnabled(), ShizukuSettings.getTcpMode()
+            )
             updateNotification(
                 applicationContext,
                 WorkerState.RUNNING
@@ -185,15 +189,19 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
             }.first()
             }
 
+            timber.log.Timber.tag("AdbStartWorker").i("doWork: resolved port %d, starting ADB client", port)
             AdbStarter.startAdb(applicationContext, port)
             Starter.waitForBinder()
             ActivityLogManager.log("Shizuku", applicationContext.packageName, "Service started via background ADB worker on port $port")
+            timber.log.Timber.tag("AdbStartWorker").i("doWork: Shizuku service successfully started and binder ready on port %d", port)
 
             val nm = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             nm.cancel(ShizukuReceiverStarter.NOTIFICATION_ID)
 
             return Result.success()
         } catch (e: CancellationException) {
+            val reason = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) stopReason else -1
+            timber.log.Timber.tag("AdbStartWorker").w("doWork: job cancelled (stopReason=%d)", reason)
             val state = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
                 WorkerState.AWAITING_RETRY
             } else {
@@ -207,6 +215,7 @@ class AdbStartWorker(context: Context, params: WorkerParameters) : CoroutineWork
 
             throw e
         } catch (e: Exception) {
+            timber.log.Timber.tag("AdbStartWorker").e(e, "doWork: failed on runAttempt %d: %s", runAttemptCount, e.message)
             val ignored = listOf(
                 EOFException::class,
                 SecurityException::class,

@@ -4,7 +4,6 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:title="@string/settings_main_category_capabilities"
-        android:icon="@drawable/ic_bolt_24"
         app:collapsible="false">
 
         <af.shizuku.manager.settings.PlusNavPreference
@@ -25,7 +24,6 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:title="@string/settings_main_category_personalization"
-        android:icon="@drawable/ic_palette_24"
         app:collapsible="false">
 
         <Preference
@@ -46,7 +44,6 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:title="@string/settings_main_category_system"
-        android:icon="@drawable/ic_settings_suggest_24"
         app:collapsible="false">
 
         <Preference

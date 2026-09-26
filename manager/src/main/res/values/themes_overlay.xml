@@ -7,16 +7,15 @@
          containers use subtle near-black tones so cards, dialogs, and sheets have visible
          depth without wasting pixels on a fully white-lit background. -->
     <style name="ThemeOverlay.Black">
-        <item name="android:colorPrimary">@android:color/black</item>
         <item name="android:colorPrimaryDark">@android:color/black</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="colorSurface">@android:color/black</item>
         <item name="colorSurfaceDim">@android:color/black</item>
         <item name="colorSurfaceContainerLowest">@android:color/black</item>
-        <item name="colorSurfaceContainerLow">#0D0D0D</item>
-        <item name="colorSurfaceContainer">#111111</item>
-        <item name="colorSurfaceContainerHigh">#141414</item>
-        <item name="colorSurfaceContainerHighest">#1A1A1A</item>
+        <item name="colorSurfaceContainerLow">@android:color/black</item>
+        <item name="colorSurfaceContainer">#0B0B0B</item>
+        <item name="colorSurfaceContainerHigh">#121212</item>
+        <item name="colorSurfaceContainerHighest">#181818</item>
     </style>
 
     <!-- AMOLED+ overlay — extends AMOLED by also forcing all elevated surface container

@@ -51,15 +51,24 @@ object IconStyleHelper {
         style: Style = current(),
         colorMode: ColorMode = currentColorMode()
     ) {
+        var styledCount = 0
         for (i in 0 until group.preferenceCount) {
             val pref = group.getPreference(i)
             if (pref is PreferenceGroup) {
                 applyToTree(context, pref, style, colorMode)
+                // PreferenceCategory (including CollapsiblePreferenceCategory) headers
+                // must never be wrapped in 48dp item icon pills
+                if (pref is androidx.preference.PreferenceCategory) continue
             }
             pref.icon?.let { original ->
                 pref.icon = stylize(context, original, style, colorMode, seedKey = pref.key)
+                styledCount++
             }
         }
+        timber.log.Timber.tag("IconStyleHelper").d(
+            "applyToTree: styled %d icons in group '%s' (style=%s, mode=%s)",
+            styledCount, group.key ?: group.title ?: "root", style, colorMode
+        )
     }
 
     fun stylize(

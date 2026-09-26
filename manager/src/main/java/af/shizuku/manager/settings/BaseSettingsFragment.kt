@@ -66,12 +66,20 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun getPrefIconCacheKey(pref: androidx.preference.Preference, index: Int): String {
+        return pref.key ?: "pref_${index}_${pref.title?.toString().hashCode()}"
+    }
+
     private fun captureOriginalIcons(group: androidx.preference.PreferenceGroup) {
         for (i in 0 until group.preferenceCount) {
             val pref = group.getPreference(i)
-            if (pref is androidx.preference.PreferenceGroup) captureOriginalIcons(pref)
-            pref.key?.let { key ->
-                originalIcons[key] = pref.icon?.constantState?.newDrawable()
+            if (pref is androidx.preference.PreferenceGroup) {
+                captureOriginalIcons(pref)
+                if (pref is androidx.preference.PreferenceCategory) continue
+            }
+            pref.icon?.let { icon ->
+                val key = getPrefIconCacheKey(pref, i)
+                originalIcons[key] = icon.constantState?.newDrawable() ?: icon
             }
         }
     }
@@ -95,12 +103,21 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         style: IconStyleHelper.Style,
         colorMode: IconStyleHelper.ColorMode
     ) {
+        var count = 0
         for (i in 0 until group.preferenceCount) {
             val pref = group.getPreference(i)
-            if (pref is androidx.preference.PreferenceGroup) reapplyIconStyles(ctx, pref, style, colorMode)
-            val original = pref.key?.let { originalIcons[it] } ?: continue
+            if (pref is androidx.preference.PreferenceGroup) {
+                reapplyIconStyles(ctx, pref, style, colorMode)
+                if (pref is androidx.preference.PreferenceCategory) continue
+            }
+            val key = getPrefIconCacheKey(pref, i)
+            val original = originalIcons[key] ?: continue
             pref.icon = IconStyleHelper.stylize(ctx, original.mutate(), style, colorMode, pref.key)
+            count++
         }
+        timber.log.Timber.tag("BaseSettings").d(
+            "reapplyIconStyles: updated %d icons in group '%s'", count, group.key ?: group.title ?: "root"
+        )
     }
 
     /**
@@ -245,10 +262,19 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         val oneHandedTopPx = if (ShizukuSettings.isOneHandedModeEnabled()) {
             (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
         } else 0
-        recyclerView.isVerticalScrollBarEnabled = true
-        val pageBgValue = TypedValue()
-        context.theme.resolveAttribute(R.attr.colorSurfaceContainerLow, pageBgValue, true)
-        recyclerView.setBackgroundColor(pageBgValue.data)
+        val isOled = af.shizuku.manager.app.ThemeHelper.isBlackNightTheme(context) &&
+            rikka.core.res.isNight(context.resources.configuration)
+        val pageBgColor = if (isOled) {
+            android.graphics.Color.BLACK
+        } else {
+            val pageBgValue = TypedValue()
+            context.theme.resolveAttribute(R.attr.colorSurfaceContainerLow, pageBgValue, true)
+            pageBgValue.data
+        }
+        recyclerView.setBackgroundColor(pageBgColor)
+        timber.log.Timber.tag("BaseSettings").d(
+            "onCreateRecyclerView: isOled=%s, pageBgColor=0x%08X", isOled, pageBgColor
+        )
         recyclerView.setPadding(cardMarginPx + contentPaddingPx, oneHandedTopPx, cardMarginPx + contentPaddingPx, 0)
         recyclerView.clipToPadding = false
         recyclerView.addItemDecoration(SettingsItemDecoration(context))

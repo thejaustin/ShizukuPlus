@@ -5,7 +5,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_startup"
         android:title="@string/settings_behavior_category_startup"
-        android:icon="@drawable/ic_power_settings_new_24"
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
@@ -39,7 +38,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_network_activity"
         android:title="@string/settings_behavior_category_network_activity"
-        android:icon="@drawable/ic_lan_24"
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
@@ -73,7 +71,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_updates"
         android:title="@string/settings_update_category"
-        android:icon="@drawable/ic_update_24"
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference

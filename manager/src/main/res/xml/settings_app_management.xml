@@ -5,7 +5,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_gestures"
         android:title="@string/settings_app_management_category_gestures"
-        android:icon="@drawable/ic_swipe_24"
         android:defaultValue="true">
 
         <rikka.preference.SimpleMenuPreference
@@ -60,7 +59,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_verified_install"
         android:title="@string/settings_app_management_category_verified_install"
-        android:icon="@drawable/ic_shield_24"
         android:defaultValue="false">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference

@@ -24,7 +24,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_connectivity"
         android:title="@string/settings_plus_category_connectivity"
-        android:icon="@drawable/ic_lan_24"
         android:defaultValue="false">
 
         <af.shizuku.manager.settings.PlusFeaturePreference
@@ -67,7 +66,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_system"
         android:title="@string/settings_plus_category_system_performance"
-        android:icon="@drawable/ic_settings_suggest_24"
         android:defaultValue="false">
 
         <af.shizuku.manager.settings.PlusFeaturePreference
@@ -135,7 +133,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_security"
         android:title="@string/settings_plus_category_security_access"
-        android:icon="@drawable/ic_shield_24"
         android:defaultValue="false">
 
         <af.shizuku.manager.settings.PlusFeaturePreference
@@ -210,7 +207,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_backup"
         android:title="@string/settings_plus_category_backup_restore"
-        android:icon="@drawable/ic_folder_24"
         android:defaultValue="false">
 
         <Preference
@@ -230,7 +226,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_developer"
         android:title="@string/settings_plus_category_experimental"
-        android:icon="@drawable/ic_science_24"
         android:defaultValue="false">
 
         <af.shizuku.manager.settings.PlusFeaturePreference

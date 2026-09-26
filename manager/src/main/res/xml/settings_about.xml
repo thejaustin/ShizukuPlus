@@ -6,7 +6,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:title="@string/settings_about"
         android:key="category_about_info"
-        android:icon="@drawable/ic_info_24"
         android:defaultValue="true">
 
         <Preference

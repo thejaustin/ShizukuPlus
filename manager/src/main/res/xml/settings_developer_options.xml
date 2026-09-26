@@ -5,7 +5,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_debug"
         android:title="@string/settings_developer_category_debug"
-        android:icon="@drawable/ic_code_24"
         android:defaultValue="true">
 
         <Preference
@@ -19,7 +18,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_experimental"
         android:title="@string/settings_plus_category_developer"
-        android:icon="@drawable/ic_science_24"
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.PlusFeaturePreference

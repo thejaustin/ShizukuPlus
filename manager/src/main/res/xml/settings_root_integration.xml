@@ -5,7 +5,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_adb_connection"
         android:title="@string/settings_root_category_adb_connection"
-        android:icon="@drawable/ic_adb_24"
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
@@ -34,7 +33,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_stock_shizuku_compat"
         android:title="@string/settings_root_category_stock_compat"
-        android:icon="@drawable/ic_baseline_link_24"
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
@@ -55,7 +53,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_su_bridge"
         android:title="@string/settings_root_category_su_bridge"
-        android:icon="@drawable/ic_terminal_24"
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
@@ -80,7 +77,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_root_modules"
         android:title="@string/settings_root_category_rootless_bridges"
-        android:icon="@drawable/ic_root_24"
         android:defaultValue="true">
 
         <Preference
@@ -121,7 +117,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_ghost_bridge"
         android:title="@string/settings_root_category_mocking"
-        android:icon="@drawable/ic_science_24"
         android:defaultValue="false">
 
         <af.shizuku.manager.settings.PlusFeaturePreference
@@ -193,7 +188,6 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_unlocked_bootloader"
         android:title="@string/settings_root_category_bootloader"
-        android:icon="@drawable/ic_shield_24"
         android:defaultValue="false">
 
         <af.shizuku.manager.settings.PlusFeaturePreference
