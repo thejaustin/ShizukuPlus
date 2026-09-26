@@ -210,26 +210,6 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
-            view.post {
-                val lv = listView ?: return@post
-                val interp = android.view.animation.AnimationUtils.loadInterpolator(
-                    lv.context, android.R.interpolator.fast_out_slow_in
-                )
-                for (i in 0 until lv.childCount) {
-                    val child = lv.getChildAt(i) ?: continue
-                    child.alpha = 0f
-                    child.translationY = 12f
-                    child.animate()
-                        .alpha(1f)
-                        .translationY(0f)
-                        .setDuration(ShizukuSettings.scaledAnimationDuration(200))
-                        .setStartDelay(ShizukuSettings.scaledAnimationDuration(i * 25L))
-                        .setInterpolator(interp)
-                        .start()
-                }
-            }
-        }
         setDivider(null)
     }
 
@@ -263,7 +243,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             (context.resources.displayMetrics.heightPixels * 0.16f).toInt()
         } else 0
         val isOled = af.shizuku.manager.app.ThemeHelper.isBlackNightTheme(context) &&
-            rikka.core.res.isNight(context.resources.configuration)
+            rikka.core.util.ResourceUtils.isNightMode(context.resources.configuration)
         val pageBgColor = if (isOled) {
             android.graphics.Color.BLACK
         } else {
@@ -421,16 +401,32 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             val pos = parent.getChildAdapterPosition(view)
             if (pos == RecyclerView.NO_POSITION) return
 
+            // 12dp spacing above category headers to cleanly separate card groups
             if (view.tag == "category_header") {
-                // Space above each category header for M3E group separation
                 outRect.top = (12 * density).toInt()
-            } else {
-                // 2dp gap below every item in a group — shows the page background between
-                // segments so groups look like the M3E segmented-list pattern (Chrome/Settings).
-                outRect.bottom = (2 * density).toInt()
             }
         }
 
         override fun isHeader(view: View): Boolean = view.tag == "category_header"
+
+        override fun shouldDrawDivider(parent: RecyclerView, index: Int, count: Int): Boolean {
+            for (i in index + 1 until count) {
+                val next = parent.getChildAt(i) ?: continue
+                if (next.visibility != View.VISIBLE) continue
+                return !isHeader(next)
+            }
+            return false
+        }
+
+        override fun getDividerInset(view: View): Float {
+            if (isHeader(view)) return 16f * density
+            val iconView = view.findViewById<View>(android.R.id.icon)
+            if (iconView == null || iconView.visibility == View.GONE) {
+                return 16f * density
+            }
+            return 56f * density
+        }
+
+        override fun getDividerEndInset(view: View): Float = 16f * density
     }
 }

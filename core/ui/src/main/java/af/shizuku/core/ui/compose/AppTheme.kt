@@ -213,10 +213,10 @@ fun AppTheme(
             surface = Color.Black,
             surfaceDim = Color.Black,
             surfaceContainerLowest = Color.Black,
-            surfaceContainerLow = if (isAmoledPlus) Color.Black else Color(0xFF0D0D0D),
-            surfaceContainer = if (isAmoledPlus) Color.Black else Color(0xFF111111),
-            surfaceContainerHigh = if (isAmoledPlus) Color.Black else Color(0xFF141414),
-            surfaceContainerHighest = if (isAmoledPlus) Color.Black else Color(0xFF1A1A1A),
+            surfaceContainerLow = Color.Black,
+            surfaceContainer = if (isAmoledPlus) Color.Black else Color(0xFF0B0B0B),
+            surfaceContainerHigh = if (isAmoledPlus) Color.Black else Color(0xFF121212),
+            surfaceContainerHighest = if (isAmoledPlus) Color.Black else Color(0xFF181818),
         )
     }
 

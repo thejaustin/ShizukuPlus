@@ -98,7 +98,7 @@ object AdbStarter {
                 log?.invoke("Connecting on port $activePort...")
 
                 AdbClient("127.0.0.1", activePort, key).use { client ->
-                    connectWithRetry(client)
+                    connectWithRetry(client, activePort)
                     Timber.tag(TAG).i("Connected to ADB at 127.0.0.1:%d; deploying starter command", activePort)
                     log?.invoke("Successfully connected on port $activePort...\n")
                     client.runCommand("shell:${Starter.internalCommand}")
@@ -176,7 +176,7 @@ object AdbStarter {
         }
     }
 
-    private suspend fun connectWithRetry(client: AdbClient) {
+    private suspend fun connectWithRetry(client: AdbClient, port: Int) {
         var delayTime = 500L
         val maxAttempts = 8
         for (attempt in 1..maxAttempts) {
@@ -185,7 +185,7 @@ object AdbStarter {
                     delay(delayTime)
                     delayTime = (delayTime * 1.5).toLong().coerceAtMost(3000L) // Exponential backoff up to 3s
                 }
-                Timber.tag(TAG).d("Connecting to ADB attempt %d/%d (port=%d)", attempt, maxAttempts, client.port)
+                Timber.tag(TAG).d("Connecting to ADB attempt %d/%d (port=%d)", attempt, maxAttempts, port)
                 client.connect()
                 Timber.tag(TAG).d("Connected successfully on attempt %d", attempt)
                 break

@@ -136,6 +136,9 @@ object IconStyleHelper {
      *   pattern (Hct hue-rotation + MaterialColors.harmonize/getColorRoles) rather than a
      *   hand-picked fixed palette - see IconStyleHelper's audit notes.
      */
+    private var cachedPrimary: Int = 0
+    private val perIconColorCache = arrayOfNulls<Pair<Int, Int>>(HUE_SLOTS)
+
     private fun twoToneColors(context: Context, colorMode: ColorMode, seedKey: String?): Pair<Int, Int> {
         return when (colorMode) {
             ColorMode.NONE ->
@@ -144,13 +147,21 @@ object IconStyleHelper {
                 resolveColor(context, R.attr.colorPrimaryContainer) to resolveColor(context, R.attr.colorOnPrimaryContainer)
             ColorMode.PER_ICON -> {
                 val primary = resolveColor(context, R.attr.colorPrimary)
+                if (primary != cachedPrimary) {
+                    cachedPrimary = primary
+                    java.util.Arrays.fill(perIconColorCache, null)
+                }
                 val slot = if (seedKey.isNullOrEmpty()) 0 else abs(seedKey.hashCode()) % HUE_SLOTS
-                val baseHct = Hct.fromInt(primary)
-                val hue = (baseHct.hue + slot * (360.0 / HUE_SLOTS)) % 360.0
-                val seedColor = Hct.from(hue, baseHct.chroma, baseHct.tone).toInt()
-                val harmonized = MaterialColors.harmonize(seedColor, primary)
-                val roles = MaterialColors.getColorRoles(context, harmonized)
-                roles.accentContainer to roles.onAccentContainer
+                perIconColorCache[slot] ?: run {
+                    val baseHct = Hct.fromInt(primary)
+                    val hue = (baseHct.hue + slot * (360.0 / HUE_SLOTS)) % 360.0
+                    val seedColor = Hct.from(hue, baseHct.chroma, baseHct.tone).toInt()
+                    val harmonized = MaterialColors.harmonize(seedColor, primary)
+                    val roles = MaterialColors.getColorRoles(context, harmonized)
+                    val pair = roles.accentContainer to roles.onAccentContainer
+                    perIconColorCache[slot] = pair
+                    pair
+                }
             }
         }
     }
