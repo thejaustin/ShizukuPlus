@@ -177,13 +177,15 @@ Thank you to everyone who has contributed code, translations, and testing to Shi
 | Language | Contributor |
 |----------|-------------|
 | Brazilian Portuguese | [odorizzioficial](https://github.com/odorizzioficial) |
+| Simplified Chinese | [Yizutt](https://github.com/Yizutt) |
+| Ukrainian | [thejaustin](https://github.com/thejaustin) |
 | French | [Ryfter](https://github.com/Ryfter), [T. Clement](https://github.com/thibaultclement) |
 | Vietnamese | [ThePrimalPea](https://github.com/ThePrimalPea) |
 | Filipino | [IverCoder](https://github.com/IverCoder) |
 | Italian | [Dany-coder778](https://github.com/Dany-coder778) |
 | Japanese | [MES-mitutti](https://github.com/MES-mitutti) |
 
-*Plus many more via community translation through Weblate — thank you to all translators!*
+*Simplified Chinese is the most complete locale — 100% of the manager string set, including the companion strings; Ukrainian (99.9%) and Brazilian Portuguese (99.6%) are close behind. The remaining locales cover the shared core strings. Community translations are managed through Crowdin — thank you to all translators!*
 
 ### Acknowledgments
 - Special thanks to **AkayamiShurui42** for the proactive security research and stability patches (Reference: #239).

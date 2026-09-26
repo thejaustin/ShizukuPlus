@@ -179,13 +179,15 @@ Shizuku+ 是一个社区驱动的增强项目，fork 自 [thedjchi/Shizuku](http
 | 语言 | 贡献者 |
 |----------|-------------|
 | 巴西葡萄牙语 | [odorizzioficial](https://github.com/odorizzioficial) |
+| 简体中文 | [Yizutt](https://github.com/Yizutt) |
+| 乌克兰语 | [thejaustin](https://github.com/thejaustin) |
 | 法语 | [Ryfter](https://github.com/Ryfter)、[T. Clement](https://github.com/thibaultclement) |
 | 越南语 | [ThePrimalPea](https://github.com/ThePrimalPea) |
 | 菲律宾语 | [IverCoder](https://github.com/IverCoder) |
 | 意大利语 | [Dany-coder778](https://github.com/Dany-coder778) |
 | 日语 | [MES-mitutti](https://github.com/MES-mitutti) |
 
-*还有更多通过 Weblate 参与社区翻译的人 —— 感谢所有译者！*
+*简体中文是覆盖最完整的语言 —— manager 字符串集 100%，且含伴生字符串；乌克兰语（99.9%）与巴西葡萄牙语（99.6%）紧随其后。其余语言覆盖共享核心字符串。社区译文通过 Crowdin 管理 —— 感谢所有译者！*
 
 ### 鸣谢
 - 特别感谢 **AkayamiShurui42** 主动进行安全研究并提供稳定性补丁（参考：#239）。
