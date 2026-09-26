@@ -154,7 +154,7 @@ object AdbStarter {
             val key = AdbKey(PreferenceAdbKeyStore(ShizukuSettings.getPreferences()), "shizuku+")
             withContext(Dispatchers.IO) {
                 AdbClient("127.0.0.1", port, key).use { client ->
-                    connectWithRetry(client)
+                    connectWithRetry(client, port)
                     client.command("usb:")
                 }
             }
