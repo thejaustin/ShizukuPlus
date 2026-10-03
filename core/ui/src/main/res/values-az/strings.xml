@@ -576,7 +576,7 @@
     <string name="notification_service_start_failed">Shizuku xidmətini başlatmaq mümkün olmadı.</string>
     <string name="notification_service_start_no_root">Root icazəsi almaq mümkün olmadı.</string>
     <string name="notification_working">İşləyir…</string>
-    <string name="notification_channel_adb_pairing">Naqilsiz xətaların kənarlaşdırılması cütləşməsi</string>
+    <string name="notification_channel_adb_pairing">Simsiz sazlama cütləşməsi</string>
     <string name="notification_adb_pairing_input_paring_code">Cütləşdirmə kodunu daxil edin</string>
     <string name="notification_adb_pairing_searching_for_service_title">Cütləşdirmə xidməti axtarılır</string>
     <string name="notification_adb_pairing_service_found_title">Cütləşdirmə xidməti tapıldı</string>
@@ -626,7 +626,7 @@
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Səyahətçini başlatmaq mümkün olmadı</string>
     <string name="toast_copied_to_clipboard">Mübadilə buferinə kopyalandı</string>
-    <string name="accessibility_service_description">Bildirişlərin və ya bölünmüş ekranın asanlıqla istifadə edilə bilmədiyi cihazlar (məsələn, TV-lər və Samsung One UI telefonları) üçün cütləşdirmə dəstəyi təmin edir.\n\nShizuku+-a naqilsiz xətaların kənarlaşdırılması cütləşdirmə ekranından cütləşdirmə kodunu çıxarmağa imkan verir. Cütləşdirmə kodu tapıldıqdan sonra özünü söndürəcək.</string>
+    <string name="accessibility_service_description">Bildirişlərin və ya bölünmüş ekranın asanlıqla istifadə edilə bilmədiyi cihazlar (məsələn, TV-lər və Samsung One UI telefonları) üçün cütləşdirmə dəstəyi təmin edir.\n\nShizuku+-a simsiz sazlama cütləşdirmə ekranından cütləşdirmə kodunu çıxarmağa imkan verir. Cütləşdirmə kodu tapıldıqdan sonra özünü söndürəcək.</string>
     <!-- Messages for legacy -->
     <string name="dialog_legacy_not_support_title">%1$s müasir Shizuku-nu dəstəkləmir</string>
     <string name="dialog_legacy_not_support_message"><![CDATA[Köhnə Shizuku 2019-cu ilin Mart ayından etibarən dəstəklənmir. Həmçinin, köhnə Shizuku yeni Android sistemlərində işləmir.<p>Xahiş edirik <b>%1$s</b> tərtibatçısından tətbiqi yeniləməsini xahiş edin.]]></string>
