@@ -70,26 +70,26 @@
     <string name="home_adb_dialog_view_command_copy_button">Kopyala</string>
     <string name="home_adb_dialog_view_command_button_send">Göndər</string>
     <!-- Home - Wireless Adb -->
-    <string name="home_wireless_adb_title"><![CDATA[Naqilsiz xətaların kənarlaşdırılması ilə başladın]]></string>
-    <string name="home_wireless_adb_description"><![CDATA[Android 11 və daha yuxarı versiyalarda kompüterə qoşulmadan, birbaşa cihazınızdan Naqilsiz xətaların kənarlaşdırılmasını aktivləşdirib Shizuku-nu başladacağı bilərsiniz.<p>Xahiş edirik əvvəlcə addım-addım təlimatla tanış olun.]]></string>
-    <string name="home_wireless_adb_description_pre_11"><![CDATA[Android 11-dən əvvəlki versiyalarda naqilsiz xətaların kənarlaşdırılmasını aktivləşdirmək üçün kompüterə qoşulmaq tələb olunur.]]></string>
+    <string name="home_wireless_adb_title"><![CDATA[Simsiz sazlama ilə başladın]]></string>
+    <string name="home_wireless_adb_description"><![CDATA[Android 11 və daha yuxarı versiyalarda kompüterə qoşulmadan, birbaşa cihazınızdan Simsiz Sazlamanı aktivləşdirib Shizuku-nu başlada bilərsiniz.<p>Xahiş edirik əvvəlcə addım-addım təlimatla tanış olun.]]></string>
+    <string name="home_wireless_adb_description_pre_11"><![CDATA[Android 11-dən əvvəlki versiyalarda simsiz sazlamanı aktivləşdirmək üçün kompüterə qoşulmaq tələb olunur.]]></string>
     <string name="home_wireless_adb_view_guide_button">Addım-addım təlimat</string>
     <!-- Adb -->
-    <string name="dialog_adb_discovery">Naqilsiz xətaların kənarlaşdırılması xidməti axtarılır</string>
-    <string name="dialog_adb_discovery_message">Xahiş edirik "Tərtibatçı seçimləri" bölməsində "Naqilsiz xətaların kənarlaşdırılması" funksiyasını aktivləşdirin. Şəbəkə dəyişdikdə "Naqilsiz xətaların kənarlaşdırılması" avtomatik söndürülür.\n\nQeyd: "Tərtibatçı seçimləri" və ya "USB xətaların kənarlaşdırılması" funksiyasını söndürməyin, əks halda Shizuku dayandırılacaq.</string>
-    <string name="dialog_adb_discovery_message_toggle_wireless_debugging">Axtarış davam edərsə, "Naqilsiz xətaların kənarlaşdırılması" funksiyasını söndürüb yenidən aktivləşdirməyə çalışın.</string>
+    <string name="dialog_adb_discovery">Simsiz sazlama xidməti axtarılır</string>
+    <string name="dialog_adb_discovery_message">Xahiş edirik "Tərtibatçı seçimləri" bölməsində "Wi-Fi simsiz sazlama" funksiyasını aktivləşdirin. Şəbəkə dəyişdikdə "Simsiz sazlama" avtomatik söndürülür.\n\nQeyd: "Tərtibatçı seçimləri" və ya "USB sazlama" funksiyasını söndürməyin, əks halda Shizuku dayandırılacaq.</string>
+    <string name="dialog_adb_discovery_message_toggle_wireless_debugging">Axtarış davam edərsə, "Simsiz sazlama" funksiyasını söndürüb yenidən aktivləşdirməyə çalışın.</string>
     <string name="dialog_adb_port">Port</string>
     <string name="dialog_adb_invalid_port">Port 1 ilə 65535 arasında bir tam ədəd olmalıdır.</string>
-    <string name="adb_pairing">Cütləşdirilir</string>
-    <string name="dialog_adb_pairing_title">Cihazla cütləşdir</string>
-    <string name="dialog_adb_pairing_discovery">Cütləşdirmə xidməti axtarılır</string>
-    <string name="dialog_adb_pairing_paring_code">Cütləşdirmə kodu</string>
-    <string name="paring_code_is_wrong">Cütləşdirmə kodu yanlışdır.</string>
-    <string name="cannot_connect_port">Naqilsiz xətaların kənarlaşdırılması xidmətinə qoşulmaq mümkün olmadı.\n\nXahiş edirik Shizuku-nun şəbəkə keçidini məhdudlaşdıran bütün fayrvol, reklam blokerləri, VPN və ya bənzər tətbiqlərdə istisna siyahısına əlavə olunduğundan əmin olun.</string>
-    <string name="dialog_wireless_adb_not_enabled">Naqilsiz xətaların kənarlaşdırılması aktiv deyil.\nQeyd: Android 11-dən əvvəlki versiyalarda naqilsiz xətaların kənarlaşdırılmasını aktiv etmək üçün kompüterə qoşulmaq mütləqdir.</string>
-    <string name="dialog_usb_debugging_not_enabled">USB xətaların kənarlaşdırılması aktiv deyil.\nXahiş edirik onu "Tərtibatçı seçimləri" bölməsindən aktivləşdirin.</string>
-    <string name="dialog_adb_pairing_message">Xahiş edirik aşağıdakı addımları yerinə yetirərək cütləşdirməni başladın:\n- "Tərtibatçı seçimləri" bölməsinə keçin\n- "USB xətaların kənarlaşdırılması" və "Naqilsiz xətaların kənarlaşdırılması" funksiyalarını aktivləşdirin\n- "Naqilsiz xətaların kənarlaşdırılması" mətni üzərinə toxunun\n- "Cihazı cütləşdirmə kodu ilə cütləşdir" seçimini edin\n- Bildiriş bölməsində cütləşdirmə kodunu daxil edin</string>
-    <string name="dialog_adb_pairing_accessibility_permission">Android 14-də Shizuku-nu Paketi Quraşdırıcı ilə quraşdırdıqda/yenilədikdə cütləşdirmə üçün xüsusi imkanlar xidmətini aktivləşdirməyə kömək edən %1$s icazəsi ləğv edilir.\n\nİcazə vermək üçün aşağıdakı ADB əmrini icra edin:\n\n%2$s\n\nƏmri icra etdikdən sonra cütləşdirmə prosesinə davam edə bilərsiniz.\n\nQeyd: Shizuku-nu ADB vasitəsilə quraşdıraraq/yeniləyərək bu addımdan yan keçə bilərsiniz.</string>
+    <string name="adb_pairing">Qoşalaşdırılır</string>
+    <string name="dialog_adb_pairing_title">Cihazla qoşalaşdır</string>
+    <string name="dialog_adb_pairing_discovery">Qoşalaşdırma xidməti axtarılır</string>
+    <string name="dialog_adb_pairing_paring_code">Qoşalaşdırma kodu</string>
+    <string name="paring_code_is_wrong">Qoşalaşdırma kodu yanlışdır.</string>
+    <string name="cannot_connect_port">Simsiz sazlama xidmətinə qoşulmaq mümkün olmadı.\n\nXahiş edirik Shizuku-nun şəbəkə keçidini məhdudlaşdıran bütün fayrvol, reklam blokerləri, VPN və ya bənzər tətbiqlərdə istisna siyahısına əlavə olunduğundan əmin olun.</string>
+    <string name="dialog_wireless_adb_not_enabled">Simsiz sazlama aktiv deyil.\nQeyd: Android 11-dən əvvəlki versiyalarda naqilsiz xətaların kənarlaşdırılmasını aktiv etmək üçün kompüterə qoşulmaq mütləqdir.</string>
+    <string name="dialog_usb_debugging_not_enabled">USB sazlama aktiv deyil.\nXahiş edirik onu "Tərtibatçı seçimləri" bölməsindən aktivləşdirin.</string>
+    <string name="dialog_adb_pairing_message">Xahiş edirik aşağıdakı addımları yerinə yetirərək qoşalaşdırmanı başladın:\n- "Tərtibatçı seçimləri" bölməsinə keçin\n- "USB sazlaması" və "Simsiz sazlama" funksiyalarını aktivləşdirin\n- "Simsiz Sazlama" mətni üzərinə toxunun\n- "Cihazı qoşalaşdırma kodu ilə birləşdir" seçimini edin\n- Bildiriş bölməsində qoşalaşdırma kodunu daxil edin</string>
+    <string name="dialog_adb_pairing_accessibility_permission">Android 14-də Shizuku-nu Paket Quraşdırıcı ilə quraşdırdıqda/yenilədikdə cütləşdirmə üçün xüsusi imkanlar xidmətini aktivləşdirməyə kömək edən %1$s icazəsi ləğv edilir.\n\nİcazə vermək üçün aşağıdakı ADB əmrini icra edin:\n\n%2$s\n\nƏmri icra etdikdən sonra cütləşdirmə prosesinə davam edə bilərsiniz.\n\nQeyd: Shizuku-nu ADB vasitəsilə quraşdıraraq/yeniləyərək bu addımdan yan keçə bilərsiniz.</string>
     <!-- Service Doctor -->
     <string name="doctor_check_samsung_autoblocker">Samsung Avto Bloklayıcı</string>
     <string name="doctor_check_samsung_battery_protection">Samsung Batareya Qorunması</string>
