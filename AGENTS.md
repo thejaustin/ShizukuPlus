@@ -36,3 +36,28 @@ Claude file is the most fleshed-out — start there if your guide is sparse.
 - **Theme:** `Theme.Material3Expressive.*` — use M3 components, not AppCompat
 - **App widgets:** `RemoteViews` only allows framework views — do NOT use
   `MaterialButton` / `MaterialSwitch` etc. inside `widget_*.xml`
+
+## Branding
+
+- Two manager flavors (`manager/build.gradle` → `productFlavors`):
+  - `shizukuplus`: app name `Shizuku+`, `af.shizuku.plus.api` — coexists with stock Shizuku.
+  - `dropin`: app name `Shizuku`, `moe.shizuku.privileged.api` — replaces stock Shizuku for apps hard-coded to its package.
+- Compat stub (`compat/`) is labelled `Shizuku (Compat Hub)`.
+- Code namespaces are `af.shizuku.*`; keep `rikka.shizuku.*` namespaces that come from upstream modules (shell, starter) as-is.
+- Launcher icon: cat + hexagon with a plus badge. The Themed Icons (monochrome) layer contains only the plus badge — don't add the cat/hexagon to it.
+- Never re-declare `moe.shizuku.manager.permission.API_V23` in the Plus flavor (breaks coexistence).
+- Upstream credit (`CHANGES.md`, `NOTICE`, README) must keep naming thedjchi/Shizuku and RikkaApps/Shizuku.
+
+### Project family (all by thejaustin)
+
+| Product | Display name | Repo | Package / coordinates | Upstream |
+|---------|-------------|------|------------------------|----------|
+| Shizuku+ | `Shizuku+` | `thejaustin/ShizukuPlus` | `af.shizuku.plus.api` (Plus flavor), `moe.shizuku.privileged.api` (Drop-In flavor) | thedjchi/Shizuku ← RikkaApps/Shizuku |
+| Shizuku+-API | `Shizuku+-API` | `thejaustin/ShizukuPlus-API` | Maven group `af.shizuku.plus`; JitPack `com.github.thejaustin:Shizuku+-API:<ver>-plus` | RikkaApps/Shizuku-API |
+| Obtainium+ | `Obtainium+` | `thejaustin/ObtainiumPlus` | `dev.thejaustin.obtainiumplus` | ImranR98/Obtainium |
+| SuperShade | `SuperShade` | `thejaustin/SuperShade` | `com.supershade` | original (no upstream) |
+
+Naming rules:
+- User-facing text uses the `+` form (`Shizuku+`, `Obtainium+`); repo names, URLs, and code identifiers spell it `Plus` (`ShizukuPlus`, `PlusSettingsProvider`). Never write "Shizuku Plus" or "ObtainiumPlus" in UI strings.
+- `SuperShade` is one word, capital S twice — never "Super Shade" / "Supershade".
+- Refer to upstreams by their own names (Shizuku, Obtainium) and credit them; don't rebrand upstream attributions or license notices.
