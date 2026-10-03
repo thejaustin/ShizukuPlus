@@ -138,8 +138,8 @@
     <string name="notification_settings">Bildiriş seçimləri</string>
     <string name="adb_pairing_tutorial_title">Shizuku-nu cihazınızla cütləşdirin</string>
     <string name="adb_pairing_tutorial_content_notification">Shizuku-dan gələn bildiriş cütləşdirməni tamamlamağa kömək edəcək.</string>
-    <string name="adb_pairing_tutorial_content_steps">"Tərtibatçı seçimləri" bölməsinə keçin, sonra "USB xətaların kənarlaşdırılması" və "Naqilsiz xətaların kənarlaşdırılması" funksiyalarını aktivləşdirin.</string>
-    <string name="adb_pairing_tutorial_content_enter_pairing_code">"Naqilsiz xətaların kənarlaşdırılması" sözünün sol tərəfinə toxunun, sonra "Cihazı cütləşdirmə kodu ilə cütləşdir" düyməsinə toxunun. Cütləşdirməni tamamlamaq üçün bildirişə kodu daxil edin.</string>
+    <string name="adb_pairing_tutorial_content_steps">"Tərtibatçı seçimləri" bölməsinə keçin, sonra "USB sazlama" və "Simsiz sazlama" funksiyalarını aktivləşdirin.</string>
+    <string name="adb_pairing_tutorial_content_enter_pairing_code">"Simsiz sazlama" sözünün sol tərəfinə toxunun, sonra "Cihazı cütləşdirmə kodu ilə cütləşdir" düyməsinə toxunun. Cütləşdirməni tamamlamaq üçün bildirişə kodu daxil edin.</string>
     <string name="adb_pairing_tutorial_content_notification_blocked">Cütləşdirmə prosesi Shizuku bildirişi ilə qarşılıqlı əlaqə tələb edir. Xahiş edirik Shizuku-ya bildiriş göndərməyə icazə verin.</string>
     <string name="adb_pairing_tutorial_content_miui">MIUI istifadəçiləri sistem tənzimləmələrində "Bildirişlər" - "Bildiriş paneli" bölməsindən bildiriş üslubunu "Android" rejiminə keçirməli ola bilər.</string>
     <string name="adb_pairing_tutorial_content_miui_2">Əks halda, cütləşdirmə kodunu bildirişdən daxil edə bilməyəcəksiniz.</string>
@@ -195,7 +195,7 @@
     <string name="app_management_hint_search">Tətbiqləri axtarın…</string>
     <string name="app_management_filter_all">Hamısı</string>
     <string name="app_management_filter_granted">İcazə verilənlər</string>
-    <string name="app_management_filter_denied">İmtaz edilənlər</string>
+    <string name="app_management_filter_denied">İmtina edilənlər</string>
     <string name="app_management_filter_hidden">Gizlədilənlər</string>
     <string name="app_management_action_sort">Sırala</string>
     <string name="app_management_action_hidden_apps">Gizli tətbiqlər</string>
@@ -230,7 +230,7 @@
     <string name="terminal_tutorial_2">Faylları şəxsi fayllar qovluğuna kopyalamaq üçün terminal tətbiqinizdən istifadə edin.</string>
     <string name="terminal_tutorial_2_description">Məsləhət: Terminal tətbiqinizin əsas qovluğu (~) şəxsi fayllar qovluğundadırsa, faylları oraya yerləşdirmək sizə yolu yazmadan %1$s icra etməyə imkan verəcək.\n\nƏks halda, terminal tətbiqinizin %3$s konfiqurasiya faylında %2$s üçün bir təxəllüs (alias) yarada bilərsiniz.</string>
     <string name="terminal_tutorial_3">Terminalı açın və ya Shizuku+ əmrini icra edin:</string>
-    <string name="rish_description"><![CDATA[%1$s ilə istənilən terminal tətbiqində shell əmrlərini icra edə bilərsiniz.<p>İstifadə qaydası haqqında etraflı öyrənmək üçün toxunun.]]></string>
+    <string name="rish_description"><![CDATA[%1$s ilə istənilən terminal tətbiqində shell əmrlərini icra edə bilərsiniz.<p>İstifadə qaydası haqqında ətraflı öyrənmək üçün toxunun.]]></string>
     <!-- Settings — swipe customisation -->
     <string name="settings_swipe_right">Sağa sürüşdürmə əməliyyatı</string>
     <string name="settings_swipe_left">Sola sürüşdürmə əməliyyatı</string>
@@ -262,7 +262,7 @@
     <string name="onboarding_setup_desc">Bu cihazda Shizuku-nu necə başlatmaq istədiyinizi seçin. Bunu daha sonra əsas ekrandan da edə bilərsiniz.</string>
     <string name="onboarding_setup_running">Shizuku işləyir</string>
     <string name="onboarding_setup_later">Bunu sonra edəcəyəm</string>
-    <string name="onboarding_setup_wadb_desc">Android 11+, kompüter tələb olunmur. Naqilsiz xətaların kənarlaşdırılmasından istifadə edir.</string>
+    <string name="onboarding_setup_wadb_desc">Android 11+, kompüter tələb olunmur. Simsiz sazlama istifadə edir.</string>
     <string name="onboarding_setup_root_desc">Cihazınız root olunub. Shizuku-nu root girişi ilə başladın.</string>
     <string name="onboarding_setup_adb_desc">İstənilən cihaz. Başlamaq üçün kompüterdən tək bir ADB əmrini icra edin.</string>
     <!-- Swipe hint overlay -->
@@ -275,9 +275,9 @@
     <string name="settings_behavior">Davranış</string>
     <string name="settings_start_on_boot">Sistem açılanda başlat</string>
     <string name="settings_start_on_boot_summary">Android 11+ və ya root tələb olunur</string>
-    <string name="settings_start_on_boot_bug">Android 11-12 versiyalarındakı xəta səbəbindən naqilsiz xətaların kənarlaşdırılması icazə verilmiş şəbəkələri yadda saxlamır.\n\nHər dəfə sistem yenidən başladıqda icazə dialoqu göründükdə "İcazə ver" toxunaraq şəbəkəni yenidən təsdiqləməlisiniz.</string>
+    <string name="settings_start_on_boot_bug">Android 11-12 versiyalarındakı xəta səbəbindən simsiz sazlama icazə verilmiş şəbəkələri yadda saxlamır.\n\nHər dəfə sistem yenidən başladıqda icazə dialoqu göründükdə "İcazə ver" toxunaraq şəbəkəni yenidən təsdiqləməlisiniz.</string>
     <string name="settings_use_system_color">Sistem mövzu rəngindən istifadə et</string>
-    <string name="settings_watchdog">Qözətçi (Watchdog)</string>
+    <string name="settings_watchdog">Gözətçi (Watchdog)</string>
     <string name="settings_watchdog_summary">Shizuku sıradan çıxdıqda onu avtomatik yenidən başlat</string>
     <string name="settings_tcp_mode">TCP rejimi</string>
     <string name="settings_tcp_mode_summary">"Shizuku-ya Wi-Fi olmadan yenidən başlamağa icazə verir. (Shizuku sistem açılandan sonra ən azı bir dəfə başlamış olmalıdır)"</string>
