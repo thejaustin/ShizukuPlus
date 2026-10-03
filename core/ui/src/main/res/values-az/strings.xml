@@ -289,8 +289,8 @@
     <string name="settings_tcp_port">TCP portu</string>
     <string name="settings_tcp_port_default">Standart (5555)</string>
     <string name="settings_tcp_port_hint">Standart portdan (5555) istifadə üçün boş buraxın</string>
-    <string name="settings_auto_disable_usb_debugging">USB xətaların kənarlaşdırılmasını avto-söndür</string>
-    <string name="settings_auto_disable_usb_debugging_summary">Shizuku dayandırıldıqda USB xətaların kənarlaşdırılmasını söndür</string>
+    <string name="settings_auto_disable_usb_debugging">USB sazlamanı avto-söndür</string>
+    <string name="settings_auto_disable_usb_debugging_summary">Shizuku dayandırıldıqda USB sazlamanı söndür</string>
     <string name="settings_language">Dil</string>
     <string name="settings_translation_contributors">Tərcüməyə töhfə verənlər</string>
     <string name="settings_translation">Tərcümədə iştirak et</string>
@@ -313,7 +313,7 @@
     <string name="settings_show_activity_log_home">Fəaliyyət Jurnalını Göstər</string>
     <string name="settings_home_visibility">Əsas ekran görünürlüyü</string>
     <string name="settings_update_app_database">Tətbiq məlumat bazasını yenilə</string>
-    <string name="settings_update_app_database_summary">En son tətbiq təsvirlərini və təkmilləşdirmə təkliflərini GitHub-dan əldə edin.</string>
+    <string name="settings_update_app_database_summary">Ən son tətbiq təsvirlərini və təkmilləşdirmə təkliflərini GitHub-dan əldə edin.</string>
     <string name="settings_update_app_database_success">Məlumat bazası uğurla yeniləndi</string>
     <string name="settings_update_app_database_error">Məlumat bazasını yeniləmək mümkün olmadı</string>
     <string name="settings_show_terminal_home">Terminalı Göstər (rish)</string>
@@ -697,12 +697,12 @@
     <string name="accessibility_action_unhide_app">Siyahıda göstər</string>
     <string name="accessibility_action_toggle_selection">Seçimi dəyişdir</string>
     <string name="accessibility_action_expand">Genişləndir</string>
-    <string name="accessibility_action_collapse">Yığ</string>
+    <string name="accessibility_action_collapse">Yığcamlaşdır</string>
     <string name="accessibility_status_running">İşləyir</string>
     <string name="accessibility_status_stopped">Dayandırılıb</string>
     <string name="accessibility_status_error">Xəta</string>
     <string name="accessibility_permission_granted">İcazə verildi</string>
-    <string name="accessibility_permission_denied">İcazə imtaz edildi</string>
+    <string name="accessibility_permission_denied">İcazə rədd edildi</string>
     <!-- Empty State Views -->
     <string name="empty_state_title_no_results">Heç bir nəticə tapılmadı</string>
     <string name="empty_state_description_no_results">Cari süzgəcinizə və ya axtarış meyarlarınıza uyğun tətbiq yoxdur.</string>
@@ -820,7 +820,7 @@
     <string name="accessibility_service_monitoring">Xüsusi imkanlar xidməti aktivdir: cütləşdirmə kodu gözlənilir…</string>
     <!-- Dhizuku Device Owner Setup -->
     <string name="dhizuku_setup_title">Cihaz Sahibini Quraşdırın</string>
-    <string name="dhizuku_setup_message">Dhizuku Rejimi Shizuku+-ın Cihaz Sahibi kimi təyin olunmasını tələb edir. USB xətaların kənarlaşdırılması aktiv ikən ADB vasitəsilə bu əmri bir dəfə icra edin:\n\n%1$s\n\nƏmri icra etdikdən sonra Shizuku-nu yenidən başladın.</string>
+    <string name="dhizuku_setup_message">Dhizuku Rejimi Shizuku+-ın Cihaz Sahibi kimi təyin olunmasını tələb edir. USB sazlaması aktiv ikən ADB vasitəsilə bu əmri bir dəfə icra edin:\n\n%1$s\n\nƏmri icra etdikdən sonra Shizuku-nu yenidən başladın.</string>
     <string name="dhizuku_setup_copy">Əmri Kopyala</string>
     <string name="dhizuku_setup_copied">Əmr mübadilə buferinə kopyalandı</string>
     <string name="dhizuku_status_active">Cihaz Sahibi: Aktivdir</string>
