@@ -606,7 +606,7 @@
     <string name="starter_waiting_description">Qoşulur — dayandırmaq üçün İmtina düyməsinə toxunun.</string>
     <string name="starter_retrying">Qoşulma yenidən cəhd edilir…\n</string>
     <string name="starter_retry">Yenidən cəhd et</string>
-    <string name="adb_error_timeout">Xidmət vaxtında başlamadı. Xahiş edirik Naqilsiz xətaların kənarlaşdırılmasının aktiv olduğundan əmin olun və yenidən cəhd edin.</string>
+    <string name="adb_error_timeout">Xidmət vaxtında başlamadı. Xahiş edirik, Simsiz sazlamanın aktiv olduğundan əmin olun və yenidən cəhd edin.</string>
     <string name="adb_error_generic">Gözlənilməz bir xəta baş verdi. Xahiş edirik yenidən cəhd edin.</string>
     <!-- WADB Starter -->
     <string name="wadb_notification_title">Shizuku başlayır…</string>
