@@ -734,7 +734,7 @@
     <string name="settings_update_channel_title">Yeniləmə kanalı</string>
     <string name="update_channel_stable">Stabil</string>
     <string name="update_channel_dev">Dev / İlkin buraxılış</string>
-    <update_channel_dev_warning_title">Dev kanalına keçirilsin?</update_channel_dev_warning_title>
+    <string name=<update_channel_dev_warning_title">Dev kanalına keçirilsin?</update_channel_dev_warning_title></string>
     <string name="update_channel_dev_warning_message">Dev buraxılışları ən son kodlar əsasında qurulur və xətalar, çökmələr və ya qeyri-stabil işləmə yarada bilər. Yalnız yeni funksiyaları erkən sınaqdan keçirmək istəyirsinizsə istifadə edin.\n\nİstənilən vaxt yenidən Stabil kanala qayıda bilərsiniz.</string>
     <string name="settings_update_manual_category">Əl ilə Yeniləmə</string>
     <string name="settings_check_for_update_title">Yeniləməni yoxla</string>
