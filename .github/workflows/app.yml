@@ -166,13 +166,20 @@ jobs:
             echo "filePath=${RENAMED}" >> $GITHUB_OUTPUT
           else
             CMD="./gradlew :manager:assembleShizukuplusRelease :manager:assembleDropinRelease $ARGS"
+            # Without SENTRY_AUTH_TOKEN, manager/build.gradle turns off native-symbol and
+            # source-context upload, so the Sentry plugin never registers those tasks, and
+            # Gradle fails task selection on -x for a task that does not exist.
+            SENTRY_SKIP=""
+            if [ -n "$SENTRY_AUTH_TOKEN" ]; then
+              SENTRY_SKIP="-x uploadSentryNativeSymbolsForShizukuplusRelease \
+                -x uploadSentryNativeSymbolsForDropinRelease \
+                -x sentryUploadSourceBundleShizukuplusRelease \
+                -x sentryUploadSourceBundleDropinRelease"
+            fi
             eval $CMD --stacktrace --info \
               -x uploadSentryProguardMappingsShizukuplusRelease \
               -x uploadSentryProguardMappingsDropinRelease \
-              -x uploadSentryNativeSymbolsForShizukuplusRelease \
-              -x uploadSentryNativeSymbolsForDropinRelease \
-              -x sentryUploadSourceBundleShizukuplusRelease \
-              -x sentryUploadSourceBundleDropinRelease \
+              $SENTRY_SKIP \
               -x :manager:lint
 
             sign_apk() {
