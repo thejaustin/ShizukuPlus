@@ -529,6 +529,24 @@ jobs:
               echo "[All changes since last major release](https://github.com/${{ github.repository }}/compare/${MAJOR_RELEASE}...${TAG_NAME})"
             fi
           } > release_notes.md
+
+          # GitHub rejects release bodies over 125,000 characters (HTTP 422 "body is too
+          # long"), which a long gap between releases can reach. Cap by bytes (never fewer
+          # than characters) and only cut between lines, which keeps multi-byte UTF-8 intact
+          # and avoids half a table row. The compare links at the end are lost, so point at
+          # the full commit list instead.
+          MAX_NOTES_BYTES=120000
+          if [ "$(wc -c < release_notes.md)" -gt "$MAX_NOTES_BYTES" ]; then
+            LC_ALL=C awk -v max="$MAX_NOTES_BYTES" '{ n += length($0) + 1; if (n > max) exit; print }' \
+              release_notes.md > release_notes.trunc
+            {
+              echo
+              echo "---"
+              echo "_Release notes truncated to fit GitHub's release body limit._"
+              echo "[Full commit list](https://github.com/${{ github.repository }}/commits/${TAG_NAME})"
+            } >> release_notes.trunc
+            mv release_notes.trunc release_notes.md
+          fi
           echo "NOTES_FILE=release_notes.md" >> $GITHUB_ENV
 
       - name: Create Release
