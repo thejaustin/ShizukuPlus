@@ -67,6 +67,15 @@ The following prompt was contributed by [@djbclark (Daniel JB Clark)](https://gi
 - **Binder transaction codes are explicit** — Shizuku+ uses `= N` explicit codes in AIDL, not positional. If your fork added methods in the middle of an interface, you need to assign them explicit codes that don't collide with existing ones.
 - **ProGuard keeps are hand-maintained** — `manager/proguard-rules.pro` must explicitly keep every class accessed via reflection. Missing keeps cause silent release crashes that don't appear in debug builds.
 
+## Lessons from a completed migration
+
+These come from moving one long-lived fork onto Shizuku+; they are not specific to that fork.
+
+- **Rename with a build-time resource overlay, not by editing `strings.xml`.** A Gradle task that reads upstream's `values*/strings.xml` and generates an overriding resource file for your flavor leaves upstream's strings and every translation byte-identical, so later rebases do not conflict in each locale. Keep an explicit list of string names that must keep the upstream name (the API and permission names other apps request, the "Shizuku+ API" names, URLs) and match by name rather than by English phrasing, so the exceptions hold in every language.
+- **Restart the server after every in-place install.** `adb install -r` leaves the old server process running the previous build's code, so the first test after a rebase can silently exercise old server code. Stop and start the service (or compare the running server's APK path with the installed one) before testing.
+- **Re-test with apps built against the stock Shizuku API after any binder change.** Transaction codes and the legacy compatibility path are easy to break in a merge, and the failure shows up only in client apps, as a call landing on the wrong method or an exception with no server-side log.
+- **Test the authorisation path, not just "it starts".** If you add automation that starts the service unattended, revoke USB debugging authorisations and check that each explicit start raises exactly one "Allow USB debugging?" dialog and that nothing unattended raises another.
+
 ## Contributing back
 
 If your migration surfaces a bug fix or genuinely useful feature that isn't fork-specific, please consider opening a PR against `master`. See [CONTRIBUTING.md](CONTRIBUTING.md) for submission guidelines.
