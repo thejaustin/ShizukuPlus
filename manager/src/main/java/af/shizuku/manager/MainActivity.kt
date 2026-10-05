@@ -117,7 +117,9 @@ class MainActivity : HomeActivity() {
                 Regex("""^\d+\.\d+\.\d+\.r\d+$""").matches(versionSuffix) -> versionSuffix
                 // Transitional format: "Shizuku+ r2673" → tag is "r2673"
                 versionSuffix.matches(Regex("""r\d+""")) -> versionSuffix
-                // Legacy: "Shizuku+ 14.0.0.r2162" → GitHub tag was "v14.0.0.r2162"
+                // Legacy: builds r2663–r2668 were incorrectly tagged "v14.0.0.r{N}" (now
+                // corrected to "13.7.0.r{N}" scheme). Map them to their published GitHub tags
+                // so existing installs can still fetch their changelog entry.
                 Regex("""14\.\d+\.\d+\.r\d+""").containsMatchIn(versionSuffix) ->
                     "v${Regex("""\d+\.\d+\.\d+\.r\d+""").find(versionSuffix)!!.value}"
                 else -> {

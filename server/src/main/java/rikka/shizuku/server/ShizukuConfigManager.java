@@ -295,6 +295,19 @@ public class ShizukuConfigManager extends ConfigManager {
         }
     }
 
+    public boolean isPermGrantMigrationDone() {
+        synchronized (this) {
+            return config.permGrantMigrationDone;
+        }
+    }
+
+    public void markPermGrantMigrationDone() {
+        synchronized (this) {
+            config.permGrantMigrationDone = true;
+            scheduleWriteLocked();
+        }
+    }
+
     private void updateLocked(int uid, List<String> packages, int mask, int values) {
         ShizukuConfig.PackageEntry entry = findLocked(uid);
         if (entry == null) {

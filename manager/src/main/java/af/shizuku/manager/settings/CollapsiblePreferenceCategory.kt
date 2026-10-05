@@ -182,6 +182,15 @@ class CollapsiblePreferenceCategory
             updateChildren()
         }
 
+        fun expand() {
+            if (!expanded) {
+                expanded = true
+                if (shouldPersist()) persistBoolean(true)
+                updateChildren()
+                notifyChanged()
+            }
+        }
+
         override fun addPreference(preference: Preference): Boolean {
             val result = super.addPreference(preference)
             if (result) {

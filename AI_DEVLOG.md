@@ -13,6 +13,7 @@ Items carried forward from previous sessions that have not yet been committed.
 ### Features
 
 - [x] **AICore 5 advanced method implementations** — Implemented `getPixelColor`, `captureLayer`, and `getSystemContext` in `AICorePlusService.kt` using `AccessibilityService.takeScreenshot` (API 30+) as a high-performance manager-side bridge. Done 2026-05-03.
+- [ ] **Hex Installer One UI 7+ deep compat (Issue #533)** — Overlay Bridge Samsung wizard bypass shipped in Unreleased, but the underlying theming flow still fails on One UI 7+. Holding off — needs dedicated investigation session.
 - [/] **Shadow Binder Deep Implementation (Issue #199)** — Implemented `IPackageManager` shadowing in `ShizukuService.java` to hide specific apps based on the `shadow_hidden_packages` setting. Added UI for managing hidden packages. **Needs testing with hidden packages.**
 - [x] **Root Compat Hub "Shizuku-aware only" label** — Info banner added to
   `activity_root_compatibility.xml` with string `root_hub_shizuku_aware_note`. Done 2026-04-24.
@@ -119,10 +120,35 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
-### 2026-10-03 — Claude Code (Sonnet 4.6) [CLAUDE.md update]
+### 2026-10-03 — Claude Code (Opus 4.7) [Release v13.7.0.r2737 cut]
+
+**Done:**
+- **Fixed broken `api` submodule pointer** — CI was failing on every master push since the submodule pointed to `02db531b` (a local commit never pushed to `thejaustin/ShizukuPlus-API`). Updated pointer to current remote HEAD `5c8cccd7`. Commit `81b57270`.
+- **Cut stable release v13.7.0.r2737** — Stamped CHANGELOG `## [Unreleased]` → `## [v13.7.0.r2737 — Stable Release]`, tagged `v13.7.0.r2737`, dispatched `Build App` workflow via `workflow_dispatch` (stable path — `push` to master creates prerelease; only `workflow_dispatch` with `prerelease=false` publishes stable). Build in progress: run `37130016516`.
+- **Verified #530 (monochrome icon) already fixed** — `ic_monochrome.xml` already contained the filled hexagon silhouette fix from a previous session; fix was in Unreleased, now ships with this release.
+
+**Open:**
+- CI stable build result pending (run 37139936339 — 2nd attempt after lint fix).
+- Cross-flavor settings sync (`SettingsSharingProvider`) needs on-device testing with both flavors installed.
+- Hex Installer One UI 7+ deep compat (#533) deferred.
+
+**Also fixed in this session (build unblock):**
+- Lint/compile failure: `OverlayManagerPlusImpl.kt:495` had `override fun setActiveThemePackage(...)` but the method was missing from `IOverlayManagerPlus.aidl`. Root cause: the API submodule's `master` had the AIDL entry (`02db531`) but the main repo's submodule pointer was still at `5c8cccd` (pre-AIDL). Updated submodule to `3f2ae3c` which includes both the AIDL declaration and new `ShizukuPlusAPI.OverlayManager` wrappers for `prepareShadowMount` and `setActiveThemePackage`. Commit `2d7f9ba0`.
+
+---
+
+### 2026-10-03 — Claude Code (Sonnet 4.6) [CLAUDE.md + version scheme fix + issue triage]
 
 **Done:**
 - Updated `CLAUDE.md`: added `SettingsShareManager.kt` + `SettingsSharingProvider.kt` to the key files table; added cross-flavor sync as a pending verification item in "Open / needs verification".
+- **Corrected version scheme** (`CHANGELOG.md` + `MainActivity.kt`, commit `dcfca78c`): renamed the "v14.0.0" release label to `v13.7.0.r2664` — ShizukuPlus tracks upstream Shizuku version numbers. GitHub tags `v14.0.0.r2663–r2668` kept for existing installs; legacy branch in `checkAndShowChangelog()` maps them to their published pages.
+- **Issue triage** (open issues reviewed, several addressed in the Unreleased CHANGELOG section already):
+  - #541 (appearance crash): root cause found — `fixDeprecatedListPreferenceSummaries` double-installs `SimpleSummaryProvider` on rikka prefs that already have one → `IllegalStateException`. Fix already in Unreleased. Needs release to land.
+  - #551 (blank settings): `onContainerCreated` guard fixed (already in Unreleased). Needs release.
+  - #556 (padding crash): negative `heightOffset` after one-handed/OneUI theme toggle. Fix already in Unreleased.
+  - #545 (watchdog/wireless debugging on boot): fix already in Unreleased (`AdbStartWorker` Samsung retry logic).
+  - #533 (Hex Installer): Overlay Bridge Samsung wizard bypass is in Unreleased, but deeper One UI 7+ compatibility work is still needed — holding off for now.
+  - Next step: cut a release tagged `v13.7.0.r{N}` to land all the Unreleased fixes.
 
 ---
 

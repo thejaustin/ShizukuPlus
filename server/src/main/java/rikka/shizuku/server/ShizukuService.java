@@ -149,15 +149,26 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private final ApkPatcherImpl apkPatcher = new ApkPatcherImpl();
     private final DeviceControlPlusImpl deviceControlPlus = new DeviceControlPlusImpl();
 
-    // Re-grants the OS-level runtime permission for every already-authorized app on each server
-    // start. Prior to the 741df2f4 fix (2026-07-19), grantRuntimePermission silently failed because
-    // no installed package defined moe.shizuku.manager.permission.API_V23 — so apps authorized
-    // before that date have a ConfigManager entry but no OS grant. This is idempotent (re-granting
-    // an already-granted permission is a no-op), so it's safe to run unconditionally on startup.
+    // One-time backfill: re-grants the OS-level runtime permission for every already-authorized app.
+    // Prior to the 741df2f4 fix (2026-07-19), grantRuntimePermission silently failed because no
+    // installed package defined moe.shizuku.manager.permission.API_V23 — apps authorized before
+    // that date have a ConfigManager entry but no OS grant.
+    //
+    // This runs exactly once (gated by ShizukuConfig.permGrantMigrationDone). Re-running on every
+    // startup would silently override manual pm-revoke calls the user made outside ShizukuPlus
+    // (#568). After the first pass all pre-existing apps are backfilled; new grants are issued at
+    // connect time in attachApplication, so the migration is no longer needed.
     private void migratePermissionGrants() {
+        if (configManager.isPermGrantMigrationDone()) {
+            LOGGER.i("migratePermissionGrants: already done, skipping");
+            return;
+        }
         List<Integer> allowedUids = configManager.getAllowedUids();
-        if (allowedUids.isEmpty()) return;
-        LOGGER.i("migratePermissionGrants: checking %d authorized UIDs", allowedUids.size());
+        if (allowedUids.isEmpty()) {
+            configManager.markPermGrantMigrationDone();
+            return;
+        }
+        LOGGER.i("migratePermissionGrants: backfilling %d authorized UIDs (one-time)", allowedUids.size());
         int migrated = 0;
         for (int uid : allowedUids) {
             int userId = UserHandleCompat.getUserId(uid);
@@ -183,7 +194,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 }
             }
         }
-        LOGGER.i("migratePermissionGrants: granted/refreshed %d permission(s)", migrated);
+        LOGGER.i("migratePermissionGrants: backfilled %d permission(s)", migrated);
+        configManager.markPermGrantMigrationDone();
     }
 
     private void grantManagerEssentialPermissions() {
@@ -2804,10 +2816,20 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     }
 
     private static boolean isLegacyOriginalShizukuApp(String packageName, int userId) {
+        // Only apply the legacy proxy when the app declares the original Shizuku permission
+        // (moe.shizuku.manager.permission.API_V23) AND does NOT declare any ShizukuPlus
+        // permission. Apps like Installer X Revived declare the original permission for
+        // backward-compat but are compiled against ShizukuPlus explicit AIDL codes; wrapping
+        // them in the -1 offset proxy corrupts their calls (#567).
         try {
             PackageInfo pi = Android17Compat.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS, userId);
-            return pi != null && pi.requestedPermissions != null
-                    && ArraysKt.contains(pi.requestedPermissions, ServerConstants.PERMISSION_ORIGINAL);
+            if (pi == null || pi.requestedPermissions == null) return false;
+            String[] perms = pi.requestedPermissions;
+            boolean hasOriginal = ArraysKt.contains(perms, ServerConstants.PERMISSION_ORIGINAL);
+            if (!hasOriginal) return false;
+            boolean hasPlus = ArraysKt.contains(perms, ServerConstants.PERMISSION)
+                    || ArraysKt.contains(perms, ServerConstants.PERMISSION_LEGACY);
+            return !hasPlus;
         } catch (Throwable e) {
             return false;
         }

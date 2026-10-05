@@ -17,6 +17,11 @@ public class ShizukuConfig {
     @SerializedName("packages")
     public List<PackageEntry> packages = new ArrayList<>();
 
+    // Set to true after the one-time permission-grant backfill (migratePermissionGrants) completes.
+    // Skipped on subsequent server starts so manual pm-revoke calls are not silently overridden.
+    @SerializedName("permGrantMigrationDone")
+    public boolean permGrantMigrationDone = false;
+
     public static class PackageEntry extends ConfigPackageEntry {
 
         @SerializedName("uid")

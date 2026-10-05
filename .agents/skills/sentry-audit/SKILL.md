@@ -19,7 +19,7 @@ This skill minimizes token usage while extracting actionable crash data from the
 1. **Fetch Unresolved Issues:**
    Run a `curl` command against the Sentry API to fetch unresolved issues. Extract ONLY the `id`, `shortId`, `title`, and `culprit`.
    ```bash
-   curl -s -H 'Authorization: Bearer <SENTRY_TOKEN>' "https://sentry.io/api/0/projects/af-developments/shizukuplus/issues/?query=is:unresolved" | jq -c '.[] | {id, shortId, title, culprit}'
+   curl -s -H 'Authorization: Bearer <SENTRY_TOKEN>' "https://sentry.io/api/0/projects/<SENTRY_ORG>/<SENTRY_PROJECT>/issues/?query=is:unresolved" | jq -c '.[] | {id, shortId, title, culprit}'
    ```
    *Note: Do NOT fetch the full JSON dump into context; it is massive and wastes tokens.*
 

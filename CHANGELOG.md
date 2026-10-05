@@ -2,12 +2,32 @@
 
 All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md](AI_ATTRIBUTIONS.md) for full AI pair-programming provenance and commit mapping.
 
-## [Unreleased — post-v14.0.0]
+## [Unreleased]
+
+### 🐛 Bug Fixes
+
+#### Server / Binder
+- **Fixed 'Padding must be non-negative' crash in Settings on font/display-size changes (Android 16)** — `SettingsScreen` uses `LargeTopAppBar` with `exitUntilCollapsedScrollBehavior`. The `LargeTopAppBar` updates `heightOffsetLimit` in its layout pass (after composition), so there is a one-frame window where a previously scrolled `heightOffset` is below the new limit. The stale offset causes Scaffold to report a negative top padding, throwing `IllegalArgumentException: Padding must be non-negative`. Fix: added `LaunchedEffect(scrollBehavior.state.heightOffsetLimit)` that re-coerces `heightOffset` via the setter (which enforces `[heightOffsetLimit, 0f]`) whenever the limit changes — same pattern as `HomeScreen.kt:87`. Added belt-and-suspenders `coerceAtLeast(0.dp)` on all three `innerPadding` padding call-sites in `SettingsScreen`. ([#569](https://github.com/thejaustin/ShizukuPlus/issues/569))
+- **Fixed manual `pm revoke` being silently overridden on every server restart** — `migratePermissionGrants()` was designed as a one-time backfill for apps that had a ConfigManager authorization entry but no OS-level runtime permission grant (a side-effect of a silent bug in versions prior to 2026-07-19). Running it unconditionally on startup meant that any permission manually revoked with `pm revoke <pkg> af.shizuku.plus.permission.API_V23` was re-granted moments later when the server started. The migration is now gated by a `permGrantMigrationDone` flag persisted in `shizuku.json`; it runs exactly once, marks the flag, and skips on all subsequent starts. New grants continue to be issued at connect time in `attachApplication`. ([#568](https://github.com/thejaustin/ShizukuPlus/issues/568))
+- **Fixed Installer X Revived, Universal Installer X, and Total Commander broken with r2739** — `LegacyShizukuBinderProxy` was applied to any app declaring `moe.shizuku.manager.permission.API_V23`, but many modern apps (including the above) still declare this original-Shizuku permission for backward-compat while actually using ShizukuPlus explicit AIDL transaction codes. The −1 offset proxy corrupted all binder calls, causing `IInterface.asBinder() on null` crashes. Proxy now only applies when the app declares the original Shizuku permission AND does **not** also declare any ShizukuPlus permission (`af.shizuku.plus.permission.API_V23` / `af.shizuku.manager.permission.API_V23`). ([#567](https://github.com/thejaustin/ShizukuPlus/issues/567), [#566](https://github.com/thejaustin/ShizukuPlus/issues/566))
+
+#### Manager App (Settings)
+- **Fixed search result navigation not scrolling to or highlighting the preference when it lives inside a collapsed category** — when a `CollapsiblePreferenceCategory` is collapsed, its children are hidden and not present in the RecyclerView adapter. The scroll-and-highlight code searched the adapter by key and found position -1, so nothing happened. Added `CollapsiblePreferenceCategory.expand()` and call it before the position scan in `BaseSettingsFragment.onResume()` — if the target preference's parent category is collapsed, it is expanded first so the preference is visible.
+- **Improved search highlight animation** — the previous animation used `alpha(1.0f)` which is a no-op (view starts at full alpha). Replaced with a `ValueAnimator` that fades a `ColorDrawable` from full opacity to transparent over 700 ms (after a 350 ms hold), with `DecelerateInterpolator` for a natural feel.
+- **Fixed Settings top bar briefly showing preference name instead of section name after tapping a search result** — `navigateToSetting()` was setting `currentTitle = item.title` (e.g. "Blur UI") before committing the fragment transaction. The fragment's `onResume → updateTitle()` already sets the correct section title ("Personalization"), making the preemptive assignment both redundant and wrong. Removed the early assignment; the fragment now owns the title update entirely.
+- **Fixed Settings page still blank after background kill on some devices** — the previous fix checked `findFragmentById == null`, but the Fragment Manager restores the fragment into its internal state during `super.onCreate()` before the Compose `AndroidView` container exists. `findFragmentById` returned non-null even though the fragment had no live view (its container didn't exist at restore time). Added `existing.view == null` check so the fragment is replaced whenever it lacks an attached view; switched to `commitNow()` to guarantee the container is populated synchronously. ([#551](https://github.com/thejaustin/ShizukuPlus/issues/551))
+
+### 📖 Documentation
+- **Added fork migration guide** — `FORK_MIGRATION.md` provides an AI-assisted migration prompt (contributed by [@djbclark](https://github.com/djbclark)) for developers rebasing their own Shizuku forks onto Shizuku+, plus Shizuku+-specific tips covering the API submodule boundary, explicit AIDL transaction codes, and ProGuard keep requirements. Linked from `CONTRIBUTING.md`. ([#562](https://github.com/thejaustin/ShizukuPlus/issues/562))
+
+---
+
+## [v13.7.0.r2737 — Stable Release]
 
 ### 🐛 Bug Fixes
 
 #### Server / Service
-- **Fixed Android 16 ART VerifyError crashing rish, SU Bridge, and all third-party Shizuku connections** — R8 9.4 (AGP 9.4, new in v14) transforms `ProcessObserverAdapter` and `UidObserverAdapter` (from `dev.rikka.hidden:compat`) differently from R8 8.x, producing bytecode that Android 16's eager class verifier rejects for the entire DEX. Added `-keep { *; }` rules for both adapter classes so R8 emits the original library bytecode unchanged. ([#537](https://github.com/thejaustin/ShizukuPlus/issues/537))
+- **Fixed Android 16 ART VerifyError crashing rish, SU Bridge, and all third-party Shizuku connections** — R8 9.4 (AGP 9.4, new in v13.7.0) transforms `ProcessObserverAdapter` and `UidObserverAdapter` (from `dev.rikka.hidden:compat`) differently from R8 8.x, producing bytecode that Android 16's eager class verifier rejects for the entire DEX. Added `-keep { *; }` rules for both adapter classes so R8 emits the original library bytecode unchanged. ([#537](https://github.com/thejaustin/ShizukuPlus/issues/537))
 - **Broadened Android 16 VerifyError fix to cover all `rikka.hidden.compat.adapter.*` classes** — the initial fix kept only `ProcessObserverAdapter` and `UidObserverAdapter`; a third adapter class (obfuscated as `e42`) still failed ART verification on Samsung One UI 8.5 (Android 16). Changed the ProGuard rule from two named keeps to `-keep class rikka.hidden.compat.adapter.** { *; }` so every hidden-API adapter is emitted unchanged by R8. ([#544](https://github.com/thejaustin/ShizukuPlus/issues/544))
 - **Completed Android 16 VerifyError fix by targeting the shell module's separate R8 pass** — the previous two fixes added the `-keep` rule to `manager/proguard-rules.pro`, but class `e42` (identified by a stable `r8-map-id` across all builds) was not in the manager's R8 pass. The `shell/` module compiles independently: its R8 output is `rish_shizuku.dex`, bundled as an asset and loaded at runtime via `BaseDexClassLoader`. The shell's own `proguard-rules.pro` had `-repackageclasses` (producing the short name `e42`) but no keep rule for `rikka.hidden.compat.**`. Added `-keep class rikka.hidden.compat.** { *; }` to `shell/proguard-rules.pro` (covering all subpackages, not just `adapter.**`, since the exact hidden-stub-extending class may be anywhere in the library). ([#537](https://github.com/thejaustin/ShizukuPlus/issues/537), [#544](https://github.com/thejaustin/ShizukuPlus/issues/544))
 
@@ -50,11 +70,13 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ### 🐛 Bug Fixes
 - **Fixed Device Control home card not appearing immediately after being enabled in Feature Hub** — `HomeActivity`'s `SharedPreferences` listener was missing `KEY_DEVICE_CONTROL_HOME_ENABLED`, so navigating back from Settings did not trigger a home-list refresh. Card now appears as soon as the toggle is flipped.
 
-## [v14.0.0 — Stable Release / Build r2664]
+## [v13.7.0.r2664 — Stable Release]
 
 *Co-developed with Antigravity & Claude Code*
 
-> **Major release** — Shizuku+ 14 brings a full Material 3 Expressive UI overhaul, compileSdk 37 / AGP 9.4 / Gradle 9.7 build infrastructure, 100% Ukrainian and Brazilian Portuguese localizations, and 30+ bug fixes across the server, manager UI, and Plus APIs. Minimum Android remains API 24 (Android 7); fully tested through Android 17 / One UI 9.
+> **Note:** This release was previously labelled `v14.0.0` — that numbering was incorrect; ShizukuPlus tracks upstream Shizuku version numbers. The correct identifier for this build is `13.7.0.r2664` (upstream Shizuku 13.7.0, build r2664). GitHub tags `v14.0.0.r2663–v14.0.0.r2668` remain for backward compatibility with existing installs.
+
+> **Major release** — Shizuku+ 13.7.0 brings a full Material 3 Expressive UI overhaul, compileSdk 37 / AGP 9.4 / Gradle 9.7 build infrastructure, 100% Ukrainian and Brazilian Portuguese localizations, and 30+ bug fixes across the server, manager UI, and Plus APIs. Minimum Android remains API 24 (Android 7); fully tested through Android 17 / One UI 9.
 
 ### 🔧 Build / Infrastructure
 - **Upgraded AGP to 9.4.0, Gradle to 9.7.1, compileSdk to 37, targetSdk to 36, buildToolsVersion to 36.0.0** — required by Compose BOM 2026.08.00 (→ Compose 1.12.0 requires AGP 9.1.0+ and compileSdk 37); enables Android 16 / One UI 9 readiness.

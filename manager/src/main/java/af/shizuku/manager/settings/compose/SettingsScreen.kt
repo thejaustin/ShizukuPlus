@@ -92,6 +92,16 @@ fun SettingsScreen(
                 .isBlackNightTheme(context)
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     LaunchedEffect(Unit) { onScrollStateCreated(scrollBehavior.state) }
+    // Re-coerce heightOffset whenever LargeTopAppBar remeasures and updates heightOffsetLimit
+    // (e.g. font-scale change, display-size change, rotation). The LargeTopAppBar sets
+    // heightOffsetLimit during its layout pass, AFTER composition; until the next frame the
+    // stale heightOffset can sit below the new limit, making Scaffold report a negative top
+    // padding and throwing "Padding must be non-negative" (#569, same root cause as HomeScreen's
+    // SideEffect re-coerce on line 87 of HomeScreen.kt). heightOffset's setter enforces
+    // [heightOffsetLimit, 0f], so reassigning it to itself is sufficient.
+    LaunchedEffect(scrollBehavior.state.heightOffsetLimit) {
+        scrollBehavior.state.heightOffset = scrollBehavior.state.heightOffset
+    }
     LaunchedEffect(isScrollIdle) {
         if (isScrollIdle) {
             val state = scrollBehavior.state
@@ -293,8 +303,8 @@ fun SettingsScreen(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .height(oneHandedOffset + innerPadding.calculateTopPadding())
-                            .padding(top = innerPadding.calculateTopPadding() + 8.dp)
+                            .height((oneHandedOffset + innerPadding.calculateTopPadding()).coerceAtLeast(0.dp))
+                            .padding(top = (innerPadding.calculateTopPadding() + 8.dp).coerceAtLeast(0.dp))
                             .graphicsLayer { alpha = handleAlpha },
                     contentAlignment = Alignment.TopCenter,
                 ) {
@@ -329,8 +339,8 @@ fun SettingsScreen(
                     Modifier
                         .fillMaxSize()
                         .padding(
-                            top = innerPadding.calculateTopPadding(),
-                            bottom = innerPadding.calculateBottomPadding(),
+                            top = innerPadding.calculateTopPadding().coerceAtLeast(0.dp),
+                            bottom = innerPadding.calculateBottomPadding().coerceAtLeast(0.dp),
                         ),
             )
 
@@ -346,7 +356,7 @@ fun SettingsScreen(
                 modifier =
                     Modifier
                         .fillMaxSize()
-                        .padding(top = innerPadding.calculateTopPadding()),
+                        .padding(top = innerPadding.calculateTopPadding().coerceAtLeast(0.dp)),
             ) {
                 val bgColor = if (isBlackTheme) Color.Black else MaterialTheme.colorScheme.surface
                 Box(
