@@ -324,11 +324,21 @@
                 android:value="true" />
         </service>
 
-        <!-- WorkManager's SystemForegroundService needs a declared foreground service type on Android 14+ -->
+        <!-- WorkManager's SystemForegroundService needs a declared foreground service type on Android 14+,
+             covering every type a worker's ForegroundInfo asks for (else InvalidForegroundServiceTypeException).
+             shortService: WatchdogWorker's brief heal. specialUse: AdbStartWorker while the device is locked,
+             which waits for the unlock and then for the adbd authorization dialog; shortService is stopped
+             after about 3 minutes. -->
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"
-            android:foregroundServiceType="shortService"
-            tools:node="merge" />
+            android:foregroundServiceType="shortService|specialUse"
+            tools:node="merge">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Starts this app's API service over the device's own ADB after boot: waits for the
+                    device to be unlocked and for the user to answer the USB debugging authorization dialog,
+                    which can take several minutes." />
+        </service>
 
         <service
             android:name=".service.WatchdogService"

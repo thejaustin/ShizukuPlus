@@ -173,13 +173,16 @@ class AdbStartWorker(
                                             null,
                                         )
                                     // On Android 14+ (API 34), ForegroundInfo must declare a foreground
-                                    // service type or the OS throws InvalidForegroundServiceTypeException
+                                    // service type (one the manifest lists for SystemForegroundService) or
+                                    // the OS throws InvalidForegroundServiceTypeException. specialUse, not
+                                    // shortService: the OS stops a shortService after about 3 minutes, and
+                                    // this run may wait for the unlock and then for the adbd dialog.
                                     val foregroundInfo =
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                                             ForegroundInfo(
                                                 ShizukuReceiverStarter.NOTIFICATION_ID,
                                                 notification,
-                                                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
+                                                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
                                             )
                                         } else {
                                             ForegroundInfo(ShizukuReceiverStarter.NOTIFICATION_ID, notification)
