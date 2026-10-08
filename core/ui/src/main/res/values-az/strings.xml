@@ -399,7 +399,7 @@
     <string name="settings_root_file_interceptor_summary">Həssas sistem yollarını hədəfləyən fayl əməliyyatlarına icazələrin qorunması bayraqlarını avtomatik daxil edir.</string>
     <string name="settings_root_busybox_mocking">BusyBox Simulyasiyası</string>
     <string name="settings_root_busybox_mocking_summary">Köhnə skript tələblərini ödəmək üçün 'busybox' əmri üçün saxta versiya cavabı qaytarır.</string>
-    <help_root_magisk_title>Magisk Simulyasiyası haqqında</help_root_magisk_title>
+    <string name="help_root_magisk_title>Magisk Simulyasiyası haqqında</string>
     <string name="help_root_magisk_detail">Çox tətbiq Magisk-ə xas xassələri və ya /sbin/.magisk qovluğunu axtararaq root-u yoxlayır. Bu modul bu elementləri simulyasiya edərək Magisk mühiti aşkar edilmədən açılmayan tətbiqlərdə root-a özəl funksiyalardan istifadə etməyə imkan verir.</string>
     <string name="help_root_auto_grant_title">Avtomatik Təsdiq haqqında</string>
     <string name="help_root_auto_grant_detail">Köhnə root tətbiqləri tez-tez shell vasitəsilə özlərinə icazə verməyə çalışırlar. Bu körpü bu 'pm grant' çağırışlarını dinləyir və əl ilə icra etmədən Shizuku-nun yüksək imtiyazlarından istifadə edərək onları dərhal təsdiqləyir.</string>
