@@ -49,7 +49,7 @@
     <!-- UI Settings - Corner Rounding -->
     <string name="settings_corner_rounding_override">Künc Yuvarlaqlığı</string>
 
-    <!-- UI Settings - System-following -->
+    <!-- UI Settings - System following -->
     <string name="settings_follow_system_animations">Sistem Animasiyalarına Uyğunlaş</string>
     <string name="settings_follow_system_animations_summary">Tərtibatçı Seçimlərindəki cihazınızın animasiya sürəti tənzimləməsinə əməl edin</string>
     <string name="settings_follow_system_haptics">Sistem Haptiklərinə Uyğunlaş</string>
@@ -186,16 +186,16 @@
     <string name="doctor_status_su_bridge_path_set">ixrac edilən yol təyin edilib</string>
     <string name="doctor_status_su_bridge_no_path">İxrac edilən yol konfiqurasiya edilməyib</string>
     <string name="doctor_tip_oneui8_max_restrictions">One UI 8+: Avto Bloklayıcıdakı 'Maksimum Məhdudiyyətlər' ADB-ni söndürür. Shizuku-nu işlətmək üçün onu söndürün.</string>
-    <string name="doctor_tip_su_bridge_a16">Android 16+ ADB shell-dən /data/local/tmp-yə yazmağı məhdudlaşdırır. Root Uyğunluq Mərkəzini açın və cihazınızda işləyən SU Körpüsü yolunu təyin etmək üçün "İxrac et" düyməsinə toxunun.</string>
-    <string name="doctor_tip_samsung_autoblocker"><b>Samsung Avto Bloklayıcı</b>: Onun <b>SÖNDÜRÜLDÜYÜNDƏN</b> və ya 'Maksimum Məhdudiyyətlər'in deaktiv edildiyindən əmin olun. O, One UI 7/8+ versiyalarında ADB əmrlərini səssizcə bloklayır.</string>
-    <string name="doctor_tip_oneui_connectivity"><b>One UI 7/8 Bağlantısı</b>: Simsiz Cütləşdirmə uğursuz olarsa, Shizuku+ və Tərtibatçı Seçimlərini eyni vaxtda açaraq <b>Bölünmüş Ekran rejimindən</b> üçün istifadə etməyə çalışın.</string>
-    <string name="doctor_tip_s22_ultra"><b>S22 Ultra Məsləhəti</b>: Sabit ADB bağlantısı üçün, kəsilmələr baş verərsə `*#0808#` yığın və `MTP + ADB` rejimini seçin.</string>
-    <string name="doctor_tip_secure_folder"><b>Təhlükəsiz Qovluq Aşkar Edildi</b>: Shizuku+ ən yaxşı Əsas İstifadəçidə (Sahib) işləyir. Təhlükəsiz Qovluq və ya İş Profilində işlətmək serverin əvvəlcə Əsas İstifadəçidən başladılmasını tələb edə bilər.</string>
-    <string name="doctor_tip_phantom_process"><b>Fantom Proses Qatili</b>: Android 12-15+ həddən çox əmr icra edildikdə Shizuku+-u sonlandıra bilər. 'Düzəlt' düyməsi bu məhdudiyyəti söndürməyə çalışır.</string>
-    <string name="doctor_tip_samsung_optimization"><b>Samsung Avto-Optimallaşdırma</b>: Shizuku+-un gecə vaxtı sonlandırılmasının qarşısını almaq üçün Cihaz Qayğısında 'Avtomatik Yenidən Başlat'ı söndürün.</string>
-    <string name="doctor_tip_samsung_sleeping"><b>Samsung Yuxuda olan Tətbiqlər</b>: Düzəlt düyməsinə toxunmaq birbaşa <b>'Heç vaxt yuxuya getməyən tətbiqlər'</b> siyahısını açır. <b>+</b> düyməsinə toxunun və Samsung-un arxa plan xidmətini dondurmasının qarşısını almaq üçün Shizuku+-u əlavə edin.</string>
-    <string name="doctor_tip_s22_ultra_exynos"><b>S22 Ultra (Exynos)</b>: Xidmət cavabı ləngdirsə, Cihaz Qayğısı > Yaddaş bölməsindən <b>'RAM Plus'</b>ı söndürməyə çalışın.</string>
-    <string name="doctor_tip_s22_ultra_snapdragon"><b>S22 Ultra (Snapdragon)</b>: Maksimum əmr ötürmə qabiliyyəti üçün Cəld Tənzimləmələrdə 'Təkmilləşdirilmiş Emal'ın aktiv olduğundan əmin olun.</string>
+    <string name="doctor_tip_su_bridge_a16">Android 16+ ADB shell-dən //data//local//tmp-yə yazmağı məhdudlaşdırır. Root Uyğunluq Mərkəzini açın və cihazınızda işləyən SU Körpüsü yolunu təyin etmək üçün "İxrac et" düyməsinə toxunun.</string>
+    <string name="doctor_tip_samsung_autoblocker">Samsung Avto Bloklayıcı </b>: Onun <b>SÖNDÜRÜLDÜYÜNDƏN</b> və ya 'Maksimum Məhdudiyyətlər'in deaktiv edildiyindən əmin olun. O, One UI 7/8+ versiyalarında ADB əmrlərini səssizcə bloklayır.</string>
+    <string name="doctor_tip_oneui_connectivity">One UI 7/8 Bağlantısı </b>: Simsiz Cütləşdirmə uğursuz olarsa, Shizuku+ və Tərtibatçı Seçimlərini eyni vaxtda açaraq <b>Bölünmüş Ekran rejimindən</b> üçün istifadə etməyə çalışın.</string>
+    <string name="doctor_tip_s22_ultra">S22 Ultra Məsləhəti</b>: Sabit ADB bağlantısı üçün, kəsilmələr baş verərsə `*#0808#` yığın və `MTP + ADB` rejimini seçin.</string>
+    <string name="doctor_tip_secure_folder">Təhlükəsiz Qovluq Aşkar Edildi</b>: Shizuku+ ən yaxşı Əsas İstifadəçidə (Sahib) işləyir. Təhlükəsiz Qovluq və ya İş Profilində işlətmək serverin əvvəlcə Əsas İstifadəçidən başladılmasını tələb edə bilər.</string>
+    <string name="doctor_tip_phantom_process">Fantom Proses Qatili</b>: Android 12-15+ həddən çox əmr icra edildikdə Shizuku+-u sonlandıra bilər. 'Düzəlt' düyməsi bu məhdudiyyəti söndürməyə çalışır.</string>
+    <string name="doctor_tip_samsung_optimization">Samsung Avto-Optimallaşdırma</b>: Shizuku+-un gecə vaxtı sonlandırılmasının qarşısını almaq üçün Cihaz Qayğısında 'Avtomatik Yenidən Başlat'ı söndürün.</string>
+    <string name="doctor_tip_samsung_sleeping">Samsung Yuxuda olan Tətbiqlər</b>: Düzəlt düyməsinə toxunmaq birbaşa <b>'Heç vaxt yuxuya getməyən tətbiqlər'</b> siyahısını açır. <b>+</b> düyməsinə toxunun və Samsung-un arxa plan xidmətini dondurmasının qarşısını almaq üçün Shizuku+-u əlavə edin.</string>
+    <string name="doctor_tip_s22_ultra_exynos">S22 Ultra (Exynos)</b>: Xidmət cavabı ləngdirsə, Cihaz Qayğısı > Yaddaş bölməsindən <b>'RAM Plus'</b>ı söndürməyə çalışın.</string>
+    <string name="doctor_tip_s22_ultra_snapdragon">S22 Ultra (Snapdragon)</b>: Maksimum əmr ötürmə qabiliyyəti üçün Cəld Tənzimləmələrdə 'Təkmilləşdirilmiş Emal'ın aktiv olduğundan əmin olun.</string>
     <string name="doctor_system_well_configured">Sisteminiz Shizuku+ üçün yaxşı konfiqurasiya edilib.</string>
 
     <!-- Root Compatibility -->
@@ -682,7 +682,7 @@
     <string name="su_bridge_device_identity_title">Cihaz Şəxsiyyəti</string>
     <string name="starter_service_started">Xidmət başladı.</string>
     <string name="su_bridge_device_identity_real">Real: %s</string>
-    <string name="su_bridge_device_identity_spoofed">Saxtalaşdırılmış: %s</string>
+    <string name="su_bridge_device_identity_spoofed">Saxtalaşdırılmış: %s </string>
     <string name="su_bridge_device_identity_none">Xeyr (Real cihaz gösterilir)</string>
 
     <!-- Sentry Offline Notice -->
@@ -784,7 +784,7 @@
     <string name="su_bridge_deploy_to_tmp">Körpünü /data/local/tmp-yə Yerləşdir</string>
     <string name="su_bridge_cleanup_success">SU Körpüsü /data/local/tmp-dən silindi. Google Wallet təhlükəsizliyi bərpa olundu.</string>
     <string name="su_bridge_cleanup_failed">SU Körpüsünü /data/local/tmp-dən silmək mümkün olmadı. Shizuku-nun işlədiyindən əmin olun.</string>
-    <string name="su_bridge_deploy_success">SU Körpüsü /data/local/tmp-yə yerləşdirildi.</string>
+    <string name="su_bridge_deploy_success">SU Körpüsü //data/local//tmp-yə yerləşdirildi.</string>
     <string name="su_bridge_warning_wallet_title">Google Wallet Bildirişi</string>
     <string name="su_bridge_warning_wallet_message">'su' binarını /data/local/tmp-yə yerləşdirmək və ya Magisk Simulyasiyasını aktivləşdirmək Google Play Xidmətlərində Android root aşkar edilməsini tətikləyir və bu da Google Wallet təmasız ödənişlərini söndürür. Wallet-i bərpa etmək üçün onu istənilən vaxt silə bilərsiniz.</string>
 
