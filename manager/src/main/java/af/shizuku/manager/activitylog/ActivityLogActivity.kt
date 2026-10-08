@@ -1,14 +1,18 @@
 package af.shizuku.manager.activitylog
 import af.shizuku.core.ui.EmptyStateView
 import af.shizuku.manager.R
+import af.shizuku.manager.database.ActivityEventType
 import af.shizuku.manager.database.ActivityLogManager
 import af.shizuku.manager.database.ActivityLogRecord
 import af.shizuku.manager.databinding.ItemActivityLogBinding
 import af.shizuku.manager.utils.AppIconCache
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -108,15 +112,22 @@ class ActivityLogFragment : Fragment() {
     ) : RecyclerView.ViewHolder(binding.root) {
         companion object {
             // Include the date, not just the time: logs persist across days and a bare "HH:mm:ss"
-            // makes yesterday's entry indistinguishable from today's. MEDIUM/MEDIUM is locale-aware.
+            // makes yesterday's entry indistinguishable from today's. MEDIUM date keeps a 4-digit
+            // year; SHORT time keeps the row compact. Locale-aware.
             private val dateFormat =
                 java.text.DateFormat.getDateTimeInstance(
                     java.text.DateFormat.MEDIUM,
-                    java.text.DateFormat.MEDIUM,
+                    java.text.DateFormat.SHORT,
                     Locale.getDefault(),
                 )
 
             fun create(parent: ViewGroup) = LogViewHolder(ItemActivityLogBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+
+            private fun resolveAttrColor(view: View, attr: Int): Int {
+                val tv = android.util.TypedValue()
+                view.context.theme.resolveAttribute(attr, tv, true)
+                return tv.data
+            }
         }
 
         private var lookupJob: Job? = null
@@ -139,6 +150,10 @@ class ActivityLogFragment : Fragment() {
             binding.icon.setTag(R.id.tag_app_icon_package, null)
             binding.icon.load(R.drawable.ic_system_icon)
 
+            applyEventType(record.eventType)
+            binding.root.contentDescription =
+                "${binding.appName.text}, ${binding.eventChip.text}, ${record.action}, ${binding.timestamp.text}"
+
             lookupJob?.cancel()
             lookupJob =
                 CoroutineScope(Dispatchers.IO).launch {
@@ -156,6 +171,26 @@ class ActivityLogFragment : Fragment() {
                         }
                     }
                 }
+        }
+
+        private fun applyEventType(eventType: ActivityEventType) {
+            val ctx = binding.root.context
+            val (labelRes, colorAttr) = when (eventType) {
+                ActivityEventType.SERVICE_START -> R.string.activity_log_type_start to androidx.appcompat.R.attr.colorPrimary
+                ActivityEventType.SERVICE_STOP -> R.string.activity_log_type_stop to androidx.appcompat.R.attr.colorError
+                ActivityEventType.PERMISSION -> R.string.activity_log_type_permission to com.google.android.material.R.attr.colorTertiary
+                ActivityEventType.APP_MANAGEMENT -> R.string.activity_log_type_app_mgmt to com.google.android.material.R.attr.colorSecondary
+                ActivityEventType.WATCHDOG -> R.string.activity_log_type_watchdog to com.google.android.material.R.attr.colorTertiary
+                ActivityEventType.SYSTEM -> R.string.activity_log_type_system to com.google.android.material.R.attr.colorOutline
+                ActivityEventType.OTHER -> R.string.activity_log_type_other to com.google.android.material.R.attr.colorOutline
+            }
+            val accentColor = resolveAttrColor(binding.root, colorAttr)
+            binding.eventChip.setText(labelRes)
+            binding.eventChip.chipBackgroundColor = android.content.res.ColorStateList.valueOf(
+                ColorUtils.setAlphaComponent(accentColor, 0x28)
+            )
+            binding.eventChip.setTextColor(accentColor)
+            binding.eventIndicator.backgroundTintList = android.content.res.ColorStateList.valueOf(accentColor)
         }
     }
 }

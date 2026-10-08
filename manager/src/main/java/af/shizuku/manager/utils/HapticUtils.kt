@@ -129,4 +129,15 @@ object HapticUtils {
             tick(view)
         }
     }
+
+    /**
+     * Feedback for the end of a gesture (e.g. drag drop)
+     */
+    fun gestureEnd(view: View) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            safeHaptic(view, HapticFeedbackConstants.GESTURE_END)
+        } else {
+            safeHaptic(view, HapticFeedbackConstants.LONG_PRESS)
+        }
+    }
 }

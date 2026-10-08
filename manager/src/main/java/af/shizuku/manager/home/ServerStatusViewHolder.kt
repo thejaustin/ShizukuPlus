@@ -79,18 +79,40 @@ class ServerStatusViewHolder(
                 },
             )
 
-        // Pulse animation for Starting/Running state
-        if (state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING || ok) {
-            val pulse =
-                android.view.animation.AlphaAnimation(0.4f, 1.0f).apply {
-                    duration = if (ok) 1500 else 600
-                    repeatMode = android.view.animation.Animation.REVERSE
-                    repeatCount = android.view.animation.Animation.INFINITE
-                    interpolator = android.view.animation.AccelerateDecelerateInterpolator()
-                }
-            statusIndicator.startAnimation(pulse)
+        // Pulse animation for Starting/Running state — alpha + subtle scale for depth.
+        // Gated by expressive-animations preference to respect the user's motion settings.
+        val expressiveAnimations = af.shizuku.manager.ShizukuSettings.isExpressiveAnimationsEnabled()
+        if (expressiveAnimations && (state == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING || ok)) {
+            val dur = if (ok) 1500L else 600L
+            val alphaPulse = android.animation.ObjectAnimator.ofFloat(statusIndicator, "alpha", 0.4f, 1.0f).apply {
+                duration = dur
+                repeatMode = android.animation.ValueAnimator.REVERSE
+                repeatCount = android.animation.ValueAnimator.INFINITE
+                interpolator = android.view.animation.AccelerateDecelerateInterpolator()
+            }
+            val scaleX = android.animation.ObjectAnimator.ofFloat(statusIndicator, "scaleX", 0.85f, 1.0f).apply {
+                duration = dur
+                repeatMode = android.animation.ValueAnimator.REVERSE
+                repeatCount = android.animation.ValueAnimator.INFINITE
+                interpolator = android.view.animation.AccelerateDecelerateInterpolator()
+            }
+            val scaleY = android.animation.ObjectAnimator.ofFloat(statusIndicator, "scaleY", 0.85f, 1.0f).apply {
+                duration = dur
+                repeatMode = android.animation.ValueAnimator.REVERSE
+                repeatCount = android.animation.ValueAnimator.INFINITE
+                interpolator = android.view.animation.AccelerateDecelerateInterpolator()
+            }
+            val pulse = android.animation.AnimatorSet().apply { playTogether(alphaPulse, scaleX, scaleY) }
+            statusIndicator.clearAnimation()
+            statusIndicator.tag = pulse
+            pulse.start()
         } else {
             statusIndicator.clearAnimation()
+            (statusIndicator.tag as? android.animation.AnimatorSet)?.cancel()
+            statusIndicator.tag = null
+            statusIndicator.alpha = 1f
+            statusIndicator.scaleX = 1f
+            statusIndicator.scaleY = 1f
         }
 
         // Show Sentry offline button only if limit is reached

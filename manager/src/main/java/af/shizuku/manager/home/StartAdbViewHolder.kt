@@ -5,7 +5,9 @@ import af.shizuku.manager.R
 import af.shizuku.manager.databinding.HomeItemContainerBinding
 import af.shizuku.manager.databinding.HomeStartAdbBinding
 import af.shizuku.manager.ktx.toHtml
+import af.shizuku.manager.model.ServiceStatus
 import af.shizuku.manager.starter.Starter
+import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.IconStyleHelper
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import android.content.Intent
@@ -24,10 +26,10 @@ import rikka.recyclerview.BaseViewHolder.Creator
 class StartAdbViewHolder(
     private val binding: HomeStartAdbBinding,
     private val containerBinding: HomeItemContainerBinding,
-) : BaseViewHolder<Any?>(containerBinding.root) {
+) : BaseViewHolder<ServiceStatus?>(containerBinding.root) {
     companion object {
         val CREATOR =
-            Creator<Any> { inflater: LayoutInflater, parent: ViewGroup? ->
+            Creator<ServiceStatus?> { inflater: LayoutInflater, parent: ViewGroup? ->
                 val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
                 val inner = HomeStartAdbBinding.inflate(inflater, outer.cardContent, true)
                 StartAdbViewHolder(inner, outer)
@@ -41,6 +43,7 @@ class StartAdbViewHolder(
             true
         }
         binding.button1.setOnClickListener { v: View ->
+            HapticUtils.tap(v)
             val context = v.context
             MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.home_adb_button_view_command)
@@ -74,12 +77,6 @@ class StartAdbViewHolder(
                 }.show()
         }
         binding.text1.movementMethod = LinkMovementMethod.getInstance()
-        binding.text1.text =
-            androidx.core.text.HtmlCompat
-                .fromHtml(
-                    context.getString(R.string.home_adb_description, Helps.ADB.get()),
-                    androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY,
-                ).toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
         containerBinding.dragHandle.apply {
             setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_DOWN) HomeEditMode.startDragCallback?.invoke(this@StartAdbViewHolder)
@@ -97,5 +94,14 @@ class StartAdbViewHolder(
     override fun onBind() {
         HomeEditMode.applyOverlay(containerBinding)
         IconStyleHelper.applyToCardIcon(binding.icon, originalIcon, "home_start_adb")
+
+        val runningViaAdb = data?.isRunning == true && data?.uid != 0
+        val descRes = if (runningViaAdb) R.string.home_adb_description_active else R.string.home_adb_description
+        binding.text1.text =
+            androidx.core.text.HtmlCompat
+                .fromHtml(
+                    context.getString(descRes, Helps.ADB.get()),
+                    androidx.core.text.HtmlCompat.FROM_HTML_MODE_LEGACY,
+                ).toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
     }
 }

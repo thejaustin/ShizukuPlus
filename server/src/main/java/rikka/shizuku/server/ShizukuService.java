@@ -670,6 +670,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         } catch (Throwable e) {
             LOGGER.w(e, "Failed to add %s to power save temp whitelist before bindApplication", requestPackageName);
         }
+        if (!isManager) dispatchLog(requestPackageName, "Connected to Shizuku");
         try {
             // Normal path: IShizukuApplication is now moe.shizuku.server.IShizukuApplication, matching
             // what rikka clients implement, so this transacts under the descriptor they expect.
@@ -1027,6 +1028,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         enforceManagerPermission("setPlusSetting");
         LOGGER.i("Plus Setting Update: " + key + " -> " + value);
         plusSettingsMap.put(key, value);
+    }
+
+    @Override
+    protected void onClientEvent(String packageName, String action) {
+        dispatchLog(packageName, action);
     }
 
     private void dispatchLog(String packageName, String action) {
@@ -2584,7 +2590,50 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             }
             return true;
         }
-        return super.onTransact(code, data, reply, flags);
+        // An AIDL method declared "= N" is transaction FIRST_CALL_TRANSACTION + N on the wire. The
+        // hand-written switch in Service.onTransact() matches bare N for a few methods, so three
+        // wire codes from standard clients would be answered as the wrong method. Take them here,
+        // before that switch sees them.
+        if (code == IBinder.FIRST_CALL_TRANSACTION + 2 /* getVersion; the switch answers getUid */) {
+            data.enforceInterface(ShizukuApiConstants.BINDER_DESCRIPTOR);
+            int version = getVersion();
+            reply.writeNoException();
+            reply.writeInt(version);
+            return true;
+        } else if (code == IBinder.FIRST_CALL_TRANSACTION + 16 /* two different calls share this code */) {
+            data.enforceInterface(ShizukuApiConstants.BINDER_DESCRIPTOR);
+            // Told apart by the parcel, never by the caller. The generated
+            // shouldShowRequestPermissionRationale() of every client library sends 17 with no
+            // arguments. The ShizukuPlus client library's attachApplication sends a bare 17 with
+            // (binder, int, Bundle) (api Shizuku.java attachApplicationV13): that one falls through
+            // to Service.onTransact, which rewinds the parcel and attaches.
+            if (data.dataAvail() == 0) {
+                boolean rationale = shouldShowRequestPermissionRationale();
+                reply.writeNoException();
+                reply.writeInt(rationale ? 1 : 0);
+                return true;
+            }
+        } else if (code == IBinder.FIRST_CALL_TRANSACTION + 13 /* attachApplication(IBinder, String) from API <= 12; the switch runs requestPermission */) {
+            data.enforceInterface(ShizukuApiConstants.BINDER_DESCRIPTOR);
+            IBinder application = data.readStrongBinder();
+            Bundle args = new Bundle();
+            args.putString(ShizukuApiConstants.ATTACH_APPLICATION_PACKAGE_NAME, data.readString());
+            // No API version in args: the client is treated as pre-v13.
+            attachApplication(IShizukuApplication.Stub.asInterface(application), args);
+            reply.writeNoException();
+            return true;
+        }
+        try {
+            return super.onTransact(code, data, reply, flags);
+        } catch (SecurityException e) {
+            // Permission denials are already logged by enforceCallingPermission().
+            throw e;
+        } catch (RuntimeException e) {
+            // Binder writes the exception into the reply for the caller and logs nothing on this
+            // side, so the client sees e.g. IllegalStateException with no server-side trace.
+            LOGGER.w(e, "onTransact code=%d from uid=%d pid=%d failed", code, Binder.getCallingUid(), Binder.getCallingPid());
+            throw e;
+        }
     }
 
     void sendBinderToClient() {
@@ -2784,13 +2833,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             // triggers ClassNotFoundException / BadParcelableException inside Bundle.unparcel(), which
             // invalidates the entire bundle — including the moe key — on Android 11 (#446, #389).
             //
-            // Apps that declare moe.shizuku.manager.permission.API_V23 (original Shizuku permission,
-            // not the ShizukuPlus af.shizuku variant) were compiled against the old positional AIDL
-            // transaction codes, which are all +1 relative to ShizukuPlus's explicit codes. Wrap the
-            // service binder in a proxy that applies the -1 offset so calls land on the right methods.
-            IBinder binderForLegacy = isLegacyOriginalShizukuApp(packageName, userId)
-                    ? new LegacyShizukuBinderProxy(binder) : binder;
-            extra.putParcelable("moe.shizuku.privileged.api.intent.extra.BINDER", new moe.shizuku.api.BinderContainer(binderForLegacy));
+            // Apps built against the original Shizuku API get the service binder as it is: they
+            // send the same wire codes as everyone else (see onTransact), so nothing is renumbered.
+            extra.putParcelable("moe.shizuku.privileged.api.intent.extra.BINDER", new moe.shizuku.api.BinderContainer(binder));
             extra.putBinder("binder", binder);
 
             Bundle reply = IContentProviderUtils.callCompat(provider, null, name, "sendBinder", null, extra);
@@ -2812,26 +2857,6 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     LOGGER.w(tr, "removeContentProviderExternal");
                 }
             }
-        }
-    }
-
-    private static boolean isLegacyOriginalShizukuApp(String packageName, int userId) {
-        // Only apply the legacy proxy when the app declares the original Shizuku permission
-        // (moe.shizuku.manager.permission.API_V23) AND does NOT declare any ShizukuPlus
-        // permission. Apps like Installer X Revived declare the original permission for
-        // backward-compat but are compiled against ShizukuPlus explicit AIDL codes; wrapping
-        // them in the -1 offset proxy corrupts their calls (#567).
-        try {
-            PackageInfo pi = Android17Compat.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS, userId);
-            if (pi == null || pi.requestedPermissions == null) return false;
-            String[] perms = pi.requestedPermissions;
-            boolean hasOriginal = ArraysKt.contains(perms, ServerConstants.PERMISSION_ORIGINAL);
-            if (!hasOriginal) return false;
-            boolean hasPlus = ArraysKt.contains(perms, ServerConstants.PERMISSION)
-                    || ArraysKt.contains(perms, ServerConstants.PERMISSION_LEGACY);
-            return !hasPlus;
-        } catch (Throwable e) {
-            return false;
         }
     }
 

@@ -67,7 +67,7 @@ def sh(args, retries=4):
     """Run a command, retrying on transient GitHub API failures (503/timeout/rate)."""
     last = None
     for attempt in range(retries):
-        last = subprocess.run(args, capture_output=True, text=True, cwd="/sdcard/Documents/ShizukuPlus")
+        last = subprocess.run(args, capture_output=True, text=True, cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         if last.returncode == 0:
             return last
         err = ((last.stderr or "") + (last.stdout or "")).lower()

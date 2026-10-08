@@ -114,9 +114,12 @@ class CollapsiblePreferenceCategory
                 // Guard against fast double-taps: a second tap before the arrow finishes rotating
                 // would flip `expanded` twice and leave the arrow snapped to the wrong angle.
                 if (isAnimating) return@setOnClickListener
-                af.shizuku.manager.utils.HapticUtils
-                    .tap(holder.itemView)
                 expanded = !expanded
+                if (expanded) {
+                    af.shizuku.manager.utils.HapticUtils.toggleOn(holder.itemView)
+                } else {
+                    af.shizuku.manager.utils.HapticUtils.toggleOff(holder.itemView)
+                }
                 if (shouldPersist()) persistBoolean(expanded)
                 // Animate arrow with M3E spring-style motion
                 arrow

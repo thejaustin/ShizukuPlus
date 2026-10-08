@@ -6,7 +6,6 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.adb.AdbMdns
 import af.shizuku.manager.adb.AdbPortProber
 import af.shizuku.manager.adb.AdbStarter
-import af.shizuku.manager.database.ActivityLogManager
 import af.shizuku.manager.receiver.ShizukuReceiverStarter
 import af.shizuku.manager.receiver.ShizukuReceiverStarter.WorkerState
 import af.shizuku.manager.receiver.ShizukuReceiverStarter.updateNotification
@@ -84,13 +83,12 @@ class AdbStartWorker(
                 val desiredPort = ShizukuSettings.getTcpPort()
                 if (desiredPort in 1..65535) {
                     if (AdbPortProber.isPortOpen(desiredPort, 600)) {
-                        AdbStarter.startAdb(applicationContext, desiredPort)
-                        Starter.waitForBinder()
-                        ActivityLogManager.log(
-                            "Shizuku",
-                            applicationContext.packageName,
-                            "Service started via direct TCP port $desiredPort (no Wi-Fi required)",
+                        AdbStarter.startAdb(
+                            applicationContext,
+                            desiredPort,
+                            activityLogMessage = "Service started via direct TCP port $desiredPort (no Wi-Fi required)",
                         )
+                        Starter.waitForBinder()
                         val nm = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
                         nm.cancel(ShizukuReceiverStarter.NOTIFICATION_ID)
                         return Result.success()
@@ -113,13 +111,12 @@ class AdbStartWorker(
             if (ShizukuSettings.isForceStartWadbEnabled() && tcpPort <= 0 && savedPort <= 0) {
                 val probePort = ShizukuSettings.getTcpPort().takeIf { it in 1..65535 } ?: 5555
                 if (AdbPortProber.isPortOpen(probePort, 400)) {
-                    AdbStarter.startAdb(applicationContext, probePort)
-                    Starter.waitForBinder()
-                    ActivityLogManager.log(
-                        "Shizuku",
-                        applicationContext.packageName,
-                        "Service started via force_start_wadb TCP probe on port $probePort",
+                    AdbStarter.startAdb(
+                        applicationContext,
+                        probePort,
+                        activityLogMessage = "Service started via force_start_wadb TCP probe on port $probePort",
                     )
+                    Starter.waitForBinder()
                     val nm = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
                     nm.cancel(ShizukuReceiverStarter.NOTIFICATION_ID)
                     return Result.success()
@@ -173,13 +170,16 @@ class AdbStartWorker(
                                             null,
                                         )
                                     // On Android 14+ (API 34), ForegroundInfo must declare a foreground
-                                    // service type or the OS throws InvalidForegroundServiceTypeException
+                                    // service type (one the manifest lists for SystemForegroundService) or
+                                    // the OS throws InvalidForegroundServiceTypeException. specialUse, not
+                                    // shortService: the OS stops a shortService after about 3 minutes, and
+                                    // this run may wait for the unlock and then for the adbd dialog.
                                     val foregroundInfo =
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                                             ForegroundInfo(
                                                 ShizukuReceiverStarter.NOTIFICATION_ID,
                                                 notification,
-                                                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE,
+                                                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
                                             )
                                         } else {
                                             ForegroundInfo(ShizukuReceiverStarter.NOTIFICATION_ID, notification)
@@ -255,7 +255,6 @@ class AdbStartWorker(
                 .i("doWork: resolved port %d, starting ADB client", port)
             AdbStarter.startAdb(applicationContext, port)
             Starter.waitForBinder()
-            ActivityLogManager.log("Shizuku", applicationContext.packageName, "Service started via background ADB worker on port $port")
             timber.log.Timber
                 .tag("AdbStartWorker")
                 .i("doWork: Shizuku service successfully started and binder ready on port %d", port)
@@ -442,9 +441,12 @@ class AdbStartWorker(
                     .setConstraints(constraints)
                     .build()
 
+            // Use KEEP while a key offer is waiting for a dialog response — REPLACE would cancel
+            // the current connection and create another "Allow USB debugging?" dialog.
+            val policy = if (af.shizuku.manager.adb.AdbStarter.keyOfferInFlight) ExistingWorkPolicy.KEEP else ExistingWorkPolicy.REPLACE
             WorkManager.getInstance(context).enqueueUniqueWork(
                 "adb_start_worker",
-                ExistingWorkPolicy.REPLACE,
+                policy,
                 request,
             )
         }

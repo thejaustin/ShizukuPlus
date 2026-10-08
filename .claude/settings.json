@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd /sdcard/Documents/ShizukuPlus && bash scripts/dev/check-build.sh 2>&1 | tail -8"
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && bash scripts/dev/check-build.sh 2>&1 | tail -8"
           }
         ]
       }

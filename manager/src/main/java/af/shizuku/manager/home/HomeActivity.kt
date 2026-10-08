@@ -355,9 +355,13 @@ open class HomeActivity :
                             }
                         }
 
-                        if (EnvironmentUtils.isOneUi8()) {
-                            HapticUtils.success(view)
-                        }
+                        HapticUtils.success(view)
+                    }
+                } else if (!status.isRunning && previouslyRunning == true) {
+                    recyclerView.post {
+                        val view = recyclerView
+                        if (!view.isAttachedToWindow) return@post
+                        HapticUtils.error(view)
                     }
                 }
             }
@@ -500,7 +504,7 @@ open class HomeActivity :
                 ): Boolean {
                     if (!adapter.isDraggable(target.bindingAdapterPosition)) return false
                     adapter.moveItem(src.bindingAdapterPosition, target.bindingAdapterPosition)
-                    HapticUtils.tap(target.itemView)
+                    HapticUtils.segmentTick(src.itemView)
                     return true
                 }
 
@@ -516,12 +520,15 @@ open class HomeActivity :
                             viewHolder
                                 ?.itemView
                                 ?.animate()
-                                ?.scaleX(1.04f)
-                                ?.scaleY(1.04f)
-                                ?.translationZ(16f)
-                                ?.setDuration(ShizukuSettings.scaledAnimationDuration(200))
-                                ?.setInterpolator(android.view.animation.DecelerateInterpolator())
-                                ?.start()
+                                ?.scaleX(1.06f)
+                                ?.scaleY(1.06f)
+                                ?.alpha(0.96f)
+                                ?.translationZ(24f)
+                                ?.setDuration(ShizukuSettings.scaledAnimationDuration(180))
+                                ?.setInterpolator(
+                                    androidx.core.view.animation.PathInterpolatorCompat
+                                        .create(0.2f, 0f, 0f, 1f),
+                                )?.start()
                         }
                     } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
                         adapter.isDragging = false
@@ -539,21 +546,26 @@ open class HomeActivity :
                 ) {
                     super.clearView(rv, vh)
                     adapter.isDragging = false
+                    HapticUtils.gestureEnd(vh.itemView)
                     if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
                         val animator = vh.itemView.animate()
                         if (animator != null) {
                             animator
                                 .scaleX(1f)
                                 .scaleY(1f)
+                                .alpha(1f)
                                 .translationZ(0f)
-                                .setDuration(ShizukuSettings.scaledAnimationDuration(250))
-                                .setInterpolator(android.view.animation.OvershootInterpolator(0.8f))
+                                .setDuration(ShizukuSettings.scaledAnimationDuration(350))
+                                .setInterpolator(android.view.animation.OvershootInterpolator(2.2f))
                                 .start()
                         } else {
                             vh.itemView.scaleX = 1f
                             vh.itemView.scaleY = 1f
+                            vh.itemView.alpha = 1f
                             vh.itemView.translationZ = 0f
                         }
+                    } else {
+                        vh.itemView.alpha = 1f
                     }
                     adapter.persistCardOrder()
                     adapter.updateData()
@@ -636,6 +648,7 @@ open class HomeActivity :
         onBackPressedDispatcher.addCallback(this, backCallback)
 
         HomeEditMode.onChanged = {
+            if (HomeEditMode.isActive) HapticUtils.gestureStart(recyclerView) else HapticUtils.gestureEnd(recyclerView)
             lifecycleScope.launch {
                 delay(150)
                 isEditMode = HomeEditMode.isActive
