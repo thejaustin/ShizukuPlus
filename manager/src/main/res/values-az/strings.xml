@@ -187,7 +187,7 @@
     <string name="doctor_status_su_bridge_no_path">İxrac edilən yol konfiqurasiya edilməyib</string>
     <string name="doctor_tip_oneui8_max_restrictions">One UI 8+: Avto Bloklayıcıdakı 'Maksimum Məhdudiyyətlər' ADB-ni söndürür. Shizuku-nu işlətmək üçün onu söndürün.</string>
     <string name="doctor_tip_su_bridge_a16">Android 16+ ADB shell-dən //data//local//tmp-yə yazmağı məhdudlaşdırır. Root Uyğunluq Mərkəzini açın və cihazınızda işləyən SU Körpüsü yolunu təyin etmək üçün "İxrac et" düyməsinə toxunun.</string>
-    <string name="doctor_tip_samsung_autoblocker">Samsung Avto Bloklayıcı </b>: Onun <b>SÖNDÜRÜLDÜYÜNDƏN</b> və ya 'Maksimum Məhdudiyyətlər'in deaktiv edildiyindən əmin olun. O, One UI 7/8+ versiyalarında ADB əmrlərini səssizcə bloklayır.</string>
+    <string name="doctor_tip_samsung_autoblocker">Samsung Avto Bloklayıcı </b>: Onun <b> SÖNDÜRÜLDÜYÜNDƏN </b> və ya 'Maksimum Məhdudiyyətlər'in deaktiv edildiyindən əmin olun. O, One UI 7/8+ versiyalarında ADB əmrlərini səssizcə bloklayır.</string>
     <string name="doctor_tip_oneui_connectivity">One UI 7/8 Bağlantısı </b>: Simsiz Cütləşdirmə uğursuz olarsa, Shizuku+ və Tərtibatçı Seçimlərini eyni vaxtda açaraq <b>Bölünmüş Ekran rejimindən</b> üçün istifadə etməyə çalışın.</string>
     <string name="doctor_tip_s22_ultra">S22 Ultra Məsləhəti</b>: Sabit ADB bağlantısı üçün, kəsilmələr baş verərsə `*#0808#` yığın və `MTP + ADB` rejimini seçin.</string>
     <string name="doctor_tip_secure_folder">Təhlükəsiz Qovluq Aşkar Edildi</b>: Shizuku+ ən yaxşı Əsas İstifadəçidə (Sahib) işləyir. Təhlükəsiz Qovluq və ya İş Profilində işlətmək serverin əvvəlcə Əsas İstifadəçidən başladılmasını tələb edə bilər.</string>
