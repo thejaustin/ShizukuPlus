@@ -373,7 +373,7 @@
     <!-- Swipe hint overlay -->
     <string name="swipe_hint_title">Sürüşdürmə jestləri</string>
     <string name="swipe_hint_right">Cəld əməliyyat üçün sağa sürüşdürün</string>
-    <swipe_hint_left name="swipe_hint_left">Cəld əməliyyat üçün sola sürüşdürün</swipe_hint_left>
+    <string name="swipe_hint_left">Cəld əməliyyat üçün sola sürüşdürün</string>
     <string name="swipe_hint_dismiss">Bağlamaq üçün hər hansı bir yerə toxunun</string>
 
     <!-- Settings -->
