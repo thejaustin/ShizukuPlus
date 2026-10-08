@@ -238,11 +238,11 @@ class HomeAdapter(
                     }
                 ID_START_WADB ->
                     if (isEditMode || (isPrimaryUser && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R || EnvironmentUtils.getAdbTcpPort() > 0))) {
-                        addItem(startWadbCreator, null, id)
+                        addItem(startWadbCreator, status, id)
                     }
                 ID_START_ADB ->
                     if (isEditMode || isPrimaryUser) {
-                        addItem(StartAdbViewHolder.CREATOR, null, id)
+                        addItem(StartAdbViewHolder.CREATOR, status, id)
                     }
                 ID_AUTOMATION -> addItem(AutomationViewHolder.CREATOR, null, id)
                 ID_BACKUP ->
@@ -256,14 +256,12 @@ class HomeAdapter(
                 ID_PERMISSION_MANAGER -> addItem(PermissionManagerViewHolder.CREATOR, status, id)
                 ID_LEARN_MORE -> addItem(LearnMoreViewHolder.CREATOR, null, id)
                 ID_COMPANION -> {
-                    // The compat hub is what lets third-party apps detect Shizuku+, so surface
-                    // this card whenever it still needs action — the hub isn't installed yet, or
-                    // stock Shizuku is present and conflicts — not only when companion mode is on.
-                    // Otherwise (hub installed, no conflict) it stays opt-in via companion mode.
-                    val needsAction = !compatHubInstalled || companionInstalled
-                    if (isEditMode || ShizukuSettings.isCompanionModeEnabled() || needsAction) {
-                        addItem(companionCreator, Pair(companionInstalled, compatHubInstalled), id)
-                    }
+                    // Show the compat hub card unconditionally (visibility is managed by the
+                    // standard hidden-set like every other card). Previously the card was gated
+                    // on isCompanionModeEnabled() || needsAction, which made it disappear from
+                    // the home screen as soon as the hub was successfully installed — users had
+                    // no persistent status indicator and couldn't tell the hub was active.
+                    addItem(companionCreator, Pair(companionInstalled, compatHubInstalled), id)
                 }
             }
         }

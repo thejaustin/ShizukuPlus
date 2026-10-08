@@ -9,6 +9,7 @@ import af.shizuku.manager.databinding.HomeItemContainerBinding
 import af.shizuku.manager.databinding.HomeStartWirelessAdbBinding
 import af.shizuku.manager.ktx.startWithSceneTransition
 import af.shizuku.manager.ktx.toHtml
+import af.shizuku.manager.model.ServiceStatus
 import af.shizuku.manager.receiver.NotifCancelReceiver
 import af.shizuku.manager.starter.StarterActivity
 import af.shizuku.manager.utils.CustomTabsHelper
@@ -44,12 +45,12 @@ class StartWirelessAdbViewHolder(
     private val containerBinding: HomeItemContainerBinding,
     private val scope: CoroutineScope,
     private val homeModel: HomeViewModel,
-) : BaseViewHolder<Any?>(containerBinding.root) {
+) : BaseViewHolder<ServiceStatus?>(containerBinding.root) {
     companion object {
         fun creator(
             scope: CoroutineScope,
             homeModel: HomeViewModel,
-        ): Creator<Any> =
+        ): Creator<ServiceStatus?> =
             Creator { inflater: LayoutInflater, parent: ViewGroup? ->
                 val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
                 val inner = HomeStartWirelessAdbBinding.inflate(inflater, outer.cardContent, true)
@@ -214,6 +215,23 @@ class StartWirelessAdbViewHolder(
     override fun onBind() {
         HomeEditMode.applyOverlay(containerBinding)
         IconStyleHelper.applyToCardIcon(binding.icon, originalIcon, "home_start_wireless_adb")
+
+        val runningViaAdb = data?.isRunning == true && data?.uid != 0
+        if (EnvironmentUtils.isTlsSupported()) {
+            if (runningViaAdb) {
+                binding.button1.setText(R.string.home_wireless_adb_button_reconnect)
+                binding.text1.text =
+                    context
+                        .getString(R.string.home_wireless_adb_description_active)
+                        .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
+            } else {
+                binding.button1.setText(R.string.home_root_button_start)
+                binding.text1.text =
+                    context
+                        .getString(R.string.home_wireless_adb_description)
+                        .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.R)

@@ -3,18 +3,18 @@
     android:height="108dp"
     android:viewportWidth="432"
     android:viewportHeight="432">
-    <!-- Filled hexagon silhouette — the launcher/system applies a single tint color in
-         themed-icon / monochrome mode, so the icon must be an opaque filled shape rather
-         than a stroke outline (the previous stroke-only design rendered as a sparse ring
-         that looked broken under Pixel Launcher's minimal mode, issue #530). -->
+    <!-- Flat-top hexagon, circumradius 120 units, centered at (216,216). Fills ~60 % of
+         the 432-unit viewport while staying inside the 132-unit adaptive-icon safe zone.
+         The previous hexagon (R≈88) was too small — only 41 % of the viewport — and its
+         plus badge was barely 5dp wide at 48dp icon size, making it invisible in practice
+         (issue #530). -->
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M 311.0,224.0 L 266.75,300.64 L 178.25,300.64 L 134.0,224.0 L 178.25,147.36 L 266.75,147.36 Z" />
-    <!-- Plus badge centered exactly on the hexagon's top-right vertex (266.75, 147.36) in this
-         432-unit viewport (= 66.69, 36.84 in 108-unit ic_launcher_foreground.xml space). Half
-         the badge overlaps the hexagon corner; the outward arms read as a visible badge when
-         both paths are filled with the same tint in themed/monochrome icon mode. -->
+        android:pathData="M 336,216 L 276,112 L 156,112 L 96,216 L 156,320 L 276,320 Z" />
+    <!-- Plus badge centered exactly on the top-right vertex (276, 112). Half the badge
+         overlaps the hexagon fill so the outer arms — pointing up and right — read as a
+         clear plus badge after the launcher applies its single tint color. W=68, arm=20. -->
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M 259.63,118.86 h 14.25 v 21.38 h 21.38 v 14.25 h -21.38 v 21.38 h -14.25 v -21.38 h -21.38 v -14.25 h 21.38 z" />
+        android:pathData="M 266,78 h 20 v 24 h 24 v 20 h -24 v 24 h -20 v -24 h -24 v -20 h 24 Z" />
 </vector>

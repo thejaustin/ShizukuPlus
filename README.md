@@ -37,7 +37,8 @@ Get the latest release from [GitHub Releases](https://github.com/thejaustin/Shiz
 *   **Integrated Feature Guides**: Every Plus feature has an info icon with a plain-language explanation of what it does.
 *   **Quick Settings Tile**: Check and toggle the service status from your notification panel.
 
-## 🚀 Plus API Features
+<details>
+<summary>🚀 Plus API Features</summary>
 
 Shizuku+ provides exclusive system interfaces for advanced automation and tools — none of these exist in stock Shizuku:
 
@@ -52,7 +53,12 @@ Shizuku+ provides exclusive system interfaces for advanced automation and tools 
 *   **Deep Process Control** (*Activity Manager Plus*): Lets process managers kill apps and set standby buckets more aggressively. ([added](https://github.com/thejaustin/ShizukuPlus/commit/55f6b7c7))
 *   **Continuity Bridge**: Secure state and task handoff between Shizuku+ devices. ([added](https://github.com/thejaustin/ShizukuPlus/commit/20cf14f7))
 
-## 🛠️ Backporting & Optimizations
+See the [Shizuku+-API](https://github.com/thejaustin/ShizukuPlus-API) repository for full documentation and client bindings.
+
+</details>
+
+<details>
+<summary>🛠️ Backporting & Optimizations</summary>
 
 Shizuku+ makes regular Shizuku apps faster and more compatible without any code changes:
 
@@ -61,6 +67,8 @@ Shizuku+ makes regular Shizuku apps faster and more compatible without any code 
 *   **SU Bridge**: A Shizuku-backed `su` drop-in for non-rooted apps that support a custom root path. Common root commands are translated into real framework operations where shell UID allows it — `iptables --uid-owner` per-app blocks become live `NetworkPolicy` restrictions, `resetprop` reads/writes real system properties, and `chmod`/`chown` apply for real — falling back to mocked success only when an operation genuinely requires root (e.g. flashing partitions or loading kernel modules).
 *   **`plus` CLI Helper**: A privileged command-line utility, available inside `rish`.
 *   **Dynamic App Database**: Keeps app descriptions and suggestions in the UI up-to-date from GitHub.
+
+</details>
 
 ## ⚙️ Modular Control
 
@@ -91,11 +99,14 @@ Alternatively, install the **drop-in** build, which registers as `moe.shizuku.pr
 
 On **Android 16+**, Shizuku+ requests the new Local Network Protection permissions so wireless-debugging discovery and pairing keep working; on **Android 17**, it transparently handles the hidden-API `deviceId` change so authorized apps still appear and permission grants still apply.
 
-## 📱 Developer Guide
+## 📃 License
 
-See the [Shizuku+-API](https://github.com/thejaustin/ShizukuPlus-API) repository for documentation on the exclusive Plus APIs.
+[Apache 2.0](LICENSE)
 
-## 🙏 Acknowledgements & Licenses
+---
+
+<details>
+<summary>🙏 Acknowledgements & Upstream Projects</summary>
 
 Shizuku+ is a community-driven enhancement and fork of [thedjchi/Shizuku](https://github.com/thedjchi/Shizuku), which is itself a fork of the original [RikkaApps/Shizuku](https://github.com/RikkaApps/Shizuku). This project is not affiliated with the original RikkaApps team.
 
@@ -153,13 +164,10 @@ Thanks to the following upstream contributors and projects whose work makes Shiz
 
 Full license texts and per-library details: [OPEN_SOURCE_LICENSES.md](OPEN_SOURCE_LICENSES.md) | [NOTICE](NOTICE)
 
-## 📃 License
+</details>
 
-[Apache 2.0](LICENSE)
-
-### Contributors
-
-Thank you to everyone who has contributed code, translations, and testing to Shizuku+:
+<details>
+<summary>👥 Contributors</summary>
 
 **Code Contributors**
 
@@ -193,3 +201,5 @@ Thank you to everyone who has contributed code, translations, and testing to Shi
 - Thank you to **aragortsantiago6-beep** and **Scoop2389** (Pixel 9a) and **ConversionRituals** (Xiaomi) for on-device Android 16/17 testing, crash reports, and logs that drove the SDK 37 hidden-API and Local Network Protection compatibility fixes (#317, #323).
 - Thank you to **gmm96** for extensive multi-round logcat debugging across several builds that pinned down the Cached Apps Freezer binder-delivery bug (#371).
 - Thank you to **[odorizzioficial](https://github.com/odorizzioficial)** for the complete Brazilian Portuguese translation (#409), and for the detailed report on the Samsung "Sleeping apps" Watchdog freeze (#415).
+
+</details>

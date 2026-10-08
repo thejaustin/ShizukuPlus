@@ -27,13 +27,20 @@ jules-mcp.sh
 .jules-key
 jules-mcp.sh
 
-# Downloaded CI/build logs
+# Downloaded CI/build logs and build artifacts
 build_error*.log
 build_app.log
 build_failure.log
 check.log
 smoke-test.log
 ktlint
+_archive/logs/
+.jobs_info.json
+.run_info.json
+.gradle_scan.html
+
+# Device-specific agent/skill configs (contain absolute local paths)
+.agents/skills.json
 
 # Local build output — compat.apk is built by CI and should not be committed
 manager/src/main/assets/compat.apk

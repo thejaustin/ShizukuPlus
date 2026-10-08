@@ -8,11 +8,12 @@
     <string name="companion_disable_failure">Failed to disable Stock Shizuku. Ensure Shizuku+ is running or use ADB manually.</string>
     <string name="companion_action_disabling">Disabling…</string>
 
-    <string name="compat_hub_installed_title">Compat Hub Installed</string>
-    <string name="compat_hub_installed_desc">Third-party apps (like SwiftBackup) will now seamlessly detect Shizuku+.</string>
-    <string name="compat_hub_missing_title">Compat Hub Required</string>
-    <string name="compat_hub_missing_desc">Third-party apps that explicitly check for stock Shizuku will not detect Shizuku+. Install the lightweight Compat Hub to allow apps to detect Shizuku+.</string>
+    <string name="compat_hub_installed_title">Compat Hub Active</string>
+    <string name="compat_hub_installed_desc">Apps using the standard Shizuku API (SD Maid, SwiftBackup, and most others) can now detect and use Shizuku+.</string>
+    <string name="compat_hub_missing_title">Compat Hub Not Installed</string>
+    <string name="compat_hub_missing_desc">Most apps are built against the standard Shizuku API and won\'t detect Shizuku+ without this small compatibility bridge. Install it once and all compatible apps work automatically.</string>
     <string name="compat_hub_install_btn">Install Compat Hub</string>
+    <string name="compat_hub_uninstall_btn">Uninstall Hub</string>
     <string name="compat_hub_installing">Installing…</string>
     <string name="compat_hub_install_success">Compat Hub installed successfully!</string>
     <string name="compat_hub_install_fail">Failed to install. Ensure Shizuku+ or Root is active.</string>

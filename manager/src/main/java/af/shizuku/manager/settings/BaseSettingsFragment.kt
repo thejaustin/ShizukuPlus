@@ -177,6 +177,11 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         val highlightKey = arguments?.getString("highlight_key")
         if (!highlightKey.isNullOrEmpty()) {
             listView?.post {
+                // Auto-expand the parent CollapsiblePreferenceCategory if it's collapsed so the
+                // target preference is actually visible in the adapter before we try to scroll.
+                val targetPref = findPreference<androidx.preference.Preference>(highlightKey)
+                (targetPref?.parent as? CollapsiblePreferenceCategory)?.expand()
+
                 val adapter = listView?.adapter
                 if (adapter != null) {
                     var position = -1
@@ -196,14 +201,20 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                                 val defaultBg = itemView.background
                                 val tintColor = TypedValue()
                                 requireContext().theme.resolveAttribute(R.attr.colorPrimaryContainer, tintColor, true)
-                                itemView.setBackgroundColor(tintColor.data)
-                                itemView
-                                    .animate()
-                                    .setDuration(ShizukuSettings.scaledAnimationDuration(1200))
-                                    .alpha(1.0f)
-                                    .withEndAction {
-                                        itemView.background = defaultBg
-                                    }.start()
+                                val highlight = android.graphics.drawable.ColorDrawable(tintColor.data)
+                                itemView.background = highlight
+                                android.animation.ValueAnimator.ofInt(255, 0).apply {
+                                    duration = ShizukuSettings.scaledAnimationDuration(700)
+                                    startDelay = ShizukuSettings.scaledAnimationDuration(350)
+                                    interpolator = android.view.animation.DecelerateInterpolator()
+                                    addUpdateListener { highlight.alpha = it.animatedValue as Int }
+                                    addListener(object : android.animation.AnimatorListenerAdapter() {
+                                        override fun onAnimationEnd(animation: android.animation.Animator) {
+                                            itemView.background = defaultBg
+                                        }
+                                    })
+                                    start()
+                                }
                             }
                         }, 400)
                     }

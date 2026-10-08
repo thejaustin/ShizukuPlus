@@ -86,17 +86,18 @@ class SettingsActivity :
                         }
                     },
                     onContainerCreated = {
-                        // Do not gate on savedInstanceState here. When the activity is killed in
-                        // the background and recreated, the Fragment Manager may not be able to
-                        // restore the fragment into the Compose-created AndroidView container
-                        // before onContainerCreated fires, leaving the page blank. Checking
-                        // findFragmentById is reliable: if FM did restore the fragment it is
-                        // non-null (skip); if it wasn't restored we add a fresh one.
-                        if (supportFragmentManager.findFragmentById(R.id.fragment_container) == null) {
+                        // FM restores the fragment into its internal state during super.onCreate(),
+                        // before the Compose AndroidView container exists. findFragmentById returns
+                        // non-null in that case, but the fragment's view was never created (the
+                        // container wasn't in the hierarchy when FM tried to attach it). Checking
+                        // view == null catches this: the fragment exists in FM's state but has no
+                        // live view, so we replace it to force a fresh attach.
+                        val existing = supportFragmentManager.findFragmentById(R.id.fragment_container)
+                        if (existing == null || existing.view == null) {
                             supportFragmentManager
                                 .beginTransaction()
                                 .replace(R.id.fragment_container, SettingsFragment())
-                                .commit()
+                                .commitNow()
                         }
                     },
                     isScrollIdle = _isScrollIdle,
@@ -119,8 +120,7 @@ class SettingsActivity :
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
-
-        currentTitle = item.title
+        // Title is updated by the fragment's onResume → updateTitle(); no need to set it here.
     }
 
     override fun onPreferenceStartFragment(

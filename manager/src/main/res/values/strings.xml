@@ -132,6 +132,7 @@
     <string name="home_adb_description"><![CDATA[For devices without root, you need to use adb to start Shizuku (requires computer connection). This process needs to be repeated every time the device is restarted. Please <b><a href=\"%1$s\">read the help</a></b>.]]></string>
     <string name="home_adb_button_view_help">Read help</string>
     <string name="home_adb_button_view_command">View command</string>
+    <string name="home_adb_description_active"><![CDATA[Shizuku+ is active via computer ADB. Re-run the command to reconnect after a device restart. Please <b><a href=\"%1$s\">read the help</a></b>.]]></string>
     <string name="home_adb_dialog_view_command_message"><![CDATA[<font face="monospace">%1$s</font><br><br>* There are some other considerations, please confirm that you have read the help first.]]></string>
     <string name="home_adb_dialog_view_command_copy_button">Copy</string>
     <string name="home_adb_dialog_view_command_button_send">Send</string>
@@ -141,6 +142,8 @@
     <string name="home_wireless_adb_description"><![CDATA[On Android 11 or above, you can enable Wireless debugging and start Shizuku directly from your device, without connecting to a computer.<p>Please view the step-by-step guide first.]]></string>
     <string name="home_wireless_adb_description_pre_11"><![CDATA[Before Android 11, connecting to a computer is required to enable Wireless debugging.]]></string>
     <string name="home_wireless_adb_view_guide_button">Step-by-step guide</string>
+    <string name="home_wireless_adb_button_reconnect">Reconnect</string>
+    <string name="home_wireless_adb_description_active"><![CDATA[Shizuku+ is running via Wireless debugging. Tap Reconnect if the connection drops.]]></string>
     <string name="home_layout_sim_adb">ADB</string>
 
     <!-- Adb -->
@@ -241,6 +244,7 @@
     <!-- Home - Root -->
     <string name="home_root_title"><![CDATA[Start (for rooted devices)]]></string>
     <string name="home_root_description"><![CDATA[If you are using Magisk, you can try %1$s. For root users, it will eventually replace Shizuku. Note, existing applications need to change a little to use %2$s.]]></string>
+    <string name="home_root_description_samsung"><![CDATA[Running via Samsung system UID escalation. No Magisk or root required — Shizuku+ uses a privileged system account available on Samsung devices.]]></string>
     <string name="home_root_button_start">Start</string>
     <string name="home_root_button_restart">Restart</string>
 
@@ -1054,6 +1058,13 @@
     <string name="empty_state_description_no_plus_features">You\'ve disabled all Shizuku+ features. Enable features to see them here.</string>
     <string name="empty_state_title_activity_log_empty">No activity recorded</string>
     <string name="empty_state_description_activity_log_empty">Shizuku API calls and events will appear here when activity logging is enabled.</string>
+    <string name="activity_log_type_start">Start</string>
+    <string name="activity_log_type_stop">Stop</string>
+    <string name="activity_log_type_permission">Permission</string>
+    <string name="activity_log_type_app_mgmt">App</string>
+    <string name="activity_log_type_watchdog">Watchdog</string>
+    <string name="activity_log_type_system">System</string>
+    <string name="activity_log_type_other">Event</string>
     <string name="empty_state_title_hidden_apps">No hidden apps</string>
     <string name="empty_state_description_hidden_apps">Apps you hide from the management list will appear here.</string>
 

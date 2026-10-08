@@ -7,6 +7,7 @@ import af.shizuku.manager.databinding.HomeStartRootBinding
 import af.shizuku.manager.ktx.startWithSceneTransition
 import af.shizuku.manager.ktx.toHtml
 import af.shizuku.manager.starter.StarterActivity
+import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.IconStyleHelper
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import android.content.Intent
@@ -63,6 +64,7 @@ class StartRootViewHolder(
     }
 
     private fun onStartClicked(v: View) {
+        HapticUtils.tap(v)
         val activity = v.context.asActivity<android.app.Activity>() ?: return
         val isRooted =
             af.shizuku.manager.utils.EnvironmentUtils
@@ -109,16 +111,20 @@ class StartRootViewHolder(
             }
         }
 
-        val sb =
-            StringBuilder()
-                .append(
-                    context.getString(
+        val isSamsungMode =
+            af.shizuku.manager.ShizukuSettings
+                .isSamsungSystemUidEscalationEnabled() &&
+                !af.shizuku.manager.utils.EnvironmentUtils.isRooted()
+        binding.text1.text =
+            if (isSamsungMode) {
+                context.getString(R.string.home_root_description_samsung)
+            } else {
+                context
+                    .getString(
                         R.string.home_root_description,
                         "<b><a href=\"${Helps.SUI.get()}\">Sui</a></b>",
                         "Sui",
-                    ),
-                )
-
-        binding.text1.text = sb.toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
+                    ).toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
+            }
     }
 }

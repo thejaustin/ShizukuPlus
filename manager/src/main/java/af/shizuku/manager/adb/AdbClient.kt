@@ -48,7 +48,7 @@ class AdbClient(
         (if (useTls) tlsOutputStream else plainOutputStream)
             ?: throw IllegalStateException("outputStream is null - AdbClient not connected or closed")
 
-    fun connect() {
+    fun connect(onKeyOffered: (() -> Unit)? = null, onKeyOfferDone: (() -> Unit)? = null) {
         require(port in 1..65535) { "port out of range: $port" }
         useTls = false // Reset TLS state for each connection attempt
         val s = Socket()
@@ -93,7 +93,22 @@ class AdbClient(
                 message = read()
                 if (message.command != A_CNXN) {
                     write(A_AUTH, ADB_AUTH_RSAPUBLICKEY, 0, key.adbPublicKey)
-                    message = read()
+                    // adbd holds the connection open while the "Allow USB debugging?" dialog is
+                    // shown. The 15 s soTimeout used for protocol messages is far too short —
+                    // Samsung and other OEM UIs can take 30+ seconds to surface the dialog, and
+                    // a slow user may need even longer. If we close the connection and reconnect,
+                    // adbd queues a new dialog for every offer and never de-duplicates them, so
+                    // the user sees a stack of identical prompts. Keep this one connection alive
+                    // for up to 5 minutes, then restore the normal timeout for command I/O.
+                    val prevTimeout = s.soTimeout
+                    s.soTimeout = 5 * 60 * 1000 // 5 min — wait for Allow/Deny dialog
+                    onKeyOffered?.invoke()
+                    try {
+                        message = read()
+                    } finally {
+                        s.soTimeout = prevTimeout
+                        onKeyOfferDone?.invoke()
+                    }
                 }
             }
 

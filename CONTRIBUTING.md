@@ -2,6 +2,10 @@
 
 Thanks for considering a contribution — bug fixes, translations, and new Plus API work are all welcome.
 
+## Migrating your own Shizuku fork onto Shizuku+
+
+If you maintain a fork of the original Shizuku (or another derivative) and want to move onto Shizuku+, see **[FORK_MIGRATION.md](FORK_MIGRATION.md)** for an AI-assisted migration prompt and Shizuku+-specific tips. This is distinct from contributing a PR — it's for fork maintainers porting their own accumulated changes.
+
 ## Before you start
 
 - **Check existing issues and PRs first.** A quick search saves everyone time — see [open issues](https://github.com/thejaustin/ShizukuPlus/issues) and [open PRs](https://github.com/thejaustin/ShizukuPlus/pulls).

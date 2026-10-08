@@ -326,7 +326,8 @@ class ShizukuCompanionViewHolder(
             binding.title.setText(R.string.compat_hub_installed_title)
             binding.text1.setText(R.string.compat_hub_installed_desc)
             binding.button1.visibility = View.GONE
-            binding.button2.visibility = View.GONE
+            binding.button2.setText(R.string.compat_hub_uninstall_btn)
+            binding.button2.visibility = View.VISIBLE
         } else if (companionInstalled) {
             binding.title.setText(R.string.companion_conflict_title)
             binding.text1.setText(R.string.companion_conflict_description)

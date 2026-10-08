@@ -125,6 +125,7 @@
     <!-- Home - Adb -->
     <string name="home_adb_title"><![CDATA[通过连接电脑启动（使用 adb）]]></string>
     <string name="home_adb_description"><![CDATA[对于没有 root 的设备需要借助 adb 来启动 Shizuku（需要连接电脑）。这个过程每次设备重新启动后需要重新进行。请<b><a href=\"%1$s\">阅读帮助</a></b>。]]></string>
+    <string name="home_adb_description_active"><![CDATA[Shizuku+ 已通过电脑 ADB 激活。设备重启后请重新运行命令以重新连接。请<b><a href=\"%1$s\">阅读帮助</a></b>。]]></string>
     <string name="home_adb_button_view_help">阅读帮助</string>
     <string name="home_adb_button_view_command">查看指令</string>
     <string name="home_adb_dialog_view_command_message"><![CDATA[<font face="monospace">%1$s</font><br><br>* 还有一些其他注意事项，请确认你已阅读帮助。]]></string>
@@ -136,6 +137,8 @@
     <string name="home_wireless_adb_description"><![CDATA[在 Android 11 或更高版本上，您可以直接从您的设备启用无线调试并启动 Shizuku，无需连接到计算机。<p>请先查看分步骤指南。]]></string>
     <string name="home_wireless_adb_description_pre_11"><![CDATA[在 Android 11 之前，需要连接到计算机才能启用无线调试。]]></string>
     <string name="home_wireless_adb_view_guide_button">分步骤指南</string>
+    <string name="home_wireless_adb_button_reconnect">重新连接</string>
+    <string name="home_wireless_adb_description_active"><![CDATA[Shizuku+ 已通过无线调试激活。设备重启后请重新开启无线调试以重新连接。请<b><a href="%1$s">阅读帮助</a></b>。]]></string>
     <string name="home_layout_sim_adb">ADB</string>
 
     <!-- Adb -->
@@ -238,6 +241,7 @@
     <string name="home_root_description"><![CDATA[如果您正在使用 Magisk，可以尝试使用 %1$s。对于 root 用户，它最终会取代 Shizuku。请注意，现有应用程序需要稍作修改才能使用 %2$s。]]></string>
     <string name="home_root_button_start">启动</string>
     <string name="home_root_button_restart">重新启动</string>
+    <string name="home_root_description_samsung"><![CDATA[通过三星系统 UID 提权方式运行，无需 Magisk 或 Root——Shizuku+ 使用三星设备上内置的系统特权账户。]]></string>
 
     <!-- Home - Application management -->
     <string name="home_app_management_title">应用管理</string>
@@ -393,6 +397,11 @@
     <string name="settings_tcp_port">TCP 端口</string>
     <string name="settings_tcp_port_default">默认值 (5555)</string>
     <string name="settings_tcp_port_hint">留空则使用默认值(5555)</string>
+    <string name="settings_tcp_randomize_port">随机化 TCP 端口</string>
+    <string name="settings_tcp_randomize_port_summary">随机选择高范围端口（49152–65535）以降低端口扫描暴露风险</string>
+    <string name="snackbar_tcp_port_randomized">TCP 端口已随机化为 %1$d</string>
+    <string name="settings_tcp_auto_close_port">停止时自动关闭 TCP 端口</string>
+    <string name="settings_tcp_auto_close_port_summary">当 Shizuku 停止时禁用无线调试，关闭 ADB TCP 监听端口</string>
     <string name="settings_auto_reconnect_mdns">智能自动重连</string>
     <string name="settings_auto_reconnect_mdns_summary">打开应用时若无线 ADB 端口已就绪，自动重启服务</string>
     <string name="settings_auto_disable_usb_debugging">自动关闭 USB 调试</string>
@@ -1572,4 +1581,17 @@
     <string name="accessibility_sim_toggle_automation">切换自动化卡片显示</string>
     <string name="accessibility_sim_toggle_activity_log">切换活动日志卡片显示</string>
     <string name="accessibility_sim_toggle_learn_more">切换了解更多卡片显示</string>
+
+    <!-- Settings sync peer -->
+    <string name="settings_sync_peer_title">与 %1$s 同步</string>
+    <string name="settings_sync_peer_summary_installed">%1$s 已安装 • 点击同步设置</string>
+    <string name="settings_sync_peer_summary_not_installed">%1$s 未安装在此设备上</string>
+    <string name="settings_sync_peer_not_installed_dialog">%1$s 当前未安装。当您安装 %1$s 进行测试或用作直接替代时，可在两个应用之间无缝导入和同步设置。</string>
+    <string name="settings_sync_peer_import">从 %1$s 导入设置</string>
+    <string name="settings_sync_peer_export">导出设置到 %1$s</string>
+    <string name="settings_sync_peer_import_success">已成功从 %1$s 导入设置</string>
+    <string name="settings_sync_peer_export_success">已成功导出设置到 %1$s</string>
+    <string name="settings_sync_peer_failed">与 %1$s 同步设置失败。请确保两个应用均已安装且为最新版本。</string>
+    <string name="settings_auto_sync_peer_title">自动与 %1$s 同步</string>
+    <string name="settings_auto_sync_peer_summary">在切换应用时自动同步偏好设置和配置</string>
 </resources>

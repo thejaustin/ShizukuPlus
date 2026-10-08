@@ -4,6 +4,61 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ## [Unreleased]
 
+### 🐛 Bug Fixes
+
+#### Server / Binder
+- **Fixed 'Padding must be non-negative' crash in Settings on font/display-size changes (Android 16)** — `SettingsScreen` uses `LargeTopAppBar` with `exitUntilCollapsedScrollBehavior`. The `LargeTopAppBar` updates `heightOffsetLimit` in its layout pass (after composition), so there is a one-frame window where a previously scrolled `heightOffset` is below the new limit. The stale offset causes Scaffold to report a negative top padding, throwing `IllegalArgumentException: Padding must be non-negative`. Fix: added `LaunchedEffect(scrollBehavior.state.heightOffsetLimit)` that re-coerces `heightOffset` via the setter (which enforces `[heightOffsetLimit, 0f]`) whenever the limit changes — same pattern as `HomeScreen.kt:87`. Added belt-and-suspenders `coerceAtLeast(0.dp)` on all three `innerPadding` padding call-sites in `SettingsScreen`. ([#569](https://github.com/thejaustin/ShizukuPlus/issues/569))
+- **Fixed manual `pm revoke` being silently overridden on every server restart** — `migratePermissionGrants()` was designed as a one-time backfill for apps that had a ConfigManager authorization entry but no OS-level runtime permission grant (a side-effect of a silent bug in versions prior to 2026-07-19). Running it unconditionally on startup meant that any permission manually revoked with `pm revoke <pkg> af.shizuku.plus.permission.API_V23` was re-granted moments later when the server started. The migration is now gated by a `permGrantMigrationDone` flag persisted in `shizuku.json`; it runs exactly once, marks the flag, and skips on all subsequent starts. New grants continue to be issued at connect time in `attachApplication`. ([#568](https://github.com/thejaustin/ShizukuPlus/issues/568))
+- **Fixed Installer X Revived, Universal Installer X, Total Commander, and all stock `dev.rikka.shizuku:api` apps broken after r2739** — root cause: `LegacyShizukuBinderProxy` subtracted 1 from every transaction code for apps that declared `moe.shizuku.manager.permission.API_V23`, but stock-API clients already send the wire codes the generated stub expects (`= N` means `FIRST_CALL_TRANSACTION + N`), so e.g. `addUserService` (wire 12) arrived as `setSystemProperty` (wire 11). The proxy and `isLegacyOriginalShizukuApp()` are now **fully removed** — every client gets the real binder. Three wire codes that the hand-written switch in `Service.onTransact()` mis-numbers are now intercepted first in `ShizukuService.onTransact()`, decided by the parcel shape, never by caller identity: `getVersion` (code 3), `attachApplication(IBinder, String)` from API ≤ 12 (code 14), and `shouldShowRequestPermissionRationale` when the parcel carries no arguments (code 17). ([#566](https://github.com/thejaustin/ShizukuPlus/issues/566), [#567](https://github.com/thejaustin/ShizukuPlus/issues/567))
+
+#### Boot / ADB Start
+- **Fixed duplicate "Service started" activity log entries** — every ADB start path in `AdbStartWorker` called `ActivityLogManager.log()` after `AdbStarter.startAdb()` had already logged its own entry, resulting in two identical or near-identical lines per start (visible in the History tab). `startAdb()` now accepts an optional `activityLogMessage` so each call site provides its own contextual description ("direct TCP port", "force_start_wadb probe", etc.) as a single entry; the redundant worker-level log is removed.
+- **Fixed boot-time ADB start being stopped if the device stays locked for more than ~3 minutes** — `AdbStartWorker` waits in the foreground for the unlock and then for the USB-debugging authorization dialog, but asked for `FOREGROUND_SERVICE_TYPE_SHORT_SERVICE`, which Android 14+ stops after about 3 minutes. Changed to `FOREGROUND_SERVICE_TYPE_SPECIAL_USE` (no time limit, allowed from `BOOT_COMPLETED`); `SystemForegroundService` in the manifest now declares `shortService|specialUse` with the required `PROPERTY_SPECIAL_USE_FGS_SUBTYPE`. `WatchdogWorker`'s brief heal keeps `shortService`.
+- **Fixed stacked "Allow USB debugging?" dialogs when a new ADB start is triggered while waiting for the first authorization** — adbd queues a new dialog for every public-key offer and never de-duplicates them, so each reconnect added another identical prompt. ADB client now holds the socket open (up to 5 minutes) after sending the public key instead of timing out and reconnecting; `AdbStartWorker` uses `ExistingWorkPolicy.KEEP` while waiting so a subsequent enqueue doesn't cancel the live connection. ([#583](https://github.com/thejaustin/ShizukuPlus/issues/583))
+
+#### Server / Observability
+- **Binder transaction errors now log the failing code, uid, and pid** — when a handler in `Service.onTransact()` throws a non-security `RuntimeException`, Binder silently writes it into the reply and logs nothing server-side, so the client sees e.g. `IllegalStateException` with no server trace. `ShizukuService.onTransact()` now catches these and emits one `WARN` log with the transaction code, uid, and pid before rethrowing. `SecurityException`s (permission denials, already logged by `enforceCallingPermission()`) are rethrown unchanged with no extra log.
+
+#### Manager App (Settings)
+- **Fixed TCP mode preference icon disappearing when no restart is pending** — `maybeGetRestartIcon()` returns `null` when Shizuku doesn't need a restart, and the call-sites in `BehaviorSettingsFragment` assigned it directly to `icon`, wiping the static XML-defined icon. TCP mode now falls back to `ic_wadb_24` (wireless ADB) and TCP port to `ic_lan_24` when no restart icon is needed.
+- **Fixed bug-report dialog "Wiki" and "Issues" links returning 404** — both links were constructed as children of `/releases/`, making `/releases/wiki#troubleshooting` and `/releases/issues`, which GitHub does not serve. Wiki link now points to the ShizukuPlus Knowledgebase page; Issues link points to `/issues`.
+- **Fixed search result navigation not scrolling to or highlighting the preference when it lives inside a collapsed category** — when a `CollapsiblePreferenceCategory` is collapsed, its children are hidden and not present in the RecyclerView adapter. The scroll-and-highlight code searched the adapter by key and found position -1, so nothing happened. Added `CollapsiblePreferenceCategory.expand()` and call it before the position scan in `BaseSettingsFragment.onResume()` — if the target preference's parent category is collapsed, it is expanded first so the preference is visible.
+- **Improved search highlight animation** — the previous animation used `alpha(1.0f)` which is a no-op (view starts at full alpha). Replaced with a `ValueAnimator` that fades a `ColorDrawable` from full opacity to transparent over 700 ms (after a 350 ms hold), with `DecelerateInterpolator` for a natural feel.
+- **Fixed Settings top bar briefly showing preference name instead of section name after tapping a search result** — `navigateToSetting()` was setting `currentTitle = item.title` (e.g. "Blur UI") before committing the fragment transaction. The fragment's `onResume → updateTitle()` already sets the correct section title ("Personalization"), making the preemptive assignment both redundant and wrong. Removed the early assignment; the fragment now owns the title update entirely.
+- **Fixed Settings page still blank after background kill on some devices** — the previous fix checked `findFragmentById == null`, but the Fragment Manager restores the fragment into its internal state during `super.onCreate()` before the Compose `AndroidView` container exists. `findFragmentById` returned non-null even though the fragment had no live view (its container didn't exist at restore time). Added `existing.view == null` check so the fragment is replaced whenever it lacks an attached view; switched to `commitNow()` to guarantee the container is populated synchronously. ([#551](https://github.com/thejaustin/ShizukuPlus/issues/551))
+
+#### Manager App (Home)
+- **Fixed compat hub card disappearing after a successful hub install** — `rebuildItems()` had an extra inner condition (`isCompanionModeEnabled() || needsAction`) inside the `ID_COMPANION` case that was not present for any other card type. This caused the compat hub card to be excluded from the item list once installed (both conditions false), even when the user had not hidden it. Removed the inner condition; the card now follows the standard hidden-set visibility logic shared by all other home cards.
+
+### ✨ Features
+
+#### Setup / Home Cards
+- **WADB and ADB cards now reflect Shizuku's running state** — the Wireless ADB and (wired) ADB ViewHolders previously received `null` service data, so they could never adapt their UI after Shizuku started. The adapter now passes the live `ServiceStatus` to both ViewHolders, and each `onBind()` detects whether Shizuku is already running via that method. When running: WADB button label changes to "Reconnect" and the description confirms active status; ADB description similarly updates to reflect the active session. This makes all home cards consistently state-aware.
+- **Root card adapts for Samsung SystemUID escalation mode** — when "Samsung System UID Escalation" is enabled and the device is not rooted, the root card now shows a Samsung-specific description instead of the generic Magisk/Sui text. The conditional check is in `onBind()` so it updates if the user toggles the setting without restarting the app.
+- **Compat hub card gains Uninstall button in installed state** — previously both action buttons (`button1`/`button2`) were hidden after the hub was installed, leaving the card as a dead-end with no actions. The uninstall button is now shown in the installed state, keeping the card actionable. Card title and descriptions also clarified: installed → "Compat Hub Active" with a list of compatible apps; not-installed → explains most apps use the standard Shizuku API and that the hub bridges compatibility.
+
+### 🌐 Localization
+- **Completed Simplified Chinese translations for all new strings** — 20 recently added strings (wireless ADB reconnect, Samsung root description, TCP port randomization, sync peer settings) now have accurate zh-CN translations, closing the gap introduced by recent feature additions. Incorporates and extends the community translation work from PR #404.
+
+### 🎨 UI / Visual Polish
+
+#### Activity Log
+- **Redesigned activity log** — each entry now shows a colour-coded event type (start, stop, permission, app, watchdog, system) with a tonal app icon and accent bar. Shizuku now also logs when an app connects, requests permission, or binds a user service.
+- **Haptics and motion polish** — Start/ADB buttons give a tap, onboarding switches use proper on/off haptics, and the status-dot pulse now respects the expressive-animations setting.
+
+#### Edit Mode
+- **Haptic feedback when entering and exiting card edit mode** — long-pressing any home card to enter drag-to-reorder mode now fires a `gestureStart` haptic; exiting edit mode (tap outside, back button, or done) fires `gestureEnd`. Previously entering edit mode was silent.
+
+#### Card Drag-to-Reorder
+- **Dramatically improved drag-to-reorder haptics, animations, and tactile feel** — the previous drag implementation used a subtle lift (1.04× scale, `DecelerateInterpolator`), a barely-noticeable spring-back on drop (`OvershootInterpolator(0.8f)`), and fired haptic on the wrong view (`target` instead of the dragged card). Replaced with:
+  - **Lift**: 1.06× scale + 24dp elevation + 0.96 alpha, using M3 "emphasized" easing (`PathInterpolatorCompat(0.2, 0, 0, 1)`) over 180 ms — the card visibly rises off the surface.
+  - **Per-move haptic**: `HapticUtils.segmentTick()` fired on the dragged card's view on every position swap — each reorder step has a distinct tactile tick.
+  - **Drop (clearView)**: `OvershootInterpolator(2.2f)` over 350 ms — the card springs back with a satisfying overshoot before settling; `gestureEnd` haptic fires unconditionally on release.
+  - **gestureEnd()** added to `HapticUtils`: uses `GESTURE_END` on API 30+, falls back to `LONG_PRESS` on older devices.
+
+### 📖 Documentation
+- **Added fork migration guide** — `FORK_MIGRATION.md` provides an AI-assisted migration prompt (contributed by [@djbclark](https://github.com/djbclark)) for developers rebasing their own Shizuku forks onto Shizuku+, plus Shizuku+-specific tips covering the API submodule boundary, explicit AIDL transaction codes, and ProGuard keep requirements. Linked from `CONTRIBUTING.md`. ([#562](https://github.com/thejaustin/ShizukuPlus/issues/562))
+
 ---
 
 ## [v13.7.0.r2737 — Stable Release]
@@ -56,15 +111,12 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ## [v13.7.0.r2664 — Stable Release]
 
-*Co-developed with Antigravity & Claude Code*
-
 > **Note:** This release was previously labelled `v14.0.0` — that numbering was incorrect; ShizukuPlus tracks upstream Shizuku version numbers. The correct identifier for this build is `13.7.0.r2664` (upstream Shizuku 13.7.0, build r2664). GitHub tags `v14.0.0.r2663–v14.0.0.r2668` remain for backward compatibility with existing installs.
 
 > **Major release** — Shizuku+ 13.7.0 brings a full Material 3 Expressive UI overhaul, compileSdk 37 / AGP 9.4 / Gradle 9.7 build infrastructure, 100% Ukrainian and Brazilian Portuguese localizations, and 30+ bug fixes across the server, manager UI, and Plus APIs. Minimum Android remains API 24 (Android 7); fully tested through Android 17 / One UI 9.
 
 ### 🔧 Build / Infrastructure
 - **Upgraded AGP to 9.4.0, Gradle to 9.7.1, compileSdk to 37, targetSdk to 36, buildToolsVersion to 36.0.0** — required by Compose BOM 2026.08.00 (→ Compose 1.12.0 requires AGP 9.1.0+ and compileSdk 37); enables Android 16 / One UI 9 readiness.
-- **Full on-device APK build now works on ARM64 PRoot (Termux)** — custom cmake wrapper + NDK toolchain stub lets Termux's clang build all three native libraries (`libshizuku.so`, `libadb.so`, `librish.so`) locally without a CI round-trip. Fixes AGP 9.4.0 NPE in `CmakeFileApiV1.kt:94` (`CMAKE_LINKER` must be a CMake CACHE variable), cmake 4.x `-Wl,` arg handling, and libcxx prefab include-path conflicts.
 - **Fixed release notes major/critical release tags pointing to non-existent or deleted tags** — `MAJOR_RELEASE` updated to `v13.6.0.r2551` (latest stable), `CRITICAL_RELEASE` updated to `v13.6.0.r2647`. Fixes 404 errors on changelog links reported in [#532](https://github.com/thejaustin/ShizukuPlus/issues/532).
 
 ### 🌍 Localization
@@ -95,6 +147,7 @@ Hardening pass on the newly-added privileged Binder services, which are reachabl
 - **Fixed manager crash when opening Permission Manager or Device Control via Explode transition on Android 16+** — `PermissionManagerActivity`, `DeviceControlActivity`, and `SystemHubActivity` all called `WindowCompat.setDecorFitsSystemWindows(window, false)` after `AppActivity.onCreate()` had already called `enableEdgeToEdge()` (which sets the same flag). The conflicting calls produced inconsistent window state during the Explode enter/exit transition, crashing on API 36+. Removed the redundant calls and left explanatory comments. ([#529](https://github.com/thejaustin/ShizukuPlus/issues/529))
 - **Fixed AMOLED+ mode not applying in Permission Manager, Device Control, and System Hub screens** — those three activities called `AppTheme()` without the `isAmoledPlus` parameter, so AMOLED+ rendered grey instead of pure black on those screens.
 - **Fixed monochrome launcher icon rendering as a sparse outlined ring** under Pixel Launcher's "minimal icons" / themed-icon mode — the monochrome drawable used a stroke-only hexagon path; the single tint color Android applies in monochrome mode turned it into a thin outline. Replaced with a filled hexagon silhouette so the icon renders as a solid, legible shape. ([#530](https://github.com/thejaustin/ShizukuPlus/issues/530))
+- **Redesigned monochrome icon to properly fill the adaptive-icon safe zone** — the previous filled hexagon had circumradius ≈ 88 units in a 432-unit viewport (~41 % of the canvas), making it appear small inside themed-icon circles. Rebuilt with circumradius 120 units (~60 % of canvas, still inside the 132-unit safe-zone boundary) with a correctly proportioned plus badge (W=68, arm=20) centred exactly on the top-right vertex so both the up and right arms are clearly visible as a badge overlay. ([#530](https://github.com/thejaustin/ShizukuPlus/issues/530))
 - **Settings scroll-snap uses `spring(DampingRatioNoBouncy, StiffnessMedium)`** — the snap animation that flicks the collapsing settings/home header fully open or closed now uses a well-tuned stable spring; replaced the M3E `motionScheme.defaultSpatialSpec()` call which was `@InternalComposeApi` in Material3 1.4.0 stable and caused compile errors in external modules.
 - **Fixed AMOLED mode showing grey search menu and surfaces** — all six surface-container tone-scale tokens (`colorSurfaceContainer`, `High`, `Highest`, `Low`, `Lowest`, `Dim`) are now forced to pure `#000000` in both `ThemeOverlay.Black` (XML View system) and `AppTheme.kt` (Compose). Previously near-black values like `#0D0D0D` and `#111111` were visibly grey on high-contrast OLED panels, causing the SearchBar suggestion pane, settings-search card header, and home screen cards to stand out against the pure-black background. ([#496](https://github.com/thejaustin/ShizukuPlus/issues/496))
 - **Fixed Start on Boot getting silently re-enabled** after a Samsung One UI backup/restore or app-data partial clear — `syncStartOnBootDefaultIfNeeded()` previously called `setStartOnBoot(true)` unconditionally whenever the migration flag was missing, overwriting the user's explicit "off" preference. It now reads `getComponentEnabledSetting()` first and only promotes `DEFAULT → ENABLED`; an already-`DISABLED` component is left alone. ([#516](https://github.com/thejaustin/ShizukuPlus/issues/516))
@@ -183,8 +236,6 @@ Hardening pass on the newly-added privileged Binder services, which are reachabl
 
 ## [v13.6.0.r2287 → r2343]
 
-*Co-developed with Claude Code*
-
 ### 🐛 Bug Fixes
 
 #### Server / Service
@@ -228,8 +279,6 @@ Hardening pass on the newly-added privileged Binder services, which are reachabl
 
 ## [Unreleased / Build r2248+]
 
-*Co-developed with Claude Code*
-
 ### 🐛 Bug Fixes
 
 #### Server / Service
@@ -264,8 +313,6 @@ Hardening pass on the newly-added privileged Binder services, which are reachabl
 
 ## [v13.6.0.r2239]
 
-*Co-developed with Claude Code*
-
 ### 🐛 Bug Fixes
 
 #### Server / Service
@@ -275,8 +322,6 @@ Hardening pass on the newly-added privileged Binder services, which are reachabl
 - **Fixed `newProcess()` dropping the entire boot environment when Magisk mocking is enabled** — `BOOTCLASSPATH`, `ANDROID_DATA`, `ANDROID_ROOT`, etc. were stripped from the child process env when the caller passed `null`, causing spawned `app_process` children to die instantly with `ANDROID_DATA environment variable unset`. ([#410](https://github.com/thejaustin/ShizukuPlus/issues/410))
 
 ## [v13.6.0.r2222]
-
-*Co-developed with Claude Code*
 
 ### 🐛 Bug Fixes
 

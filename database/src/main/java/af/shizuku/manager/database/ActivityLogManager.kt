@@ -19,14 +19,44 @@ import java.util.LinkedList
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
-/**
- * Data class representing an activity log record.
- */
+enum class ActivityEventType {
+    SERVICE_START,
+    SERVICE_STOP,
+    PERMISSION,
+    APP_MANAGEMENT,
+    WATCHDOG,
+    SYSTEM,
+    OTHER;
+
+    companion object {
+        fun fromAction(action: String): ActivityEventType = when {
+            action.contains("Service started", ignoreCase = true) -> SERVICE_START
+            action.contains("started via", ignoreCase = true) -> SERVICE_START
+            action.contains("Service stopped", ignoreCase = true) ||
+                action.contains("stopped", ignoreCase = true) -> SERVICE_STOP
+            action.contains("grant_permission", ignoreCase = true) ||
+                action.contains("revoke_permission", ignoreCase = true) ||
+                action.contains("Permission", ignoreCase = true) -> PERMISSION
+            action.contains("Long-press:", ignoreCase = true) ||
+                action.contains("freeze", ignoreCase = true) ||
+                action.contains("unfreeze", ignoreCase = true) ||
+                action.contains("Enhancement", ignoreCase = true) -> APP_MANAGEMENT
+            action.contains("Watchdog", ignoreCase = true) ||
+                action.contains("watchdog", ignoreCase = true) -> WATCHDOG
+            action.contains("Database", ignoreCase = true) ||
+                action.contains("System", ignoreCase = true) ||
+                action.contains("autofixed", ignoreCase = true) -> SYSTEM
+            else -> OTHER
+        }
+    }
+}
+
 data class ActivityLogRecord(
     val timestamp: Long = System.currentTimeMillis(),
     val appName: String,
     val packageName: String,
-    val action: String
+    val action: String,
+    val eventType: ActivityEventType = ActivityEventType.fromAction(action),
 )
 
 /**

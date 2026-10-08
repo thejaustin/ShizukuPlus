@@ -166,13 +166,20 @@ jobs:
             echo "filePath=${RENAMED}" >> $GITHUB_OUTPUT
           else
             CMD="./gradlew :manager:assembleShizukuplusRelease :manager:assembleDropinRelease $ARGS"
+            # Without SENTRY_AUTH_TOKEN, manager/build.gradle turns off native-symbol and
+            # source-context upload, so the Sentry plugin never registers those tasks, and
+            # Gradle fails task selection on -x for a task that does not exist.
+            SENTRY_SKIP=""
+            if [ -n "$SENTRY_AUTH_TOKEN" ]; then
+              SENTRY_SKIP="-x uploadSentryNativeSymbolsForShizukuplusRelease \
+                -x uploadSentryNativeSymbolsForDropinRelease \
+                -x sentryUploadSourceBundleShizukuplusRelease \
+                -x sentryUploadSourceBundleDropinRelease"
+            fi
             eval $CMD --stacktrace --info \
               -x uploadSentryProguardMappingsShizukuplusRelease \
               -x uploadSentryProguardMappingsDropinRelease \
-              -x uploadSentryNativeSymbolsForShizukuplusRelease \
-              -x uploadSentryNativeSymbolsForDropinRelease \
-              -x sentryUploadSourceBundleShizukuplusRelease \
-              -x sentryUploadSourceBundleDropinRelease \
+              $SENTRY_SKIP \
               -x :manager:lint
 
             sign_apk() {
@@ -450,30 +457,30 @@ jobs:
             fi
             echo
 
-            # Strip conventional-commit type prefixes (feat(ui):, fix:, chore(i18n):, etc.) from
-            # bullet subjects so the rendered release notes are human-readable, not dev-jargon.
-            # The sed expression removes the type+scope prefix and capitalises the first letter.
-            ALL_COMMITS=$(git log "$RANGE" --no-merges --pretty=format:"- %s (%h)" | \
-              sed -E 's/^(- )(feat|fix|chore|refactor|perf|test|docs|build|ci|style|revert)(\([^)]+\))?: (.)(.*)$/\1\u\4\5/' || true)
+            # Collect raw commits (with conventional-commit prefix) for classification,
+            # then strip the prefix for display. Classifying on stripped commits broke
+            # Added/Fixed sections because ^- feat / ^- fix never matched post-strip (#577).
+            RAW_COMMITS=$(git log "$RANGE" --no-merges --pretty=format:"- %s (%h)" || true)
+            strip_prefix() {
+              sed -E 's/^(- )(feat|fix|chore|refactor|perf|test|docs|build|ci|style|revert)(\([^)]+\))?: (.)(.*)$/\1\u\4\5/'
+            }
 
-            SECURITY=$(printf '%s\n' "$ALL_COMMITS" | grep -iE "^- (fix\(security\)|security)" || true)
-            BREAKING=$(printf '%s\n' "$ALL_COMMITS" | grep -iE "BREAKING" || true)
+            SECURITY=$(printf '%s\n' "$RAW_COMMITS" | grep -iE "^- (fix\(security\)|security)" | strip_prefix || true)
+            BREAKING=$(printf '%s\n' "$RAW_COMMITS" | grep -iE "BREAKING" | strip_prefix || true)
+            # Classify using raw commits (before prefix strip). Exclusion list also uses raw
+            # strings so grep -vFf matching is consistent across all three sections.
             # grep -vFf on an EMPTY pattern file matches every line (an empty string is a substring
-            # of everything), so -v then excludes ALL of them - when a release has no security/
-            # breaking commits (the common case), Added/Fixed/Other all silently came out empty.
-            # This has been the actual generated body for every release since the Keep a Changelog
-            # restyle: confirmed by re-running this exact logic locally against r2339-r2343's real
-            # commits and against GitHub's actual published release bodies for those tags. Only run
-            # the exclusion pass when there's something real to exclude.
-            EXCLUDE=$(printf '%s\n%s' "$SECURITY" "$BREAKING" | grep -v '^$' || true)
-            if [ -n "$EXCLUDE" ]; then
-              ADDED=$(printf '%s\n' "$ALL_COMMITS" | grep -E "^- feat" | grep -vFf <(printf '%s\n' "$EXCLUDE") || true)
-              FIXED=$(printf '%s\n' "$ALL_COMMITS" | grep -E "^- fix" | grep -vFf <(printf '%s\n' "$EXCLUDE") || true)
-              OTHER=$(printf '%s\n' "$ALL_COMMITS" | grep -vE "^- (feat|fix)" | grep -vFf <(printf '%s\n' "$EXCLUDE") || true)
+            # of everything), so -v then excludes ALL of them — only run the exclusion pass when
+            # there's something real to exclude.
+            RAW_EXCLUDE=$(printf '%s\n' "$RAW_COMMITS" | grep -iE "^- (fix\(security\)|security)|BREAKING" | grep -v '^$' || true)
+            if [ -n "$RAW_EXCLUDE" ]; then
+              ADDED=$(printf '%s\n' "$RAW_COMMITS" | grep -E "^- feat" | grep -vFf <(printf '%s\n' "$RAW_EXCLUDE") | strip_prefix || true)
+              FIXED=$(printf '%s\n' "$RAW_COMMITS" | grep -E "^- fix" | grep -vFf <(printf '%s\n' "$RAW_EXCLUDE") | strip_prefix || true)
+              OTHER=$(printf '%s\n' "$RAW_COMMITS" | grep -vE "^- (feat|fix)" | grep -vFf <(printf '%s\n' "$RAW_EXCLUDE") | strip_prefix || true)
             else
-              ADDED=$(printf '%s\n' "$ALL_COMMITS" | grep -E "^- feat" || true)
-              FIXED=$(printf '%s\n' "$ALL_COMMITS" | grep -E "^- fix" || true)
-              OTHER=$(printf '%s\n' "$ALL_COMMITS" | grep -vE "^- (feat|fix)" || true)
+              ADDED=$(printf '%s\n' "$RAW_COMMITS" | grep -E "^- feat" | strip_prefix || true)
+              FIXED=$(printf '%s\n' "$RAW_COMMITS" | grep -E "^- fix" | strip_prefix || true)
+              OTHER=$(printf '%s\n' "$RAW_COMMITS" | grep -vE "^- (feat|fix)" | strip_prefix || true)
             fi
 
             if [ -n "$SECURITY" ]; then echo "### Security"; echo "$SECURITY"; echo; fi
@@ -529,6 +536,24 @@ jobs:
               echo "[All changes since last major release](https://github.com/${{ github.repository }}/compare/${MAJOR_RELEASE}...${TAG_NAME})"
             fi
           } > release_notes.md
+
+          # GitHub rejects release bodies over 125,000 characters (HTTP 422 "body is too
+          # long"), which a long gap between releases can reach. Cap by bytes (never fewer
+          # than characters) and only cut between lines, which keeps multi-byte UTF-8 intact
+          # and avoids half a table row. The compare links at the end are lost, so point at
+          # the full commit list instead.
+          MAX_NOTES_BYTES=120000
+          if [ "$(wc -c < release_notes.md)" -gt "$MAX_NOTES_BYTES" ]; then
+            LC_ALL=C awk -v max="$MAX_NOTES_BYTES" '{ n += length($0) + 1; if (n > max) exit; print }' \
+              release_notes.md > release_notes.trunc
+            {
+              echo
+              echo "---"
+              echo "_Release notes truncated to fit GitHub's release body limit._"
+              echo "[Full commit list](https://github.com/${{ github.repository }}/commits/${TAG_NAME})"
+            } >> release_notes.trunc
+            mv release_notes.trunc release_notes.md
+          fi
           echo "NOTES_FILE=release_notes.md" >> $GITHUB_ENV
 
       - name: Create Release

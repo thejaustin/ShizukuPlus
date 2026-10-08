@@ -292,7 +292,7 @@ class OnboardingActivity : AppActivity() {
             binding.switchOpenApp.apply {
                 isChecked = ShizukuSettings.getLongPressOpenApp()
                 setOnCheckedChangeListener { view, checked ->
-                    HapticUtils.tick(view)
+                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
                     ShizukuSettings
                         .getPreferences()
                         ?.edit()
@@ -303,7 +303,7 @@ class OnboardingActivity : AppActivity() {
             binding.switchAppInfo.apply {
                 isChecked = ShizukuSettings.getLongPressAppInfo()
                 setOnCheckedChangeListener { view, checked ->
-                    HapticUtils.tick(view)
+                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
                     ShizukuSettings
                         .getPreferences()
                         ?.edit()
@@ -314,7 +314,7 @@ class OnboardingActivity : AppActivity() {
             binding.switchTogglePermission.apply {
                 isChecked = ShizukuSettings.getLongPressTogglePermission()
                 setOnCheckedChangeListener { view, checked ->
-                    HapticUtils.tick(view)
+                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
                     ShizukuSettings
                         .getPreferences()
                         ?.edit()
@@ -325,7 +325,7 @@ class OnboardingActivity : AppActivity() {
             binding.switchHideFromList.apply {
                 isChecked = ShizukuSettings.getLongPressHideFromList()
                 setOnCheckedChangeListener { view, checked ->
-                    HapticUtils.tick(view)
+                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
                     ShizukuSettings
                         .getPreferences()
                         ?.edit()
@@ -336,21 +336,21 @@ class OnboardingActivity : AppActivity() {
             binding.switchDhizuku.apply {
                 isChecked = ShizukuSettings.isDhizukuModeEnabled()
                 setOnCheckedChangeListener { view, checked ->
-                    HapticUtils.tick(view)
+                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
                     ShizukuSettings.setDhizukuModeEnabled(checked)
                 }
             }
             binding.switchEnhancedApi.apply {
                 isChecked = ShizukuSettings.isCustomApiEnabled()
                 setOnCheckedChangeListener { view, checked ->
-                    HapticUtils.tick(view)
+                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
                     ShizukuSettings.setCustomApiEnabled(checked)
                 }
             }
             binding.switchThemedIcon.apply {
                 isChecked = ShizukuSettings.isThemedIconWanted()
                 setOnCheckedChangeListener { view, checked ->
-                    HapticUtils.tick(view)
+                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
                     ShizukuSettings.setThemedIconWanted(checked)
                 }
             }
