@@ -194,7 +194,7 @@
     <string name="doctor_tip_phantom_process">Fantom Proses Qatili</b>: Android 12-15+ həddən çox əmr icra edildikdə Shizuku+-u sonlandıra bilər. 'Düzəlt' düyməsi bu məhdudiyyəti söndürməyə çalışır.</string>
     <string name="doctor_tip_samsung_optimization">Samsung Avto-Optimallaşdırma</b>: Shizuku+-un gecə vaxtı sonlandırılmasının qarşısını almaq üçün Cihaz Qayğısında 'Avtomatik Yenidən Başlat'ı söndürün.</string>
     <string name="doctor_tip_samsung_sleeping">Samsung Yuxuda olan Tətbiqlər</b>: Düzəlt düyməsinə toxunmaq birbaşa <b>'Heç vaxt yuxuya getməyən tətbiqlər'</b> siyahısını açır. <b>+</b> düyməsinə toxunun və Samsung-un arxa plan xidmətini dondurmasının qarşısını almaq üçün Shizuku+-u əlavə edin.</string>
-    <string name="doctor_tip_s22_ultra_exynos">S22 Ultra (Exynos): Xidmət cavabı ləngdirsə, Cihaz Qayğısı &gt; Yaddaş bölməsindən \'RAM Plus\'ı söndürməyə çalışın.</string>
+    <string name="doctor_tip_s22_ultra_exynos"><b>S22 Ultra (Exynos)</b>: Device Care > Memory 'da xidmət cavabı ləngdirsə, <b>\'RAM Plus\'</b> deaktiv etməyə çalışın.</string>
     <string name="doctor_tip_s22_ultra_snapdragon">S22 Ultra (Snapdragon)</b>: Maksimum əmr ötürmə qabiliyyəti üçün Cəld Tənzimləmələrdə 'Təkmilləşdirilmiş Emal'ın aktiv olduğundan əmin olun.</string>
     <string name="doctor_system_well_configured">Sisteminiz Shizuku+ üçün yaxşı konfiqurasiya edilib.</string>
 
