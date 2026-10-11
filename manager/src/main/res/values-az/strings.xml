@@ -595,15 +595,15 @@
     <string name="settings_root_file_interceptor">Ağıllı Fayl Tutucusu</string>
     <string name="settings_root_file_interceptor_summary">Həssas sistem yollarını hədəf alan fayl əməliyyatlarına icazə qorunması bayraqlarını avtomatik əlavə edir.</string>
     <string name="settings_root_busybox_mocking">BusyBox Simulyasiyası</string>
-    <string name="settings_root_busybox_mocking_summary">Köhnə skрыпt tələblərini ödəmək üçün \'busybox\' əmri üçün saxta versiya sətri qaytarır.</string>
+    <string name="settings_root_busybox_mocking_summary">Köhnə skript tələblərini ödəmək üçün \'busybox\' əmri üçün saxta versiya sətri qaytarır.</string>
     <string name="help_root_magisk_title">Magisk Mocking Haqqında</string>
     <string name="help_root_magisk_detail">Bir çox tətbiq Magisk-ə məxsus xüsusiyyətləri və ya /sbin/.magisk qovluğunu yoxlamaqla root-u yoxlayır. Bu modul bu elementləri simulyasiya edərək Magisk mühiti aşkar edilmədən işləməkdən imtina edən tətbiqlərdə yalnız root xüsusiyyətlərindən istifadə etməyə imkan verir.</string>
 
     <string name="help_root_auto_grant_title">Avtomatik Təsdiq Haqqında</string>
-    <string name="help_root_auto_grant_detail">Köhnə root tətbiqləri tez-tez qabıq (shell) vasitəsilə özlərinə icazə verməyə çalışırlar. Bu körpü bu \'pm grant\' çağırışlarını dinləyir və əl ilə icazə idarəçiliyindən qaçaraq dərhal təsdiqləmək üçün Shizuku-nun yüksək imtiyazlarından istifadə edir.</string>
+    <string name="help_root_auto_grant_detail">Köhnə root tətbiqləri tez-tez shell vasitəsilə özlərinə icazə verməyə çalışırlar. Bu körpü bu \'pm grant\' çağırışlarını dinləyir və əl ilə icazə idarəçiliyindən qaçaraq dərhal təsdiqləmək üçün Shizuku-nun yüksək imtiyazlarından istifadə edir.</string>
 
     <string name="help_root_file_interceptor_title">Fayl Tutucusu Haqqında</string>
-    <string name="help_root_file_interceptor_detail">Tətbiqlər standart qabıqdan istifadə edərək /data/data/ qovluğuna fayl kopyaladıqda, onlar çox vaxt sahiblik və SELinux kontekstlərini itirirlər. Bu modul fayl bütövlüyünü qorumaq və tətbiq qəzalarının qarşısını almaq üçün avtomatik olaraq --preserve=all kimi bayraqlar əlavə edir.</string>
+    <string name="help_root_file_interceptor_detail">Tətbiqlər standart shell istifadə edərək /data/data/ qovluğuna fayl kopyaladıqda, onlar çox vaxt sahiblik və SELinux kontekstlərini itirirlər. Bu modul fayl bütövlüyünü qorumaq və tətbiq qəzalarının qarşısını almaq üçün avtomatik olaraq --preserve=all kimi bayraqlar əlavə edir.</string>
 
     <string name="help_root_busybox_title">BusyBox Simulyasiyası Haqqında</string>
     <string name="help_root_busybox_detail">BusyBox root edilmiş cihazlarda ümumi olan Unix utilitlər dəstidir. Bəzi köhnə root tətbiqləri işləməzdən əvvəl onun mövcudluğunu yoxlayır. Bu modul \'busybox\' əmri üçün simulyasiya edilmiş uğurlu cavab qaytarır.</string>
@@ -635,7 +635,7 @@
     <string name="settings_on_device_adb_tcp">Cihaz daxilində TCP üzərindən ADB</string>
     <string name="settings_on_device_adb_tcp_summary">Birbaşa cihazda ADB TCP rejimini (port 5555) aktivləşdirin. Root ilə Shizuku tələb edir. WiFi olmayan ADB alətləri üçün faydalıdır.</string>
     <string name="settings_force_start_wadb">WADB üçün Wi-Fi yoxlamasından yan keç</string>
-    <string name="settings_force_start_wadb_summary">Wi-Fi bağlantısı kəsilsə belə Shizuku-nu ADB TCP vasitəsilə işə salmağa cəhd edin. Yerli döngə (loopback) və ya mobil internet ADB üçün faydalıdır.</string>
+    <string name="settings_force_start_wadb_summary">Wi-Fi bağlantısı kəsilsə belə Shizuku-nu ADB TCP vasitəsilə işə salmağa cəhd edin. Yerli döngə və ya mobil internet ADB üçün faydalıdır.</string>
     <string name="settings_fake_su">SU Körpüsü</string>
     <string name="settings_fake_su_summary">Xüsusi yolları dəstəkləyən köhnə root tətbiqləri üçün Shizuku tərəfindən dəstəklənən \'su\' binar faylı təmin edin.</string>
     <string name="settings_root_integration_hub">Root İnteqrasiya Mərkəzi</string>
