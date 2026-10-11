@@ -24,9 +24,9 @@
         <item>İki çalarlı</item>
     </string-array>
     <string-array name="icon_styles_value">
-        <item>standard</item>
-        <item>outlined</item>
-        <item>twotone</item>
+        <item>standart</item>
+        <item>konturlanmış</item>
+        <item>iki rəngli</item>
     </string-array>
     <string-array name="shape_styles">
         <item>Zen (Bədii)</item>
@@ -36,9 +36,9 @@
     </string-array>
     <string-array name="shape_styles_value">
         <item>zen</item>
-        <item>modern</item>
-        <item>classic</item>
-        <item>squircle</item>
+        <item>müasir</item>
+        <item>klassik</item>
+        <item>dairəvi</item>
     </string-array>
     <string-array name="animation_intensities">
         <item>Yoxdur</item>
@@ -339,7 +339,7 @@
     <string name="dhizuku_device_owner_disabled">Dhizuku Cihaz Sahibi Söndürülüb</string>
     <string name="settings_enhanced_api">Shizuku+ Təkmilləşdirilmiş API</string>
     <string name="settings_enhanced_api_summary">Qabaqcıl istifadəçilər üçün mürəkkəb sistem interfeyslərini aktivləşdirin. Bütün özəl Shizuku+ funksiyaları üçün tələb olunur.</string>
-    <string name="settings_shell_interceptor">Shell Sürətləndiricisi</string>
+    <string name="settings_shell_interceptor">Shell Tutucu</string>
     <string name="settings_shell_interceptor_summary">Yerli API-lər vasitəsilə shell əmrlərini sürətləndirin. MacroDroid və Tasker tapşırıqlarının məhsuldarlığını artırır.</string>
     <string name="settings_avf_manager">Virtual Maşın Meneceri (AVF)</string>
     <string name="settings_avf_manager_summary">Təcrid olunmuş Microdroid və ya Linux VM-lərini işlədin. Virtual mühitləri idarə etmək üçün Hyperbox və Termux-VM ilə birlikdə istifadə olunur.</string>
@@ -365,8 +365,8 @@
     <!-- Detailed Help Strings -->
     <string name="help_dhizuku_title">Dhizuku Rejimi haqqında</string>
     <string name="help_dhizuku_detail">Dhizuku Shizuku-ya Cihaz Sahibi hüquqlarını üçüncü tərəf tətbiqləri ilə bölüşməyə imkan verir. Bu, təkbaşına Cihaz Sahibi olmadan sistem siyasətlərini idarə etməli olan Dhizuku Manager kimi tətbiqlər və ya müəyyən köşk (kiosk) rejimi alətləri üçün vacibdir.</string>
-    <string name="help_shell_interceptor_title">Shell Sürətləndiricisi haqqında</string>
-    <string name="help_shell_interceptor_detail">Shell Sürətləndiricisi standart shell əmrlərini (am, pm, settings) tutur və onları birbaşa Shizuku server API çağırışlarına çevirir. Bu, hər əmr üçün yeni bir /system/bin/sh prosesinin yaradılmasının yüksək yükünün qarşısını alır, MacroDroid və ya Tasker-də avtomatlaşdırmanı əhəmiyyətli dərəcədə sürətli və batareyaya qənaətcil edir.</string>
+    <string name="help_shell_interceptor_title">Shell Tutucu haqqında</string>
+    <string name="help_shell_interceptor_detail">Shell Tutucu standart shell əmrlərini (am, pm, settings) tutur və onları birbaşa Shizuku server API çağırışlarına çevirir. Bu, hər əmr üçün yeni bir /system/bin/sh prosesinin yaradılmasının yüksək yükünün qarşısını alır, MacroDroid və ya Tasker-də avtomatlaşdırmanı əhəmiyyətli dərəcədə sürətli və batareyaya qənaətcil edir.</string>
     <string name="help_avf_manager_title">AVF Meneceri haqqında</string>
     <string name="help_avf_manager_detail">Android Virtuallaşdırma Çərçivəsi (AVF) Meneceri təcrid olunmuş Linux və ya Microdroid virtual maşınlarını işlətməyə imkan verir. Dəstəklənən avadanlıqlarda (Snapdragon 8 Gen 1+, Tensor G2+) bu, masaüstü Linux mühitlərini və ya təcrid olunmuş təhlükəsiz tapşırıqları işlətmək üçün VirtIO-GPU dəstəyi ilə aparat sürətləndirilməli virtuallaşdırmanı aktivləşdirir.</string>
     <string name="help_storage_proxy_title">Yaddaş Körpüsü haqqında</string>
@@ -602,7 +602,7 @@
     <!-- Starter -->
     <string name="starter">Başladıcı</string>
     <string name="starting_root_shell" translatable="false">Starting root shell…</string>
-    <string name="start_with_root_failed">Root icazəsi verilmədiyi və ya bu cihaz root olunmadığı üçün xidmət başladılan bilməz.</string>
+    <string name="start_with_root_failed">Root icazəsi verilmədiyi və ya bu cihaz root olunmadığı üçün xidmət başladıla bilməz.</string>
     <string name="starter_waiting">Xidmət gözlənilir…</string>
     <string name="starter_waiting_description">Qoşulur — dayandırmaq üçün İmtina düyməsinə toxunun.</string>
     <string name="starter_retrying">Qoşulma yenidən cəhd edilir…\n</string>
@@ -625,7 +625,7 @@
     <string name="watchdog_shizuku_crashed_text">Gözətçi xidməti yenidən başlatdı. Gələcəkdə çökmələrin qarşısını almaq üçün potensial həll yolları haqqında öyrənmək üçün toxunun.</string>
     <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Xəbərdarlıqları Söndür</string>
     <!-- Misc -->
-    <string name="dialog_cannot_open_browser_title">Səyahətçini başlatmaq mümkün olmadı</string>
+    <string name="dialog_cannot_open_browser_title">Brauzeri başlatmaq mümkün olmadı</string>
     <string name="toast_copied_to_clipboard">Mübadilə buferinə kopyalandı</string>
     <string name="accessibility_service_description">Bildirişlərin və ya bölünmüş ekranın asanlıqla istifadə edilə bilmədiyi cihazlar (məsələn, TV-lər və Samsung One UI telefonları) üçün cütləşdirmə dəstəyi təmin edir.\n\nShizuku+-a simsiz sazlama cütləşdirmə ekranından cütləşdirmə kodunu çıxarmağa imkan verir. Cütləşdirmə kodu tapıldıqdan sonra özünü söndürəcək.</string>
     <!-- Messages for legacy -->
@@ -650,7 +650,7 @@
     <string name="settings_category_appearance">Xarici görünüş</string>
     <string name="settings_category_advanced">Genişləndirilmiş</string>
     <string name="settings_nav_behavior_summary">Sistem açılanda başlatma, Gözətçi və TCP rejimi</string>
-    <string name="settings_nav_shizuku_plus_summary">Təkmilləşdirilmiş API, shell sürətləndiricisi və daha çoxu</string>
+    <string name="settings_nav_shizuku_plus_summary">Təkmilləşdirilmiş API, shell tutucu və daha çoxu</string>
     <string name="settings_nav_ui_summary">Mövzu, rənglər, dil</string>
     <string name="settings_nav_app_management_summary">Sürüşdürmə və basıb saxlama əməliyyatları</string>
     <string name="settings_nav_home_summary">Görünən kartlar və qısayollar</string>
@@ -811,10 +811,10 @@
     <string name="action_open_github">GitHub</string>
     <!-- Service Doctor auto-fix -->
     <string name="service_doctor_fix_phantom_attempted">Fantom proses məhdudiyyəti söndürüldü. Ehtiyac olarsa xidməti yenidən başladın.</string>
-    <string name="service_doctor_fix_requires_service">Bu düzəlişi avtomatik tətbiq etmək üçün Shizuku işləyir olmalıdır.</string>
+    <string name="service_doctor_fix_requires_service">Bu düzəlişi avtomatik tətbiq etmək üçün Shizuku aktiv olmalıdır.</string>
     <string name="service_doctor_fix_failed">Avto-düzəliş uğursuz oldu: %1$s</string>
     <!-- ADB Pairing -->
-    <string name="adb_foreground_op_denied">Ön plan xidmətini başlatmaq mümkün olmadı — START_FOREGROUND icazəsi imtaz edildi. Xahiş edirik cihazınızın tətbiq icazələrini yoxlayın.</string>
+    <string name="adb_foreground_op_denied">Ön plan xidmətini başlatmaq mümkün olmadı — START_FOREGROUND icazəsi rədd edildi. Xahiş edirik cihazınızın tətbiq icazələrini yoxlayın.</string>
     <!-- Update dialog -->
     <string name="update_no_release_notes">Buraxılış qeydləri mövcud deyil.</string>
     <!-- Accessibility service status -->
