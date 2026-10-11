@@ -29,7 +29,7 @@
 
     <!-- UI Settings - Display -->
     <string name="settings_display_category">Ekran</string>
-    <string name="settings_edge_to_edge">Kənardan-kənara Düzen</string>
+    <string name="settings_edge_to_edge">Kənardan-kənara tərtibat</string>
     <string name="settings_edge_to_edge_summary">Məzmunu sistem panellərinin arxasına uzatın. Sistem panelləri vacib idarəetmə elementlərini örtürsə, söndürün</string>
     <string name="settings_blur_ui">Buzlu Şüşə Effekti</string>
     <string name="settings_blur_ui_summary">Dialoq pəncərələrinə və yuxarı panelə bulanıqlıq və şəffaflıq tətbiq edin. Ən yaxşı Android 12+ üzərində işləyir</string>
@@ -42,7 +42,7 @@
 
     <!-- UI Settings - Typography & Layout -->
     <string name="settings_bold_typography">Qalın Şriftlər</string>
-    <string name="settings_bold_typography_summary">Başlıqlar üçün daha qalın şrift çəkilərindən istifadə edin</string>
+    <string name="settings_bold_typography_summary">Başlıqlar üçün daha qalın şrift ştrixləri istifadə edin</string>
     <string name="settings_expanded_headers">Genişləndirilmiş Bölmə Başlıqları</string>
     <string name="settings_expanded_headers_summary">Tənzimləmələr ekranlarında hündür yığılan başlıqlardan istifadə edin</string>
 
@@ -534,7 +534,7 @@
     <string name="diagnostics_warning_shadow_binder_no_apps">Kölgə Bağlayıcısı aktivdir, lakin gizlədiləcək heç bir tətbiq seçilməyib. Seçmək üçün toxunun.</string>
     <string name="diagnostics_warning_battery_optimization">Batareya optimizasiyası aktivdir. Shizuku+ fonda dayandırıla bilər. İstisna etmək üçün toxunun.</string>
     <string name="diagnostics_warning_automation_stopped">Şəbəkə avtomatlaşdırma qaydaları konfiqurasiya edilib, lakin xidmət dayandırılıb — Bağlayıcı Firewall avtomatik dəyişməyəcək. Yenidən başlatmaq üçün toxunun.</string>
-    <string name="diagnostics_automation_start_failed">Avtomatlaşdırma xidməti başladılabilmədi</string>
+    <string name="diagnostics_automation_start_failed">Avtomatlaşdırma xidməti başladıla bilmədi</string>
     <string name="diagnostics_battery_settings_open_failed">Batareya tənzimləmələrini açmaq mümkün olmadı</string>
     <string name="diagnostics_shadow_binder_navigate_hint">Tətbiqləri seçmək üçün Xüsusiyyət Mərkəzi → Təhlükəsizlik və Giriş → Kölgə Bağlayıcısı bölməsinə keçin</string>
     <string name="diagnostics_device_owner_setup_title">Cihaz Sahibini Quraşdır</string>
@@ -673,7 +673,7 @@
     <string name="su_bridge_copy_path">Yolu kopyala</string>
     <string name="su_bridge_default_nav_hint">Tətbiq parametrlərində xüsusi SU yolunu təyin edin</string>
     <string name="su_bridge_path_copied">SU yolu mübadilə buferinə kopyalandı</string>
-    <string name="su_bridge_self_test">Körpü özünü-yoxlamasını işlət</string>
+    <string name="su_bridge_self_test">Körpü özünüyoxlamasını işlət</string>
     <string name="su_bridge_self_test_running">SU Körpüsü yoxlanılır…</string>
     <string name="su_bridge_self_test_title">SU Körpüsü özünü-yoxlaması</string>
     <string name="su_bridge_self_test_ok">Körpü qaydasındadır</string>
