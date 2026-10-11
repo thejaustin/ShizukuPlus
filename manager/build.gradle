@@ -299,6 +299,7 @@ dependencies {
     testImplementation libs.mavericks.testing
     testImplementation libs.androidx.test.core
     testImplementation "junit:junit:4.13.2"
+    testRuntimeOnly libs.junit.vintage.engine
     androidTestImplementation "androidx.test.ext:junit:1.2.1"
     androidTestImplementation "androidx.test:runner:1.6.2"
     androidTestImplementation "androidx.test:rules:1.6.1"
@@ -306,8 +307,25 @@ dependencies {
 
 android {
     testOptions {
+        // Robolectric needs the merged resources: without them every getString() in the start
+        // path (ManagerActivityLog, the start notification) throws Resources.NotFoundException.
+        unitTests.includeAndroidResources = true
         unitTests.all {
             useJUnitPlatform()
+        }
+    }
+}
+
+// refine registers its visitor with InstrumentationScope.ALL, which re-serializes every
+// jar on the unit-test runtime classpath (AsmClassesTransform, jar-to-jar) while keeping
+// META-INF signatures, so signed jars (conscrypt, BouncyCastle) fail Robolectric with
+// "SHA-256 digest error". Excluded entries are copied byte-identically; these packages
+// contain no refine stubs, so nothing we ship is affected.
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        ["org/conscrypt/**", "org/bouncycastle/**"].each { pattern ->
+            variant.instrumentation.excludes.addAll(pattern)
+            variant.unitTest?.instrumentation?.excludes?.addAll(pattern)
         }
     }
 }
