@@ -31,9 +31,29 @@ internal object StartNotificationState {
 
     enum class PendingReason { WIFI_REQUIRED, WILL_RETRY, QUEUED }
 
+    /** What "Ask again" can do for the held wait (AdbAuthWait.reoffer). Times are wall-clock ms. */
+    sealed interface AskAgain {
+        /** Too soon: it re-offers the key from [atMs]. */
+        data class From(
+            val atMs: Long,
+        ) : AskAgain
+
+        /** It re-offers the key now, once. */
+        object Ready : AskAgain
+
+        /** The one re-offer has been made; the dialog showing is the wait's last. */
+        object Used : AskAgain
+    }
+
     sealed interface Display {
-        /** adbd's dialog is up for a connection this process holds. */
-        object Prompt : Display
+        /**
+         * adbd's dialog is up for a connection this process holds. [askAgain] is null until the
+         * connection can re-offer; [endsAtMs] is the wall-clock time the wait ends, if known.
+         */
+        data class Prompt(
+            val askAgain: AskAgain? = null,
+            val endsAtMs: Long? = null,
+        ) : Display
 
         object Progress : Display
 

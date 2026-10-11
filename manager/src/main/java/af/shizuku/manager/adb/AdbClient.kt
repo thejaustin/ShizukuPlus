@@ -183,6 +183,8 @@ class AdbClient(
                     }
                     deadlineAt = System.nanoTime() + timeoutMs * 1_000_000L
                 }
+                // For the prompt's text: when this wait now ends, as a time of day.
+                AdbAuthWait.deadlineArmed(timeoutMs)
                 deadlineTask?.cancel()
                 deadlineTask = task
                 write(A_AUTH, ADB_AUTH_RSAPUBLICKEY, 0, key.adbPublicKey)

@@ -1224,6 +1224,11 @@
     <string name="ok">OK</string>
     <string name="no_file_picker">No file picker app found on this device</string>
     <string name="wadb_notification_awaiting_auth">Waiting for you to accept the \"Allow USB debugging\" prompt on this phone</string>
+    <string name="wadb_notification_ask_again_from">If you tapped Deny, Ask again shows the prompt once more from %1$s</string>
+    <string name="wadb_notification_ask_again_ready">If you tapped Deny, tap Ask again to show the prompt once more</string>
+    <string name="wadb_notification_ask_again_used">This is the last prompt for this wait, which ends at %1$s</string>
+    <string name="wadb_notification_ask_again_used_untimed">This is the last prompt for this wait</string>
+    <string name="wadb_notification_wait_ends">This wait ends at %1$s</string>
     <string name="wadb_notification_auth_timed_out">The \"Allow USB debugging\" prompt was not accepted in time. Tap Attempt now to try again</string>
     <string name="wadb_notification_discovery_timeout">ADB port discovery timed out — retrying…</string>
     <string name="shell_export_success">Files exported successfully</string>

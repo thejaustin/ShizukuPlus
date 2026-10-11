@@ -23,10 +23,13 @@ class NotifAttemptReceiver : BroadcastReceiver() {
             // again"). adbd never reports a denied dialog, so offer its key again there: one new
             // dialog, once per wait and only after the user has had time to answer the first
             // (AdbAuthWait.reoffer). Otherwise say the dialog is awaited rather than silently
-            // doing nothing.
+            // doing nothing: a toast, and, since some devices (a Samsung S24) suppress app toasts,
+            // the notification posted again, whose text says when "Ask again" works or that the
+            // dialog showing is the last. Silent and alert-once, so the re-post makes no sound.
             if (AdbAuthWait.isWaiting()) {
                 if (!AdbAuthWait.reoffer()) {
                     Toast.makeText(context.applicationContext, R.string.wadb_notification_awaiting_auth, Toast.LENGTH_SHORT).show()
+                    ShizukuReceiverStarter.refreshNotification(context, force = true)
                 }
                 return
             }

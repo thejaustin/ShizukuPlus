@@ -8,6 +8,7 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.ShizukuSettings.LaunchMethod
 import af.shizuku.manager.adb.AdbAuthWait
 import af.shizuku.manager.adb.StartNotificationState
+import af.shizuku.manager.adb.StartNotificationState.AskAgain
 import af.shizuku.manager.adb.StartNotificationState.Display
 import af.shizuku.manager.adb.StartNotificationState.PendingReason
 import af.shizuku.manager.starter.Starter
@@ -25,6 +26,7 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
+import android.text.format.DateFormat
 import androidx.core.app.NotificationCompat
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
@@ -42,6 +44,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import rikka.shizuku.Shizuku
 import timber.log.Timber
+import java.util.Locale
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -216,6 +219,8 @@ object ShizukuReceiverStarter {
             .setContentTitle(context.getString(R.string.wadb_notification_title))
             .setOngoing(true)
             .setSilent(true)
+            // Re-posted as its text changes (the prompt's "Ask again" times): never alert again.
+            .setOnlyAlertOnce(true)
             .addAction(R.drawable.ic_notification_server_restart, context.getString(attemptLabel), attemptNowPendingIntent)
             .addAction(R.drawable.ic_notification_close_24, context.getString(android.R.string.cancel), cancelPendingIntent)
             .setDeleteIntent(restorePendingIntent)
@@ -487,19 +492,13 @@ object ShizukuReceiverStarter {
             val stamp = if (display == Display.Unanswered) AdbAuthWait.unansweredStamp() else 0L
             if (!force && display == rendered && stamp == renderedStamp && (showing == null || showing == wanted)) return@runCatching
             when (display) {
-                is Display.Prompt -> {
-                    val base = app.getString(R.string.wadb_notification_awaiting_auth)
+                is Display.Prompt ->
                     // The same button, while this wait is held, offers the key again on it
                     // (NotifAttemptReceiver.attempt), so it says so.
                     nm.notify(
                         NOTIFICATION_ID,
-                        buildNotification(
-                            app,
-                            base,
-                            attemptLabel = R.string.wadb_notification_ask_again,
-                        ),
+                        buildNotification(app, promptText(app, display), attemptLabel = R.string.wadb_notification_ask_again),
                     )
-                }
                 Display.Progress -> nm.notify(NOTIFICATION_ID, buildNotification(app))
                 is Display.Pending -> {
                     val msg =
@@ -525,6 +524,40 @@ object ShizukuReceiverStarter {
             rendered = display
             renderedStamp = stamp
         }.onFailure { Timber.tag(TAG).w(it, "could not render the start notification") }
+    }
+
+    /**
+     * The held dialog's text. Toasts may be suppressed (seen on a Samsung S24), so it says
+     * where the user stands with "Ask again" and when the wait ends, as times
+     * of day: Display.Prompt carries both, so a change in either renders again.
+     */
+    private fun promptText(
+        app: Context,
+        prompt: Display.Prompt,
+    ): String {
+        val ends = prompt.endsAtMs?.let { clockText(app, it) }
+        val askAgain =
+            when (val a = prompt.askAgain) {
+                is AskAgain.From -> app.getString(R.string.wadb_notification_ask_again_from, clockText(app, a.atMs))
+                AskAgain.Ready -> app.getString(R.string.wadb_notification_ask_again_ready)
+                AskAgain.Used ->
+                    ends?.let { app.getString(R.string.wadb_notification_ask_again_used, it) }
+                        ?: app.getString(R.string.wadb_notification_ask_again_used_untimed)
+                null -> null
+            }
+        // The "last prompt" sentence already gives the end.
+        val endsSentence = if (prompt.askAgain == AskAgain.Used) null else ends?.let { app.getString(R.string.wadb_notification_wait_ends, it) }
+        return listOfNotNull(app.getString(R.string.wadb_notification_awaiting_auth), askAgain, endsSentence)
+            .joinToString(". ")
+    }
+
+    /** [wallMs] as a time of day with seconds, in the device's locale and 12/24-hour setting. */
+    private fun clockText(
+        context: Context,
+        wallMs: Long,
+    ): String {
+        val skeleton = if (DateFormat.is24HourFormat(context)) "Hms" else "hms"
+        return DateFormat.format(DateFormat.getBestDateTimePattern(Locale.getDefault(), skeleton), wallMs).toString()
     }
 
     // Null when WorkManager cannot be read, which renders nothing new rather than an empty queue.

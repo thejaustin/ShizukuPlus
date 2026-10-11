@@ -7,6 +7,7 @@ import timber.log.Timber
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -54,14 +55,73 @@ object AdbAuthWait {
     // re-offers at most once.
     private var offeredAtMs: Long? = null
 
+    // clockMs() at the same moment, for telling the user when "Ask again" works. Display only: the
+    // guard uses offeredAtMs.
+    private var offeredWallMs = 0L
+
+    // Cancels the refresh that turns the prompt's text when "Ask again" becomes available.
+    private var cancelReadyRefresh: (() -> Unit)? = null
+
+    // When the held wait ends, as clockMs(): published by AdbClient each time an offer arms its
+    // deadline. Display only; the deadline itself is AdbClient's.
+    @Volatile
+    private var deadlineWallMs: Long? = null
+
     private val reofferExecutor =
         Executors.newSingleThreadExecutor { Thread(it, "adb-auth-reoffer").apply { isDaemon = true } }
 
-    internal fun holdReoffer(hook: (() -> Unit)?) =
+    // Its own thread: a re-offer stuck writing to the socket must not hold back a refresh.
+    private val refreshTimer by lazy {
+        Executors.newSingleThreadScheduledExecutor { Thread(it, "adb-auth-prompt-refresh").apply { isDaemon = true } }
+    }
+
+    internal val realSchedule: (Long, () -> Unit) -> (() -> Unit) = { delayMs, task ->
+        val future = refreshTimer.schedule(Runnable { task() }, delayMs, TimeUnit.MILLISECONDS)
+        val cancel: () -> Unit = { future.cancel(false) }
+        cancel
+    }
+
+    // Runs a task after a delay and returns what cancels it. Tests run it on their virtual clock.
+    @Volatile
+    internal var schedule: (delayMs: Long, task: () -> Unit) -> (() -> Unit) = realSchedule
+
+    internal fun holdReoffer(hook: (() -> Unit)?) {
+        val previous =
+            synchronized(this) {
+                reofferHook = hook
+                offeredAtMs = hook?.let { elapsedMs() }
+                offeredWallMs = if (hook != null) clockMs() else 0L
+                val previous = cancelReadyRefresh
+                // The prompt's text changes when "Ask again" becomes available, tap or no tap. The
+                // timer never fires early, and elapsedMs() (boot time) advances at least as fast as
+                // its clock, so the render it brings sees the boundary passed.
+                cancelReadyRefresh =
+                    hook?.let {
+                        schedule(REOFFER_MIN_AGE_MS.toLong()) { ShizukuReceiverStarter.refreshNotification() }
+                    }
+                previous
+            }
+        previous?.invoke()
+        // The prompt may have been rendered before this hook was set, without its "Ask again" text.
+        if (hook != null) ShizukuReceiverStarter.refreshNotification()
+    }
+
+    /** What "Ask again" can do now, for the prompt's text; null when the held wait cannot re-offer. */
+    internal fun askAgain(): StartNotificationState.AskAgain? =
         synchronized(this) {
-            reofferHook = hook
-            offeredAtMs = hook?.let { elapsedMs() }
+            if (reofferHook == null) return null
+            val offeredAt = offeredAtMs ?: return StartNotificationState.AskAgain.Used
+            if (elapsedMs() - offeredAt >= REOFFER_MIN_AGE_MS) {
+                StartNotificationState.AskAgain.Ready
+            } else {
+                StartNotificationState.AskAgain.From(offeredWallMs + REOFFER_MIN_AGE_MS)
+            }
         }
+
+    /** AdbClient armed the held wait's deadline [timeoutMs] from now (each offer does). */
+    internal fun deadlineArmed(timeoutMs: Int) {
+        deadlineWallMs = clockMs() + timeoutMs
+    }
 
     internal fun reofferHeld(): Boolean = reofferHook != null
 
@@ -107,6 +167,7 @@ object AdbAuthWait {
         // Cleared before the slot is released, so it can never clear the next holder's prompt.
         heldPrompt = null
         holdReoffer(null)
+        deadlineWallMs = null
         if (waiting.compareAndSet(1, 0)) starts.end()
         ShizukuReceiverStarter.refreshNotification()
     }
@@ -123,12 +184,13 @@ object AdbAuthWait {
     @Volatile
     private var heldPrompt: StartNotificationState.Display.Prompt? = null
 
-    internal fun prompt(): StartNotificationState.Display.Prompt? = heldPrompt
+    /** The held dialog, with what "Ask again" can do now and when the wait ends. */
+    internal fun prompt(): StartNotificationState.Display.Prompt? = heldPrompt?.copy(askAgain = askAgain(), endsAtMs = deadlineWallMs)
 
     /** The key has been offered and adbd's dialog is up; it shows over everything until [end]. */
     internal fun postAuthPrompt() {
         if (!isWaiting()) return
-        heldPrompt = StartNotificationState.Display.Prompt
+        heldPrompt = StartNotificationState.Display.Prompt()
         ShizukuReceiverStarter.refreshNotification()
     }
 
@@ -205,6 +267,7 @@ object AdbAuthWait {
         waiting.set(0)
         heldPrompt = null
         holdReoffer(null)
+        deadlineWallMs = null
         starts.resetForTesting()
     }
 
