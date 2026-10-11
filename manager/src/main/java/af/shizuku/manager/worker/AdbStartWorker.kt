@@ -3,12 +3,14 @@ package af.shizuku.manager.worker
 import af.shizuku.manager.MainActivity
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.adb.AdbAuthPendingException
+import af.shizuku.manager.adb.AdbAuthTimeoutException
+import af.shizuku.manager.adb.AdbAuthWait
 import af.shizuku.manager.adb.AdbMdns
 import af.shizuku.manager.adb.AdbPortProber
 import af.shizuku.manager.adb.AdbStarter
+import af.shizuku.manager.adb.StartNotificationState
 import af.shizuku.manager.receiver.ShizukuReceiverStarter
-import af.shizuku.manager.receiver.ShizukuReceiverStarter.WorkerState
-import af.shizuku.manager.receiver.ShizukuReceiverStarter.updateNotification
 import af.shizuku.manager.settings.BugReportDialogActivity
 import af.shizuku.manager.starter.Starter
 import af.shizuku.manager.utils.EnvironmentUtils
@@ -41,18 +43,41 @@ class AdbStartWorker(
     context: Context,
     params: WorkerParameters,
 ) : CoroutineWorker(context, params) {
-    override suspend fun doWork(): Result {
+    // Counted as start work for its whole run, so the tile never settles a start this worker is
+    // still making (mDNS discovery, waiting for an unlock, the binder wait).
+    override suspend fun doWork(): Result = AdbAuthWait.starts.track { attemptStart() }
+
+    private suspend fun attemptStart(): Result {
         try {
+            // Decide before publishing progress, so a start that stands down never shows itself
+            // over the start that holds the dialog.
+            if (AdbAuthWait.isWaiting()) {
+                throw AdbAuthPendingException("another start is waiting for the adbd authorisation dialog to be answered")
+            }
+            // One dialog per boot or explicit start, enforced where every background connection
+            // begins, so it also covers WorkManager's own re-runs and requests admitted long ago.
+            // A request nobody made by hand (the watchdog, Home auto-reconnect, a Tasker trigger)
+            // stops at any unanswered marker. An explicit one may pass a marker that was already
+            // there when it was made (the user asked in spite of it) and keeps that right across
+            // retries, but stops at a newer one: its own dialog, or a later one, went unanswered.
+            // Read once: 0 means no marker.
+            val unansweredAt = AdbAuthWait.unansweredStamp()
+            if (unansweredAt != 0L &&
+                (!inputData.getBoolean(KEY_EXPLICIT, false) || unansweredAt > inputData.getLong(KEY_REQUESTED_AT, 0L))
+            ) {
+                throw AdbAuthPendingException("the adbd authorisation dialog went unanswered; waiting for an explicit start")
+            }
             timber.log.Timber.tag("AdbStartWorker").i(
                 "doWork: runAttempt=%d, isAdbEnabled=%s, tcpMode=%s",
                 runAttemptCount,
                 EnvironmentUtils.isAdbEnabled(),
                 ShizukuSettings.getTcpMode(),
             )
-            updateNotification(
-                applicationContext,
-                WorkerState.RUNNING,
-            )
+            // Progress travels with this request's WorkInfo, which the shared notification is
+            // rendered from; the refresh makes sure this process (perhaps started just for this run)
+            // is rendering it.
+            setProgress(workDataOf(KEY_STEP to StartNotificationState.Step.STARTING.name))
+            ShizukuReceiverStarter.refreshNotification(applicationContext)
 
             val cr = applicationContext.contentResolver
 
@@ -89,8 +114,6 @@ class AdbStartWorker(
                             activityLogMessage = "Service started via direct TCP port $desiredPort (no Wi-Fi required)",
                         )
                         Starter.waitForBinder()
-                        val nm = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
-                        nm.cancel(ShizukuReceiverStarter.NOTIFICATION_ID)
                         return Result.success()
                     }
                 }
@@ -98,7 +121,10 @@ class AdbStartWorker(
 
             val tcpPort = EnvironmentUtils.getAdbTcpPort()
             if (tcpPort > 0 && !ShizukuSettings.getTcpMode()) {
-                AdbStarter.stopTcp(applicationContext, tcpPort)
+                if (!AdbStarter.stopTcp(applicationContext, tcpPort)) {
+                    // Connecting again for the start would raise the dialog a second time.
+                    throw AdbAuthTimeoutException("adbd authorisation was not accepted while leaving TCP mode")
+                }
             }
 
             val savedPort = ShizukuSettings.getLastPort()
@@ -117,8 +143,6 @@ class AdbStartWorker(
                         activityLogMessage = "Service started via force_start_wadb TCP probe on port $probePort",
                     )
                     Starter.waitForBinder()
-                    val nm = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
-                    nm.cancel(ShizukuReceiverStarter.NOTIFICATION_ID)
                     return Result.success()
                 }
             }
@@ -164,11 +188,7 @@ class AdbStartWorker(
                             fun handleAuth() {
                                 val km = applicationContext.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
                                 if (km.isKeyguardLocked) {
-                                    val notification =
-                                        ShizukuReceiverStarter.buildNotification(
-                                            applicationContext,
-                                            null,
-                                        )
+                                    val notification = ShizukuReceiverStarter.buildForegroundNotification(applicationContext)
                                     // On Android 14+ (API 34), ForegroundInfo must declare a foreground
                                     // service type (one the manifest lists for SystemForegroundService) or
                                     // the OS throws InvalidForegroundServiceTypeException. specialUse, not
@@ -177,14 +197,26 @@ class AdbStartWorker(
                                     val foregroundInfo =
                                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                                             ForegroundInfo(
-                                                ShizukuReceiverStarter.NOTIFICATION_ID,
+                                                ShizukuReceiverStarter.FOREGROUND_NOTIFICATION_ID,
                                                 notification,
                                                 android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE,
                                             )
                                         } else {
-                                            ForegroundInfo(ShizukuReceiverStarter.NOTIFICATION_ID, notification)
+                                            ForegroundInfo(ShizukuReceiverStarter.FOREGROUND_NOTIFICATION_ID, notification)
                                         }
-                                    setForegroundAsync(foregroundInfo)
+                                    // Only once the foreground notification is really up does this
+                                    // run's identical progress step aside; if promotion fails, the
+                                    // progress stays the one visible sign of the start.
+                                    launch {
+                                        try {
+                                            setForeground(foregroundInfo)
+                                            setProgress(workDataOf(KEY_STEP to StartNotificationState.Step.FOREGROUND.name))
+                                        } catch (e: CancellationException) {
+                                            throw e
+                                        } catch (e: Exception) {
+                                            timber.log.Timber.tag("AdbStartWorker").w(e, "doWork: foreground promotion failed")
+                                        }
+                                    }
 
                                     val filter = IntentFilter(Intent.ACTION_USER_PRESENT)
                                     unlockReceiver =
@@ -259,28 +291,32 @@ class AdbStartWorker(
                 .tag("AdbStartWorker")
                 .i("doWork: Shizuku service successfully started and binder ready on port %d", port)
 
-            val nm = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            nm.cancel(ShizukuReceiverStarter.NOTIFICATION_ID)
-
             return Result.success()
         } catch (e: CancellationException) {
+            // Whether WorkManager runs this request again (a stop by the system) or not (Cancel,
+            // REPLACE) is its decision, and the notification follows it from WorkInfo.
             val reason = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) stopReason else -1
             timber.log.Timber
                 .tag("AdbStartWorker")
                 .w("doWork: job cancelled (stopReason=%d)", reason)
-            val state =
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-                    WorkerState.AWAITING_RETRY
-                } else {
-                    when (stopReason) {
-                        WorkInfo.STOP_REASON_CONSTRAINT_CONNECTIVITY -> WorkerState.AWAITING_WIFI
-                        WorkInfo.STOP_REASON_CANCELLED_BY_APP -> WorkerState.STOPPED
-                        else -> WorkerState.AWAITING_RETRY
-                    }
-                }
-            updateNotification(applicationContext, state)
-
             throw e
+        } catch (e: AdbAuthPendingException) {
+            // Another start holds the one authorisation dialog. It owns the state machine and the
+            // unanswered marker; stand down without touching either (and without retrying, which
+            // would just stand down again).
+            timber.log.Timber.tag("AdbStartWorker").i("doWork: stood down: %s", e.message)
+            return Result.failure()
+        } catch (e: AdbAuthTimeoutException) {
+            // Retrying (WorkManager backoff) would open a new connection and raise a new dialog.
+            // Stop here; the notification's "Attempt now" or the next explicit start tries again.
+            timber.log.Timber.tag("AdbStartWorker").w(e, "doWork: authorisation dialog not answered, not retrying")
+            if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
+                ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
+            }
+            // The marker was recorded when the key was offered (AdbClient) and stays: a server
+            // that happens to be running did not come from this offer, and its key is still
+            // not authorised.
+            return Result.failure()
         } catch (e: Exception) {
             timber.log.Timber
                 .tag("AdbStartWorker")
@@ -309,6 +345,9 @@ class AdbStartWorker(
                 ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
             }
             if (ShizukuStateMachine.update() == ShizukuStateMachine.State.RUNNING) {
+                // A server is up despite the exception (e.g. the connection dropped after the
+                // starter command ran). That does not show the key was accepted, so the
+                // unanswered marker is left to AdbClient, which clears it on acceptance.
                 return Result.success()
             } else {
                 // After repeated mDNS timeouts, suggest TCP Mode — the device may be
@@ -316,8 +355,6 @@ class AdbStartWorker(
                 if (e is TimeoutException && runAttemptCount >= 2) {
                     showMdnsBlockedSuggestion(applicationContext)
                 }
-                val retryState = if (e is TimeoutException) WorkerState.AWAITING_DISCOVERY else WorkerState.AWAITING_RETRY
-                updateNotification(applicationContext, retryState)
                 return Result.retry()
             }
         }
@@ -422,7 +459,20 @@ class AdbStartWorker(
     }
 
     companion object {
-        fun enqueue(context: Context) {
+        /**
+         * Asks for a background start. Returns at once: whether to enqueue is decided off the main
+         * thread from WorkManager's state (nothing happens while a worker is already running), and
+         * the notification then shows whatever WorkManager holds.
+         */
+        fun enqueue(
+            context: Context,
+            explicit: Boolean = false,
+        ) {
+            // An early out only: enqueueStart decides again, as one step with the enqueue.
+            if (AdbAuthWait.isWaiting()) {
+                timber.log.Timber.tag("AdbStartWorker").i("enqueue skipped: waiting for the adbd authorisation dialog")
+                return
+            }
             // WorkManager uses credential-encrypted storage which is unavailable during direct boot.
             // Skip enqueueing until the user has unlocked their device.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -430,27 +480,33 @@ class AdbStartWorker(
                 if (um != null && !um.isUserUnlocked) return
             }
 
+            val waitsForWifi = EnvironmentUtils.isWifiRequired() && !ShizukuSettings.isForceStartWadbEnabled()
             val cb = Constraints.Builder()
-            if (EnvironmentUtils.isWifiRequired() && !ShizukuSettings.isForceStartWadbEnabled()) {
+            if (waitsForWifi) {
                 cb.setRequiredNetworkType(NetworkType.UNMETERED)
             }
-            val constraints = cb.build()
-
             val request =
                 OneTimeWorkRequestBuilder<AdbStartWorker>()
-                    .setConstraints(constraints)
+                    .setConstraints(cb.build())
+                    .setInputData(workDataOf(KEY_EXPLICIT to explicit, KEY_REQUESTED_AT to AdbAuthWait.clockMs()))
                     .build()
-
-            // Use KEEP while a key offer is waiting for a dialog response — REPLACE would cancel
-            // the current connection and create another "Allow USB debugging?" dialog.
-            val policy = if (af.shizuku.manager.adb.AdbStarter.keyOfferInFlight) ExistingWorkPolicy.KEEP else ExistingWorkPolicy.REPLACE
-            WorkManager.getInstance(context).enqueueUniqueWork(
-                "adb_start_worker",
-                policy,
-                request,
-            )
+            ShizukuReceiverStarter.enqueueStart(context, request, explicit)
         }
 
+        /** Cancels the start work, queued or running, and dismisses its "not answered" notice. */
+        fun cancel(
+            context: Context,
+            then: (() -> Unit)? = null,
+        ) = ShizukuReceiverStarter.cancelStarts(context, then)
+
+        const val UNIQUE_WORK_NAME = "adb_start_worker"
+
+        // The progress key a running worker publishes its StartNotificationState.Step under.
+        internal const val KEY_STEP = "step"
+
+        // The request came from the user's own hand (or a path that deliberately allows a new dialog).
+        private const val KEY_EXPLICIT = "explicit"
+        private const val KEY_REQUESTED_AT = "requested_at"
         const val CHANNEL_ID = "AdbStartWorker"
         const val NOTIFICATION_ID = 1448
         private const val NOTIFICATION_ID_MDNS_BLOCKED = 1449

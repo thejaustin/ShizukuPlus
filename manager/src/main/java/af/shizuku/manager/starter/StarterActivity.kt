@@ -3,6 +3,7 @@ package af.shizuku.manager.starter
 import af.shizuku.core.ui.AppBarActivity
 import af.shizuku.manager.AppConstants.EXTRA
 import af.shizuku.manager.R
+import af.shizuku.manager.adb.AdbAuthWait
 import af.shizuku.manager.adb.AdbKeyException
 import af.shizuku.manager.adb.AdbStarter
 import af.shizuku.manager.database.ActivityLogManager
@@ -103,6 +104,21 @@ class StarterActivity : AppBarActivity() {
             binding.text1.text = output
             binding.scrollView.post { binding.scrollView.scrollTo(0, Int.MAX_VALUE) }
         }
+
+        viewModel.confirmUnanswered.observe(this) { pending ->
+            if (!pending || isFinishing || isDestroyed) return@observe
+            binding.progressIndicator.visibility = View.GONE
+            binding.cancelButton.visibility = View.GONE
+            MaterialAlertDialogBuilder(this)
+                .setMessage(R.string.wadb_notification_auth_timed_out)
+                .setPositiveButton(R.string.wadb_notification_attempt_now) { _, _ ->
+                    binding.progressIndicator.visibility = View.VISIBLE
+                    binding.cancelButton.visibility = View.VISIBLE
+                    viewModel.confirmUnanswered()
+                }.setNegativeButton(android.R.string.cancel) { _, _ -> finish() }
+                .setOnCancelListener { finish() }
+                .show()
+        }
     }
 
     private var hasStarted = false
@@ -112,11 +128,13 @@ class StarterActivity : AppBarActivity() {
         if (hasFocus && !hasStarted) {
             hasStarted = true
             val port = intent.getIntExtra(EXTRA_PORT, 0)
+            val userGesture = intent.getBooleanExtra(EXTRA_USER_GESTURE, false)
 
             viewModel.start(
                 intent.getBooleanExtra(EXTRA_IS_ROOT, false),
                 intent.getBooleanExtra(EXTRA_IS_SYSTEM, false),
                 port,
+                userGesture,
             )
         }
     }
@@ -125,6 +143,15 @@ class StarterActivity : AppBarActivity() {
         const val EXTRA_IS_SYSTEM = "$EXTRA.IS_SYSTEM"
         const val EXTRA_IS_ROOT = "$EXTRA.IS_ROOT"
         const val EXTRA_PORT = "$EXTRA.PORT"
+
+        /**
+         * Set only on a start that follows from a tap on the Home card's Start button: its direct
+         * launches, and the discovery dialog that tap opens (AdbDialogFragment.forUserGesture).
+         * Such a start is itself the explicit gesture the unanswered-prompt guard asks for, so it
+         * does not ask again. Other routes here (the start_service_via_wadb extra, a shortcut,
+         * onboarding) do not set it.
+         */
+        const val EXTRA_USER_GESTURE = "$EXTRA.USER_GESTURE"
     }
 }
 
@@ -137,6 +164,11 @@ class ViewModel(
     private val _output = MutableLiveData<Resource<StringBuilder>>()
 
     val output = _output as LiveData<Resource<StringBuilder>>
+
+    private val _confirmUnanswered = MutableLiveData(false)
+
+    /** True while an ADB start is held for the user to confirm it (see [start]). */
+    val confirmUnanswered = _confirmUnanswered as LiveData<Boolean>
 
     private val handler =
         CoroutineExceptionHandler { _, throwable ->
@@ -153,6 +185,7 @@ class ViewModel(
         }
 
     private var started = false
+    private val confirmation = UnansweredConfirmation()
     private var lastRoot = false
     private var lastSystem = false
     private var lastPort = 0
@@ -161,31 +194,64 @@ class ViewModel(
         root: Boolean,
         isSystem: Boolean,
         port: Int,
+        userGesture: Boolean = false,
     ) {
         lastRoot = root
         lastSystem = isSystem
         lastPort = port
+        if (userGesture) confirmation.confirm()
         if (!root && !isSystem && port !in 1..65535) {
             log(error = IllegalArgumentException("Invalid port value: $port. Port must be between 1 and 65535."))
             return
         }
         if (started) return
+        // Not every route here is a fresh start gesture in the manager (the start_service_via_wadb
+        // extra, a shortcut, onboarding also open this screen). So once a
+        // dialog has gone unanswered, an ADB start waits for the user to confirm here first —
+        // the one-dialog-per-explicit-start rule background triggers already follow — unless
+        // the launch was itself a tap in the manager (EXTRA_USER_GESTURE). It is a question, not
+        // a failure: nothing was attempted, so no error and no stack trace.
+        if (!confirmation.mayStart(adb = !root && !isSystem, unanswered = AdbAuthWait.isUnanswered())) {
+            // A recreated activity calls start() again; the prompt is already pending.
+            if (_confirmUnanswered.value != true) _confirmUnanswered.value = true
+            return
+        }
         started = true
 
         viewModelScope.launch(handler) {
-            if (root) {
-                startRoot()
-            } else if (isSystem) {
-                startSys()
-            } else {
-                AdbStarter.startAdb(appContext, port, { log(it) })
+            // In flight until the binder arrives or the wait for it gives up, so the tile does not
+            // settle a start that has deployed the server and is only waiting for it to bind.
+            AdbAuthWait.starts.track {
+                if (root) {
+                    startRoot()
+                } else if (isSystem) {
+                    startSys()
+                } else {
+                    try {
+                        AdbStarter.startAdb(appContext, port, { log(it) })
+                    } catch (e: af.shizuku.manager.adb.AdbAuthPendingException) {
+                        // Another start owns the authorisation dialog. Informational, not a failure:
+                        // the generic handler would reset the owner's STARTING state to STOPPED and
+                        // file a spurious Sentry report. Leave the owner's state and wait alone.
+                        log(appContext.getString(af.shizuku.manager.R.string.wadb_notification_awaiting_auth) + "\n")
+                        started = false
+                        return@launch
+                    }
+                }
+                Starter.waitForBinder({ log(it) })
             }
-            Starter.waitForBinder({ log(it) })
         }
+    }
+
+    fun confirmUnanswered() {
+        confirmation.confirm()
+        _confirmUnanswered.value = false
+        start(lastRoot, lastSystem, lastPort)
     }
 
     fun retry() {
         started = false
+        confirmation.confirm()
         sb.clear()
         _output.postValue(Resource.success(sb))
         start(lastRoot, lastSystem, lastPort)

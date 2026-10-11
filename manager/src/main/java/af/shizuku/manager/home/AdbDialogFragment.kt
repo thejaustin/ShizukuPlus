@@ -181,6 +181,9 @@ class AdbDialogFragment : DialogFragment() {
         val intent =
             Intent(context, StarterActivity::class.java).apply {
                 putExtra(StarterActivity.EXTRA_PORT, port)
+                if (arguments?.getBoolean(ARG_USER_GESTURE, false) == true) {
+                    putExtra(StarterActivity.EXTRA_USER_GESTURE, true)
+                }
             }
         requireContext().startActivity(intent)
 
@@ -190,5 +193,21 @@ class AdbDialogFragment : DialogFragment() {
     fun show(fragmentManager: FragmentManager) {
         if (fragmentManager.isStateSaved) return
         show(fragmentManager, javaClass.simpleName)
+    }
+
+    companion object {
+        // In the arguments rather than a field so a recreated dialog keeps its origin.
+        private const val ARG_USER_GESTURE = "user_gesture"
+
+        /**
+         * A discovery dialog opened by a tap on the Home card's Start button: the start it makes
+         * once a port resolves is that tap's, so it carries [StarterActivity.EXTRA_USER_GESTURE].
+         * Every other route (start_service_via_wadb, the launcher
+         * shortcut, onboarding) uses the plain constructor and stays unconfirmed.
+         */
+        fun forUserGesture(): AdbDialogFragment =
+            AdbDialogFragment().apply {
+                arguments = Bundle().apply { putBoolean(ARG_USER_GESTURE, true) }
+            }
     }
 }

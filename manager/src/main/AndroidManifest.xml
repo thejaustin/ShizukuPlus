@@ -449,7 +449,19 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receiver.NotifAttemptReceiver" />
+        <!-- An empty affinity gives it a task of its own, so finishing it returns to whatever
+             was in front rather than bringing the manager's task forward. -->
+        <activity
+            android:name=".receiver.NotifAttemptActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.NoDisplay" />
+
+        <receiver
+            android:name=".receiver.NotifAttemptReceiver"
+            android:exported="false" />
         <receiver android:name=".receiver.NotifCancelReceiver" />
         <receiver android:name=".receiver.NotifRestoreReceiver" />
 

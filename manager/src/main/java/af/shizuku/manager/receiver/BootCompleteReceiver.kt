@@ -36,6 +36,11 @@ class BootCompleteReceiver : BroadcastReceiver() {
         // the user unlocks and handles the actual start (#504). Skip auto-start for LOCKED_BOOT_COMPLETED.
         if (action != Intent.ACTION_LOCKED_BOOT_COMPLETED) {
             try {
+                // A real boot may raise adbd's authorisation dialog once more; the QUICKBOOT
+                // look-alikes do not reset that.
+                if (action == Intent.ACTION_BOOT_COMPLETED) {
+                    af.shizuku.manager.adb.AdbAuthWait.clearUnanswered()
+                }
                 ShizukuReceiverStarter.start(context)
             } catch (e: Exception) {
                 Timber.tag("BootCompleteReceiver").w(e, "Auto-start skipped (service not ready, e.g. direct boot)")

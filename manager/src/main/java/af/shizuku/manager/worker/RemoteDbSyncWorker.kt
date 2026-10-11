@@ -49,6 +49,9 @@ class RemoteDbSyncWorker(
         }
     }
 
+    // The network fetch, replaceable by tests: java.net.URL cannot be constructor-mocked on current JDKs.
+    internal var fetchDb: (String) -> String? = ::fetch
+
     override suspend fun doWork(): Result {
         val lastUpdate = ShizukuSettings.getLastDbUpdate()
         if (lastUpdate > 0 && System.currentTimeMillis() - lastUpdate < MIN_REFRESH_INTERVAL_MS) {
@@ -57,7 +60,7 @@ class RemoteDbSyncWorker(
         }
 
         return try {
-            val json = fetch(DB_URL)
+            val json = fetchDb(DB_URL)
             if (json != null) {
                 AppContextManager.updateDatabase(json)
                 Timber.d("RemoteDbSync: app context database updated successfully")

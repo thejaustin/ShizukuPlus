@@ -2,6 +2,7 @@ package af.shizuku.manager.adb
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.database.ActivityLogManager
+import af.shizuku.manager.receiver.ShizukuReceiverStarter
 import af.shizuku.manager.starter.Starter
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.SettingsPage
@@ -18,22 +19,22 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.sentry.Sentry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.EOFException
 import java.net.ConnectException
 import java.net.SocketException
 import java.net.SocketTimeoutException
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.net.ssl.SSLException
 
 object AdbStarter {
     private const val TAG = "AdbStarter"
-
-    // True while a connection is holding its socket open waiting for the user to tap
-    // "Allow USB debugging?". Read by AdbStartWorker.enqueue() to switch from REPLACE
-    // to KEEP so the waiting worker is not cancelled and a second dialog is not queued.
-    @Volatile var keyOfferInFlight: Boolean = false
 
     private fun Context.getActivity(): Activity? {
         var context = this
@@ -52,23 +53,47 @@ object AdbStarter {
             this is ConnectException ||
             this is SSLException ||
             this is AdbKeyException ||
+            this is AdbAuthPendingException ||
             (includeIllegalState && this is IllegalStateException)
 
+    /**
+     * @param attempt the background start this call belongs to (see [AdbAuthWait.scheduleAttempt]);
+     * its authorisation prompt is posted as that attempt's. Ignored when [log] is given: an
+     * interactive start reports through its log and posts nothing.
+     */
     suspend fun startAdb(
         context: Context,
         port: Int,
         log: ((String) -> Unit)? = null,
         activityLogMessage: String? = null,
+        attempt: Long = AdbAuthWait.NO_ATTEMPT,
     ) {
         if (port !in 1..65535) {
             Timber.tag(TAG).w("startAdb called with invalid port $port — skipping")
             return
         }
 
+        // Another start is holding adbd's authorisation dialog open; a second connection would
+        // raise a second dialog. Throw rather than return: a silent return looked like success,
+        // and the caller's next step (a 20 s waitForBinder) then timed out while the pending
+        // start was still legitimately waiting its 300 s.
+        if (AdbAuthWait.isWaiting()) {
+            Timber.tag(TAG).i("startAdb stood down: waiting for the adbd authorisation dialog")
+            log?.invoke(context.getString(R.string.wadb_notification_awaiting_auth) + "\n")
+            throw AdbAuthPendingException("another start is waiting for the adbd authorisation dialog to be answered")
+        }
+
+        // Set when this call stood down because another start owns the authorisation wait; the
+        // finally block must then leave wireless debugging alone — it is the owner's transport.
+        var stoodDown = false
+
         suspend fun AdbClient.runCommand(cmd: String) {
             command(cmd) { log?.invoke(String(it)) }
         }
 
+        // Counted from here to the end of the starter command: the authorisation wait alone ends
+        // before the server is deployed, and an already-authorised key never waits at all.
+        AdbAuthWait.starts.begin()
         try {
             ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
             Timber.tag(TAG).i("startAdb: initiating connection on port %d", port)
@@ -85,6 +110,16 @@ object AdbStarter {
                             }
                         }
 
+                // The background worker owns (and later clears) the ongoing notification; an
+                // interactive start reports through its log instead and must not leave one behind.
+                val onPending = {
+                    if (log != null) {
+                        log.invoke(context.getString(R.string.wadb_notification_awaiting_auth) + "\n")
+                    } else {
+                        ShizukuReceiverStarter.postAuthPrompt(context, attempt)
+                    }
+                }
+
                 var activePort = port
                 val tcpMode = ShizukuSettings.getTcpMode()
                 val tcpPort = ShizukuSettings.getTcpPort()
@@ -95,8 +130,8 @@ object AdbStarter {
                         Timber.tag(TAG).d("Switching ADB from port %d to TCP port %d", activePort, tcpPort)
                         log?.invoke("Connecting on port $activePort...")
 
-                        AdbClient("127.0.0.1", activePort, key).use { client ->
-                            client.connect()
+                        AdbClient("127.0.0.1", activePort, key, onPending).use { client ->
+                            connectWithRetry(client, activePort)
 
                             log?.invoke("Successfully connected on port $activePort...")
                             log?.invoke("\nRestarting in TCP mode port: $tcpPort")
@@ -112,7 +147,7 @@ object AdbStarter {
                 Timber.tag(TAG).i("Connecting to ADB daemon at 127.0.0.1:%d", activePort)
                 log?.invoke("Connecting on port $activePort...")
 
-                AdbClient("127.0.0.1", activePort, key).use { client ->
+                AdbClient("127.0.0.1", activePort, key, onPending).use { client ->
                     connectWithRetry(client, activePort)
                     Timber.tag(TAG).i("Connected to ADB at 127.0.0.1:%d; deploying starter command", activePort)
                     log?.invoke("Successfully connected on port $activePort...\n")
@@ -122,6 +157,7 @@ object AdbStarter {
                         client.runCommand("shell:pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS")
                     }.onFailure { Timber.tag(TAG).w(it, "Failed to auto-elevate privileges on ADB start") }
                     ShizukuSettings.setLastPort(activePort)
+                    AdbAuthWait.clearUnanswered()
                     val msg = activityLogMessage ?: "Service started via ADB on port $activePort"
                     ActivityLogManager.log("Shizuku", context.packageName, msg)
                     ShizukuStateMachine.update()
@@ -129,6 +165,7 @@ object AdbStarter {
                 }
             }
         } catch (e: Exception) {
+            if (e is AdbAuthPendingException) stoodDown = true
             Timber.tag(TAG).e(e, "startAdb failed on port %d: %s", port, e.message)
             if (e is SSLException && (e.message?.contains("protocol version") == true || e is javax.net.ssl.SSLProtocolException)) {
                 withContext(Dispatchers.Main) {
@@ -153,18 +190,20 @@ object AdbStarter {
             }
             throw e
         } finally {
-            if (ShizukuSettings.getAutoDisableUsbDebugging() && context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
+            AdbAuthWait.starts.end()
+            if (!stoodDown && ShizukuSettings.getAutoDisableUsbDebugging() && context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
                 Settings.Global.putInt(context.contentResolver, "adb_wifi_enabled", 0)
             }
         }
     }
 
+    /** @return false only if adbd's authorisation dialog was raised and not accepted. */
     suspend fun stopTcp(
         context: Context,
         port: Int,
-    ) {
-        if (port !in 1..65535) return
-        runCatching {
+    ): Boolean {
+        if (port !in 1..65535 || AdbAuthWait.isWaiting()) return true
+        val result = runCatching {
             val cr = context.contentResolver
             if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
                 Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)
@@ -181,7 +220,9 @@ object AdbStarter {
                     client.command("usb:")
                 }
             }
-        }.onFailure {
+        }
+        result.onFailure {
+            if (it is CancellationException) throw it
             if (it !is CancellationException && !it.isExpectedAdbError(includeIllegalState = true)) {
                 Sentry.captureException(it)
             }
@@ -199,36 +240,60 @@ object AdbStarter {
                 }
             }
         }
+        return result.exceptionOrNull() !is AdbAuthTimeoutException
     }
 
     private suspend fun connectWithRetry(
         client: AdbClient,
         port: Int,
-    ) {
-        var delayTime = 500L
-        val maxAttempts = 8
-        for (attempt in 1..maxAttempts) {
-            try {
-                if (attempt > 1) {
-                    delay(delayTime)
-                    delayTime = (delayTime * 1.5).toLong().coerceAtMost(3000L) // Exponential backoff up to 3s
-                }
-                Timber.tag(TAG).d("Connecting to ADB attempt %d/%d (port=%d)", attempt, maxAttempts, port)
-                client.connect(
-                    onKeyOffered = { keyOfferInFlight = true },
-                    onKeyOfferDone = { keyOfferInFlight = false },
-                )
-                Timber.tag(TAG).d("Connected successfully on attempt %d", attempt)
-                break
-            } catch (e: Exception) {
-                Timber.tag(TAG).w(e, "Connection attempt %d/%d failed: %s", attempt, maxAttempts, e.message)
-                if (
-                    attempt == maxAttempts ||
-                    e is CancellationException
-                ) {
-                    throw e
+    ) = coroutineScope {
+        // connect() blocks in a socket read that coroutine cancellation cannot interrupt, and it can
+        // now wait minutes for the authorisation dialog. Close the socket when this scope is
+        // cancelled so a cancelled start does not leave a connection (and the AdbAuthWait gate) held.
+        val finished = AtomicBoolean(false)
+        val watcher =
+            launch {
+                try {
+                    awaitCancellation()
+                } finally {
+                    if (!finished.get()) client.close()
                 }
             }
+        try {
+            var delayTime = 500L
+            val maxAttempts = 8
+            for (attempt in 1..maxAttempts) {
+                try {
+                    if (attempt > 1) {
+                        delay(delayTime)
+                        delayTime = (delayTime * 1.5).toLong().coerceAtMost(3000L) // Exponential backoff up to 3s
+                    }
+                    Timber.tag(TAG).d("Connecting to ADB attempt %d/%d (port=%d)", attempt, maxAttempts, port)
+                    client.connect()
+                    Timber.tag(TAG).d("Connected successfully on attempt %d", attempt)
+                    break
+                } catch (e: Exception) {
+                    // A cancelled start closes the socket (see the watcher above), which surfaces
+                    // here as an I/O failure; report it as the cancellation it is.
+                    ensureActive()
+                    Timber.tag(TAG).w(e, "Connection attempt %d/%d failed: %s", attempt, maxAttempts, e.message)
+                    if (
+                        attempt == maxAttempts ||
+                        e is CancellationException ||
+                        // Reconnecting would raise another "Allow USB debugging?" dialog.
+                        e is AdbAuthTimeoutException ||
+                        // A CAS loser must stand down, not reconnect: a retry could claim the
+                        // slot the instant its owner releases it and offer a second key, or —
+                        // once the owner's key is accepted — start a second server in parallel.
+                        e is AdbAuthPendingException
+                    ) {
+                        throw e
+                    }
+                }
+            }
+        } finally {
+            finished.set(true)
+            watcher.cancel()
         }
     }
 }
