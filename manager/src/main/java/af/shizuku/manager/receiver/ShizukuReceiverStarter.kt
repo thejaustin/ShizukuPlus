@@ -163,6 +163,7 @@ object ShizukuReceiverStarter {
         msg: String? = null,
         notice: Boolean = false,
         noticeStamp: Long = 0L,
+        attemptLabel: Int = R.string.wadb_notification_attempt_now,
     ): Notification {
         ensureChannel(context)
         val cancelPendingIntent = cancelPendingIntent(context)
@@ -215,7 +216,7 @@ object ShizukuReceiverStarter {
             .setContentTitle(context.getString(R.string.wadb_notification_title))
             .setOngoing(true)
             .setSilent(true)
-            .addAction(R.drawable.ic_notification_server_restart, context.getString(R.string.wadb_notification_attempt_now), attemptNowPendingIntent)
+            .addAction(R.drawable.ic_notification_server_restart, context.getString(attemptLabel), attemptNowPendingIntent)
             .addAction(R.drawable.ic_notification_close_24, context.getString(android.R.string.cancel), cancelPendingIntent)
             .setDeleteIntent(restorePendingIntent)
             .setContentIntent(wifiPendingIntent)
@@ -488,7 +489,16 @@ object ShizukuReceiverStarter {
             when (display) {
                 is Display.Prompt -> {
                     val base = app.getString(R.string.wadb_notification_awaiting_auth)
-                    nm.notify(NOTIFICATION_ID, buildNotification(app, base))
+                    // The same button, while this wait is held, offers the key again on it
+                    // (NotifAttemptReceiver.attempt), so it says so.
+                    nm.notify(
+                        NOTIFICATION_ID,
+                        buildNotification(
+                            app,
+                            base,
+                            attemptLabel = R.string.wadb_notification_ask_again,
+                        ),
+                    )
                 }
                 Display.Progress -> nm.notify(NOTIFICATION_ID, buildNotification(app))
                 is Display.Pending -> {

@@ -2,8 +2,11 @@ package af.shizuku.manager.adb
 
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.receiver.ShizukuReceiverStarter
+import android.os.SystemClock
+import timber.log.Timber
 import java.io.IOException
 import java.net.SocketTimeoutException
+import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -31,6 +34,63 @@ object AdbAuthWait {
     @Volatile
     internal var timeoutMs: Int = TIMEOUT_MS
 
+    /**
+     * "Ask again" offers the held key again only once this long has passed since it went out, so
+     * the user has had time to see the dialog and deny it (see [reoffer]).
+     */
+    const val REOFFER_MIN_AGE_MS = 20_000
+
+    // The clock that age is measured with: monotonic, so a wall-clock change cannot let a tap
+    // through early. Tests replace it.
+    @Volatile
+    internal var elapsedMs: () -> Long = { SystemClock.elapsedRealtime() }
+
+    // Set by the connection holding the dialog once its key is out: offers the key again on that
+    // connection. Cleared in end(), before the slot is released.
+    @Volatile
+    private var reofferHook: (() -> Unit)? = null
+
+    // elapsedMs() when this wait's key went out; null once it has been offered again, since a wait
+    // re-offers at most once.
+    private var offeredAtMs: Long? = null
+
+    private val reofferExecutor =
+        Executors.newSingleThreadExecutor { Thread(it, "adb-auth-reoffer").apply { isDaemon = true } }
+
+    internal fun holdReoffer(hook: (() -> Unit)?) =
+        synchronized(this) {
+            reofferHook = hook
+            offeredAtMs = hook?.let { elapsedMs() }
+        }
+
+    internal fun reofferHeld(): Boolean = reofferHook != null
+
+    /**
+     * "Ask again" while this process holds the dialog. adbd never tells the client that a dialog
+     * was denied (it moves on to its next prompt and keeps the connection open and unauthorised),
+     * so the held connection offers its key again: adbd raises one new dialog. adbd also queues a
+     * prompt for every offer and shows it even once the key has been accepted, so a re-offer made
+     * while the first dialog is still up brings a second dialog after the user answers. Hence at
+     * most one re-offer per wait, and only [REOFFER_MIN_AGE_MS] after the key went out. False when
+     * there is nothing to re-offer yet, it is too soon or the re-offer was used; the caller then
+     * says the dialog is still awaited.
+     */
+    fun reoffer(): Boolean {
+        val hook =
+            synchronized(this) {
+                val hook = reofferHook ?: return false
+                val offeredAt = offeredAtMs ?: return false
+                if (elapsedMs() - offeredAt < REOFFER_MIN_AGE_MS) return false
+                offeredAtMs = null
+                hook
+            }
+        // The hook writes to the socket, which a notification tap's main thread may not do.
+        reofferExecutor.execute {
+            runCatching { hook() }.onFailure { Timber.tag("AdbAuthWait").w(it, "re-offer failed") }
+        }
+        return true
+    }
+
     private val waiting = AtomicInteger(0)
 
     fun isWaiting(): Boolean = waiting.get() > 0
@@ -46,6 +106,7 @@ object AdbAuthWait {
     internal fun end() {
         // Cleared before the slot is released, so it can never clear the next holder's prompt.
         heldPrompt = null
+        holdReoffer(null)
         if (waiting.compareAndSet(1, 0)) starts.end()
         ShizukuReceiverStarter.refreshNotification()
     }
@@ -106,8 +167,15 @@ object AdbAuthWait {
     @Synchronized
     fun markUnanswered(): Boolean {
         val written =
-            runCatching { ShizukuSettings.getPreferences().edit().putLong(PREF_UNANSWERED_AT, clockMs()).commit() }
-                .getOrDefault(false)
+            runCatching {
+                val prefs = ShizukuSettings.getPreferences()
+                // Never moved backwards. A re-offer stamps it again, and a wall clock set back since
+                // an explicit request must not make the marker look older than that request (the
+                // worker's guard would then let a rerun offer the key). An unreadable stamp does not
+                // stop the write.
+                val existing = runCatching { prefs.getLong(PREF_UNANSWERED_AT, 0L) }.getOrDefault(0L)
+                prefs.edit().putLong(PREF_UNANSWERED_AT, maxOf(existing, clockMs())).commit()
+            }.getOrDefault(false)
         ShizukuReceiverStarter.refreshNotification()
         return written
     }
@@ -136,6 +204,7 @@ object AdbAuthWait {
     internal fun resetForTesting() {
         waiting.set(0)
         heldPrompt = null
+        holdReoffer(null)
         starts.resetForTesting()
     }
 

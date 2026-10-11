@@ -20,11 +20,11 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.net.InetSocketAddress
 import java.net.Socket
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.util.Timer
 import java.util.TimerTask
 import java.util.concurrent.atomic.AtomicBoolean
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import javax.net.ssl.SSLSocket
 
 private const val TAG = "AdbClient"
@@ -117,7 +117,8 @@ class AdbClient(
      * DenyUsbDevice), so a rejection and an unanswered dialog look the same here. adbd raises one
      * dialog per key offer and queues the rest behind the one showing. Reconnecting after the
      * normal read timeout would therefore stack dialogs, so this holds the one connection open
-     * for [AdbAuthWait.TIMEOUT_MS]. Anything that goes wrong once the key has been offered (the
+     * for [AdbAuthWait.TIMEOUT_MS] after the last offer; "Ask again" may offer the key again on it,
+     * once ([AdbAuthWait.reoffer]). Anything that goes wrong once the key has been offered (the
      * deadline, a dropped connection, a malformed reply) surfaces as [AdbAuthTimeoutException],
      * which callers do not retry.
      */
@@ -133,30 +134,98 @@ class AdbClient(
         }
         var deadline: Timer? = null
         val timeoutMs = AdbAuthWait.timeoutMs
+        // Offers and the end of the wait take this lock, so once this thread has read adbd's reply
+        // no re-offer ("Ask again") is written. That narrows, but cannot close, the window in which
+        // a key is offered on a connection adbd has just accepted (its A_CNXN may already be on the
+        // wire), which raises a stray dialog.
+        val offerLock = Any()
+        var settled = false
+        // When the wait ends, as System.nanoTime(); each offer moves it. Whether it has passed is
+        // decided once, under this lock rather than offerLock (which a stuck write may hold while
+        // the deadline must still close the socket): a deadline task already running when the key
+        // is offered again then cannot close the renewed wait, and no key goes out once it has.
+        val deadlineLock = Any()
+        var deadlineAt = 0L
+        var expired = false
         try {
             Timber.tag(TAG).i("Waiting up to %d ms for the user to accept the adbd authorisation dialog", timeoutMs)
-            // soTimeout bounds each read call, not the whole wait, so the connection (and the
-            // process-wide gate) could stay held past it. Close the socket at a deadline.
-            deadline = Timer("adb-auth-deadline", true)
-            // Recorded before the key goes out and removed only when adbd accepts it, so every
-            // other way this wait can end (the deadline, a rejection, a dropped connection, the
-            // worker being stopped or cancelled, this process dying) leaves the marker that stops
-            // unattended starts from offering the key again. Whoever offered it, worker or not.
-            // An offer that cannot be recorded is not made.
-            check(AdbAuthWait.markUnanswered()) { "the pending authorisation could not be recorded" }
-            write(A_AUTH, ADB_AUTH_RSAPUBLICKEY, 0, key.adbPublicKey)
-            runCatching { onAuthorizationPending?.invoke() }
-            s.soTimeout = timeoutMs
-            deadline.schedule(
-                object : TimerTask() {
-                    override fun run() {
-                        deadlineHit.set(true)
-                        runCatching { s.close() }
+            // A socket timeout bounds each read call, not the whole wait, so the connection (and the
+            // process-wide gate) could stay held past it. Close the socket at a
+            // deadline instead, restarted by each offer so a re-offered key gets the whole wait.
+            val timer = Timer("adb-auth-deadline", true).also { deadline = it }
+            var deadlineTask: TimerTask? = null
+
+            fun offer() {
+                // Recorded before the key goes out and removed only when adbd accepts it, so every
+                // other way this wait can end (the deadline, a dropped connection, the worker being
+                // stopped or cancelled, this process dying) leaves the marker that stops unattended
+                // starts from offering the key again. Whoever offered it, worker or not. An offer
+                // that cannot be recorded is not made.
+                check(AdbAuthWait.markUnanswered()) { "the pending authorisation could not be recorded" }
+                // The new deadline is scheduled before the old one is cancelled and before the key
+                // goes out: a timer that cannot take it fails this offer, and the old one stands.
+                val task =
+                    object : TimerTask() {
+                        override fun run() {
+                            synchronized(deadlineLock) {
+                                if (expired || System.nanoTime() - deadlineAt < 0) return
+                                expired = true
+                            }
+                            deadlineHit.set(true)
+                            runCatching { s.close() }
+                        }
                     }
-                },
-                timeoutMs.toLong(),
-            )
-            val message = read()
+                timer.schedule(task, timeoutMs.toLong())
+                synchronized(deadlineLock) {
+                    if (expired) {
+                        task.cancel()
+                        error("the deadline has passed")
+                    }
+                    deadlineAt = System.nanoTime() + timeoutMs * 1_000_000L
+                }
+                deadlineTask?.cancel()
+                deadlineTask = task
+                write(A_AUTH, ADB_AUTH_RSAPUBLICKEY, 0, key.adbPublicKey)
+            }
+
+            // The reply, read in slices of what is left of the wait: a backstop that ends it even if
+            // no deadline task runs (the timer thread died, or its wall clock jumped).
+            fun awaitReply(): AdbMessage {
+                while (true) {
+                    val leftMs =
+                        synchronized(deadlineLock) {
+                            ((deadlineAt - System.nanoTime()) / 1_000_000L).also { if (it <= 0) expired = true }
+                        }
+                    if (leftMs <= 0) {
+                        deadlineHit.set(true)
+                        throw java.net.SocketTimeoutException("deadline")
+                    }
+                    s.soTimeout = leftMs.coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
+                    try {
+                        return read()
+                    } catch (_: java.net.SocketTimeoutException) {
+                        // A re-offer may have moved the deadline; the loop checks.
+                    }
+                }
+            }
+
+            synchronized(offerLock) { offer() }
+            runCatching { onAuthorizationPending?.invoke() }
+            // adbd never reports a denied dialog, so "Ask again" offers the key again on this
+            // connection (AdbAuthWait.reoffer): one new dialog, on the user's tap. A wait re-offers
+            // at most once, so it lasts at most about twice the timeout.
+            AdbAuthWait.holdReoffer {
+                synchronized(offerLock) {
+                    if (settled) return@holdReoffer
+                    Timber.tag(TAG).i("Offering the key again on the held connection")
+                    offer()
+                    // Under the lock too: it can then never run after the wait has ended, and so
+                    // never posts a prompt for a wait that is gone.
+                    runCatching { onAuthorizationPending?.invoke() }
+                }
+            }
+            val message = awaitReply()
+            synchronized(offerLock) { settled = true }
             if (message.command != A_CNXN) error("not A_CNXN")
             AdbAuthWait.clearUnanswered()
             return message
@@ -167,6 +236,7 @@ class AdbClient(
                 AdbAuthTimeoutException("adbd did not accept the key: ${e.message}")
             }
         } finally {
+            synchronized(offerLock) { settled = true }
             deadline?.cancel()
             AdbAuthWait.end()
             runCatching { s.soTimeout = 15000 }

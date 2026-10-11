@@ -19,10 +19,15 @@ class NotifAttemptReceiver : BroadcastReceiver() {
 
     companion object {
         fun attempt(context: Context) {
-            // The one authorisation dialog is already waiting; a tap cannot act, so say so instead
-            // of silently doing nothing (enqueue() would skip without any visible response).
+            // A connection already holds the one authorisation wait (the button reads "Ask
+            // again"). adbd never reports a denied dialog, so offer its key again there: one new
+            // dialog, once per wait and only after the user has had time to answer the first
+            // (AdbAuthWait.reoffer). Otherwise say the dialog is awaited rather than silently
+            // doing nothing.
             if (AdbAuthWait.isWaiting()) {
-                Toast.makeText(context.applicationContext, R.string.wadb_notification_awaiting_auth, Toast.LENGTH_SHORT).show()
+                if (!AdbAuthWait.reoffer()) {
+                    Toast.makeText(context.applicationContext, R.string.wadb_notification_awaiting_auth, Toast.LENGTH_SHORT).show()
+                }
                 return
             }
             // "Attempt now" is an explicit user start: it may raise one new dialog even if a

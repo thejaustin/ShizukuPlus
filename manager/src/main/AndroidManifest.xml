@@ -459,7 +459,9 @@
             android:taskAffinity=""
             android:theme="@android:style/Theme.NoDisplay" />
 
-        <receiver android:name=".receiver.NotifAttemptReceiver" />
+        <receiver
+            android:name=".receiver.NotifAttemptReceiver"
+            android:exported="false" />
         <receiver android:name=".receiver.NotifCancelReceiver" />
         <receiver android:name=".receiver.NotifRestoreReceiver" />
 

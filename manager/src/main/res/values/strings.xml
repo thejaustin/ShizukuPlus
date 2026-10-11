@@ -939,6 +939,7 @@
     <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> has modern Shizuku support, but it\'s requesting legacy Shizuku. This could because Shizuku is not running, please check in Shizuku app.<p>Legacy Shizuku has been deprecated since March 2019.]]></string>
     <string name="dialog_requesting_legacy_button_open_shizuku">Open Shizuku</string>
     <string name="wadb_notification_attempt_now">Attempt now</string>
+    <string name="wadb_notification_ask_again">Ask again</string>
 
 
     <string name="settings_category_general">General</string>
