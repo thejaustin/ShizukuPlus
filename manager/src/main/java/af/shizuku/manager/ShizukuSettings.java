@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatDelegate;
 import java.lang.annotation.Retention;
 import java.util.Locale;
@@ -411,6 +412,12 @@ public class ShizukuSettings {
         if (sContext == null) {
             sContext = context.getApplicationContext();
         }
+    }
+
+    /** Tests only: replaces the settings store (the one-prompt scenario harness's fake prefs). */
+    @VisibleForTesting
+    public static void setPreferencesForTesting(SharedPreferences preferences) {
+        sPreferences = preferences;
     }
 
     @IntDef({

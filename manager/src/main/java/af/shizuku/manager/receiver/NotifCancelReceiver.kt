@@ -1,10 +1,9 @@
 package af.shizuku.manager.receiver
 
-import android.app.NotificationManager
+import af.shizuku.manager.worker.AdbStartWorker
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import androidx.work.WorkManager
 import timber.log.Timber
 
 class NotifCancelReceiver : BroadcastReceiver() {
@@ -12,19 +11,16 @@ class NotifCancelReceiver : BroadcastReceiver() {
         context: Context,
         intent: Intent,
     ) {
+        // Cancelled on the thread every enqueue decision runs on, so a start being enqueued
+        // concurrently is either cancelled too or comes after the cancel.
+        val pending = goAsync()
         try {
-            WorkManager.getInstance(context).cancelUniqueWork("adb_start_worker")
+            AdbStartWorker.cancel(context) { pending.finish() }
         } catch (e: Throwable) {
-            // WorkManager may throw NoSuchMethodError / NoSuchMethodException / LinkageError or IllegalStateException when
-            // called from a BroadcastReceiver context before the app process is fully
-            // initialized (e.g. direct boot, process re-creation for receiver only).
-            Timber.tag("NotifCancelReceiver").w("WorkManager unavailable: ${e.message}")
-        }
-        try {
-            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-            nm?.cancel(ShizukuReceiverStarter.NOTIFICATION_ID)
-        } catch (e: Throwable) {
-            Timber.tag("NotifCancelReceiver").w("Failed to cancel notification: ${e.message}")
+            // WorkManager failures (direct boot, a process created only for this receiver) are
+            // handled where it is called; this only guarantees the broadcast is finished.
+            Timber.tag("NotifCancelReceiver").w("cancel not scheduled: ${e.message}")
+            pending.finish()
         }
     }
 }

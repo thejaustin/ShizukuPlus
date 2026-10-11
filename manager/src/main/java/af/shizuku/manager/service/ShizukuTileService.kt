@@ -3,6 +3,7 @@ package af.shizuku.manager.service
 import af.shizuku.manager.MainActivity
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.adb.AdbAuthWait
 import af.shizuku.manager.adb.AdbPortProber
 import af.shizuku.manager.starter.Starter
 import af.shizuku.manager.utils.EnvironmentUtils
@@ -14,14 +15,15 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.widget.Toast
-import androidx.work.WorkManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import rikka.shizuku.Shizuku
 
 class ShizukuTileService : TileService() {
     private val stateListener: (ShizukuStateMachine.State) -> Unit = { updateTile() }
@@ -100,6 +102,7 @@ class ShizukuTileService : TileService() {
     }
 
     internal fun startShizuku() {
+        watchdog?.cancel()
         if (Shell.isAppGrantedRoot() == true) {
             ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
             updateTile()
@@ -127,26 +130,18 @@ class ShizukuTileService : TileService() {
 
                     ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
                     updateTile()
-                    AdbStartWorker.enqueue(this@ShizukuTileService)
-
-                    // Watchdog fallback: if background worker hasn't started the service within 15s,
-                    // reset STARTING state so tile doesn't remain frozen in unavailable state.
-                    CoroutineScope(Dispatchers.Main).launch {
-                        delay(15_000)
-                        if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
-                            ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
-                            updateTile()
-                        }
-                    }
+                    AdbStartWorker.enqueue(this@ShizukuTileService, explicit = true)
+                    superviseStart()
                 }
             }
         }
     }
 
     internal fun stopShizuku() {
+        watchdog?.cancel()
         ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPING)
         updateTile()
-        WorkManager.getInstance(this).cancelUniqueWork("adb_start_worker")
+        AdbStartWorker.cancel(this)
         kotlin.runCatching { rikka.shizuku.Shizuku.exit() }
         ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
         updateTile()
@@ -206,5 +201,48 @@ class ShizukuTileService : TileService() {
                     }
                 }.create()
         showDialog(dialog)
+    }
+
+    companion object {
+        // Process-wide and touched only on the main thread. A new start or a stop cancels it, so a
+        // watchdog left over from an earlier attempt can never settle a later one.
+        private var watchdog: Job? = null
+
+        // Covers the gap between enqueue() and the worker starting, during which nothing counts
+        // as in flight yet.
+        private const val WATCHDOG_GRACE_MS = 25_000L
+
+        /**
+         * Keeps the tile from staying frozen on STARTING when nothing will ever settle it — the
+         * worker is held back by its Wi-Fi constraint, or enqueue() was skipped. Every start that
+         * is actually running settles the state itself (RUNNING via the binder listener, STOPPED
+         * from its failure paths) and counts as in flight in [AdbAuthWait.starts] until it has: a
+         * start worker for its whole run, an interactive start through its binder wait, any
+         * AdbStarter call or authorisation wait. Supervision follows those as events, so a start
+         * that begins and ends at any moment restarts the grace; only [WATCHDOG_GRACE_MS] after
+         * the last of them ends, still STARTING, does it settle the state from what the server
+         * reports. That decision and the transition are one step against a start beginning:
+         * a start that begins after the grace ran out either stops the settling or comes after it.
+         */
+        internal fun superviseStart() {
+            watchdog?.cancel()
+            watchdog =
+                CoroutineScope(Dispatchers.Main).launch {
+                    val starting = ShizukuStateMachine.asFlow().map { it == ShizukuStateMachine.State.STARTING }
+                    AdbAuthWait.starts.settleWhenStalled(starting, WATCHDOG_GRACE_MS) {
+                        if (ShizukuStateMachine.get() != ShizukuStateMachine.State.STARTING) return@settleWhenStalled
+                        // State listeners (the tile's included) pick up the transition.
+                        if (runCatching { Shizuku.pingBinder() }.getOrDefault(false)) {
+                            ShizukuStateMachine.update()
+                        } else {
+                            ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
+                        }
+                    }
+                }
+        }
+
+        internal fun cancelSupervision() {
+            watchdog?.cancel()
+        }
     }
 }

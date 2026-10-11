@@ -311,6 +311,7 @@ open class HomeActivity :
                 if (!status.isRunning &&
                     !autoRestartAttempted &&
                     ShizukuSettings.isAutoReconnectMdnsEnabled() &&
+                    !af.shizuku.manager.adb.AdbAuthWait.isUnanswered() &&
                     Build.VERSION.SDK_INT >= Build.VERSION_CODES.R &&
                     ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ADB &&
                     checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED

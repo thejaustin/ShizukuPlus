@@ -36,6 +36,12 @@ object ShizukuStateMachine {
             .AtomicLong(0L)
     private const val STARTING_TIMEOUT_MS = 90_000L
 
+    /** Tests only: what a new process would start from (the persisted settled state). */
+    internal fun resetForTesting() {
+        state.set(loadPersistedSettledState())
+        startingTimestamp.set(0L)
+    }
+
     private fun loadPersistedSettledState(): State =
         try {
             when (ShizukuSettings.getLastSettledState()) {
@@ -55,6 +61,12 @@ object ShizukuStateMachine {
                         category = "shizuku.service"
                     },
                 )
+                // A live binder does not say this manager's ADB key was accepted (the server may
+                // have been started as root, from a computer, or before the key was revoked), so
+                // the unanswered marker stays: it is cleared where adbd accepts the key
+                // (AdbClient) and by explicit starts. Its notice is hidden while a server runs;
+                // the start notification follows this state machine's flow, so it comes back
+                // when the server stops.
                 set(State.RUNNING)
             },
         )
@@ -216,7 +228,9 @@ object ShizukuStateMachine {
                     // Break out of STARTING after 90 s so a failed start (server process died,
                     // ADB connection refused, etc.) never leaves the UI permanently locked.
                     val elapsed = System.currentTimeMillis() - startingTimestamp.get()
-                    if (elapsed > STARTING_TIMEOUT_MS) State.STOPPED else State.STARTING
+                    // A start waiting on adbd's authorisation dialog is still in progress; calling
+                    // it STOPPED would invite a second start, and with it a second dialog.
+                    if (elapsed > STARTING_TIMEOUT_MS && !af.shizuku.manager.adb.AdbAuthWait.isWaiting()) State.STOPPED else State.STARTING
                 }
                 currentState == State.STOPPING -> State.STOPPING
                 currentState == State.CRASHED -> State.CRASHED

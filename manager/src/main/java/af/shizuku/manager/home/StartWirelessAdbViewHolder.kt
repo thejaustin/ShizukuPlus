@@ -146,18 +146,19 @@ class StartWirelessAdbViewHolder(
                 if (validPort <= 0 && !EnvironmentUtils.isTlsSupported()) {
                     WadbNotEnabledDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
                 } else if (validPort <= 0) {
-                    AdbDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
+                    AdbDialogFragment.forUserGesture().show(context.asActivity<FragmentActivity>().supportFragmentManager)
                 } else if (sysPropPort > 0 && !tcpMode && activeLoopbackPort <= 0) {
                     // A TCP-mode connection is active but the user wants TLS. Stop TCP first, then
                     // open the dialog so mDNS can rediscover the (different) TLS port.
                     AdbStarter.stopTcp(context, sysPropPort)
-                    AdbDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
+                    AdbDialogFragment.forUserGesture().show(context.asActivity<FragmentActivity>().supportFragmentManager)
                 } else if (livePort > 0) {
                     // Live port confirmed: loopback responsive, TCP active, or TLS already resolved by mDNS.
                     // Skip the intermediate dialog — go straight to the connect flow.
                     val intent =
                         Intent(context, StarterActivity::class.java).apply {
                             putExtra(StarterActivity.EXTRA_PORT, livePort)
+                            putExtra(StarterActivity.EXTRA_USER_GESTURE, true)
                         }
                     val activity = context.asActivity<android.app.Activity>()
                     if (activity != null) {
@@ -170,11 +171,12 @@ class StartWirelessAdbViewHolder(
                     val intent =
                         Intent(context, StarterActivity::class.java).apply {
                             putExtra(StarterActivity.EXTRA_PORT, lastPort)
+                            putExtra(StarterActivity.EXTRA_USER_GESTURE, true)
                         }
                     context.startActivity(intent)
                 } else {
                     // Only a stale cached TLS port — open dialog so mDNS can rediscover the current port.
-                    AdbDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
+                    AdbDialogFragment.forUserGesture().show(context.asActivity<FragmentActivity>().supportFragmentManager)
                 }
             }
         }

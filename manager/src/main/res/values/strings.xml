@@ -1222,6 +1222,8 @@
     <string name="update_checking">Checking for updates…</string>
     <string name="ok">OK</string>
     <string name="no_file_picker">No file picker app found on this device</string>
+    <string name="wadb_notification_awaiting_auth">Waiting for you to accept the \"Allow USB debugging\" prompt on this phone</string>
+    <string name="wadb_notification_auth_timed_out">The \"Allow USB debugging\" prompt was not accepted in time. Tap Attempt now to try again</string>
     <string name="wadb_notification_discovery_timeout">ADB port discovery timed out — retrying…</string>
     <string name="shell_export_success">Files exported successfully</string>
     <string name="shell_export_failed">Export failed — no files could be written</string>

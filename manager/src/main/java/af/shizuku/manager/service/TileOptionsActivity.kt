@@ -8,7 +8,6 @@ import af.shizuku.manager.worker.AdbStartWorker
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.work.WorkManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.topjohnwu.superuser.Shell
 
@@ -84,20 +83,27 @@ class TileOptionsActivity : AppCompatActivity() {
             .show()
     }
 
+    // Same settling as a tap on the tile, so a start from here cannot leave the tile on STARTING.
     private fun startShizuku() {
+        ShizukuTileService.cancelSupervision()
         ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
         if (Shell.isAppGrantedRoot() == true) {
             Shell.cmd(Starter.internalCommand).submit {
+                if (!it.isSuccess && ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
+                    ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
+                }
                 ShizukuStateMachine.update()
             }
         } else {
-            AdbStartWorker.enqueue(this)
+            AdbStartWorker.enqueue(this, explicit = true)
+            ShizukuTileService.superviseStart()
         }
     }
 
     private fun stopShizuku() {
+        ShizukuTileService.cancelSupervision()
         ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPING)
-        WorkManager.getInstance(this).cancelUniqueWork("adb_start_worker")
+        AdbStartWorker.cancel(this)
         kotlin.runCatching { rikka.shizuku.Shizuku.exit() }
         ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
     }

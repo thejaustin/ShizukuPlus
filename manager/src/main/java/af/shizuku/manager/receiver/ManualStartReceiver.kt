@@ -12,6 +12,9 @@ class ManualStartReceiver : AuthenticatedReceiver() {
         val applicationId = BuildConfig.APPLICATION_ID
         if (intent.action != "$applicationId.START") return
 
+        // Token-authenticated, so this is an explicit start: it may raise one new dialog even if
+        // a previous one went unanswered.
+        af.shizuku.manager.adb.AdbAuthWait.clearUnanswered()
         ShizukuReceiverStarter.start(context)
     }
 }

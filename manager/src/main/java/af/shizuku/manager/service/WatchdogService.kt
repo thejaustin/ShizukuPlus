@@ -95,8 +95,23 @@ class WatchdogService : Service() {
                         if (now - lastRestartMs > cooldown) {
                             consecutiveCrashes++
                             lastRestartMs = now
-                            showCrashNotification()
-                            ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: restarting after crash #$consecutiveCrashes")
+                            // An unanswered authorisation dialog stops unattended ADB starts, so
+                            // start() below will do nothing: do not announce a restart that is
+                            // not going to happen. The "not answered" notice, with "Attempt
+                            // now", is what the user sees instead.
+                            val withheld =
+                                ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ADB &&
+                                    af.shizuku.manager.adb.AdbAuthWait.isUnanswered()
+                            if (withheld) {
+                                ActivityLogManager.log(
+                                    "Shizuku",
+                                    applicationContext.packageName,
+                                    "Watchdog: crash #$consecutiveCrashes, restart withheld until an explicit start (authorisation dialog unanswered)",
+                                )
+                            } else {
+                                showCrashNotification()
+                                ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: restarting after crash #$consecutiveCrashes")
+                            }
                             ShizukuReceiverStarter.start(applicationContext)
                             Timber.tag(TAG).d("Watchdog: restart #$consecutiveCrashes (cooldown was ${cooldown}ms)")
                         } else {
