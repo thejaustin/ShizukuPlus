@@ -469,7 +469,7 @@
     <string name="settings_themed_icon">Temalı tətbiq ikonu</string>
     <string name="settings_themed_icon_summary">Başlatıcınız temalı ikonları dəstəklədikdə Shizuku+ ikonunun Material You rəngli versiyasından istifadə edin.</string>
     <string name="settings_themed_icon_open_settings">İkon tənzimləmələrini aç</string>
-    <string name="settings_shell_interceptor">Shell Sürətləndiricisi</string>
+    <string name="settings_shell_interceptor">Shell Tutucu</string>
     <string name="settings_shell_interceptor_summary">Yerli API-lər vasitəsilə shell əmrlərini sürətləndirin. MacroDroid və Tasker tapşırıqları üçün performansını artırır.</string>
     <string name="settings_avf_manager">Virtual Maşın Meneceri (AVF)</string>
     <string name="settings_avf_manager_summary">Təcrid olunmuş Microdroid və ya Linux VM-ləri işlədin. Virtual mühitləri idarə etmək üçün Hyperbox və Termux-VM ilə birlikdə istifadə olunur.</string>
@@ -552,8 +552,8 @@
     <string name="help_dhizuku_title">Dhizuku Rejimi Haqqında</string>
     <string name="help_dhizuku_detail">Dhizuku Shizuku-ya Cihaz Sahibinin imtiyazlarını üçüncü tərəf tətbiqləri ilə paylaşmağa imkan verir. Bu, Dhizuku Meneceri və ya tək Cihaz Sahibi olmadan sistem siyasətlərini idarə etməli olan müəyyən kiosk-rejim alətləri kimi tətbiqlər üçün vacibdir.</string>
 
-    <string name="help_shell_interceptor_title">Shell Sürətləndiricisi Haqqında</string>
-    <string name="help_shell_interceptor_detail">Shell Sürətləndiricisi standart shell əmrlərini (am, pm, settings) tutur və onları birbaşa Shizuku server API çağırışlarına tərcümə edir. Bu, hər bir əmr üçün yeni /system/bin/sh prosesinin başladılmasının yüksək məsrəfinin qarşısını alır və MacroDroid və ya Tasker-də avtomatlaşdırmanı nəzərəçarpacaq dərəcədə sürətli və batareyaya qənaətli edir.</string>
+    <string name="help_shell_interceptor_title">Shell Tutucu Haqqında</string>
+    <string name="help_shell_interceptor_detail">Shell Tutucu standart shell əmrlərini (am, pm, settings) tutur və onları birbaşa Shizuku server API çağırışlarına tərcümə edir. Bu, hər bir əmr üçün yeni /system/bin/sh prosesinin başladılmasının yüksək məsrəfinin qarşısını alır və MacroDroid və ya Tasker-də avtomatlaşdırmanı nəzərəçarpacaq dərəcədə sürətli və batareyaya qənaətli edir.</string>
 
     <string name="help_avf_manager_title">AVF Meneceri Haqqında</string>
     <string name="help_avf_manager_detail">Android Virtualization Framework (AVF) Meneceri təcrid olunmuş Linux və ya Microdroid virtual maşınlarını işlətməyə imkan verir. Dəstəklənən aparat təminatında (Snapdragon 8 Gen 1+, Tensor G2+), bu, masaüstü Linux mühitlərini və ya təcrid olunmuş təhlükəsiz tapşırıqları işlətmək üçün VirtIO-GPU dəstəyi ilə aparat sürətləndirməli virtuallaşdırmanı təmin edir.</string>
