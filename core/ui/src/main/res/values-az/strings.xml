@@ -854,7 +854,6 @@
     <string name="home_companion_install">Quraşdır</string>
     <string name="watchdog_open_stock_shizuku">Orijinal Shizuku-nu Aç</string>
     <string name="settings_live_activity">Canlı Fəaliyyət Bildirişləri</string>
-    <string name="settings_live_activity_summary">Status panelində real vaxt xidmət fəaliyyətini göstərin</string>
     <!-- App picker dialog -->
     <string name="app_management_empty">Tətbiq tapılmadı</string>
     <string name="app_management_search_hint">Tətbiqləri axtarın</string>
