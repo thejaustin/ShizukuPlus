@@ -389,6 +389,7 @@
     <string name="settings_use_system_color">Sistem tema rəngindən istifadə et</string>
     <string name="settings_watchdog">Gözətçi</string>
     <string name="settings_watchdog_summary">Qəza və ya gözlənilməz dayanmadan sonra Shizuku+-ı avtomatik yenidən başladın. Əsas şəbəkə bağlantısı kəsildikdə yenidən qoşula bilməz (məsələn, RNDIS/USB ADB istifadə edərkən USB kabelin çıxarılması).</string>
+    <string name="settings_watchdog_not_running">Aktivdir, hazırda işləmir</string>
     <string name="settings_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Canlı Saxlanılması</string>
     <string name="settings_device_hardening_summary">Shizuku və terminal klientlərini Doze rejimindən azad edin, WRITE_SECURE_SETTINGS-ə avtomatik icazə verin və başlanğıc binar fayllarını sinxronlaşdırın</string>
     <string name="doctor_check_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Doze İstisnası</string>
@@ -1335,7 +1336,7 @@
     <string name="watchdog_open_stock_shizuku">Orijinal Shizuku-nu Aç</string>
 
     <string name="settings_live_activity">Canlı Fəaliyyət Bildirişləri</string>
-    <string name="settings_live_activity_summary">Status barında real vaxt rejimində xidmət fəaliyyətini göstərin</string>
+    <string name="settings_live_activity_summary">Gözətçi bildirişində real vaxt rejimində xidmət fəaliyyətini göstərin</string>
 
     <!-- App picker dialog -->
     <string name="app_management_empty">Heç bir tətbiq tapılmadı</string>
