@@ -391,7 +391,7 @@
     <string name="settings_watchdog_summary">Qəza və ya gözlənilməz dayanmadan sonra Shizuku+-ı avtomatik yenidən başladın. Əsas şəbəkə bağlantısı kəsildikdə yenidən qoşula bilməz (məsələn, RNDIS/USB ADB istifadə edərkən USB kabelin çıxarılması).</string>
     <string name="settings_watchdog_not_running">Aktivdir, hazırda işləmir</string>
     <string name="settings_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Canlı Saxlanılması</string>
-    <string name="settings_device_hardening_summary">Shizuku və terminal klientlərini Doze rejimindən azad edin, WRITE_SECURE_SETTINGS-ə avtomatik icazə verin və başlanğıc binar fayllarını sinxronlaşdırın</string>
+    <string name="settings_device_hardening_summary">Shizuku və terminal klientlərini Doze rejimindən istisna edin, WRITE_SECURE_SETTINGS hüququnu avtomatik verin, starter binar fayllarını sinxronlaşdırın və Gözətçi aktiv olarkən bu tətbiqdəki arxa fon və batareya məhdudiyyətlərini qaldırın</string>
     <string name="doctor_check_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Doze İstisnası</string>
     <string name="device_hardening_applied">Cihaz təhlükəsizliyi və Doze optimizasiyaları tətbiq edildi</string>
     <string name="settings_tcp_mode">TCP rejimi</string>
@@ -924,6 +924,17 @@
     <string name="watchdog_shizuku_crashed_title">Shizuku bu yaxınlarda qəzaya uğrayıb</string>
     <string name="watchdog_shizuku_crashed_text">Gözətçi xidməti yenidən başladı. Gələcək qəzaların qarşısını almaq üçün potensial düzəlişlər haqqında öyrənmək üçün toxunun.</string>
     <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Xəbərdarlıqları Söndür</string>
+    <string name="battery_exemption_channel_name">Batareya optimizasiyası</string>
+    <string name="battery_exemption_notification_title">Shizuku+-un arxa fonda işləməsinə icazə verin</string>
+    <string name="battery_exemption_notification_text">Gözətçi avtomatik işə salındı. Xidmət dayandıqda onun yenidən başladılması üçün Shizuku+ batareya optimizasiyasından istisna edin.</string>
+    <string name="vendor_battery_notification_title">Shizuku+-un arxa fonda dayandırıla bilər</string>
+    <string name="vendor_battery_notification_text">Gözətçi %1$s tərəfindən dayandırıla bilər. Shizuku+ işləməyə davam etməsinə imkan verən parametri açmaq üçün toxunun.</string>
+    <string name="vendor_battery_restriction_background_activity">arxa fon fəaliyyətinin məhdudlaşdırılması</string>
+    <string name="vendor_battery_restriction_standby_bucket">Az istifadə olunan tətbiqlər üçün Android məhdudiyyətləri</string>
+    <string name="vendor_battery_restriction_samsung_deep_sleep">Samsung Dərin yuxu rejimi tətbiqləri</string>
+    <string name="vendor_battery_restriction_xiaomi_autostart">Xiaomi avto-başlatma parametri</string>
+    <string name="vendor_battery_restriction_xiaomi_no_restrict">Xiaomi batareya qənaəti</string>
+
 
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Veb-brauzer açıla bilmir</string>
