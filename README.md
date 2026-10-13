@@ -1,4 +1,13 @@
 <div align="center">
+NOTICE: 
+
+I'm in the process of simplifying, restructuring, and improving the code quality, and visual quality of the app locally. 
+
+Releases are less frequent as I'm doing more local tests before pushing a release. 
+Nightly releases may return in the future, but I'm learning to create checkpoints for myself and this project.
+
+It's time to truly stabilize things before developing at the speed of light. 
+Thank you for your patience, and much love to you all!
 
 # Shizuku+
 
