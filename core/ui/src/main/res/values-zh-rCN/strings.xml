@@ -854,6 +854,7 @@
     <string name="home_companion_install">安装</string>
     <string name="watchdog_open_stock_shizuku">打开原版 Shizuku</string>
     <string name="settings_live_activity">实时活动通知</string>
+    <string name="settings_live_activity_summary">在看门狗通知中显示实时服务活动</string>
     <!-- App picker dialog -->
     <string name="app_management_empty">未找到应用</string>
     <string name="app_management_search_hint">搜索应用</string>

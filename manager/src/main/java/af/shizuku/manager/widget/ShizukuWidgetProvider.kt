@@ -59,7 +59,14 @@ class ShizukuWidgetProvider : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.widget_shizuku)
 
             // Set Text
-            views.setTextViewText(R.id.widget_status, if (isRunning) "Running" else "Stopped")
+            views.setTextViewText(
+                R.id.widget_status,
+                if (isRunning) {
+                    context.getString(R.string.widget_status_running)
+                } else {
+                    context.getString(R.string.widget_status_stopped)
+                },
+            )
 
             // Set Colors and Icons based on state
             if (isRunning) {

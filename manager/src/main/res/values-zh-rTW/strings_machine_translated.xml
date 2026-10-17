@@ -40,7 +40,6 @@
     <string name="settings_bold_typography">粗體字型</string>
     <string name="settings_bold_typography_summary">標題使用較粗的字重</string>
     <string name="settings_expanded_headers">展開式區段標題</string>
-    <string name="settings_expanded_headers_summary">設定畫面使用可收合的高標題列</string>
     <string name="settings_corner_rounding_override">圓角程度</string>
     <string name="settings_follow_system_animations">跟隨系統動畫</string>
     <string name="settings_follow_system_animations_summary">遵循裝置在開發人員選項中的動畫速度設定</string>
@@ -181,7 +180,6 @@
     <string name="swipe_hint_left">向左滑動可執行快速動作</string>
     <string name="swipe_hint_dismiss">點按任意處即可關閉</string>
     <string name="settings_device_hardening">裝置強化與保持運作</string>
-    <string name="settings_device_hardening_summary">讓 Shizuku 與終端機用戶端不受 Doze 限制、自動授予 WRITE_SECURE_SETTINGS，並同步啟動器二進位檔</string>
     <string name="doctor_check_device_hardening">裝置強化與 Doze 豁免</string>
     <string name="device_hardening_applied">已套用裝置強化與 Doze 最佳化</string>
     <string name="settings_tcp_randomize_port">隨機化 TCP 連接埠</string>
@@ -281,7 +279,6 @@
     <string name="settings_keystore_fallback">軟體 KeyStore 備援</string>
     <string name="settings_keystore_fallback_summary">當硬體 KeyStore 失敗時（例如 Samsung Knox），以軟體 AES 金鑰加密並快取 ADB RSA 金鑰。可減少配對提示，但會降低安全性。</string>
     <string name="settings_samsung_uid_escalation">Samsung 系統 UID 提權</string>
-    <string name="settings_samsung_uid_escalation_summary">嘗試利用針對未修補 Samsung 裝置的漏洞（作者 pascua28）提權至 UID 1000 (system)。風險請自行承擔。</string>
     <string name="settings_display_tuner_plus_title">顯示調校器</string>
     <string name="settings_device_control_home_title">裝置控制主畫面卡片</string>
     <string name="settings_device_control_home_summary">在主畫面顯示裝置控制卡片。可對 Wi-Fi、藍牙、行動數據、顯示器、音訊與電源進行特權控制。實驗性功能——在某些裝置上可能造成非預期行為。</string>
@@ -379,9 +376,6 @@
     <string name="settings_on_device_adb_tcp_summary">直接在裝置上啟用 ADB TCP 模式（連接埠 5555）。需要具備 root 的 Shizuku。適用於不使用 Wi-Fi 的 ADB 工具。</string>
     <string name="settings_force_start_wadb">略過 WADB 的 Wi-Fi 檢查</string>
     <string name="settings_force_start_wadb_summary">即使 Wi-Fi 未連線，也嘗試透過 ADB TCP 啟動 Shizuku。適用於本機迴路或行動數據 ADB。</string>
-    <string name="settings_fake_su">SU Bridge（su 包裝器）</string>
-    <string name="settings_fake_su_summary">為支援自訂路徑的舊版 root 應用程式提供由 Shizuku 支援的 su 二進位檔。</string>
-    <string name="settings_root_integration_hub">Root 整合中心</string>
     <string name="settings_root_integration_hub_summary">設定並管理 root 應用程式，使其能搭配 Shizuku+ 權限運作。</string>
     <string name="settings_root_compatibility_hub">Root 相容中心</string>
     <string name="settings_root_compatibility_hub_summary">設定並管理 root 應用程式，使其能搭配 Shizuku+ 權限運作。</string>
@@ -401,15 +395,10 @@
     <string name="su_bridge_magic_setup_all_no_apps">找不到可自動化的支援 root 應用程式。</string>
     <string name="su_bridge_copy_open">複製路徑並開啟</string>
     <string name="su_bridge_no_export">尚未設定 SU 路徑。請先從主畫面匯出 Shizuku 檔案。</string>
-    <string name="root_hub_shizuku_aware_note">SU Bridge 可讓未 root 的裝置獲得類似 root 的存取權。不過，「一鍵設定」（自動設定）需要 Shizuku 處於 Root 模式才能修改其他應用程式。在 ADB 模式下，請使用「複製路徑」並手動設定您的應用程式。</string>
     <string name="su_bridge_magic_setup_root_required">一鍵設定需要 Shizuku 處於 Root 模式。</string>
     <string name="su_bridge_no_custom_path_support">此應用程式沒有自訂路徑設定。需要真正的 root。</string>
     <string name="su_bridge_manual_setup_required">ADB 模式下需手動設定</string>
     <string name="su_bridge_how_to_use">使用方式：</string>
-    <string name="su_bridge_step_1">1. 從主畫面匯出 Shizuku 檔案。</string>
-    <string name="su_bridge_step_2">2. 在您的 root 應用程式設定中，尋找「SU 路徑」或「二進位檔路徑」。</string>
-    <string name="su_bridge_step_3">3. 將其變更為已匯出的 su 檔案路徑。</string>
-    <string name="su_bridge_step_4">4. 對於沒有自訂路徑設定的應用程式，請在 Shizuku+ 設定中啟用「SU Bridge」。這會自動重新導向許多舊版 su 呼叫。</string>
     <string name="su_bridge_app_instruction">請在 設定 > %s 中設定路徑</string>
     <string name="su_bridge_path_label">已匯出的 su 路徑</string>
     <string name="su_bridge_su_path_label">已匯出的 su 路徑</string>
@@ -586,15 +575,10 @@
     <string name="settings_main_nav_feature_hub_title">功能中心</string>
     <string name="settings_main_nav_feature_hub_summary">管理 Plus 專屬功能</string>
     <string name="settings_main_nav_root_compat_title">Root 與相容性</string>
-    <string name="settings_main_nav_root_compat_summary">ADB 連線、SU bridge、免 root 整合，以及與原版 Shizuku 的相容性</string>
     <string name="settings_main_nav_appearance_summary">主題、形狀、圖示、動態效果、主畫面版面配置與語言</string>
     <string name="settings_main_nav_app_interactions_title">應用程式互動</string>
-    <string name="settings_main_nav_app_interactions_summary">手勢、長按動作與安裝驗證</string>
     <string name="settings_main_nav_startup_behavior_title">啟動與行為</string>
-    <string name="settings_main_nav_startup_behavior_summary">開機選項、看門狗、網路、活動與更新</string>
     <string name="settings_main_nav_advanced_diagnostics_title">進階與診斷</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">記錄、ADB 工具與疑難排解</string>
-    <string name="settings_main_nav_about_summary">版本、備份與還原、授權與開發人員選項</string>
     <string name="settings_accent_violet_applied">已套用午夜紫</string>
     <string name="settings_accent_green_applied">已套用森林綠</string>
     <string name="settings_accent_crimson_applied">已套用緋紅玫瑰</string>
@@ -899,12 +883,6 @@
     <string name="dialog_notif_permission_open_settings">開啟設定</string>
     <string name="dialog_notif_permission_denied">通知權限遭拒。您可以在設定中啟用，或改用手動配對。</string>
     <string name="remote_db_sync_channel_name">應用程式資料庫更新</string>
-    <string name="settings_binder_firewall">Binder 防火牆</string>
-    <string name="settings_binder_firewall_summary">稽核並封鎖未經授權的應用程式發出的敏感系統交易</string>
-    <string name="settings_binder_logging">AIDL 交易記錄</string>
-    <string name="settings_binder_logging_summary">將所有經代理的 Binder 交易記錄到系統記錄 (Logcat) 以便偵錯</string>
-    <string name="settings_shadow_binder">Shadow Binder</string>
-    <string name="settings_shadow_binder_summary">攔截並模擬系統服務呼叫，以隱藏裝置資訊或應用程式狀態</string>
     <string name="settings_shadow_binder_hidden_packages">隱藏的套件</string>
     <string name="settings_shadow_binder_hidden_packages_summary">要對其他應用程式隱藏的套件名稱清單，以逗號分隔。若同時安裝了原版 Shizuku 與 Shizuku+，請將兩者都加入（moe.shizuku.privileged.api、af.shizuku.manager）以避免衝突。</string>
     <string name="settings_automation_trusted_networks">信任的網路</string>
@@ -923,7 +901,6 @@
     <string name="home_companion_install">安裝</string>
     <string name="watchdog_open_stock_shizuku">開啟原版 Shizuku</string>
     <string name="settings_live_activity">即時活動通知</string>
-    <string name="settings_live_activity_summary">在狀態列顯示即時的服務活動</string>
     <string name="app_management_empty">找不到應用程式</string>
     <string name="app_management_search_hint">搜尋應用程式</string>
     <string name="root_hub_title">Root 相容中心</string>

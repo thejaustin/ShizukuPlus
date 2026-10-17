@@ -33,7 +33,7 @@
             android:id="@+id/widget_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Shizuku+"
+            android:text="@string/app_name"
             android:textAppearance="?textAppearanceTitleMedium"
             android:textColor="?colorOnSurface" />
 
@@ -41,7 +41,7 @@
             android:id="@+id/widget_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Running"
+            android:text="@string/widget_status_running"
             android:textAppearance="?textAppearanceBodySmall"
             android:textColor="?colorOnSurfaceVariant" />
 
