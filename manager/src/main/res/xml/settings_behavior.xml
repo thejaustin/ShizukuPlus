@@ -33,6 +33,12 @@
             android:defaultValue="true"
             android:icon="@drawable/ic_warning_24" />
 
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="legacy_rish_keepalive"
+            android:title="@string/settings_legacy_rish_keepalive"
+            android:summary="@string/settings_legacy_rish_keepalive_summary"
+            android:icon="@drawable/ic_visibility_24" />
+
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="auto_reconnect_mdns"
             android:title="@string/settings_auto_reconnect_mdns"

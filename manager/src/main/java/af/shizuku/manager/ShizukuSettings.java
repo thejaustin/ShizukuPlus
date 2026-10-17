@@ -205,6 +205,10 @@ public class ShizukuSettings {
         public static final String KEY_STEALTH_MODE = "stealth_mode";
         public static final String KEY_DEVICE_HARDENING_ENABLED = "device_hardening_enabled";
         public static final String KEY_WATCHDOG_CRASH_ALERTS = "watchdog_crash_alerts";
+        /** Floating navigation bar (#498); read by BaseSettingsFragment for bottom clearance. */
+        public static final String KEY_FLOATING_NAV_BAR_ENABLED = "floating_nav_enabled";
+        /** Keep the manager process alive while the privileged server runs (legacy rish clients). */
+        public static final String KEY_LEGACY_RISH_KEEPALIVE = "legacy_rish_keepalive";
     }
 
     private static SharedPreferences sPreferences;
@@ -352,6 +356,46 @@ public class ShizukuSettings {
 
     public static boolean isOneHandedModeEnabled() {
         return getPreferences().getBoolean(Keys.KEY_ONE_HANDED_MODE, false);
+    }
+
+    /** Floating navigation bar (#498). */
+    public static boolean isFloatingNavBarEnabled() {
+        return getPreferences().getBoolean(Keys.KEY_FLOATING_NAV_BAR_ENABLED, false);
+    }
+
+    /**
+     * Keep the manager process alive while the privileged server is running so that legacy rish
+     * clients (MT Manager 2.x and other apps bundling a prebuilt rikka/rish loader) can always ask
+     * for the server binder through the REQUEST_BINDER broadcast. Those clients only wait a few
+     * hundred milliseconds for the shell socket, so a manager process that an OEM freezer put to
+     * sleep cannot answer in time and the client never gets shell access.
+     *
+     * <p>Default: on for the Drop-In flavor (moe.shizuku.privileged.api, the package legacy
+     * clients look for), off for the Shizuku+ flavor. See docs/MT_COMPAT.md.
+     */
+    public static boolean isLegacyRishKeepaliveEnabled() {
+        return getPreferences().getBoolean(
+            Keys.KEY_LEGACY_RISH_KEEPALIVE, "dropin".equals(BuildConfig.FLAVOR));
+    }
+
+    public static void setLegacyRishKeepaliveEnabled(boolean enabled) {
+        getPreferences().edit().putBoolean(Keys.KEY_LEGACY_RISH_KEEPALIVE, enabled).apply();
+    }
+
+    /**
+     * Persists the per-flavor default once so the settings switch and
+     * {@link #isLegacyRishKeepaliveEnabled()} agree from the first start. Call once at app start.
+     */
+    public static void decideLegacyRishKeepaliveDefaultIfNeeded(Context context) {
+        try {
+            SharedPreferences prefs = getPreferences();
+            if (prefs == null || prefs.contains(Keys.KEY_LEGACY_RISH_KEEPALIVE)) return;
+            prefs.edit()
+                .putBoolean(Keys.KEY_LEGACY_RISH_KEEPALIVE, "dropin".equals(BuildConfig.FLAVOR))
+                .apply();
+        } catch (Exception e) {
+            Timber.w(e, "Legacy rish keep-alive default: could not decide");
+        }
     }
 
     public static boolean isBoldTypographyEnabled() {

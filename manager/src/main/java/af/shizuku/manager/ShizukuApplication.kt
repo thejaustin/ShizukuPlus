@@ -484,6 +484,24 @@ class ShizukuApplication :
      * Initialize settings and managers
      */
     private fun initializeManagers() {
+        // Legacy rish clients (MT Manager and other prebuilt rikka/rish loaders) ask for the
+        // binder with a broadcast and only wait a few hundred milliseconds for the shell socket.
+        // Keep the manager process alive while the server runs so that broadcast is always
+        // answered quickly, even when an OEM freezer would otherwise freeze this process.
+        // See docs/MT_COMPAT.md.
+        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+            ShizukuStateMachine
+                .asFlow()
+                .distinctUntilChanged()
+                .collect { state ->
+                    if (state == ShizukuStateMachine.State.RUNNING) {
+                        af.shizuku.manager.service.LegacyRishKeepAliveService.start(this@ShizukuApplication)
+                    } else {
+                        af.shizuku.manager.service.LegacyRishKeepAliveService.stop(this@ShizukuApplication)
+                    }
+                }
+        }
+
         ActivityLogManager.initialize(this, ActivityLogSettingsImpl())
         af.shizuku.manager.database.ScriptSnippetManager
             .initialize(this)
@@ -679,6 +697,7 @@ class ShizukuApplication :
         // Watchdog setting: tells a new install (Watchdog on at its first server start) from an
         // update (keeps the off an absent setting meant). See decideWatchdogDefaultIfNeeded().
         ShizukuSettings.decideWatchdogDefaultIfNeeded(this)
+        ShizukuSettings.decideLegacyRishKeepaliveDefaultIfNeeded(this)
 
         // 0. Initialize Timber
         if (BuildConfig.DEBUG) {

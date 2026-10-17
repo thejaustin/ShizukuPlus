@@ -64,6 +64,18 @@
 -keep class rikka.rish.** { *; }
 -keep class rikka.shizuku.** { *; }
 -keep class af.shizuku.manager.shell.** { *; }
+
+# Legacy rish loaders (MT Manager and other prebuilt rikka/rish clients) hard-code the
+# upstream class name moe.shizuku.manager.shell.Shell and load it reflectively from this
+# APK after the REQUEST_BINDER handshake. The source shim in
+# manager/src/main/java/moe/shizuku/manager/shell/Shell.java forwards to the real
+# af.shizuku.manager.shell.Shell, but R8 would otherwise inline/rename/remove it and the
+# loader would again fail with ClassNotFoundException. Keep the exact class name and the
+# exact main(...) signature both parties agree on. See docs/MT_COMPAT.md.
+-keep class moe.shizuku.manager.shell.Shell {
+    public static void main(java.lang.String[], java.lang.String, android.os.IBinder, android.os.Handler);
+}
+
 -keep class moe.shizuku.server.** { *; }
 -keep class af.shizuku.server.** { *; }
 

@@ -656,6 +656,18 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config" />
         </service>
-    </application>
+            <!-- Keeps the manager process reachable while the server runs, so legacy rish clients
+             (MT Manager and other prebuilt rikka/rish loaders) can obtain the binder through the
+             REQUEST_BINDER broadcast. See docs/MT_COMPAT.md. -->
+        <service
+            android:name=".service.LegacyRishKeepAliveService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Keeps the Shizuku+ manager process reachable for legacy rish clients (MT Manager) while the privileged server is running." />
+        </service>
+
+</application>
 
 </manifest>

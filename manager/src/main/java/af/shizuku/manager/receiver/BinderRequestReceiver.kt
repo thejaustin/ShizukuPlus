@@ -1,6 +1,7 @@
 package af.shizuku.manager.receiver
 
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.service.LegacyRishKeepAliveService
 import af.shizuku.manager.shell.ShellBinderRequestHandler
 import af.shizuku.manager.utils.IntentCrypto
 import android.content.BroadcastReceiver
@@ -21,6 +22,11 @@ class BinderRequestReceiver : BroadcastReceiver() {
         ) {
             return
         }
+
+        // A legacy rish client is asking for the binder. Keep a process that receives this
+        // broadcast reachable for its next request too: such clients retry on every launch and
+        // only wait a few hundred milliseconds for the shell socket. See docs/MT_COMPAT.md.
+        LegacyRishKeepAliveService.start(context)
 
         val rawToken =
             intent.getStringExtra("auth")

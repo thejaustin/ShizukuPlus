@@ -236,4 +236,9 @@
     <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> 支援現代 Shizuku，但它正在要求舊版 Shizuku。這可能是因為 Shizuku 未在執行，請在 Shizuku 應用程式內檢查。<p>舊版 Shizuku 已於 2019 年 3 月被棄用。]]></string>
     <string name="dialog_requesting_legacy_button_open_shizuku">開啟 Shizuku</string>
     <string name="wadb_notification_attempt_now">現在嘗試</string>
+    <string name="settings_legacy_rish_keepalive">舊版 rish 相容</string>
+    <string name="settings_legacy_rish_keepalive_summary">服務執行期間保持 Shizuku+ 管理端在背景存活，讓 MT 管理器等舊版 rish 用戶端能夠請求 Shell 權限。會顯示一則低優先度通知。</string>
+    <string name="legacy_rish_keepalive_channel_name">舊版 rish 相容</string>
+    <string name="legacy_rish_keepalive_title">舊版 rish 相容已生效</string>
+    <string name="legacy_rish_keepalive_text">正在背景保持 Shizuku+，以便舊版 rish 用戶端請求 Shell 權限。</string>
 </resources>

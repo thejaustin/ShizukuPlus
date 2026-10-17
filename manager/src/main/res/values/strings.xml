@@ -1816,4 +1816,9 @@
     <string name="settings_fake_su_consumer_summary">Allow standard root-only apps (like AdAway or Franco Kernel) to work through Shizuku+ without permanently rooting your phone.</string>
     <string name="settings_root_file_interceptor_consumer_title">File Permission &amp; Security Label Preserver</string>
     <string name="settings_root_file_interceptor_consumer_summary">Preserve original ownership and system security rules when copying app files, preventing crashes and broken data.</string>
+    <string name="settings_legacy_rish_keepalive">Legacy rish compatibility</string>
+    <string name="settings_legacy_rish_keepalive_summary">Keep the Shizuku+ manager in the background while the server runs, so older rish clients such as MT Manager can request the shell binder. Shows a low-priority notification.</string>
+    <string name="legacy_rish_keepalive_channel_name">Legacy rish compatibility</string>
+    <string name="legacy_rish_keepalive_title">Legacy rish compatibility is active</string>
+    <string name="legacy_rish_keepalive_text">Keeping Shizuku+ in the background so legacy rish clients can request the shell binder.</string>
 </resources>
