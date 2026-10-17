@@ -205,6 +205,8 @@ public class ShizukuSettings {
         public static final String KEY_STEALTH_MODE = "stealth_mode";
         public static final String KEY_DEVICE_HARDENING_ENABLED = "device_hardening_enabled";
         public static final String KEY_WATCHDOG_CRASH_ALERTS = "watchdog_crash_alerts";
+        /** Floating navigation bar (#498); read by BaseSettingsFragment for bottom clearance. */
+        public static final String KEY_FLOATING_NAV_BAR_ENABLED = "floating_nav_enabled";
     }
 
     private static SharedPreferences sPreferences;
@@ -352,6 +354,11 @@ public class ShizukuSettings {
 
     public static boolean isOneHandedModeEnabled() {
         return getPreferences().getBoolean(Keys.KEY_ONE_HANDED_MODE, false);
+    }
+
+    /** Floating navigation bar (#498). */
+    public static boolean isFloatingNavBarEnabled() {
+        return getPreferences().getBoolean(Keys.KEY_FLOATING_NAV_BAR_ENABLED, false);
     }
 
     public static boolean isBoldTypographyEnabled() {

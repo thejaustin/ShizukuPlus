@@ -236,4 +236,197 @@
     <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> 支援現代 Shizuku，但它正在要求舊版 Shizuku。這可能是因為 Shizuku 未在執行，請在 Shizuku 應用程式內檢查。<p>舊版 Shizuku 已於 2019 年 3 月被棄用。]]></string>
     <string name="dialog_requesting_legacy_button_open_shizuku">開啟 Shizuku</string>
     <string name="wadb_notification_attempt_now">現在嘗試</string>
+    <!-- ===== zh-rTW completion (2026-10-18): previously missing keys (translated to Traditional Chinese / Taiwan usage) ===== -->
+    <!-- 無障礙：首頁卡片操作 -->
+    <string name="accessibility_card_hide">隱藏卡片</string>
+    <string name="accessibility_card_show">顯示卡片</string>
+    <string name="accessibility_move_card_down">下移卡片</string>
+    <string name="accessibility_move_card_up">上移卡片</string>
+    <!-- 活動記錄 -->
+    <string name="activity_log_clear_confirm_message">所有已記錄的活動記錄事件都將被永久刪除。</string>
+    <string name="activity_log_clear_confirm_title">清除活動記錄？</string>
+    <string name="activity_log_copied">已將 %1$s 複製到剪貼簿</string>
+    <string name="activity_log_filter_all">全部</string>
+    <string name="activity_log_sort_by_type">依類型</string>
+    <string name="activity_log_sort_most_active">最活躍</string>
+    <string name="activity_log_stack_activities">合併重複事件</string>
+    <string name="activity_log_stacked_count">%d 次</string>
+    <string name="activity_log_stacked_expand">點按以查看全部記錄</string>
+    <string name="activity_log_type_connection">連線</string>
+    <!-- 背景保護提示 -->
+    <string name="background_nudge_channel">背景保護</string>
+    <string name="background_nudge_text">手機的電池管理員可能正在背景限制 Shizuku。請開啟服務醫生進行修復。</string>
+    <string name="background_nudge_title">Shizuku 經常被停止</string>
+    <!-- 功能標籤 -->
+    <string name="badge_device_owner">裝置擁有者</string>
+    <string name="badge_root_only">ROOT</string>
+    <string name="badge_samsung_only">ONE UI</string>
+    <string name="badge_wireless_adb">ADB</string>
+    <!-- 電池最佳化豁免 -->
+    <string name="battery_exemption_channel_name">電池最佳化</string>
+    <string name="battery_exemption_notification_text">看門狗已自動開啟。請將 Shizuku+ 從電池最佳化中排除，以便服務停止時能自動重新啟動。</string>
+    <string name="battery_exemption_notification_title">允許 Shizuku+ 在背景執行</string>
+    <!-- 診斷 -->
+    <string name="diagnostics_auto_reconnect_enabled_toast">已啟用智慧自動重新連線</string>
+    <string name="diagnostics_start_on_boot_enabled_toast">已啟用開機時啟動</string>
+    <string name="diagnostics_warning_auto_reconnect_disabled">無線自動重新連線已停用。點按即可在 Wi-Fi 環境下自動重新連線。</string>
+    <string name="diagnostics_warning_start_on_boot_disabled">開機時啟動已停用。點按即可在系統開機時自動啟動 Shizuku。</string>
+    <string name="diagnostics_warning_watchdog_disabled">看門狗已停用。點按即可在 Shizuku 服務停止時啟用自動重新啟動。</string>
+    <string name="diagnostics_watchdog_enabled_toast">已啟用看門狗</string>
+    <!-- 服務醫生 -->
+    <string name="doctor_action_rerun">重新執行</string>
+    <string name="doctor_fix_applied">已修復</string>
+    <string name="doctor_fix_starting">正在啟動 Shizuku…</string>
+    <string name="doctor_status_samsung_sleeping_restricted">受限——系統正在限制背景活動</string>
+    <string name="doctor_summary_healthy_subtitle">所有診斷檢查皆已通過，服務環境處於最佳狀態。</string>
+    <string name="doctor_summary_healthy_title">所有系統運作正常</string>
+    <string name="doctor_summary_issues_subtitle">請檢閱下方建議的修正，以恢復完整的服務可靠性。</string>
+    <string name="doctor_summary_issues_title">偵測到 %1$d 個問題</string>
+    <string name="doctor_tips_title">疑難排解與修正</string>
+    <!-- 首頁 -->
+    <string name="home_adb_description_active"><![CDATA[Shizuku+ 已透過電腦 ADB 啟動。裝置重新啟動後，請重新執行指令以重新連線。請<b><a href=\"%1$s\">閱讀說明</a></b>。]]></string>
+    <string name="home_restore_default">還原為預設值</string>
+    <string name="home_restore_default_dialog_message">將首頁卡片還原為預設順序，並取消隱藏所有卡片？</string>
+    <string name="home_restore_default_dialog_title">還原為預設值</string>
+    <string name="home_restore_default_success">首頁卡片已還原為預設</string>
+    <string name="home_root_description_samsung"><![CDATA[透過 Samsung 系統 UID 提權方式執行，無需 Magisk 或 root——Shizuku+ 使用 Samsung 裝置上內建的系統特權帳戶。]]></string>
+    <string name="home_samsung_system_uid_title"><![CDATA[啟動（Samsung 系統 UID）]]></string>
+    <string name="home_status_diagnostics_tips">保持運作提示</string>
+    <string name="home_wireless_adb_description_active"><![CDATA[Shizuku+ 已透過無線偵錯啟動。若連線中斷，請點按「重新連線」。]]></string>
+    <!-- 知識庫 -->
+    <string name="knowledgebase_action_view_guide">在知識庫中檢視</string>
+    <string name="knowledgebase_peek">快速查看知識庫</string>
+    <string name="knowledgebase_title">知識庫</string>
+    <!-- 底部導覽 -->
+    <string name="nav_apps">應用程式</string>
+    <string name="nav_home">首頁</string>
+    <string name="nav_hub">中心</string>
+    <string name="nav_settings">設定</string>
+    <!-- 瀏覽器 -->
+    <string name="open_in_browser">在瀏覽器中開啟</string>
+    <!-- 設定 -->
+    <string name="settings_binder_firewall_consumer_summary">檢查並封鎖應用程式在未經您同意的情況下，存取受限 Android 系統服務的隱匿背景請求。</string>
+    <string name="settings_binder_firewall_consumer_title">應用程式連線防火牆（Binder 防護）</string>
+    <string name="settings_fake_su_consumer_summary">讓標準 root 應用程式（例如 AdAway 或 Franco Kernel）無需永久 root 手機，即可透過 Shizuku+ 運作。</string>
+    <string name="settings_fake_su_consumer_title">Root 應用程式轉譯器（SU Bridge）</string>
+    <string name="settings_floating_nav">浮動導覽列</string>
+    <string name="settings_floating_nav_info">這是用於在首頁、應用程式、中心與設定之間跳轉的實驗性導覽列。向下捲動時會自動隱藏，並在頁面之間滑動切換。此功能預設為關閉且可能變更；若有異常，請在此將其關閉。</string>
+    <string name="settings_floating_nav_summary">透過浮動於內容上方的導覽列，在首頁、應用程式、中心與設定之間快速跳轉</string>
+    <string name="settings_main_category_preferences">偏好設定</string>
+    <string name="settings_mdns_consumer_summary">自動掃描本機 Wi-Fi 連線，尋找手機目前的無線偵錯連接埠，無需手動輸入連接埠號碼。</string>
+    <string name="settings_mdns_consumer_title">自動探索 Wi-Fi 連接埠（無線 ADB）</string>
+    <string name="settings_plus_category_core">核心</string>
+    <string name="settings_root_file_interceptor_consumer_summary">複製應用程式檔案時保留原始擁有者與系統安全性規則，避免當機與資料損毀。</string>
+    <string name="settings_root_file_interceptor_consumer_title">檔案權限與安全性標籤保護器</string>
+    <string name="settings_samsung_autoblocker_consumer_summary">Samsung 內建防護，會封鎖背景系統工具與 ADB 偵錯。關閉後可讓 Shizuku+ 持續保持連線。</string>
+    <string name="settings_samsung_autoblocker_consumer_title">Samsung Knox 自動防護（Auto Blocker）</string>
+    <string name="settings_shadow_binder_consumer_summary">隱藏 Shizuku+ 及所選的敏感應用程式，避免被 root 偵測器、銀行應用程式與遊戲掃描器偵測到。</string>
+    <string name="settings_shadow_binder_consumer_title">應用程式偽裝與隱形防護</string>
+    <string name="settings_show_advanced_summary">顯示專屬進階使用者工具、系統調控功能與低階橋接功能</string>
+    <string name="settings_show_advanced_title">顯示進階選項</string>
+    <string name="settings_status_banner_running_adb">模式：ADB Shell（無線／USB 權限已啟用）</string>
+    <string name="settings_status_banner_running_root">模式：已 Root（超級使用者權限已啟用）</string>
+    <string name="settings_status_banner_stopped">狀態：Shizuku 服務已停止</string>
+    <string name="settings_status_banner_title">服務狀態</string>
+    <string name="settings_tcp_protection">在共用網路上保護 TCP</string>
+    <string name="settings_tcp_protection_auto_close">自動關閉連接埠</string>
+    <string name="settings_tcp_protection_auto_close_summary">當您連線到不受信任的網路時，不經詢問即重新啟動偵錯常駐程式</string>
+    <string name="settings_tcp_trusted_networks">信任的網路</string>
+    <string name="settings_tcp_trusted_networks_none">尚未儲存——點按以新增目前的網路</string>
+    <string name="settings_tcp_trusted_networks_summary">已儲存 %d 個——點按以管理</string>
+    <string name="settings_usb_phone_switch_notify">USB 連線與切換通知</string>
+    <string name="settings_usb_phone_switch_notify_summary">連接手機或 USB 裝置時，固定顯示包含快速設定與工具捷徑的通知</string>
+    <string name="settings_watchdog_crash_alerts">當機通知</string>
+    <string name="settings_watchdog_crash_alerts_summary">當看門狗在當機後重新啟動服務時，發出無聲通知</string>
+    <string name="settings_watchdog_not_running">已開啟，目前未執行</string>
+    <!-- 保持運作提示 -->
+    <string name="stability_tips_all_enabled_message">所有建議的背景保持運作設定皆已啟用。若 Shizuku 仍會停止，請在服務醫生中檢查 OEM 專屬的電池限制或幽靈程序終止限制。</string>
+    <string name="stability_tips_apply_selected">啟用所選項目</string>
+    <string name="stability_tips_dialog_message">Shizuku 未在執行。請選取要為背景穩定性與自動復原啟用的建議設定：</string>
+    <string name="stability_tips_dialog_title">讓 Shizuku 保持運作</string>
+    <!-- SU Bridge -->
+    <string name="su_bridge_configure_dialog_message">1. SU bridge 路徑已複製到剪貼簿：\n\n%1$s\n\n2. 開啟 %2$s，找到其 root／二進位檔路徑設定：\n\n%3$s\n\n3. 貼上已複製的 SU bridge 路徑。</string>
+    <string name="su_bridge_configure_dialog_title">設定 %s</string>
+    <string name="su_bridge_copy_termux_setup">複製 Termux 設定檔指令</string>
+    <string name="su_bridge_kernelsu_restart_shizuku">以 Root 身分重新啟動 Shizuku</string>
+    <string name="su_bridge_kernelsu_upgrade_body">KernelSU 已安裝並於本次開機中生效。請在 KernelSU 下重新啟動 Shizuku 服務，讓橋接取得真正的 uid=0 root，而非 uid=2000（ADB shell）。如此一來，同時在 Shizuku+ 與 KernelSU 中授權的應用程式將以完整的 root 權限執行。</string>
+    <string name="su_bridge_kernelsu_upgrade_title">偵測到 KernelSU——升級為 Root 橋接</string>
+    <string name="su_bridge_open_app">開啟應用程式</string>
+    <string name="su_bridge_terminal_profile_desc">若使用 Termux 與 shell 指令碼，請將 SU Bridge 加入 PATH 開頭，或新增別名，讓「su」無需 root 也能順暢執行。</string>
+    <string name="su_bridge_terminal_profile_title">終端機與環境設定</string>
+    <string name="su_bridge_termux_setup_copied">Termux 指令已複製到剪貼簿</string>
+    <!-- TCP 保護 -->
+    <string name="tcp_guard_channel">TCP 網路保護</string>
+    <string name="tcp_guard_close">關閉連接埠</string>
+    <string name="tcp_guard_reason_captive">您目前位於強制入口（公開）Wi-Fi 網路</string>
+    <string name="tcp_guard_reason_open">您目前位於開放的 Wi-Fi 網路</string>
+    <string name="tcp_guard_reason_untrusted">此網路不在您的信任清單中</string>
+    <string name="tcp_guard_text">ADB TCP 連接埠 %1$d 正在監聽，且%2$s。除非您現在需要，否則請關閉該連接埠。</string>
+    <string name="tcp_guard_title">TCP 偵錯已在不受信任的網路上開放</string>
+    <string name="tcp_protection_limited_summary">此 Android 版本僅能偵測強制入口網路，無法辨識開放網路。</string>
+    <string name="tcp_protection_off">關閉</string>
+    <string name="tcp_protection_open">開放與公開 Wi-Fi</string>
+    <string name="tcp_protection_trusted">僅限信任的網路</string>
+    <string name="tcp_trusted_add_current">信任目前的網路</string>
+    <string name="tcp_trusted_added">已信任 %s</string>
+    <string name="tcp_trusted_dialog_empty">尚無信任的網路。</string>
+    <string name="tcp_trusted_not_on_wifi">請先連線至 Wi-Fi 網路。</string>
+    <string name="tcp_trusted_remove_selected">移除所選項目</string>
+    <string name="tcp_trusted_ssid_hidden">Android 未提供此網路的名稱。請允許位置存取（Android 讀取 Wi-Fi 名稱所需），然後再試一次。</string>
+    <!-- 提示 -->
+    <string name="tip_auto_reconnect_desc">在 Wi-Fi 環境下自動重新探索無線偵錯並重新連線</string>
+    <string name="tip_battery_doctor_desc">保護 Shizuku 不受系統省電模式與 OEM 休眠限制影響</string>
+    <string name="tip_start_on_boot_desc">裝置開機時自動啟動 Shizuku 服務</string>
+    <string name="tip_watchdog_desc">監控 Shizuku 伺服器，並在其被終止時自動重新啟動</string>
+    <!-- 廠商電池限制 -->
+    <string name="vendor_battery_notification_text">看門狗可能會被 %1$s 停止。點按以開啟可讓 Shizuku+ 持續運作的設定。</string>
+    <string name="vendor_battery_notification_title">Shizuku+ 可能會在背景被停止</string>
+    <string name="vendor_battery_restriction_background_activity">背景活動限制</string>
+    <string name="vendor_battery_restriction_samsung_deep_sleep">Samsung 的深層休眠應用程式</string>
+    <string name="vendor_battery_restriction_standby_bucket">Android 對鮮少使用應用程式的限制</string>
+    <string name="vendor_battery_restriction_xiaomi_autostart">Xiaomi 的自動啟動設定</string>
+    <string name="vendor_battery_restriction_xiaomi_no_restrict">Xiaomi 的省電模式（未設為「無限制」）</string>
+    <!-- 無線 ADB 通知 -->
+    <string name="wadb_notification_ask_again">再次詢問</string>
+    <string name="wadb_notification_ask_again_from">若您曾點按「拒絕」，「再次詢問」會從 %1$s 再次顯示提示</string>
+    <string name="wadb_notification_ask_again_ready">若您曾點按「拒絕」，請點按「再次詢問」以再次顯示提示</string>
+    <string name="wadb_notification_ask_again_used">這是本次等待的最後一次提示，等待將於 %1$s 結束</string>
+    <string name="wadb_notification_ask_again_used_untimed">這是本次等待的最後一次提示</string>
+    <string name="wadb_notification_auth_timed_out">「允許 USB 偵錯」提示未及時接受。請點按「現在嘗試」重試</string>
+    <string name="wadb_notification_awaiting_auth">正在等待您在本機接受「允許 USB 偵錯」提示</string>
+    <string name="wadb_notification_wait_ends">本次等待將於 %1$s 結束</string>
+
+    <!-- ===== Machine-translation review (2026-10-18): corrected entries moved from strings_machine_translated.xml ===== -->
+    <string name="settings_expanded_headers_summary">在設定畫面頂端顯示大型可收合標題，捲動時會平滑縮小</string>
+    <string name="settings_device_hardening_summary">讓 Shizuku 與終端機用戶端不受 Doze 限制、自動授予 WRITE_SECURE_SETTINGS、同步啟動器二進位檔，並在看門狗開啟時解除此應用程式的背景與電池限制</string>
+    <string name="settings_samsung_uid_escalation_summary">嘗試利用針對未修補 Samsung 裝置的漏洞（作者 pascua28）提權至 UID 1000 (system)，無需 root。注意：Samsung 已在較新的 One UI（Android 12+）修補此漏洞。</string>
+    <string name="settings_fake_su">Root 應用程式轉譯器（SU Bridge）</string>
+    <string name="settings_fake_su_summary">讓標準僅限 root 的應用程式（例如 NeoBackup、AdAway 與 Swift Backup）透過 Shizuku+ 運作，而無需永久 root 手機。</string>
+    <string name="settings_root_integration_hub">Root 相容性中心</string>
+    <string name="root_hub_shizuku_aware_note">SU Bridge 讓未 root 的裝置透過 Shizuku shell 或暫時的 root 權限獲得類似 root 的指令存取能力。點按「一鍵設定」可自動設定支援的應用程式，或點按「複製路徑並開啟」將具有自訂 SU 設定的應用程式直接指向此橋接。</string>
+    <string name="su_bridge_step_1">1. 從主畫面匯出 Shizuku 檔案，或將 SU bridge 部署到 /data/local/tmp。</string>
+    <string name="su_bridge_step_2">2. 在支援自訂二進位檔的應用程式（例如 AdAway、Solid Explorer）中，將其「SU 路徑」設定指向橋接路徑。</string>
+    <string name="su_bridge_step_3">3. 若使用終端機（例如 Termux），請執行「export PATH=\"/data/local/tmp:$PATH\"」即可立即使用「su」。</string>
+    <string name="su_bridge_step_4">4. 對於沒有自訂 SU 設定的應用程式，當 Shizuku 以 Root 模式執行時，「一鍵設定」可自動設定支援的應用程式。其他應用程式則需要真正的系統 root（/system/bin/su）。</string>
+    <string name="settings_main_nav_root_compat_summary">SU 橋接、裝置擁有者工具、安全性存取，以及與原版 Shizuku 的相容性</string>
+    <string name="settings_main_nav_app_interactions_summary">手勢、長按動作、套件調控與安裝驗證</string>
+    <string name="settings_main_nav_startup_behavior_summary">開機選項、看門狗、TCP/ADB 連接埠、防火牆與保持運作</string>
+    <string name="settings_main_nav_advanced_diagnostics_summary">增強 API、系統調控、診斷儀表板與備份</string>
+    <string name="settings_main_nav_about_summary">版本、版本更新記錄、授權與開發人員選項</string>
+    <string name="settings_binder_firewall">應用程式連線防火牆（Binder 防護）</string>
+    <string name="settings_binder_firewall_summary">檢查並封鎖應用程式在未經您同意的情況下，試圖存取受限 Android 系統服務的隱匿背景請求</string>
+    <string name="settings_binder_logging">通訊診斷記錄</string>
+    <string name="settings_binder_logging_summary">將應用程式對系統的內部請求記錄到系統記錄，以協助診斷連線問題</string>
+    <string name="settings_shadow_binder">應用程式偽裝與隱形防護</string>
+    <string name="settings_shadow_binder_summary">讓 Shizuku+ 與所選的敏感應用程式不被 root 偵測工具、銀行應用程式與遊戲掃描器察覺</string>
+    <string name="settings_live_activity_summary">在看門狗通知中顯示即時的服務活動</string>
+    <string name="widget_status_running">執行中</string>
+    <string name="widget_status_stopped">已停止</string>
+    <string name="settings_ai_core_plus_title">AI 橋接與 NPU</string>
+    <string name="home_layout_sim_title">首頁版面模擬器</string>
+    <string name="home_layout_sim_terminal_apps">終端應用</string>
+    <string name="home_layout_sim_automation">自動化</string>
+    <string name="home_layout_sim_activity_logs">活動日誌</string>
+    <string name="home_layout_sim_developer_guide">開發者指南</string>
+    <string name="home_layout_sim_hint">點擊模型中的模擬區塊，即可在主畫面首頁上即時切換它們的顯示狀態。</string>
 </resources>

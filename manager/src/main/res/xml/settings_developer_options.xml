@@ -86,7 +86,7 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="ai_core_plus_enabled"
-            android:title="AI Bridge &amp; NPU"
+            android:title="@string/settings_ai_core_plus_title"
             android:summary="@string/settings_ai_core_plus_summary"
             android:icon="@drawable/ic_integration_instructions_24"
             android:defaultValue="false"
