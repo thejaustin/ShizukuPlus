@@ -171,6 +171,11 @@ public class ShizukuSettings {
         // Management cache (Shizuku+ additions)
         public static final String KEY_LAST_GRANTED_APP_COUNT = "last_granted_app_count";
         public static final String KEY_SHOW_ADVANCED_SETTINGS = "show_advanced_settings";
+        public static final String KEY_FLOATING_NAV_BAR_ENABLED = "floating_nav_enabled";
+        public static final String KEY_HIDE_LAUNCHER_ICON = "hide_launcher_icon";
+        public static final String KEY_APP_ICON_ALIAS = "app_icon_alias";
+        public static final String KEY_SHOW_HOME_CARDS_OUTLINE = "show_home_cards_outline";
+        public static final String KEY_DEV_OPTIONS_UNLOCKED = "dev_options_unlocked";
 
         // Migration (Shizuku+ additions)
         public static final String KEY_MIGRATION_OFFERED = "migration_offered";
@@ -205,8 +210,6 @@ public class ShizukuSettings {
         public static final String KEY_STEALTH_MODE = "stealth_mode";
         public static final String KEY_DEVICE_HARDENING_ENABLED = "device_hardening_enabled";
         public static final String KEY_WATCHDOG_CRASH_ALERTS = "watchdog_crash_alerts";
-        /** Floating navigation bar (#498); read by BaseSettingsFragment for bottom clearance. */
-        public static final String KEY_FLOATING_NAV_BAR_ENABLED = "floating_nav_enabled";
     }
 
     private static SharedPreferences sPreferences;
@@ -356,11 +359,6 @@ public class ShizukuSettings {
         return getPreferences().getBoolean(Keys.KEY_ONE_HANDED_MODE, false);
     }
 
-    /** Floating navigation bar (#498). */
-    public static boolean isFloatingNavBarEnabled() {
-        return getPreferences().getBoolean(Keys.KEY_FLOATING_NAV_BAR_ENABLED, false);
-    }
-
     public static boolean isBoldTypographyEnabled() {
         return getPreferences().getBoolean(Keys.KEY_BOLD_TYPOGRAPHY, false);
     }
@@ -499,7 +497,7 @@ public class ShizukuSettings {
 
     public static boolean isUsbPhoneSwitchNotifyEnabled() {
         SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_USB_PHONE_SWITCH_NOTIFY, true);
+        return p != null && p.getBoolean(Keys.KEY_USB_PHONE_SWITCH_NOTIFY, false);
     }
 
     public static void setUsbPhoneSwitchNotifyEnabled(boolean enabled) {
@@ -524,7 +522,12 @@ public class ShizukuSettings {
     }
 
     public static boolean isSamsungSystemUidEscalationEnabled() {
-        return getPreferences().getBoolean(Keys.KEY_SAMSUNG_SYSTEM_UID_ESCALATION_ENABLED, false);
+        // Samsung patched system-UID elevation starting with OneUI 7 (Android 15).
+        // Gate the feature to OneUI <= 6 so it never silently fails on modern Samsung devices.
+        int oneUiVersion = af.shizuku.common.util.EnvironmentUtils.getOneUiVersion();
+        return af.shizuku.common.util.EnvironmentUtils.isSamsung()
+                && (oneUiVersion >= 1 && oneUiVersion <= 6)
+                && getPreferences().getBoolean(Keys.KEY_SAMSUNG_SYSTEM_UID_ESCALATION_ENABLED, false);
     }
 
     public static boolean isSoftwareKeystoreFallbackEnabled() {
@@ -910,6 +913,26 @@ public class ShizukuSettings {
         if (p != null) p.edit().putBoolean(Keys.KEY_SHOW_STATUS_CARD_OUTLINE, enabled).apply();
     }
 
+    public static boolean isShowHomeCardsOutlineEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_SHOW_HOME_CARDS_OUTLINE, false);
+    }
+
+    public static void setShowHomeCardsOutlineEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_SHOW_HOME_CARDS_OUTLINE, enabled).apply();
+    }
+
+    public static String getAppIconAlias() {
+        SharedPreferences p = getPreferences();
+        return p != null ? p.getString(Keys.KEY_APP_ICON_ALIAS, "default") : "default";
+    }
+
+    public static void setAppIconAlias(String alias) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putString(Keys.KEY_APP_ICON_ALIAS, alias).apply();
+    }
+
     /** "material" (default) = theme colorPrimary/colorError; "status" = green/amber/red semantic colors. */
     public static String getStatusCardOutlineStyle() {
         SharedPreferences p = getPreferences();
@@ -977,9 +1000,24 @@ public class ShizukuSettings {
         if (p != null) p.edit().putBoolean("enh_" + packageName + "_" + enhancementKey, enabled).apply();
     }
 
+    public static boolean isOnboardingSeen() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean("onboarding_seen", false);
+    }
+
     public static void setOnboardingSeen() {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putBoolean("onboarding_seen", true).apply();
+    }
+
+    public static boolean isOnboardingV2Seen() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean("onboarding_v2_seen", false);
+    }
+
+    public static void setOnboardingV2Seen() {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean("onboarding_v2_seen", true).apply();
     }
 
     public static Locale getLocale() {
@@ -1294,6 +1332,26 @@ public class ShizukuSettings {
         if (p != null) p.edit().putBoolean(Keys.KEY_VECTOR_ENABLED, enable).apply();
     }
 
+    public static boolean isDevOptionsUnlocked() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_DEV_OPTIONS_UNLOCKED, false);
+    }
+
+    public static void setDevOptionsUnlocked(boolean unlocked) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_DEV_OPTIONS_UNLOCKED, unlocked).apply();
+    }
+
+    public static boolean isHideLauncherIconEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_HIDE_LAUNCHER_ICON, false);
+    }
+
+    public static void setHideLauncherIconEnabled(boolean hide) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_HIDE_LAUNCHER_ICON, hide).apply();
+    }
+
     public static boolean isExperimentalRootCompatEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_EXPERIMENTAL_ROOT_COMPAT, false);
@@ -1414,7 +1472,9 @@ public class ShizukuSettings {
 
     public static java.util.Set<String> getHiddenHomeCards() {
         SharedPreferences p = getPreferences();
-        return p != null ? p.getStringSet(Keys.KEY_HIDDEN_HOME_CARDS, new java.util.HashSet<>()) : new java.util.HashSet<>();
+        // Default: hide "Learn More" (6) — it's informational onboarding content, not an action.
+        java.util.Set<String> defaultHidden = new java.util.HashSet<>(java.util.Arrays.asList("6"));
+        return p != null ? p.getStringSet(Keys.KEY_HIDDEN_HOME_CARDS, defaultHidden) : defaultHidden;
     }
 
     public static void setHiddenHomeCards(java.util.Set<String> hidden) {
@@ -1753,4 +1813,14 @@ public class ShizukuSettings {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putBoolean(Keys.KEY_SHOW_ADVANCED_SETTINGS, enabled).apply();
     }
+
+    public static boolean isFloatingNavBarEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_FLOATING_NAV_BAR_ENABLED, false);
     }
+
+    public static void setFloatingNavBarEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_FLOATING_NAV_BAR_ENABLED, enabled).apply();
+    }
+        }
