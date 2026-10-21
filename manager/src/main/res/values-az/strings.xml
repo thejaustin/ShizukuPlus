@@ -30,7 +30,7 @@
     <!-- UI Settings - Display -->
     <string name="settings_display_category">Ekran</string>
     <string name="settings_edge_to_edge">Kənardan-kənara tərtibat</string>
-    <string name="settings_edge_to_edge_summary">Məzmunu sistem panellərinin arxasına uzatın. Sistem panelləri vacib idarəetmə elementlərini örtürsə, söndürün</string>
+    <string name="settings_edge_to_edge_summary">Məzmunu sistem panellərinin arxasına uzadın. Sistem panelləri vacib idarəetmə elementlərini örtürsə, söndürün</string>
     <string name="settings_blur_ui">Buzlu Şüşə Effekti</string>
     <string name="settings_blur_ui_summary">Dialoq pəncərələrinə və yuxarı panelə bulanıqlıq və şəffaflıq tətbiq edin. Ən yaxşı Android 12+ üzərində işləyir</string>
 
@@ -51,7 +51,7 @@
 
     <!-- UI Settings - System-following -->
     <string name="settings_follow_system_animations">Sistem Animasiyalarını İzlə</string>
-    <string name="settings_follow_system_animations_summary">Tərtibatçı Seçimlərindən cihazınızın animasiya sürəti tənzimləməsinə hörmətlə yanaşın</string>
+    <string name="settings_follow_system_animations_summary">Tərtibatçı Seçimlərindən cihazınızın animasiya sürəti tənzimləməsinə uyğun yanaşın</string>
     <string name="settings_follow_system_haptics">Sistem Haptiklərini İzlə</string>
     <string name="settings_follow_system_haptics_summary">Sistem haptik əks-əlaqəsi söndürüldükdə tətbiqdaxili haptikləri söndürün</string>
 
@@ -135,7 +135,7 @@
 
     <!-- Home - Adb -->
     <string name="home_adb_title"><![CDATA[Kompüterə qoşulmaqla başlayın]]></string>
-    <string name="home_adb_description"><![CDATA[Root-u olmayan cihazlar için Shizuku-nu işə salmaq için adb-dən istifadə etməlisiniz (kompüterə qoşulma tələb olunur). Bu proses cihaz hər dəfə yenidən başladıldıqda təkrar olunmalıdır. Zəhmət olmasa, <b><a href=\"%1$s\">köməkliyə baxın</a></b>.]]></string>
+    <string name="home_adb_description"><![CDATA[Root-u olmayan cihazlar üçün Shizuku-nu işə salmaq üçün adb-dən istifadə etməlisiniz (kompüterə qoşulma tələb olunur). Bu proses cihaz hər dəfə yenidən başladıldıqda təkrar olunmalıdır. Zəhmət olmasa, <b><a href=\"%1$s\">köməkliyə baxın</a></b>.]]></string>
     <string name="home_adb_button_view_help">Köməyə bax</string>
     <string name="home_adb_button_view_command">Əmrə bax</string>
     <string name="home_adb_description_active"><![CDATA[Shizuku+ kompüter ADB vasitəsilə aktivdir. Cihaz yenidən başladıqdan sonra yenidən qoşulmaq üçün əmri yenidən icra edin. Zəhmət olmasa, <b><a href=\"%1$s\">köməkliyə baxın</a></b>.]]></string>
@@ -229,7 +229,7 @@
     <string name="dialog_adb_pairing_accessibility_navigate">Zəhmət olmasa, aşağıdakı addımları yerinə yetirərək cütləşməni başladın:\n- \"Tərtibatçı Seçimləri\"nə keçin\n- \"USB sazlama\" və \"Simsiz sazlama\"nı aktivləşdirin\n- \"Simsiz sazlama\"nın sol tərəfinə toxunun\n- \"Cihazı cütləşmə kodu ilə cütləşdir\" seçiminə toxunun. Shizuku cütləşmə kodunu avtomatik aşkar edəcək.</string>
     <string name="adb_pairing_requires_multi_window">Zəhmət olmasa, əvvəlcə bölünmüş ekran (çoxpəncərəli) rejiminə daxil olun.</string>
     <string name="adb_pairing_requires_multi_window_reason">Sistem cütləşmə dialoqunun həmişə görünən olmasını tələb edir. Bölünmüş ekran rejimindən istifadə etmək bu tətbiqin və sistem dialoqunun eyni vaxtda görünməsinin yeganə yoludur.</string>
-    <string name="adb_error_key_store">Simsiz sazlama üçün açar yaradıla bilmədi.\nBunun səbəbi bu cihazın KeyStore mexanizмініn zədələnməsi ola bilər.</string>
+    <string name="adb_error_key_store">Simsiz sazlama üçün açar yaradıla bilmədi.\nBunun səbəbi bu cihazın KeyStore mexanizminin zədələnməsi ola bilər.</string>
     <string name="adb_stopping_tcp">TCP portu bağlanır</string>
     <string name="adb_error_stop_tcp">TCP üzərindən ADB dayandırıla bilmədi</string>
     <string name="adb_pair_required">Zəhmət olmasa, əvvəlcə cütləşmə addımını tamamlayın.</string>
@@ -292,7 +292,7 @@
     <string name="app_management_context_grant">İcazə ver</string>
     <string name="app_management_context_revoke">İcazəni ləğv et</string>
     <string name="app_management_context_hide">Siyahıdan gizlət</string>
-    <string name="app_management_no_launcher">Bu tətbiqin başlanğıc ekranı yoxdur</string>
+    <string name="app_management_no_launcher">Bu tətbiqin başladıcı ekranı yoxdur</string>
     <string name="app_management_package_copied">Paket adı kopyalandı</string>
     <string name="app_management_log_permission_toggle">İcazəni dəyiş: %s</string>
     <string name="app_management_log_hide">Siyahıdan gizlət</string>
@@ -371,9 +371,9 @@
     <string name="onboarding_longpress_desc">Tətbiqə uzun basdıqda hansı əməliyyatların görünəcəyini seçin və ya Dhizuku Rejimi kimi Shizuku+ eksklüziv xüsusiyyətlərini aktivləşdirin.</string>
     <string name="onboarding_next">Növbəti</string>
     <string name="onboarding_skip">Keç</string>
-    <string name="onboarding_get_started">Başlayaq</string>
+    <string name="onboarding_get_started">Başlat</string>
     <string name="onboarding_setup_title">Shizuku+-ı Başlat</string>
-    <string name="onboarding_setup_desc">Bu cihazda Shizuku+-ın necə başladılacağını seçin. Bunu sonradan əsas ekran edə bilərsiniz.</string>
+    <string name="onboarding_setup_desc">Bu cihazda Shizuku+-ın necə başladılacağını seçin. Bunu sonradan əsas ekranda edə bilərsiniz.</string>
     <string name="onboarding_setup_running">Shizuku+ işləyir</string>
     <string name="onboarding_setup_later">Bunu sonra edəcəyəm</string>
     <string name="onboarding_setup_wadb_desc">Android 11+, kompüter tələb olunmur. Simsiz sazlamadan istifadə edir.</string>
@@ -432,7 +432,7 @@
     <string name="settings_watchdog_crash_alerts_summary">Gözətçi xətadan sonra xidməti yenidən başlatdıqda səssiz bildiriş göstər</string>
     <string name="settings_watchdog_not_running">Aktivdir, hazırda işləmir</string>
     <string name="settings_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Canlı Saxlanılması</string>
-    <string name="settings_device_hardening_summary">Shizuku və terminal klientlərini Doze rejimindən istisna edin, WRITE_SECURE_SETTINGS hüququnu avtomatik verin, starter binar fayllarını sinxronlaşdırın və Gözətçi aktiv olarkən bu tətbiqdəki arxa fon və batareya məhdudiyyətlərini qaldırın</string>
+    <string name="settings_device_hardening_summary">Shizuku və terminal klientlərini Doze rejimindən istisna edin, WRITE_SECURE_SETTINGS hüququnu avtomatik verin, başladıcı binar fayllarını sinxronlaşdırın və Gözətçi aktiv olarkən bu tətbiqdəki arxa fon və batareya məhdudiyyətlərini qaldırın</string>
     <string name="doctor_check_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Doze İstisnası</string>
     <string name="device_hardening_applied">Cihaz təhlükəsizliyi və Doze optimizasiyaları tətbiq edildi</string>
     <string name="settings_tcp_mode">TCP rejimi</string>
@@ -630,7 +630,7 @@
     <string name="settings_plus_category_core">Nüvə</string>
     <string name="settings_plus_category_framework">Çərçivə</string>
     <string name="settings_plus_category_performance">Performans və Proses Nəzarəti</string>
-    <string name="settings_plus_category_files">Faylllar və Virtual Maşınlar</string>
+    <string name="settings_plus_category_files">Fayllar və Virtual Maşınlar</string>
     <string name="settings_plus_category_display">Ekran və Tematika</string>
     <string name="settings_plus_category_network">Şəbəkə və Məxfilik</string>
     <string name="settings_plus_category_intelligence">İntellekt və Davamlılıq</string>
@@ -784,7 +784,7 @@
 
     <!-- Service Doctor -->
     <string name="home_service_doctor_title">Xidmət Həkimi</string>
-    <string name="home_service_doctor_summary">Shizuku+-ı işə salmaqda çətinlik çvirirsiniz? Diaqnostik yoxlama keçirmək üçün toxunun.</string>
+    <string name="home_service_doctor_summary">Shizuku+-ı işə salmaqda çətinlik çəkirsiniz? Diaqnostik yoxlama keçirmək üçün toxunun.</string>
     <string name="doctor_tips_title">Məsləhətlər &amp; həllər</string>
     <string name="doctor_action_rerun">Yenidən icra et</string>
     <string name="doctor_summary_healthy_title">Bütün sistemlər qaydasındadır</string>
@@ -1020,7 +1020,7 @@
     <string name="wadb_notification_ask_again_used">Bu, %1$s vaxtında başa çatan gözləmə üçün son sorğudur</string>
     <string name="wadb_notification_ask_again_used_untimed">Bu, bu gözləmə üçün son sorğudur</string>
     <string name="wadb_notification_wait_ends">Bu gözləmə %1$s vaxtında başa çatır</string>
-    <string name="wadb_notification_auth_timed_out">\"USB sazlamasına icazə verilsin\" sorğusu vaxtında qəbul edilmədi. Yenidən cəhd etmək için İndi cəhd et düyməsinə toxunun</string>
+    <string name="wadb_notification_auth_timed_out">\"USB sazlamasına icazə verilsin\" sorğusu vaxtında qəbul edilmədi. Yenidən cəhd etmək üçün İndi cəhd et düyməsinə toxunun</string>
 
     <string name="settings_category_general">Ümumi</string>
     <string name="settings_category_dark_mode">Qaranlıq Tema</string>
@@ -1165,9 +1165,9 @@
 
     <!-- Verified install preferences (settings_app_management.xml) -->
     <string name="settings_verify_apk_local_title">Yerli İmza Uyğunluğu</string>
-    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiqın imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
+    <string name="settings_verify_apk_local_summary">Yeniləmələrin quraşdırılmış tətbiqin imzasına uyğun olduğunu yoxlayın. Sürətli və tamamilə oflayn.</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid İndeksi</string>
-    <string name="settings_verify_apk_fdroid_summary">Etibarlı açıq mənbə metadverilərinə qarşı APK heşlərini yerli olaraq yoxlayın.</string>
+    <string name="settings_verify_apk_fdroid_summary">Etibarlı açıq mənbə meta verilərinə qarşı APK heşlərini yerli olaraq yoxlayın.</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal Skanlaması</string>
     <string name="settings_verify_apk_virustotal_summary">Quraşdırmadan əvvəl APK heşlərini VirusTotal-a qarşı skan edin. API açarı tələb olunur.</string>
     <string name="settings_verify_apk_pithus_title">Pithus Təhlükə Kəşfiyyatı</string>
@@ -1498,9 +1498,9 @@
 
     <!-- APK verification API key strings -->
     <string name="verify_virustotal_key_title">VirusTotal API Açarı</string>
-    <string name="verify_virustotal_key_required">VirusTotal skanlamasından istifadə etmək için API açarı tələb olunur</string>
+    <string name="verify_virustotal_key_required">VirusTotal skanlamasından istifadə etmək üçün API açarı tələb olunur</string>
     <string name="verify_pithus_key_title">Pithus API Açarı (Könüllü)</string>
-    <string name="verify_pithus_key_configured">Zərərli proqram əlamətlərini aşkar etmək için heşləri Pithus-a qarşı yoxlayın · API açarı konfiqurasiya edilib</string>
+    <string name="verify_pithus_key_configured">Zərərli proqram əlamətlərini aşkar etmək üçün heşləri Pithus-a qarşı yoxlayın · API açarı konfiqurasiya edilib</string>
     <string name="verify_pithus_default_summary">Zərərli proqram əlamətlərini aşkar etmək üçün heşləri Pithus-a qarşı yoxlayın.</string>
     <string name="verify_api_key_hint">API açarını daxil etmək üçün toxunun</string>
     <string name="verify_api_key_configured">API açarı yadda saxlanıldı · yeniləmək üçün toxunun</string>
@@ -1510,7 +1510,7 @@
     <string name="scripting_title">Skriptlər</string>
     <string name="scripting_summary">İmtiyazlı shell skriptlərini yadda saxlayın, paylaşın və işlədin</string>
     <string name="scripting_empty_title">Hələ heç bir skript yoxdur</string>
-    <string name="scripting_empty_description">Shizuku+ vasitəsilə istənilən vaxt işlətmək için imtiyazlı shell skriptini yadda saxlayın.</string>
+    <string name="scripting_empty_description">Shizuku+ vasitəsilə istənilən vaxt işlətmək üçün imtiyazlı shell skriptini yadda saxlayın.</string>
     <string name="scripting_add">Skript əlavə et</string>
     <string name="scripting_edit">Skripti redaktə et</string>
     <string name="scripting_run">İşlət</string>
@@ -1648,7 +1648,7 @@
     <string name="settings_status_bar_governor_plus_summary">Status bar və Sürətli Parametrlər panelinə nəzarət edin: paneli yığın/genişləndirin, genişləndirmə kilidini dəyişin və tile düzənini idarə edin — hamısı istifadəçi qarşılıqlı əlaqəsi olmadan.</string>
     <string name="help_status_bar_governor_plus_title">Status Bar Nəzarəti</string>
     <string name="help_status_bar_governor_plus_detail">Sistem statusbar xidməti vasitəsilə status bar və Sürətli Parametrlər panelinə imtiyazlı giriş təmin edir. Tətbiqlər və avtomatlaşdırmalar bildiriş panelini yığışdıra və ya genişləndirə, istifadəçi girişinin qarşısını almaq üçün genişləndirməni kilidləyə, fərdi QS tile-larına toxuna və bütün tile siyahısını oxuya və ya yenidən apara bilər — cihazın kilidinin açılmasını və ya istifadəçi jestlərini tələb etmədən.</string>
-    <string name="settings_package_governor_plus_summary">Sorğu olmadan işləmə müddəti icazələrini verin və ya ləğv edin, APK-ları səssizcə quraşdırın, sistem tətbiqlərini hər istifadəçiyə görə debloating edin və tətbiqləri tam məlumat qorunması ilə dondurun/bərpa edin — hamısı imtiyazlı qabıq girişi vasitəsilə.</string>
+    <string name="settings_package_governor_plus_summary">Sorğu olmadan işləmə müddəti icazələrini verin və ya ləğv edin, APK-ları səssizcə quraşdırın, sistem tətbiqlərini hər istifadəçiyə görə debloating edin və tətbiqləri tam məlumat qorunması ilə dondurun/bərpa edin — hamısı imtiyazlı shell girişi vasitəsilə.</string>
     <string name="help_package_governor_plus_title">Paket İdarəedicisi</string>
     <string name="help_package_governor_plus_detail">ADB/shell prosesi üçün əlçatan olan imtiyazlı paket idarəetmə əməliyyatlarını üzə çıxarır: işləmə müddəti icazəsinin verilməsi/ləğv edilməsi (pm grant/revoke), istifadəçi səviyyəsində sistem tətbiqinin silinməsi (pm uninstall --user 0) və bərpası (pm install-existing), məlumat üçün təhlükəsiz tətbiq dayandırılması (pm suspend/unsuspend) və avtomatik icazə verilməsi ilə səssiz APK quraşdırılması. Bunlar həqiqi root tələb etmədən Shizuku-nu ADB üzərindən işlədən istənilən cihazda işləyən həqiqi root-sinif imkanlardır.</string>
     <string name="settings_display_tuner_plus_summary">Ekran icazəsini və DPI-ni ləğv edin — adb shell wm size/density ilə eynidir — beləliklə tətbiqlər və avtomatlaşdırma özləri ADB girişi tələb etmədən ekran düzənini tənzimləyə bilər.</string>
@@ -1766,7 +1766,7 @@
     <string name="permission_manager_no_permissions">Heç bir işləmə müddəti və ya imtiyazlı icazə bəyan edilməyib</string>
     <string name="permission_manager_section_privileged">İmtiyazlı İcazələr (shell ilə verilə bilən)</string>
     <string name="permission_manager_section_runtime">İşləmə Müddəti İcazələri</string>
-    <string name="permission_manager_privileged_note">Bu icazələr adətən sistem və ya root tətbiqləri ilə məhdudlaşdırılır, lakin ADB shell prosesi tərəfındən verilə bilər. DUMP, READ_LOGS və ya oxşar giriş tələb edən ehtiyat nüsxə tətbiqləri (Neo Backup, Swift Backup) üçün faydalıdır.</string>
+    <string name="permission_manager_privileged_note">Bu icazələr adətən sistem və ya root tətbiqləri ilə məhdudlaşdırılır, lakin ADB shell prosesi tərəfindən verilə bilər. DUMP, READ_LOGS və ya oxşar giriş tələb edən ehtiyat nüsxə tətbiqləri (Neo Backup, Swift Backup) üçün faydalıdır.</string>
 
     <!-- Home layout simulator accessibility labels (decorative preview widget — a11y toggles) -->
     <string name="accessibility_sim_toggle_adb">ADB start kartının görünürlüyünü dəyiş</string>
