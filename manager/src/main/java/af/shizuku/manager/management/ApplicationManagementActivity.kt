@@ -277,7 +277,7 @@ open class ApplicationManagementActivity :
                 if (af.shizuku.manager.widget.FloatingNavBar
                         .isTopLevel(this)
                 ) {
-                    (112 * resources.displayMetrics.density).toInt()
+                    (160 * resources.displayMetrics.density).toInt()
                 } else {
                     (24 * resources.displayMetrics.density).toInt()
                 }
