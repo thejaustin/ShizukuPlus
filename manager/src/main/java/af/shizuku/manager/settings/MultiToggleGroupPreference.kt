@@ -17,8 +17,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,9 +25,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,8 +50,8 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 
 /**
- * Material 3 Expressive multi-toggle pill group for related boolean actions.
- * Combines multiple separate switch rows into an interactive, scannable pill cloud.
+ * Material 3 Expressive structured toggle grid for long-press contextual actions.
+ * Presents a balanced 2x2 grid of tactile action tiles with real-time feedback.
  */
 class MultiToggleGroupPreference
     @JvmOverloads
@@ -118,8 +117,6 @@ class MultiToggleGroupPreference
                     ?: holder.itemView as? ComposeView ?: return
             cv.setPreferenceContent {
                 MultiToggleContent(
-                    title = title?.toString() ?: stringResource(R.string.settings_app_management_category_long_press),
-                    summary = summary?.toString() ?: stringResource(R.string.settings_lp_category_summary),
                     items = items,
                     states = states,
                     onToggle = { key, newChecked ->
@@ -136,161 +133,194 @@ class MultiToggleGroupPreference
         }
     }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun MultiToggleContent(
-    title: String,
-    summary: String,
     items: List<MultiToggleGroupPreference.ToggleItem>,
     states: Map<String, Boolean>,
     onToggle: (String, Boolean) -> Unit,
 ) {
-    val view = LocalView.current
-
-    Surface(
+    Card(
         modifier =
             Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 6.dp),
-        shape = RoundedCornerShape(22.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        tonalElevation = 1.dp,
+        shape = RoundedCornerShape(24.dp),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+            ),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
         ) {
-            if (title.isNotBlank()) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-            }
-            if (summary.isNotBlank()) {
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = summary,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+            Text(
+                text = stringResource(R.string.settings_lp_category_summary),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            FlowRow(
+            // Balanced 2x2 Grid
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items.forEach { item ->
-                    val checked = states[item.key] ?: item.defaultVal
-
-                    val scale by animateFloatAsState(
-                        targetValue = if (checked) 1.0f else 0.95f,
-                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-                        label = "pillScale",
-                    )
-                    val pillCorner by animateDpAsState(
-                        targetValue = if (checked) 22.dp else 10.dp,
-                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-                        label = "pillCorner",
-                    )
-                    val iconBgCorner by animateDpAsState(
-                        targetValue = if (checked) 6.dp else 12.dp,
-                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-                        label = "iconBgCorner",
-                    )
-                    val hPadding by animateDpAsState(
-                        targetValue = if (checked) 14.dp else 11.dp,
-                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-                        label = "hPadding",
-                    )
-                    val bgColor by animateColorAsState(
-                        targetValue =
-                            if (checked) {
-                                MaterialTheme.colorScheme.primaryContainer
-                            } else {
-                                MaterialTheme.colorScheme.surfaceContainerHighest
-                            },
-                        label = "pillBg",
-                    )
-                    val contentColor by animateColorAsState(
-                        targetValue =
-                            if (checked) {
-                                MaterialTheme.colorScheme.onPrimaryContainer
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.65f)
-                            },
-                        label = "pillContent",
-                    )
-
-                    val pillShape = RoundedCornerShape(pillCorner)
-                    Row(
-                        modifier =
-                            Modifier
-                                .scale(scale)
-                                .clip(pillShape)
-                                .background(bgColor)
-                                .border(
-                                    width = 1.dp,
-                                    color =
-                                        if (checked) {
-                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.35f)
-                                        } else {
-                                            Color.Transparent
-                                        },
-                                    shape = pillShape,
-                                ).clickable {
-                                    val next = !checked
-                                    if (next) {
-                                        HapticUtils.toggleOn(view)
-                                    } else {
-                                        HapticUtils.toggleOff(view)
-                                    }
-                                    onToggle(item.key, next)
-                                }.padding(horizontal = hPadding, vertical = 9.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .size(24.dp)
-                                    .clip(RoundedCornerShape(iconBgCorner))
-                                    .background(contentColor.copy(alpha = if (checked) 0.16f else 0.08f)),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Icon(
-                                painter = painterResource(item.iconRes),
-                                contentDescription = null,
-                                tint = contentColor,
-                                modifier = Modifier.size(15.dp),
+                // Row 1
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    if (items.isNotEmpty()) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            ToggleTile(
+                                item = items[0],
+                                checked = states[items[0].key] ?: items[0].defaultVal,
+                                onToggle = onToggle,
                             )
                         }
+                    }
+                    if (items.size > 1) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            ToggleTile(
+                                item = items[1],
+                                checked = states[items[1].key] ?: items[1].defaultVal,
+                                onToggle = onToggle,
+                            )
+                        }
+                    }
+                }
 
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Text(
-                            text = stringResource(item.titleRes),
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = if (checked) FontWeight.Bold else FontWeight.Medium,
-                            color = contentColor,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-
-                        if (checked) {
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "✓",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = contentColor,
+                // Row 2
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    if (items.size > 2) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            ToggleTile(
+                                item = items[2],
+                                checked = states[items[2].key] ?: items[2].defaultVal,
+                                onToggle = onToggle,
+                            )
+                        }
+                    }
+                    if (items.size > 3) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            ToggleTile(
+                                item = items[3],
+                                checked = states[items[3].key] ?: items[3].defaultVal,
+                                onToggle = onToggle,
                             )
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ToggleTile(
+    item: MultiToggleGroupPreference.ToggleItem,
+    checked: Boolean,
+    onToggle: (String, Boolean) -> Unit,
+) {
+    val view = LocalView.current
+
+    val scale by animateFloatAsState(
+        targetValue = if (checked) 1.0f else 0.97f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "tileScale",
+    )
+    val cornerRadius by animateDpAsState(
+        targetValue = if (checked) 16.dp else 12.dp,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "tileCorner",
+    )
+    val bgColor by animateColorAsState(
+        targetValue =
+            if (checked) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.7f)
+            },
+        label = "tileBg",
+    )
+    val contentColor by animateColorAsState(
+        targetValue =
+            if (checked) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+            },
+        label = "tileContent",
+    )
+
+    val shape = RoundedCornerShape(cornerRadius)
+
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .scale(scale)
+                .clip(shape)
+                .background(bgColor)
+                .border(
+                    width = 1.dp,
+                    color =
+                        if (checked) {
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+                        } else {
+                            Color.Transparent
+                        },
+                    shape = shape,
+                ).clickable {
+                    val next = !checked
+                    if (next) {
+                        HapticUtils.toggleOn(view)
+                    } else {
+                        HapticUtils.toggleOff(view)
+                    }
+                    onToggle(item.key, next)
+                }.padding(horizontal = 10.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier =
+                Modifier
+                    .size(26.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(contentColor.copy(alpha = if (checked) 0.16f else 0.08f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                painter = painterResource(item.iconRes),
+                contentDescription = null,
+                tint = contentColor,
+                modifier = Modifier.size(16.dp),
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = stringResource(item.titleRes),
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = if (checked) FontWeight.Bold else FontWeight.Medium,
+            color = contentColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+        )
+
+        if (checked) {
+            Text(
+                text = "✓",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = contentColor,
+            )
         }
     }
 }

@@ -6,10 +6,15 @@ import af.shizuku.manager.utils.HapticUtils
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.AttributeSet
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,17 +32,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ComposeView
@@ -45,6 +53,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,6 +62,10 @@ import androidx.preference.PreferenceViewHolder
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+/**
+ * Unified Material 3 Expressive Gesture Studio.
+ * Combines an interactive real-time gesture simulator with clean, structured action selectors.
+ */
 class GesturePreviewPreference
     @JvmOverloads
     constructor(
@@ -60,6 +73,21 @@ class GesturePreviewPreference
         attrs: AttributeSet? = null,
     ) : Preference(context, attrs),
         SharedPreferences.OnSharedPreferenceChangeListener {
+        data class ActionItem(
+            val key: String,
+            val labelRes: Int,
+            val iconRes: Int,
+        )
+
+        private val availableActions =
+            listOf(
+                ActionItem("open_app", R.string.settings_action_open_app, R.drawable.ic_outline_play_arrow_24),
+                ActionItem("app_info", R.string.settings_action_app_info, R.drawable.ic_outline_info_24),
+                ActionItem("toggle_permission", R.string.settings_action_toggle_permission, R.drawable.ic_shield_24),
+                ActionItem("hide_from_list", R.string.settings_action_hide_from_list, R.drawable.ic_visibility_off_24),
+                ActionItem("none", R.string.settings_action_none, R.drawable.ic_close_24),
+            )
+
         private val swipeRight = mutableStateOf("open_app")
         private val swipeLeft = mutableStateOf("app_info")
 
@@ -101,18 +129,40 @@ class GesturePreviewPreference
                 holder.findViewById(R.id.preference_compose_view) as? ComposeView
                     ?: holder.itemView as? ComposeView ?: return
             cv.setPreferenceContent {
-                GesturePreviewContent(
+                GestureStudioContent(
+                    availableActions = availableActions,
                     swipeRight = swipeRight.value,
                     swipeLeft = swipeLeft.value,
+                    onSelectRight = { newAction ->
+                        swipeRight.value = newAction
+                        ShizukuSettings
+                            .getPreferences()
+                            ?.edit()
+                            ?.putString("swipe_right_action", newAction)
+                            ?.apply()
+                        ShizukuSettings.syncAllPlusFeaturesToServer()
+                    },
+                    onSelectLeft = { newAction ->
+                        swipeLeft.value = newAction
+                        ShizukuSettings
+                            .getPreferences()
+                            ?.edit()
+                            ?.putString("swipe_left_action", newAction)
+                            ?.apply()
+                        ShizukuSettings.syncAllPlusFeaturesToServer()
+                    },
                 )
             }
         }
     }
 
 @Composable
-private fun GesturePreviewContent(
+private fun GestureStudioContent(
+    availableActions: List<GesturePreviewPreference.ActionItem>,
     swipeRight: String,
     swipeLeft: String,
+    onSelectRight: (String) -> Unit,
+    onSelectLeft: (String) -> Unit,
 ) {
     val view = LocalView.current
     val coroutineScope = rememberCoroutineScope()
@@ -125,7 +175,7 @@ private fun GesturePreviewContent(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 6.dp),
         shape = RoundedCornerShape(24.dp),
         colors =
             CardDefaults.cardColors(
@@ -135,7 +185,7 @@ private fun GesturePreviewContent(
         Column(
             modifier = Modifier.padding(16.dp),
         ) {
-            // Action indicator chips
+            // Action indicator badges showing live configured actions
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -146,22 +196,23 @@ private fun GesturePreviewContent(
                     modifier = Modifier.weight(1f).padding(end = 4.dp),
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
-                            text = "➔",
+                            text = "→",
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(end = 4.dp),
+                            fontSize = 13.sp,
+                            modifier = Modifier.padding(end = 6.dp),
                         )
                         Text(
                             text = rightLabel,
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
                             maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                         )
                     }
                 }
@@ -172,23 +223,24 @@ private fun GesturePreviewContent(
                     modifier = Modifier.weight(1f).padding(start = 4.dp),
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.End,
                     ) {
                         Text(
                             text = leftLabel,
                             color = MaterialTheme.colorScheme.onSecondaryContainer,
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
                             maxLines = 1,
-                            modifier = Modifier.padding(end = 4.dp),
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(end = 6.dp),
                         )
                         Text(
-                            text = "⬅",
+                            text = "←",
                             color = MaterialTheme.colorScheme.onSecondaryContainer,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 12.sp,
+                            fontSize = 13.sp,
                         )
                     }
                 }
@@ -201,8 +253,8 @@ private fun GesturePreviewContent(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(72.dp)
-                        .clip(RoundedCornerShape(20.dp)),
+                        .height(68.dp)
+                        .clip(RoundedCornerShape(18.dp)),
             ) {
                 // Background action reveal
                 val currentOffset = offsetX.value
@@ -223,13 +275,11 @@ private fun GesturePreviewContent(
                     contentAlignment = if (currentOffset > 0) Alignment.CenterStart else Alignment.CenterEnd,
                 ) {
                     if (currentOffset > 25f) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
                                 modifier =
                                     Modifier
-                                        .size(38.dp)
+                                        .size(36.dp)
                                         .clip(CircleShape)
                                         .background(MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = if (isPastThreshold) 0.25f else 0.12f)),
                                 contentAlignment = Alignment.Center,
@@ -238,11 +288,11 @@ private fun GesturePreviewContent(
                                     painter = painterResource(actionIcon(swipeRight)),
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                                    modifier = Modifier.size(20.dp),
+                                    modifier = Modifier.size(18.dp),
                                 )
                             }
                             if (isPastThreshold) {
-                                Spacer(modifier = Modifier.width(10.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = rightLabel,
                                     color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -252,9 +302,7 @@ private fun GesturePreviewContent(
                             }
                         }
                     } else if (currentOffset < -25f) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             if (isPastThreshold) {
                                 Text(
                                     text = leftLabel,
@@ -262,12 +310,12 @@ private fun GesturePreviewContent(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 13.sp,
                                 )
-                                Spacer(modifier = Modifier.width(10.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
                             }
                             Box(
                                 modifier =
                                     Modifier
-                                        .size(38.dp)
+                                        .size(36.dp)
                                         .clip(CircleShape)
                                         .background(MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = if (isPastThreshold) 0.25f else 0.12f)),
                                 contentAlignment = Alignment.Center,
@@ -276,7 +324,7 @@ private fun GesturePreviewContent(
                                     painter = painterResource(actionIcon(swipeLeft)),
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    modifier = Modifier.size(20.dp),
+                                    modifier = Modifier.size(18.dp),
                                 )
                             }
                         }
@@ -322,7 +370,7 @@ private fun GesturePreviewContent(
                                     },
                                 )
                             },
-                    shape = RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(18.dp),
                     color = MaterialTheme.colorScheme.surfaceContainerHighest,
                     tonalElevation = 2.dp,
                 ) {
@@ -364,6 +412,284 @@ private fun GesturePreviewContent(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // Swipe Right Action Configuration
+            ActionSelectorSection(
+                title = stringResource(R.string.settings_swipe_right),
+                directionIndicator = "→",
+                isRight = true,
+                actions = availableActions,
+                selectedValue = swipeRight,
+                onSelect = onSelectRight,
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // Swipe Left Action Configuration
+            ActionSelectorSection(
+                title = stringResource(R.string.settings_swipe_left),
+                directionIndicator = "←",
+                isRight = false,
+                actions = availableActions,
+                selectedValue = swipeLeft,
+                onSelect = onSelectLeft,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ActionSelectorSection(
+    title: String,
+    directionIndicator: String,
+    isRight: Boolean,
+    actions: List<GesturePreviewPreference.ActionItem>,
+    selectedValue: String,
+    onSelect: (String) -> Unit,
+) {
+    val view = LocalView.current
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier =
+                    Modifier
+                        .size(26.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (isRight) {
+                                MaterialTheme.colorScheme.primaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.secondaryContainer
+                            },
+                        ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = directionIndicator,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color =
+                        if (isRight) {
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.onSecondaryContainer
+                        },
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.height(10.dp))
+
+    // 2-column grid of options for clean, unclipped readability
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        // Row 1: Actions 0 and 1
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            if (actions.isNotEmpty()) {
+                Box(modifier = Modifier.weight(1f)) {
+                    ActionChip(
+                        item = actions[0],
+                        selected = selectedValue == actions[0].key,
+                        isRight = isRight,
+                        onClick = {
+                            HapticUtils.tick(view)
+                            onSelect(actions[0].key)
+                        },
+                    )
+                }
+            }
+            if (actions.size > 1) {
+                Box(modifier = Modifier.weight(1f)) {
+                    ActionChip(
+                        item = actions[1],
+                        selected = selectedValue == actions[1].key,
+                        isRight = isRight,
+                        onClick = {
+                            HapticUtils.tick(view)
+                            onSelect(actions[1].key)
+                        },
+                    )
+                }
+            }
+        }
+
+        // Row 2: Actions 2 and 3
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            if (actions.size > 2) {
+                Box(modifier = Modifier.weight(1f)) {
+                    ActionChip(
+                        item = actions[2],
+                        selected = selectedValue == actions[2].key,
+                        isRight = isRight,
+                        onClick = {
+                            HapticUtils.tick(view)
+                            onSelect(actions[2].key)
+                        },
+                    )
+                }
+            }
+            if (actions.size > 3) {
+                Box(modifier = Modifier.weight(1f)) {
+                    ActionChip(
+                        item = actions[3],
+                        selected = selectedValue == actions[3].key,
+                        isRight = isRight,
+                        onClick = {
+                            HapticUtils.tick(view)
+                            onSelect(actions[3].key)
+                        },
+                    )
+                }
+            }
+        }
+
+        // Row 3: Action 4 (None)
+        if (actions.size > 4) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Box(modifier = Modifier.weight(0.5f)) {
+                    ActionChip(
+                        item = actions[4],
+                        selected = selectedValue == actions[4].key,
+                        isRight = isRight,
+                        onClick = {
+                            HapticUtils.tick(view)
+                            onSelect(actions[4].key)
+                        },
+                    )
+                }
+                Spacer(modifier = Modifier.weight(0.5f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun ActionChip(
+    item: GesturePreviewPreference.ActionItem,
+    selected: Boolean,
+    isRight: Boolean,
+    onClick: () -> Unit,
+) {
+    val scale by animateFloatAsState(
+        targetValue = if (selected) 1.0f else 0.97f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "chipScale",
+    )
+    val cornerRadius by animateDpAsState(
+        targetValue = if (selected) 16.dp else 12.dp,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "chipCorner",
+    )
+    val bgColor by animateColorAsState(
+        targetValue =
+            when {
+                selected && isRight -> MaterialTheme.colorScheme.primaryContainer
+                selected && !isRight -> MaterialTheme.colorScheme.secondaryContainer
+                else -> MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.7f)
+            },
+        label = "chipBg",
+    )
+    val contentColor by animateColorAsState(
+        targetValue =
+            when {
+                selected && isRight -> MaterialTheme.colorScheme.onPrimaryContainer
+                selected && !isRight -> MaterialTheme.colorScheme.onSecondaryContainer
+                else -> MaterialTheme.colorScheme.onSurfaceVariant
+            },
+        label = "chipContent",
+    )
+
+    val shape = RoundedCornerShape(cornerRadius)
+
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .scale(scale)
+                .clip(shape)
+                .background(bgColor)
+                .border(
+                    width = 1.dp,
+                    color =
+                        if (selected) {
+                            if (isRight) {
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+                            } else {
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
+                            }
+                        } else {
+                            Color.Transparent
+                        },
+                    shape = shape,
+                ).clickable(onClick = onClick)
+                .padding(horizontal = 10.dp, vertical = 9.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier =
+                Modifier
+                    .size(24.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(contentColor.copy(alpha = if (selected) 0.16f else 0.08f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                painter = painterResource(item.iconRes),
+                contentDescription = null,
+                tint = contentColor,
+                modifier = Modifier.size(15.dp),
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            text = stringResource(item.labelRes),
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+            color = contentColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+        )
+
+        if (selected) {
+            Text(
+                text = "✓",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = contentColor,
+            )
         }
     }
 }

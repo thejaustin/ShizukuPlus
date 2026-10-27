@@ -11,9 +11,6 @@
         <af.shizuku.manager.settings.GesturePreviewPreference
             android:key="gesture_interactive_preview" />
 
-        <af.shizuku.manager.settings.SwipeActionsConnectedPreference
-            android:key="swipe_actions_connected" />
-
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory

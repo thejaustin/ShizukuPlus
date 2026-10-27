@@ -81,10 +81,8 @@ class MotionControlsPreference
         }
 
         private fun syncPrefs() {
-            val p = ShizukuSettings.getPreferences() ?: return
-            masterEnabled.value = p.getBoolean("expressive_animations", true)
-            val intVal = p.getInt("animation_intensity", 2)
-            intensity.floatValue = intVal.toFloat().coerceIn(0f, 3f)
+            masterEnabled.value = ShizukuSettings.isExpressiveAnimationsEnabled()
+            intensity.floatValue = ShizukuSettings.getAnimationIntensity().toFloat().coerceIn(0f, 3f)
         }
 
         override fun onAttached() {
@@ -130,7 +128,7 @@ class MotionControlsPreference
                         ShizukuSettings
                             .getPreferences()
                             ?.edit()
-                            ?.putInt("animation_intensity", newInt)
+                            ?.putString("animation_intensity", newInt.toString())
                             ?.apply()
                         context.findSettingsActivity()?.onThemeChanged()
                     },

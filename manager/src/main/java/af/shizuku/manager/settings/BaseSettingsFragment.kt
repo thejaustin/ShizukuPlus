@@ -234,6 +234,12 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
     override fun onDestroyView() {
         activeDialogs.forEach { if (it.isShowing) it.dismiss() }
         activeDialogs.clear()
+        listView?.let { rv ->
+            rv.adapter = null
+            for (i in rv.itemDecorationCount - 1 downTo 0) {
+                rv.removeItemDecorationAt(i)
+            }
+        }
         super.onDestroyView()
     }
 

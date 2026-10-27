@@ -283,4 +283,10 @@ class AdbPairingAccessibilityService : AccessibilityService() {
         serviceScope.cancel()
         return super.onUnbind(intent)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        isPairing = false
+        serviceScope.cancel()
+    }
 }

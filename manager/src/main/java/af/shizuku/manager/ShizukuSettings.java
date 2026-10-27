@@ -474,10 +474,19 @@ public class ShizukuSettings {
 
     public static int getAnimationIntensity() {
         try {
-            return Integer.parseInt(getPreferences().getString(Keys.KEY_ANIMATION_INTENSITY, "2"));
-        } catch (NumberFormatException e) {
-            return 2;
+            SharedPreferences prefs = getPreferences();
+            if (prefs == null) return 2;
+            Object raw = prefs.getAll().get(Keys.KEY_ANIMATION_INTENSITY);
+            if (raw instanceof Integer) {
+                return (Integer) raw;
+            } else if (raw instanceof String) {
+                return Integer.parseInt((String) raw);
+            } else if (raw instanceof Number) {
+                return ((Number) raw).intValue();
+            }
+        } catch (Exception ignored) {
         }
+        return 2;
     }
 
     /**
