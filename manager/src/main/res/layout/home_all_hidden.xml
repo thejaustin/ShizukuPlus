@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingVertical="8dp">
+
+    <ImageView
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_empty_home_24"
+        app:tint="?colorOnSurfaceVariant" />
+
+    <TextView
+        style="@style/CardTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:text="@string/empty_state_title_no_home_cards" />
+
+    <TextView
+        style="@style/CardSummary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:text="@string/home_all_cards_hidden_description" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@android:id/button1"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/empty_state_action_restore_home_cards" />
+
+</LinearLayout>

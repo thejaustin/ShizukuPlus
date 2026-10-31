@@ -836,7 +836,6 @@
     <string name="empty_state_title_no_results">未找到结果</string>
     <string name="empty_state_description_no_results">没有应用符合当前的筛选或搜索条件。</string>
     <string name="empty_state_title_no_home_cards">所有卡片均已隐藏</string>
-    <string name="empty_state_description_no_home_cards">你已隐藏所有主界面卡片。请前往设置恢复它们。</string>
     <string name="empty_state_action_restore_home_cards">恢复卡片</string>
     <string name="empty_state_title_activity_log_empty">暂无活动记录</string>
     <string name="empty_state_description_activity_log_empty">启用活动日志后，Shizuku API 调用与事件会显示在这里。</string>

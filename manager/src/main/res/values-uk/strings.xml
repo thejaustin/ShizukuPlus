@@ -708,7 +708,6 @@
     <string name="empty_state_title_no_results">Результатів не знайдено</string>
     <string name="empty_state_description_no_results">Жоден додаток не відповідає вашим фільтрам або критеріям пошуку.</string>
     <string name="empty_state_title_no_home_cards">Всі картки приховано</string>
-    <string name="empty_state_description_no_home_cards">Ви приховали всі картки головного екрана. Перейдіть у Налаштування, щоб відновити їх.</string>
     <string name="empty_state_action_restore_home_cards">Відновити картки</string>
     <string name="empty_state_title_activity_log_empty">Активність не записано</string>
     <string name="empty_state_description_activity_log_empty">Виклики API Shizuku та події з\'являться тут, коли увімкнено журналювання активності.</string>

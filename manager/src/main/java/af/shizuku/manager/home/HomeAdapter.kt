@@ -40,6 +40,7 @@ class HomeAdapter(
         const val ID_BACKUP = 11L
         const val ID_DEVICE_CONTROL = 12L
         const val ID_PERMISSION_MANAGER = 13L
+        const val ID_ALL_HIDDEN = 14L
 
         private val DEFAULT_ORDER =
             listOf(
@@ -93,11 +94,8 @@ class HomeAdapter(
 
     private var lastRebuildArgs: RebuildArgs? = null
 
-    /**
-     * Callback to notify when the empty state should be shown/hidden.
-     * @param isEmpty true if there are no visible cards (excluding fixed status card)
-     */
-    var onEmptyStateChanged: ((Boolean) -> Unit)? = null
+    /** Run by the card that replaces the others once all of them are hidden. */
+    var onRestoreAllCards: (() -> Unit)? = null
 
     init {
         setHasStableIds(true)
@@ -198,10 +196,6 @@ class HomeAdapter(
 
                 dispatchDiff(oldIds)
 
-                // The empty state replaces the whole list, status card included, so it only shows
-                // when there's truly nothing to show.
-                onEmptyStateChanged?.invoke(itemCount == 0)
-
                 isUpdating = false
             }
         }
@@ -275,6 +269,7 @@ class HomeAdapter(
         }
 
         // Draggable cards
+        val beforeDraggable = itemCount
         cardOrder.forEach { id ->
             val isHidden = id.toString() in hidden
             if (isHidden && !isEditMode) return@forEach
@@ -312,6 +307,10 @@ class HomeAdapter(
                     addItem(companionCreator, Pair(companionInstalled, compatHubInstalled), id)
                 }
             }
+        }
+        val restore = onRestoreAllCards
+        if (!isEditMode && itemCount == beforeDraggable && restore != null) {
+            addItem(AllCardsHiddenViewHolder.CREATOR, restore, ID_ALL_HIDDEN)
         }
 
         return fixedCardCount

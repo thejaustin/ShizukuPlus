@@ -774,7 +774,6 @@
     <string name="empty_state_title_no_results">검색 결과가 없습니다</string>
     <string name="empty_state_description_no_results">현재 필터나 검색 조건과 일치하는 앱이 없습니다.</string>
     <string name="empty_state_title_no_home_cards">모든 카드가 숨겨졌습니다</string>
-    <string name="empty_state_description_no_home_cards">홈 화면 카드를 모두 숨겼습니다. 복원하려면 설정으로 이동하세요.</string>
     <string name="empty_state_action_restore_home_cards">카드 복원</string>
     <string name="empty_state_title_activity_log_empty">기록된 활동이 없습니다</string>
     <string name="empty_state_description_activity_log_empty">활동 로깅이 활성화되면 Shizuku API 호출과 이벤트가 여기에 표시됩니다.</string>

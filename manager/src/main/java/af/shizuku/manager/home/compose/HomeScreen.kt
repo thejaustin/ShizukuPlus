@@ -1,7 +1,5 @@
 package af.shizuku.manager.home.compose
 
-import af.shizuku.core.ui.compose.Button
-import af.shizuku.core.ui.compose.ButtonSize
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.utils.EnvironmentUtils
@@ -16,12 +14,9 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -51,7 +46,6 @@ import androidx.recyclerview.widget.RecyclerView
 fun HomeScreen(
     isEditMode: Boolean,
     isOneHanded: Boolean,
-    showEmptyState: Boolean,
     isOneUi: Boolean = ShizukuSettings.isOneUiThemeEnabled(),
     isServerRunning: Boolean = false,
     onStopClick: () -> Unit,
@@ -435,59 +429,53 @@ fun HomeScreen(
             )
         AnimatedGradientBackground(pureBlack = isOled) {
             Box(modifier = Modifier.fillMaxSize()) {
-                if (showEmptyState) {
-                    Box(modifier = Modifier.padding(adjustedPadding)) {
-                        HomeEmptyState(onRestoreHomeCards)
-                    }
-                } else {
-                    AndroidView(
-                        factory = { context ->
-                            recyclerViewProvider(context, adjustedPadding).also { rv ->
-                                (rv.parent as? android.view.ViewGroup)?.removeView(rv)
-                                (rv.getTag(R.id.tag_home_scroll_listener) as? RecyclerView.OnScrollListener)?.let { oldListener ->
-                                    rv.removeOnScrollListener(oldListener)
-                                }
-                                val newListener =
-                                    object : RecyclerView.OnScrollListener() {
-                                        override fun onScrolled(
-                                            recyclerView: RecyclerView,
-                                            dx: Int,
-                                            dy: Int,
-                                        ) {
-                                            val state = scrollBehavior.state
-                                            val limit = state.heightOffsetLimit
-                                            when {
-                                                dy > 0 ->
-                                                    state.heightOffset =
-                                                        (state.heightOffset - dy).coerceAtLeast(limit)
-                                                dy < 0 && !recyclerView.canScrollVertically(-1) ->
-                                                    state.heightOffset =
-                                                        (state.heightOffset - dy).coerceAtMost(0f)
-                                            }
-                                            state.contentOffset -= dy
+                AndroidView(
+                    factory = { context ->
+                        recyclerViewProvider(context, adjustedPadding).also { rv ->
+                            (rv.parent as? android.view.ViewGroup)?.removeView(rv)
+                            (rv.getTag(R.id.tag_home_scroll_listener) as? RecyclerView.OnScrollListener)?.let { oldListener ->
+                                rv.removeOnScrollListener(oldListener)
+                            }
+                            val newListener =
+                                object : RecyclerView.OnScrollListener() {
+                                    override fun onScrolled(
+                                        recyclerView: RecyclerView,
+                                        dx: Int,
+                                        dy: Int,
+                                    ) {
+                                        val state = scrollBehavior.state
+                                        val limit = state.heightOffsetLimit
+                                        when {
+                                            dy > 0 ->
+                                                state.heightOffset =
+                                                    (state.heightOffset - dy).coerceAtLeast(limit)
+                                            dy < 0 && !recyclerView.canScrollVertically(-1) ->
+                                                state.heightOffset =
+                                                    (state.heightOffset - dy).coerceAtMost(0f)
                                         }
-
-                                        override fun onScrollStateChanged(
-                                            recyclerView: RecyclerView,
-                                            newState: Int,
-                                        ) {
-                                            isScrollIdle.value = (newState == RecyclerView.SCROLL_STATE_IDLE)
-                                        }
+                                        state.contentOffset -= dy
                                     }
-                                rv.addOnScrollListener(newListener)
-                                rv.setTag(R.id.tag_home_scroll_listener, newListener)
-                            }
-                        },
-                        update = { view -> recyclerViewProvider(view.context, adjustedPadding) },
-                        onRelease = { rv ->
-                            (rv.getTag(R.id.tag_home_scroll_listener) as? RecyclerView.OnScrollListener)?.let {
-                                rv.removeOnScrollListener(it)
-                                rv.setTag(R.id.tag_home_scroll_listener, null)
-                            }
-                        },
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                }
+
+                                    override fun onScrollStateChanged(
+                                        recyclerView: RecyclerView,
+                                        newState: Int,
+                                    ) {
+                                        isScrollIdle.value = (newState == RecyclerView.SCROLL_STATE_IDLE)
+                                    }
+                                }
+                            rv.addOnScrollListener(newListener)
+                            rv.setTag(R.id.tag_home_scroll_listener, newListener)
+                        }
+                    },
+                    update = { view -> recyclerViewProvider(view.context, adjustedPadding) },
+                    onRelease = { rv ->
+                        (rv.getTag(R.id.tag_home_scroll_listener) as? RecyclerView.OnScrollListener)?.let {
+                            rv.removeOnScrollListener(it)
+                            rv.setTag(R.id.tag_home_scroll_listener, null)
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
         }
     }
@@ -534,60 +522,5 @@ fun AnimatedGradientBackground(
                 ),
     ) {
         content()
-    }
-}
-
-@Composable
-fun HomeEmptyState(onRestoreHomeCards: () -> Unit) {
-    val animationsEnabled = ShizukuSettings.isExpressiveAnimationsEnabled()
-    val infiniteTransition = rememberInfiniteTransition()
-    val floatAnim by infiniteTransition.animateFloat(
-        initialValue = -8f,
-        targetValue = if (animationsEnabled) 8f else -8f,
-        animationSpec =
-            infiniteRepeatable(
-                animation = tween(2500, easing = EaseInOutSine),
-                repeatMode = RepeatMode.Reverse,
-            ),
-    )
-
-    Column(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Image(
-            painter = painterResource(R.drawable.ic_empty_home_24),
-            contentDescription = null,
-            modifier =
-                Modifier
-                    .size(72.dp)
-                    .offset(y = floatAnim.dp),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.empty_state_title_no_home_cards),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = stringResource(R.string.empty_state_description_no_home_cards),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(
-            size = ButtonSize.Medium,
-            onClick = onRestoreHomeCards,
-        ) {
-            Text(stringResource(R.string.empty_state_action_restore_home_cards))
-        }
     }
 }

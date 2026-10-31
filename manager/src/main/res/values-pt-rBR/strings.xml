@@ -696,7 +696,6 @@ Impressão digital da chave RSA:
     <string name="empty_state_title_no_results">Nenhum resultado encontrado</string>
     <string name="empty_state_description_no_results">Nenhum aplicativo corresponde ao seu filtro ou critério de pesquisa atual.</string>
     <string name="empty_state_title_no_home_cards">Todos os cartões ocultos</string>
-    <string name="empty_state_description_no_home_cards">Você ocultou todos os cartões da tela inicial. Acesse Configurações para restaurá-los.</string>
     <string name="empty_state_action_restore_home_cards">Restaurar cartões</string>
     <string name="empty_state_title_activity_log_empty">Nenhuma atividade registrada</string>
     <string name="empty_state_description_activity_log_empty">As chamadas e eventos da API do Shizuku aparecerão aqui quando o registro de atividades estiver ativado.</string>

@@ -255,7 +255,6 @@ open class HomeActivity :
             window.setBackgroundBlurRadius(30)
         }
 
-        var showEmptyState by mutableStateOf(false)
         var isEditMode by mutableStateOf(HomeEditMode.isActive)
         val recyclerView =
             RecyclerView(this).apply {
@@ -282,7 +281,6 @@ open class HomeActivity :
                 HomeScreen(
                     isEditMode = isEditMode,
                     isOneHanded = isOneHanded,
-                    showEmptyState = showEmptyState,
                     isOneUi = isOneUi,
                     isServerRunning = isServerRunning,
                     onStopClick = {
@@ -556,9 +554,10 @@ open class HomeActivity :
             insets
         }
 
-        // Listen for empty state changes
-        adapter.onEmptyStateChanged = { isEmpty ->
-            showEmptyState = isEmpty
+        // Brings back the hidden cards in their current order. Backup stays opt-in.
+        adapter.onRestoreAllCards = {
+            ShizukuSettings.setHiddenHomeCards(emptySet())
+            adapter.updateData()
         }
 
         val cardSpacing = resources.getDimension(R.dimen.card_spacing)

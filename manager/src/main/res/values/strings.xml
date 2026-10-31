@@ -1099,7 +1099,7 @@
     <string name="empty_state_title_no_results">No results found</string>
     <string name="empty_state_description_no_results">No apps match your current filter or search criteria.</string>
     <string name="empty_state_title_no_home_cards">All cards hidden</string>
-    <string name="empty_state_description_no_home_cards">You\'ve hidden all home screen cards. Go to Settings to restore them.</string>
+    <string name="home_all_cards_hidden_description">Every other card is hidden</string>
     <string name="empty_state_action_restore_home_cards">Restore cards</string>
     <string name="home_restore_default">Restore to default</string>
     <string name="home_restore_default_dialog_title">Restore to Default</string>

@@ -1100,7 +1100,6 @@
     <string name="empty_state_title_no_results">Heç nə tapılmadı</string>
     <string name="empty_state_description_no_results">Cari filtrinizə və ya axtarış meyarlarınıza heç bir tətbiq uyğun gəlmir.</string>
     <string name="empty_state_title_no_home_cards">Bütün kartlar gizlədilib</string>
-    <string name="empty_state_description_no_home_cards">Bütün əsas ekran kartlarını gizlətmisiniz. Onları bərpa etmək üçün Tənzimləmələrə keçin.</string>
     <string name="empty_state_action_restore_home_cards">Kartları bərpa et</string>
     <string name="home_restore_default">İlkin vəziyyətə qaytar</string>
     <string name="home_restore_default_dialog_title">İlkin vəziyyətə qaytar</string>

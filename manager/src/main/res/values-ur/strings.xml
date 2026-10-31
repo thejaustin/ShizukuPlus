@@ -670,7 +670,6 @@
     <string name="empty_state_title_no_results">کوئی نتائج نہیں ملے</string>
     <string name="empty_state_description_no_results">کوئی ایپ آپ کے موجودہ filter یا search criteria سے مطابقت نہیں رکھتی۔</string>
     <string name="empty_state_title_no_home_cards">تمام cards چھپے ہوئے ہیں</string>
-    <string name="empty_state_description_no_home_cards">آپ نے home screen کے تمام cards چھپا دیے ہیں۔ انہیں بحال کرنے کے لیے Settings پر جائیں۔</string>
     <string name="empty_state_action_restore_home_cards">Cards بحال کریں</string>
     <string name="empty_state_title_activity_log_empty">کوئی سرگرمی ریکارڈ نہیں ہوئی</string>
     <string name="empty_state_description_activity_log_empty">Activity logging فعال ہونے پر Shizuku API calls اور events یہاں نظر آئیں گے۔</string>
