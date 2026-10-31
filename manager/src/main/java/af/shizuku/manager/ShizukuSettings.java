@@ -173,6 +173,11 @@ public class ShizukuSettings {
         public static final String KEY_LAST_GRANTED_APP_COUNT = "last_granted_app_count";
         public static final String KEY_SHOW_ADVANCED_SETTINGS = "show_advanced_settings";
         public static final String KEY_DOCTOR_ADAPTIVE_AUTO_HEAL = "doctor_adaptive_auto_heal";
+        public static final String KEY_DOCTOR_HEAL_PAIRING_HELPER = "doctor_heal_pairing_helper";
+        public static final String KEY_WATCHDOG_AUTO_RESTART = "watchdog_auto_restart";
+        public static final String KEY_TOASTS_OVER_OTHER_APPS = "toasts_over_other_apps";
+        public static final String KEY_PROBLEMS_ON_HOME = "problems_on_home";
+        public static final String KEY_DOCTOR_REPORT_FAILED_FIXES = "doctor_report_failed_fixes";
         public static final String KEY_FLOATING_NAV_BAR_ENABLED = "floating_nav_enabled";
         public static final String KEY_HIDE_LAUNCHER_ICON = "hide_launcher_icon";
         public static final String KEY_APP_ICON_ALIAS = "app_icon_alias";
@@ -995,6 +1000,49 @@ public class ShizukuSettings {
     public static boolean isAdaptiveDoctorAutoHealEnabled() {
         SharedPreferences p = getPreferences();
         return p == null || p.getBoolean(Keys.KEY_DOCTOR_ADAPTIVE_AUTO_HEAL, true);
+    }
+
+    /**
+     * Whether the Watchdog restarts a server that stopped unexpectedly (on by default). Off, it
+     * only keeps its status notification up and reports the stop.
+     */
+    public static boolean isWatchdogAutoRestartEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_WATCHDOG_AUTO_RESTART, true);
+    }
+
+    /** Whether Home's status card shows the current problem (on by default). */
+    public static boolean isProblemsOnHomeEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_PROBLEMS_ON_HOME, true);
+    }
+
+    /** Whether short messages may show while another app is open (off by default). */
+    public static boolean isToastsOverOtherAppsEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_TOASTS_OVER_OTHER_APPS, false);
+    }
+
+    /** Whether background self-healing may turn the Pairing Helper back on (off by default). */
+    public static boolean isDoctorHealPairingHelperEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_DOCTOR_HEAL_PAIRING_HELPER, false);
+    }
+
+    public static void setDoctorHealPairingHelperEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_DOCTOR_HEAL_PAIRING_HELPER, enable).apply();
+    }
+
+    /** Whether fixes background self-healing tried and could not make are reported (off by default). */
+    public static boolean isDoctorReportFailedFixesEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_DOCTOR_REPORT_FAILED_FIXES, false);
+    }
+
+    public static void setDoctorReportFailedFixesEnabled(boolean enable) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_DOCTOR_REPORT_FAILED_FIXES, enable).apply();
     }
 
     public static void setAdaptiveDoctorAutoHealEnabled(boolean enable) {

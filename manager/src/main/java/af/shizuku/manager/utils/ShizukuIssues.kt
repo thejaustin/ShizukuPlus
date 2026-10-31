@@ -14,6 +14,9 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.core.app.NotificationCompat
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
@@ -76,6 +79,7 @@ object ShizukuIssues {
     const val KEY_START_FAILED = "start_failed"
     const val KEY_STOPPED = "stopped"
     const val KEY_TCP_OPEN = "tcp_open"
+    const val KEY_DOCTOR = "doctor"
     private val START_KEYS = setOf(KEY_PORT_DISCOVERY, KEY_START_FAILED, KEY_STOPPED)
 
     private const val CHANNEL_ID = "helper_notifications"
@@ -84,6 +88,11 @@ object ShizukuIssues {
     // Each issue with the order it was reported in, so the newest of equal severity shows.
     private val issues = ConcurrentHashMap<String, Pair<Issue, Long>>()
     private val sequence = AtomicLong()
+
+    private val currentFlow = MutableStateFlow<Issue?>(null)
+
+    /** The issue [top] returns, for screens that show it (Home's status card). */
+    val current: StateFlow<Issue?> = currentFlow.asStateFlow()
 
     // The severity last posted in the shared notification, so an escalation alerts again.
     @Volatile
@@ -198,9 +207,22 @@ object ShizukuIssues {
             ),
         )
 
+    /** Opens Service Doctor, to see what is wrong and fix it by hand. */
+    fun openDoctorAction(context: Context): Action =
+        Action(
+            context.getString(R.string.issue_open_doctor),
+            PendingIntent.getActivity(
+                context,
+                14,
+                Intent(context, af.shizuku.manager.settings.ServiceDoctorActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            ),
+        )
+
     fun stoppedIssue(
         context: Context,
-        actions: List<Action> = listOf(retryAction(context)),
+        actions: List<Action> = listOf(retryAction(context), openDoctorAction(context)),
         contentIntent: PendingIntent? = null,
     ): Issue =
         Issue(
@@ -217,17 +239,17 @@ object ShizukuIssues {
 
     /**
      * The server died unexpectedly. The Watchdog restarts it and reports what it could not fix;
-     * without it, nothing will bring the server back, so after a short wait (another starter may
+     * without it (or with its restarting turned off), nothing will bring the server back, so after a short wait (another starter may
      * already be on it) that is reported here.
      */
     fun onServerLost(context: Context) {
         val app = context.applicationContext
         main.post {
             stoppedCheck?.let { main.removeCallbacks(it) }
-            if (WatchdogService.isRunning()) return@post
+            if (WatchdogService.isRestarting()) return@post
             val check =
                 Runnable {
-                    if (!ShizukuStateMachine.isRunning() && !WatchdogService.isRunning() && !droppedWithNetwork(app)) {
+                    if (!ShizukuStateMachine.isRunning() && !WatchdogService.isRestarting() && !droppedWithNetwork(app)) {
                         report(app, stoppedIssue(app))
                     }
                 }
@@ -251,6 +273,7 @@ object ShizukuIssues {
     fun render(context: Context) {
         val entry = topEntry()
         val issue = entry?.first
+        currentFlow.value = issue
         val ongoing = WatchdogService.isRunning()
         if (ongoing) WatchdogService.refreshNotification(context)
         val nm = context.getSystemService(NotificationManager::class.java) ?: return

@@ -3,13 +3,13 @@ import af.shizuku.manager.MainActivity
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.home.HomeActivity
+import af.shizuku.manager.utils.AppToast
 import af.shizuku.manager.utils.EnvironmentUtils
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.os.SystemClock
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import android.widget.Toast
 import io.sentry.Breadcrumb
 import io.sentry.Sentry
 import io.sentry.SentryLevel
@@ -71,7 +71,9 @@ class AdbPairingAccessibilityService : AccessibilityService() {
         val isTv = EnvironmentUtils.isTelevision()
 
         if (!EnvironmentUtils.isTlsSupported()) {
-            Toast.makeText(this, getString(R.string.toast_accessibility_tv_only), Toast.LENGTH_SHORT).show()
+            if (!AppToast.show(this, getString(R.string.toast_accessibility_tv_only))) {
+                AdbPairingService.notifyResult(this, getString(R.string.toast_accessibility_tv_only))
+            }
             disableSelf()
             return
         }
@@ -244,7 +246,9 @@ class AdbPairingAccessibilityService : AccessibilityService() {
                 }
                 isPairing = false
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@AdbPairingAccessibilityService, toastMsg, Toast.LENGTH_LONG).show()
+                    if (!AppToast.show(this@AdbPairingAccessibilityService, toastMsg, long = true)) {
+                        AdbPairingService.notifyResult(this@AdbPairingAccessibilityService, toastMsg)
+                    }
                     disableSelf()
                 }
             }

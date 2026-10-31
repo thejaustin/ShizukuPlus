@@ -37,6 +37,8 @@ object SettingsBackupManager {
             // flavors would switch off MT Manager compatibility on the Drop-In build.
             ShizukuSettings.Keys.KEY_LEGACY_RISH_KEEPALIVE,
             ShizukuSettings.Keys.KEY_CUSTOM_APP_NAME_SEED_CLEARED,
+            "firewall_automation_migrated",
+            "retired_problem_channels_deleted",
             // Consent is per device: never restore or sync it.
             ShizukuSettings.Keys.KEY_AICORE_A11Y_USER_ENABLED,
             ShizukuSettings.Keys.KEY_SECURITY_DEFAULTS_DECIDED,
@@ -119,6 +121,8 @@ object SettingsBackupManager {
             ShizukuSettings.Keys.KEY_ROOT_KERNEL_GHOSTING_ENABLED to R.string.settings_root_kernel_ghosting,
             ShizukuSettings.Keys.KEY_ROOT_PARTITION_GHOSTING_ENABLED to R.string.settings_root_partition_ghosting,
             ShizukuSettings.Keys.KEY_ROOT_POWER_GHOSTING_ENABLED to R.string.settings_root_power_ghosting,
+            // Lets a background job switch an accessibility service on.
+            ShizukuSettings.Keys.KEY_DOCTOR_HEAL_PAIRING_HELPER to R.string.doctor_heal_pairing_helper_title,
         )
 
     /** Privileged values the last import held back instead of switching on. */

@@ -27,6 +27,14 @@
             android:title="@string/settings_watchdog"
             android:icon="@drawable/ic_monitor_heart_24" />
 
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="watchdog_auto_restart"
+            android:dependency="watchdog"
+            android:defaultValue="true"
+            android:summary="@string/settings_watchdog_auto_restart_summary"
+            android:title="@string/settings_watchdog_auto_restart"
+            android:icon="@drawable/ic_refresh_24" />
+
         <Preference
             android:key="startup_scripts"
             android:title="@string/settings_startup_scripts_title"
@@ -174,6 +182,20 @@
             android:entries="@array/helper_notifications"
             android:entryValues="@array/helper_notifications_values"
             android:icon="@drawable/ic_outline_notifications_active_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="problems_on_home"
+            android:title="@string/settings_problems_on_home"
+            android:summary="@string/settings_problems_on_home_summary"
+            android:icon="@drawable/ic_nav_home_24"
+            android:defaultValue="true" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="toasts_over_other_apps"
+            android:title="@string/settings_toasts_over_other_apps"
+            android:summary="@string/settings_toasts_over_other_apps_summary"
+            android:icon="@drawable/ic_outline_info_24"
+            android:defaultValue="false" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="live_activity_enabled"

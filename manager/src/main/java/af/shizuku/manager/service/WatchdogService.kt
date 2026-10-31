@@ -118,6 +118,14 @@ class WatchdogService : Service() {
                             return@collectLatest
                         }
 
+                        // Restarting is off: only the status shows here, and the stop is
+                        // reported by ShizukuIssues.onServerLost like with no Watchdog at all.
+                        if (!ShizukuSettings.isWatchdogAutoRestartEnabled()) {
+                            stabilityJob?.cancel()
+                            pendingRecoveryJob?.cancel()
+                            return@collectLatest
+                        }
+
                         // The server is no longer RUNNING, so the stability window ends here:
                         // left armed, it would fire while the server is dead and reset
                         // consecutiveCrashes, making the next crash look like a first restart.
@@ -267,6 +275,8 @@ class WatchdogService : Service() {
                     actions += ShizukuIssues.Action(getString(R.string.watchdog_open_stock_shizuku), pi)
                 }
         }
+        // Last: the Watchdog notification has room for two, and the stock Shizuku fallback matters more.
+        actions += ShizukuIssues.openDoctorAction(ctx)
         val learnMore =
             PendingIntent.getActivity(
                 this,
@@ -450,5 +460,8 @@ class WatchdogService : Service() {
 
         @JvmStatic
         fun isRunning(): Boolean = isRunning.get()
+
+        /** Running and allowed to restart the server, so it is the one that reports a stop. */
+        fun isRestarting(): Boolean = isRunning() && ShizukuSettings.isWatchdogAutoRestartEnabled()
     }
 }

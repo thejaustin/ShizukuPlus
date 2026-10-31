@@ -41,6 +41,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.dynamicanimation.animation.FloatPropertyCompat
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.mvrx.MavericksView
@@ -52,6 +53,7 @@ import com.google.android.material.snackbar.Snackbar
 import io.noties.markwon.Markwon
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.core.ktx.unsafeLazy
@@ -836,6 +838,15 @@ open class HomeActivity :
 
         ShizukuStateMachine.addListener(stateListener)
         ShizukuSettings.getPreferences()?.registerOnSharedPreferenceChangeListener(appearanceChangeListener)
+
+        // The status card shows the current problem; rebind it when that changes.
+        lifecycleScope.launch {
+            repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                af.shizuku.manager.utils.ShizukuIssues.current
+                    .drop(1)
+                    .collect { if (adapter.itemCount > 0) adapter.notifyItemChanged(0) }
+            }
+        }
 
         maybeAskCrashReporting(savedInstanceState)
 

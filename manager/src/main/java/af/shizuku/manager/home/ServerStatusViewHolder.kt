@@ -319,8 +319,21 @@ class ServerStatusViewHolder(
             } else {
                 context.getString(R.string.home_status_service_not_running_summary, context.getString(R.string.app_name))
             }
+        // What the helper notifications would say, here too, for whoever has them off.
+        val issue =
+            af.shizuku.manager.utils.ShizukuIssues
+                .top()
+                ?.takeIf {
+                    af.shizuku.manager.ShizukuSettings
+                        .isProblemsOnHomeEnabled()
+                }
+        val problem =
+            issue?.let {
+                "<br><br><b>${TextUtils.htmlEncode(it.title)}</b><br>" +
+                    TextUtils.htmlEncode(it.text.substringBefore("\n\n"))
+            } ?: ""
         textView.text = title.toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
-        summaryView.text = summary.toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
+        summaryView.text = (summary + problem).toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
         summaryView.visibility = if (TextUtils.isEmpty(summaryView.text)) View.GONE else View.VISIBLE
     }
 }

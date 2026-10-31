@@ -115,6 +115,48 @@ class AdbPairingService : Service() {
             context.getSystemService(NotificationManager::class.java)?.cancel(NOTIFICATION_ID)
         }
 
+        /**
+         * The pairing helper's result, as this service's notification, for when its toast is held
+         * back: the user is in Settings, and a failed pairing would otherwise end silently.
+         */
+        internal fun notifyResult(
+            context: Context,
+            text: String,
+        ) {
+            runCatching {
+                val nm = context.getSystemService(NotificationManager::class.java) ?: return
+                nm.createNotificationChannel(
+                    NotificationChannel(
+                        NOTIFICATION_CHANNEL,
+                        context.getString(R.string.notification_channel_adb_pairing),
+                        NotificationManager.IMPORTANCE_HIGH,
+                    ).apply {
+                        setSound(null, null)
+                        setShowBadge(false)
+                        setAllowBubbles(false)
+                    },
+                )
+                nm.notify(
+                    NOTIFICATION_ID,
+                    Notification
+                        .Builder(context, NOTIFICATION_CHANNEL)
+                        .setColor(context.getColor(R.color.notification))
+                        .setSmallIcon(R.drawable.ic_notification_icon)
+                        .setContentTitle(text)
+                        .setContentIntent(
+                            PendingIntent.getActivity(
+                                context,
+                                NOTIFICATION_ID,
+                                Intent(context, af.shizuku.manager.MainActivity::class.java)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+                            ),
+                        ).setAutoCancel(true)
+                        .build(),
+                )
+            }.onFailure { Timber.tag(tag).w(it, "could not post the pairing result") }
+        }
+
         fun startIntent(context: Context): Intent = Intent(context, AdbPairingService::class.java).setAction(startAction)
 
         private fun stopIntent(context: Context): Intent = Intent(context, AdbPairingService::class.java).setAction(stopAction)

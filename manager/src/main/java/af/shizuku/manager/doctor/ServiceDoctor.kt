@@ -11,6 +11,7 @@ import af.shizuku.manager.receiver.ShizukuReceiverStarter
 import af.shizuku.manager.utils.DeviceOptimizer
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.SettingsHelper
+import af.shizuku.manager.utils.ShizukuIssues
 import af.shizuku.manager.utils.ShizukuStateMachine
 import android.Manifest
 import android.content.Context
@@ -42,7 +43,7 @@ object ServiceDoctor {
         val autoFix: (suspend (Context) -> Boolean)? = null,
         val manualAction: ((Context) -> Unit)? = null,
         val tip: String? = null,
-        // False for a fix that is only wanted when the user taps it, never in a bulk auto-heal.
+        // False for a fix that is only wanted when the user taps it, never in background healing.
         val autoHeal: Boolean = true,
     )
 
@@ -57,6 +58,9 @@ object ServiceDoctor {
         val resolvedCount: Int,
         val appliedFixes: List<String>,
         val remainingIssues: List<String>,
+        // Fixes that were tried and did not work; checks with no fix, or only a manual one, are
+        // not in here (some never pass on some devices).
+        val failedFixes: List<String> = emptyList(),
     )
 
     private fun trySecureSettingOff(
@@ -203,7 +207,8 @@ object ServiceDoctor {
                     },
                     // The pairing helper turns itself off a minute after Settings is left, so
                     // enabling it whenever the server stopped only re-armed it, over and over.
-                    autoHeal = false,
+                    // Left to the user, who can allow it in Service Doctor.
+                    autoHeal = ShizukuSettings.isDoctorHealPairingHelperEnabled(),
                 ),
             )
 
@@ -477,17 +482,20 @@ object ServiceDoctor {
             DiagnosticResult(checks, issues, fixable, tips)
         }
 
+    /** [tapped]: the user pressed "Fix all", so fixes kept out of background healing run too. */
     suspend fun autoHeal(
         context: Context,
         onProgress: ((step: String) -> Unit)? = null,
+        tapped: Boolean = false,
     ): AutoHealReport =
         withContext(Dispatchers.IO) {
             val applied = mutableListOf<String>()
             val remaining = mutableListOf<String>()
+            val failed = mutableListOf<String>()
 
             val diag = runFullDiagnostics(context)
             for (check in diag.checks) {
-                if (!check.ok && check.canAutoFix && check.autoHeal && check.autoFix != null) {
+                if (!check.ok && check.canAutoFix && (check.autoHeal || tapped) && check.autoFix != null) {
                     onProgress?.invoke(check.title)
                     try {
                         val success = check.autoFix.invoke(context)
@@ -496,10 +504,12 @@ object ServiceDoctor {
                             Timber.d("ServiceDoctor: Auto-healed ${check.id}")
                         } else {
                             remaining.add(check.title)
+                            failed.add(check.title)
                         }
                     } catch (e: Exception) {
                         Timber.w(e, "ServiceDoctor: Failed auto-healing ${check.id}")
                         remaining.add(check.title)
+                        failed.add(check.title)
                     }
                 } else if (!check.ok) {
                     remaining.add(check.title)
@@ -519,7 +529,7 @@ object ServiceDoctor {
             } catch (_: Exception) {
             }
 
-            AutoHealReport(resolvedCount, applied, remaining)
+            AutoHealReport(resolvedCount, applied, remaining, failed)
         }
 
     fun triggerAdaptiveAutoHealAsync(context: Context) {
@@ -535,6 +545,7 @@ object ServiceDoctor {
                     delay(1500) // Brief delay to let transient state settle
                     val report = autoHeal(context)
                     Timber.i("ServiceDoctor adaptive background healing: ${report.resolvedCount} fixed")
+                    reportFailedFixes(context, report.failedFixes)
                 } catch (e: Exception) {
                     Timber.w(e, "ServiceDoctor adaptive healing exception")
                 } finally {
@@ -542,5 +553,31 @@ object ServiceDoctor {
                 }
             }
         }
+    }
+
+    /**
+     * Background self-healing could not fix [failed] (empty: everything it tried worked). Shown
+     * through the helper notifications when the user asked for it; a manual run is not reported,
+     * as its results are already on screen.
+     */
+    fun reportFailedFixes(
+        context: Context,
+        failed: List<String>,
+    ) {
+        if (failed.isEmpty() || !ShizukuSettings.isDoctorReportFailedFixesEnabled()) {
+            ShizukuIssues.clear(context, ShizukuIssues.KEY_DOCTOR)
+            return
+        }
+        ShizukuIssues.report(
+            context,
+            ShizukuIssues.Issue(
+                ShizukuIssues.KEY_DOCTOR,
+                ShizukuIssues.Severity.PROBLEM,
+                context.resources.getQuantityString(R.plurals.issue_doctor_failed_title, failed.size, failed.size),
+                failed.joinToString(", "),
+                listOf(ShizukuIssues.openDoctorAction(context)),
+                ShizukuIssues.openDoctorAction(context).intent,
+            ),
+        )
     }
 }

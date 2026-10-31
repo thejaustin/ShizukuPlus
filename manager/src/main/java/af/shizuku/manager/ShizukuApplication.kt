@@ -70,6 +70,14 @@ class ShizukuApplication :
         lateinit var appContext: Context
             private set
 
+        // Shizuku+ activities between onStart and onStop; above zero, the app is on screen.
+        private val startedActivities =
+            java.util.concurrent.atomic
+                .AtomicInteger()
+
+        /** Whether one of the app's own screens is showing (a toast then lands on it). */
+        fun isOnScreen(): Boolean = startedActivities.get() > 0
+
         /** True only if libadb.so loaded successfully. ADB pairing features must check this. */
         var isAdbNativeAvailable: Boolean = false
             private set
@@ -551,6 +559,7 @@ class ShizukuApplication :
         registerActivityLifecycleCallbacks(
             object : ActivityLifecycleCallbacks {
                 override fun onActivityStarted(activity: Activity) {
+                    startedActivities.incrementAndGet()
                     if (!af.shizuku.manager.service.LegacyRishKeepAliveService
                             .isRunning()
                     ) {
@@ -569,6 +578,7 @@ class ShizukuApplication :
                 override fun onActivityPaused(activity: Activity) = Unit
 
                 override fun onActivityStopped(activity: Activity) {
+                    startedActivities.updateAndGet { (it - 1).coerceAtLeast(0) }
                     af.shizuku.manager.utils.SettingsBackupManager
                         .requestAutoBackup(this@ShizukuApplication)
                 }

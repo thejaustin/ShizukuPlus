@@ -488,7 +488,13 @@
     <string name="settings_start_on_boot_bug">Due to a bug in Android 11-12, wireless debugging does not remember any authorized networks.\n\nYou will need to re-authorize the network on each reboot by tapping \"Allow\" when the authorization dialog pops up.</string>
     <string name="settings_use_system_color">Use system theme color</string>
     <string name="settings_watchdog">Watchdog</string>
-    <string name="settings_watchdog_summary">Automatically restart Shizuku+ after a crash or unexpected stop. Cannot reconnect when the underlying network disconnects (e.g. USB cable unplugged while using RNDIS/USB ADB).</string>
+    <string name="settings_watchdog_summary">Keeps Shizuku+ in the background with a status notification that shows when something\'s wrong, and restarts it after a crash or unexpected stop. Cannot reconnect when the underlying network disconnects (e.g. USB cable unplugged while using RNDIS/USB ADB).</string>
+    <string name="settings_problems_on_home">Show problems on Home</string>
+    <string name="settings_problems_on_home_summary">Shizuku+\'s status card says what\'s wrong, even with helper notifications off</string>
+    <string name="settings_toasts_over_other_apps">Messages over other apps</string>
+    <string name="settings_toasts_over_other_apps_summary">Show Shizuku+\'s short messages while you\'re in another app. Off, they only show while Shizuku+ is open, and a pairing result comes as a notification</string>
+    <string name="settings_watchdog_auto_restart">Restart automatically</string>
+    <string name="settings_watchdog_auto_restart_summary">Off, the Watchdog only shows the status notification and tells you when Shizuku+ stops</string>
     <string name="settings_watchdog_not_running">On, not running right now</string>
     <string name="settings_device_hardening">Device hardening &amp; keepalive</string>
     <string name="settings_device_hardening_summary">Exempt Shizuku and terminal clients from Doze, auto-grant WRITE_SECURE_SETTINGS, sync starter binaries, and while the Watchdog is on, lift background and battery limits on this app</string>
@@ -1014,6 +1020,15 @@
     <string name="issue_stopped_text">It stopped unexpectedly and hasn\'t come back. Tap Retry to start it again.</string>
     <string name="issue_start_failed_title">Shizuku+ couldn\'t start</string>
     <string name="issue_turn_on_tcp_mode">Turn on TCP Mode</string>
+    <string name="issue_open_doctor">Open Service Doctor</string>
+    <plurals name="issue_doctor_failed_title">
+        <item quantity="one">Self-healing couldn\'t fix %d thing</item>
+        <item quantity="other">Self-healing couldn\'t fix %d things</item>
+    </plurals>
+    <string name="doctor_heal_pairing_helper_title">Turn on the Pairing Helper</string>
+    <string name="doctor_heal_pairing_helper_desc">Let self-healing switch the Pairing Helper back on. It turns itself off a minute after you leave Settings, so this mostly re-arms it.</string>
+    <string name="doctor_report_failed_fixes_title">Tell me what it couldn\'t fix</string>
+    <string name="doctor_report_failed_fixes_desc">When self-healing tries a fix in the background and it doesn\'t work, show it in the helper notifications</string>
     <string name="watchdog_turn_off">Turn Off</string>
     <string name="watchdog_shizuku_crashed_title">Shizuku crashed recently</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog restarted the service. Tap to learn about potential fixes to prevent future crashes.</string>

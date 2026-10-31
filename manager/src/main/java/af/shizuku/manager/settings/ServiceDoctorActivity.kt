@@ -81,6 +81,32 @@ class ServiceDoctorActivity : AppBarActivity() {
         binding.switchAdaptiveAutoHeal.setOnCheckedChangeListener { view, isChecked ->
             if (isChecked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
             ShizukuSettings.setAdaptiveDoctorAutoHealEnabled(isChecked)
+            binding.switchHealPairingHelper.isEnabled = isChecked
+            binding.switchReportFailedFixes.isEnabled = isChecked
+            if (!isChecked) {
+                af.shizuku.manager.utils.ShizukuIssues
+                    .clear(applicationContext, af.shizuku.manager.utils.ShizukuIssues.KEY_DOCTOR)
+            }
+        }
+
+        // Only meaningful while background self-healing runs.
+        binding.switchHealPairingHelper.isEnabled = binding.switchAdaptiveAutoHeal.isChecked
+        binding.switchReportFailedFixes.isEnabled = binding.switchAdaptiveAutoHeal.isChecked
+
+        binding.switchHealPairingHelper.isChecked = ShizukuSettings.isDoctorHealPairingHelperEnabled()
+        binding.switchHealPairingHelper.setOnCheckedChangeListener { view, isChecked ->
+            if (isChecked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
+            ShizukuSettings.setDoctorHealPairingHelperEnabled(isChecked)
+        }
+
+        binding.switchReportFailedFixes.isChecked = ShizukuSettings.isDoctorReportFailedFixesEnabled()
+        binding.switchReportFailedFixes.setOnCheckedChangeListener { view, isChecked ->
+            if (isChecked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
+            ShizukuSettings.setDoctorReportFailedFixesEnabled(isChecked)
+            if (!isChecked) {
+                af.shizuku.manager.utils.ShizukuIssues
+                    .clear(applicationContext, af.shizuku.manager.utils.ShizukuIssues.KEY_DOCTOR)
+            }
         }
 
         binding.rowHelperNotifications.setOnClickListener {
@@ -109,6 +135,9 @@ class ServiceDoctorActivity : AppBarActivity() {
         super.onResume()
         // Also settable from Behavior › Notifications.
         showHelperNotificationsLevel()
+        // A reported failed fix is what brought the user here; the list below now shows it.
+        af.shizuku.manager.utils.ShizukuIssues
+            .clear(applicationContext, af.shizuku.manager.utils.ShizukuIssues.KEY_DOCTOR)
     }
 
     private fun showHelperNotificationsLevel() {
@@ -468,7 +497,7 @@ class ServiceDoctorActivity : AppBarActivity() {
         binding.autoFixProgress.visibility = View.VISIBLE
 
         serviceScope.launch {
-            val report = ServiceDoctor.autoHeal(this@ServiceDoctorActivity)
+            val report = ServiceDoctor.autoHeal(this@ServiceDoctorActivity, tapped = true)
             withContext(Dispatchers.Main) {
                 binding.autoFixProgress.visibility = View.GONE
                 HapticUtils.success(binding.btnAutoHeal)

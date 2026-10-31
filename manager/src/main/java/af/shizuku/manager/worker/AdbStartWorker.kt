@@ -457,7 +457,7 @@ class AdbStartWorker(
                 ShizukuIssues.Severity.PROBLEM,
                 context.getString(R.string.issue_start_failed_title),
                 e.message?.take(120)?.let { "$shortMsg\n\n$it" } ?: shortMsg,
-                listOf(ShizukuIssues.retryAction(context)),
+                listOf(ShizukuIssues.retryAction(context), ShizukuIssues.openDoctorAction(context)),
                 bugReport,
             ),
         )

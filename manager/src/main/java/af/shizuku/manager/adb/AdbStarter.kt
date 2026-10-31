@@ -5,6 +5,7 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.database.ActivityLogManager
 import af.shizuku.manager.receiver.ShizukuReceiverStarter
 import af.shizuku.manager.starter.Starter
+import af.shizuku.manager.utils.AppToast
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuStateMachine
@@ -15,7 +16,6 @@ import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import android.provider.Settings
 import android.view.ContextThemeWrapper
-import android.widget.Toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.sentry.Sentry
 import kotlinx.coroutines.CancellationException
@@ -195,7 +195,7 @@ object AdbStarter {
                     } else {
                         // Fallback for non-activity context
                         val themedContext = ContextThemeWrapper(context, R.style.AppTheme)
-                        Toast.makeText(themedContext, R.string.adb_error_ssl_message, Toast.LENGTH_LONG).show()
+                        AppToast.show(themedContext, themedContext.getString(R.string.adb_error_ssl_message), long = true)
                     }
                 }
             }
@@ -248,9 +248,7 @@ object AdbStarter {
                             is AdbKeyException -> context.getString(R.string.adb_error_key_store)
                             else -> it.message
                         }
-                    Toast
-                        .makeText(context, context.getString(R.string.adb_error_stop_tcp) + ". ${errorMsg?.take(80)}", Toast.LENGTH_LONG)
-                        .show()
+                    AppToast.show(context, context.getString(R.string.adb_error_stop_tcp) + ". ${errorMsg?.take(80)}", long = true)
                 }
             }
         }
