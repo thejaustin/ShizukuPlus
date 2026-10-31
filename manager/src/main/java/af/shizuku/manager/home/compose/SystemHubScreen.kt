@@ -88,7 +88,7 @@ fun SystemHubScreen(
         val navClearance =
             // Bar attaches only while Hub is one of its tabs.
             if (!showBack) {
-                112.dp
+                160.dp
             } else {
                 0.dp
             }

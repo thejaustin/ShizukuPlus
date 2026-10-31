@@ -424,7 +424,7 @@ fun HomeScreen(
         }
         val navClearance =
             if (ShizukuSettings.isFloatingNavBarEnabled()) {
-                116.dp
+                160.dp
             } else {
                 72.dp
             }
