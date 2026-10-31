@@ -31,7 +31,7 @@ class AutomationService : Service() {
     // NetworkFirewallRule, AppAutoHideRule, and AppSpecificProfileRule are registered globally in
     // ShizukuApplication via registerDefaultRules() — no per-service registration needed here.
     // Registering them again in onCreate()/onDestroy() would cause double-fire while the service
-    // is running and lose rule state (isSafeNetwork, savedGlobalFirewall) across service restarts.
+    // is running. The firewall state they set lives in ShizukuSettings and is cleared in onDestroy.
 
     private val networkCallback =
         object : ConnectivityManager.NetworkCallback() {
@@ -313,5 +313,6 @@ class AutomationService : Service() {
             }
         }
         job.cancel()
+        ShizukuSettings.clearAutomationFirewallState()
     }
 }

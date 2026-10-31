@@ -1444,11 +1444,47 @@ public class ShizukuSettings {
         return p != null && p.getBoolean(Keys.KEY_BINDER_FIREWALL_ENABLED, false);
     }
 
-    /** Was missing entirely (#435) - NetworkFirewallRule needs to flip this programmatically,
-     *  not just have the user flip it by hand in Settings. */
-    public static void setBinderFirewallEnabled(boolean enabled) {
-        SharedPreferences p = getPreferences();
-        if (p != null) p.edit().putBoolean(Keys.KEY_BINDER_FIREWALL_ENABLED, enabled).apply();
+    // What automation knows, kept apart from the user's switch so no rule ever rewrites it. In
+    // memory only: AutomationService evaluates the network and foreground app again when it starts.
+    private static volatile boolean onTrustedNetwork = false;
+    @Nullable
+    private static volatile Boolean appFirewallOverride = null;
+
+    /** NetworkFirewallRule: the current Wi-Fi is one the user trusts, so the firewall relaxes. */
+    public static void setOnTrustedNetwork(boolean trusted) {
+        onTrustedNetwork = trusted;
+    }
+
+    public static boolean isOnTrustedNetwork() {
+        return onTrustedNetwork;
+    }
+
+    /** AppSpecificProfileRule: the foreground app's Block/Allow profile, or null for none. */
+    public static void setAppFirewallOverride(@Nullable Boolean enabled) {
+        appFirewallOverride = enabled;
+    }
+
+    @Nullable
+    public static Boolean getAppFirewallOverride() {
+        return appFirewallOverride;
+    }
+
+    /** AutomationService stopped: nothing is watching, so the user's switch applies as set. */
+    public static void clearAutomationFirewallState() {
+        boolean changed = onTrustedNetwork || appFirewallOverride != null;
+        onTrustedNetwork = false;
+        appFirewallOverride = null;
+        if (changed) syncAllPlusFeaturesToServer();
+    }
+
+    /**
+     * The firewall state the server should apply: a foreground app's profile wins, otherwise the
+     * user's switch, relaxed on a trusted network.
+     */
+    public static boolean isBinderFirewallEffective() {
+        Boolean override = appFirewallOverride;
+        if (override != null) return override;
+        return isBinderFirewallEnabled() && !onTrustedNetwork;
     }
 
     public static boolean isBinderLoggingEnabled() {
@@ -1853,7 +1889,7 @@ public class ShizukuSettings {
                 service.updatePlusFeatureEnabled("on_device_adb_tcp", isOnDeviceAdbTcpEnabled());
                 service.updatePlusFeatureEnabled("force_start_wadb", isForceStartWadbEnabled());
                 service.updatePlusFeatureEnabled("enable_activity_log", isActivityLogEnabled());
-                service.updatePlusFeatureEnabled("binder_firewall", isBinderFirewallEnabled());
+                service.updatePlusFeatureEnabled("binder_firewall", isBinderFirewallEffective());
                 service.updatePlusFeatureEnabled("binder_logging", isBinderLoggingEnabled());
                 service.updatePlusFeatureEnabled("shadow_binder", isShadowBinderEnabled());
                 service.setPlusSetting("shadow_hidden_packages", getShadowBinderHiddenPackages());
