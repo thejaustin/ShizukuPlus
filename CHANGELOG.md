@@ -38,6 +38,13 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Diagnostics fixes do what they say** — "Device hardening" applies it, and "No hidden apps" opens the hidden-apps list.
 - **App Backup's "restore original" never deletes the only copy** — if restoring fails, the saved original is kept so it can be tried again, and an app left uninstalled by an interrupted restore can still be brought back.
 - **No freezes when enabling the pairing helper** — turning on the accessibility service automatically no longer runs shell commands on the main thread, and the "Fix conflict" button for the stock Shizuku server checks for root in the background and tells you what happened.
+- **No repeated "Port discovery keeps timing out" notification** — it shows at most once a day, silently, and not at all when TCP Mode is on or the service is already running.
+- **The "prompt was not accepted in time" notice no longer comes back** after the service has been started another way (root, or adb from a computer). It used to reappear every time that service stopped.
+- **The firewall automation no longer changes your Binder Firewall switch** — trusted networks and per-app Block/Allow profiles now apply on top of your setting instead of rewriting it, so turning the firewall off stays off and the trusted-networks list no longer greys itself out on a trusted network. If automation changed your switch before this update, check it once in Behavior settings.
+- **"All cards hidden" shows on Home** — when every card except the status card is hidden, a card under it brings them back in one tap.
+- **`rish` no longer prints "Waiting for Shizuku authorization…"** on every command; the line only appears when authorization is actually taking a while.
+- **Updated translations** — Azerbaijani (thanks @Figim), plus newer strings filled in for Arabic, German, Spanish and French.
+- **Bottom cards are no longer hidden behind the floating navigation bar** (thanks @udmodz0).
 
 ### 👆 Swipe actions settings
 - **Simpler Swipe actions settings** — a row from your app list swipes each way on its own, showing exactly what each swipe does. Below it, "Swipe right", "Swipe left" and "Long-press menu" are normal settings rows that open a short picker, replacing the grid of chips.
