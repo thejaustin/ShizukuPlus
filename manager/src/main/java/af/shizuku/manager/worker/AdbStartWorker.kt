@@ -415,13 +415,20 @@ class AdbStartWorker(
 
     private fun showMdnsBlockedSuggestion(context: Context) {
         if (!ShizukuSettings.isNotificationSystemEnabled()) return
+        // The advice is to turn TCP Mode on, so it says nothing once that is done or a server is
+        // up anyway. Each run of failed retries would post it again; once a day is enough.
+        if (ShizukuSettings.getTcpMode() || ShizukuStateMachine.isRunning()) return
+        val prefs = ShizukuSettings.getPreferences()
+        val now = System.currentTimeMillis()
+        if (now - prefs.getLong(PREF_MDNS_NOTICE_AT, 0L) in 0 until MDNS_NOTICE_INTERVAL_MS) return
+        prefs.edit().putLong(PREF_MDNS_NOTICE_AT, now).apply()
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             nm.createNotificationChannel(
                 NotificationChannel(
                     CHANNEL_ID,
                     context.getString(R.string.wadb_notification_title),
-                    NotificationManager.IMPORTANCE_DEFAULT,
+                    NotificationManager.IMPORTANCE_LOW,
                 ),
             )
         }
@@ -460,6 +467,7 @@ class AdbStartWorker(
                 ).setContentIntent(pi)
                 .addAction(0, context.getString(R.string.wadb_mdns_switch_tcp_action), pi)
                 .addAction(0, context.getString(R.string.settings_developer_options), devPi)
+                .setSilent(true)
                 .setAutoCancel(true)
                 .build()
         nm.notify(NOTIFICATION_ID_MDNS_BLOCKED, notification)
@@ -607,6 +615,8 @@ class AdbStartWorker(
         const val NOTIFICATION_ID = 1448
         const val NOTIFICATION_ID_MDNS_BLOCKED = 1449
         private const val ERROR_NOTIFICATION_COOLDOWN_MS = 600_000L
+        private const val PREF_MDNS_NOTICE_AT = "mdns_blocked_notice_at"
+        private const val MDNS_NOTICE_INTERVAL_MS = 24 * 60 * 60 * 1000L
 
         @Volatile
         private var lastErrorNotificationMs = 0L

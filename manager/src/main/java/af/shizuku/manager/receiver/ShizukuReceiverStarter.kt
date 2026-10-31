@@ -484,6 +484,13 @@ object ShizukuReceiverStarter {
     ) {
         if (!unlocked(app)) return
         observe(app)
+        val serverRunning = ShizukuStateMachine.isRunning()
+        // A server started some other way (root, adb from a computer) leaves the marker set, since
+        // this manager's key is still not accepted. Its notice is old news by then: without this it
+        // came back every time that server stopped. The marker and its start guard stay.
+        if (serverRunning && AdbAuthWait.isUnansweredNoticeDue()) {
+            AdbAuthWait.dismissUnansweredNotice(AdbAuthWait.unansweredStamp())
+        }
         val display =
             StartNotificationState.display(
                 works = queryWork(app),
@@ -491,7 +498,7 @@ object ShizukuReceiverStarter {
                 waitHeld = AdbAuthWait.isWaiting(),
                 unmeteredAvailable = unmeteredAvailable(app),
                 unanswered = AdbAuthWait.isUnansweredNoticeDue(),
-                serverRunning = ShizukuStateMachine.isRunning(),
+                serverRunning = serverRunning,
             )
         if (display == Display.Unknown) return
         runCatching {

@@ -36,6 +36,7 @@ public class ShizukuShellLoader {
     private static String callingPackage;
     private static Handler handler;
     private static Runnable timeoutCallback;
+    private static Runnable waitingNotice;
 
     private static final Binder receiverBinder = new Binder() {
 
@@ -137,6 +138,9 @@ public class ShizukuShellLoader {
     }
 
     private static void onBinderReceived(IBinder binder, String sourceDir) {
+        if (waitingNotice != null) {
+            handler.removeCallbacks(waitingNotice);
+        }
         if (timeoutCallback != null) {
             handler.removeCallbacks(timeoutCallback);
         }
@@ -202,8 +206,11 @@ public class ShizukuShellLoader {
         // genuine wait for a human to notice and tap the consent notification, but prints nothing
         // while it's waiting - which reads identically to a hang for a setup that's actually
         // broken (dialog never displayed, wrong flavor installed, etc). One line up front at least
-        // tells the caller what it's blocked on.
-        System.err.println("Waiting for Shizuku authorization... check your notifications.");
+        // tells the caller what it's blocked on. Only when the binder is slow to arrive: an app
+        // that is already authorised gets it within a few milliseconds, and printing on every
+        // command clutters scripts' stderr.
+        waitingNotice = () -> System.err.println("Waiting for Shizuku authorization... check your notifications.");
+        handler.postDelayed(waitingNotice, 1500);
 
         timeoutCallback = () -> abort(
                 String.format(
