@@ -50,9 +50,6 @@
         <item>twotone</item>
     </string-array>
 
-    <string name="icon_style_filled">Dolu</string>
-    <string name="icon_style_outlined">Konturlu</string>
-    <string name="icon_style_twotone">İkirəngli</string>
     <string name="home_edit_mode_banner">Əsas ekran düzənini fərdiləşdirmək üçün kartları basıb saxlayın və sürükləyin</string>
 
     <string name="settings_icon_color_mode">İki Rəngli İkon Rəngləri</string>
@@ -319,6 +316,23 @@
     <string name="rish_description"><![CDATA[%1$s ilə istənilən terminal tətbiqində shell əmrləri icra edə bilərsiniz.<p>Onun necə istifadə olunacağını öyrənmək üçün toxunun.]]></string>
 
     <!-- Settings — swipe customisation -->
+    <string name="swipe_actions_right_title">Sola sürüşdür</string>
+    <string name="swipe_actions_left_title">Sağa sürüşdür</string>
+    <string name="swipe_actions_long_press_title">Uzun basma menyusu</string>
+    <string name="swipe_actions_long_press_summary">%2$d əməliyyatdan %1$d-i aktivdir</string>
+    <string name="swipe_picker_right_subtitle">Tətbiqi sola sürüşdürdükdə nə baş verir</string>
+    <string name="swipe_picker_left_subtitle">Tətbiqi sağa sürüşdürdükdə nə baş verir</string>
+    <string name="swipe_preview_caption">Tətbiq siyahınızda sürüşdürmənin görünüşü</string>
+    <string name="swipe_sandbox_hint">Sətri hər hansı bir istiqamətə sürüşdürün. Xətti keçdikdən sonra buraxın və həmin sürüşdürmənin nə edəcəyini seçin.</string>
+    <string name="swipe_sandbox_right_will">Sola sürüşdürmə bu əməliyyatı yerinə yetirəcək…</string>
+    <string name="swipe_sandbox_left_will">Sağa sürüşdürmə bu əməliyyatı yerinə yetirəcək…</string>
+    <string name="swipe_action_desc_open_app">Tətbiqi işə sal</string>
+    <string name="swipe_action_desc_app_info">Android-in tətbiq təfərrüatları səhifəsini aç</string>
+    <string name="swipe_action_desc_toggle_permission">Shizuku giriş icazəsini ver və ya ləğv et</string>
+    <string name="swipe_action_desc_hide_from_list">Geri qaytarmaq imkanı ilə onu siyahıdan gizlət</string>
+    <string name="swipe_action_desc_none">Bu istiqamətə sürüşdürmək heç nə etmir</string>
+    <string name="settings_swipe_sandbox_title">Sürüşdürmə tənzimləmələri sınaq mühiti</string>
+    <string name="settings_swipe_sandbox_summary">Sürüşdürmə əməliyyatlarında önizləməni özünüz sürüşdürə biləcəyiniz sətirlə əvəz edin, sonra isə həmin sürüşdürmənin nə edəcəyini seçin</string>
     <string name="settings_action_none">Heç biri</string>
     <string name="settings_action_open_app">Tətbiqi aç</string>
     <string name="settings_action_app_info">Tətbiq məlumatı</string>
@@ -351,13 +365,6 @@
     <string name="onboarding_setup_wadb_desc">Android 11+, kompüter tələb olunmur. Simsiz sazlamadan istifadə edir.</string>
     <string name="onboarding_setup_root_desc">Cihazınız root-ludur. Shizuku-nu root giriş ilə başladın.</string>
     <string name="onboarding_setup_adb_desc">İstənilən cihaz. Başlamaq üçün kompüterdən bir ADB əmri icra edin.</string>
-    <string name="onboarding_m3e_title">İfadəli Görünüş &amp; Hissiyyat</string>
-    <string name="onboarding_m3e_desc">Adaptiv ikon üslubları, AMOLED+ kontrastı və axıcı hərəkətlərlə təcrübənizi fərdiləşdirin.</string>
-    <string name="onboarding_icon_style_title">İkon Üslubu</string>
-    <string name="onboarding_amoled_title">AMOLED+ Xalis Qara</string>
-    <string name="onboarding_amoled_desc">Tünd rejimdə təmiz qara arxa fonlar</string>
-    <string name="onboarding_animations_title">İfadəli Animasiyalar</string>
-    <string name="onboarding_animations_desc">Axıcı yay fizikası və toxunma hərəkəti</string>
     <string name="onboarding_layout_nav_title">Əsas ekran &amp; Naviqasiya</string>
     <string name="onboarding_layout_nav_desc">Gündəlik iş sahənizi uyğunlaşdırın. Əsas ekranda kartların sırasını dəyişmək üçün sürükləyin və ya üzən kapsul naviqasiya panelindən istifadə edin.</string>
     <string name="onboarding_floating_nav_title">Üzən Naviqasiya Paneli</string>
@@ -906,6 +913,7 @@
     <string name="stock_shizuku_conflict_dialog_title">Uyğunsuz Server İşləyir</string>
     <string name="stock_shizuku_conflict_dialog_message">Orijinal Shizuku serveri hazırda fonda işləyir. Android təhlükəsizlik məhdudiyyətlərinə görə, Shizuku+ orijinal serverlə əlaqə qura bilməz və ya onu dayandıra bilməz.\n\nZəhmət olmasa, orijinal serveri dayandırmaq üçün cihazınızı tamamilə yenidən başladın, sonra ADB və ya Root istifadə edərək Shizuku+-ı başladın.</string>
     <string name="stock_shizuku_restarting_via_root">Root vasitəsilə yenidən başladılır…</string>
+    <string name="stock_shizuku_restarting">Yenidən başladılır…</string>
     <string name="backup_plain_exported">Adi ehtiyat nüsxə ixrac edildi. Bu faylı məxfi saxlayın — o, şifrələnməyib.</string>
     <string name="backup_exported_success">Ehtiyat nüsxə uğurla ixrac edildi</string>
     <string name="backup_restored_success">Ehtiyat nüsxə uğurla bərpa edildi</string>
@@ -1135,10 +1143,6 @@
     <!-- Custom accent color preference (settings_personalization.xml) -->
     <string name="settings_custom_accent_title">Xüsusi Vurğu Rəngi</string>
 
-    <!-- AI Bridge feature preference (settings_shizuku_plus.xml) -->
-
-    <!-- Backup error messages (ShizukuPlusSettingsFragment.kt) -->
-
     <!-- Update Settings -->
     <string name="settings_behavior_category_startup">Başlanğıc və Bərpa</string>
     <string name="settings_advanced_category_diagnostics">Diaqnostika</string>
@@ -1263,6 +1267,7 @@
     <string name="update_install_now">İndi quraşdır</string>
     <string name="update_download_failed_title">Yükləmə uğursuz oldu</string>
     <string name="update_download_failed_message">Yeniləmə yüklənə bilmədi. Zəhmət olmasa yenidən cəhd edin.</string>
+    <string name="update_download_corrupt">Yüklənilən yeniləmə zədələnib (%1$s). Təkrar cəhd edin və ya onu GitHub-dan yükləyin.</string>
     <string name="update_download_failed_storage">Yeniləməni yükləmək üçün kifayət qədər boş yaddaş yoxdur.</string>
     <string name="update_download_failed_cannot_resume">Fasilədən sonra yükləmə davam etdirilə bilmədi. Zəhmət olmasa yenidən cəhd edin.</string>
     <string name="update_download_failed_http">Şəbəkə xətası yükləməni kəsdi. Zəhmət olmasa əlaqənizi yoxlayın və yenidən cəhd edin.</string>
@@ -1657,7 +1662,7 @@
 
     <!-- Stealth Mode -->
     <string name="help_stealth_mode_title">Gizli Rejim</string>
-    <string name="help_stealth_mode_detail">Binder səviyyəsində PackageManager sorğularını tutur və ShizukuPlus və Shizuku paketləri üçün \"quraşdırılmayıb\" cavabını qaytarır. PM-dən root alətlərini aşkar etmək üçün istifadə edən tətbiqlər (bank tətbiqləri, DRM yoxlamaları) onları tapa bilməyəcək. Qeyd: bu, onları yalnız PackageManager sorğularından gizlədir — birbaşa Android tənzimləmələrini yoxlayan tətbiqlər üçün tərtibatçı rejimi və USB sazlama hələ də görünəndir.</string>
+    <string name="help_stealth_mode_detail">Binder səviyyəsində PackageManager sorğularını tutur və ShizukuPlus və Shizuku paketləri üçün \"quraşdırılmayıb\" cavabını qaytarır. PM-dən root alətlərini aşkar etmək üçün istifadə edən tətbiqlər (bank tətbiqləri, DRM yoxlamaları) onları tapa bilməyəcək. Qeyd: bu, obyektiv olaraq onları yalnız PackageManager sorğularından gizlədir — birbaşa Android tənzimləmələrini yoxlayan tətbiqlər üçün tərtibatçı rejimi və USB sazlama hələ də görünəndir.</string>
 
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
     <string name="corner_style_sharp">İti / Düz</string>
@@ -1698,6 +1703,19 @@
     <string name="settings_tcp_auto_close_untrusted">Etibarsız şəbəkələrdə avtomatik bağla</string>
     <string name="settings_tcp_ssid_label">Şəbəkə adı (SSID)</string>
     <string name="settings_tcp_remove_network">%1$s şəbəkəsini sil</string>
+    <string name="settings_automation_trusted_networks_desc">Tətbiq Bağlantı Firewall-u bu Wi-Fi şəbəkələrində sönür və mobil internet də daxil olmaqla başqa hər yerdə yenidən yanır.</string>
+    <string name="trusted_networks_tcp_subtitle">\"Yalnız etibarlı\" mühafizə ilə Simsiz ADB bu şəbəkələrdə əlçatan qalır və digərlərində bağlanır.</string>
+    <string name="trusted_networks_connected">İndi qoşulub</string>
+    <string name="trusted_networks_saved_label">Bu cihazda saxlanılıb</string>
+    <string name="trusted_networks_not_saved">Bu cihazda saxlanılmayıb</string>
+    <string name="trusted_networks_needs_service">Bu cihazda saxlanılan şəbəkələri sadalamaq üçün Shizuku+-ı başladın.</string>
+    <string name="trusted_networks_type_name">Şəbəkə adını daxil edin</string>
+    <string name="trusted_networks_add">Əlavə et</string>
+    <string name="trusted_networks_choose">Şəbəkələri seçin</string>
+    <string name="trusted_networks_trust_current">%1$s şəbəkəsinə etibar et</string>
+    <string name="update_migrate_failed">Bu qurğuya avtomatik keçmək mümkün olmadı. Shizuku+-ı silin və əl ilə quraşdırın.</string>
+    <string name="app_picker_names_and_more">%1$s + daha %2$d</string>
+    <string name="trusted_networks_comma">Vergül olan adlar bu siyahı üçün istifadə edilə bilməz</string>
     <string name="tcp_protection_off">Söndürülüb</string>
     <string name="tcp_protection_open">Açıq və ictimai Wi-Fi</string>
     <string name="tcp_protection_trusted">Yalnız etibarlı şəbəkələr</string>
@@ -1705,8 +1723,8 @@
     <string name="nav_home">Əsas ekran</string>
     <string name="nav_apps">Tətbiqlər</string>
     <string name="nav_hub">Mərkəz</string>
-    <string name="settings_category_active_count">%1$s / %2$s aktiv</string>
-    <string name="settings_category_active_single">%1$s aktiv</string>
+    <string name="settings_category_active_count">%1$d / %2$d aktiv</string>
+    <string name="settings_category_active_single">%1$d aktiv</string>
     <string name="system_hub_title">Sistem Mərkəzi</string>
     <string name="system_hub_tab_metrics">Göstəricilər</string>
     <string name="server_memory_used_of">%2$s-dən %1$s</string>
@@ -1849,7 +1867,7 @@
     <string name="tip_device_hardening_desc">Fantom proses öldürülməsinin və arxa fon donmalarının qarşısını almaq üçün imtiyazlı ƏS optimizasiyalarını tətbiq edin</string>
     <string name="diagnostics_warning_tcp_mode_disabled">TCP Rejimi (port 5555) söndürülüb. Wi-Fi olmadan dərhal Simsiz ADB yenidən qoşulmasını aktivləşdirmək üçün toxunun.</string>
     <string name="diagnostics_warning_device_hardening_disabled">Cihazın Təhlükəsizləşdirilməsi söndürülüb. Shizuku+-ı arxa fon prosesləri öldürülməsindən qorumaq üçün toxunun.</string>
-    <string name="diagnostics_tcp_mode_enabled_toast">TCP Rejimi (port 5555) aktivləşdirildi</string>
+    <string name="diagnostics_tcp_mode_enabled_toast">TCP rejimi (port 5555) aktivləşdirildi. O, Shizuku+ növbəti dəfə işə düşəndə tətbiq olunacaq.</string>
     <string name="settings_reset_recommendations_title">Rədd edilmiş tövsiyələri sıfırla</string>
     <string name="settings_reset_recommendations_summary">Bütün rədd edilmiş adaptiv ipuclarını və diaqnostika xəbərdarlıqlarını bərpa edin</string>
     <string name="settings_reset_recommendations_toast">Rədd edilmiş tövsiyələr sıfırlandı</string>
@@ -1863,6 +1881,7 @@
     <string name="app_management_context_select_multiple">Çoxlu tətbiq seçin</string>
     <string name="app_management_selected_count">%1$d seçildi</string>
     <string name="api_scopes_dialog_title">API Səlahiyyətləri · %1$s</string>
+    <string name="api_scopes_dialog_note">Əmrlər tətbiq tərəfindən başladıldıqda, sh -c vasitəsilə daxil olmaqla yoxlanılır. Tətbiqin artıq açıq olan shell pəncərəsinə daxil edilmiş əmrləri yoxlamaq mümkün deyil; onları da bloklamaq üçün Shell funksiyasını söndürün.</string>
     <string name="api_scopes_restricted_badge">Səlahiyyətlər: %1$d/%2$d icazə verilib</string>
     <string name="api_scope_shell">Shell və Proses İcrası (newProcess)</string>
     <string name="api_scope_package_manager">Paket İdarəedicisi (quraşdır, sil, dayandır)</string>
@@ -1884,22 +1903,32 @@
     <string name="plus_benefits_badge_hint">Faydalandığı funksiyalar: %1$s (bağlı) →</string>
     <string name="lp_action_enable_freeform">Sərbəst forma / ölçü dəyişməsinə icazə ver</string>
     <string name="lp_action_disable_freeform">Məcburi sərbəst formanı / ölçü dəyişməni söndür</string>
-    <string name="toast_freeform_enabled">%1$s üçün sərbəst formada ölçü dəyişməsi aktivləşdirildi</string>
-    <string name="toast_freeform_disabled">%1$s üçün sərbəst formada ölçü dəyişməsi sıfırlandı</string>
+    <string name="toast_freeform_enabled">%1$s üçün sərbəst formada ölçü dəyişməsi aktivləşdirildi. O, tətbiq növbəti dəfə açılanda tətbiq olunacaq.</string>
+    <string name="toast_freeform_disabled">%1$s üçün sərbəst formada ölçü dəyişməsi sıfırlandı. O, tətbiq növbəti dəfə açılanda tətbiq olunacaq.</string>
     <string name="settings_adaptive_recommendations_title">Adaptiv tövsiyələr</string>
-    <string name="settings_adaptive_recommendations_summary">Uyğun olduqda kontekstual quraşdırma və sabitlik tövsiyələrini göstərin</string>
-    <string name="settings_adb_loopback_probe_title">Avtomatik loopback port yoxlanılması</string>
-    <string name="settings_adb_loopback_probe_summary">mDNS aşkarlanmasını gözləməzdən əvvəl yerli loopback portlarını (5555, xüsusi TCP, son port) yoxlayın</string>
-    <string name="settings_root_to_adb_fallback_title">Root-dan Simsiz ADB-yə avtomatik keçid</string>
-    <string name="settings_root_to_adb_fallback_summary">Açılışda və ya Sürətli Tənzimləmələr plitəsindən root ilə başlatma uğursuz olarsa, avtomatik olaraq Simsiz ADB-yə keçin</string>
+    <string name="settings_adaptive_recommendations_summary">Lazım olduqda kontekstə uyğun quraşdırma və sabitlik tövsiyələrini göstər</string>
+    <string name="settings_adb_loopback_probe_title">Avtomatik loopback port yoxlaması</string>
+    <string name="settings_adb_loopback_probe_summary">mDNS aşkar edilməsini gözləmədən əvvəl yerli loopback portlarını yoxla (5555, xüsusi TCP, sonuncu port)</string>
+    <string name="settings_root_to_adb_fallback_title">Avtomatik Root-dan Simsiz ADB-yə keçid</string>
+    <string name="settings_root_to_adb_fallback_summary">Sistem işə düşərkən və ya Sürətli tənzimləmələr panelindən root ilə işə salınma uğursuz olarsa, avtomatik olaraq Simsiz ADB-yə keç</string>
     <string name="settings_show_app_descriptions">Tətbiq təsvirlərini göstər</string>
-    <string name="settings_show_app_descriptions_summary">Tətbiqlər siyahısında məlum tətbiqlərin altında seçilmiş imkan təsvirlərini göstərin</string>
+    <string name="settings_show_app_descriptions_summary">Tətbiqlər siyahısındakı tanınmış tətbiqlərin altında xüsusi imkan təsvirlərini göstər</string>
     <string name="settings_show_plus_feature_hints">Plus funksiya ipuclarını göstər</string>
-    <string name="settings_show_plus_feature_hints_summary">Tətbiqin faydalana biləcəyi söndürülmüş qlobal Plus funksiyalarını vurğulayın</string>
-    <string name="settings_dpm_freeze_title">Cihaz Sahibi tətbiq gizlətməsinə üstünlük ver</string>
-    <string name="settings_dpm_freeze_summary">Cihaz Sahibi aktiv olduqda tətbiqləri dondurarkən əvvəlcə DevicePolicyManager.setApplicationHidden istifadə edin</string>
-    <string name="settings_lp_api_scopes">API Səlahiyyətləri</string>
-    <string name="settings_lp_select_multiple">Çoxlu Seçim</string>
-    <string name="settings_lp_freeze_app">Dondur / Aç</string>
-    <string name="settings_lp_freeform_resize">Sərbəst Ölçü</string>
+    <string name="settings_show_plus_feature_hints_summary">Tətbiqin faydalana biləcəyi, lakin deaktiv olan qlobal Plus funksiyalarını vurğula</string>
+    <string name="settings_dpm_freeze_title">Cihaz Sahibi tətbiq gizlədilməsinə üstünlük ver</string>
+    <string name="settings_dpm_freeze_summary">Cihaz Sahibi aktiv olarkən tətbiqləri dondurarkən əvvəlcə DevicePolicyManager.setApplicationHidden metodundan istifadə et</string>
+    <string name="settings_lp_api_scopes">API Əhatə dairələri</string>
+    <string name="settings_lp_select_multiple">Çoxlu Seç</string>
+    <string name="settings_lp_freeze_app">Dondur / Donunu aç</string>
+    <string name="settings_lp_freeform_resize">Sərbəst Formalı Ölçü Dəyişməsi</string>
+    <string name="icon_style_filled">Doldurulmuş</string>
+    <string name="icon_style_outlined">Konturlu</string>
+    <string name="icon_style_twotone">İkigörünüşlü</string>
+    <string name="onboarding_amoled_desc">Qaranlıq rejimdə tam qara fonlar</string>
+    <string name="onboarding_amoled_title">AMOLED+ Əsl Qara</string>
+    <string name="onboarding_animations_desc">Axıcı yay fizikası və taktil hərəkət</string>
+    <string name="onboarding_animations_title">Ekspressiv Animasiyalar</string>
+    <string name="onboarding_icon_style_title">İkon Üslubu</string>
+    <string name="onboarding_m3e_desc">Adaptiv ikon üslubları, AMOLED+ kontrastı və axıcı hərəkətlərlə təcrübənizi fərdiləşdirin.</string>
+    <string name="onboarding_m3e_title">Ekspressiv Görünüş və Hiss</string>
 </resources>
