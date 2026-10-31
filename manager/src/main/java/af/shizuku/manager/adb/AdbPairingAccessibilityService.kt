@@ -87,9 +87,9 @@ class AdbPairingAccessibilityService : AccessibilityService() {
                     putExtra(HomeActivity.EXTRA_SHOW_PAIRING_DIALOG, true)
                 }
             startActivity(intent)
-        } else {
-            Toast.makeText(this, R.string.accessibility_service_monitoring, Toast.LENGTH_SHORT).show()
         }
+        // No "monitoring" toast: the service can be switched on from outside Shizuku+, and the
+        // pairing notification already says it is waiting for a code.
 
         connectedAt = SystemClock.elapsedRealtime()
         lastEventAt = connectedAt
@@ -113,7 +113,7 @@ class AdbPairingAccessibilityService : AccessibilityService() {
                             level = SentryLevel.WARNING
                         },
                     )
-                    Toast.makeText(this@AdbPairingAccessibilityService, getString(R.string.toast_pairing_timeout), Toast.LENGTH_LONG).show()
+                    // No toast: by now the user has left Settings, so it would land on another app.
                     disableSelf()
                     return@launch
                 }

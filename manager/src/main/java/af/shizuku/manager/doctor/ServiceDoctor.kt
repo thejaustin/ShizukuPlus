@@ -42,6 +42,8 @@ object ServiceDoctor {
         val autoFix: (suspend (Context) -> Boolean)? = null,
         val manualAction: ((Context) -> Unit)? = null,
         val tip: String? = null,
+        // False for a fix that is only wanted when the user taps it, never in a bulk auto-heal.
+        val autoHeal: Boolean = true,
     )
 
     data class DiagnosticResult(
@@ -199,6 +201,9 @@ object ServiceDoctor {
                     autoFix = { ctx ->
                         ctx.tryEnableAccessibilityAutomatically()
                     },
+                    // The pairing helper turns itself off a minute after Settings is left, so
+                    // enabling it whenever the server stopped only re-armed it, over and over.
+                    autoHeal = false,
                 ),
             )
 
@@ -482,7 +487,7 @@ object ServiceDoctor {
 
             val diag = runFullDiagnostics(context)
             for (check in diag.checks) {
-                if (!check.ok && check.canAutoFix && check.autoFix != null) {
+                if (!check.ok && check.canAutoFix && check.autoHeal && check.autoFix != null) {
                     onProgress?.invoke(check.title)
                     try {
                         val success = check.autoFix.invoke(context)

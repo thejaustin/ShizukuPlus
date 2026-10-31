@@ -11,7 +11,6 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -254,8 +253,9 @@ class AdbPairingService : Service() {
         return START_REDELIVER_INTENT
     }
 
+    // The system's limit for this service type. Removing the notification is the only sign: a
+    // toast would show over whatever app the user is in.
     override fun onTimeout(startId: Int) {
-        Toast.makeText(this, R.string.toast_pairing_timeout, Toast.LENGTH_SHORT).show()
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
