@@ -1444,6 +1444,22 @@ public class ShizukuSettings {
         return p != null && p.getBoolean(Keys.KEY_BINDER_FIREWALL_ENABLED, false);
     }
 
+    /**
+     * Older versions' NetworkFirewallRule wrote the Binder Firewall switch itself, turning it off
+     * on a trusted network, so a user whose last network was trusted has it stored off. Automation
+     * now leaves the switch alone, which would keep the firewall off everywhere. A trusted-networks
+     * list can only be set while the switch is on, so it is turned back on once for those users.
+     */
+    public static void migrateFirewallAutomationIfNeeded() {
+        SharedPreferences p = getPreferences();
+        if (p == null || p.getBoolean(KEY_FIREWALL_AUTOMATION_MIGRATED, false)) return;
+        SharedPreferences.Editor e = p.edit().putBoolean(KEY_FIREWALL_AUTOMATION_MIGRATED, true);
+        if (!getTrustedNetworksSet().isEmpty()) e.putBoolean(Keys.KEY_BINDER_FIREWALL_ENABLED, true);
+        e.apply();
+    }
+
+    private static final String KEY_FIREWALL_AUTOMATION_MIGRATED = "firewall_automation_migrated";
+
     // What automation knows, kept apart from the user's switch so no rule ever rewrites it. In
     // memory only: AutomationService evaluates the network and foreground app again when it starts.
     private static volatile boolean onTrustedNetwork = false;

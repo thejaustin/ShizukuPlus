@@ -647,6 +647,8 @@ class ShizukuApplication :
         ShizukuSettings.syncStartOnBootDefaultIfNeeded(this)
         // Before any activity themes itself: Rounded edges / card corner styles -> Corner rounding.
         ShizukuSettings.migrateCornerSettingsIfNeeded()
+        // Before the first Plus feature sync sends the firewall state to the server.
+        ShizukuSettings.migrateFirewallAutomationIfNeeded()
 
         AppCompatDelegate.setDefaultNightMode(ShizukuSettings.getNightMode())
 
