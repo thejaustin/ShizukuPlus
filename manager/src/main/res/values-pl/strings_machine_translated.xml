@@ -518,7 +518,6 @@
     <string name="empty_state_title_no_results">Brak wyników</string>
     <string name="empty_state_description_no_results">Żadna aplikacja nie pasuje do bieżącego filtra ani wyszukiwania.</string>
     <string name="empty_state_title_no_home_cards">Wszystkie karty ukryte</string>
-    <string name="empty_state_description_no_home_cards">Ukryto wszystkie karty ekranu głównego. Przejdź do Ustawień, aby je przywrócić.</string>
     <string name="empty_state_action_restore_home_cards">Przywróć karty</string>
     <string name="empty_state_title_activity_log_empty">Brak zarejestrowanej aktywności</string>
     <string name="empty_state_description_activity_log_empty">Wywołania API Shizuku i zdarzenia pojawią się tutaj po włączeniu rejestrowania aktywności.</string>

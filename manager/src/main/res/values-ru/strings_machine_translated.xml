@@ -518,7 +518,6 @@
     <string name="empty_state_title_no_results">Ничего не найдено</string>
     <string name="empty_state_description_no_results">Нет приложений, подходящих под текущий фильтр или поисковый запрос.</string>
     <string name="empty_state_title_no_home_cards">Все карточки скрыты</string>
-    <string name="empty_state_description_no_home_cards">Вы скрыли все карточки главного экрана. Откройте «Настройки», чтобы вернуть их.</string>
     <string name="empty_state_action_restore_home_cards">Вернуть карточки</string>
     <string name="empty_state_title_activity_log_empty">Активность не записана</string>
     <string name="empty_state_description_activity_log_empty">Вызовы API и события Shizuku появятся здесь, когда включено ведение журнала активности.</string>

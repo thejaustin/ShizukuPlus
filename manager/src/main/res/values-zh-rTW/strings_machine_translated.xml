@@ -504,7 +504,6 @@
     <string name="empty_state_title_no_results">找不到結果</string>
     <string name="empty_state_description_no_results">沒有符合目前篩選或搜尋條件的應用程式。</string>
     <string name="empty_state_title_no_home_cards">所有卡片都已隱藏</string>
-    <string name="empty_state_description_no_home_cards">您已隱藏所有主畫面卡片。請前往設定還原。</string>
     <string name="empty_state_action_restore_home_cards">還原卡片</string>
     <string name="empty_state_title_activity_log_empty">尚無活動記錄</string>
     <string name="empty_state_description_activity_log_empty">啟用活動記錄後，Shizuku API 呼叫與事件會顯示在這裡。</string>

@@ -518,7 +518,6 @@
     <string name="empty_state_title_no_results">Nenhum resultado encontrado</string>
     <string name="empty_state_description_no_results">Nenhuma aplicação corresponde ao filtro ou à pesquisa atual.</string>
     <string name="empty_state_title_no_home_cards">Todos os cartões ocultos</string>
-    <string name="empty_state_description_no_home_cards">Ocultou todos os cartões do ecrã inicial. Aceda às Definições para os restaurar.</string>
     <string name="empty_state_action_restore_home_cards">Restaurar cartões</string>
     <string name="empty_state_title_activity_log_empty">Nenhuma atividade registada</string>
     <string name="empty_state_description_activity_log_empty">As chamadas e os eventos da API do Shizuku aparecerão aqui quando o registo de atividade estiver ativado.</string>

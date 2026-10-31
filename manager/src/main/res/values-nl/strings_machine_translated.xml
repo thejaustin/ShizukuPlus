@@ -518,7 +518,6 @@
     <string name="empty_state_title_no_results">Geen resultaten gevonden</string>
     <string name="empty_state_description_no_results">Geen apps komen overeen met je huidige filter of zoekcriteria.</string>
     <string name="empty_state_title_no_home_cards">Alle kaarten verborgen</string>
-    <string name="empty_state_description_no_home_cards">Je hebt alle kaarten van het startscherm verborgen. Ga naar Instellingen om ze te herstellen.</string>
     <string name="empty_state_action_restore_home_cards">Kaarten herstellen</string>
     <string name="empty_state_title_activity_log_empty">Geen activiteit geregistreerd</string>
     <string name="empty_state_description_activity_log_empty">Shizuku API-aanroepen en gebeurtenissen verschijnen hier wanneer activiteitenregistratie is ingeschakeld.</string>

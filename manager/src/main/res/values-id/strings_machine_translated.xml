@@ -518,7 +518,6 @@
     <string name="empty_state_title_no_results">Tidak ada hasil</string>
     <string name="empty_state_description_no_results">Tidak ada aplikasi yang cocok dengan filter atau kriteria pencarian Anda saat ini.</string>
     <string name="empty_state_title_no_home_cards">Semua kartu disembunyikan</string>
-    <string name="empty_state_description_no_home_cards">Anda telah menyembunyikan semua kartu layar utama. Buka Pengaturan untuk memulihkannya.</string>
     <string name="empty_state_action_restore_home_cards">Pulihkan kartu</string>
     <string name="empty_state_title_activity_log_empty">Tidak ada aktivitas tercatat</string>
     <string name="empty_state_description_activity_log_empty">Panggilan dan peristiwa API Shizuku akan muncul di sini saat pencatatan aktivitas diaktifkan.</string>

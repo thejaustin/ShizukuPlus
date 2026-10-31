@@ -518,7 +518,6 @@
     <string name="empty_state_title_no_results">Nessun risultato</string>
     <string name="empty_state_description_no_results">Nessuna app corrisponde al filtro o ai criteri di ricerca attuali.</string>
     <string name="empty_state_title_no_home_cards">Tutte le schede nascoste</string>
-    <string name="empty_state_description_no_home_cards">Hai nascosto tutte le schede della schermata principale. Vai nelle Impostazioni per ripristinarle.</string>
     <string name="empty_state_action_restore_home_cards">Ripristina schede</string>
     <string name="empty_state_title_activity_log_empty">Nessuna attività registrata</string>
     <string name="empty_state_description_activity_log_empty">Le chiamate API ed eventi di Shizuku compariranno qui quando la registrazione delle attività è abilitata.</string>

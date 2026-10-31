@@ -517,7 +517,6 @@
     <string name="empty_state_title_no_results">結果が見つかりません</string>
     <string name="empty_state_description_no_results">現在のフィルターまたは検索条件に一致するアプリはありません。</string>
     <string name="empty_state_title_no_home_cards">すべてのカードが非表示です</string>
-    <string name="empty_state_description_no_home_cards">ホーム画面のカードをすべて非表示にしています。設定で元に戻せます。</string>
     <string name="empty_state_action_restore_home_cards">カードを復元</string>
     <string name="empty_state_title_activity_log_empty">記録されたアクティビティはありません</string>
     <string name="empty_state_description_activity_log_empty">アクティビティログを有効にすると、ShizukuのAPI呼び出しとイベントがここに表示されます。</string>

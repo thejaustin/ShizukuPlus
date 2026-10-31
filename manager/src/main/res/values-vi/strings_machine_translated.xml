@@ -518,7 +518,6 @@
     <string name="empty_state_title_no_results">Không tìm thấy kết quả</string>
     <string name="empty_state_description_no_results">Không có ứng dụng nào khớp với bộ lọc hoặc tiêu chí tìm kiếm hiện tại.</string>
     <string name="empty_state_title_no_home_cards">Đã ẩn tất cả thẻ</string>
-    <string name="empty_state_description_no_home_cards">Bạn đã ẩn tất cả thẻ trên màn hình chính. Vào Cài đặt để khôi phục chúng.</string>
     <string name="empty_state_action_restore_home_cards">Khôi phục thẻ</string>
     <string name="empty_state_title_activity_log_empty">Chưa ghi nhận hoạt động</string>
     <string name="empty_state_description_activity_log_empty">Các lệnh gọi API và sự kiện của Shizuku sẽ xuất hiện ở đây khi bật ghi nhật ký hoạt động.</string>

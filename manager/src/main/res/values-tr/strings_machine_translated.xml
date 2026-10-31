@@ -515,7 +515,6 @@
     <string name="empty_state_title_no_results">Sonuç bulunamadı</string>
     <string name="empty_state_description_no_results">Mevcut filtrenizle veya arama ölçütlerinizle eşleşen uygulama yok.</string>
     <string name="empty_state_title_no_home_cards">Tüm kartlar gizlendi</string>
-    <string name="empty_state_description_no_home_cards">Tüm ana ekran kartlarını gizlediniz. Geri yüklemek için Ayarlar\'a gidin.</string>
     <string name="empty_state_action_restore_home_cards">Kartları geri yükle</string>
     <string name="empty_state_title_activity_log_empty">Etkinlik kaydedilmedi</string>
     <string name="empty_state_description_activity_log_empty">Etkinlik günlüğü etkinleştirildiğinde Shizuku API çağrıları ve olayları burada görünecek.</string>

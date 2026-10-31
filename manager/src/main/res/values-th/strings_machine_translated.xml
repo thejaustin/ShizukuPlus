@@ -709,7 +709,6 @@
     <string name="empty_state_title_no_results">ไม่พบผลลัพธ์</string>
     <string name="empty_state_description_no_results">ไม่มีแอปที่ตรงกับตัวกรองหรือเกณฑ์การค้นหาปัจจุบันของคุณ</string>
     <string name="empty_state_title_no_home_cards">การ์ดทั้งหมดถูกซ่อน</string>
-    <string name="empty_state_description_no_home_cards">คุณได้ซ่อนการ์ดบนหน้าแรกทั้งหมด ไปที่การตั้งค่าเพื่อกู้คืน</string>
     <string name="empty_state_action_restore_home_cards">กู้คืนการ์ด</string>
     <string name="home_restore_default">คืนค่าเริ่มต้น</string>
     <string name="home_restore_default_dialog_title">คืนค่าเริ่มต้น</string>
