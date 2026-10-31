@@ -1005,11 +1005,11 @@
     <string name="watchdog_running">Watchdog is running</string>
     <string name="watchdog_status_running">Shizuku+ is running</string>
     <string name="watchdog_status_stopped">Shizuku+ isn\'t running</string>
-    <string name="problems_channel">Problems</string>
-    <string name="settings_problem_alerts">Problem alerts</string>
-    <string name="settings_problem_alerts_off">Off</string>
-    <string name="settings_problem_alerts_stopped">When Shizuku+ stops or needs you</string>
-    <string name="settings_problem_alerts_all">All problems</string>
+    <string name="helper_notifications_channel">Helper notifications</string>
+    <string name="settings_helper_notifications">Helper notifications</string>
+    <string name="settings_helper_notifications_off">Off</string>
+    <string name="settings_helper_notifications_stopped">When Shizuku+ stops or needs you</string>
+    <string name="settings_helper_notifications_all">For every problem</string>
     <string name="issue_stopped_title">Shizuku+ stopped</string>
     <string name="issue_stopped_text">It stopped unexpectedly and hasn\'t come back. Tap Retry to start it again.</string>
     <string name="issue_start_failed_title">Shizuku+ couldn\'t start</string>

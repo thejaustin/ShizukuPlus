@@ -166,13 +166,13 @@
         android:defaultValue="false">
 
 
-        <!-- No defaultValue: BehaviorSettingsFragment sets it from getProblemAlertLevel(), which
+        <!-- No defaultValue: BehaviorSettingsFragment sets it from getHelperNotificationLevel(), which
              carries over the old "Crash notifications" switch. -->
         <rikka.preference.SimpleMenuPreference
-            android:key="problem_alerts"
-            android:title="@string/settings_problem_alerts"
-            android:entries="@array/problem_alerts"
-            android:entryValues="@array/problem_alerts_values"
+            android:key="helper_notifications"
+            android:title="@string/settings_helper_notifications"
+            android:entries="@array/helper_notifications"
+            android:entryValues="@array/helper_notifications_values"
             android:icon="@drawable/ic_outline_notifications_active_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference

@@ -6,7 +6,7 @@ import af.shizuku.manager.utils.ShizukuIssues.Severity
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 
-/** Where a problem shows, from whether the Watchdog notification is up and "Problem alerts". */
+/** Where a problem shows, from whether the Watchdog notification is up and "Helper notifications". */
 class ShizukuIssuesRouteTest :
     FunSpec({
         val inOngoing = Route(inOngoing = true, shared = false)

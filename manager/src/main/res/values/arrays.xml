@@ -231,12 +231,12 @@
         <item>vibrant</item>
         <item>minimal</item>
     </string-array>
-    <string-array name="problem_alerts">
-        <item>@string/settings_problem_alerts_off</item>
-        <item>@string/settings_problem_alerts_stopped</item>
-        <item>@string/settings_problem_alerts_all</item>
+    <string-array name="helper_notifications">
+        <item>@string/settings_helper_notifications_off</item>
+        <item>@string/settings_helper_notifications_stopped</item>
+        <item>@string/settings_helper_notifications_all</item>
     </string-array>
-    <string-array name="problem_alerts_values" translatable="false">
+    <string-array name="helper_notifications_values" translatable="false">
         <item>off</item>
         <item>stopped</item>
         <item>all</item>

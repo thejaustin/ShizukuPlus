@@ -83,6 +83,11 @@ class ServiceDoctorActivity : AppBarActivity() {
             ShizukuSettings.setAdaptiveDoctorAutoHealEnabled(isChecked)
         }
 
+        binding.rowHelperNotifications.setOnClickListener {
+            HapticUtils.tap(it)
+            pickHelperNotifications()
+        }
+
         binding.checkList.clipToPadding = false
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val bars =
@@ -98,6 +103,33 @@ class ServiceDoctorActivity : AppBarActivity() {
         binding.checkList.adapter = checkListAdapter
 
         runDiagnostics()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Also settable from Behavior › Notifications.
+        showHelperNotificationsLevel()
+    }
+
+    private fun showHelperNotificationsLevel() {
+        val values = resources.getStringArray(R.array.helper_notifications_values)
+        val index = values.indexOf(ShizukuSettings.getHelperNotificationLevel()).coerceAtLeast(0)
+        binding.textHelperNotifications.text = resources.getStringArray(R.array.helper_notifications)[index]
+    }
+
+    private fun pickHelperNotifications() {
+        val values = resources.getStringArray(R.array.helper_notifications_values)
+        val checked = values.indexOf(ShizukuSettings.getHelperNotificationLevel()).coerceAtLeast(0)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.settings_helper_notifications)
+            .setSingleChoiceItems(R.array.helper_notifications, checked) { dialog, which ->
+                ShizukuSettings.setHelperNotificationLevel(values[which])
+                af.shizuku.manager.utils.ShizukuIssues
+                    .render(applicationContext)
+                showHelperNotificationsLevel()
+                dialog.dismiss()
+            }.setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

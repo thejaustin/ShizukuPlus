@@ -153,8 +153,8 @@ class BehaviorSettingsFragment :
             }
         }
 
-        findPreference<androidx.preference.ListPreference>("problem_alerts")?.apply {
-            value = ShizukuSettings.getProblemAlertLevel()
+        findPreference<androidx.preference.ListPreference>("helper_notifications")?.apply {
+            value = ShizukuSettings.getHelperNotificationLevel()
             summaryProvider =
                 androidx.preference.ListPreference.SimpleSummaryProvider
                     .getInstance()

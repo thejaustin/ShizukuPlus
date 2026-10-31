@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicLong
  *
  * With the Watchdog notification showing, problems are written into it. Otherwise one shared
  * notification is posted, replaced in place rather than stacked, and only as far as the user's
- * "Problem alerts" setting allows. Nothing here posts a toast: those land on whatever app the user
+ * "Helper notifications" setting allows. Nothing here posts a toast: those land on whatever app the user
  * happens to be in.
  */
 object ShizukuIssues {
@@ -51,7 +51,7 @@ object ShizukuIssues {
         val contentIntent: PendingIntent? = null,
     )
 
-    /** The "Problem alerts" setting. */
+    /** The "Helper notifications" setting. */
     enum class AlertLevel(
         val value: String,
     ) {
@@ -78,7 +78,7 @@ object ShizukuIssues {
     const val KEY_TCP_OPEN = "tcp_open"
     private val START_KEYS = setOf(KEY_PORT_DISCOVERY, KEY_START_FAILED, KEY_STOPPED)
 
-    private const val CHANNEL_ID = "shizuku_problems"
+    private const val CHANNEL_ID = "helper_notifications"
     const val NOTIFICATION_ID = 1450
 
     // Each issue with the order it was reported in, so the newest of equal severity shows.
@@ -184,7 +184,7 @@ object ShizukuIssues {
 
     private const val PREF_RETIRED_CHANNELS_DELETED = "retired_problem_channels_deleted"
 
-    fun alertLevel(): AlertLevel = AlertLevel.of(ShizukuSettings.getProblemAlertLevel())
+    fun alertLevel(): AlertLevel = AlertLevel.of(ShizukuSettings.getHelperNotificationLevel())
 
     /** Starts the server again, as the start notification's "Attempt now" does. */
     fun retryAction(context: Context): Action =
@@ -265,7 +265,7 @@ object ShizukuIssues {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 // Default importance: a sound and a status-bar icon, never a pop-up over another app.
                 nm.createNotificationChannel(
-                    NotificationChannel(CHANNEL_ID, context.getString(R.string.problems_channel), NotificationManager.IMPORTANCE_DEFAULT),
+                    NotificationChannel(CHANNEL_ID, context.getString(R.string.helper_notifications_channel), NotificationManager.IMPORTANCE_DEFAULT),
                 )
             }
             val builder =

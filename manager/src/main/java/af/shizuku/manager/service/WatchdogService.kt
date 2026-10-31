@@ -250,7 +250,7 @@ class WatchdogService : Service() {
     /**
      * The server crashed again ([stopped] false: the watchdog is restarting it) or did not come
      * back after a restart. Either shows in this notification; one that stayed down also alerts if
-     * the user's "Problem alerts" setting allows it.
+     * the user's "Helper notifications" setting allows it.
      */
     private fun reportCrash(stopped: Boolean) {
         val ctx = applicationContext
