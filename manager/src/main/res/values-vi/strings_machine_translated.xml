@@ -357,7 +357,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ phát hiện sự cố từ phiên làm việc trước. Bạn có muốn tạo báo cáo để giúp chúng tôi sửa lỗi không?</string>
     <string name="crash_detected_dialog_ignore">Bỏ qua</string>
     <string name="shortcut_open_terminal">Mở Terminal</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">Báo cáo thủ công</string>
     <string name="home_service_doctor_title">Bác sĩ dịch vụ</string>
     <string name="home_service_doctor_summary">Gặp khó khăn khi khởi động Shizuku+? Nhấn để chạy kiểm tra chẩn đoán.</string>
     <string name="doctor_check_battery">Tối ưu hóa pin</string>
@@ -662,8 +661,6 @@
     <string name="custom_icon_studio_border_width">Độ dày viền</string>
     <string name="custom_icon_studio_nudge_x">Vị trí ngang</string>
     <string name="custom_icon_studio_nudge_y">Vị trí dọc</string>
-    <string name="settings_watchdog_crash_alerts">Thông báo sự cố</string>
-    <string name="settings_watchdog_crash_alerts_summary">Đăng thông báo im lặng khi watchdog khởi động lại dịch vụ sau sự cố</string>
     <string name="settings_watchdog_not_running">Bật, hiện không chạy</string>
     <string name="settings_update_app_database_status">Mô tả và mẹo thiết lập cho %1$d ứng dụng, hiển thị trong Ứng dụng và Tương thích root. Đã kiểm tra lần cuối %2$s.</string>
     <string name="settings_update_app_database_status_never">Mô tả và mẹo thiết lập cho %1$d ứng dụng, hiển thị trong Ứng dụng và Tương thích root. Chưa kiểm tra.</string>
@@ -905,7 +902,6 @@
     <string name="service_doctor_fix_blocked_generic">Tự động sửa bị chặn — hạn chế của thiết bị ngăn các lệnh shell đặc quyền. Kiểm tra cài đặt ADB/OEM.</string>
     <string name="adb_foreground_op_denied">Không thể bắt đầu dịch vụ chạy ở nền trước — quyền START_FOREGROUND bị từ chối. Vui lòng kiểm tra quyền ứng dụng trên thiết bị của bạn.</string>
     <string name="update_no_release_notes">Không có ghi chú phát hành.</string>
-    <string name="accessibility_service_monitoring">Dịch vụ trợ năng đang hoạt động: đang theo dõi mã ghép nối…</string>
     <string name="dhizuku_setup_title">Thiết lập Chủ sở hữu thiết bị</string>
     <string name="dhizuku_setup_message">Chế độ Dhizuku yêu cầu đặt Shizuku+ làm Chủ sở hữu thiết bị. Chạy lệnh này một lần qua ADB trong khi bật gỡ lỗi USB:\n\n%1$s\n\nSau khi chạy lệnh, hãy khởi động lại Shizuku.</string>
     <string name="dhizuku_setup_copy">Sao chép lệnh</string>
@@ -1130,7 +1126,6 @@
     <string name="accessibility_sim_toggle_automation">Bật/tắt hiển thị thẻ Tự động hóa</string>
     <string name="accessibility_sim_toggle_activity_log">Bật/tắt hiển thị thẻ Nhật ký hoạt động</string>
     <string name="accessibility_sim_toggle_learn_more">Bật/tắt hiển thị thẻ Tìm hiểu thêm</string>
-    <string name="tcp_guard_channel">Bảo vệ mạng TCP</string>
     <string name="tcp_guard_title">Gỡ lỗi TCP đang mở trên một mạng không đáng tin cậy</string>
     <string name="tcp_guard_text">Cổng TCP ADB %1$d đang lắng nghe và %2$s. Hãy đóng cổng nếu bạn không cần sử dụng ngay bây giờ.</string>
     <string name="tcp_guard_reason_open">bạn đang sử dụng mạng Wi-Fi mở</string>

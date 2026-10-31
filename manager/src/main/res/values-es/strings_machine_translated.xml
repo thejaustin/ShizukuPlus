@@ -357,7 +357,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ detectó un fallo en tu última sesión. ¿Quieres generar un informe para ayudarnos a corregirlo?</string>
     <string name="crash_detected_dialog_ignore">Ignorar</string>
     <string name="shortcut_open_terminal">Abrir terminal</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">Informar manualmente</string>
     <string name="home_service_doctor_title">Doctor del servicio</string>
     <string name="home_service_doctor_summary">¿Tienes problemas para iniciar Shizuku+? Toca para ejecutar una comprobación de diagnóstico.</string>
     <string name="doctor_check_battery">Optimización de batería</string>
@@ -671,7 +670,6 @@
     <string name="service_doctor_fix_blocked_generic">Corrección automática bloqueada: las restricciones del dispositivo impiden los comandos de shell privilegiados. Revisa los ajustes de ADB/OEM.</string>
     <string name="adb_foreground_op_denied">No se puede iniciar el servicio en primer plano: se denegó el permiso START_FOREGROUND. Revisa los permisos de apps de tu dispositivo.</string>
     <string name="update_no_release_notes">No hay notas de la versión disponibles.</string>
-    <string name="accessibility_service_monitoring">Servicio de accesibilidad activo: buscando el código de emparejamiento…</string>
     <string name="dhizuku_setup_title">Configurar propietario del dispositivo</string>
     <string name="dhizuku_setup_message">El modo Dhizuku requiere que Shizuku+ esté configurado como propietario del dispositivo. Ejecuta este comando una vez mediante ADB con la depuración USB activada:\n\n%1$s\n\nTras ejecutar el comando, reinicia Shizuku.</string>
     <string name="dhizuku_setup_copy">Copiar comando</string>
@@ -950,8 +948,6 @@
     <string name="custom_icon_studio_border_width">Ancho</string>
     <string name="custom_icon_studio_nudge_x">Posición horizontal</string>
     <string name="custom_icon_studio_nudge_y">Posición vertical</string>
-    <string name="settings_watchdog_crash_alerts">Notificaciones de bloqueo</string>
-    <string name="settings_watchdog_crash_alerts_summary">Publica una notificación silenciosa cuando la vigilancia reinicia el servicio después de un bloqueo</string>
     <string name="settings_watchdog_not_running">Activado, no se ejecuta en este momento</string>
     <string name="settings_update_app_database_status">Descripciones y consejos de configuración para %1$d apps, mostradas en Apps y compatibilidad de Root. Última verificación %2$s.</string>
     <string name="settings_update_app_database_status_never">Descripciones y consejos de configuración para %1$d apps, mostradas en Apps y compatibilidad de Root. Aún no se ha verificado.</string>
@@ -1137,7 +1133,6 @@
     <string name="custom_icon_studio_bg_gradient">Degradado</string>
     <string name="home_adb_description_active"><![CDATA[Shizuku+ está activo a través de ADB desde una computadora. Vuelva a ejecutar el comando para reconectarse después de reiniciar el dispositivo. Por favor <b><a href=\"%1$s\">lea la guía</a></b>.]]></string>
     <string name="settings_ai_bridge_title">Puente AI y NPU</string>
-    <string name="tcp_guard_channel">Protección de red TCP</string>
     <string name="tcp_guard_title">La depuración TCP está abierta en una red no confiable</string>
     <string name="tcp_guard_text">El puerto TCP de ADB %1$d está escuchando y %2$s. Ciérralo a menos que lo necesites ahora mismo.</string>
     <string name="tcp_guard_reason_open">estás en una red Wi-Fi abierta</string>

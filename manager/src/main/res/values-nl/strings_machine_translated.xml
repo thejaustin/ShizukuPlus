@@ -357,7 +357,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ heeft een crash van je vorige sessie gedetecteerd. Wil je een rapport genereren om ons te helpen dit op te lossen?</string>
     <string name="crash_detected_dialog_ignore">Negeren</string>
     <string name="shortcut_open_terminal">Terminal openen</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">Handmatig melden</string>
     <string name="home_service_doctor_title">Servicedokter</string>
     <string name="home_service_doctor_summary">Problemen met het starten van Shizuku+? Tik om een diagnose uit te voeren.</string>
     <string name="doctor_check_battery">Batterij-optimalisatie</string>
@@ -751,8 +750,6 @@
     <string name="custom_icon_studio_border_width">Breedte</string>
     <string name="custom_icon_studio_nudge_x">Horizontale positie</string>
     <string name="custom_icon_studio_nudge_y">Verticale positie</string>
-    <string name="settings_watchdog_crash_alerts">Crashmeldingen</string>
-    <string name="settings_watchdog_crash_alerts_summary">Plaats een stille melding wanneer de watchdog de service herstart na een crash</string>
     <string name="settings_watchdog_not_running">Aan, momenteel niet actief</string>
     <string name="settings_update_app_database_status">Beschrijvingen en insteltips voor %1$d apps, weergegeven in Apps en Root-compatibiliteit. Laatst gecontroleerd: %2$s.</string>
     <string name="settings_update_app_database_status_never">Beschrijvingen en insteltips voor %1$d apps, weergegeven in Apps en Root-compatibiliteit. Nog niet gecontroleerd.</string>
@@ -905,7 +902,6 @@
     <string name="service_doctor_fix_blocked_generic">Automatische oplossing geblokkeerd — apparaatbeperkingen verhinderen bevoorrechte shell-opdrachten. Controleer de ADB-/OEM-instellingen.</string>
     <string name="adb_foreground_op_denied">Kan voorgrondservice niet starten — START_FOREGROUND-machtiging is geweigerd. Controleer de app-machtigingen van je apparaat.</string>
     <string name="update_no_release_notes">Geen release-opmerkingen beschikbaar.</string>
-    <string name="accessibility_service_monitoring">Toegankelijkheidsservice actief: controleren op koppelingscode…</string>
     <string name="dhizuku_setup_title">Apparaateigenaar instellen</string>
     <string name="dhizuku_setup_message">Dhizuku Mode vereist dat Shizuku+ is ingesteld als apparaateigenaar. Voer deze opdracht eenmalig uit via ADB terwijl USB-foutopsporing is ingeschakeld:\n\n%1$s\n\nHerstart Shizuku na het uitvoeren van de opdracht.</string>
     <string name="dhizuku_setup_copy">Opdracht kopiëren</string>
@@ -1130,7 +1126,6 @@
     <string name="accessibility_sim_toggle_automation">Zichtbaarheid van Automatisering-kaart schakelen</string>
     <string name="accessibility_sim_toggle_activity_log">Zichtbaarheid van Activiteitenlog-kaart schakelen</string>
     <string name="accessibility_sim_toggle_learn_more">Zichtbaarheid van Meer informatie-kaart schakelen</string>
-    <string name="tcp_guard_channel">TCP-netwerkbeveiliging</string>
     <string name="tcp_guard_title">TCP-foutopsporing is geopend op een niet-vertrouwd netwerk</string>
     <string name="tcp_guard_text">ADB TCP-poort %1$d luistert en %2$s. Sluit deze tenzij je hem nu nodig hebt.</string>
     <string name="tcp_guard_reason_open">je bent verbonden met een open Wi-Fi-netwerk</string>

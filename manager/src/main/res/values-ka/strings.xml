@@ -202,7 +202,6 @@
     <string name="toast_shizuku_already_starting">Shizuku უკვე იწყება ფონზე</string>
     <string name="toast_accessibility_tv_only">ეს სერვისი მხოლოდ ტელევიზორის მოწყობილობებზეა
         მხარდაჭერილი.</string>
-    <string name="toast_pairing_timeout">შიზუკუს დაწყვილების სერვისს ვადა ამოეწურა.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">თემა</string>
     <string name="dark_theme_off">ყოველთვის მსუბუქი</string>
@@ -248,7 +247,6 @@
     <string name="watchdog_shizuku_crashed_title">შიზუკუ ცოტა ხნის წინ ჩამოვარდა</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog-მა განაახლა სერვისი. შეეხეთ პოტენციურ
         გამოსწორებებს, რათა თავიდან აიცილოთ მომავალი ავარიები.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">გამორთეთ შეტყობინებები</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">ბრაუზერის გაშვება შეუძლებელია</string>
     <string name="toast_copied_to_clipboard">კოპირებულია ბუფერში</string>

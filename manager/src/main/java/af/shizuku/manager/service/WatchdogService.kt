@@ -6,7 +6,7 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.database.ActivityLogManager
 import af.shizuku.manager.receiver.ShizukuReceiverStarter
 import af.shizuku.manager.utils.LiveActivityNotificationManager
-import af.shizuku.manager.utils.SettingsPage
+import af.shizuku.manager.utils.ShizukuIssues
 import af.shizuku.manager.utils.ShizukuStateMachine
 import af.shizuku.manager.utils.StockShizukuCompat
 import android.app.Notification
@@ -101,18 +101,17 @@ class WatchdogService : Service() {
             stopSelf()
             return
         }
+        // Problems shown in their own notification until now move into this one.
+        ShizukuIssues.render(applicationContext)
 
         job =
             scope.launch {
                 ShizukuStateMachine.asFlow().collectLatest { state ->
+                    // The title says whether the server is up.
+                    refreshNotification(applicationContext)
                     if (state == ShizukuStateMachine.State.CRASHED) {
                         // Suppress false crash alert if disconnected from Wi-Fi on Wireless ADB
-                        if (ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ADB &&
-                            !af.shizuku.manager.utils.NetworkStateHelper
-                                .isWirelessAdbSupportedNetwork(applicationContext) &&
-                            af.shizuku.manager.utils.EnvironmentUtils
-                                .isWifiRequired(allowNetworkProbe = false)
-                        ) {
+                        if (ShizukuIssues.droppedWithNetwork(applicationContext)) {
                             Timber.tag(TAG).d("Watchdog: server dropped because Wi-Fi/network is disconnected; suppressing crash alert")
                             stabilityJob?.cancel()
                             pendingRecoveryJob?.cancel()
@@ -136,7 +135,7 @@ class WatchdogService : Service() {
                             consecutiveCrashes++
                             lastRestartMs = now
                             if (!wasFirstRestart) {
-                                showCrashNotification()
+                                reportCrash(stopped = false)
                             }
                             // Repeated crashes with no OS exemption usually mean an OEM battery manager
                             // is killing it: send the user to the Service Doctor once (#476).
@@ -162,7 +161,7 @@ class WatchdogService : Service() {
                                             // Auto-run snippets run from the RUNNING transition.
                                             ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: the server came back after restart #1")
                                         } else {
-                                            showCrashNotification()
+                                            reportCrash(stopped = true)
                                         }
                                     }
                             }
@@ -191,10 +190,10 @@ class WatchdogService : Service() {
                             scope.launch {
                                 delay(STABILITY_WINDOW_MS)
                                 consecutiveCrashes = 0
+                                // Running steadily again: the crashes are history.
+                                ShizukuIssues.clear(applicationContext, KEY_CRASHED)
                             }
                         dismissCrashNotification(applicationContext)
-                        af.shizuku.manager.worker.AdbStartWorker
-                            .dismissNotifications(applicationContext)
                     }
                 }
             }
@@ -233,6 +232,8 @@ class WatchdogService : Service() {
         }
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
         nm?.cancel(NOTIFICATION_ID_WATCHDOG)
+        // With this notification gone, problems go back to their own (if the user wants them).
+        ShizukuIssues.render(applicationContext)
         // Only clear the user's preference when the service was deliberately stopped via the
         // notification action. Transient stops (failed foreground-start, background-start
         // restrictions) must not wipe the setting — the watchdog should re-arm on next boot.
@@ -246,89 +247,49 @@ class WatchdogService : Service() {
 
     private fun buildNotification(): Notification = buildNotification(this, currentLiveStatus)
 
-    private fun showCrashNotification() {
-        if (!ShizukuSettings.isNotificationSystemEnabled() || !ShizukuSettings.isWatchdogCrashAlertsEnabled()) {
-            return
-        }
-        val now = System.currentTimeMillis()
-        if (now - lastCrashNotificationMs < CRASH_NOTIFICATION_COOLDOWN_MS) {
-            return
-        }
-        lastCrashNotificationMs = now
-
-        val channelId = CRASH_CHANNEL_ID
-        val channelName = "Crash Reports"
-
-        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager ?: return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel =
-                NotificationChannel(
-                    channelId,
-                    channelName,
-                    NotificationManager.IMPORTANCE_LOW,
-                )
-            nm.createNotificationChannel(channel)
-        }
-
-        val learnMoreIntent =
-            Intent(Intent.ACTION_VIEW).apply {
-                setData(Uri.parse("https://github.com/thejaustin/ShizukuPlus/wiki#shizuku-keeps-stopping-randomly"))
-            }
-        val learnMorePendingIntent = PendingIntent.getActivity(this, 10, learnMoreIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-
-        val disableIntent = SettingsPage.Notifications.NotificationChannel.buildIntent(applicationContext)
-        val disablePendingIntent = PendingIntent.getActivity(this, 11, disableIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-
-        // Manual crash report via BugReportDialogActivity or similar
-        val reportIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thejaustin/ShizukuPlus/issues/new"))
-        val reportPendingIntent = PendingIntent.getActivity(this, 12, reportIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-
-        val restartIntent = Intent(this, af.shizuku.manager.receiver.NotifAttemptActivity::class.java)
-        val restartPendingIntent =
-            PendingIntent.getActivity(
-                this,
-                13,
-                restartIntent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-            )
-
-        val builder =
-            NotificationCompat
-                .Builder(this, channelId)
-                .setContentTitle(getString(R.string.watchdog_shizuku_crashed_title))
-                .setContentText(getString(R.string.watchdog_shizuku_crashed_text))
-                .setSmallIcon(R.drawable.ic_notification_icon)
-                .setContentIntent(learnMorePendingIntent)
-                .setAutoCancel(true)
-                .setSilent(true)
-                .setOnlyAlertOnce(true)
-                .addAction(0, getString(R.string.starter_retry), restartPendingIntent)
-                .addAction(0, getString(R.string.watchdog_shizuku_crashed_action_report_manually), reportPendingIntent)
-                .addAction(0, getString(R.string.watchdog_shizuku_crashed_action_turn_off_alerts), disablePendingIntent)
-
+    /**
+     * The server crashed again ([stopped] false: the watchdog is restarting it) or did not come
+     * back after a restart. Either shows in this notification; one that stayed down also alerts if
+     * the user's "Problem alerts" setting allows it.
+     */
+    private fun reportCrash(stopped: Boolean) {
+        val ctx = applicationContext
+        val actions = mutableListOf(ShizukuIssues.retryAction(ctx))
         if (consecutiveCrashes >= 3 &&
             ShizukuSettings.isCompanionFallbackEnabled() &&
-            StockShizukuCompat.isInstalled(applicationContext)
+            StockShizukuCompat.isInstalled(ctx)
         ) {
-            val companionIntent =
-                applicationContext.packageManager
-                    .getLaunchIntentForPackage(StockShizukuCompat.PACKAGE)
-                    ?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            if (companionIntent != null) {
-                val companionPendingIntent =
-                    PendingIntent.getActivity(
-                        this,
-                        3,
-                        companionIntent,
-                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-                    )
-                builder.addAction(0, getString(R.string.watchdog_open_stock_shizuku), companionPendingIntent)
-            }
+            ctx.packageManager
+                .getLaunchIntentForPackage(StockShizukuCompat.PACKAGE)
+                ?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                ?.let {
+                    val pi = PendingIntent.getActivity(this, 3, it, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+                    actions += ShizukuIssues.Action(getString(R.string.watchdog_open_stock_shizuku), pi)
+                }
         }
-
-        val notification = builder.build()
-
-        nm.notify(NOTIFICATION_ID_CRASH, notification)
+        val learnMore =
+            PendingIntent.getActivity(
+                this,
+                10,
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thejaustin/ShizukuPlus/wiki#shizuku-keeps-stopping-randomly"))
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            )
+        ShizukuIssues.report(
+            ctx,
+            if (stopped) {
+                ShizukuIssues.stoppedIssue(ctx, actions, learnMore)
+            } else {
+                ShizukuIssues.Issue(
+                    KEY_CRASHED,
+                    ShizukuIssues.Severity.PROBLEM,
+                    getString(R.string.watchdog_shizuku_crashed_title),
+                    getString(R.string.watchdog_shizuku_crashed_text),
+                    actions,
+                    learnMore,
+                )
+            },
+        )
     }
 
     companion object {
@@ -337,7 +298,7 @@ class WatchdogService : Service() {
         const val NOTIFICATION_ID_CRASH = 1002
         private const val ACTION_STOP_SERVICE = "action.stop_service"
         const val WATCHDOG_CHANNEL_ID = "shizuku_watchdog"
-        const val CRASH_CHANNEL_ID = "crash_reports"
+        private const val KEY_CRASHED = "crashed"
 
         /** How long a first restart waits for RUNNING before the crash heads-up is posted: a successful restart took ~11 s on an API 34 emulator, a loaded device's first start 32 s. A restart slower than this, or one that raises a fresh authorisation dialog answered later, still gets the heads-up — by design for now. */
         const val RECOVERY_WAIT_MS = 60_000L
@@ -348,7 +309,6 @@ class WatchdogService : Service() {
 
         private const val BASE_COOLDOWN_MS = 5_000L
         private const val MAX_COOLDOWN_MS = 300_000L // 5 min cap
-        private const val CRASH_NOTIFICATION_COOLDOWN_MS = 900_000L // 15 min cooldown
 
         @JvmStatic
         fun dismissCrashNotification(context: Context) {
@@ -359,8 +319,6 @@ class WatchdogService : Service() {
             }
         }
 
-        @Volatile
-        private var lastCrashNotificationMs = 0L
         private val isRunning = AtomicBoolean(false)
         private val runningListeners = CopyOnWriteArrayList<(Boolean) -> Unit>()
 
@@ -397,10 +355,17 @@ class WatchdogService : Service() {
             status: String?,
         ) {
             currentLiveStatus = status
-            if (isRunning()) {
+            refreshNotification(context)
+        }
+
+        /** Redraws the ongoing notification from the server state, current problem and status. */
+        @JvmStatic
+        fun refreshNotification(context: Context) {
+            if (!isRunning()) return
+            runCatching {
                 val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-                nm?.notify(NOTIFICATION_ID_WATCHDOG, buildNotification(context, status))
-            }
+                nm?.notify(NOTIFICATION_ID_WATCHDOG, buildNotification(context))
+            }.onFailure { Timber.tag(TAG).w(it, "could not refresh the watchdog notification") }
         }
 
         @JvmStatic
@@ -436,22 +401,29 @@ class WatchdogService : Service() {
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
                 )
 
+            // A problem takes the notification over; otherwise it says whether the server is up,
+            // with the live activity line under that.
+            val issue = ShizukuIssues.top()
+            val title =
+                issue?.title ?: context.getString(
+                    if (ShizukuStateMachine.isRunning()) R.string.watchdog_status_running else R.string.watchdog_status_stopped,
+                )
+            val text = issue?.text ?: status
             val builder =
                 NotificationCompat
                     .Builder(context, WATCHDOG_CHANNEL_ID)
-                    .setContentTitle(context.getString(R.string.watchdog_running))
+                    .setContentTitle(title)
                     .setSmallIcon(R.drawable.ic_notification_icon)
+                    // Always the app: an issue's own target (a help page) would surprise here.
                     .setContentIntent(launchPendingIntent)
-                    .addAction(
-                        R.drawable.ic_close_24,
-                        context.getString(R.string.watchdog_turn_off),
-                        stopPendingIntent,
-                    ).setOngoing(true)
-
-            if (!status.isNullOrEmpty()) {
-                builder.setContentText(status)
+                    .setOnlyAlertOnce(true)
+                    .setOngoing(true)
+            issue?.actions?.take(2)?.forEach { builder.addAction(0, it.label, it.intent) }
+            builder.addAction(0, context.getString(R.string.watchdog_turn_off), stopPendingIntent)
+            if (!text.isNullOrEmpty()) {
+                builder.setContentText(text)
+                if (issue != null) builder.setStyle(NotificationCompat.BigTextStyle().bigText(text))
             }
-
             return builder.build()
         }
 

@@ -210,7 +210,6 @@
     <string name="toast_shizuku_already_starting">Nagsisimula na si Shizuku sa background</string>
     <string name="toast_accessibility_tv_only">Ang serbisyong ito ay sinusuportahan lamang sa mga TV
         device.</string>
-    <string name="toast_pairing_timeout">Nag-time out ang serbisyo ng pagpapares ng Shizuku.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Tema</string>
     <string name="dark_theme_off">Laging magaan</string>
@@ -259,7 +258,6 @@
     <string name="watchdog_shizuku_crashed_text">Muling sinimulan ng Watchdog ang serbisyo. I-tap
         upang malaman ang tungkol sa mga potensyal na pag-aayos upang maiwasan ang mga pag-crash sa
         hinaharap.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">I-off ang Mga Alerto</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Hindi mabuksan ang browser</string>
     <string name="toast_copied_to_clipboard">Kinopya sa clipboard</string>

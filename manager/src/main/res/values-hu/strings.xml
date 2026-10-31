@@ -208,7 +208,6 @@
     <string name="toast_no_email_app">Nem található e-mail alkalmazás</string>
     <string name="toast_shizuku_already_starting">A Shizuku már elindul a háttérben</string>
     <string name="toast_accessibility_tv_only">Ez a szolgáltatás csak TV-eszközökön támogatott.</string>
-    <string name="toast_pairing_timeout">A Shizuku párosítási szolgáltatás időtúllépést okozott.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Téma</string>
     <string name="dark_theme_off">Mindig könnyű</string>
@@ -255,7 +254,6 @@
     <string name="watchdog_shizuku_crashed_title">Shizuku nemrég lezuhant</string>
     <string name="watchdog_shizuku_crashed_text">A Watchdog újraindította a szolgáltatást.
         Koppintson a lehetséges javításokról a jövőbeli összeomlások megelőzése érdekében.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Kapcsolja ki a riasztásokat</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Nem lehet elindítani a böngészőt</string>
     <string name="toast_copied_to_clipboard">Vágólapra másolva</string>

@@ -208,7 +208,6 @@
     <string name="toast_shizuku_already_starting">Shizuku commence déjà en arrière-plan</string>
     <string name="toast_accessibility_tv_only">Ce service est uniquement pris en charge sur les
         appareils TV</string>
-    <string name="toast_pairing_timeout">Le service de jumelage Shizuku a expiré</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Thème</string>
     <string name="dark_theme_off">Toujours léger</string>
@@ -256,7 +255,6 @@
     <string name="watchdog_shizuku_crashed_title">Shizuku s’est récemment écrasée</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog a relancé le service. Appuyez pour
         connaître les solutions potentielles afin d’éviter de futurs plantages.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Désactivez les alertes</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Impossible de lancer le navigateur</string>
     <string name="toast_copied_to_clipboard">Copié dans le presse-papiers</string>

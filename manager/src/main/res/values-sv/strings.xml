@@ -196,7 +196,6 @@
     <string name="toast_no_email_app">Ingen e-postapp hittades</string>
     <string name="toast_shizuku_already_starting">Shizuku börjar redan i bakgrunden</string>
     <string name="toast_accessibility_tv_only">Denna tjänst stöds endast på TV-enheter.</string>
-    <string name="toast_pairing_timeout">Shizukus parningstjänst gick ut på tid.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Tema</string>
     <string name="dark_theme_off">Alltid ljus</string>
@@ -242,7 +241,6 @@
     <string name="watchdog_shizuku_crashed_title">Shizuku kraschade nyligen</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog startade om tjänsten. Tryck för att läsa
         mer om potentiella lösningar för att förhindra framtida krascher.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Stäng av varningar</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Kan inte starta webbläsaren</string>
     <string name="toast_copied_to_clipboard">Kopierad till urklipp</string>

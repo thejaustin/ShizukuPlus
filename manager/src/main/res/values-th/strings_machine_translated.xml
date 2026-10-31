@@ -357,7 +357,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ ตรวจพบข้อขัดข้องจากเซสชันล่าสุดของคุณ คุณต้องการสร้างรายงานเพื่อช่วยให้เราแก้ไขหรือไม่</string>
     <string name="crash_detected_dialog_ignore">ละเว้น</string>
     <string name="shortcut_open_terminal">เปิดเทอร์มินัล</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">รายงานด้วยตนเอง</string>
     <string name="home_service_doctor_title">Service Doctor</string>
     <string name="home_service_doctor_summary">เริ่ม Shizuku+ ไม่ได้ใช่หรือไม่ แตะเพื่อรันการตรวจสอบวินิจฉัย</string>
     <string name="doctor_check_battery">การเพิ่มประสิทธิภาพแบตเตอรี่</string>
@@ -606,8 +605,6 @@
     <string name="custom_icon_studio_border_width">ความหนา</string>
     <string name="custom_icon_studio_nudge_x">ตำแหน่งแนวนอน</string>
     <string name="custom_icon_studio_nudge_y">ตำแหน่งแนวตั้ง</string>
-    <string name="settings_watchdog_crash_alerts">การแจ้งเตือนเมื่อแอปขัดข้อง</string>
-    <string name="settings_watchdog_crash_alerts_summary">ส่งการแจ้งเตือนแบบเงียบเมื่อ Watchdog เริ่มบริการใหม่หลังจากเกิดข้อขัดข้อง</string>
     <string name="settings_watchdog_not_running">เปิดอยู่ แต่ยังไม่ทำงานในขณะนี้</string>
     <string name="settings_update_app_database_status">คำอธิบายและเคล็ดลับการตั้งค่าสำหรับ %1$d แอป แสดงในส่วนแอปและความเข้ากันได้กับ Root ตรวจสอบล่าสุดเมื่อ %2$s</string>
     <string name="settings_update_app_database_status_never">คำอธิบายและเคล็ดลับการตั้งค่าสำหรับ %1$d แอป แสดงในส่วนแอปและความเข้ากันได้กับ Root ยังไม่ได้ตรวจสอบ</string>
@@ -905,7 +902,6 @@
     <string name="service_doctor_fix_blocked_generic">การแก้ไขอัตโนมัติถูกบล็อก — ข้อจำกัดของอุปกรณ์ป้องกันคำสั่งเชลล์ที่ได้รับสิทธิ์ ตรวจสอบการตั้งค่า ADB/OEM</string>
     <string name="adb_foreground_op_denied">ไม่สามารถเริ่มบริการเบื้องหน้าได้ — สิทธิ์ START_FOREGROUND ถูกปฏิเสธ โปรดตรวจสอบการอนุญาตแอปของอุปกรณ์ของคุณ</string>
     <string name="update_no_release_notes">ไม่มีบันทึกประจำรุ่น</string>
-    <string name="accessibility_service_monitoring">บริการการเข้าถึงทำงานอยู่: กำลังตรวจหารหัสการจับคู่…</string>
     <string name="dhizuku_setup_title">ตั้งค่าเจ้าของอุปกรณ์ (Device Owner)</string>
     <string name="dhizuku_setup_message">โหมด Dhizuku กำหนดให้ต้องตั้งค่า Shizuku+ เป็นเจ้าของอุปกรณ์ (Device Owner) รันคำสั่งนี้หนึ่งครั้งผ่าน ADB ในขณะที่เปิดใช้การแก้ไขข้อบกพร่อง USB:\n\n%1$s\n\nหลังจากรันคำสั่งแล้ว ให้รีสตาร์ต Shizuku</string>
     <string name="dhizuku_setup_copy">คัดลอกคำสั่ง</string>
@@ -1130,7 +1126,6 @@
     <string name="accessibility_sim_toggle_automation">สลับการมองเห็นการ์ดระบบอัตโนมัติ</string>
     <string name="accessibility_sim_toggle_activity_log">สลับการมองเห็นการ์ดบันทึกกิจกรรม</string>
     <string name="accessibility_sim_toggle_learn_more">สลับการมองเห็นการ์ดเรียนรู้เพิ่มเติม</string>
-    <string name="tcp_guard_channel">การป้องกันเครือข่าย TCP</string>
     <string name="tcp_guard_title">การดีบัก TCP เปิดอยู่บนเครือข่ายที่ไม่น่าเชื่อถือ</string>
     <string name="tcp_guard_text">พอร์ต ADB TCP %1$d กำลังเปิดรับฟังและ%2$s ปิดพอร์ตนี้เว้นแต่คุณจำเป็นต้องใช้ในขณะนี้</string>
     <string name="tcp_guard_reason_open">คุณอยู่ในเครือข่าย Wi-Fi แบบเปิด</string>

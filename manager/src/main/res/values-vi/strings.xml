@@ -194,7 +194,6 @@
     <string name="toast_no_email_app">Không tìm thấy ứng dụng email</string>
     <string name="toast_shizuku_already_starting">Shizuku đã bắt đầu ở phía sau</string>
     <string name="toast_accessibility_tv_only">Dịch vụ này chỉ được hỗ trợ trên các thiết bị TV.</string>
-    <string name="toast_pairing_timeout">Dịch vụ ghép nối Shizuku đã hết thời gian chờ.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Đề tài</string>
     <string name="dark_theme_off">Luôn nhẹ nhàng</string>
@@ -241,7 +240,6 @@
     <string name="watchdog_shizuku_crashed_title">Shizuku bị rơi gần đây</string>
     <string name="watchdog_shizuku_crashed_text">Cơ quan giám sát đã khởi động lại dịch vụ. Nhấn để
         tìm hiểu về các bản sửa lỗi tiềm năng nhằm ngăn chặn sự cố trong tương lai.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Tắt cảnh báo</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Không thể khởi động trình duyệt</string>
     <string name="toast_copied_to_clipboard">Đã sao chép vào clipboard</string>

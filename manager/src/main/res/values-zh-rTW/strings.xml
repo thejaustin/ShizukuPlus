@@ -194,7 +194,6 @@
     <string name="watchdog_turn_off">關閉</string>
     <string name="watchdog_shizuku_crashed_title">Shizuku 最近崩潰了</string>
     <string name="watchdog_shizuku_crashed_text">看門狗重新啟動了這項服務。點擊以了解防止未來當機的潛在修復方法。</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">關閉警報</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">無法啟動瀏覽器</string>
     <string name="toast_copied_to_clipboard">已複製到剪貼簿</string>
@@ -276,8 +275,6 @@
     <string name="settings_status_banner_title">服務狀態</string>
     <string name="settings_usb_phone_switch_notify">USB 連線與切換通知</string>
     <string name="settings_usb_phone_switch_notify_summary">連接手機或 USB 裝置時，固定顯示包含快速設定與工具捷徑的通知</string>
-    <string name="settings_watchdog_crash_alerts">當機通知</string>
-    <string name="settings_watchdog_crash_alerts_summary">當看門狗在當機後重新啟動服務時，發出無聲通知</string>
     <string name="settings_watchdog_not_running">已開啟，目前未執行</string>
     <!-- 保持運作提示 -->
     <string name="stability_tips_all_enabled_message">所有建議的背景保持運作設定皆已啟用。若 Shizuku 仍會停止，請在服務醫生中檢查 OEM 專屬的電池限制或幽靈程序終止限制。</string>
@@ -296,7 +293,6 @@
     <string name="su_bridge_terminal_profile_title">終端機與環境設定</string>
     <string name="su_bridge_termux_setup_copied">Termux 指令已複製到剪貼簿</string>
     <!-- TCP 保護 -->
-    <string name="tcp_guard_channel">TCP 網路保護</string>
     <string name="tcp_guard_close">關閉連接埠</string>
     <string name="tcp_guard_reason_captive">您目前位於強制入口（公開）Wi-Fi 網路</string>
     <string name="tcp_guard_reason_open">您目前位於開放的 Wi-Fi 網路</string>

@@ -357,7 +357,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ hat einen Absturz in deiner letzten Sitzung erkannt. Möchtest du einen Bericht erstellen, damit wir ihn beheben können?</string>
     <string name="crash_detected_dialog_ignore">Ignorieren</string>
     <string name="shortcut_open_terminal">Terminal öffnen</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">Manuell melden</string>
     <string name="home_service_doctor_title">Service Doctor</string>
     <string name="home_service_doctor_summary">Probleme beim Starten von Shizuku+? Tippe, um eine Diagnose auszuführen.</string>
     <string name="doctor_check_battery">Akkuoptimierung</string>
@@ -671,7 +670,6 @@
     <string name="service_doctor_fix_blocked_generic">Automatische Korrektur blockiert — Gerätebeschränkungen verhindern privilegierte Shell-Befehle. Prüfe die ADB-/Hersteller-Einstellungen.</string>
     <string name="adb_foreground_op_denied">Vordergrunddienst konnte nicht gestartet werden — die Berechtigung START_FOREGROUND wurde verweigert. Bitte prüfe die App-Berechtigungen deines Geräts.</string>
     <string name="update_no_release_notes">Keine Versionshinweise verfügbar.</string>
-    <string name="accessibility_service_monitoring">Bedienungshilfen-Dienst aktiv: Überwachung auf Kopplungscode…</string>
     <string name="dhizuku_setup_title">Geräteeigentümer einrichten</string>
     <string name="dhizuku_setup_message">Der Dhizuku-Modus erfordert, dass Shizuku+ als Geräteeigentümer festgelegt ist. Führe diesen Befehl einmalig per ADB aus, solange das USB-Debugging aktiviert ist:\n\n%1$s\n\nStarte Shizuku nach dem Ausführen des Befehls neu.</string>
     <string name="dhizuku_setup_copy">Befehl kopieren</string>
@@ -1031,7 +1029,6 @@
     <string name="settings_stealth_mode_pkg_query">Paket-Abfrage-Filter</string>
     <string name="settings_stealth_mode_pkg_query_summary">Verberge Shizuku vor Paket-Abfragen durch andere Apps</string>
     <string name="settings_ai_bridge_title">AI-Brücke und NPU</string>
-    <string name="tcp_guard_channel">TCP-Netzwerkschutz</string>
     <string name="tcp_guard_title">TCP-Debugging ist in einem nicht vertrauenswürdigen Netzwerk offen</string>
     <string name="tcp_guard_text">ADB TCP-Port %1$d ist offen und %2$s. Schließe es, Wenn du es jetzt nicht benötigen.</string>
     <string name="tcp_guard_reason_open">du bist in einem offenen Wi-Fi-Netzwerk</string>
@@ -1144,8 +1141,6 @@
     <string name="custom_icon_studio_border_width">Breite</string>
     <string name="custom_icon_studio_nudge_x">Horizontale Position</string>
     <string name="custom_icon_studio_nudge_y">Vertikale Position</string>
-    <string name="settings_watchdog_crash_alerts">Absturz-Benachrichtigungen</string>
-    <string name="settings_watchdog_crash_alerts_summary">Poste eine stille Benachrichtigung, wenn der Watchdog den Dienst nach einem Absturz neu startet</string>
     <string name="settings_watchdog_not_running">An, wird gerade nicht ausgeführt</string>
     <string name="settings_update_app_database_status">Beschreibungen und Einrichtungstipps für %1$d Apps, angezeigt in Apps und Root-Kompatibilität. Zuletzt überprüft %2$s.</string>
     <string name="settings_update_app_database_status_never">Beschreibungen und Einrichtungstipps für %1$d Apps, angezeigt in Apps und Root-Kompatibilität. Noch nicht überprüft.</string>

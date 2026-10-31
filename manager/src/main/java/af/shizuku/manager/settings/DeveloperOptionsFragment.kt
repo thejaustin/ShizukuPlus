@@ -44,6 +44,7 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
                     nm?.cancel(af.shizuku.manager.adb.AdbPairingService.NOTIFICATION_ID)
                     nm?.cancel(af.shizuku.manager.utils.TcpNetworkGuard.NOTIFICATION_ID)
                     nm?.cancel(af.shizuku.manager.utils.LiveActivityNotificationManager.NOTIFICATION_ID_WARNING)
+                    nm?.cancel(af.shizuku.manager.utils.ShizukuIssues.NOTIFICATION_ID)
                 }
                 true
             }

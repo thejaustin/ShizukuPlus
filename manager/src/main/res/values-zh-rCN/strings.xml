@@ -568,7 +568,6 @@
     <string name="crash_detected_dialog_ignore">忽略</string>
     <string name="shortcut_open_terminal">打开终端</string>
 
-    <string name="watchdog_shizuku_crashed_action_report_manually">手动反馈</string>
 
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">首先，请执行以下操作：</string>
@@ -684,7 +683,6 @@
     <string name="backup_auth_failed">身份验证失败（%1$s）</string>
     <string name="toast_shizuku_already_starting">Shizuku+ 已在后台启动</string>
     <string name="toast_accessibility_tv_only">该服务仅支持电视设备</string>
-    <string name="toast_pairing_timeout">Shizuku+ 配对服务超时</string>
     <string name="adb_error_ssl_title">连接错误</string>
     <string name="adb_error_ssl_message">无线 ADB 握手失败（SSL 协议错误）。这通常发生在 ADB 密钥损坏时。是否在开发者选项中重置它们？</string>
     <string name="adb_error_ssl_button_reset">前往开发者选项</string>
@@ -765,7 +763,6 @@
     <string name="watchdog_turn_off">关</string>
     <string name="watchdog_shizuku_crashed_title">Shizuku 最近崩溃了</string>
     <string name="watchdog_shizuku_crashed_text">看门狗已重启服务。点击了解可防止未来崩溃的潜在修复方案。</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">关闭提醒</string>
 
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">无法启动浏览器</string>
@@ -977,7 +974,6 @@
     <string name="update_no_release_notes">暂无发布说明。</string>
 
     <!-- Accessibility service status -->
-    <string name="accessibility_service_monitoring">无障碍服务已启用：正在监听配对码…</string>
 
     <!-- Dhizuku Device Owner Setup -->
     <string name="dhizuku_setup_title">设置设备所有者</string>
@@ -1307,8 +1303,6 @@
 
     <!-- New strings for features added after the last zh-rCN sync -->
     <string name="home_samsung_system_uid_title"><![CDATA[启动（三星系统 UID）]]></string>
-    <string name="settings_watchdog_crash_alerts">崩溃通知</string>
-    <string name="settings_watchdog_crash_alerts_summary">当看门狗在崩溃后重启服务时，发送静默通知</string>
     <string name="settings_watchdog_not_running">已开启，当前未运行</string>
     <string name="settings_plus_category_core">核心</string>
     <string name="settings_usb_phone_switch_notify">USB 连接与切换通知</string>
@@ -1356,7 +1350,6 @@
     <string name="su_bridge_kernelsu_upgrade_title">检测到 KernelSU——升级为 Root 桥接</string>
     <string name="su_bridge_kernelsu_upgrade_body">KernelSU 已安装并在本次开机中生效。请在 KernelSU 下重启 Shizuku 服务，让桥接获得真正的 uid=0 root 权限，而不是 uid=2000（ADB shell）。这样，同时获得 Shizuku+ 与 KernelSU 授权的应用将以完整的 root 权限运行。</string>
     <string name="su_bridge_kernelsu_restart_shizuku">以 Root 身份重启 Shizuku</string>
-    <string name="tcp_guard_channel">TCP 网络保护</string>
     <string name="tcp_guard_title">TCP 调试已在不受信任的网络上开放</string>
     <string name="tcp_guard_text">ADB TCP 端口 %1$d 正在监听，且%2$s。除非你此刻需要，否则请关闭该端口。</string>
     <string name="tcp_guard_reason_open">你正处于开放 Wi-Fi 网络</string>

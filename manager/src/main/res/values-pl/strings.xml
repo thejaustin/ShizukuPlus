@@ -200,7 +200,6 @@
     <string name="toast_no_email_app">Nie znaleziono aplikacji pocztowej</string>
     <string name="toast_shizuku_already_starting">Shizuku już uruchamia się w tle</string>
     <string name="toast_accessibility_tv_only">Ta usługa jest obsługiwana tylko na urządzeniach TV.</string>
-    <string name="toast_pairing_timeout">Upłynął limit czasu usługi parowania Shizuku.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Motyw</string>
     <string name="dark_theme_off">Zawsze jasny</string>
@@ -247,7 +246,6 @@
     <string name="watchdog_shizuku_crashed_title">Shizuku niedawno uległo awarii</string>
     <string name="watchdog_shizuku_crashed_text">Nadzorowanie zrestartowało usługę. Dotknij, aby
         poznać rozwiązania, które mogą zapobiec awariom w przyszłości.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Wyłącz alerty</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Nie można uruchomić przeglądarki</string>
     <string name="toast_copied_to_clipboard">Skopiowano do schowka</string>

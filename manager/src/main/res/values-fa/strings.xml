@@ -198,7 +198,6 @@
     <string name="toast_shizuku_already_starting">شیزوکو از قبل در پس‌زمینه شروع به کار کرده است</string>
     <string name="toast_accessibility_tv_only">این سرویس فقط روی دستگاه های تلویزیونی پشتیبانی می
         شود.</string>
-    <string name="toast_pairing_timeout">سرویس جفت سازی شیزوکو تمام شد.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">تم</string>
     <string name="dark_theme_off">همیشه روشن</string>
@@ -244,7 +243,6 @@
     <string name="watchdog_shizuku_crashed_title">شیزوکو اخیراً تصادف کرد</string>
     <string name="watchdog_shizuku_crashed_text">واچ‌داگ سرویس را مجدداً راه‌اندازی کرد. برای کسب
         اطلاعات در مورد راه‌حل‌های احتمالی برای جلوگیری از خرابی‌های آینده، ضربه بزنید.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">خاموش کردن هشدارها</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">نمی توان مرورگر را راه اندازی کرد</string>
     <string name="toast_copied_to_clipboard">در کلیپ بورد کپی شد</string>

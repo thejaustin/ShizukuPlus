@@ -160,6 +160,7 @@ object ShizukuStateMachine {
                             .dismissCrashNotification(context)
                         af.shizuku.manager.worker.AdbStartWorker
                             .dismissNotifications(context)
+                        ShizukuIssues.clearStartProblems(context)
                         val nm = context.getSystemService(android.app.NotificationManager::class.java)
                         nm?.cancel(af.shizuku.manager.receiver.ShizukuReceiverStarter.NOTIFICATION_ID)
                         nm?.cancel(af.shizuku.manager.receiver.ShizukuReceiverStarter.FOREGROUND_NOTIFICATION_ID)
@@ -233,6 +234,10 @@ object ShizukuStateMachine {
                     } catch (e: Exception) {
                         Timber.tag("ShizukuStateMachine").w(e, "Failed to apply optimizations and privileges on RUNNING")
                     }
+                }
+
+                if (newState == State.CRASHED && oldState == State.RUNNING) {
+                    runCatching { ShizukuIssues.onServerLost(ShizukuApplication.appContext) }
                 }
 
                 if ((newState == State.STOPPED || newState == State.CRASHED) && (oldState == State.RUNNING || oldState == State.STARTING)) {

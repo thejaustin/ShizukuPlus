@@ -1,6 +1,5 @@
 package af.shizuku.manager.worker
 
-import af.shizuku.manager.MainActivity
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.adb.AdbAuthPendingException
@@ -15,9 +14,9 @@ import af.shizuku.manager.settings.BugReportDialogActivity
 import af.shizuku.manager.starter.Starter
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.NetworkTrust
+import af.shizuku.manager.utils.ShizukuIssues
 import af.shizuku.manager.utils.ShizukuStateMachine
 import android.app.KeyguardManager
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -27,7 +26,6 @@ import android.content.IntentFilter
 import android.database.ContentObserver
 import android.os.Build
 import android.provider.Settings
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.work.*
 import kotlinx.coroutines.CancellationException
@@ -413,141 +411,56 @@ class AdbStartWorker(
             else -> context.getString(R.string.wadb_error_generic_short)
         }
 
+    // After repeated discovery timeouts the device may be blocking multicast. The advice is TCP
+    // Mode, so it is moot once that is on or a server is up anyway; a server reaching RUNNING
+    // clears it (ShizukuIssues.clearStartProblems).
     private fun showMdnsBlockedSuggestion(context: Context) {
-        if (!ShizukuSettings.isNotificationSystemEnabled()) return
-        // The advice is to turn TCP Mode on, so it says nothing once that is done or a server is
-        // up anyway. Each run of failed retries would post it again; once a day is enough.
         if (ShizukuSettings.getTcpMode() || ShizukuStateMachine.isRunning()) return
-        val prefs = ShizukuSettings.getPreferences()
-        val now = System.currentTimeMillis()
-        if (now - prefs.getLong(PREF_MDNS_NOTICE_AT, 0L) in 0 until MDNS_NOTICE_INTERVAL_MS) return
-        prefs.edit().putLong(PREF_MDNS_NOTICE_AT, now).apply()
-        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            nm.createNotificationChannel(
-                NotificationChannel(
-                    CHANNEL_ID,
-                    context.getString(R.string.wadb_notification_title),
-                    NotificationManager.IMPORTANCE_LOW,
-                ),
-            )
-        }
-        val openAppIntent =
-            Intent(context, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            }
-        val pi =
-            PendingIntent.getActivity(
+        val enableTcp =
+            PendingIntent.getBroadcast(
                 context,
                 20,
-                openAppIntent,
+                Intent(context, af.shizuku.manager.receiver.TcpGuardReceiver::class.java)
+                    .setAction(af.shizuku.manager.receiver.TcpGuardReceiver.ACTION_ENABLE_TCP_MODE),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
-        val devIntent =
-            Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-        val devPi =
-            PendingIntent.getActivity(
-                context,
-                23,
-                devIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-            )
-        val notification =
-            NotificationCompat
-                .Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notification_icon)
-                .setContentTitle(context.getString(R.string.wadb_mdns_blocked_title))
-                .setContentText(context.getString(R.string.wadb_mdns_blocked_text))
-                .setStyle(
-                    NotificationCompat
-                        .BigTextStyle()
-                        .bigText(context.getString(R.string.wadb_mdns_blocked_text)),
-                ).setContentIntent(pi)
-                .addAction(0, context.getString(R.string.wadb_mdns_switch_tcp_action), pi)
-                .addAction(0, context.getString(R.string.settings_developer_options), devPi)
-                .setSilent(true)
-                .setAutoCancel(true)
-                .build()
-        nm.notify(NOTIFICATION_ID_MDNS_BLOCKED, notification)
+        ShizukuIssues.report(
+            context,
+            ShizukuIssues.Issue(
+                ShizukuIssues.KEY_PORT_DISCOVERY,
+                ShizukuIssues.Severity.PROBLEM,
+                context.getString(R.string.wadb_mdns_blocked_title),
+                context.getString(R.string.wadb_mdns_blocked_text),
+                listOf(ShizukuIssues.Action(context.getString(R.string.issue_turn_on_tcp_mode), enableTcp)),
+            ),
+        )
     }
 
     private fun showErrorNotification(
         context: Context,
         e: Exception,
     ) {
-        if (!ShizukuSettings.isNotificationSystemEnabled()) return
-        val now = System.currentTimeMillis()
-        if (now - lastErrorNotificationMs < ERROR_NOTIFICATION_COOLDOWN_MS) {
-            return
-        }
-        lastErrorNotificationMs = now
-
-        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel =
-                NotificationChannel(
-                    CHANNEL_ID,
-                    context.getString(R.string.wadb_notification_title),
-                    NotificationManager.IMPORTANCE_LOW,
-                )
-            nm.createNotificationChannel(channel)
-        }
-
-        val nb = NotificationCompat.Builder(context, CHANNEL_ID)
-
         val shortMsg = e.toUserMessage(context)
-        val devDetail = e.message?.take(120)
-        val bigText = if (devDetail != null) "$shortMsg\n\n$devDetail" else shortMsg
-
-        val intent =
-            Intent(context, BugReportDialogActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }
-        val pendingIntent =
+        val bugReport =
             PendingIntent.getActivity(
                 context,
                 0,
-                intent,
+                Intent(context, BugReportDialogActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                },
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
-
-        val retryIntent = Intent(context, af.shizuku.manager.receiver.NotifAttemptActivity::class.java)
-        val retryPendingIntent =
-            PendingIntent.getActivity(
-                context,
-                21,
-                retryIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-            )
-
-        val devIntent =
-            Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-        val devPendingIntent =
-            PendingIntent.getActivity(
-                context,
-                22,
-                devIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-            )
-
-        val notification =
-            nb
-                .setSmallIcon(R.drawable.ic_notification_icon)
-                .setContentTitle(context.getString(R.string.wadb_error_title))
-                .setContentText(shortMsg)
-                .setContentIntent(pendingIntent)
-                .setSilent(true)
-                .setAutoCancel(true)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
-                .addAction(0, context.getString(R.string.starter_retry), retryPendingIntent)
-                .addAction(0, context.getString(R.string.settings_developer_options), devPendingIntent)
-                .build()
-
-        nm.notify(NOTIFICATION_ID, notification)
+        ShizukuIssues.report(
+            context,
+            ShizukuIssues.Issue(
+                ShizukuIssues.KEY_START_FAILED,
+                ShizukuIssues.Severity.PROBLEM,
+                context.getString(R.string.issue_start_failed_title),
+                e.message?.take(120)?.let { "$shortMsg\n\n$it" } ?: shortMsg,
+                listOf(ShizukuIssues.retryAction(context)),
+                bugReport,
+            ),
+        )
     }
 
     companion object {
@@ -593,8 +506,10 @@ class AdbStartWorker(
             then: (() -> Unit)? = null,
         ) = ShizukuReceiverStarter.cancelStarts(context, then)
 
+        /** Clears this worker's problems; also removes the notifications older versions posted. */
         @JvmStatic
         fun dismissNotifications(context: Context) {
+            ShizukuIssues.clearStartProblems(context)
             try {
                 val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager ?: return
                 nm.cancel(NOTIFICATION_ID)
@@ -614,11 +529,5 @@ class AdbStartWorker(
         const val CHANNEL_ID = "AdbStartWorker"
         const val NOTIFICATION_ID = 1448
         const val NOTIFICATION_ID_MDNS_BLOCKED = 1449
-        private const val ERROR_NOTIFICATION_COOLDOWN_MS = 600_000L
-        private const val PREF_MDNS_NOTICE_AT = "mdns_blocked_notice_at"
-        private const val MDNS_NOTICE_INTERVAL_MS = 24 * 60 * 60 * 1000L
-
-        @Volatile
-        private var lastErrorNotificationMs = 0L
     }
 }

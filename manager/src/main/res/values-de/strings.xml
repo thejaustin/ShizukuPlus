@@ -213,7 +213,6 @@
     <string name="toast_no_email_app">Keine E-Mail-App gefunden</string>
     <string name="toast_shizuku_already_starting">Shizuku beginnt bereits im Hintergrund</string>
     <string name="toast_accessibility_tv_only">Diese Automatisierung ist nur für TV- oder Samsung One UI-Geräte mit TLS-Unterstützung.</string>
-    <string name="toast_pairing_timeout">Der Shizuku-Pairing-Service ist abgelaufen.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Thema</string>
     <string name="dark_theme_off">Immer leicht</string>
@@ -260,7 +259,6 @@
     <string name="watchdog_shizuku_crashed_text">Der Wachhund hat den Service wieder aufgenommen.
         Tippen Sie, um sich über mögliche Korrekturen zu informieren, die zukünftige Abstürze
         verhindern.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Alarme ausschalten</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Browser starten nicht möglich</string>
     <string name="toast_copied_to_clipboard">In die Zwischenablage kopiert</string>

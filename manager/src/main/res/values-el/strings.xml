@@ -212,7 +212,6 @@
     <string name="toast_shizuku_already_starting">Το Shizuku ξεκινά ήδη στο παρασκήνιο</string>
     <string name="toast_accessibility_tv_only">Αυτή η υπηρεσία υποστηρίζεται μόνο σε συσκευές
         τηλεόρασης.</string>
-    <string name="toast_pairing_timeout">Το χρονικό όριο της υπηρεσίας σύζευξης Shizuku έληξε.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Θέμα</string>
     <string name="dark_theme_off">Πάντα ελαφρύ</string>
@@ -259,7 +258,6 @@
     <string name="watchdog_shizuku_crashed_title">Ο Shizuku συνετρίβη πρόσφατα</string>
     <string name="watchdog_shizuku_crashed_text">Το Watchdog επανεκκίνησε την υπηρεσία. Πατήστε για
         να μάθετε σχετικά με πιθανές επιδιορθώσεις για την αποτροπή μελλοντικών σφαλμάτων.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Απενεργοποίηση ειδοποιήσεων</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Δεν είναι δυνατή η εκκίνηση του προγράμματος
         περιήγησης</string>

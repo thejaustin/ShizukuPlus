@@ -169,7 +169,6 @@
     <string name="toast_no_email_app">メールアプリが見つかりません</string>
     <string name="toast_shizuku_already_starting">バックグラウンドではすでに雫が起動しています</string>
     <string name="toast_accessibility_tv_only">このサービスはテレビ機器のみでサポートされています。</string>
-    <string name="toast_pairing_timeout">雫のペアリングサービスがタイムアウトした。</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">テーマ</string>
     <string name="dark_theme_off">ホワイトテーマ</string>
@@ -214,7 +213,6 @@
     <string name="watchdog_shizuku_crashed_title">雫は最近墜落した</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog
         がサービスを再起動しました。タップすると、今後のクラッシュを防ぐための潜在的な修正内容を確認できます。</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">アラートをオフにする</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">ブラウザが起動することができません</string>
     <string name="toast_copied_to_clipboard">クリップボードにコピーされました</string>

@@ -27,13 +27,6 @@
             android:title="@string/settings_watchdog"
             android:icon="@drawable/ic_monitor_heart_24" />
 
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="watchdog_crash_alerts"
-            android:summary="@string/settings_watchdog_crash_alerts_summary"
-            android:title="@string/settings_watchdog_crash_alerts"
-            android:defaultValue="true"
-            android:icon="@drawable/ic_outline_notifications_active_24" />
-
         <Preference
             android:key="startup_scripts"
             android:title="@string/settings_startup_scripts_title"
@@ -172,6 +165,15 @@
         android:icon="@drawable/ic_outline_notifications_active_24"
         android:defaultValue="false">
 
+
+        <!-- No defaultValue: BehaviorSettingsFragment sets it from getProblemAlertLevel(), which
+             carries over the old "Crash notifications" switch. -->
+        <rikka.preference.SimpleMenuPreference
+            android:key="problem_alerts"
+            android:title="@string/settings_problem_alerts"
+            android:entries="@array/problem_alerts"
+            android:entryValues="@array/problem_alerts_values"
+            android:icon="@drawable/ic_outline_notifications_active_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="live_activity_enabled"

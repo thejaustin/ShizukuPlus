@@ -649,6 +649,8 @@ class ShizukuApplication :
         ShizukuSettings.migrateCornerSettingsIfNeeded()
         // Before the first Plus feature sync sends the firewall state to the server.
         ShizukuSettings.migrateFirewallAutomationIfNeeded()
+        af.shizuku.manager.utils.ShizukuIssues
+            .deleteRetiredChannels(this)
 
         AppCompatDelegate.setDefaultNightMode(ShizukuSettings.getNightMode())
 

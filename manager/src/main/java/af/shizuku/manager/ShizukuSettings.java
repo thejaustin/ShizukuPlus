@@ -240,6 +240,7 @@ public class ShizukuSettings {
         public static final String KEY_STEALTH_MODE = "stealth_mode";
         public static final String KEY_DEVICE_HARDENING_ENABLED = "device_hardening_enabled";
         public static final String KEY_WATCHDOG_CRASH_ALERTS = "watchdog_crash_alerts";
+        public static final String KEY_PROBLEM_ALERTS = "problem_alerts";
         public static final String KEY_NOTIFICATION_SYSTEM_ENABLED = "notification_system_enabled";
         public static final String KEY_LOCK_HOME_LAYOUT = "lock_home_layout";
         public static final String KEY_PER_APP_DISABLED_SCOPES = "per_app_disabled_scopes";
@@ -946,12 +947,16 @@ public class ShizukuSettings {
         return;
     }
 
-    public static boolean isWatchdogCrashAlertsEnabled() {
-        return getPreferences().getBoolean(Keys.KEY_WATCHDOG_CRASH_ALERTS, true);
-    }
-
-    public static void setWatchdogCrashAlertsEnabled(boolean enable) {
-        getPreferences().edit().putBoolean(Keys.KEY_WATCHDOG_CRASH_ALERTS, enable).apply();
+    /**
+     * The "Problem alerts" setting: "off", "stopped" (only when Shizuku+ stops or something needs
+     * attention now) or "all". The old "Crash notifications" switch, when turned off, reads as off.
+     */
+    public static String getProblemAlertLevel() {
+        SharedPreferences p = getPreferences();
+        if (p == null) return "stopped";
+        String level = p.getString(Keys.KEY_PROBLEM_ALERTS, null);
+        if (level != null) return level;
+        return p.getBoolean(Keys.KEY_WATCHDOG_CRASH_ALERTS, true) ? "stopped" : "off";
     }
 
     public static boolean isNotificationSystemEnabled() {

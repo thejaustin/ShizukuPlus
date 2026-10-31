@@ -354,7 +354,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ son oturumunuzdan bir çökme algıladı. Düzeltmemize yardımcı olmak için bir rapor oluşturmak ister misiniz?</string>
     <string name="crash_detected_dialog_ignore">Yoksay</string>
     <string name="shortcut_open_terminal">Terminali Aç</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">Elle Bildir</string>
     <string name="home_service_doctor_title">Hizmet Doktoru</string>
     <string name="home_service_doctor_summary">Shizuku+\'ı başlatmakta sorun mu yaşıyorsunuz? Tanılama denetimi çalıştırmak için dokunun.</string>
     <string name="doctor_check_battery">Pil optimizasyonu</string>
@@ -668,7 +667,6 @@
     <string name="service_doctor_fix_blocked_generic">Otomatik düzeltme engellendi: cihaz kısıtlamaları ayrıcalıklı kabuk komutlarını engelliyor. ADB/OEM ayarlarını kontrol edin.</string>
     <string name="adb_foreground_op_denied">Ön plan hizmeti başlatılamıyor: START_FOREGROUND izni reddedildi. Lütfen cihazınızın uygulama izinlerini kontrol edin.</string>
     <string name="update_no_release_notes">Sürüm notu yok.</string>
-    <string name="accessibility_service_monitoring">Erişilebilirlik hizmeti etkin: eşleştirme kodu izleniyor…</string>
     <string name="dhizuku_setup_title">Cihaz Sahibini Ayarla</string>
     <string name="dhizuku_setup_message">Dhizuku Modu, Shizuku+\'ın Cihaz Sahibi olarak ayarlanmasını gerektirir. USB hata ayıklama etkinken bu komutu ADB üzerinden bir kez çalıştırın:\n\n%1$s\n\nKomutu çalıştırdıktan sonra Shizuku\'yu yeniden başlatın.</string>
     <string name="dhizuku_setup_copy">Komutu Kopyala</string>
@@ -1000,8 +998,6 @@
     <string name="custom_icon_studio_border_width">Genişlik</string>
     <string name="custom_icon_studio_nudge_x">Yatay Konum</string>
     <string name="custom_icon_studio_nudge_y">Dikey Konum</string>
-    <string name="settings_watchdog_crash_alerts">Çökme bildirimleri</string>
-    <string name="settings_watchdog_crash_alerts_summary">Watchdog bir çökmeden sonra hizmeti yeniden başlattığında sessiz bir bildirim yayınlayın</string>
     <string name="settings_watchdog_not_running">Açık, şu anda çalışmıyor</string>
     <string name="settings_update_app_database_status">%1$d uygulama için açıklamalar ve kurulum ipuçları, Uygulamalar ve Root uyumluluğu içinde gösterilir. Son kontrol: %2$s.</string>
     <string name="settings_update_app_database_status_never">%1$d uygulama için açıklamalar ve kurulum ipuçları, Uygulamalar ve Root uyumluluğu içinde gösterilir. Henüz kontrol edilmedi.</string>
@@ -1131,7 +1127,6 @@
     <string name="settings_stealth_mode_pkg_query">Paket Sorgu Filtresi</string>
     <string name="settings_stealth_mode_pkg_query_summary">Shizuku\'yu diğer uygulamaların paket sorgularından gizleyin</string>
     <string name="settings_ai_bridge_title">AI Bridge ve NPU</string>
-    <string name="tcp_guard_channel">TCP ağ koruması</string>
     <string name="tcp_guard_title">Güvenilmeyen bir ağda TCP hata ayıklaması açık</string>
     <string name="tcp_guard_text">ADB TCP bağlantı noktası %1$d dinliyor ve %2$s. Şu anda ihtiyacınız yoksa kapatın.</string>
     <string name="tcp_guard_reason_open">açık bir Wi-Fi ağındasınız</string>

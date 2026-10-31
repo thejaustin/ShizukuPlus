@@ -489,8 +489,6 @@
     <string name="settings_use_system_color">Use system theme color</string>
     <string name="settings_watchdog">Watchdog</string>
     <string name="settings_watchdog_summary">Automatically restart Shizuku+ after a crash or unexpected stop. Cannot reconnect when the underlying network disconnects (e.g. USB cable unplugged while using RNDIS/USB ADB).</string>
-    <string name="settings_watchdog_crash_alerts">Crash notifications</string>
-    <string name="settings_watchdog_crash_alerts_summary">Post a silent notification when the watchdog restarts the service after a crash</string>
     <string name="settings_watchdog_not_running">On, not running right now</string>
     <string name="settings_device_hardening">Device hardening &amp; keepalive</string>
     <string name="settings_device_hardening_summary">Exempt Shizuku and terminal clients from Doze, auto-grant WRITE_SECURE_SETTINGS, sync starter binaries, and while the Watchdog is on, lift background and battery limits on this app</string>
@@ -799,7 +797,6 @@
     <string name="crash_detected_dialog_ignore">Ignore</string>
     <string name="shortcut_open_terminal">Open Terminal</string>
 
-    <string name="watchdog_shizuku_crashed_action_report_manually">Report Manually</string>
 
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">First, please do the following:</string>
@@ -928,7 +925,6 @@
     <string name="backup_auth_failed">Authentication failed (%1$s)</string>
     <string name="toast_shizuku_already_starting">Shizuku+ is already starting in the background</string>
     <string name="toast_accessibility_tv_only">This automation is for TV or Samsung One UI devices with TLS support.</string>
-    <string name="toast_pairing_timeout">Shizuku+ pairing service timed out</string>
     <string name="adb_error_ssl_title">Connection Error</string>
     <string name="adb_error_ssl_message">Wireless ADB handshake failed (SSL protocol error). This typically happens when ADB keys are corrupted. Would you like to reset them in Developer Options?</string>
     <string name="adb_error_ssl_button_reset">Go to Developer Options</string>
@@ -1007,10 +1003,20 @@
 
     <!-- Watchdog -->
     <string name="watchdog_running">Watchdog is running</string>
+    <string name="watchdog_status_running">Shizuku+ is running</string>
+    <string name="watchdog_status_stopped">Shizuku+ isn\'t running</string>
+    <string name="problems_channel">Problems</string>
+    <string name="settings_problem_alerts">Problem alerts</string>
+    <string name="settings_problem_alerts_off">Off</string>
+    <string name="settings_problem_alerts_stopped">When Shizuku+ stops or needs you</string>
+    <string name="settings_problem_alerts_all">All problems</string>
+    <string name="issue_stopped_title">Shizuku+ stopped</string>
+    <string name="issue_stopped_text">It stopped unexpectedly and hasn\'t come back. Tap Retry to start it again.</string>
+    <string name="issue_start_failed_title">Shizuku+ couldn\'t start</string>
+    <string name="issue_turn_on_tcp_mode">Turn on TCP Mode</string>
     <string name="watchdog_turn_off">Turn Off</string>
     <string name="watchdog_shizuku_crashed_title">Shizuku crashed recently</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog restarted the service. Tap to learn about potential fixes to prevent future crashes.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Turn Off Alerts</string>
     <string name="battery_exemption_channel_name">Battery optimization</string>
     <string name="battery_exemption_notification_title">Allow Shizuku+ to run in the background</string>
     <string name="battery_exemption_notification_text">The Watchdog was turned on automatically. Exempt Shizuku+ from battery optimization so it can restart the service when it stops.</string>
@@ -1374,7 +1380,6 @@
     <string name="update_no_release_notes">No release notes available.</string>
 
     <!-- Accessibility service status -->
-    <string name="accessibility_service_monitoring">Accessibility service active: monitoring for pairing code…</string>
 
     <!-- Dhizuku Device Owner Setup -->
     <string name="dhizuku_setup_title">Set Up Device Owner</string>
@@ -1684,7 +1689,6 @@
     <string name="accessibility_sim_toggle_automation">Toggle Automation card visibility</string>
     <string name="accessibility_sim_toggle_activity_log">Toggle Activity Log card visibility</string>
     <string name="accessibility_sim_toggle_learn_more">Toggle Learn More card visibility</string>
-    <string name="tcp_guard_channel">TCP network protection</string>
     <string name="tcp_guard_title">TCP debugging is open on an untrusted network</string>
     <string name="tcp_guard_text">ADB TCP port %1$d is listening and %2$s. Close it unless you need it right now.</string>
     <string name="tcp_guard_reason_open">you are on an open Wi-Fi network</string>

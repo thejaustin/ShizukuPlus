@@ -1,6 +1,5 @@
 package af.shizuku.manager.utils
 
-import af.shizuku.manager.service.WatchdogService
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -77,13 +76,6 @@ sealed class SettingsPage(
             }
 
         object NotificationSettings : Notifications()
-
-        object NotificationChannel : Notifications() {
-            override fun buildIntent(context: Context): Intent =
-                super.buildIntent(context).apply {
-                    putExtra(Settings.EXTRA_CHANNEL_ID, WatchdogService.CRASH_CHANNEL_ID)
-                }
-        }
     }
 
     object InternetPanel : SettingsPage(Settings.Panel.ACTION_INTERNET_CONNECTIVITY)

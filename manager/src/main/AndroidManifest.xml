@@ -535,6 +535,10 @@
             android:exported="false" />
 
         <receiver
+            android:name=".receiver.IssueDismissReceiver"
+            android:exported="false" />
+
+        <receiver
             android:name=".receiver.ManualStopReceiver"
             android:enabled="true"
             android:exported="true">

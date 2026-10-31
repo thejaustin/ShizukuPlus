@@ -357,7 +357,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ обнаружил сбой в прошлом сеансе. Создать отчёт, чтобы помочь нам его исправить?</string>
     <string name="crash_detected_dialog_ignore">Игнорировать</string>
     <string name="shortcut_open_terminal">Открыть терминал</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">Сообщить вручную</string>
     <string name="home_service_doctor_title">Диагностика службы</string>
     <string name="home_service_doctor_summary">Проблемы с запуском Shizuku+? Нажмите, чтобы запустить диагностику.</string>
     <string name="doctor_check_battery">Оптимизация батареи</string>
@@ -671,7 +670,6 @@
     <string name="service_doctor_fix_blocked_generic">Автоисправление заблокировано — ограничения устройства не позволяют выполнять привилегированные команды shell. Проверьте настройки ADB/OEM.</string>
     <string name="adb_foreground_op_denied">Не удалось запустить фоновую службу переднего плана — разрешение START_FOREGROUND отклонено. Проверьте разрешения приложения в настройках устройства.</string>
     <string name="update_no_release_notes">Примечания к выпуску отсутствуют.</string>
-    <string name="accessibility_service_monitoring">Служба специальных возможностей активна: ожидание кода сопряжения…</string>
     <string name="dhizuku_setup_title">Настройка владельца устройства</string>
     <string name="dhizuku_setup_message">Для режима Dhizuku Shizuku+ должен быть назначен владельцем устройства. Выполните эту команду один раз через ADB при включённой отладке по USB:\n\n%1$s\n\nПосле выполнения команды перезапустите Shizuku.</string>
     <string name="dhizuku_setup_copy">Копировать команду</string>
@@ -999,8 +997,6 @@
     <string name="custom_icon_studio_border_width">Ширина</string>
     <string name="custom_icon_studio_nudge_x">Горизонтальная позиция</string>
     <string name="custom_icon_studio_nudge_y">Вертикальная позиция</string>
-    <string name="settings_watchdog_crash_alerts">Уведомления о сбое</string>
-    <string name="settings_watchdog_crash_alerts_summary">Выведите беззвучное уведомление, когда сторожевой пес перезапустит службу после сбоя</string>
     <string name="settings_watchdog_not_running">Включено, но сейчас не работает</string>
     <string name="settings_update_app_database_status">Описания и советы по настройке для %1$d приложений, показанные в разделах Приложения и Совместимость с root. Последняя проверка %2$s.</string>
     <string name="settings_update_app_database_status_never">Описания и советы по настройке для %1$d приложений, показанные в разделах Приложения и Совместимость с root. Ещё не проверено.</string>
@@ -1130,7 +1126,6 @@
     <string name="settings_stealth_mode_pkg_query">Фильтр запросов пакетов</string>
     <string name="settings_stealth_mode_pkg_query_summary">Скройте Shizuku от запросов пакетов другими приложениями</string>
     <string name="settings_ai_bridge_title">AI Bridge и NPU</string>
-    <string name="tcp_guard_channel">Защита сети TCP</string>
     <string name="tcp_guard_title">TCP отладка открыта на недоверенной сети</string>
     <string name="tcp_guard_text">Порт ADB TCP %1$d прослушивается и %2$s. Закройте его, если вам он не требуется сейчас же.</string>
     <string name="tcp_guard_reason_open">вы находитесь на открытой сети Wi-Fi</string>

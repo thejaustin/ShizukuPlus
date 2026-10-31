@@ -357,7 +357,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ a détecté un plantage lors de votre dernière session. Voulez-vous générer un rapport pour nous aider à le corriger ?</string>
     <string name="crash_detected_dialog_ignore">Ignorer</string>
     <string name="shortcut_open_terminal">Ouvrir le terminal</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">Signaler manuellement</string>
     <string name="home_service_doctor_title">Service Doctor</string>
     <string name="home_service_doctor_summary">Des difficultés pour démarrer Shizuku+ ? Appuyez pour lancer un diagnostic.</string>
     <string name="doctor_check_battery">Optimisation de la batterie</string>
@@ -670,7 +669,6 @@
     <string name="service_doctor_fix_blocked_generic">Correction automatique bloquée : les restrictions de l\'appareil empêchent les commandes shell privilégiées. Vérifiez les paramètres ADB/constructeur.</string>
     <string name="adb_foreground_op_denied">Impossible de démarrer le service au premier plan : l\'autorisation START_FOREGROUND est refusée. Vérifiez les autorisations des applications de votre appareil.</string>
     <string name="update_no_release_notes">Aucune note de version disponible.</string>
-    <string name="accessibility_service_monitoring">Service d\'accessibilité actif : surveillance du code d\'association…</string>
     <string name="dhizuku_setup_title">Configurer le propriétaire de l\'appareil</string>
     <string name="dhizuku_setup_message">Le mode Dhizuku exige que Shizuku+ soit défini comme propriétaire de l\'appareil. Exécutez cette commande une seule fois via ADB, le débogage USB étant activé :\n\n%1$s\n\nAprès avoir exécuté la commande, redémarrez Shizuku.</string>
     <string name="dhizuku_setup_copy">Copier la commande</string>
@@ -949,8 +947,6 @@
     <string name="custom_icon_studio_border_width">Largeur</string>
     <string name="custom_icon_studio_nudge_x">Position horizontale</string>
     <string name="custom_icon_studio_nudge_y">Position verticale</string>
-    <string name="settings_watchdog_crash_alerts">Notifications de plantage</string>
-    <string name="settings_watchdog_crash_alerts_summary">Afficher une notification silencieuse quand le watchdog redémarre le service après un plantage</string>
     <string name="settings_watchdog_not_running">Activé, non en cours d\'exécution maintenant</string>
     <string name="settings_update_app_database_status">Descriptions et conseils de configuration pour %1$d applications, affichés dans Applications et Compatibilité root. Dernière vérification %2$s.</string>
     <string name="settings_update_app_database_status_never">Descriptions et conseils de configuration pour %1$d applications, affichés dans Applications et Compatibilité root. Pas encore vérifiées.</string>
@@ -1136,7 +1132,6 @@
     <string name="custom_icon_studio_bg_solid">Uni</string>
     <string name="custom_icon_studio_bg_gradient">Dégradé</string>
     <string name="settings_ai_bridge_title">Pont IA et NPU</string>
-    <string name="tcp_guard_channel">Protection du réseau TCP</string>
     <string name="tcp_guard_title">Le débogage TCP est ouvert sur un réseau non approuvé</string>
     <string name="tcp_guard_reason_open">vous êtes sur un réseau Wi-Fi ouvert</string>
     <string name="tcp_guard_reason_captive">vous êtes sur un réseau Wi-Fi captif (public)</string>

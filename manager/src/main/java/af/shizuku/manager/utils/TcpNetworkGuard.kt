@@ -4,7 +4,6 @@ import af.shizuku.manager.R
 import af.shizuku.manager.adb.AdbStarter
 import af.shizuku.manager.database.ActivityLogManager
 import af.shizuku.manager.receiver.TcpGuardReceiver
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -12,7 +11,6 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
-import androidx.core.app.NotificationCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,7 +26,6 @@ import timber.log.Timber
  */
 object TcpNetworkGuard {
     private const val TAG = "TcpNetworkGuard"
-    private const val CHANNEL_ID = "TcpNetworkGuard"
     const val NOTIFICATION_ID = 7518
 
     @Volatile private var registered = false
@@ -60,7 +57,7 @@ object TcpNetworkGuard {
         } else if (!wanted && registered) {
             runCatching { cm.unregisterNetworkCallback(callback) }
             registered = false
-            ctx.getSystemService(NotificationManager::class.java)?.cancel(NOTIFICATION_ID)
+            dismiss(ctx)
         }
     }
 
@@ -70,11 +67,10 @@ object TcpNetworkGuard {
 
     fun enforce(context: Context) {
         val ctx = context.applicationContext
-        val nm = ctx.getSystemService(NotificationManager::class.java)
         CoroutineScope(Dispatchers.IO).launch {
             // Off the main thread: reading the network name may go through the shell.
             if (!NetworkTrust.shouldBlockTcp(ctx)) {
-                nm?.cancel(NOTIFICATION_ID)
+                dismiss(ctx)
                 return@launch
             }
             val port = EnvironmentUtils.getAdbTcpPort()
@@ -86,7 +82,7 @@ object TcpNetworkGuard {
                     false
                 }
             if (port <= 0 && !isWirelessAdbOn) {
-                nm?.cancel(NOTIFICATION_ID)
+                dismiss(ctx)
                 return@launch
             }
             val assessment = NetworkTrust.assess(ctx)
@@ -113,7 +109,13 @@ object TcpNetworkGuard {
                 .putInt(context.contentResolver, "adb_wifi_enabled", 0)
         } catch (_: Exception) {
         }
+        dismiss(context)
+    }
+
+    // Older versions posted this as a pop-up notification of its own; that one is removed too.
+    private fun dismiss(context: Context) {
         context.getSystemService(NotificationManager::class.java)?.cancel(NOTIFICATION_ID)
+        ShizukuIssues.clear(context, ShizukuIssues.KEY_TCP_OPEN)
     }
 
     private fun notifyOpenPort(
@@ -121,16 +123,6 @@ object TcpNetworkGuard {
         port: Int,
         assessment: NetworkTrust.Assessment,
     ) {
-        val nm = context.getSystemService(NotificationManager::class.java) ?: return
-        if (!af.shizuku.manager.ShizukuSettings
-                .isNotificationSystemEnabled()
-        ) {
-            nm.cancel(NOTIFICATION_ID)
-            return
-        }
-        nm.createNotificationChannel(
-            NotificationChannel(CHANNEL_ID, context.getString(R.string.tcp_guard_channel), NotificationManager.IMPORTANCE_HIGH),
-        )
         val closeIntent =
             PendingIntent.getBroadcast(
                 context,
@@ -146,18 +138,16 @@ object TcpNetworkGuard {
                     else -> R.string.tcp_guard_reason_untrusted
                 },
             )
-        nm.notify(
-            NOTIFICATION_ID,
-            NotificationCompat
-                .Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notification_icon)
-                .setContentTitle(context.getString(R.string.tcp_guard_title))
-                .setContentText(context.getString(R.string.tcp_guard_text, port, reason))
-                .setStyle(NotificationCompat.BigTextStyle().bigText(context.getString(R.string.tcp_guard_text, port, reason)))
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setOnlyAlertOnce(true)
-                .addAction(0, context.getString(R.string.tcp_guard_close), closeIntent)
-                .build(),
+        // Urgent: a debugging port open to strangers is worth an alert, though never a pop-up.
+        ShizukuIssues.report(
+            context,
+            ShizukuIssues.Issue(
+                ShizukuIssues.KEY_TCP_OPEN,
+                ShizukuIssues.Severity.URGENT,
+                context.getString(R.string.tcp_guard_title),
+                context.getString(R.string.tcp_guard_text, port, reason),
+                listOf(ShizukuIssues.Action(context.getString(R.string.tcp_guard_close), closeIntent)),
+            ),
         )
     }
 }

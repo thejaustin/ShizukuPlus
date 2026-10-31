@@ -207,7 +207,6 @@
     <string name="toast_shizuku_already_starting">Сидзуку уже запускается в фоновом режиме.</string>
     <string name="toast_accessibility_tv_only">Эта услуга поддерживается только на телевизионных
         устройствах.</string>
-    <string name="toast_pairing_timeout">Сервис пары Сидзуку истёк.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Тема</string>
     <string name="dark_theme_off">Всегда светло</string>
@@ -252,7 +251,6 @@
     <string name="watchdog_shizuku_crashed_title">Сидзуку недавно разбилась</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog перезапустил сервис. Нажмите на них, чтобы
         узнать о возможных решениях для предотвращения будущих сбоев.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Отключить оповещения</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Не удается запустить браузер</string>
     <string name="toast_copied_to_clipboard">Скопировано в буфер обмена</string>

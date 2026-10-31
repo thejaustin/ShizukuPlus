@@ -202,7 +202,6 @@
     <string name="toast_no_email_app">Tidak ada aplikasi email yang ditemukan</string>
     <string name="toast_shizuku_already_starting">Shizuku sudah mulai di latar belakang</string>
     <string name="toast_accessibility_tv_only">Layanan ini hanya didukung pada perangkat TV.</string>
-    <string name="toast_pairing_timeout">Layanan pemasangan Shizuku telah habis waktunya.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Tema</string>
     <string name="dark_theme_off">Selalu terang</string>
@@ -248,7 +247,6 @@
     <string name="watchdog_shizuku_crashed_title">Shizuku baru saja jatuh</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog telah memulai kembali layanan. Ketuk untuk
         mempelajari kemungkinan perbaikan guna mencegah kerusakan di masa mendatang.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Matikan Peringatan</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Tidak bisa membuka browser</string>
     <string name="toast_copied_to_clipboard">Disalin ke papan klip</string>

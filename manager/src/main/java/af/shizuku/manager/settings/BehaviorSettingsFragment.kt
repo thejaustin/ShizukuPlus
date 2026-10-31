@@ -153,6 +153,22 @@ class BehaviorSettingsFragment :
             }
         }
 
+        findPreference<androidx.preference.ListPreference>("problem_alerts")?.apply {
+            value = ShizukuSettings.getProblemAlertLevel()
+            summaryProvider =
+                androidx.preference.ListPreference.SimpleSummaryProvider
+                    .getInstance()
+            setOnPreferenceChangeListener { _, _ ->
+                // Applied after the new value is stored.
+                val app = requireContext().applicationContext
+                view?.post {
+                    af.shizuku.manager.utils.ShizukuIssues
+                        .render(app)
+                }
+                true
+            }
+        }
+
         findPreference<TwoStatePreference>(KEY_LIVE_ACTIVITY_ENABLED)?.setOnPreferenceChangeListener { _, newValue ->
             val enable = newValue as? Boolean ?: return@setOnPreferenceChangeListener false
             val ctx = requireContext()
@@ -348,8 +364,6 @@ class BehaviorSettingsFragment :
     private fun syncWatchdogPreference() {
         val isOn = watchdogShownOn()
         watchdogPreference.isChecked = isOn
-        // Crash notifications come from the watchdog; nothing to configure while it's off.
-        findPreference<Preference>("watchdog_crash_alerts")?.setAvailable(isOn)
         if (isOn && !WatchdogService.isRunning()) {
             watchdogPreference.setSummary(R.string.settings_watchdog_not_running)
         } else {

@@ -202,7 +202,6 @@
     <string name="toast_shizuku_already_starting">Shizuku že začne v ozadju</string>
     <string name="toast_accessibility_tv_only">Ta storitev je podprta samo na televizijskih
         napravah.</string>
-    <string name="toast_pairing_timeout">Storitev za parjenje Shizuku je potekla.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Tema</string>
     <string name="dark_theme_off">Vedno svetloba</string>
@@ -248,7 +247,6 @@
     <string name="watchdog_shizuku_crashed_title">Shizuku je pred kratkim doživela nesrečo</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog je ponovno zagnal storitev. Tapnite, da
         izveste o možnih popravkih za preprečevanje prihodnjih zrušitev.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Izklopite opozorila</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Brskalnika ni mogoče zagnati</string>
     <string name="toast_copied_to_clipboard">Kopirano v odložišče</string>

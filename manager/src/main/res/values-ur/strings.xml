@@ -472,7 +472,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ نے آپ کے پچھلے session میں crash کا پتہ لگایا ہے۔ کیا آپ اسے ٹھیک کرنے میں مدد کے لیے report بنانا چاہتے ہیں؟</string>
     <string name="crash_detected_dialog_ignore">نظر انداز کریں</string>
     <string name="shortcut_open_terminal">Terminal کھولیں</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">دستی طور پر رپورٹ کریں</string>
 
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">رپورٹ کرنے سے پہلے درج ذیل کریں:</string>
@@ -538,7 +537,6 @@
     <string name="backup_auth_failed">Authentication ناکام (%1$s)</string>
     <string name="toast_shizuku_already_starting">Shizuku پہلے ہی بیک گراؤنڈ میں شروع ہو رہا ہے</string>
     <string name="toast_accessibility_tv_only">یہ automation صرف TV یا TLS support والی Samsung One UI ڈیوائسز کے لیے ہے۔</string>
-    <string name="toast_pairing_timeout">Shizuku pairing service کا وقت ختم ہو گیا</string>
     <string name="adb_error_ssl_title">Connection Error</string>
     <string name="adb_error_ssl_message">Wireless ADB handshake ناکام (SSL protocol error)۔ یہ عموماً اس وقت ہوتا ہے جب ADB keys خراب ہوں۔ کیا آپ انہیں Developer Options میں reset کرنا چاہتے ہیں؟</string>
     <string name="adb_error_ssl_button_reset">Developer Options پر جائیں</string>
@@ -605,7 +603,6 @@
     <string name="watchdog_turn_off">بند کریں</string>
     <string name="watchdog_shizuku_crashed_title">Shizuku حال ہی میں crash ہوا</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog نے service دوبارہ شروع کر دی۔ مستقبل کے crashes روکنے کے ممکنہ حل جاننے کے لیے ٹیپ کریں۔</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Alerts بند کریں</string>
 
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Browser شروع نہیں ہو سکا</string>
@@ -761,7 +758,6 @@
     <string name="update_no_release_notes">کوئی release notes دستیاب نہیں۔</string>
 
     <!-- Accessibility service status -->
-    <string name="accessibility_service_monitoring">Accessibility service فعال ہے: pairing code کی نگرانی ہو رہی ہے…</string>
 
     <!-- Dhizuku Device Owner Setup -->
     <string name="dhizuku_setup_title">Device Owner سیٹ اپ کریں</string>

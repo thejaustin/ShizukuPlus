@@ -205,7 +205,6 @@
     <string name="toast_shizuku_already_starting">Շիզուկուն արդեն սկսում է հետեւում</string>
     <string name="toast_accessibility_tv_only">Այս ծառայությունը աջակցվում է միայն հեռուստացույցների
         վրա։</string>
-    <string name="toast_pairing_timeout">Շիզուկուի զուգավորման ծառայության ժամանակը սպառվեց։</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Թեմա</string>
     <string name="dark_theme_off">Միշտ թեթեւ</string>
@@ -253,7 +252,6 @@
     <string name="watchdog_shizuku_crashed_title">Շիզուկուն վերջերս վթարի ենթարկվեց</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog-ը վերսկսեց ծառայությունը։ Սեղմեք ապագա
         վթարները կանխելու հնարավոր շտկումների մասին իմանալու համար:</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Անջատել ծանուցումները</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Չհաջողվեց միացնել ինտերնետի ծրագիրը</string>
     <string name="toast_copied_to_clipboard">Պատճենվել է սեղմատախտակին</string>

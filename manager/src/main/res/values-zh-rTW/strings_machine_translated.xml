@@ -347,7 +347,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ 偵測到上次使用時發生當機。要產生報告協助我們修正嗎？</string>
     <string name="crash_detected_dialog_ignore">忽略</string>
     <string name="shortcut_open_terminal">開啟終端機</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">手動回報</string>
     <string name="home_service_doctor_title">服務診斷</string>
     <string name="home_service_doctor_summary">啟動 Shizuku+ 時遇到問題？點按以執行診斷檢查。</string>
     <string name="doctor_check_battery">電池最佳化</string>
@@ -432,7 +431,6 @@
     <string name="backup_failed_generic">備份失敗：%1$s</string>
     <string name="restore_failed_generic">還原失敗：%1$s</string>
     <string name="backup_auth_failed">驗證失敗 (%1$s)</string>
-    <string name="toast_pairing_timeout">Shizuku+ 配對服務逾時</string>
     <string name="adb_error_ssl_title">連線錯誤</string>
     <string name="adb_error_ssl_message">無線 ADB 握手失敗（SSL 通訊協定錯誤）。這通常發生在 ADB 金鑰損毀時。要在開發人員選項中重設嗎？</string>
     <string name="adb_error_ssl_button_reset">前往開發人員選項</string>
@@ -657,7 +655,6 @@
     <string name="service_doctor_fix_blocked_generic">自動修復遭封鎖——裝置限制導致無法執行特權 shell 指令。請檢查 ADB/OEM 設定。</string>
     <string name="adb_foreground_op_denied">無法啟動前景服務——START_FOREGROUND 權限遭拒。請檢查您裝置的應用程式權限。</string>
     <string name="update_no_release_notes">沒有可用的版本資訊。</string>
-    <string name="accessibility_service_monitoring">無障礙服務已啟用：正在監控配對碼…</string>
     <string name="dhizuku_setup_title">設定裝置擁有者</string>
     <string name="dhizuku_setup_message">Dhizuku 模式需要將 Shizuku+ 設為裝置擁有者。請在啟用 USB 偵錯的情況下，透過 ADB 執行一次以下指令：\n\n%1$s\n\n執行指令後，請重新啟動 Shizuku。</string>
     <string name="dhizuku_setup_copy">複製指令</string>

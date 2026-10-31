@@ -357,7 +357,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ wykrył awarię z ostatniej sesji. Czy chcesz wygenerować raport, który pomoże nam ją naprawić?</string>
     <string name="crash_detected_dialog_ignore">Ignoruj</string>
     <string name="shortcut_open_terminal">Otwórz terminal</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">Zgłoś ręcznie</string>
     <string name="home_service_doctor_title">Doktor usługi</string>
     <string name="home_service_doctor_summary">Masz problem z uruchomieniem Shizuku+? Stuknij, aby uruchomić kontrolę diagnostyczną.</string>
     <string name="doctor_check_battery">Optymalizacja baterii</string>
@@ -751,8 +750,6 @@
     <string name="custom_icon_studio_border_width">Szerokość</string>
     <string name="custom_icon_studio_nudge_x">Pozycja pozioma</string>
     <string name="custom_icon_studio_nudge_y">Pozycja pionowa</string>
-    <string name="settings_watchdog_crash_alerts">Powiadomienia o awariach</string>
-    <string name="settings_watchdog_crash_alerts_summary">Wyślij ciche powiadomienie, gdy Watchdog zrestartuje usługę po awarii</string>
     <string name="settings_watchdog_not_running">Włączone, obecnie nie działa</string>
     <string name="settings_update_app_database_status">Opisy i wskazówki dotyczące konfiguracji dla %1$d aplikacji, wyświetlane w sekcjach Aplikacje i Zgodność z rootem. Ostatnio sprawdzono %2$s.</string>
     <string name="settings_update_app_database_status_never">Opisy i wskazówki dotyczące konfiguracji dla %1$d aplikacji, wyświetlane w sekcjach Aplikacje i Zgodność z rootem. Jeszcze nie sprawdzono.</string>
@@ -905,7 +902,6 @@
     <string name="service_doctor_fix_blocked_generic">Automatyczna poprawka zablokowana — ograniczenia urządzenia uniemożliwiają wykonywanie uprzywilejowanych poleceń powłoki. Sprawdź ustawienia ADB/OEM.</string>
     <string name="adb_foreground_op_denied">Nie można uruchomić usługi na pierwszym planie — odmowa uprawnienia START_FOREGROUND. Sprawdź uprawnienia aplikacji w ustawieniach urządzenia.</string>
     <string name="update_no_release_notes">Brak dostępnych informacji o wydaniu.</string>
-    <string name="accessibility_service_monitoring">Usługa ułatwień dostępu aktywna: oczekiwanie na kod parowania…</string>
     <string name="dhizuku_setup_title">Skonfiguruj Właściciela Urządzenia</string>
     <string name="dhizuku_setup_message">Tryb Dhizuku wymaga ustawienia Shizuku+ jako Właściciela Urządzenia (Device Owner). Uruchom to polecenie raz przez ADB z włączonym debugowaniem USB:\n\n%1$s\n\nPo uruchomieniu polecenia uruchom ponownie Shizuku.</string>
     <string name="dhizuku_setup_copy">Kopiuj polecenie</string>
@@ -1130,7 +1126,6 @@
     <string name="accessibility_sim_toggle_automation">Przełącz widoczność karty Automatyzacja</string>
     <string name="accessibility_sim_toggle_activity_log">Przełącz widoczność karty Dziennik aktywności</string>
     <string name="accessibility_sim_toggle_learn_more">Przełącz widoczność karty Dowiedz się więcej</string>
-    <string name="tcp_guard_channel">Ochrona sieciowa TCP</string>
     <string name="tcp_guard_title">Debugowanie TCP jest otwarte w niezaufanej sieci</string>
     <string name="tcp_guard_text">Port ADB TCP %1$d nasłuchuje i %2$s. Zamknij go, chyba że potrzebujesz go w tej chwili.</string>
     <string name="tcp_guard_reason_open">jesteś w otwartej sieci Wi-Fi</string>

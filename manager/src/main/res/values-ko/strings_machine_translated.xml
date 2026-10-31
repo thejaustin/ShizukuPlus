@@ -169,8 +169,6 @@
     <string name="custom_icon_studio_border_width">너비</string>
     <string name="custom_icon_studio_nudge_x">가로 위치</string>
     <string name="custom_icon_studio_nudge_y">세로 위치</string>
-    <string name="settings_watchdog_crash_alerts">충돌 알림</string>
-    <string name="settings_watchdog_crash_alerts_summary">충돌 후 Watchdog이 서비스를 다시 시작할 때 조용한 알림 게시</string>
     <string name="settings_watchdog_not_running">켜짐, 현재 실행 중이지 않음</string>
     <string name="settings_update_app_database_status">%1$d개 앱에 대한 설명 및 설정 팁이 앱 및 Root 호환성에 표시됩니다. 마지막 확인: %2$s.</string>
     <string name="settings_update_app_database_status_never">%1$d개 앱에 대한 설명 및 설정 팁이 앱 및 Root 호환성에 표시됩니다. 아직 확인되지 않음.</string>
@@ -301,7 +299,6 @@
     <string name="settings_stealth_mode_pkg_query">패키지 쿼리 필터</string>
     <string name="settings_stealth_mode_pkg_query_summary">다른 앱의 패키지 쿼리로부터 Shizuku를 숨깁니다</string>
     <string name="settings_ai_bridge_title">AI Bridge &amp; NPU</string>
-    <string name="tcp_guard_channel">TCP 네트워크 보호</string>
     <string name="tcp_guard_title">신뢰할 수 없는 네트워크에서 TCP 디버깅이 열려 있습니다</string>
     <string name="tcp_guard_text">ADB TCP 포트 %1$d이(가) 수신 대기 중이며 %2$s 상태입니다. 지금 필요하지 않다면 포트를 닫으세요.</string>
     <string name="tcp_guard_reason_open">개방형 Wi-Fi 네트워크에 연결되어 있습니다</string>

@@ -195,7 +195,6 @@
     <string name="toast_no_email_app">لم يتم العثور على تطبيق البريد الإلكتروني</string>
     <string name="toast_shizuku_already_starting">شيزوكو بدأت بالفعل في الخلفية</string>
     <string name="toast_accessibility_tv_only">هذه الخدمة مدعومة فقط على أجهزة التلفزيون.</string>
-    <string name="toast_pairing_timeout">انتهت مهلة خدمة إقران شيزوكو.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">سمة</string>
     <string name="dark_theme_off">دائما خفيف</string>
@@ -240,7 +239,6 @@
     <string name="watchdog_shizuku_crashed_title">تحطمت شيزوكو مؤخرًا</string>
     <string name="watchdog_shizuku_crashed_text">أعاد برنامج المراقبة تشغيل الخدمة. انقر لمعرفة
         المزيد عن الحلول الممكنة لمنع الأعطال المستقبلية.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">إيقاف التنبيهات</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">لا يمكن بدء المتصفح</string>
     <string name="toast_copied_to_clipboard">تم نسخها إلى الحافظة</string>

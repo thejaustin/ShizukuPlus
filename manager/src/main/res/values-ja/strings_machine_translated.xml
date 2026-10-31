@@ -357,7 +357,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ は前回のセッションでクラッシュを検出しました。修正に役立てるため、レポートを作成しますか？</string>
     <string name="crash_detected_dialog_ignore">無視</string>
     <string name="shortcut_open_terminal">ターミナルを開く</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">手動で報告</string>
     <string name="home_service_doctor_title">サービスドクター</string>
     <string name="home_service_doctor_summary">Shizuku+ を起動できませんか？タップして診断チェックを実行します。</string>
     <string name="doctor_check_battery">バッテリー最適化</string>
@@ -670,7 +669,6 @@
     <string name="service_doctor_fix_blocked_generic">自動修正がブロックされました — デバイスの制限により、特権シェルコマンドを実行できません。ADB/OEMの設定を確認してください。</string>
     <string name="adb_foreground_op_denied">フォアグラウンドサービスを開始できません — START_FOREGROUND権限が拒否されています。デバイスのアプリ権限を確認してください。</string>
     <string name="update_no_release_notes">リリースノートはありません。</string>
-    <string name="accessibility_service_monitoring">ユーザー補助サービスが有効: ペアリングコードを監視中…</string>
     <string name="dhizuku_setup_title">デバイス所有者を設定</string>
     <string name="dhizuku_setup_message">Dhizukuモードには、Shizuku+ をデバイス所有者に設定する必要があります。USBデバッグを有効にした状態で、ADB経由で次のコマンドを一度実行してください:\n\n%1$s\n\nコマンドの実行後、Shizukuを再起動してください。</string>
     <string name="dhizuku_setup_copy">コマンドをコピー</string>
@@ -999,8 +997,6 @@
     <string name="custom_icon_studio_border_width">幅</string>
     <string name="custom_icon_studio_nudge_x">水平位置</string>
     <string name="custom_icon_studio_nudge_y">垂直位置</string>
-    <string name="settings_watchdog_crash_alerts">クラッシュ通知</string>
-    <string name="settings_watchdog_crash_alerts_summary">クラッシュ後に Watchdog がサービスを再起動した際にサイレント通知を表示</string>
     <string name="settings_watchdog_not_running">オン（現在は実行されていません）</string>
     <string name="settings_update_app_database_status">%1$d 個のアプリの説明とセットアップのヒント（「アプリ」および「Root 互換性」に表示）。最終確認: %2$s。</string>
     <string name="settings_update_app_database_status_never">%1$d 個のアプリの説明とセットアップのヒント（「アプリ」および「Root 互換性」に表示）。まだ確認されていません。</string>
@@ -1130,7 +1126,6 @@
     <string name="settings_stealth_mode_pkg_query">パッケージクエリフィルター</string>
     <string name="settings_stealth_mode_pkg_query_summary">他のアプリによるパッケージ照会から Shizuku を隠す</string>
     <string name="settings_ai_bridge_title">AI Bridge &amp; NPU</string>
-    <string name="tcp_guard_channel">TCP ネットワーク保護</string>
     <string name="tcp_guard_title">信頼できないネットワークで TCP デバッグが開いています</string>
     <string name="tcp_guard_text">ADB TCP ポート %1$d でリッスンしており、%2$s。今すぐ必要でない場合は閉じてください。</string>
     <string name="tcp_guard_reason_open">オープン Wi-Fi ネットワークに接続されています</string>

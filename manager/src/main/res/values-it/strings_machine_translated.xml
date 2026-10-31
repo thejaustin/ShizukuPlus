@@ -357,7 +357,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ ha rilevato un crash nell\'ultima sessione. Vuoi generare un report per aiutarci a risolverlo?</string>
     <string name="crash_detected_dialog_ignore">Ignora</string>
     <string name="shortcut_open_terminal">Apri terminale</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">Segnala manualmente</string>
     <string name="home_service_doctor_title">Service Doctor</string>
     <string name="home_service_doctor_summary">Problemi ad avviare Shizuku+? Tocca per eseguire una diagnosi.</string>
     <string name="doctor_check_battery">Ottimizzazione batteria</string>
@@ -671,7 +670,6 @@
     <string name="service_doctor_fix_blocked_generic">Correzione automatica bloccata: le restrizioni del dispositivo impediscono i comandi shell privilegiati. Controlla le impostazioni ADB/OEM.</string>
     <string name="adb_foreground_op_denied">Impossibile avviare il servizio in primo piano: il permesso START_FOREGROUND è negato. Controlla i permessi delle app del dispositivo.</string>
     <string name="update_no_release_notes">Nessuna nota di rilascio disponibile.</string>
-    <string name="accessibility_service_monitoring">Servizio di accessibilità attivo: in attesa del codice di associazione…</string>
     <string name="dhizuku_setup_title">Configura Device Owner</string>
     <string name="dhizuku_setup_message">La modalità Dhizuku richiede che Shizuku+ sia impostato come Device Owner. Esegui questo comando una sola volta tramite ADB con il debug USB attivo:\n\n%1$s\n\nDopo aver eseguito il comando, riavvia Shizuku.</string>
     <string name="dhizuku_setup_copy">Copia comando</string>
@@ -950,8 +948,6 @@
     <string name="custom_icon_studio_border_width">Larghezza</string>
     <string name="custom_icon_studio_nudge_x">Posizione orizzontale</string>
     <string name="custom_icon_studio_nudge_y">Posizione verticale</string>
-    <string name="settings_watchdog_crash_alerts">Notifiche di crash</string>
-    <string name="settings_watchdog_crash_alerts_summary">Pubblica una notifica silenziosa quando il watchdog riavvia il servizio dopo un crash</string>
     <string name="settings_watchdog_not_running">Acceso, non in esecuzione adesso</string>
     <string name="settings_update_app_database_status">Descrizioni e suggerimenti di configurazione per %1$d app, mostrati in App e compatibilità Root. Ultimo controllo %2$s.</string>
     <string name="settings_update_app_database_status_never">Descrizioni e suggerimenti di configurazione per %1$d app, mostrati in App e compatibilità Root. Non ancora controllato.</string>
@@ -1031,7 +1027,6 @@
     <string name="settings_stealth_mode_pkg_query">Filtro query pacchetto</string>
     <string name="settings_stealth_mode_pkg_query_summary">Nascondi Shizuku dalle query dei pacchetti di altre app</string>
     <string name="settings_ai_bridge_title">AI Bridge e NPU</string>
-    <string name="tcp_guard_channel">Protezione rete TCP</string>
     <string name="tcp_guard_title">Il debug TCP è aperto su una rete non attendibile</string>
     <string name="tcp_guard_text">La porta TCP ADB %1$d è in ascolto e %2$s. Chiudila a meno che non ne hai bisogno adesso.</string>
     <string name="stability_tips_apply_selected">Abilita selezionate</string>

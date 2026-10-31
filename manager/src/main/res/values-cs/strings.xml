@@ -144,7 +144,6 @@
     <string name="toast_no_email_app">Žádná e-mailová aplikace nenalezena</string>
     <string name="toast_shizuku_already_starting">Shizuku už začíná v pozadí</string>
     <string name="toast_accessibility_tv_only">Tato služba je podporována pouze na televizních zařízeních.</string>
-    <string name="toast_pairing_timeout">Časový limit párovací služby Shizuku vypršel.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Téma</string>
     <string name="dark_theme_off">Vždy světlé</string>
@@ -186,7 +185,6 @@
     <string name="watchdog_turn_off">Vypnout</string>
     <string name="watchdog_shizuku_crashed_title">Shizuku nedávno havarovala</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog službu znovu spustil. Klepněte a zjistěte o možných řešeních, jak předejít budoucím pádům.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Vypnout upozornění</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Prohlížeč nelze spustit</string>
     <string name="toast_copied_to_clipboard">Zkopírováno do schránky</string>

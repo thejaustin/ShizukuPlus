@@ -490,8 +490,6 @@
     <string name="settings_use_system_color">Sistem tema rəngindən istifadə et</string>
     <string name="settings_watchdog">Gözətçi</string>
     <string name="settings_watchdog_summary">Qəza və ya gözlənilməz dayanmadan sonra Shizuku+-ı avtomatik yenidən başladın. Əsas şəbəkə bağlantısı kəsildikdə yenidən qoşula bilməz (məsələn, RNDIS/USB ADB istifadə edərkən USB kabelin çıxarılması).</string>
-    <string name="settings_watchdog_crash_alerts">Xəta bildirişləri</string>
-    <string name="settings_watchdog_crash_alerts_summary">Gözətçi xətadan sonra xidməti yenidən başlatdıqda səssiz bildiriş göstər</string>
     <string name="settings_watchdog_not_running">Aktivdir, hazırda işləmir</string>
     <string name="settings_device_hardening">Cihazın Təhlükəsizləşdirilməsi və Canlı Saxlanılması</string>
     <string name="settings_device_hardening_summary">Shizuku və terminal klientlərini Doze rejimindən istisna edin, WRITE_SECURE_SETTINGS hüququnu avtomatik verin, başladıcı binar fayllarını sinxronlaşdırın və Gözətçi aktiv olarkən bu tətbiqdəki arxa fon və batareya məhdudiyyətlərini qaldırın</string>
@@ -800,7 +798,6 @@
     <string name="crash_detected_dialog_ignore">Məhəl qoyma</string>
     <string name="shortcut_open_terminal">Terminalı Aç</string>
 
-    <string name="watchdog_shizuku_crashed_action_report_manually">Əl ilə Məlumat Ver</string>
 
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">Əvvəlcə aşağıdakıları edin:</string>
@@ -929,7 +926,6 @@
     <string name="backup_auth_failed">Autentifikasiya uğursuz oldu (%1$s)</string>
     <string name="toast_shizuku_already_starting">Shizuku+ artıq fonda işə düşür</string>
     <string name="toast_accessibility_tv_only">Bu avtomatlaşdırma TLS dəstəyi olan TV və ya Samsung One UI cihazları üçündür.</string>
-    <string name="toast_pairing_timeout">Shizuku+ cütləşmə xidmətinin vaxtı bitdi</string>
     <string name="adb_error_ssl_title">Bağlantı Xətası</string>
     <string name="adb_error_ssl_message">Simsiz ADB əl sıxılması uğursuz oldu (SSL protokol xətası). Bu, adətən ADB açarları zədələndikdə baş verir. Tərtibatçı Seçimlərində onları sıfırlamaq istəyirsinizmi?</string>
     <string name="adb_error_ssl_button_reset">Tərtibatçı Seçimlərinə Get</string>
@@ -1011,7 +1007,6 @@
     <string name="watchdog_turn_off">Söndür</string>
     <string name="watchdog_shizuku_crashed_title">Shizuku bu yaxınlarda qəzaya uğrayıb</string>
     <string name="watchdog_shizuku_crashed_text">Gözətçi xidməti yenidən başladı. Gələcək qəzaların qarşısını almaq üçün potensial düzəlişlər haqqında öyrənmək üçün toxunun.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Xəbərdarlıqları Söndür</string>
     <string name="battery_exemption_channel_name">Batareya optimizasiyası</string>
     <string name="battery_exemption_notification_title">Shizuku+-ın arxa fonda işləməsinə icazə verin</string>
     <string name="battery_exemption_notification_text">Gözətçi avtomatik işə salındı. Xidmət dayandıqda onun yenidən başladılması üçün Shizuku+ batareya optimizasiyasından istisna edin.</string>
@@ -1374,7 +1369,6 @@
     <string name="update_no_release_notes">Buraxılış qeydləri mövcud deyil.</string>
 
     <!-- Accessibility service status -->
-    <string name="accessibility_service_monitoring">Əlçatanlıq xidməti aktivdir: cütləşmə kodu üçün izlənilir…</string>
 
     <!-- Dhizuku Device Owner Setup -->
     <string name="dhizuku_setup_title">Cihaz Sahibini Quraşdır</string>
@@ -1684,7 +1678,6 @@
     <string name="accessibility_sim_toggle_automation">Avtomatlaşdırma kartının görünürlüyünü dəyiş</string>
     <string name="accessibility_sim_toggle_activity_log">Fəaliyyət jurnalı kartının görünürlüyünü dəyiş</string>
     <string name="accessibility_sim_toggle_learn_more">Ətraflı öyrən kartının görünürlüyünü dəyiş</string>
-    <string name="tcp_guard_channel">TCP şəbəkə mühafizəsi</string>
     <string name="tcp_guard_title">Etibarsız şəbəkədə TCP sazlaması açıqdır</string>
     <string name="tcp_guard_text">ADB TCP portu %1$d dinlənilir və %2$s. İndi ehtiyacınız yoxdursa, onu bağlayın.</string>
     <string name="tcp_guard_reason_open">açıq Wi-Fi şəbəkəsindəsiniz</string>

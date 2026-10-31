@@ -169,8 +169,6 @@
     <string name="custom_icon_studio_border_width">Ширина</string>
     <string name="custom_icon_studio_nudge_x">Горизонтальна позиція</string>
     <string name="custom_icon_studio_nudge_y">Вертикальна позиція</string>
-    <string name="settings_watchdog_crash_alerts">Сповіщення про збої</string>
-    <string name="settings_watchdog_crash_alerts_summary">Розмістити беззвучне сповіщення, коли сторож перезавантажує службу після збою</string>
     <string name="settings_watchdog_not_running">Увімкнено, зараз не працює</string>
     <string name="settings_update_app_database_status">Описи та поради з налаштування для %1$d додатків, показані в Додатках та сумісності root. Перевірено %2$s.</string>
     <string name="settings_update_app_database_status_never">Описи та поради з налаштування для %1$d додатків, показані в Додатках та сумісності root. Ще не перевірено.</string>
@@ -301,7 +299,6 @@
     <string name="settings_stealth_mode_pkg_query">Фільтр запитів пакетів</string>
     <string name="settings_stealth_mode_pkg_query_summary">Приховати Shizuku від запитів пакетів іншими додатками</string>
     <string name="settings_ai_bridge_title">AI Bridge та NPU</string>
-    <string name="tcp_guard_channel">Захист мережі TCP</string>
     <string name="tcp_guard_title">TCP налагодження відкрито на ненадійній мережі</string>
     <string name="tcp_guard_text">Порт ADB TCP %1$d прослуховується та %2$s. Закрийте його, якщо вам він не потрібен прямо зараз.</string>
     <string name="tcp_guard_reason_open">ви знаходитесь на відкритій мережі Wi-Fi</string>

@@ -200,7 +200,6 @@
     <string name="toast_no_email_app">Није пронађена апликација за е-пошту</string>
     <string name="toast_shizuku_already_starting">Шизуку већ почиње у позадини</string>
     <string name="toast_accessibility_tv_only">Ova usluga je podržana samo na TV uređajima.</string>
-    <string name="toast_pairing_timeout">Shizuku uparivanje servis je isteklo.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Тема</string>
     <string name="dark_theme_off">Увек светло</string>
@@ -245,7 +244,6 @@
     <string name="watchdog_shizuku_crashed_title">Шизуку се недавно срушио</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog је поново покренуо услугу. Додирните да
         бисте сазнали више о потенцијалним решењима за спречавање будућих падова.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Искључи упозорења</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Не могу да покренем прегледач</string>
     <string name="toast_copied_to_clipboard">Копирано у међуспремник</string>

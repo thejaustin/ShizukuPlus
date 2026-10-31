@@ -526,7 +526,6 @@
     <string name="crash_detected_dialog_message">Shizuku+가 마지막 세션에서 충돌을 감지했습니다. 문제 해결에 도움이 되도록 보고서를 생성하시겠습니까?</string>
     <string name="crash_detected_dialog_ignore">무시</string>
     <string name="shortcut_open_terminal">터미널 열기</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">수동 보고</string>
     <!-- Bug Report Dialog -->
 <string name="bug_report_dialog_before_reporting">먼저 다음 사항을 수행해 주십시오.</string>
 <string name="bug_report_dialog_update">^1을 사용하고 있는지 확인하세요.</string>
@@ -638,7 +637,6 @@
     <string name="backup_auth_failed">인증 실패 (%1$s)</string>
 <string name="toast_shizuku_already_starting">시즈쿠는 이미 배경에서 시작하고 있습니다</string>
 <string name="toast_accessibility_tv_only">이 자동화는 TLS를 지원하는 TV 또는 Samsung One UI 기기용입니다.</string>
-<string name="toast_pairing_timeout">시즈쿠 페어링 서비스가 시간 초과되었다.</string>
     <string name="adb_error_ssl_title">연결 오류</string>
     <string name="adb_error_ssl_message">무선 ADB 핸드셰이크에 실패했습니다(SSL 프로토콜 오류). 이는 일반적으로 ADB 키가 손상되었을 때 발생합니다. 개발자 옵션에서 키를 재설정하시겠습니까?</string>
     <string name="adb_error_ssl_button_reset">개발자 옵션으로 이동</string>
@@ -709,7 +707,6 @@
 <string name="watchdog_shizuku_crashed_title">시즈쿠는 최근에 추락했습니다</string>
 <string name="watchdog_shizuku_crashed_text">Watchdog이 서비스를 다시 시작했습니다. 향후 충돌을 방지하기 위한 잠재적인 수정
         사항을 알아보려면 탭하세요.</string>
-<string name="watchdog_shizuku_crashed_action_turn_off_alerts">알림 끄기</string>
     <!-- Misc -->
 <string name="dialog_cannot_open_browser_title">브라우저를 실행할 수 없음</string>
 <string name="toast_copied_to_clipboard">클립보드에 복사됨</string>
@@ -911,7 +908,6 @@
     <!-- Update dialog -->
     <string name="update_no_release_notes">릴리스 노트가 없습니다.</string>
     <!-- Accessibility service status -->
-    <string name="accessibility_service_monitoring">접근성 서비스 활성화됨: 페어링 코드를 모니터링 중…</string>
     <!-- Dhizuku Device Owner Setup -->
     <string name="dhizuku_setup_title">기기 소유자 설정</string>
     <string name="dhizuku_setup_message">Dhizuku 모드를 사용하려면 Shizuku+를 기기 소유자로 설정해야 합니다. USB 디버깅이 활성화된 상태에서 ADB를 통해 다음 명령을 한 번 실행하세요:\n\n%1$s\n\n명령을 실행한 후 Shizuku를 다시 시작하세요.</string>

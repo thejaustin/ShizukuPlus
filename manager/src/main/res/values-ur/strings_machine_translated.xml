@@ -440,8 +440,6 @@
     <string name="custom_icon_studio_border_width">چوڑائی</string>
     <string name="custom_icon_studio_nudge_x">افقی مقام</string>
     <string name="custom_icon_studio_nudge_y">سیدھی مقام</string>
-    <string name="settings_watchdog_crash_alerts">Crash کی اطلاعات</string>
-    <string name="settings_watchdog_crash_alerts_summary">Watchdog کریش کے بعد سروس کو دوبارہ شروع کرنے کے وقت خاموشی سے اطلاع درج کریں</string>
     <string name="settings_watchdog_not_running">فعال ہے، ابھی چل نہیں رہی</string>
     <string name="settings_update_app_database_status">%1$d ایپس کے لیے تفصیلات اور سیٹ اپ کے نکات، Apps اور Root مطابقت میں دیکھائے گئے۔ آخری بار چیک کیا گیا %2$s۔</string>
     <string name="settings_update_app_database_status_never">%1$d ایپس کے لیے تفصیلات اور سیٹ اپ کے نکات، Apps اور Root مطابقت میں دیکھائے گئے۔ ابھی تک چیک نہیں ہوا۔</string>
@@ -572,7 +570,6 @@
     <string name="settings_stealth_mode_pkg_query">پیکیج کوئیری فلٹر</string>
     <string name="settings_stealth_mode_pkg_query_summary">دیگر ایپس کی پیکیج کی تلاش سے Shizuku کو چھپائیں</string>
     <string name="settings_ai_bridge_title">AI Bridge &amp; NPU</string>
-    <string name="tcp_guard_channel">TCP نیٹ ورک کی حفاظت</string>
     <string name="tcp_guard_title">غیر محفوظ نیٹ ورک پر TCP ڈیبگنگ کھلی ہے</string>
     <string name="tcp_guard_text">ADB TCP پورٹ %1$d سن رہا ہے اور %2$s۔ جب تک آپ کو فوری ضرورت نہ ہو اسے بند کر دیں۔</string>
     <string name="tcp_guard_reason_open">آپ ایک کھلے (اوپن) Wi-Fi نیٹ ورک پر ہیں</string>

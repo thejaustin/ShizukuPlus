@@ -201,7 +201,6 @@
     <string name="toast_no_email_app">Nu a fost găsită nicio aplicație de e-mail</string>
     <string name="toast_shizuku_already_starting">Shizuku începe deja în fundal</string>
     <string name="toast_accessibility_tv_only">Acest serviciu este suportat doar pe dispozitive TV.</string>
-    <string name="toast_pairing_timeout">Serviciul de pereche Shizuku expirat.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Temă</string>
     <string name="dark_theme_off">Întotdeauna lumină</string>
@@ -248,7 +247,6 @@
     <string name="watchdog_shizuku_crashed_title">Shizuku s-a prăbușit recent</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog a repornit serviciul. Apasă pentru a afla
         despre posibile soluții pentru a preveni viitoare blocări.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Dezactivează alertele</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Nu se poate porni browser-ul</string>
     <string name="toast_copied_to_clipboard">Copiat în clipboard</string>

@@ -489,7 +489,6 @@ Execute este comando no PC (a depuração USB deve estar ativada):
     <string name="crash_detected_dialog_ignore">Ignorar</string>
     <string name="shortcut_open_terminal">Abrir Terminal</string>
 
-    <string name="watchdog_shizuku_crashed_action_report_manually">Reportar Manualmente</string>
 
     <!--Diálogo de relatório de bug-->
     <string name="bug_report_dialog_before_reporting">Primeiro, faça o seguinte:</string>
@@ -557,7 +556,6 @@ Reinicie completamente o dispositivo para encerrar o servidor original e, em seg
     <string name="backup_auth_failed">Falha na autenticação (%1$s)</string>
     <string name="toast_shizuku_already_starting">O Shizuku já está sendo iniciado em segundo plano</string>
     <string name="toast_accessibility_tv_only">Esta automação é para dispositivos TV ou Samsung One UI com suporte a TLS.</string>
-    <string name="toast_pairing_timeout">O tempo limite do serviço de pareamento do Shizuku foi atingido</string>
     <string name="adb_error_ssl_title">Erro de Conexão</string>
     <string name="adb_error_ssl_message">Falha no handshake do ADB sem fio (erro de protocolo SSL). Isso geralmente acontece quando as chaves ADB estão corrompidas. Gostaria de redefini-las nas Opções do Desenvolvedor?</string>
     <string name="adb_error_ssl_button_reset">Ir para Opções do Desenvolvedor</string>
@@ -625,7 +623,6 @@ Reinicie completamente o dispositivo para encerrar o servidor original e, em seg
     <string name="watchdog_turn_off">Desativar</string>
     <string name="watchdog_shizuku_crashed_title">O Shizuku travou recentemente</string>
     <string name="watchdog_shizuku_crashed_text">O Watchdog reiniciou o serviço. Toque para saber sobre possíveis correções para evitar futuras falhas.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Desativar Alertas</string>
 
     <!--Diversos-->
     <string name="dialog_cannot_open_browser_title">Não é possível iniciar o navegador</string>
@@ -791,7 +788,6 @@ Impressão digital da chave RSA:
     <string name="update_no_release_notes">Nenhuma nota de lançamento disponível.</string>
 
     <!--Status do serviço de acessibilidade-->
-    <string name="accessibility_service_monitoring">Serviço de acessibilidade ativo: monitorando o código de pareamento…</string>
 
     <!--Configuração do Device Owner do Dhizuku-->
     <string name="dhizuku_setup_title">Configurar Proprietário do Dispositivo</string>

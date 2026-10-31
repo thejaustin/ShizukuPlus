@@ -199,7 +199,6 @@
     <string name="toast_no_email_app">Sähköpostisovellusta ei löytynyt</string>
     <string name="toast_shizuku_already_starting">Shizuku aloittaa jo taustalla</string>
     <string name="toast_accessibility_tv_only">Tätä palvelua tuetaan vain TV-laitteissa.</string>
-    <string name="toast_pairing_timeout">Shizukun pariliitospalvelu aikakatkaistiin.</string>
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Teema</string>
     <string name="dark_theme_off">Aina kevyt</string>
@@ -244,7 +243,6 @@
     <string name="watchdog_shizuku_crashed_title">Shizuku kaatui äskettäin</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog käynnisti palvelun uudelleen. Napauta
         oppiaksesi mahdollisista korjauksista tulevien kaatumisten estämiseksi.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Sammuta hälytykset</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Selainta ei voi käynnistää</string>
     <string name="toast_copied_to_clipboard">Kopioitu leikepöydälle</string>

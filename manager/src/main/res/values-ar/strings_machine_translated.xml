@@ -357,7 +357,6 @@
     <string name="crash_detected_dialog_message">اكتشف Shizuku+ عطلًا في جلستك الأخيرة. هل تريد إنشاء تقرير لمساعدتنا في إصلاحه؟</string>
     <string name="crash_detected_dialog_ignore">تجاهل</string>
     <string name="shortcut_open_terminal">فتح الطرفية</string>
-    <string name="watchdog_shizuku_crashed_action_report_manually">الإبلاغ يدويًا</string>
     <string name="home_service_doctor_title">طبيب الخدمة</string>
     <string name="home_service_doctor_summary">هل تواجه مشكلة في تشغيل Shizuku+؟ اضغط لإجراء فحص تشخيصي.</string>
     <string name="doctor_check_battery">تحسين البطارية</string>
@@ -671,7 +670,6 @@
     <string name="service_doctor_fix_blocked_generic">تم حظر الإصلاح التلقائي — قيود الجهاز تمنع أوامر الصدفة المميزة. تحقق من إعدادات ADB/الشركة المصنّعة.</string>
     <string name="adb_foreground_op_denied">تعذر بدء الخدمة الأمامية — إذن START_FOREGROUND مرفوض. يرجى التحقق من أذونات التطبيقات في جهازك.</string>
     <string name="update_no_release_notes">لا توجد ملاحظات إصدار متاحة.</string>
-    <string name="accessibility_service_monitoring">خدمة إمكانية الوصول نشطة: مراقبة رمز الاقتران…</string>
     <string name="dhizuku_setup_title">إعداد مالك الجهاز</string>
     <string name="dhizuku_setup_message">يتطلب وضع Dhizuku تعيين Shizuku+ مالكًا للجهاز. شغّل هذا الأمر مرة واحدة عبر ADB أثناء تفعيل تصحيح USB:\n\n%1$s\n\nبعد تشغيل الأمر، أعد تشغيل Shizuku.</string>
     <string name="dhizuku_setup_copy">نسخ الأمر</string>
@@ -1000,8 +998,6 @@
     <string name="custom_icon_studio_border_width">العرض</string>
     <string name="custom_icon_studio_nudge_x">الموضع الأفقي</string>
     <string name="custom_icon_studio_nudge_y">الموضع العمودي</string>
-    <string name="settings_watchdog_crash_alerts">إشعارات الأعطال</string>
-    <string name="settings_watchdog_crash_alerts_summary">نشر إشعار صامت عندما يعيد كلب الحراسة تشغيل الخدمة بعد انهيار</string>
     <string name="settings_watchdog_not_running">مفعل، لكن لا يعمل الآن</string>
     <string name="settings_update_app_database_status">الأوصاف ونصائح الإعداد لـ %1$d تطبيق، معروضة في التطبيقات وتوافق Root. آخر فحص %2$s.</string>
     <string name="settings_update_app_database_status_never">الأوصاف ونصائح الإعداد لـ %1$d تطبيق، معروضة في التطبيقات وتوافق Root. لم يتم الفحص بعد.</string>
@@ -1131,7 +1127,6 @@
     <string name="settings_stealth_mode_pkg_query">عامل تصفية استعلام الحزم</string>
     <string name="settings_stealth_mode_pkg_query_summary">إخفاء Shizuku من استعلامات الحزم من قبل تطبيقات أخرى</string>
     <string name="settings_ai_bridge_title">جسر AI و NPU</string>
-    <string name="tcp_guard_channel">حماية شبكة TCP</string>
     <string name="tcp_guard_title">التصحيح عبر TCP مفتوح على شبكة غير موثوقة</string>
     <string name="tcp_guard_text">منفذ ADB TCP %1$d يستمع و %2$s. أغلقه ما لم تحتجه الآن.</string>
     <string name="tcp_guard_reason_open">أنت على شبكة Wi-Fi مفتوحة</string>

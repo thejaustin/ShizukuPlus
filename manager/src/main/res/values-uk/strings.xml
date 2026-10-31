@@ -505,7 +505,6 @@
     <string name="crash_detected_dialog_ignore">Ігнорувати</string>
     <string name="shortcut_open_terminal">Відкрити Термінал</string>
 
-    <string name="watchdog_shizuku_crashed_action_report_manually">Повідомити власноруч</string>
 
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">Спочатку, будь ласка, виконайте наступне:</string>
@@ -571,7 +570,6 @@
     <string name="backup_auth_failed">Помилка автентифікації (%1$s)</string>
     <string name="toast_shizuku_already_starting">Shizuku вже запускається у фоновому режимі</string>
     <string name="toast_accessibility_tv_only">Ця автоматизація призначена для ТВ або пристроїв Samsung One UI з підтримкою TLS.</string>
-    <string name="toast_pairing_timeout">Час очікування сервісу створення пари Shizuku минув</string>
     <string name="adb_error_ssl_title">Помилка з\'єднання</string>
     <string name="adb_error_ssl_message">Збій підтвердження Бездротового ADB (помилка протоколу SSL). Зазвичай це відбувається, коли ключі ADB пошкоджено. Бажаєте скинути їх в Параметрах розробника?</string>
     <string name="adb_error_ssl_button_reset">Перейти до Параметрів розробника</string>
@@ -640,7 +638,6 @@
     <string name="watchdog_turn_off">Вимкнути</string>
     <string name="watchdog_shizuku_crashed_title">Shizuku нещодавно зазнав збою</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog перезапустив службу. Натисніть, щоб дізнатися про можливі виправлення для запобігання збоям у майбутньому.</string>
-    <string name="watchdog_shizuku_crashed_action_turn_off_alerts">Вимкнути сповіщення</string>
 
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Не вдається запустити браузер</string>
@@ -824,7 +821,6 @@
     <string name="update_no_release_notes">Примітки до випуску недоступні.</string>
 
     <!-- Accessibility service status -->
-    <string name="accessibility_service_monitoring">Служба доступності активна: очікування коду для створення пари…</string>
 
     <!-- Dhizuku Device Owner Setup -->
     <string name="dhizuku_setup_title">Налаштування Власника пристрою</string>
