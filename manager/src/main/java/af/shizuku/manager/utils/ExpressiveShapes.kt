@@ -152,7 +152,7 @@ object ExpressiveShapes {
  * plain circle (0) to the target shape (1), so switch rows can morph their icon on toggle.
  */
 class MorphShapeDrawable(
-    color: Int,
+    private val color: Int,
     val shapeKey: String,
 ) : Drawable() {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color }
@@ -199,6 +199,15 @@ class MorphShapeDrawable(
 
     @Deprecated("Deprecated in Java")
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT
+
+    // A tinted ImageView mutates its LayerDrawable, which copies each layer through its constant
+    // state. Without one the copy shares this instance with the original and logs a warning.
+    override fun getConstantState(): ConstantState =
+        object : ConstantState() {
+            override fun newDrawable(): Drawable = MorphShapeDrawable(color, shapeKey).also { it.progress = progress }
+
+            override fun getChangingConfigurations(): Int = 0
+        }
 }
 
 /**
