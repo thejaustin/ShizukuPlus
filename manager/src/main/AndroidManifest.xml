@@ -64,10 +64,12 @@
          package - installing both side by side used to fail with error -126 ("attempting to
          redeclare permission group... already owned by...") (#316). Unlike the permission below,
          nothing outside this manifest references the group name by string, so scoping it is safe. -->
+    <!-- Icons Android shows outside the app (permission screens, the Quick Settings tile, the
+         automation plugin) use the Shizuku+ glyph from ic_notification_icon. -->
     <permission-group
         android:name="${applicationId}.permission-group.API"
         android:description="@string/permission_group_description_plus"
-        android:icon="@drawable/ic_system_icon"
+        android:icon="@drawable/ic_notification_icon"
         android:label="@string/permission_group_label_plus" />
 
     <permission
@@ -81,7 +83,7 @@
     <permission
         android:name="af.shizuku.plus.permission.API_V23"
         android:description="@string/permission_description_plus"
-        android:icon="@drawable/ic_system_icon"
+        android:icon="@drawable/ic_notification_icon"
         android:label="@string/permission_label_plus"
         android:permissionGroup="${applicationId}.permission-group.API"
         android:protectionLevel="dangerous" />
@@ -462,7 +464,7 @@
         <service
             android:name=".service.ShizukuTileService"
             android:exported="true"
-            android:icon="@drawable/ic_server_ok_24"
+            android:icon="@drawable/ic_notification_icon"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
@@ -679,7 +681,7 @@
         <activity
             android:name="af.shizuku.manager.automation.locale.LocaleActionEditActivity"
             android:exported="true"
-            android:icon="@drawable/ic_bolt_24"
+            android:icon="@drawable/ic_notification_icon"
             android:label="@string/automation_plugin_action_label"
             android:theme="@style/Theme.App.DialogHost">
             <intent-filter>
@@ -702,7 +704,7 @@
         <activity
             android:name="af.shizuku.manager.automation.locale.LocaleConditionEditActivity"
             android:exported="true"
-            android:icon="@drawable/ic_bolt_24"
+            android:icon="@drawable/ic_notification_icon"
             android:label="@string/automation_plugin_condition_label"
             android:theme="@style/Theme.App.DialogHost">
             <intent-filter>

@@ -197,7 +197,7 @@ class RequestPermissionActivity : AppActivity() {
     }
 
     private fun showSelfPermissionMissingDialog() {
-        val icon = getDrawable(R.drawable.ic_system_icon)
+        val icon = getDrawable(R.drawable.ic_notification_icon)
         icon?.setTint(theme.resolveColor(android.R.attr.colorAccent))
 
         val d =
