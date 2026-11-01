@@ -48,6 +48,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **`rish` no longer prints "Waiting for Shizuku authorization…"** on every command; the line only appears when authorization is actually taking a while.
 - **Updated translations** — Azerbaijani (thanks @Figim), plus newer strings filled in for Arabic, German, Spanish and French.
 - **Bottom cards are no longer hidden behind the floating navigation bar** (thanks @udmodz0).
+- **Messages sit properly on the floating navigation bar** — they line up with the bar's width and corners, and when the bar hides as you scroll they slide down with it and come back up with it, instead of hanging where the bar used to be or sitting too high above it.
 
 ### 👆 Swipe actions settings
 - **Simpler Swipe actions settings** — a row from your app list swipes each way on its own, showing exactly what each swipe does. Below it, "Swipe right", "Swipe left" and "Long-press menu" are normal settings rows that open a short picker, replacing the grid of chips.

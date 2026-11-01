@@ -11,6 +11,7 @@ import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import android.app.Activity
 import android.app.ActivityOptions
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
@@ -126,7 +127,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         if (!isEnabled() || selected == null) {
             existing?.let { content.removeView(it) }
             af.shizuku.manager.app.SnackbarHelper
-                .updateAnchor(null)
+                .attachBar(null)
             return
         }
         val isNew = existing == null
@@ -169,7 +170,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         root.post {
             reserveSpace(content, root)
             af.shizuku.manager.app.SnackbarHelper
-                .updateAnchor(root)
+                .attachBar(root)
         }
     }
 
@@ -335,16 +336,10 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             .alpha(if (hide) 0f else 1f)
             .setDuration(duration)
             .setInterpolator(interpolator)
-            .withEndAction {
-                if (hide) {
-                    af.shizuku.manager.app.SnackbarHelper
-                        .updateAnchor(null)
-                }
-            }.start()
-        if (!hide) {
-            af.shizuku.manager.app.SnackbarHelper
-                .updateAnchor(bar)
-        }
+            .start()
+        // A message sitting on the bar moves with it, on the same curve.
+        af.shizuku.manager.app.SnackbarHelper
+            .followBar(bar, hide, duration, interpolator)
     }
 
     private fun findRecyclerView(view: View): RecyclerView? {
@@ -371,6 +366,37 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         return null
     }
 
+    /** The bar's corner radius from the rounding settings, before the docked/capsule shapes. */
+    private fun baseRadius(context: Context): Float {
+        val density = context.resources.displayMetrics.density
+        if (!ShizukuSettings.isRoundedEdgesEnabled()) return 0f
+        if (ShizukuSettings.isOneUiThemeEnabled()) return 36f * density
+        val cornerOverride =
+            ShizukuSettings
+                .getPreferences()
+                .getString(ShizukuSettings.Keys.KEY_CORNER_ROUNDING_OVERRIDE, "default")
+        return when (cornerOverride) {
+            "gentle" -> 20f * density
+            "standard" -> 28f * density
+            "large" -> 36f * density
+            "maximum" -> 44f * density
+            else -> 32f * density
+        }
+    }
+
+    /** The corner radius a message sitting on the bar uses, so the two read as one stack. */
+    fun messageRadius(context: Context): Float {
+        val density = context.resources.displayMetrics.density
+        return when (style()) {
+            "capsule" -> 38f * density
+            "docked" -> baseRadius(context).coerceAtMost(28f * density)
+            else -> baseRadius(context)
+        }
+    }
+
+    /** Whether the bar spans the screen width (a message then keeps its own width). */
+    fun isDocked(): Boolean = style() == "docked"
+
     private fun layoutBar(
         activity: Activity,
         root: View,
@@ -394,24 +420,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         // M3 Expressive card adaptation: Dynamic curvature and AMOLED+ true black
         val card = root as? MaterialCardView
         if (card != null) {
-            if (!ShizukuSettings.isRoundedEdgesEnabled()) {
-                card.radius = 0f
-            } else if (ShizukuSettings.isOneUiThemeEnabled()) {
-                card.radius = 36f * density
-            } else {
-                val cornerOverride =
-                    ShizukuSettings
-                        .getPreferences()
-                        .getString(ShizukuSettings.Keys.KEY_CORNER_ROUNDING_OVERRIDE, "default")
-                card.radius =
-                    when (cornerOverride) {
-                        "gentle" -> 20f * density
-                        "standard" -> 28f * density
-                        "large" -> 36f * density
-                        "maximum" -> 44f * density
-                        else -> 32f * density
-                    }
-            }
+            card.radius = baseRadius(activity)
 
             val isNight = ResourceUtils.isNightMode(activity.resources.configuration)
             val isBlur = ShizukuSettings.isBlurUiEnabled()
