@@ -39,7 +39,9 @@ open class GrayableIconSwitchPreference
                     alpha = if (isChecked) 1.0f else OFF_ICON_ALPHA
                     scaleX = if (isChecked) 1.0f else 0.90f
                     scaleY = if (isChecked) 1.0f else 0.90f
-                    morphShapeOf(this)?.progress = if (!ShizukuSettings.isIconMorphOnToggle() || isChecked) 1f else 0f
+                    val showShape = !ShizukuSettings.isIconMorphOnToggle() || isChecked
+                    morphShapeOf(this)?.progress = if (showShape) 1f else 0f
+                    roundedContainerOf(this)?.let { setContainerRound(it, if (showShape) 0f else 1f) }
                 }
         }
 
@@ -67,6 +69,12 @@ open class GrayableIconSwitchPreference
                         if (morph != null && ShizukuSettings.isIconMorphOnToggle()) {
                             morph.springTo(if (isChecked) 1f else 0f)
                         }
+                        // Without an icon shape picked: the Shape style's rounded square
+                        // rounds into a circle when off, on the same spring feel.
+                        val rounded = roundedContainerOf(iv)
+                        if (rounded != null && ShizukuSettings.isIconMorphOnToggle()) {
+                            springContainerRound(iv, rounded, if (isChecked) 0f else 1f)
+                        }
                     }
                     // Icon scale springs (may bounce); its dimming fades without overshoot.
                     v.findViewById<ImageView>(android.R.id.icon)?.let { icon ->
@@ -85,6 +93,65 @@ open class GrayableIconSwitchPreference
  * unavailable. With an icon shape picked, the container also morphs circle -> shape when on.
  */
 private const val OFF_ICON_ALPHA = 0.6f
+
+/**
+ * The rounded-rectangle background layer of a two-tone icon (the Shape style's pill when no icon
+ * shape is picked), if it has rounded corners to morph. Oval and sharp containers have none.
+ */
+private fun roundedContainerOf(iv: ImageView): android.graphics.drawable.GradientDrawable? {
+    val bg =
+        (iv.drawable as? android.graphics.drawable.LayerDrawable)?.getDrawable(0) as? android.graphics.drawable.GradientDrawable
+            ?: return null
+    if (bg.shape != android.graphics.drawable.GradientDrawable.RECTANGLE) return null
+    // The style's own radius, read once before any morph changes it.
+    val base = (iv.getTag(R.id.tag_icon_container_radius) as? Float) ?: bg.cornerRadius.also { iv.setTag(R.id.tag_icon_container_radius, it) }
+    return bg.takeIf { base > 0f }
+}
+
+/** [round] 0 = the style's corner radius, 1 = a circle. */
+private fun setContainerRound(
+    bg: android.graphics.drawable.GradientDrawable,
+    round: Float,
+    base: Float,
+) {
+    val b = bg.bounds
+    val circle = if (b.isEmpty) base * 4f else minOf(b.width(), b.height()) / 2f
+    bg.cornerRadius = base + (maxOf(circle, base) - base) * round.coerceIn(0f, 1f)
+}
+
+private fun ImageView.setContainerRound(
+    bg: android.graphics.drawable.GradientDrawable,
+    round: Float,
+) {
+    val base = getTag(R.id.tag_icon_container_radius) as? Float ?: return
+    setTag(R.id.tag_icon_container_round, round)
+    setContainerRound(bg, round, base)
+}
+
+/** Springs the container between its style's radius and a circle, like the shape morph. */
+private fun springContainerRound(
+    iv: ImageView,
+    bg: android.graphics.drawable.GradientDrawable,
+    target: Float,
+) {
+    if (ShizukuSettings.getAnimationDurationScale() <= 0f) {
+        iv.setContainerRound(bg, target)
+        return
+    }
+    (iv.getTag(R.id.tag_icon_container_spring) as? SpringAnimation)?.cancel()
+    val holder =
+        androidx.dynamicanimation.animation
+            .FloatValueHolder((iv.getTag(R.id.tag_icon_container_round) as? Float) ?: (1f - target))
+    SpringAnimation(holder)
+        .setSpring(
+            androidx.dynamicanimation.animation.SpringForce(target).apply {
+                dampingRatio = androidx.dynamicanimation.animation.SpringForce.DAMPING_RATIO_NO_BOUNCY
+                stiffness = androidx.dynamicanimation.animation.SpringForce.STIFFNESS_LOW
+            },
+        ).addUpdateListener { _, value, _ -> iv.setContainerRound(bg, value) }
+        .also { iv.setTag(R.id.tag_icon_container_spring, it) }
+        .start()
+}
 
 /** The morphing background layer of a two-tone icon, if the icon uses one. */
 private fun morphShapeOf(iv: ImageView): af.shizuku.manager.utils.MorphShapeDrawable? =

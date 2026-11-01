@@ -30,8 +30,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asComposePath
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -106,14 +108,21 @@ private fun ShapeTiles(
         )
     Row(
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = Modifier.horizontalScroll(rememberScrollState()).padding(top = 8.dp).selectableGroup(),
+        modifier =
+            Modifier
+                .horizontalScroll(rememberScrollState())
+                .padding(top = 8.dp)
+                .alpha(if (enabled) 1f else 0.38f)
+                .selectableGroup(),
     ) {
         ExpressiveShapes.KEYS.forEach { key ->
             val isSelected = key == selectedKey
-            val morph by animateFloatAsState(
-                if (isSelected || key == ExpressiveShapes.OFF) 1f else 0.35f,
+            // Every option shows its real shape; a part-morphed preview read as a blob. The
+            // selected one is told apart by color and size.
+            val scale by animateFloatAsState(
+                if (isSelected) 1f else 0.86f,
                 animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow),
-                label = "tileMorph",
+                label = "tileScale",
             )
             val fill by animateColorAsState(
                 if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.controlContainer,
@@ -140,8 +149,8 @@ private fun ShapeTiles(
                 Box(Modifier.size(44.dp), contentAlignment = Alignment.Center) {
                     Canvas(Modifier.size(40.dp)) {
                         val shapeKey = if (key == ExpressiveShapes.OFF) "circle" else key
-                        val path = ExpressiveShapes.path(shapeKey, size.width, size.height, morph)
-                        drawPath(path.asComposePath(), fill)
+                        val path = ExpressiveShapes.path(shapeKey, size.width, size.height)
+                        scale(scale) { drawPath(path.asComposePath(), fill) }
                     }
                 }
                 Text(
