@@ -2,7 +2,10 @@
 <!-- Optional floating navigation bar (#498). Added to an activity's content root by
      FloatingNavBar, never inflated from an activity layout, so it can't affect the
      AppBarActivity/getLayoutId rules. A rounded translucent card around a stock
-     BottomNavigationView keeps the pill indicator, 48dp+ touch targets and TalkBack semantics. -->
+     BottomNavigationView keeps the pill indicator, 48dp+ touch targets and TalkBack semantics.
+     itemGravity="center": FloatingNavBar sets the bar's height (64/80dp), and items keep their
+     default top gravity otherwise, so icons sat high in the bar, most visibly with labels off or
+     on unselected tabs. -->
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -29,8 +32,9 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:paddingHorizontal="6dp"
+            app:itemGravity="center"
             app:itemPaddingTop="4dp"
-            app:itemPaddingBottom="6dp"
+            app:itemPaddingBottom="4dp"
             app:itemHorizontalTranslationEnabled="false"
             app:elevation="0dp"
             app:labelVisibilityMode="selected"
