@@ -126,49 +126,55 @@ fun SegmentedChoiceRow(
     modifier: Modifier = Modifier,
 ) {
     val view = androidx.compose.ui.platform.LocalView.current
-    androidx.compose.foundation.layout.Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement =
-            androidx.compose.foundation.layout.Arrangement.spacedBy(
-                androidx.compose.material3.ButtonGroupDefaults.ConnectedSpaceBetween,
-            ),
-    ) {
-        labels.forEachIndexed { index, label ->
-            androidx.compose.material3.ToggleButton(
-                checked = index == selectedIndex,
-                onCheckedChange = {
-                    if (index != selectedIndex) {
-                        af.shizuku.manager.utils.HapticUtils
-                            .segmentTick(view)
-                        onSelect(index)
-                    }
-                },
-                enabled = enabled,
-                // The default unchecked container is near the card color and vanishes on dark /
-                // AMOLED cards; a tonal container keeps every option visibly tappable.
-                colors =
-                    androidx.compose.material3.ToggleButtonDefaults.toggleButtonColors(
-                        containerColor = androidx.compose.material3.MaterialTheme.colorScheme.controlContainer,
-                        contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onControlContainer,
-                    ),
-                shapes = connectedMorphShapes(index, labels.size),
-                // Tighter than the M3E default so 3-way rows like "Always light / Always dark /
-                // Follow system" fit; long labels wrap to two centred lines instead of "Follo…".
-                contentPadding =
-                    androidx.compose.foundation.layout
-                        .PaddingValues(horizontal = 8.dp, vertical = 8.dp),
-                modifier =
-                    Modifier
-                        .weight(1f)
-                        .heightIn(min = 48.dp)
-                        .semantics { role = androidx.compose.ui.semantics.Role.RadioButton },
-            ) {
-                Text(
-                    label,
-                    maxLines = 3,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                    style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
-                )
+    // Settings rows recycle their ComposeView between preferences. Keyed on the options, the
+    // buttons start from this row's own checked/unchecked shapes instead of carrying the morph
+    // state of whichever row used the view before (the selected one sometimes kept a segment
+    // shape until tapped).
+    androidx.compose.runtime.key(labels) {
+        androidx.compose.foundation.layout.Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement =
+                androidx.compose.foundation.layout.Arrangement.spacedBy(
+                    androidx.compose.material3.ButtonGroupDefaults.ConnectedSpaceBetween,
+                ),
+        ) {
+            labels.forEachIndexed { index, label ->
+                androidx.compose.material3.ToggleButton(
+                    checked = index == selectedIndex,
+                    onCheckedChange = {
+                        if (index != selectedIndex) {
+                            af.shizuku.manager.utils.HapticUtils
+                                .segmentTick(view)
+                            onSelect(index)
+                        }
+                    },
+                    enabled = enabled,
+                    // The default unchecked container is near the card color and vanishes on dark /
+                    // AMOLED cards; a tonal container keeps every option visibly tappable.
+                    colors =
+                        androidx.compose.material3.ToggleButtonDefaults.toggleButtonColors(
+                            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.controlContainer,
+                            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onControlContainer,
+                        ),
+                    shapes = connectedMorphShapes(index, labels.size),
+                    // Tighter than the M3E default so 3-way rows like "Always light / Always dark /
+                    // Follow system" fit; long labels wrap to two centred lines instead of "Follo…".
+                    contentPadding =
+                        androidx.compose.foundation.layout
+                            .PaddingValues(horizontal = 8.dp, vertical = 8.dp),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .heightIn(min = 48.dp)
+                            .semantics { role = androidx.compose.ui.semantics.Role.RadioButton },
+                ) {
+                    Text(
+                        label,
+                        maxLines = 3,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
+                    )
+                }
             }
         }
     }
