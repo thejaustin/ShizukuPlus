@@ -843,7 +843,10 @@ fun ActivityLogScreen(
                             rawLogs.joinToString("\n") { r ->
                                 "[${dateFormat.format(Date(r.timestamp))}] [${r.eventType}] ${r.appName} (${r.packageName}): ${r.action}"
                             }
-                        clipboard.setPrimaryClip(ClipData.newPlainText("Activity Log", text))
+                        clipboard.setPrimaryClip(
+                            af.shizuku.manager.utils
+                                .sensitivePlainText("Activity Log", text),
+                        )
                         Toast
                             .makeText(
                                 context,
@@ -1010,7 +1013,10 @@ fun ActivityLogScreen(
                                     HapticUtils.tap(view)
                                     val exported = exportLogsToText(rawLogs, dateFormat)
                                     val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                    cm.setPrimaryClip(ClipData.newPlainText("Activity Log", exported))
+                                    cm.setPrimaryClip(
+                                        af.shizuku.manager.utils
+                                            .sensitivePlainText("Activity Log", exported),
+                                    )
                                     Toast
                                         .makeText(
                                             context,

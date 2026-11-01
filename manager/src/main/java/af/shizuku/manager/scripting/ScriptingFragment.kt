@@ -5,7 +5,6 @@ import af.shizuku.manager.R
 import af.shizuku.manager.database.ScriptSnippetManager
 import af.shizuku.manager.database.ScriptSnippetRoom
 import af.shizuku.manager.databinding.ItemScriptSnippetBinding
-import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
@@ -139,7 +138,10 @@ class ScriptingFragment : Fragment() {
                 .setPositiveButton(android.R.string.ok, null)
                 .setNeutralButton(R.string.scripting_copy_output) { _, _ ->
                     val cm = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    cm.setPrimaryClip(ClipData.newPlainText(snippet.title, output))
+                    cm.setPrimaryClip(
+                        af.shizuku.manager.utils
+                            .sensitivePlainText(snippet.title, output),
+                    )
                     Toast.makeText(ctx, R.string.scripting_output_copied, Toast.LENGTH_SHORT).show()
                 }.show()
         }

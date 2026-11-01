@@ -185,7 +185,7 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
         val report = CrashReporter.generateReport(ctx, crashes)
         val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         clipboard.setPrimaryClip(
-            android.content.ClipData.newPlainText(
+            af.shizuku.manager.utils.sensitivePlainText(
                 ctx.getString(R.string.manual_report_clipboard_label),
                 report,
             ),

@@ -194,9 +194,8 @@ class AdbPairingClient(
     fun start(): Boolean {
         Sentry.addBreadcrumb(
             Breadcrumb("ADB Pairing started").apply {
+                // No host or port: they identify the device's network.
                 category = "adb.pairing"
-                setData("host", host)
-                setData("port", port.toString())
             },
         )
         try {
