@@ -1920,9 +1920,9 @@
     <string name="app_management_context_select_multiple">Select multiple apps</string>
     <string name="app_management_selected_count">%1$d selected</string>
     <string name="api_scopes_dialog_title">API Scopes · %1$s</string>
-    <string name="api_scopes_dialog_note">Commands are checked when the app starts them, including through sh -c. Commands typed into a shell the app already has open can\'t be checked; turn off Shell to block those too.</string>
+    <string name="api_scopes_dialog_note">Commands are checked when the app starts them, including through sh -c. While any of these is off, the app can\'t open an interactive shell or run commands that build what they run, since those can\'t be checked. Turning off Shell also stops the app\'s own background services that run with Shizuku access.</string>
     <string name="api_scopes_restricted_badge">Scopes: %1$d/%2$d allowed</string>
-    <string name="api_scope_shell">Shell &amp; Process Execution (newProcess)</string>
+    <string name="api_scope_shell">Shell, processes &amp; user services</string>
     <string name="api_scope_package_manager">Package Manager (install, uninstall, suspend)</string>
     <string name="api_scope_activity_manager">Activity &amp; Process Manager (force-stop, tasks)</string>
     <string name="api_scope_appops">AppOps &amp; Runtime Permissions</string>

@@ -1865,9 +1865,7 @@
     <string name="app_management_context_select_multiple">Çoxlu tətbiq seçin</string>
     <string name="app_management_selected_count">%1$d seçildi</string>
     <string name="api_scopes_dialog_title">API Səlahiyyətləri · %1$s</string>
-    <string name="api_scopes_dialog_note">Əmrlər tətbiq tərəfindən başladıldıqda, sh -c vasitəsilə daxil olmaqla yoxlanılır. Tətbiqin artıq açıq olan shell pəncərəsinə daxil edilmiş əmrləri yoxlamaq mümkün deyil; onları da bloklamaq üçün Shell funksiyasını söndürün.</string>
     <string name="api_scopes_restricted_badge">Səlahiyyətlər: %1$d/%2$d icazə verilib</string>
-    <string name="api_scope_shell">Shell və Proses İcrası (newProcess)</string>
     <string name="api_scope_package_manager">Paket İdarəedicisi (quraşdır, sil, dayandır)</string>
     <string name="api_scope_activity_manager">Fəaliyyət və Proses Meneceri (məcburi dayandır, tapşırıqlar)</string>
     <string name="api_scope_appops">AppOps və İşləmə Müddəti İcazələri</string>

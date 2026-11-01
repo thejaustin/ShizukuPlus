@@ -18,8 +18,21 @@ public class ShizukuUserServiceManager extends UserServiceManager {
 
     private final Map<UserServiceRecord, ApkChangedListener> apkChangedListeners = new ArrayMap<>();
 
-    public ShizukuUserServiceManager() {
+    private final java.util.function.IntPredicate shellScopeDisabled;
+
+    /** @param shellScopeDisabled whether the calling uid has the per-app "shell" scope turned off. */
+    public ShizukuUserServiceManager(java.util.function.IntPredicate shellScopeDisabled) {
         super();
+        this.shellScopeDisabled = shellScopeDisabled;
+    }
+
+    @Override
+    public int addUserService(moe.shizuku.server.IShizukuServiceConnection conn, android.os.Bundle options, int callingApiVersion) {
+        int callingUid = android.os.Binder.getCallingUid();
+        if (shellScopeDisabled.test(callingUid)) {
+            throw new SecurityException("Permission denied: the 'shell' API scope is off for this app in Shizuku+");
+        }
+        return super.addUserService(conn, options, callingApiVersion);
     }
 
     @Override

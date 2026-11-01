@@ -1383,9 +1383,7 @@
     <string name="app_management_context_select_multiple">Mehrere Apps auswählen</string>
     <string name="app_management_selected_count">%1$d ausgewählt</string>
     <string name="api_scopes_dialog_title">API-Bereiche · %1$s</string>
-    <string name="api_scopes_dialog_note">Befehle werden geprüft, wenn die App sie startet, auch über sh -c. Befehle, die in eine bereits geöffnete Shell der App eingegeben werden, können nicht geprüft werden. Deaktiviere Shell, um auch diese zu blockieren.</string>
     <string name="api_scopes_restricted_badge">Bereiche: %1$d/%2$d erlaubt</string>
-    <string name="api_scope_shell">Shell- &amp; Prozessausführung (newProcess)</string>
     <string name="api_scope_package_manager">Paketmanager (installieren, deinstallieren, sperren)</string>
     <string name="api_scope_activity_manager">Aktivitäts- &amp; Prozessmanager (Beenden erzwingen, Aufgaben)</string>
     <string name="api_scope_appops">AppOps &amp; Laufzeitberechtigungen</string>

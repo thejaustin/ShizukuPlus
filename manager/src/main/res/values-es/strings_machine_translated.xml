@@ -1383,9 +1383,7 @@
     <string name="app_management_context_select_multiple">Seleccionar varias aplicaciones</string>
     <string name="app_management_selected_count">%1$d seleccionadas</string>
     <string name="api_scopes_dialog_title">Ámbitos de la API · %1$s</string>
-    <string name="api_scopes_dialog_note">Los comandos se comprueban cuando la aplicación los inicia, incluso mediante sh -c. Los comandos escritos en una shell que la aplicación ya tiene abierta no se pueden comprobar; desactiva Shell para bloquearlos también.</string>
     <string name="api_scopes_restricted_badge">Ámbitos: %1$d/%2$d permitidos</string>
-    <string name="api_scope_shell">Shell y ejecución de procesos (newProcess)</string>
     <string name="api_scope_package_manager">Gestor de paquetes (instalar, desinstalar, suspender)</string>
     <string name="api_scope_activity_manager">Gestor de actividades y procesos (forzar detención, tareas)</string>
     <string name="api_scope_appops">AppOps y permisos en tiempo de ejecución</string>

@@ -464,7 +464,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     @Override
     public ShizukuUserServiceManager onCreateUserServiceManager() {
-        return new ShizukuUserServiceManager();
+        // A user service runs the app's own code with Shizuku's access, so it falls under "shell".
+        return new ShizukuUserServiceManager(uid -> isAppScopeDisabled(uid, null, "shell"));
     }
 
     @Override
@@ -1049,6 +1050,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 }
             }
         }
+        // A caller that never attached has no client record; it is still bound by the rules for
+        // its packages, or it could skip every scope just by not attaching.
+        if (candidatePackages.isEmpty()) {
+            candidatePackages.addAll(PackageManagerApis.getPackagesForUidNoThrow(uid));
+        }
         if (candidatePackages.isEmpty()) return false;
 
         for (String entry : serialized.split(";")) {
@@ -1407,6 +1413,18 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             if (isAppScopeDisabled(callingUid, callingPkg, scope)) {
                 LOGGER.w("newProcess blocked by per-app '%s' scope for %s (UID=%d)", scope, callingPkg, callingUid);
                 throw new SecurityException("Permission denied: the '" + scope + "' API scope is disabled for " + callingPkg + " in Shizuku+");
+            }
+        }
+
+        // Scope rules can only be checked on a command they can read. For an app with any tool
+        // scope off, refuse shells fed on stdin, scripts and commands that build what they run.
+        if (rikka.shizuku.server.util.ScopeCommandMatcher.isOpaque(cmd)) {
+            for (String scope : rikka.shizuku.server.util.ScopeCommandMatcher.TOOL_SCOPES) {
+                if (isAppScopeDisabled(callingUid, callingPkg, scope)) {
+                    LOGGER.w("newProcess blocked: uncheckable command from %s with '%s' scope off", callingPkg, scope);
+                    throw new SecurityException("Permission denied: " + callingPkg + " has the '" + scope
+                            + "' API scope off in Shizuku+, and this command can't be checked against it");
+                }
             }
         }
 
@@ -3289,6 +3307,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public INetworkGovernorPlus getNetworkGovernorPlus() {
         enforceCallingPermission("getNetworkGovernorPlus");
+        if (isAppScopeDisabled(Binder.getCallingUid(), null, "system_settings")) return null;
         if (!isFeatureEnabled("network_governor_plus")) return null;
         return networkGovernorPlus.get();
     }
@@ -3296,6 +3315,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public IActivityManagerPlus getActivityManagerPlus() {
         enforceCallingPermission("getActivityManagerPlus");
+        if (isAppScopeDisabled(Binder.getCallingUid(), null, "activity_manager")) return null;
         if (!isFeatureEnabled("activity_manager_plus")) return null;
         return activityManagerPlus.get();
     }
@@ -3303,6 +3323,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public IStatusBarGovernorPlus getStatusBarGovernorPlus() {
         enforceCallingPermission("getStatusBarGovernorPlus");
+        if (isAppScopeDisabled(Binder.getCallingUid(), null, "system_settings")) return null;
         if (!isFeatureEnabled("status_bar_governor_plus")) return null;
         return statusBarGovernorPlus.get();
     }
@@ -3310,6 +3331,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public IPackageGovernorPlus getPackageGovernorPlus() {
         enforceCallingPermission("getPackageGovernorPlus");
+        if (isAppScopeDisabled(Binder.getCallingUid(), null, "package_manager")) return null;
         if (!isFeatureEnabled("package_governor_plus")) return null;
         return packageGovernorPlus.get();
     }
@@ -3317,6 +3339,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public IDisplayTunerPlus getDisplayTunerPlus() {
         enforceCallingPermission("getDisplayTunerPlus");
+        if (isAppScopeDisabled(Binder.getCallingUid(), null, "system_settings")) return null;
         if (!isFeatureEnabled("display_tuner_plus")) return null;
         return displayTunerPlus.get();
     }
@@ -3324,6 +3347,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public IAppInspector getAppInspector() {
         enforceCallingPermission("getAppInspector");
+        if (isAppScopeDisabled(Binder.getCallingUid(), null, "activity_manager")) return null;
         if (!isRiskyBinderAllowed("getAppInspector", FEATURE_UNRESTRICTED_PERSONAL_DATA)) return null;
         return appInspector.get();
     }
@@ -3338,6 +3362,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public IBackupRestorePlus getBackupRestorePlus() {
         enforceCallingPermission("getBackupRestorePlus");
+        if (isAppScopeDisabled(Binder.getCallingUid(), null, "package_manager")) return null;
         if (!isRiskyBinderAllowed("getBackupRestorePlus", FEATURE_UNRESTRICTED_APP_DATA)) return null;
         return backupRestorePlus.get();
     }
@@ -3354,12 +3379,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public IApkPatcher getApkPatcher() {
         enforceCallingPermission("getApkPatcher");
+        if (isAppScopeDisabled(Binder.getCallingUid(), null, "package_manager")) return null;
         return apkPatcher.get();
     }
 
     @Override
     public IDeviceControlPlus getDeviceControlPlus() {
         enforceCallingPermission("getDeviceControlPlus");
+        if (isAppScopeDisabled(Binder.getCallingUid(), null, "system_settings")) return null;
         if (!isRiskyBinderAllowed("getDeviceControlPlus", FEATURE_UNRESTRICTED_PERSONAL_DATA)) return null;
         return deviceControlPlus.get();
     }

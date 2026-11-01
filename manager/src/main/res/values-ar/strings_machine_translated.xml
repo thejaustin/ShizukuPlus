@@ -1382,9 +1382,7 @@
     <string name="app_management_context_select_multiple">تحديد عدة تطبيقات</string>
     <string name="app_management_selected_count">تم تحديد %1$d</string>
     <string name="api_scopes_dialog_title">نطاقات API · %1$s</string>
-    <string name="api_scopes_dialog_note">يتم فحص الأوامر عندما يبدأها التطبيق، بما في ذلك عبر sh -c. لا يمكن فحص الأوامر المكتوبة في shell مفتوح مسبقًا لدى التطبيق؛ أوقف Shell لحظرها أيضًا.</string>
     <string name="api_scopes_restricted_badge">النطاقات: %1$d/%2$d مسموح بها</string>
-    <string name="api_scope_shell">تنفيذ Shell والعمليات (newProcess)</string>
     <string name="api_scope_package_manager">مدير الحزم (التثبيت، إلغاء التثبيت، الإيقاف المؤقت)</string>
     <string name="api_scope_activity_manager">مدير الأنشطة والعمليات (فرض الإيقاف، المهام)</string>
     <string name="api_scope_appops">AppOps وأذونات وقت التشغيل</string>
