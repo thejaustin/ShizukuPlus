@@ -231,6 +231,8 @@ open class ApplicationManagementActivity :
             }
         }
 
+        setUpSortChip(rootView.findViewById(R.id.chip_sort))
+
         val chipGroup = rootView.findViewById<ChipGroup>(R.id.filter_chip_group)
         chipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
             if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
@@ -380,7 +382,99 @@ open class ApplicationManagementActivity :
         }
     }
 
-    // ----- Options menu: sort -----
+    // ----- Sort chip -----
+
+    private val sortLabels =
+        linkedMapOf(
+            SortOrder.NAME_ASC to R.string.app_management_sort_a_to_z,
+            SortOrder.LAST_INSTALLED to R.string.app_management_sort_last_installed,
+            SortOrder.LAST_UPDATED to R.string.app_management_sort_last_updated,
+            SortOrder.GRANTED_FIRST to R.string.app_management_sort_granted_first,
+        )
+
+    // The chip's arrow; level 0 points down (the order's natural direction), 10000 up (reversed).
+    private var sortArrow: android.graphics.drawable.RotateDrawable? = null
+
+    /**
+     * Sort sits in the filter row instead of three levels into the overflow menu. Tapping it lists
+     * the orders; picking the current one again reverses it, and the arrow turns to show which way.
+     */
+    private fun setUpSortChip(chip: com.google.android.material.chip.Chip) {
+        sortArrow =
+            android.graphics.drawable.RotateDrawable().apply {
+                drawable =
+                    androidx.core.content.ContextCompat
+                        .getDrawable(this@ApplicationManagementActivity, R.drawable.ic_outline_arrow_downward_24)
+                fromDegrees = 0f
+                toDegrees = 180f
+                level = if (viewModel.sortReversed) 10000 else 0
+            }
+        chip.chipIcon = sortArrow
+        with(af.shizuku.manager.utils.MotionUtils) { chip.applySpringTouch() }
+        val open = { _: View ->
+            af.shizuku.manager.utils.HapticUtils
+                .tap(chip)
+            showSortMenu(chip)
+        }
+        chip.setOnClickListener(open)
+        chip.setOnCloseIconClickListener(open)
+        updateSortChip(chip, animate = false)
+    }
+
+    private fun showSortMenu(chip: com.google.android.material.chip.Chip) {
+        val popup = androidx.appcompat.widget.PopupMenu(this, chip)
+        sortLabels.entries.forEachIndexed { i, (order, label) ->
+            popup.menu
+                .add(1, i, i, label)
+                .setCheckable(true)
+                .isChecked = order == viewModel.sortOrder
+        }
+        popup.menu.setGroupCheckable(1, true, true)
+        popup.menu
+            .add(2, REVERSE_ITEM, sortLabels.size, R.string.app_management_sort_reverse)
+            .setCheckable(true)
+            .isChecked = viewModel.sortReversed
+        popup.setOnMenuItemClickListener { item ->
+            af.shizuku.manager.utils.HapticUtils
+                .segmentTick(chip)
+            if (item.itemId == REVERSE_ITEM) {
+                viewModel.setSortReversed(!viewModel.sortReversed)
+            } else {
+                viewModel.setSortOrder(sortLabels.keys.elementAt(item.itemId))
+            }
+            updateSortChip(chip, animate = true)
+            true
+        }
+        popup.show()
+    }
+
+    private fun updateSortChip(
+        chip: com.google.android.material.chip.Chip,
+        animate: Boolean,
+    ) {
+        val label = getString(sortLabels.getValue(viewModel.sortOrder))
+        chip.text = label
+        chip.contentDescription =
+            getString(
+                if (viewModel.sortReversed) R.string.app_management_sort_chip_cd_reversed else R.string.app_management_sort_chip_cd,
+                label,
+            )
+        val arrow = sortArrow ?: return
+        val target = if (viewModel.sortReversed) 10000 else 0
+        val duration = ShizukuSettings.scaledAnimationDuration(250)
+        if (!animate || duration <= 0L) {
+            arrow.level = target
+            return
+        }
+        android.animation.ValueAnimator.ofInt(arrow.level, target).apply {
+            this.duration = duration
+            interpolator = af.shizuku.manager.utils.MotionUtils.EMPHASIZED_DECELERATE
+            addUpdateListener { arrow.level = it.animatedValue as Int }
+            start()
+        }
+    }
+
+    // ----- Options menu -----
 
     private fun resetListPreview() {
         recyclerView.scaleX = 1f
@@ -402,13 +496,6 @@ open class ApplicationManagementActivity :
             return true
         }
         menuInflater.inflate(R.menu.apps_management_menu, menu)
-        val sortId =
-            when (viewModel.sortOrder) {
-                SortOrder.NAME_ASC -> R.id.sort_name
-                SortOrder.LAST_INSTALLED -> R.id.sort_last_installed
-                SortOrder.LAST_UPDATED -> R.id.sort_last_updated
-            }
-        menu.findItem(sortId)?.isChecked = true
         menu.findItem(R.id.action_hidden_apps)?.isVisible = false
         return true
     }
@@ -485,21 +572,6 @@ open class ApplicationManagementActivity :
             }
             R.id.action_select_multiple -> {
                 adapter.isSelectionMode = true
-                true
-            }
-            R.id.sort_name -> {
-                item.isChecked = true
-                viewModel.setSortOrder(SortOrder.NAME_ASC)
-                true
-            }
-            R.id.sort_last_installed -> {
-                item.isChecked = true
-                viewModel.setSortOrder(SortOrder.LAST_INSTALLED)
-                true
-            }
-            R.id.sort_last_updated -> {
-                item.isChecked = true
-                viewModel.setSortOrder(SortOrder.LAST_UPDATED)
                 true
             }
             R.id.action_root_compat -> {
@@ -1109,3 +1181,6 @@ class AppListItemDecoration(
 
 /** How far the swipe badge grows once the swipe will trigger. */
 private const val BADGE_POP = 1.15f
+
+/** Menu id of the sort popup's "Reverse order" item; the orders use their index. */
+private const val REVERSE_ITEM = 100

@@ -288,6 +288,10 @@
     <string name="app_management_sort_a_to_z">Name (A–Z)</string>
     <string name="app_management_sort_last_installed">Last installed</string>
     <string name="app_management_sort_last_updated">Last updated</string>
+    <string name="app_management_sort_granted_first">Granted first</string>
+    <string name="app_management_sort_reverse">Reverse order</string>
+    <string name="app_management_sort_chip_cd">Sort: %1$s</string>
+    <string name="app_management_sort_chip_cd_reversed">Sort: %1$s, reversed</string>
 
     <!-- Application management -->
     <string name="app_management_dialog_adb_is_limited_title">The permission of adb is limited</string>

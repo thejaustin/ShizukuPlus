@@ -15,7 +15,8 @@ import kotlinx.coroutines.launch
 import rikka.lifecycle.Resource
 import java.util.concurrent.atomic.AtomicInteger
 
-enum class SortOrder { NAME_ASC, LAST_INSTALLED, LAST_UPDATED }
+/** List order; NAME_ASC keeps its old name so saved choices still load. */
+enum class SortOrder { NAME_ASC, LAST_INSTALLED, LAST_UPDATED, GRANTED_FIRST }
 
 enum class FilterState { ALL, GRANTED, DENIED, HIDDEN }
 
@@ -33,9 +34,12 @@ class AppsViewModel(
         (prefs.getStringSet(KEY_HIDDEN, emptySet()) ?: emptySet()).toMutableSet()
 
     var sortOrder: SortOrder =
-        SortOrder.valueOf(
-            prefs.getString(KEY_SORT, SortOrder.NAME_ASC.name) ?: SortOrder.NAME_ASC.name,
-        )
+        runCatching { SortOrder.valueOf(prefs.getString(KEY_SORT, null) ?: SortOrder.NAME_ASC.name) }
+            .getOrDefault(SortOrder.NAME_ASC)
+        private set
+
+    /** The chosen order runs the other way (Z–A, oldest first, not granted first). */
+    var sortReversed: Boolean = prefs.getBoolean(KEY_SORT_REVERSED, false)
         private set
 
     var filterState: FilterState = FilterState.ALL
@@ -60,9 +64,26 @@ class AppsViewModel(
 
     private val _hiddenCount = MutableLiveData<Int>(hiddenPackages.size)
 
+    /** Picks [order]; picking the current order again reverses it. */
     fun setSortOrder(order: SortOrder) {
-        sortOrder = order
-        prefs.edit().putString(KEY_SORT, order.name).apply()
+        if (order == sortOrder) {
+            sortReversed = !sortReversed
+        } else {
+            sortOrder = order
+            sortReversed = false
+        }
+        prefs
+            .edit()
+            .putString(KEY_SORT, sortOrder.name)
+            .putBoolean(KEY_SORT_REVERSED, sortReversed)
+            .apply()
+        applyFiltersAndSort()
+    }
+
+    fun setSortReversed(reversed: Boolean) {
+        if (reversed == sortReversed) return
+        sortReversed = reversed
+        prefs.edit().putBoolean(KEY_SORT_REVERSED, reversed).apply()
         applyFiltersAndSort()
     }
 
@@ -182,52 +203,51 @@ class AppsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val pm = appContext.packageManager
-                var list =
+                // Looked up once per pass: loadLabel and the binder grant check were repeated for
+                // every comparison of the sort.
+                val labels = HashMap<String, String>(rawPackages.size)
+
+                fun label(pi: PackageInfo): String =
+                    labels.getOrPut(pi.packageName) {
+                        pi.applicationInfo?.loadLabel(pm)?.toString() ?: pi.packageName
+                    }
+                val grants = HashMap<String, Boolean>()
+
+                fun granted(pi: PackageInfo): Boolean =
+                    grants.getOrPut(pi.packageName) {
+                        val appInfo = pi.applicationInfo ?: return@getOrPut false
+                        runCatching { AuthorizationManager.granted(pi.packageName, appInfo.uid) }.getOrDefault(false)
+                    }
+                val filtered =
                     rawPackages.filter { pi ->
                         if (filterState == FilterState.HIDDEN) {
                             if (pi.packageName !in hiddenPackages) return@filter false
                         } else {
                             if (pi.packageName in hiddenPackages) return@filter false
                         }
-
-                        val appInfo = pi.applicationInfo
-                        val label = appInfo?.loadLabel(pm)?.toString() ?: ""
                         val matchesSearch =
                             searchQuery.isBlank() ||
-                                label.contains(searchQuery, ignoreCase = true) ||
+                                label(pi).contains(searchQuery, ignoreCase = true) ||
                                 pi.packageName.contains(searchQuery, ignoreCase = true)
                         val matchesFilter =
                             when (filterState) {
                                 FilterState.ALL, FilterState.HIDDEN -> true
-                                FilterState.GRANTED ->
-                                    appInfo != null &&
-                                        runCatching {
-                                            AuthorizationManager.granted(pi.packageName, appInfo.uid)
-                                        }.getOrDefault(false)
-                                FilterState.DENIED -> {
-                                    val isGranted =
-                                        appInfo != null &&
-                                            runCatching {
-                                                AuthorizationManager.granted(pi.packageName, appInfo.uid)
-                                            }.getOrDefault(false)
-                                    // If it's not granted, it's considered denied/pending in this view
-                                    !isGranted
-                                }
+                                FilterState.GRANTED -> granted(pi)
+                                // Not granted counts as denied/pending in this view.
+                                FilterState.DENIED -> !granted(pi)
                             }
                         matchesSearch && matchesFilter
                     }
-                list =
+                val byName = compareBy<PackageInfo> { label(it).lowercase() }
+                val comparator =
                     when (sortOrder) {
-                        SortOrder.NAME_ASC ->
-                            list.sortedBy {
-                                it.applicationInfo
-                                    ?.loadLabel(pm)
-                                    ?.toString()
-                                    ?.lowercase() ?: it.packageName
-                            }
-                        SortOrder.LAST_INSTALLED -> list.sortedByDescending { it.firstInstallTime }
-                        SortOrder.LAST_UPDATED -> list.sortedByDescending { it.lastUpdateTime }
+                        SortOrder.NAME_ASC -> byName
+                        SortOrder.LAST_INSTALLED -> compareByDescending<PackageInfo> { it.firstInstallTime }
+                        SortOrder.LAST_UPDATED -> compareByDescending<PackageInfo> { it.lastUpdateTime }
+                        // Granted apps first, alphabetical within each group.
+                        SortOrder.GRANTED_FIRST -> compareByDescending<PackageInfo> { granted(it) }.then(byName)
                     }
+                val list = filtered.sortedWith(if (sortReversed) comparator.reversed() else comparator)
                 _packages.postValue(Resource.success(list))
             } catch (e: Throwable) {
                 _packages.postValue(Resource.error(e, null))
@@ -238,5 +258,6 @@ class AppsViewModel(
     companion object {
         private const val KEY_HIDDEN = "hidden_packages"
         private const val KEY_SORT = "app_list_sort_order"
+        private const val KEY_SORT_REVERSED = "app_list_sort_reversed"
     }
 }

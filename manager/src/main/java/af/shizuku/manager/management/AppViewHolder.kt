@@ -707,8 +707,11 @@ class AppViewHolder(
             name.text = appLabel
         }
 
+        af.shizuku.manager.utils.SwitchDesign
+            .applyThumb(switchWidget)
         val appsAdapter = adapter as AppsAdapter
         if (appsAdapter.isSelectionMode()) {
+            setGrantEmphasis(true, animate = false)
             checkbox.visibility = View.VISIBLE
             checkbox.isChecked = appsAdapter.selectedPackages.contains(capturedPackage)
             switchWidget.visibility = View.GONE
@@ -730,6 +733,7 @@ class AppViewHolder(
                         // same position before this continuation ran.
                         if (gen == bindGeneration && adapterPosition != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
                             switchWidget.isChecked = granted
+                            setGrantEmphasis(granted, animate = false)
                             if (!isPlusMissing) switchWidget.isEnabled = true
                         }
                     }
@@ -820,9 +824,33 @@ class AppViewHolder(
                 withContext(Dispatchers.Main) {
                     if (gen == bindGeneration && adapterPosition != androidx.recyclerview.widget.RecyclerView.NO_POSITION) {
                         switchWidget.isChecked = granted
+                        setGrantEmphasis(granted, animate = true)
                     }
                 }
             }
+    }
+
+    /**
+     * Apps without access get the same softened icon as an off setting, so granted apps stand out
+     * when scanning the list; it springs back on grant.
+     */
+    private fun setGrantEmphasis(
+        granted: Boolean,
+        animate: Boolean,
+    ) {
+        val scale = if (granted) 1f else 0.9f
+        val alpha = if (granted) 1f else 0.6f
+        if (!animate) {
+            icon.scaleX = scale
+            icon.scaleY = scale
+            icon.alpha = alpha
+            return
+        }
+        with(af.shizuku.manager.utils.MotionUtils) {
+            icon.springTo(androidx.dynamicanimation.animation.SpringAnimation.SCALE_X, scale, com.google.android.material.R.attr.motionSpringFastSpatial)
+            icon.springTo(androidx.dynamicanimation.animation.SpringAnimation.SCALE_Y, scale, com.google.android.material.R.attr.motionSpringFastSpatial)
+            icon.springTo(androidx.dynamicanimation.animation.SpringAnimation.ALPHA, alpha, com.google.android.material.R.attr.motionSpringFastEffects)
+        }
     }
 
     override fun onRecycle() {

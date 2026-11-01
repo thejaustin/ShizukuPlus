@@ -9,7 +9,6 @@ import af.shizuku.manager.utils.MotionUtils.springTo
 import af.shizuku.manager.utils.springTo
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -78,9 +77,6 @@ open class GrayableIconSwitchPreference
             val switchView = holder.findViewById(R.id.switchWidget) as? MaterialSwitch ?: return
             val frame = switchView.parent as? ViewGroup
             var label = frame?.findViewWithTag<TextView>(STATE_LABEL_TAG)
-            if (switchView.getTag(R.id.tag_switch_default_thumb) == null) {
-                switchView.setTag(R.id.tag_switch_default_thumb, switchView.thumbDrawable ?: NoDrawable)
-            }
             when (design) {
                 DESIGN_ICON_SWITCH -> {
                     switchView.visibility = View.GONE
@@ -114,16 +110,10 @@ open class GrayableIconSwitchPreference
                     switchView.visibility = View.VISIBLE
                     label?.visibility = View.GONE
                     ViewCompat.setAccessibilityDelegate(holder.itemView, null)
-                    switchView.thumbDrawable =
-                        if (design == DESIGN_SHAPE_THUMB) {
-                            shapeThumb(switchView, morph)
-                        } else {
-                            switchView.getTag(R.id.tag_switch_default_thumb) as? Drawable
-                        }
                 }
             }
-            // Standard M3E switch: check / close icon in the thumb.
-            switchView.setThumbIconResource(R.drawable.m3_switch_thumb_icon)
+            af.shizuku.manager.utils.SwitchDesign
+                .applyThumb(switchView, morph?.shapeKey, morph?.offKey)
         }
 
         override fun onClick() {
@@ -171,10 +161,7 @@ open class GrayableIconSwitchPreference
 private const val OFF_ICON_ALPHA = 0.6f
 
 private const val DESIGN_ICON_SWITCH = "icon_switch"
-private const val DESIGN_SHAPE_THUMB = "shape_thumb"
 private const val STATE_LABEL_TAG = "switch_state_label"
-
-private object NoDrawable
 
 private fun updateStateLabel(
     label: TextView,
@@ -201,26 +188,6 @@ private fun animateFill(
         interpolator = af.shizuku.manager.utils.MotionUtils.EMPHASIZED_DECELERATE
         addUpdateListener { morph.fillFraction = it.animatedValue as Float }
         start()
-    }
-}
-
-/**
- * A switch thumb drawn in the icon shapes: the off shape while off, morphing into the on shape
- * as it slides (MaterialSwitch tints it and passes the checked state), and smaller while off like
- * the M3 thumb. The check / close icon still sits on top.
- */
-private fun shapeThumb(
-    switchView: MaterialSwitch,
-    morph: MorphShapeDrawable?,
-): Drawable {
-    val density = switchView.resources.displayMetrics.density
-    val onKey = morph?.shapeKey ?: "cookie"
-    val offKey = morph?.offKey ?: af.shizuku.manager.utils.ExpressiveShapes.CIRCLE
-    return MorphShapeDrawable(MaterialColors.getColor(switchView, MaterialR.attr.colorOnPrimary), onKey, offKey).apply {
-        mode = MorphMode.of(ShizukuSettings.getIconMorphMode())
-        intrinsicSizePx = (24 * density).toInt()
-        shrinkWhenOff = true
-        followsCheckedState = true
     }
 }
 
