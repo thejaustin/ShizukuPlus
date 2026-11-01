@@ -5,6 +5,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ## [Unreleased]
 
 ### 🛠 Fixes
+- **Security: your ADB key stays on the device** — settings backups (Google backup, device transfer and the copy kept for reinstalls, which other apps could read) included the private key your device trusts for ADB. It's no longer backed up; after restoring onto a fresh install, approve the "Allow USB debugging" prompt once.
 - **Security: apps can no longer give themselves Shizuku+ access** — an app could declare one of the Shizuku permission names itself, have Android grant it at install, and be treated as authorized without you ever seeing the request. Shizuku+ now only trusts that permission when Shizuku+, the Compat Hub or stock Shizuku defines it.
 - **Security: root mode asks before granting access** — when started with root, Shizuku+ allowed every app that connected, so any app on a rooted device could get root without asking. Apps now get the same Allow/Deny request as in ADB mode; apps you already allowed keep their access.
 - **In-app updates no longer end in "There was a problem parsing the package"** — the downloaded update is checked before installing. If it's damaged it is downloaded again once; if that fails you get a clear error with a link to GitHub, instead of the system installer failing.

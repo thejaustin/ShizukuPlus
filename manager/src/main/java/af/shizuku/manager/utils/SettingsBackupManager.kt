@@ -17,6 +17,10 @@ object SettingsBackupManager {
     // boundaries. User-facing preference keys (theme, features, API keys) are NOT excluded.
     private val EXCLUDED_KEYS =
         setOf(
+            // The ADB private key adbd trusts (AdbKey's preference). In a backup, or in the
+            // world-readable reinstall copy, it hands out an authorized ADB shell. After a restore
+            // the app makes a new key and asks for authorization once.
+            "adbkey",
             // Remote DB cache
             ShizukuSettings.Keys.KEY_LAST_DB_UPDATE,
             ShizukuSettings.Keys.KEY_REMOTE_DB_JSON,
