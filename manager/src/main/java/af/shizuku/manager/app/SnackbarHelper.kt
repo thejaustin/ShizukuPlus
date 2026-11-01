@@ -23,7 +23,14 @@ import java.lang.ref.WeakReference
  * top of the anchor lifted it twice.
  */
 object SnackbarHelper {
-    private var snackbar: Snackbar? = null
+    // Weak, like [bar]: an indefinite snackbar on a screen that was closed would otherwise keep
+    // that whole activity in memory until something else dismissed it.
+    private var snackbarRef: WeakReference<Snackbar>? = null
+    private var snackbar: Snackbar?
+        get() = snackbarRef?.get()
+        set(value) {
+            snackbarRef = value?.let { WeakReference(it) }
+        }
     private var bar: WeakReference<View>? = null
 
     // Gap between the message and the top of the bar.
