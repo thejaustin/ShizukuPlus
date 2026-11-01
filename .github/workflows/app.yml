@@ -465,13 +465,25 @@ jobs:
           # Matches both the new r{N} format and legacy v{semver}.r{N} tags for continuity.
           PREV_TAG=$(git tag --list --sort=-creatordate | grep -E '^(r[0-9]+|[0-9]+\.[0-9]+\.[0-9]+\.r[0-9]+|v[0-9]+\.[0-9]+\.[0-9]+\.r[0-9]+)$' | grep -v "^${TAG_NAME}$" | head -1)
 
-          # Most recent MAJOR release to spotlight in every release's notes. Bump these two lines
-          # when a new headline release ships (keep MAJOR_DESC to one short clause). For the CURRENT
-          # build the headline major == the era major, so a single callout is correct here. When you
-          # bump this, also re-run scripts/backfill_majors.py (add the new major to its MAJORS list)
-          # so older release pages show BOTH this headline and the major of their own era.
-          MAJOR_RELEASE="v14.0.0.r2664"
-          MAJOR_DESC="Shizuku+ 14 — Material 3 Expressive UI overhaul (animated headers, One UI 9 style, tonal theming), full compileSdk 37 / AGP 9.4 / Gradle 9.7 upgrade, Android 17 QPR1 ADB fix, 100% Ukrainian + Brazilian Portuguese localizations, Watchdog WorkManager revival, SU bridge real framework operations, and 30+ bug fixes across server, manager, and Plus APIs."
+          # Most recent MAJOR release: the newest release (this one included) that changed what the
+          # app does, i.e. whose commits include feat: changes. Fix-only and maintenance builds
+          # don't take the spot, so it moves with every functional release. MAJOR_DESC lists that
+          # release's features. It used to be hard-coded and went stale for months.
+          RELEASE_TAGS=$(git tag --list --sort=-creatordate | grep -E '^(r[0-9]+|[0-9]+\.[0-9]+\.[0-9]+\.r[0-9]+|v[0-9]+\.[0-9]+\.[0-9]+\.r[0-9]+)$' | head -60)
+          MAJOR_RELEASE=""
+          MAJOR_DESC=""
+          PREV_T=""
+          for t in $RELEASE_TAGS; do
+            if [ -n "$PREV_T" ]; then
+              FEATS=$(git log "${t}..${PREV_T}" --no-merges --pretty=format:'%s' | grep -E '^feat(\([^)]+\))?: ' || true)
+              if [ -n "$FEATS" ]; then
+                MAJOR_RELEASE="$PREV_T"
+                MAJOR_DESC=$(printf '%s\n' "$FEATS" | sed -E 's/^feat(\([^)]+\))?: //' | head -4 | paste -sd ';' - | sed 's/;/; /g')
+                break
+              fi
+            fi
+            PREV_T="$t"
+          done
 
           # Most recent CRITICAL FIX to spotlight — a distinct, lower tier from MAJOR_RELEASE
           # above: not new capability, but a regression severe enough that users on the
@@ -549,8 +561,13 @@ jobs:
             echo "## 📦 Recent Releases"
             echo
             if [ -n "$MAJOR_RELEASE" ]; then
-              echo "> 🚀 **Most recent major release — [${MAJOR_RELEASE}](https://github.com/${{ github.repository }}/releases/tag/${MAJOR_RELEASE})**"
-              echo "> ${MAJOR_DESC}"
+              if [ "$MAJOR_RELEASE" = "$TAG_NAME" ]; then
+                echo "> 🚀 **This is a major release** — it changes what the app does."
+              else
+                echo "> 🚀 **Most recent major release — [${MAJOR_RELEASE}](https://github.com/${{ github.repository }}/releases/tag/${MAJOR_RELEASE})**"
+              fi
+              if [ -n "$MAJOR_DESC" ]; then echo "> ${MAJOR_DESC}"; fi
+              echo "> [Full changelog](https://github.com/${{ github.repository }}/blob/master/CHANGELOG.md)"
               echo
             fi
             if [ -n "$CRITICAL_RELEASE" ]; then
