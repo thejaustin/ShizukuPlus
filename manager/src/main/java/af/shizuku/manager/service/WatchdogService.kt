@@ -37,6 +37,7 @@ class WatchdogService : Service() {
     private var job: Job? = null
     private var pendingRecoveryJob: Job? = null
     private var stabilityJob: Job? = null
+    private var cooldownRetryJob: Job? = null
 
     // Only true when the user explicitly taps "Turn off" from the notification — keeps
     // onDestroy() from clearing the watchdog setting when the service self-stops due to a
@@ -197,6 +198,24 @@ class WatchdogService : Service() {
                             Timber.tag(TAG).d("Watchdog: restart #$consecutiveCrashes (cooldown was ${cooldown}ms)")
                         } else {
                             Timber.tag(TAG).d("Watchdog: restart suppressed (cooldown active, ${now - lastRestartMs}ms / ${cooldown}ms)")
+                            // Held back, not given up: try again once the cooldown has passed, and
+                            // say it's stopped meanwhile. Nothing used to follow, so a server that
+                            // died again inside the window stayed down without a word.
+                            reportCrash(stopped = true)
+                            cooldownRetryJob?.cancel()
+                            cooldownRetryJob =
+                                scope.launch {
+                                    delay(cooldown - (now - lastRestartMs) + RESTART_GRACE_MS)
+                                    if (ShizukuStateMachine.update() != ShizukuStateMachine.State.RUNNING &&
+                                        !af.shizuku.manager.utils.UserStopFlag
+                                            .isSet() &&
+                                        ShizukuSettings.isWatchdogAutoRestartEnabled()
+                                    ) {
+                                        lastRestartMs = System.currentTimeMillis()
+                                        consecutiveCrashes++
+                                        ShizukuReceiverStarter.start(applicationContext)
+                                    }
+                                }
                         }
                     } else if (state == ShizukuStateMachine.State.RUNNING) {
                         // Not pendingRecoveryJob: RUNNING is exactly what the recovery check
@@ -236,6 +255,7 @@ class WatchdogService : Service() {
 
     override fun onDestroy() {
         stabilityJob?.cancel()
+        cooldownRetryJob?.cancel()
         pendingRecoveryJob?.cancel()
         job?.cancel()
         scope.cancel()

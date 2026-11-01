@@ -681,7 +681,7 @@
         <activity
             android:name="af.shizuku.manager.automation.locale.LocaleActionEditActivity"
             android:exported="true"
-            android:icon="@drawable/ic_notification_icon"
+            android:icon="@mipmap/ic_launcher"
             android:label="@string/automation_plugin_action_label"
             android:theme="@style/Theme.App.DialogHost">
             <intent-filter>
@@ -704,7 +704,7 @@
         <activity
             android:name="af.shizuku.manager.automation.locale.LocaleConditionEditActivity"
             android:exported="true"
-            android:icon="@drawable/ic_notification_icon"
+            android:icon="@mipmap/ic_launcher"
             android:label="@string/automation_plugin_condition_label"
             android:theme="@style/Theme.App.DialogHost">
             <intent-filter>

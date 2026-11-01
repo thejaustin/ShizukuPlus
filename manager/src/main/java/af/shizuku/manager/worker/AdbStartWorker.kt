@@ -428,7 +428,7 @@ class AdbStartWorker(
             context,
             ShizukuIssues.Issue(
                 ShizukuIssues.KEY_PORT_DISCOVERY,
-                ShizukuIssues.Severity.PROBLEM,
+                ShizukuIssues.Severity.URGENT,
                 context.getString(R.string.wadb_mdns_blocked_title),
                 context.getString(R.string.wadb_mdns_blocked_text),
                 listOf(ShizukuIssues.Action(context.getString(R.string.issue_turn_on_tcp_mode), enableTcp)),
@@ -452,9 +452,11 @@ class AdbStartWorker(
             )
         ShizukuIssues.report(
             context,
+            // Urgent: Shizuku+ isn't running and won't be until this is dealt with, which the
+            // default "when it stops or needs you" level is for. As a PROBLEM it posted nothing.
             ShizukuIssues.Issue(
                 ShizukuIssues.KEY_START_FAILED,
-                ShizukuIssues.Severity.PROBLEM,
+                ShizukuIssues.Severity.URGENT,
                 context.getString(R.string.issue_start_failed_title),
                 e.message?.take(120)?.let { "$shortMsg\n\n$it" } ?: shortMsg,
                 listOf(ShizukuIssues.retryAction(context), ShizukuIssues.openDoctorAction(context)),

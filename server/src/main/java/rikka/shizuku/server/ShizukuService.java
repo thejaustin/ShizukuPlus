@@ -559,6 +559,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             ServerConstants.PLUS_APPLICATION_ID, ServerConstants.DROPIN_APPLICATION_ID
     };
     private static final long TRUSTED_PERMISSION_TTL_MS = 10_000;
+    private static final long UNTRUSTED_PERMISSION_TTL_MS = 1_000;
     private final java.util.concurrent.ConcurrentHashMap<String, long[]> trustedPermissionCache =
             new java.util.concurrent.ConcurrentHashMap<>();
 
@@ -569,7 +570,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private boolean isTrustedPermission(String name) {
         long now = android.os.SystemClock.elapsedRealtime();
         long[] cached = trustedPermissionCache.get(name);
-        if (cached != null && now - cached[1] < TRUSTED_PERMISSION_TTL_MS) return cached[0] == 1;
+        // "Not trusted" is kept only briefly: a lookup during a package update can miss the
+        // definer, and a long negative cache would deny every legitimate client meanwhile.
+        if (cached != null && now - cached[1] < (cached[0] == 1 ? TRUSTED_PERMISSION_TTL_MS : UNTRUSTED_PERMISSION_TTL_MS))
+            return cached[0] == 1;
         boolean trusted = false;
         for (String pkg : PERMISSION_DEFINERS) {
             try {

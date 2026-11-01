@@ -32,6 +32,7 @@ class AdbPairingService : Service() {
     companion object {
         const val NOTIFICATION_CHANNEL = "adb_pairing"
         const val NOTIFICATION_ID = 1
+        private const val RESULT_NOTIFICATION_ID = 3
 
         private const val tag = "AdbPairingService"
 
@@ -136,8 +137,10 @@ class AdbPairingService : Service() {
                         setAllowBubbles(false)
                     },
                 )
+                // Its own id: the pairing service cancels NOTIFICATION_ID when it stops, which
+                // removed this result as soon as it appeared.
                 nm.notify(
-                    NOTIFICATION_ID,
+                    RESULT_NOTIFICATION_ID,
                     Notification
                         .Builder(context, NOTIFICATION_CHANNEL)
                         .setColor(context.getColor(R.color.notification))

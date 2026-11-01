@@ -363,8 +363,12 @@ class MorphShapeDrawable(
     var followsCheckedState: Boolean = false
     private var lastChecked: Boolean? = null
 
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color }
+    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
+
+    // The fill colour: the constructor colour, or the tint for the current state. Kept apart from
+    // the paint, whose alpha also carries setAlpha() and fillFraction.
+    private var currentColor: Int = color
     private val path = Path()
     private var baseAlpha = 255
     private var tint: android.content.res.ColorStateList? = null
@@ -387,6 +391,13 @@ class MorphShapeDrawable(
     override fun draw(canvas: Canvas) {
         val b = bounds
         if (b.isEmpty) return
+        // A switch thumb whose first state equals the default never gets onStateChange, so take
+        // the checked state from the current state set on first draw.
+        if (followsCheckedState && lastChecked == null) {
+            val checked = state.contains(android.R.attr.state_checked)
+            lastChecked = checked
+            progress = if (checked) 1f else 0f
+        }
         val w = b.width().toFloat()
         val h = b.height().toFloat()
         val p = progress.coerceAtMost(1f)
@@ -404,7 +415,8 @@ class MorphShapeDrawable(
         if (scale != 1f) canvas.scale(scale, scale, w / 2f, h / 2f)
         if (mode == MorphMode.SPIN && moving) canvas.rotate(ExpressiveShapes.spinDegrees(offKey, shapeKey) * p, w / 2f, h / 2f)
         if (fillFraction > 0f) {
-            paint.alpha = (baseAlpha * fillFraction).toInt()
+            paint.color = currentColor
+            paint.alpha = (android.graphics.Color.alpha(currentColor) * (baseAlpha / 255f) * fillFraction).toInt()
             canvas.drawPath(path, paint)
         }
         if (fillFraction < 1f && strokeWidthPx > 0f) {
@@ -466,8 +478,8 @@ class MorphShapeDrawable(
     private fun applyTint(state: IntArray): Boolean {
         val t = tint ?: return false
         val c = t.getColorForState(state, color)
-        if (c == paint.color) return false
-        paint.color = c
+        if (c == currentColor) return false
+        currentColor = c
         invalidateSelf()
         return true
     }
@@ -489,6 +501,8 @@ class MorphShapeDrawable(
                     it.shrinkWhenOff = shrinkWhenOff
                     it.intrinsicSizePx = intrinsicSizePx
                     it.followsCheckedState = followsCheckedState
+                    it.alpha = baseAlpha
+                    it.setTintList(tint)
                 }
 
             override fun getChangingConfigurations(): Int = 0
