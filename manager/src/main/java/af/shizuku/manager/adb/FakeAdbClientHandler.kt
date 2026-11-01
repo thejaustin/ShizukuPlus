@@ -20,6 +20,10 @@ class FakeAdbClientHandler(
         private const val PREFS_NAME = "fake_adb_keys"
         private const val MAX_ADB_PAYLOAD_SIZE = 16 * 1024 * 1024 // 16MB, well above real adb's ~1MB max payload
 
+        // Until it's authenticated a client must keep talking: a silent socket is dropped.
+        private const val AUTH_READ_TIMEOUT_MS = 30_000
+        private const val MAX_SIGNATURE_ATTEMPTS = 10
+
         // Multiplexing
         private val localIdCounter = AtomicInteger(1)
     }
@@ -33,6 +37,7 @@ class FakeAdbClientHandler(
     private val activeProcesses = ConcurrentHashMap<Int, ShizukuRemoteProcess>()
 
     fun loop() {
+        socket.soTimeout = AUTH_READ_TIMEOUT_MS
         // Wait for CNXN
         var msg = readMessage()
         if (msg.command != AdbProtocol.A_CNXN) {
@@ -46,6 +51,7 @@ class FakeAdbClientHandler(
         writeMessage(AdbMessage(AdbProtocol.A_AUTH, AdbProtocol.ADB_AUTH_TOKEN, 0, token))
 
         var authenticated = false
+        var signatureAttempts = 0
         while (!authenticated) {
             msg = readMessage()
             if (msg.command == AdbProtocol.A_AUTH) {
@@ -55,6 +61,10 @@ class FakeAdbClientHandler(
                             Timber.tag(TAG).w("AUTH_SIGNATURE with null data — ignoring")
                             continue
                         }
+                    if (++signatureAttempts > MAX_SIGNATURE_ATTEMPTS) {
+                        Timber.tag(TAG).w("Too many signature attempts; closing")
+                        return
+                    }
                     if (verifySignature(token, signature)) {
                         authenticated = true
                         writeMessage(AdbMessage(AdbProtocol.A_CNXN, AdbProtocol.A_VERSION, AdbProtocol.A_MAXDATA, "device::"))
@@ -70,22 +80,18 @@ class FakeAdbClientHandler(
                             continue
                         }
                     val pubKeyStr = String(rawKeyData).trimEnd('\u0000')
-                    Timber.tag(TAG).i("Received public key: $pubKeyStr")
 
-                    if (isKeyAuthorized(pubKeyStr)) {
+                    // Always ask. A public key isn't a secret, so being sent one that's already
+                    // trusted proves nothing; a client holding the private key signs the token
+                    // above instead and never reaches this branch.
+                    val allowed = promptUserForPairingBlocking(pubKeyStr)
+                    if (allowed) {
+                        authorizeKey(pubKeyStr)
                         authenticated = true
                         writeMessage(AdbMessage(AdbProtocol.A_CNXN, AdbProtocol.A_VERSION, AdbProtocol.A_MAXDATA, "device::"))
                     } else {
-                        // Prompt user
-                        val allowed = promptUserForPairingBlocking(pubKeyStr)
-                        if (allowed) {
-                            authorizeKey(pubKeyStr)
-                            authenticated = true
-                            writeMessage(AdbMessage(AdbProtocol.A_CNXN, AdbProtocol.A_VERSION, AdbProtocol.A_MAXDATA, "device::"))
-                        } else {
-                            Timber.tag(TAG).w("User denied pairing for key: $pubKeyStr")
-                            return
-                        }
+                        Timber.tag(TAG).w("User denied pairing for key ${FakeAdbPairingActivity.fingerprint(pubKeyStr)}")
+                        return
                     }
                 }
             } else {
@@ -95,6 +101,8 @@ class FakeAdbClientHandler(
         }
 
         Timber.tag(TAG).i("Client authenticated. Entering multiplex loop.")
+        // Shell sessions can sit idle; only the handshake is time-limited.
+        socket.soTimeout = 0
 
         while (true) {
             msg = readMessage()
@@ -201,36 +209,12 @@ class FakeAdbClientHandler(
         val allKeys = prefs.getStringSet("keys", emptySet()) ?: emptySet()
         for (keyStr in allKeys) {
             try {
-                val pubKey = parseAdbPublicKey(keyStr)
-
-                // ADB's signature is a raw RSA encryption of a PKCS#1 padded token.
-                // It does NOT hash the token before signing. It treats the token as the hash.
-                val cipher = javax.crypto.Cipher.getInstance("RSA/ECB/NoPadding")
-                cipher.init(javax.crypto.Cipher.DECRYPT_MODE, pubKey)
-                val decrypted = cipher.doFinal(signature)
-
-                // Check if the decrypted payload ends with our exact token
-                var match = true
-                val offset = decrypted.size - token.size
-                if (offset < 0) continue
-
-                for (i in token.indices) {
-                    if (decrypted[offset + i] != token[i]) {
-                        match = false
-                        break
-                    }
-                }
-                if (match) return true
+                if (verifyAdbTokenSignature(parseAdbPublicKey(keyStr), token, signature)) return true
             } catch (e: Exception) {
                 Timber.tag(TAG).e(e, "Error verifying signature")
             }
         }
         return false
-    }
-
-    private fun isKeyAuthorized(pubKeyStr: String): Boolean {
-        val allKeys = prefs.getStringSet("keys", emptySet()) ?: emptySet()
-        return allKeys.contains(pubKeyStr)
     }
 
     private fun authorizeKey(pubKeyStr: String) {
@@ -281,3 +265,23 @@ class FakeAdbClientHandler(
         }
     }
 }
+
+// adb signs the token as if it were a SHA-1 digest: PKCS#1 v1.5 over DigestInfo(SHA-1) || token
+// (the same block AdbKey.sign builds by hand).
+private val SHA1_DIGEST_INFO_PREFIX =
+    byteArrayOf(0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0e, 0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14)
+
+/** Checks the whole PKCS#1 block (padding and DigestInfo), not just that it ends with the token. */
+internal fun verifyAdbTokenSignature(
+    publicKey: java.security.PublicKey,
+    token: ByteArray,
+    signature: ByteArray,
+): Boolean =
+    runCatching {
+        java.security.Signature.getInstance("NONEwithRSA").run {
+            initVerify(publicKey)
+            update(SHA1_DIGEST_INFO_PREFIX)
+            update(token)
+            verify(signature)
+        }
+    }.getOrDefault(false)
