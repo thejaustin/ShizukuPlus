@@ -47,6 +47,9 @@ Get the latest release from [GitHub Releases](https://github.com/thejaustin/Shiz
 *   **Customizable Gestures**: Swipe left, swipe right, and long-press actions, configurable per app.
 *   **In-App Changelogs**: See what's new after an update without leaving the app.
 *   **Bulk Management**: Multi-select apps to grant/revoke permissions or hide them in one tap.
+*   **Per-app API scopes**: Limit what each authorized app can do (shell, package manager, activity manager, app ops, system settings). An app with a scope off can't get around it with an interactive shell or its own background services.
+*   **Quick safety check** (optional, off by default): When an app asks for access, see where it was installed from, when, and its signing certificate. Add your own VirusTotal or Pithus key to also see whether scanners flag that exact APK; only its hash is looked up.
+*   **Safe by default for other apps**: Shizuku+'s riskier APIs for other apps (other apps' private data, SMS, contacts, location, screenshots, input, reboot) stay off until you turn them on in **Developer options → Unrestricted access**.
 *   **App list sorting up front**: A sort chip leads the filter row: name, last installed, last updated or granted first, and tap again to reverse.
 *   **In-App Knowledgebase**: Clean, offline-first Material 3 peek dialogs with rich guides, copyable command snippets, and direct action buttons without navigating away.
 *   **Activity Log with Morphe Timeline**: Visual node rails with dynamic pulsing status halos, repetitive activity occurrence grouping, and multi-criteria sorting.
@@ -112,7 +115,7 @@ Alternatively, install the **drop-in** build, which registers as `moe.shizuku.pr
 
 ## 🔒 Privacy & Backups
 
-Nothing leaves your device except update checks and, only if you opt in, crash reports with addresses and other apps' commands stripped. Backups never carry your ADB key or the list of apps you allowed, and the risky APIs for other apps are off until you turn them on. The details, with links to the code, are in [docs/PRIVACY.md](docs/PRIVACY.md).
+Nothing leaves your device except update checks, a public app-compatibility list from this repo and, only if you opt in, crash reports (with addresses and other apps' commands stripped) and the safety check's VirusTotal or Pithus hash lookups. Backups never carry your ADB key or the list of apps you allowed, and the risky APIs for other apps are off until you turn them on. The details, with links to the code, are in [docs/PRIVACY.md](docs/PRIVACY.md).
 
 ## ☑️ Requirements
 

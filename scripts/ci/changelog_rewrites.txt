@@ -1,0 +1,23 @@
+# CHANGELOG entry titles that were reworded, not added (2026-11-01 cleanup).
+# whats_new.py skips these so the next release doesn't list them as new.
+Per-app API scopes
+Select several apps at once
+Helpful recommendations
+Notification master switch
+Lock the Home screen layout
+No false "dropped unexpectedly"
+No crash alerts for a normal Wi-Fi disconnect
+Old failure notifications clear themselves
+Startup and Watchdog scripts run reliably
+Settings no longer crash on Android 15 / One UI 7
+The launcher icon picker no longer crashes
+Quieter Activity Log
+Smoother screen transitions
+Activity Log and Authorized apps animate
+Springier touch feedback
+Scrolling content no longer shows through collapsing headers
+Centered Settings titles in One UI and one-handed modes
+Bolder, better-sized headers
+Less cut-off text
+Settings header icons follow your icon style
+Cloud app database updates moved

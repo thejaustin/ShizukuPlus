@@ -4,7 +4,7 @@
 ShizukuPlus enables root-only applications to function **without permanent root access** (no Magisk, KernelSU, or bootloader unlocking required).
 
 ### Storage Bridge vs. SU Bridge
-- **Storage Bridge**: Grants privileged file read/write access to restricted app directories (like `/Android/data` on Android 14–17 / One UI 8) via Android Document Provider IPC. It does **not** simulate an `su` binary.
+- **Storage Bridge**: Gives authorized apps fast file access to shared storage and read-only access to installed APKs. Other apps' private data (`/data/data`, `/Android/data`, `/Android/obb`) is off by default; turn on **Developer options → Unrestricted app data access** for backup tools like NeoBackup. It does **not** simulate an `su` binary.
 - **SU Bridge**: Creates a lightweight, standards-compliant `su` executable wrapper in `/data/local/tmp` that intercepts `su -c` and routes execution through the Shizuku server (`uid 2000`).
 
 ### Quick Setup for Root Apps (e.g. NeoBackup, AdAway, Swift Backup)

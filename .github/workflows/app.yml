@@ -545,11 +545,22 @@ jobs:
               OTHER=$(printf '%s\n' "$RAW_COMMITS" | grep -vE "^- (feat|fix)" | strip_prefix || true)
             fi
 
+            # Lead with what changed for users: the CHANGELOG entries this release added. The
+            # commit list stays for the curious, folded away, or in front when there are no entries.
+            WHATS_NEW=$(python3 -I scripts/ci/whats_new.py "$PREV_TAG" HEAD 2>/dev/null || true)
+            if [ -n "$WHATS_NEW" ]; then
+              echo "## What's new"
+              echo
+              echo "$WHATS_NEW"
+              echo "<details><summary>All commits in this release</summary>"
+              echo
+            fi
             if [ -n "$SECURITY" ]; then echo "### Security"; echo "$SECURITY"; echo; fi
             if [ -n "$BREAKING" ]; then echo "### Breaking"; echo "$BREAKING"; echo; fi
             if [ -n "$ADDED" ]; then echo "### Added"; echo "$ADDED"; echo; fi
             if [ -n "$FIXED" ]; then echo "### Fixed"; echo "$FIXED"; echo; fi
             if [ -n "$OTHER" ]; then echo "### Other"; echo "$OTHER"; echo; fi
+            if [ -n "$WHATS_NEW" ]; then echo "</details>"; echo; fi
 
             # Surface how many distinct GitHub issues this release touches. Promoting a
             # release to MAJOR_RELEASE (see scripts/backfill_majors.py) stays a deliberate,
@@ -585,8 +596,15 @@ jobs:
             fi
             echo "| Release | Highlight |"
             echo "|:--|:--|"
-            for t in $(git tag --list --sort=-creatordate | grep -E '^(r[0-9]+|[0-9]+\.[0-9]+\.[0-9]+\.r[0-9]+|v[0-9]+\.[0-9]+\.[0-9]+\.r[0-9]+)$' | head -10); do
-              SUBJ=$(git log -1 --pretty=%s "$t" 2>/dev/null | sed 's/|/\\|/g')
+            # Highlight: the release's first CHANGELOG entry, else its last commit subject. This
+            # release's tag isn't created yet, so HEAD stands in for it.
+            RELEASE_TAGS=$(git tag --list --sort=-creatordate | grep -E '^(r[0-9]+|[0-9]+\.[0-9]+\.[0-9]+\.r[0-9]+|v[0-9]+\.[0-9]+\.[0-9]+\.r[0-9]+)$' | head -11)
+            for t in $(printf '%s\n' "$RELEASE_TAGS" | head -10); do
+              PREV_OF_T=$(printf '%s\n' "$RELEASE_TAGS" | grep -A1 -xF "$t" | sed -n 2p)
+              REF_T="$t"; git rev-parse -q --verify "refs/tags/$t" >/dev/null || REF_T=HEAD
+              SUBJ=$( { [ -n "$PREV_OF_T" ] && python3 -I scripts/ci/whats_new.py "$PREV_OF_T" "$REF_T" --title 2>/dev/null; } || true)
+              [ -z "$SUBJ" ] && SUBJ=$(git log -1 --pretty=%s "$REF_T" 2>/dev/null)
+              SUBJ=$(printf '%s' "$SUBJ" | sed 's/|/\\|/g')
               MARK=""
               if [ "$t" = "$MAJOR_RELEASE" ]; then MARK=" 🚀 **major**"; fi
               if [ "$t" = "$CRITICAL_RELEASE" ]; then MARK="${MARK} ⚠️ **critical fix**"; fi
