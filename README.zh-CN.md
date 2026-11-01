@@ -10,7 +10,7 @@ Shizuku 让普通应用可以借助通过 adb 或 root 启动的特权进程，�
 
 [![Stars](https://img.shields.io/github/stars/thejaustin/ShizukuPlus?style=for-the-badge&color=bfb330&labelColor=807820)](https://github.com/thejaustin/ShizukuPlus/stargazers)
 [![Downloads](https://img.shields.io/github/downloads/thejaustin/ShizukuPlus/total?style=for-the-badge&color=bf7830&labelColor=805020)](https://github.com/thejaustin/ShizukuPlus/releases)
-[![Latest Release](https://img.shields.io/github/v/release/thejaustin/ShizukuPlus?style=for-the-badge&color=3060bf&labelColor=204080&label=Latest)](https://github.com/thejaustin/ShizukuPlus/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/thejaustin/ShizukuPlus?include_prereleases&sort=date&style=for-the-badge&color=3060bf&labelColor=204080&label=Latest)](https://github.com/thejaustin/ShizukuPlus/releases)
 
 **🌐 语言：** [English](README.md) · **简体中文**
 
