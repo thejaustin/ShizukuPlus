@@ -775,10 +775,7 @@
     <string name="settings_diagnostics_enabled">설정 진단</string>
     <string name="settings_diagnostics_enabled_summary">충돌과 이상을 찾기 위해 구성을 선제적으로 검사합니다</string>
     <!-- Verified install preferences (settings_app_management.xml) -->
-    <string name="settings_verify_apk_local_title">로컬 서명 일치</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid 인덱스</string>
-    <string name="settings_verify_apk_virustotal_title">VirusTotal 스캔</string>
-    <string name="settings_verify_apk_pithus_title">Pithus 위협 인텔리전스</string>
     <!-- Custom accent color preference (settings_personalization.xml) -->
     <string name="settings_custom_accent_title">사용자 지정 강조 색상</string>
     <!-- AI Bridge feature preference (settings_shizuku_plus.xml) -->
@@ -787,7 +784,6 @@
     <string name="settings_behavior_category_startup">시작 및 복구</string>
     <string name="settings_advanced_category_diagnostics">진단</string>
     <string name="settings_advanced_category_adb_tools">ADB 도구</string>
-    <string name="settings_app_management_category_verified_install">확인된 설치</string>
     <string name="settings_personalization_category_color_theme">색상 및 테마</string>
     <string name="settings_personalization_category_shape_style">모양 및 아이콘 스타일</string>
     <string name="settings_personalization_category_home_screen">홈 화면</string>

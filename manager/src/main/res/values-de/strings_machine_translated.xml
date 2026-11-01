@@ -527,15 +527,11 @@
     <string name="activity_log_type_other">Ereignis</string>
     <string name="settings_diagnostics_enabled">Einstellungsdiagnose</string>
     <string name="settings_diagnostics_enabled_summary">Konfigurationen proaktiv auf Konflikte und Auffälligkeiten prüfen</string>
-    <string name="settings_verify_apk_local_title">Lokaler Signaturabgleich</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid-/IzzyOnDroid-Index</string>
-    <string name="settings_verify_apk_virustotal_title">VirusTotal-Scan</string>
-    <string name="settings_verify_apk_pithus_title">Pithus Threat Intel</string>
     <string name="settings_custom_accent_title">Benutzerdefinierte Akzentfarbe</string>
     <string name="settings_behavior_category_startup">Start &amp; Wiederherstellung</string>
     <string name="settings_advanced_category_diagnostics">Diagnose</string>
     <string name="settings_advanced_category_adb_tools">ADB-Tools</string>
-    <string name="settings_app_management_category_verified_install">Verifizierte Installation</string>
     <string name="settings_personalization_category_color_theme">Farbe &amp; Design</string>
     <string name="settings_personalization_category_shape_style">Form- &amp; Symbolstil</string>
     <string name="settings_personalization_category_home_screen">Startbildschirm</string>
@@ -1315,11 +1311,8 @@
     <string name="doctor_adaptive_self_heal_title">Adaptive Selbstreparatur im Hintergrund</string>
     <string name="doctor_adaptive_self_heal_desc">Automatisch Zustandsprüfungen ausführen und Dienstausfälle oder Berechtigungsprobleme im Hintergrund beheben</string>
     <string name="stock_shizuku_restarting">Wird neu gestartet…</string>
-    <string name="settings_verify_apk_local_badge">Offline-Zertifikat</string>
     <string name="home_all_cards_hidden_description">Alle anderen Karten sind ausgeblendet</string>
     <string name="settings_verify_apk_fdroid_badge">F-Droid-Metadaten</string>
-    <string name="settings_verify_apk_virustotal_badge">70+ Cloud-Scanner</string>
-    <string name="settings_verify_apk_pithus_badge">Verhaltensanalyse</string>
     <string name="settings_verify_engines_posture">%1$d von %2$d Sicherheits-Engines aktiv</string>
     <string name="settings_verify_key_required_hint">Schlüssel erforderlich · Zum Festlegen tippen</string>
     <string name="settings_verify_key_saved_hint">Schlüssel aktiv · Zum Bearbeiten gedrückt halten</string>

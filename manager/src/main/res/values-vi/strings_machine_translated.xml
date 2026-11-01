@@ -527,15 +527,11 @@
     <string name="activity_log_type_other">Sự kiện</string>
     <string name="settings_diagnostics_enabled">Chẩn đoán cài đặt</string>
     <string name="settings_diagnostics_enabled_summary">Chủ động quét cấu hình để tìm xung đột và bất thường</string>
-    <string name="settings_verify_apk_local_title">Đối chiếu chữ ký cục bộ</string>
     <string name="settings_verify_apk_fdroid_title">Chỉ mục F-Droid / IzzyOnDroid</string>
-    <string name="settings_verify_apk_virustotal_title">Quét VirusTotal</string>
-    <string name="settings_verify_apk_pithus_title">Tình báo mối đe dọa Pithus</string>
     <string name="settings_custom_accent_title">Màu nhấn tùy chỉnh</string>
     <string name="settings_behavior_category_startup">Khởi động &amp; Phục hồi</string>
     <string name="settings_advanced_category_diagnostics">Chẩn đoán</string>
     <string name="settings_advanced_category_adb_tools">Công cụ ADB</string>
-    <string name="settings_app_management_category_verified_install">Cài đặt đã xác minh</string>
     <string name="settings_personalization_category_color_theme">Màu sắc &amp; Chủ đề</string>
     <string name="settings_personalization_category_shape_style">Kiểu hình dạng &amp; biểu tượng</string>
     <string name="settings_personalization_category_home_screen">Màn hình chính</string>

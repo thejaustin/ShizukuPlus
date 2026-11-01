@@ -527,15 +527,11 @@
     <string name="activity_log_type_other">Peristiwa</string>
     <string name="settings_diagnostics_enabled">Diagnostik Pengaturan</string>
     <string name="settings_diagnostics_enabled_summary">Pindai konfigurasi secara proaktif untuk mencari konflik dan anomali</string>
-    <string name="settings_verify_apk_local_title">Pencocokan Tanda Tangan Lokal</string>
     <string name="settings_verify_apk_fdroid_title">Indeks F-Droid / IzzyOnDroid</string>
-    <string name="settings_verify_apk_virustotal_title">Pemindaian VirusTotal</string>
-    <string name="settings_verify_apk_pithus_title">Threat Intel Pithus</string>
     <string name="settings_custom_accent_title">Warna Aksen Kustom</string>
     <string name="settings_behavior_category_startup">Startup &amp; Pemulihan</string>
     <string name="settings_advanced_category_diagnostics">Diagnostik</string>
     <string name="settings_advanced_category_adb_tools">Alat ADB</string>
-    <string name="settings_app_management_category_verified_install">Instalasi Terverifikasi</string>
     <string name="settings_personalization_category_color_theme">Warna &amp; Tema</string>
     <string name="settings_personalization_category_shape_style">Gaya Bentuk &amp; Ikon</string>
     <string name="settings_personalization_category_home_screen">Layar Utama</string>

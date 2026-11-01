@@ -527,15 +527,11 @@
     <string name="activity_log_type_other">Evento</string>
     <string name="settings_diagnostics_enabled">Diagnostica impostazioni</string>
     <string name="settings_diagnostics_enabled_summary">Analizza in modo proattivo le configurazioni alla ricerca di conflitti e anomalie</string>
-    <string name="settings_verify_apk_local_title">Corrispondenza firma locale</string>
     <string name="settings_verify_apk_fdroid_title">Indice F-Droid / IzzyOnDroid</string>
-    <string name="settings_verify_apk_virustotal_title">Scansione VirusTotal</string>
-    <string name="settings_verify_apk_pithus_title">Threat Intel Pithus</string>
     <string name="settings_custom_accent_title">Colore di accento personalizzato</string>
     <string name="settings_behavior_category_startup">Avvio &amp; ripristino</string>
     <string name="settings_advanced_category_diagnostics">Diagnostica</string>
     <string name="settings_advanced_category_adb_tools">Strumenti ADB</string>
-    <string name="settings_app_management_category_verified_install">Installazione verificata</string>
     <string name="settings_personalization_category_color_theme">Colore &amp; tema</string>
     <string name="settings_personalization_category_shape_style">Forma &amp; stile icone</string>
     <string name="settings_personalization_category_home_screen">Schermata Home</string>

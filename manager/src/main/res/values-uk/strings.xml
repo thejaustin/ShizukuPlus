@@ -709,7 +709,6 @@
     <!-- Settings category titles -->
     <string name="settings_advanced_category_diagnostics">Діагностика</string>
     <string name="settings_advanced_category_adb_tools">Інструменти ADB</string>
-    <string name="settings_app_management_category_verified_install">Перевірене встановлення</string>
     <string name="settings_personalization_category_color_theme">Колір та тема</string>
     <string name="settings_personalization_category_shape_style">Форма та стиль іконок</string>
     <string name="settings_personalization_category_home_screen">Головний екран</string>
@@ -1254,10 +1253,7 @@
     <string name="settings_bootloader_flash_ota_summary">Прошити OTA-завантаження до неактивного слота без root або кастомного відновлення</string>
 
     <!-- Settings: APK verification -->
-    <string name="settings_verify_apk_local_title">Локальне зіставлення підписів</string>
     <string name="settings_verify_apk_fdroid_title">Індекс F-Droid / IzzyOnDroid</string>
-    <string name="settings_verify_apk_virustotal_title">Сканування VirusTotal</string>
-    <string name="settings_verify_apk_pithus_title">Розвідка загроз Pithus</string>
 
     <!-- SU path validation -->
     <string name="su_path_invalid">Неприпустимий шлях. Має бути абсолютним шляхом (починається з /), що містить лише літери, цифри, слеші, підкреслення, крапки та дефіси.</string>

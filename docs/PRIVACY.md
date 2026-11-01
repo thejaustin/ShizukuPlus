@@ -9,6 +9,7 @@ ShizukuPlus is a fork of Shizuku, and a lot of it was written with AI tools (see
 | Crash reports | Only after you say yes to the first-run prompt or turn on **Settings → Advanced → Crash reporting**. Off until then. | Sentry |
 | Update check | When the app checks for updates | GitHub (`api.github.com`, `github.com`) |
 | App compatibility list | Periodic download of a public JSON file | GitHub (`raw.githubusercontent.com`) |
+| App safety check | Only if you turn on **VirusTotal check** or **Pithus check** and add your own API key. When an app asks for Shizuku+ access, the SHA-256 hash of its APK is looked up. The APK itself is never uploaded. | VirusTotal (`virustotal.com`), Pithus (`beta.pithus.org`) |
 | Settings backup | Only if Android backup is on for your device | Your Google account (Android Backup), or the new phone during device transfer |
 
 Nothing else is sent anywhere. There are no analytics or ads, and no account.
@@ -22,6 +23,14 @@ When crash reporting is on, Sentry also counts app sessions, for a crash-free ra
 - **Manual crash reports** (Developer Options → Manual Crash Report) go wherever you send them, often a public GitHub issue. Other apps' package names are replaced with "app 1", "app 2", and addresses, network names and emails are stripped. Read the report before posting it.
 
 Turning it off stops all sending right away. Your choice isn't backed up, so a new device asks again.
+
+### App safety check
+When an app asks for Shizuku+ access, the request shows:
+- where the app was installed from (a store, an APK file, another app, or unknown);
+- when it was installed;
+- the start of its signing certificate.
+
+All of that is read on the device. If you turn on VirusTotal or Pithus and add a key, it also shows what those services know about that exact APK. Only its hash is sent, and Pithus gets your key only for APKs it already has a report on. "Hasn't seen this app" means unknown, not safe. See [`AppSafetyCheck.kt`](../manager/src/main/java/af/shizuku/manager/authorization/AppSafetyCheck.kt).
 
 ### API keys
 VirusTotal and Pithus API keys you enter are stored on the device only. They're never in cloud backups, plain exports or the reinstall copy (see below).

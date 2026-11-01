@@ -524,15 +524,11 @@
     <string name="activity_log_type_other">Olay</string>
     <string name="settings_diagnostics_enabled">Ayar Tanılaması</string>
     <string name="settings_diagnostics_enabled_summary">Yapılandırmaları çakışmalar ve anormallikler için proaktif olarak tara</string>
-    <string name="settings_verify_apk_local_title">Yerel İmza Eşleştirme</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid Dizini</string>
-    <string name="settings_verify_apk_virustotal_title">VirusTotal Taraması</string>
-    <string name="settings_verify_apk_pithus_title">Pithus Tehdit İstihbaratı</string>
     <string name="settings_custom_accent_title">Özel Vurgu Rengi</string>
     <string name="settings_behavior_category_startup">Başlangıç &amp; Kurtarma</string>
     <string name="settings_advanced_category_diagnostics">Tanılama</string>
     <string name="settings_advanced_category_adb_tools">ADB Araçları</string>
-    <string name="settings_app_management_category_verified_install">Doğrulanmış Kurulum</string>
     <string name="settings_personalization_category_color_theme">Renk &amp; Tema</string>
     <string name="settings_personalization_category_shape_style">Şekil &amp; Simge Stili</string>
     <string name="settings_personalization_category_home_screen">Ana Ekran</string>

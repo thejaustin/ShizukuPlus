@@ -79,13 +79,6 @@ class VerifiedInstallGridPreference
                     defaultVal = true,
                 ),
                 EngineItem(
-                    key = "verify_apk_fdroid",
-                    titleRes = R.string.settings_verify_apk_fdroid_title,
-                    badgeRes = R.string.settings_verify_apk_fdroid_badge,
-                    iconRes = R.drawable.ic_folder_24,
-                    defaultVal = true,
-                ),
-                EngineItem(
                     key = "verify_apk_virustotal",
                     titleRes = R.string.settings_verify_apk_virustotal_title,
                     badgeRes = R.string.settings_verify_apk_virustotal_badge,

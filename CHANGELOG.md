@@ -4,6 +4,9 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ## [Unreleased]
 
+### ✨ Features
+- **Quick safety check when an app asks for access** — the Shizuku+ request now shows where the app came from (Play Store, F-Droid, an APK file or unknown), when it was installed and its signing certificate. Add a VirusTotal or Pithus key in Settings → App safety check to also see whether scanners flag that exact APK. Only the APK's hash is looked up, never the file. This replaces the old "Verified installation" switches, which didn't check anything yet.
+
 ### 🛠 Fixes
 - **The open debugging port warning always shows** — with Helper notifications set to Off, you weren't told when Wireless ADB was left open on a public or untrusted network. That warning now shows anyway; other helper notifications still follow the setting.
 - **Security: release builds are harder to tamper with** — a release can no longer go out signed with anything but the official key; if the key is missing, the build fails instead of quietly using a stand-in. The build also refuses a tampered Gradle wrapper, every third-party build step is pinned to an exact reviewed version, and signing passwords are no longer pasted into build scripts.

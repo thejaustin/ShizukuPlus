@@ -1117,14 +1117,8 @@
     <string name="settings_diagnostics_enabled_summary">Konfiqurasiyalarda ziddiyyətləri və anomaliyaları qabaqcadan skan edin</string>
 
     <!-- Verified install preferences (settings_app_management.xml) -->
-    <string name="settings_verify_apk_local_title">Yerli İmza Uyğunluğu</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid İndeksi</string>
-    <string name="settings_verify_apk_virustotal_title">VirusTotal Skanlaması</string>
-    <string name="settings_verify_apk_pithus_title">Pithus Təhlükə Kəşfiyyatı</string>
-    <string name="settings_verify_apk_local_badge">Oflayn Sertifikat</string>
     <string name="settings_verify_apk_fdroid_badge">F-Droid Meta-məlumatı</string>
-    <string name="settings_verify_apk_virustotal_badge">70+ Bulud Skaneri</string>
-    <string name="settings_verify_apk_pithus_badge">Davranış Kəşfiyyatı</string>
     <string name="settings_verify_engines_posture">%1$d / %2$d Təhlükəsizlik Mühərriki Aktivdir</string>
     <string name="settings_verify_key_required_hint">Açar tələb olunur · Təyin etmək üçün toxunun</string>
     <string name="settings_verify_key_saved_hint">Açar aktivdir · Redaktə etmək üçün basıb saxlayın</string>
@@ -1138,7 +1132,6 @@
     <string name="settings_behavior_category_startup">Başlanğıc və Bərpa</string>
     <string name="settings_advanced_category_diagnostics">Diaqnostika</string>
     <string name="settings_advanced_category_adb_tools">ADB Alətləri</string>
-    <string name="settings_app_management_category_verified_install">Təsdiqlənmiş Quraşdırma</string>
     <string name="settings_personalization_category_color_theme">Rəng və Tema</string>
     <string name="settings_personalization_category_shape_style">Forma və İkon Üslubu</string>
     <string name="settings_personalization_category_home_screen">Əsas ekran</string>

@@ -835,17 +835,13 @@
     <string name="empty_state_description_activity_log_empty">启用活动日志后，Shizuku API 调用与事件会显示在这里。</string>
     <string name="settings_diagnostics_enabled">设置诊断</string>
     <string name="settings_diagnostics_enabled_summary">主动扫描配置中的冲突与异常</string>
-    <string name="settings_verify_apk_local_title">本地签名比对</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid 索引</string>
-    <string name="settings_verify_apk_virustotal_title">VirusTotal 扫描</string>
-    <string name="settings_verify_apk_pithus_title">Pithus 威胁情报</string>
     <string name="settings_custom_accent_title">自定义强调色</string>
 
     <!-- Update Settings -->
     <string name="settings_behavior_category_startup">启动与恢复</string>
     <string name="settings_advanced_category_diagnostics">诊断</string>
     <string name="settings_advanced_category_adb_tools">ADB 工具</string>
-    <string name="settings_app_management_category_verified_install">校验安装</string>
     <string name="settings_personalization_category_color_theme">颜色与主题</string>
     <string name="settings_personalization_category_shape_style">形状与图标样式</string>
     <string name="settings_personalization_category_home_screen">主屏幕</string>

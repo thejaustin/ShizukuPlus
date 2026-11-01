@@ -1187,7 +1187,6 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="settings_advanced_category_diagnostics">Diagnósticos</string>
     <string name="settings_developer_category_debug">Depuração e diagnósticos</string>
     <string name="settings_mode_indicator_root">Executando em modo root — opções exclusivas de ADB estão ocultas</string>
-    <string name="settings_app_management_category_verified_install">Instalação verificada</string>
 
     <!-- Settings: Root compatibility -->
     <string name="settings_custom_su_path">Caminho SU personalizado</string>
@@ -1246,10 +1245,7 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="settings_automation_trusted_networks">Redes confiáveis</string>
 
     <!-- Settings: APK verification -->
-    <string name="settings_verify_apk_local_title">Correspondência de assinatura local</string>
     <string name="settings_verify_apk_fdroid_title">Índice F-Droid / IzzyOnDroid</string>
-    <string name="settings_verify_apk_virustotal_title">Verificação VirusTotal</string>
-    <string name="settings_verify_apk_pithus_title">Inteligência de ameaças Pithus</string>
 
     <!-- Snackbar -->
     <string name="snackbar_action_check">Verificar</string>

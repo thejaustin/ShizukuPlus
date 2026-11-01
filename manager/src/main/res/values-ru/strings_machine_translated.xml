@@ -527,15 +527,11 @@
     <string name="activity_log_type_other">Событие</string>
     <string name="settings_diagnostics_enabled">Диагностика настроек</string>
     <string name="settings_diagnostics_enabled_summary">Заранее проверять конфигурации на конфликты и аномалии</string>
-    <string name="settings_verify_apk_local_title">Локальное сравнение подписи</string>
     <string name="settings_verify_apk_fdroid_title">Индекс F-Droid / IzzyOnDroid</string>
-    <string name="settings_verify_apk_virustotal_title">Проверка VirusTotal</string>
-    <string name="settings_verify_apk_pithus_title">Анализ угроз Pithus</string>
     <string name="settings_custom_accent_title">Свой акцентный цвет</string>
     <string name="settings_behavior_category_startup">Запуск и восстановление</string>
     <string name="settings_advanced_category_diagnostics">Диагностика</string>
     <string name="settings_advanced_category_adb_tools">Инструменты ADB</string>
-    <string name="settings_app_management_category_verified_install">Проверенная установка</string>
     <string name="settings_personalization_category_color_theme">Цвет и тема</string>
     <string name="settings_personalization_category_shape_style">Форма и стиль значков</string>
     <string name="settings_personalization_category_home_screen">Главный экран</string>

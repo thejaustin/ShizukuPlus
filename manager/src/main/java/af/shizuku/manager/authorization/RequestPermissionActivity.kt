@@ -180,6 +180,7 @@ class RequestPermissionActivity : AppActivity() {
                         getString(R.string.permission_warning_template, label, getString(R.string.permission_group_description)),
                     )
             }
+        (ai?.packageName ?: callingPackage)?.let { bindSafetyCheck(binding.safetyCheck, it) }
 
         dialog =
             MaterialAlertDialogBuilder(this)
@@ -193,6 +194,101 @@ class RequestPermissionActivity : AppActivity() {
         } catch (_: WindowManager.BadTokenException) {
             // Activity window detached by the time the coroutine resumed
             finish()
+        }
+    }
+
+    /**
+     * The quick safety check under the request: install source, signer, and VirusTotal / Pithus
+     * verdicts when the user turned those on and added a key. Fills in as answers arrive; the
+     * buttons work the whole time.
+     */
+    private fun bindSafetyCheck(
+        view: android.widget.TextView,
+        packageName: String,
+    ) {
+        val prefs =
+            af.shizuku.manager.ShizukuSettings
+                .getPreferences()
+        val showLocal = prefs?.getBoolean("verify_apk_local", true) ?: true
+        val vtKey =
+            af.shizuku.manager.ShizukuSettings
+                .getVirusTotalApiKey()
+                .takeIf { it.isNotBlank() && prefs?.getBoolean("verify_apk_virustotal", false) == true }
+        val pithusKey =
+            af.shizuku.manager.ShizukuSettings
+                .getPithusApiKey()
+                .takeIf { it.isNotBlank() && prefs?.getBoolean("verify_apk_pithus", false) == true }
+        if (!showLocal && vtKey == null && pithusKey == null) return
+
+        lifecycleScope.launch {
+            val local = withContext(Dispatchers.IO) { AppSafetyCheck.localInfo(this@RequestPermissionActivity, packageName) } ?: return@launch
+            val lines = mutableListOf<CharSequence>()
+
+            fun render() {
+                view.text = lines.joinToString("\n")
+                view.visibility = android.view.View.VISIBLE
+            }
+            if (showLocal) {
+                val from =
+                    when (AppSafetyCheck.source(local.installer)) {
+                        AppSafetyCheck.Source.STORE, AppSafetyCheck.Source.OPEN_SOURCE_STORE ->
+                            getString(R.string.safety_check_from_store, local.installerLabel ?: local.installer)
+                        AppSafetyCheck.Source.FILE -> getString(R.string.safety_check_from_file)
+                        AppSafetyCheck.Source.OTHER_APP -> getString(R.string.safety_check_from_app, local.installerLabel ?: local.installer)
+                        AppSafetyCheck.Source.UNKNOWN -> getString(R.string.safety_check_from_unknown)
+                    }
+                val days = ((System.currentTimeMillis() - local.firstInstallTime) / 86_400_000L).toInt().coerceAtLeast(0)
+                val age =
+                    if (days == 0) {
+                        getString(R.string.safety_check_installed_today)
+                    } else {
+                        resources.getQuantityString(R.plurals.safety_check_installed_days, days, days)
+                    }
+                lines += "$from · $age"
+                // Short form, grouped like a fingerprint; enough to compare against the developer's.
+                local.signerSha256?.let { sha ->
+                    lines +=
+                        getString(
+                            R.string.safety_check_signer,
+                            sha
+                                .take(16)
+                                .uppercase()
+                                .chunked(4)
+                                .joinToString(" "),
+                        )
+                }
+                render()
+            }
+
+            val services = listOfNotNull(vtKey?.let { "VirusTotal" to it }, pithusKey?.let { "Pithus" to it })
+            if (services.isEmpty()) return@launch
+            val firstServiceLine = lines.size
+            services.forEach { (name, _) -> lines += getString(R.string.safety_check_checking, name) }
+            render()
+            val sha = withContext(Dispatchers.IO) { local.apkPath?.let { AppSafetyCheck.sha256Of(java.io.File(it)) } }
+            services.forEachIndexed { i, (name, key) ->
+                launch {
+                    val verdict =
+                        if (sha == null) {
+                            AppSafetyCheck.Verdict.Unavailable
+                        } else {
+                            withContext(Dispatchers.IO) {
+                                if (name == "VirusTotal") AppSafetyCheck.virusTotal(key, sha) else AppSafetyCheck.pithus(key, sha)
+                            }
+                        }
+                    lines[firstServiceLine + i] =
+                        when (verdict) {
+                            is AppSafetyCheck.Verdict.Clean -> getString(R.string.safety_check_clean, name, verdict.engines)
+                            is AppSafetyCheck.Verdict.Flagged ->
+                                verdict.family?.let { getString(R.string.safety_check_known_malware, name, it) }
+                                    ?: getString(R.string.safety_check_flagged, name, verdict.detections, verdict.engines)
+                            AppSafetyCheck.Verdict.Unknown -> getString(R.string.safety_check_unknown, name)
+                            AppSafetyCheck.Verdict.BadKey -> getString(R.string.safety_check_bad_key, name)
+                            AppSafetyCheck.Verdict.Unavailable -> getString(R.string.safety_check_unavailable, name)
+                        }
+                    if (!isFinishing && !isDestroyed) render()
+                }
+            }
         }
     }
 

@@ -724,15 +724,11 @@
     <string name="activity_log_type_other">เหตุการณ์</string>
     <string name="settings_diagnostics_enabled">การวินิจฉัยการตั้งค่า</string>
     <string name="settings_diagnostics_enabled_summary">สแกนการกำหนดค่าเพื่อค้นหาข้อขัดแย้งและความผิดปกติในเชิงรุก</string>
-    <string name="settings_verify_apk_local_title">การจับคู่ลายเซ็นในเครื่อง</string>
     <string name="settings_verify_apk_fdroid_title">ดัชนี F-Droid / IzzyOnDroid</string>
-    <string name="settings_verify_apk_virustotal_title">สแกนด้วย VirusTotal</string>
-    <string name="settings_verify_apk_pithus_title">ข่าวกรองภัยคุกคาม Pithus</string>
     <string name="settings_custom_accent_title">สีกำหนดเองสำหรับเน้น</string>
     <string name="settings_behavior_category_startup">การเริ่มทำงาน &amp; การกู้คืน</string>
     <string name="settings_advanced_category_diagnostics">การวินิจฉัย</string>
     <string name="settings_advanced_category_adb_tools">เครื่องมือ ADB</string>
-    <string name="settings_app_management_category_verified_install">การติดตั้งที่ได้รับการตรวจสอบ</string>
     <string name="settings_personalization_category_color_theme">สี &amp; ธีม</string>
     <string name="settings_personalization_category_shape_style">รูปทรง &amp; สไตล์ไอคอน</string>
     <string name="settings_personalization_category_home_screen">หน้าแรก</string>

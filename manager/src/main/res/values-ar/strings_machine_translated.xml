@@ -527,15 +527,11 @@
     <string name="activity_log_type_other">حدث</string>
     <string name="settings_diagnostics_enabled">تشخيص الإعدادات</string>
     <string name="settings_diagnostics_enabled_summary">فحص الإعدادات بشكل استباقي بحثًا عن التعارضات والحالات الشاذة</string>
-    <string name="settings_verify_apk_local_title">مطابقة التوقيع محليًا</string>
     <string name="settings_verify_apk_fdroid_title">فهرس F-Droid / IzzyOnDroid</string>
-    <string name="settings_verify_apk_virustotal_title">فحص VirusTotal</string>
-    <string name="settings_verify_apk_pithus_title">استخبارات التهديدات Pithus</string>
     <string name="settings_custom_accent_title">لون التمييز المخصص</string>
     <string name="settings_behavior_category_startup">بدء التشغيل والاسترداد</string>
     <string name="settings_advanced_category_diagnostics">التشخيص</string>
     <string name="settings_advanced_category_adb_tools">أدوات ADB</string>
-    <string name="settings_app_management_category_verified_install">التثبيت الموثّق</string>
     <string name="settings_personalization_category_color_theme">اللون والسمة</string>
     <string name="settings_personalization_category_shape_style">نمط الأشكال والأيقونات</string>
     <string name="settings_personalization_category_home_screen">الشاشة الرئيسية</string>
@@ -1315,10 +1311,7 @@
     <string name="doctor_adaptive_self_heal_title">إصلاح ذاتي تكيّفي في الخلفية</string>
     <string name="doctor_adaptive_self_heal_desc">تشغيل فحوصات الحالة تلقائيًا وإصلاح انقطاعات الخدمة أو مشكلات الأذونات في الخلفية</string>
     <string name="stock_shizuku_restarting">جارٍ إعادة التشغيل…</string>
-    <string name="settings_verify_apk_local_badge">شهادة بلا اتصال</string>
     <string name="settings_verify_apk_fdroid_badge">بيانات F-Droid الوصفية</string>
-    <string name="settings_verify_apk_virustotal_badge">أكثر من 70 أداة فحص سحابية</string>
-    <string name="settings_verify_apk_pithus_badge">تحليل السلوك</string>
     <string name="settings_verify_engines_posture">%1$d من %2$d من محركات الأمان نشطة</string>
     <string name="settings_verify_key_required_hint">المفتاح مطلوب · انقر للتعيين</string>
     <string name="settings_verify_key_saved_hint">المفتاح نشط · اضغط مطولاً للتعديل</string>

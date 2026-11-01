@@ -512,15 +512,11 @@
     <string name="activity_log_type_other">事件</string>
     <string name="settings_diagnostics_enabled">設定診斷</string>
     <string name="settings_diagnostics_enabled_summary">主動掃描設定中的衝突與異常</string>
-    <string name="settings_verify_apk_local_title">本機簽章比對</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid 索引</string>
-    <string name="settings_verify_apk_virustotal_title">VirusTotal 掃描</string>
-    <string name="settings_verify_apk_pithus_title">Pithus 威脅情報</string>
     <string name="settings_custom_accent_title">自訂強調色</string>
     <string name="settings_behavior_category_startup">啟動與復原</string>
     <string name="settings_advanced_category_diagnostics">診斷</string>
     <string name="settings_advanced_category_adb_tools">ADB 工具</string>
-    <string name="settings_app_management_category_verified_install">驗證安裝</string>
     <string name="settings_personalization_category_color_theme">色彩與主題</string>
     <string name="settings_personalization_category_shape_style">形狀與圖示樣式</string>
     <string name="settings_personalization_category_home_screen">主畫面</string>

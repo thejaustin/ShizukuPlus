@@ -1152,14 +1152,31 @@
     <string name="settings_diagnostics_enabled_summary">Scan configurations for conflicts and anomalies proactively</string>
 
     <!-- Verified install preferences (settings_app_management.xml) -->
-    <string name="settings_verify_apk_local_title">Local Signature Matching</string>
+    <string name="settings_verify_apk_local_title">App details in access requests</string>
+    <string name="safety_check_from_store">From %1$s</string>
+    <string name="safety_check_from_file">Installed from an APK file</string>
+    <string name="safety_check_from_app">Installed by %1$s</string>
+    <string name="safety_check_from_unknown">Install source unknown, often sideloaded with adb</string>
+    <string name="safety_check_installed_today">installed today</string>
+    <plurals name="safety_check_installed_days">
+        <item quantity="one">installed %1$d day ago</item>
+        <item quantity="other">installed %1$d days ago</item>
+    </plurals>
+    <string name="safety_check_signer">Signing certificate %1$s</string>
+    <string name="safety_check_checking">%1$s: checking…</string>
+    <string name="safety_check_clean">%1$s: no engine flags it (0 of %2$d)</string>
+    <string name="safety_check_flagged">⚠ %1$s: flagged by %2$d of %3$d engines</string>
+    <string name="safety_check_known_malware">⚠ %1$s: known malware (%2$s)</string>
+    <string name="safety_check_unknown">%1$s: hasn\'t seen this exact app</string>
+    <string name="safety_check_bad_key">%1$s: API key was rejected</string>
+    <string name="safety_check_unavailable">%1$s: couldn\'t check right now</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid Index</string>
-    <string name="settings_verify_apk_virustotal_title">VirusTotal Scan</string>
-    <string name="settings_verify_apk_pithus_title">Pithus Threat Intel</string>
-    <string name="settings_verify_apk_local_badge">Offline Certificate</string>
+    <string name="settings_verify_apk_virustotal_title">VirusTotal check</string>
+    <string name="settings_verify_apk_pithus_title">Pithus check</string>
+    <string name="settings_verify_apk_local_badge">Source and signer, offline</string>
     <string name="settings_verify_apk_fdroid_badge">F-Droid Metadata</string>
-    <string name="settings_verify_apk_virustotal_badge">70+ Cloud Scanners</string>
-    <string name="settings_verify_apk_pithus_badge">Behavioral Intel</string>
+    <string name="settings_verify_apk_virustotal_badge">Hash lookup, 70+ scanners</string>
+    <string name="settings_verify_apk_pithus_badge">Hash lookup, malware intel</string>
     <string name="settings_verify_engines_posture">%1$d of %2$d Security Engines Active</string>
     <string name="settings_verify_key_required_hint">Key required · Tap to set</string>
     <string name="settings_verify_key_saved_hint">Key active · Hold to edit</string>
@@ -1173,7 +1190,7 @@
     <string name="settings_behavior_category_startup">Startup &amp; recovery</string>
     <string name="settings_advanced_category_diagnostics">Diagnostics</string>
     <string name="settings_advanced_category_adb_tools">ADB tools</string>
-    <string name="settings_app_management_category_verified_install">Verified installation</string>
+    <string name="settings_app_management_category_verified_install">App safety check</string>
     <string name="settings_personalization_category_color_theme">Color &amp; theme</string>
     <string name="settings_personalization_category_shape_style">Shape &amp; icon style</string>
     <string name="settings_personalization_category_home_screen">Home screen</string>

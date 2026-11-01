@@ -28,6 +28,20 @@
         android:textSize="20sp"
         tools:text="@string/permission_warning_template" />
 
+    <!-- Quick safety check for the app asking (permission requests only). -->
+    <TextView
+        android:id="@+id/safety_check"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="16dp"
+        android:lineSpacingMultiplier="1.2"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="?android:textColorSecondary"
+        android:visibility="gone"
+        tools:text="From Google Play · installed 3 days ago\nVirusTotal: no engine flags it (0 of 68)"
+        tools:visibility="visible" />
+
     <TextView
         android:id="@android:id/button1"
         style="@style/GrantPermissionsButtons.Top"

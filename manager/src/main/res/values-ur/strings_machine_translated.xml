@@ -140,15 +140,11 @@
     <string name="activity_log_type_other">واقعہ</string>
     <string name="settings_diagnostics_enabled">سیٹنگز کی تشخیص</string>
     <string name="settings_diagnostics_enabled_summary">تنازعات اور بے قاعدگیوں کے لیے ترتیبات کو پیشگی اسکین کریں</string>
-    <string name="settings_verify_apk_local_title">مقامی دستخط کی مطابقت</string>
     <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid انڈیکس</string>
-    <string name="settings_verify_apk_virustotal_title">VirusTotal اسکین</string>
-    <string name="settings_verify_apk_pithus_title">Pithus تھریٹ انٹیل</string>
     <string name="settings_custom_accent_title">حسب ضرورت ایکسنٹ رنگ</string>
     <string name="settings_behavior_category_startup">آغاز اور بحالی</string>
     <string name="settings_advanced_category_diagnostics">تشخیص</string>
     <string name="settings_advanced_category_adb_tools">ADB ٹولز</string>
-    <string name="settings_app_management_category_verified_install">تصدیق شدہ انسٹالیشن</string>
     <string name="settings_personalization_category_color_theme">رنگ اور تھیم</string>
     <string name="settings_personalization_category_shape_style">شکل اور آئیکن اسٹائل</string>
     <string name="settings_personalization_category_home_screen">ہوم اسکرین</string>

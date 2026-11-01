@@ -527,15 +527,11 @@
     <string name="activity_log_type_other">Evento</string>
     <string name="settings_diagnostics_enabled">Diagnóstico de ajustes</string>
     <string name="settings_diagnostics_enabled_summary">Analiza proactivamente las configuraciones en busca de conflictos y anomalías</string>
-    <string name="settings_verify_apk_local_title">Comparación de firma local</string>
     <string name="settings_verify_apk_fdroid_title">Índice de F-Droid / IzzyOnDroid</string>
-    <string name="settings_verify_apk_virustotal_title">Análisis de VirusTotal</string>
-    <string name="settings_verify_apk_pithus_title">Inteligencia de amenazas de Pithus</string>
     <string name="settings_custom_accent_title">Color de acento personalizado</string>
     <string name="settings_behavior_category_startup">Inicio &amp; recuperación</string>
     <string name="settings_advanced_category_diagnostics">Diagnóstico</string>
     <string name="settings_advanced_category_adb_tools">Herramientas ADB</string>
-    <string name="settings_app_management_category_verified_install">Instalación verificada</string>
     <string name="settings_personalization_category_color_theme">Color &amp; tema</string>
     <string name="settings_personalization_category_shape_style">Estilo de formas e iconos</string>
     <string name="settings_personalization_category_home_screen">Pantalla de inicio</string>
@@ -1316,10 +1312,7 @@
     <string name="doctor_adaptive_self_heal_desc">Hacer comprobaciones de estado automáticamente y reparar en segundo plano las caídas del servicio o los problemas de permisos</string>
     <string name="stock_shizuku_restarting">Reiniciando…</string>
     <string name="home_all_cards_hidden_description">Todas las demás tarjetas están ocultas</string>
-    <string name="settings_verify_apk_local_badge">Certificado sin conexión</string>
     <string name="settings_verify_apk_fdroid_badge">Metadatos de F-Droid</string>
-    <string name="settings_verify_apk_virustotal_badge">Más de 70 escáneres en la nube</string>
-    <string name="settings_verify_apk_pithus_badge">Análisis de comportamiento</string>
     <string name="settings_verify_engines_posture">%1$d de %2$d motores de seguridad activos</string>
     <string name="settings_verify_key_required_hint">Clave obligatoria · Toca para configurarla</string>
     <string name="settings_verify_key_saved_hint">Clave activa · Mantén pulsado para editarla</string>

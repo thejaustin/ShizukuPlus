@@ -526,15 +526,11 @@
     <string name="activity_log_type_other">Événement</string>
     <string name="settings_diagnostics_enabled">Diagnostic des paramètres</string>
     <string name="settings_diagnostics_enabled_summary">Analyser proactivement les configurations à la recherche de conflits et d\'anomalies</string>
-    <string name="settings_verify_apk_local_title">Correspondance de signature locale</string>
     <string name="settings_verify_apk_fdroid_title">Index F-Droid / IzzyOnDroid</string>
-    <string name="settings_verify_apk_virustotal_title">Analyse VirusTotal</string>
-    <string name="settings_verify_apk_pithus_title">Renseignement sur les menaces Pithus</string>
     <string name="settings_custom_accent_title">Couleur d\'accentuation personnalisée</string>
     <string name="settings_behavior_category_startup">Démarrage &amp; récupération</string>
     <string name="settings_advanced_category_diagnostics">Diagnostic</string>
     <string name="settings_advanced_category_adb_tools">Outils ADB</string>
-    <string name="settings_app_management_category_verified_install">Installation vérifiée</string>
     <string name="settings_personalization_category_color_theme">Couleurs &amp; thème</string>
     <string name="settings_personalization_category_shape_style">Style des formes &amp; des icônes</string>
     <string name="settings_personalization_category_home_screen">Écran d\'accueil</string>
@@ -1315,10 +1311,7 @@
     <string name="doctor_adaptive_self_heal_desc">Exécuter automatiquement des vérifications d’état et réparer en arrière-plan les interruptions du service ou les problèmes d’autorisation</string>
     <string name="stock_shizuku_restarting">Redémarrage…</string>
     <string name="home_all_cards_hidden_description">Toutes les autres cartes sont masquées</string>
-    <string name="settings_verify_apk_local_badge">Certificat hors ligne</string>
     <string name="settings_verify_apk_fdroid_badge">Métadonnées F-Droid</string>
-    <string name="settings_verify_apk_virustotal_badge">Plus de 70 analyseurs cloud</string>
-    <string name="settings_verify_apk_pithus_badge">Analyse comportementale</string>
     <string name="settings_verify_engines_posture">%1$d moteurs de sécurité actifs sur %2$d</string>
     <string name="settings_verify_key_required_hint">Clé requise · Appuyez pour la définir</string>
     <string name="settings_verify_key_saved_hint">Clé active · Maintenez pour modifier</string>
