@@ -147,6 +147,8 @@ object TcpNetworkGuard {
                 context.getString(R.string.tcp_guard_title),
                 context.getString(R.string.tcp_guard_text, port, reason),
                 listOf(ShizukuIssues.Action(context.getString(R.string.tcp_guard_close), closeIntent)),
+                // Turning helper notifications off mustn't hide that anyone nearby can get a shell.
+                security = true,
             ),
         )
     }

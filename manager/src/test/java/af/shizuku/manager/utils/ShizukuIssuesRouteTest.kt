@@ -34,6 +34,11 @@ class ShizukuIssuesRouteTest :
             ShizukuIssues.route(false, AlertLevel.ALL, Severity.PROBLEM) shouldBe shared
         }
 
+        test("a security warning alerts even with alerts off") {
+            ShizukuIssues.route(false, AlertLevel.OFF, Severity.URGENT, security = true) shouldBe shared
+            ShizukuIssues.route(true, AlertLevel.OFF, Severity.URGENT, security = true) shouldBe both
+        }
+
         test("stored values map to levels, unknown ones to the default") {
             AlertLevel.of("off") shouldBe AlertLevel.OFF
             AlertLevel.of("stopped") shouldBe AlertLevel.URGENT

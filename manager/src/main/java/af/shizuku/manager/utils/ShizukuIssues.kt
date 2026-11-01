@@ -52,6 +52,8 @@ object ShizukuIssues {
         val text: String,
         val actions: List<Action> = emptyList(),
         val contentIntent: PendingIntent? = null,
+        /** A security warning (a debugging port open to strangers): alerts even with the level Off. */
+        val security: Boolean = false,
     )
 
     /** The "Helper notifications" setting. */
@@ -113,13 +115,15 @@ object ShizukuIssues {
         ongoingShowing: Boolean,
         level: AlertLevel,
         severity: Severity,
+        security: Boolean = false,
     ): Route {
         val alertAllowed =
-            when (level) {
-                AlertLevel.OFF -> false
-                AlertLevel.URGENT -> severity == Severity.URGENT
-                AlertLevel.ALL -> true
-            }
+            security ||
+                when (level) {
+                    AlertLevel.OFF -> false
+                    AlertLevel.URGENT -> severity == Severity.URGENT
+                    AlertLevel.ALL -> true
+                }
         return if (ongoingShowing) {
             Route(inOngoing = true, shared = alertAllowed && severity == Severity.URGENT)
         } else {
@@ -277,7 +281,7 @@ object ShizukuIssues {
         val ongoing = WatchdogService.isRunning()
         if (ongoing) WatchdogService.refreshNotification(context)
         val nm = context.getSystemService(NotificationManager::class.java) ?: return
-        val route = issue?.let { route(ongoing, alertLevel(), it.severity) }
+        val route = issue?.let { route(ongoing, alertLevel(), it.severity, it.security) }
         val swiped = entry != null && dismissed == (entry.first.key to entry.second)
         if (entry == null || issue == null || route?.shared != true || swiped || !ShizukuSettings.isNotificationSystemEnabled()) {
             nm.cancel(NOTIFICATION_ID)
