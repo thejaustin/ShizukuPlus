@@ -721,8 +721,9 @@ class ShizukuApplication :
                 val jsonObject = org.json.JSONObject(eventJson)
                 val levelStr = jsonObject.optString("level", "error")
                 val tag = jsonObject.optString("tag", "ShizukuPlus")
-                val message = jsonObject.optString("message", "")
-                val stackTrace = jsonObject.optString("stackTrace", "")
+                // Server records can carry other apps' command lines, package names, paths and
+                // tokens; only a redacted form reaches crash reports.
+                val message = redactServerEventMessage(jsonObject.optString("message", ""))
 
                 // Guard against a single device's hot-looping error from draining the shared
                 // quota by itself: skip re-sending the exact same tag+message within the
@@ -746,9 +747,6 @@ class ShizukuApplication :
                 io.sentry.Sentry.withScope { scope ->
                     scope.setTag("server_side", "true")
                     scope.setTag("server_tag", tag)
-                    if (stackTrace.isNotEmpty()) {
-                        scope.setExtra("stackTrace", stackTrace)
-                    }
                     val event = io.sentry.SentryEvent()
                     event.level = sentryLevel
                     val sentryMessage = io.sentry.protocol.Message()
@@ -957,4 +955,26 @@ class ShizukuApplication :
             }
         }
     }
+}
+
+/**
+ * What of a server log record may go into a crash report: the description before the first ": ",
+ * then the details with package names, paths, key=value pairs and bearer tokens replaced, cut to
+ * a short length. The server logs blocked commands, caller packages and binder descriptors at
+ * WARN and above, and those were forwarded verbatim.
+ */
+internal fun redactServerEventMessage(message: String): String {
+    val split = message.indexOf(": ")
+    val head = if (split >= 0) message.substring(0, split) else message
+    val tail = if (split >= 0) message.substring(split + 2) else ""
+
+    fun redact(text: String) =
+        text
+            .replace(Regex("""(?i)bearer\s+\S+"""), "<token>")
+            .replace(Regex("""\b[\w.-]+=\S+"""), "<redacted>")
+            .replace(Regex("""(?<![\w])/[^\s,;)]+"""), "<path>")
+            .replace(Regex("""\b[a-zA-Z][\w]*(\.[a-zA-Z_][\w]*){2,}\b"""), "<pkg>")
+    val details = redact(tail).take(80)
+    val redactedHead = redact(head).take(120)
+    return if (details.isEmpty()) redactedHead else "$redactedHead: $details"
 }
