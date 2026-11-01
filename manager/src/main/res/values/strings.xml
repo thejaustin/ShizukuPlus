@@ -570,7 +570,7 @@
     <string name="settings_shell_interceptor_summary">Accelerate shell commands via native APIs. Improves performance for MacroDroid and Tasker tasks.</string>
     <string name="settings_avf_manager_summary">Run isolated Microdroid or Linux VMs. Used with Hyperbox and Termux-VM to manage virtual environments.</string>
     <string name="settings_storage_proxy">Storage bridge</string>
-    <string name="settings_storage_proxy_summary">Directly access /data/data/ and restricted paths. Used by Neo Backup and SD Maid to manage app data.</string>
+    <string name="settings_storage_proxy_summary">Fast file access for backup and cleaner apps. Other apps\' private data needs the Unrestricted app data access developer option.</string>
     <string name="settings_continuity_bridge_summary">Sync app states and hand off privileged tasks between devices. Works with MacroDroid for cross-device automation.</string>
     <string name="settings_ai_core_plus_summary">Prioritized NPU and screen context APIs. Enhances Gemini and local LLMs with privileged screen awareness.</string>
     <string name="settings_window_manager_plus">Window tuner</string>
@@ -650,7 +650,7 @@
     <string name="help_avf_manager_detail">Android Virtualization Framework (AVF) Manager allows you to run isolated Linux or Microdroid virtual machines. On supported hardware (Snapdragon 8 Gen 1+, Tensor G2+), this enables hardware-accelerated virtualization with VirtIO-GPU support for running desktop Linux environments or isolated secure tasks.</string>
 
     <string name="help_storage_proxy_title">About Storage Bridge</string>
-    <string name="help_storage_proxy_detail">The Storage Bridge provides authenticated, high-speed access to restricted filesystem paths like /data/data/ (app data) and /data/app/ (APK files). This allows backup tools like Neo Backup to function without full root access, while maintaining security through Shizuku\'s permission model.</string>
+    <string name="help_storage_proxy_detail">The Storage Bridge gives authorized apps fast access to shared storage and read-only access to installed APKs (/data/app/). Other apps\' private data (/data/data/, Android/data and Android/obb) stays locked unless you turn on Unrestricted app data access in Developer options. Neo Backup and SD Maid need it for app data.</string>
 
     <string name="help_continuity_bridge_title">About Multi-Device Continuity</string>
     <string name="help_continuity_bridge_detail">Continuity Bridge allows Shizuku+ devices on the same network to hand off tasks and synchronize clipboard/app state. This utilizes the Android 17 Handoff APIs (backported where possible) to allow seamless transitions of automation tasks between your phone and tablet.</string>
@@ -1269,6 +1269,14 @@
     <string name="settings_bootloader_fastbootd_summary">Restart directly into fastbootd user space from Shizuku shell</string>
 
     <string name="settings_developer_category_debug">Debug &amp; diagnostics</string>
+    <string name="settings_developer_category_unrestricted">Unrestricted access (risky)</string>
+    <string name="settings_unrestricted_app_data_title">Unrestricted app data access</string>
+    <string name="settings_unrestricted_app_data_summary">Let authorized apps read and change other apps\' private data: Storage Bridge on /data/data, Android/data and Android/obb, temp-debug backups and app data restore. Needed by Neo Backup and SD Maid for app data.</string>
+    <string name="settings_unrestricted_personal_data_title">Personal data &amp; device control</string>
+    <string name="settings_unrestricted_personal_data_summary">Let authorized apps use the Plus APIs for SMS, contacts, call log, location, clipboard, notifications, screenshots, input injection, logcat, heap dumps and reboot.</string>
+    <string name="settings_unrestricted_confirm_title">Turn on risky access?</string>
+    <string name="settings_unrestricted_confirm_message">Every app you\'ve authorized in Shizuku+ will get this access, not just the one you have in mind. Only turn it on if you trust all of them.</string>
+    <string name="settings_unrestricted_confirm_positive">Turn on</string>
     <string name="settings_plus_category_device_owner_tools">Device owner tools</string>
     
     <!-- Developer Options -->

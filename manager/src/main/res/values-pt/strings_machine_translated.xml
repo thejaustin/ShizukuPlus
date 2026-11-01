@@ -193,7 +193,6 @@
     <string name="settings_shell_interceptor_summary">Acelera os comandos de shell através de APIs nativas. Melhora o desempenho das tarefas do MacroDroid e do Tasker.</string>
     <string name="settings_avf_manager_summary">Execute VMs Microdroid ou Linux isoladas. Utilizado com o Hyperbox e o Termux-VM para gerir ambientes virtuais.</string>
     <string name="settings_storage_proxy">Ponte de armazenamento</string>
-    <string name="settings_storage_proxy_summary">Aceda diretamente a /data/data/ e a caminhos restritos. Utilizado pelo Neo Backup e pelo SD Maid para gerir dados de aplicações.</string>
     <string name="settings_continuity_bridge_summary">Sincronize estados de aplicações e transfira tarefas privilegiadas entre dispositivos. Funciona com o MacroDroid para automatização entre dispositivos.</string>
     <string name="settings_ai_core_plus_summary">APIs de NPU e contexto de ecrã prioritárias. Melhora o Gemini e os LLMs locais com perceção privilegiada do ecrã.</string>
     <string name="settings_window_manager_plus">Ajuste de janelas</string>
@@ -260,7 +259,6 @@
     <string name="help_avf_manager_title">Acerca do Gestor AVF</string>
     <string name="help_avf_manager_detail">O Gestor da Android Virtualization Framework (AVF) permite executar máquinas virtuais Linux ou Microdroid isoladas. Em hardware compatível (Snapdragon 8 Gen 1+, Tensor G2+), isto permite virtualização acelerada por hardware com suporte VirtIO-GPU para executar ambientes Linux de ambiente de trabalho ou tarefas seguras isoladas.</string>
     <string name="help_storage_proxy_title">Acerca da Ponte de armazenamento</string>
-    <string name="help_storage_proxy_detail">A Ponte de armazenamento fornece acesso autenticado e de alta velocidade a caminhos restritos do sistema de ficheiros, como /data/data/ (dados de aplicações) e /data/app/ (ficheiros APK). Isto permite que ferramentas de cópia de segurança como o Neo Backup funcionem sem acesso root completo, mantendo a segurança através do modelo de permissões do Shizuku.</string>
     <string name="help_continuity_bridge_title">Acerca da Continuidade multidispositivo</string>
     <string name="help_continuity_bridge_detail">A Ponte de continuidade permite que dispositivos com Shizuku+ na mesma rede transfiram tarefas e sincronizem a área de transferência e o estado das aplicações. Utiliza as APIs de Handoff do Android 17 (adaptadas sempre que possível) para permitir transições fluidas de tarefas de automatização entre o telemóvel e o tablet.</string>
     <string name="help_ai_core_plus_title">Acerca da Ponte de inteligência</string>

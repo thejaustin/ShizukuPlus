@@ -112,6 +112,8 @@ object SettingsBackupManager {
             ShizukuSettings.Keys.KEY_SAMSUNG_SYSTEM_UID_ESCALATION_ENABLED to R.string.settings_samsung_uid_escalation,
             ShizukuSettings.Keys.KEY_SOFTWARE_KEYSTORE_FALLBACK_ENABLED to R.string.settings_keystore_fallback,
             ShizukuSettings.Keys.KEY_EXPERIMENTAL_ROOT_COMPAT to R.string.settings_experimental_root_experimental,
+            ShizukuSettings.Keys.KEY_UNRESTRICTED_APP_DATA to R.string.settings_unrestricted_app_data_title,
+            ShizukuSettings.Keys.KEY_UNRESTRICTED_PERSONAL_DATA to R.string.settings_unrestricted_personal_data_title,
             ShizukuSettings.Keys.KEY_ON_DEVICE_ADB_TCP to R.string.settings_on_device_adb_tcp,
             ShizukuSettings.Keys.KEY_ADB_PROXY_ENABLED to R.string.settings_adb_proxy,
             "custom_su_path" to R.string.settings_custom_su_path,

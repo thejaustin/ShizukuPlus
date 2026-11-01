@@ -193,7 +193,6 @@
     <string name="settings_shell_interceptor_summary">ネイティブAPIでシェルコマンドを高速化します。MacroDroidやTaskerのタスクのパフォーマンスが向上します。</string>
     <string name="settings_avf_manager_summary">分離されたMicrodroidまたはLinux仮想マシンを実行します。HyperboxやTermux-VMと併用して仮想環境を管理します。</string>
     <string name="settings_storage_proxy">ストレージブリッジ</string>
-    <string name="settings_storage_proxy_summary">/data/data/ や制限されたパスに直接アクセスします。Neo BackupやSD Maidがアプリデータを管理するために使用します。</string>
     <string name="settings_continuity_bridge_summary">デバイス間でアプリの状態を同期し、特権タスクを引き継ぎます。MacroDroidと連携してデバイス間の自動化が可能です。</string>
     <string name="settings_ai_core_plus_summary">NPUと画面コンテキストAPIを優先的に利用します。特権による画面認識でGeminiやローカルLLMを強化します。</string>
     <string name="settings_window_manager_plus">ウィンドウチューナー</string>
@@ -260,7 +259,6 @@
     <string name="help_avf_manager_title">AVFマネージャーについて</string>
     <string name="help_avf_manager_detail">Android仮想化フレームワーク (AVF) マネージャーを使うと、分離されたLinuxまたはMicrodroidの仮想マシンを実行できます。対応ハードウェア (Snapdragon 8 Gen 1以降、Tensor G2以降) では、VirtIO-GPUに対応したハードウェアアクセラレーション仮想化により、デスクトップLinux環境や分離されたセキュアなタスクを実行できます。</string>
     <string name="help_storage_proxy_title">ストレージブリッジについて</string>
-    <string name="help_storage_proxy_detail">ストレージブリッジは、/data/data/ (アプリデータ) や /data/app/ (APKファイル) などの制限されたファイルシステムパスへ、認証された高速アクセスを提供します。Shizukuの権限モデルによるセキュリティを保ちながら、Neo Backupなどのバックアップツールをフルrootなしで動作させることができます。</string>
     <string name="help_continuity_bridge_title">マルチデバイス連携について</string>
     <string name="help_continuity_bridge_detail">連携ブリッジにより、同じネットワーク上のShizuku+ デバイス間でタスクを引き継いだり、クリップボードやアプリの状態を同期したりできます。Android 17のHandoff API (可能な範囲でバックポート) を利用し、スマートフォンとタブレット間で自動化タスクをシームレスに切り替えられます。</string>
     <string name="help_ai_core_plus_title">インテリジェンスブリッジについて</string>

@@ -381,7 +381,6 @@
     <string name="settings_shell_interceptor_summary">通过原生 API 加速 shell 命令。可提升 MacroDroid 与 Tasker 任务的性能。</string>
     <string name="settings_avf_manager_summary">运行隔离的 Microdroid 或 Linux 虚拟机。配合 Hyperbox 与 Termux-VM 管理虚拟环境。</string>
     <string name="settings_storage_proxy">存储桥接</string>
-    <string name="settings_storage_proxy_summary">直接访问 /data/data/ 等受限路径。Neo Backup 与 SD Maid 用它管理应用数据。</string>
     <string name="settings_continuity_bridge_summary">在设备之间同步应用状态并移交特权任务。可与 MacroDroid 配合实现跨设备自动化。</string>
     <string name="settings_ai_core_plus_summary">优先的 NPU 与屏幕上下文 API。为 Gemini 和本地大模型提供特权屏幕感知能力。</string>
     <string name="settings_window_manager_plus">窗口调校器</string>
@@ -453,7 +452,6 @@
     <string name="help_avf_manager_detail">Android 虚拟化框架（AVF）管理器允许你运行隔离的 Linux 或 Microdroid 虚拟机。在受支持的硬件（骁龙 8 Gen 1+、Tensor G2+）上，可启用支持 VirtIO-GPU 的硬件加速虚拟化，用于运行桌面 Linux 环境或隔离的安全任务。</string>
 
     <string name="help_storage_proxy_title">关于存储桥接</string>
-    <string name="help_storage_proxy_detail">存储桥接为 /data/data/（应用数据）和 /data/app/（APK 文件）等受限文件系统路径提供经过身份验证的高速访问。这让 Neo Backup 等备份工具无需完整 root 权限即可工作，同时通过 Shizuku 的权限模型保障安全。</string>
 
     <string name="help_continuity_bridge_title">关于多设备连续性</string>
     <string name="help_continuity_bridge_detail">连续性桥接允许同一网络中的 Shizuku+ 设备移交任务并同步剪贴板/应用状态。它利用 Android 17 的 Handoff API（在可能的情况下向下移植），让自动化任务能在手机与平板之间无缝切换。</string>

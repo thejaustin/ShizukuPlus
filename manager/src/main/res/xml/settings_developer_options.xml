@@ -168,4 +168,30 @@
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_unrestricted_access"
+        android:title="@string/settings_developer_category_unrestricted"
+        android:icon="@drawable/ic_warning_24"
+        android:defaultValue="true">
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="unrestricted_app_data_enabled"
+            android:title="@string/settings_unrestricted_app_data_title"
+            android:summary="@string/settings_unrestricted_app_data_summary"
+            android:icon="@drawable/ic_folder_24"
+            android:defaultValue="false"
+            app:badgeType="experimental"
+            app:severityBadge="dangerous" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="unrestricted_personal_data_enabled"
+            android:title="@string/settings_unrestricted_personal_data_title"
+            android:summary="@string/settings_unrestricted_personal_data_summary"
+            android:icon="@drawable/ic_shield_24"
+            android:defaultValue="false"
+            app:badgeType="experimental"
+            app:severityBadge="dangerous" />
+
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
 </PreferenceScreen>

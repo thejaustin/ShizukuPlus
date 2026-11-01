@@ -193,7 +193,6 @@
     <string name="settings_shell_interceptor_summary">Tăng tốc lệnh shell qua API gốc. Cải thiện hiệu năng cho các tác vụ MacroDroid và Tasker.</string>
     <string name="settings_avf_manager_summary">Chạy các máy ảo Microdroid hoặc Linux biệt lập. Dùng với Hyperbox và Termux-VM để quản lý môi trường ảo.</string>
     <string name="settings_storage_proxy">Cầu nối bộ nhớ</string>
-    <string name="settings_storage_proxy_summary">Truy cập trực tiếp /data/data/ và các đường dẫn bị hạn chế. Được Neo Backup và SD Maid dùng để quản lý dữ liệu ứng dụng.</string>
     <string name="settings_continuity_bridge_summary">Đồng bộ trạng thái ứng dụng và chuyển giao các tác vụ đặc quyền giữa các thiết bị. Hoạt động với MacroDroid để tự động hóa đa thiết bị.</string>
     <string name="settings_ai_core_plus_summary">API ưu tiên cho NPU và ngữ cảnh màn hình. Tăng cường Gemini và các LLM cục bộ với khả năng nhận biết màn hình đặc quyền.</string>
     <string name="settings_window_manager_plus">Tinh chỉnh cửa sổ</string>
@@ -260,7 +259,6 @@
     <string name="help_avf_manager_title">Giới thiệu AVF Manager</string>
     <string name="help_avf_manager_detail">Android Virtualization Framework (AVF) Manager cho phép bạn chạy các máy ảo Linux hoặc Microdroid biệt lập. Trên phần cứng được hỗ trợ (Snapdragon 8 Gen 1+, Tensor G2+), điều này cho phép ảo hóa tăng tốc phần cứng với hỗ trợ VirtIO-GPU để chạy môi trường Linux máy tính để bàn hoặc các tác vụ bảo mật biệt lập.</string>
     <string name="help_storage_proxy_title">Giới thiệu Cầu nối bộ nhớ</string>
-    <string name="help_storage_proxy_detail">Cầu nối bộ nhớ cung cấp quyền truy cập tốc độ cao, được xác thực vào các đường dẫn hệ thống tệp bị hạn chế như /data/data/ (dữ liệu ứng dụng) và /data/app/ (tệp APK). Nhờ đó các công cụ sao lưu như Neo Backup hoạt động mà không cần toàn quyền root, đồng thời vẫn giữ an toàn nhờ mô hình quyền của Shizuku.</string>
     <string name="help_continuity_bridge_title">Giới thiệu Liên tục đa thiết bị</string>
     <string name="help_continuity_bridge_detail">Cầu nối liên tục cho phép các thiết bị Shizuku+ trong cùng mạng chuyển giao tác vụ và đồng bộ bảng nhớ tạm/trạng thái ứng dụng. Tính năng này dùng các API Handoff của Android 17 (được chuyển ngược khi có thể) để chuyển đổi liền mạch các tác vụ tự động hóa giữa điện thoại và máy tính bảng của bạn.</string>
     <string name="help_ai_core_plus_title">Giới thiệu Cầu nối trí tuệ</string>

@@ -192,7 +192,6 @@
     <string name="settings_shell_interceptor_summary">透過原生 API 加速 shell 指令。可提升 MacroDroid 與 Tasker 工作的效能。</string>
     <string name="settings_avf_manager_summary">執行隔離的 Microdroid 或 Linux 虛擬機器。搭配 Hyperbox 與 Termux-VM 管理虛擬環境。</string>
     <string name="settings_storage_proxy">儲存空間橋接</string>
-    <string name="settings_storage_proxy_summary">直接存取 /data/data/ 與受限路徑。Neo Backup 與 SD Maid 用於管理應用程式資料。</string>
     <string name="settings_continuity_bridge_summary">在裝置之間同步應用程式狀態並交接特權工作。可搭配 MacroDroid 進行跨裝置自動化。</string>
     <string name="settings_ai_core_plus_summary">優先的 NPU 與螢幕內容 API。以特權螢幕感知能力強化 Gemini 與本機 LLM。</string>
     <string name="settings_window_manager_plus">視窗調校器</string>
@@ -258,7 +257,6 @@
     <string name="help_avf_manager_title">關於 AVF 管理員</string>
     <string name="help_avf_manager_detail">Android 虛擬化架構 (AVF) 管理員可讓您執行隔離的 Linux 或 Microdroid 虛擬機器。在支援的硬體上（Snapdragon 8 Gen 1+、Tensor G2+），可透過 VirtIO-GPU 支援實現硬體加速虛擬化，用於執行桌面 Linux 環境或隔離的安全工作。</string>
     <string name="help_storage_proxy_title">關於儲存空間橋接</string>
-    <string name="help_storage_proxy_detail">儲存空間橋接可為 /data/data/（應用程式資料）與 /data/app/（APK 檔案）等受限檔案系統路徑提供經過驗證的高速存取。這讓 Neo Backup 等備份工具無需完整 root 存取即可運作，同時透過 Shizuku 的權限模型維持安全性。</string>
     <string name="help_continuity_bridge_title">關於多裝置接續</string>
     <string name="help_continuity_bridge_detail">接續橋接讓位於同一網路的 Shizuku+ 裝置能交接工作，並同步剪貼簿與應用程式狀態。它運用 Android 17 的 Handoff API（盡可能向下移植），讓自動化工作能在手機與平板之間無縫轉移。</string>
     <string name="help_ai_core_plus_title">關於智慧橋接</string>

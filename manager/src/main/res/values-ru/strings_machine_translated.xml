@@ -193,7 +193,6 @@
     <string name="settings_shell_interceptor_summary">Ускоряет команды оболочки через нативные API. Повышает производительность задач MacroDroid и Tasker.</string>
     <string name="settings_avf_manager_summary">Запуск изолированных виртуальных машин Microdroid или Linux. Используется с Hyperbox и Termux-VM для управления виртуальными средами.</string>
     <string name="settings_storage_proxy">Мост хранилища</string>
-    <string name="settings_storage_proxy_summary">Прямой доступ к /data/data/ и защищённым путям. Используется Neo Backup и SD Maid для управления данными приложений.</string>
     <string name="settings_continuity_bridge_summary">Синхронизация состояний приложений и передача привилегированных задач между устройствами. Работает с MacroDroid для автоматизации между устройствами.</string>
     <string name="settings_ai_core_plus_summary">Приоритетные API NPU и контекста экрана. Расширяет возможности Gemini и локальных LLM привилегированным доступом к содержимому экрана.</string>
     <string name="settings_window_manager_plus">Тюнер окон</string>
@@ -260,7 +259,6 @@
     <string name="help_avf_manager_title">О менеджере AVF</string>
     <string name="help_avf_manager_detail">Менеджер Android Virtualization Framework (AVF) позволяет запускать изолированные виртуальные машины Linux или Microdroid. На поддерживаемом оборудовании (Snapdragon 8 Gen 1+, Tensor G2+) это обеспечивает аппаратное ускорение виртуализации с поддержкой VirtIO-GPU для запуска десктопных сред Linux или изолированных защищённых задач.</string>
     <string name="help_storage_proxy_title">О мосте хранилища</string>
-    <string name="help_storage_proxy_detail">Мост хранилища обеспечивает аутентифицированный высокоскоростной доступ к защищённым путям файловой системы, таким как /data/data/ (данные приложений) и /data/app/ (APK-файлы). Это позволяет инструментам резервного копирования, например Neo Backup, работать без полного root-доступа, сохраняя безопасность за счёт модели разрешений Shizuku.</string>
     <string name="help_continuity_bridge_title">О непрерывности между устройствами</string>
     <string name="help_continuity_bridge_detail">Мост непрерывности позволяет устройствам с Shizuku+ в одной сети передавать задачи и синхронизировать буфер обмена и состояние приложений. Он использует API Handoff из Android 17 (портированные, где возможно) для плавной передачи задач автоматизации между телефоном и планшетом.</string>
     <string name="help_ai_core_plus_title">О мосте интеллекта</string>

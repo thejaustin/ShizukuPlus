@@ -193,7 +193,6 @@
     <string name="settings_shell_interceptor_summary">Versnel shell-opdrachten via native API\'s. Verbetert de prestaties voor MacroDroid- en Tasker-taken.</string>
     <string name="settings_avf_manager_summary">Draai geïsoleerde Microdroid- of Linux-VM\'s. Wordt gebruikt met Hyperbox en Termux-VM om virtuele omgevingen te beheren.</string>
     <string name="settings_storage_proxy">Opslagbrug</string>
-    <string name="settings_storage_proxy_summary">Krijg direct toegang tot /data/data/ en beperkte paden. Wordt gebruikt door Neo Backup en SD Maid om appgegevens te beheren.</string>
     <string name="settings_continuity_bridge_summary">Synchroniseer appstatus en draag bevoorrechte taken over tussen apparaten. Werkt met MacroDroid voor automatisering tussen apparaten.</string>
     <string name="settings_ai_core_plus_summary">Geprioriteerde NPU- en schermcontext-API\'s. Verbetert Gemini en lokale LLM\'s met bevoorrecht schermbewustzijn.</string>
     <string name="settings_window_manager_plus">Venstertuner</string>
@@ -260,7 +259,6 @@
     <string name="help_avf_manager_title">Over AVF-beheer</string>
     <string name="help_avf_manager_detail">Met Android Virtualization Framework (AVF) Manager kun je geïsoleerde virtuele Linux- of Microdroid-machines draaien. Op ondersteunde hardware (Snapdragon 8 Gen 1+, Tensor G2+) maakt dit hardwareversnelde virtualisatie mogelijk met VirtIO-GPU-ondersteuning voor desktop-Linux-omgevingen of geïsoleerde beveiligde taken.</string>
     <string name="help_storage_proxy_title">Over Opslagbrug</string>
-    <string name="help_storage_proxy_detail">De Opslagbrug biedt geauthenticeerde, razendsnelle toegang tot beperkte bestandssysteempaden zoals /data/data/ (appgegevens) en /data/app/ (APK-bestanden). Hierdoor kunnen back-uptools zoals Neo Backup werken zonder volledige root-toegang, terwijl de beveiliging behouden blijft via het toestemmingsmodel van Shizuku\'s.</string>
     <string name="help_continuity_bridge_title">Over continuïteit tussen meerdere apparaten</string>
     <string name="help_continuity_bridge_detail">Met de Continuïteitsbrug kunnen Shizuku+-apparaten in hetzelfde netwerk taken overdragen en klembord/appstatus synchroniseren. Hiervoor worden de Handoff-API\'s van Android 17 gebruikt (waar mogelijk gebackport) voor naadloze overgangen van automatiseringstaken tussen je telefoon en tablet.</string>
     <string name="help_ai_core_plus_title">Over Intelligence Bridge</string>

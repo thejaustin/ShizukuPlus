@@ -193,7 +193,6 @@
     <string name="settings_shell_interceptor_summary">เร่งความเร็วคำสั่งเชลล์ผ่าน API เนทีฟ ช่วยปรับปรุงประสิทธิภาพของงาน MacroDroid และ Tasker</string>
     <string name="settings_avf_manager_summary">รัน VM แบบแยกส่วนของ Microdroid หรือ Linux ใช้ร่วมกับ Hyperbox และ Termux-VM เพื่อจัดการสภาพแวดล้อมเสมือน</string>
     <string name="settings_storage_proxy">สะพานเชื่อมพื้นที่จัดเก็บ</string>
-    <string name="settings_storage_proxy_summary">เข้าถึง /data/data/ และเส้นทางที่ถูกจำกัดโดยตรง ใช้โดย Neo Backup และ SD Maid เพื่อจัดการข้อมูลแอป</string>
     <string name="settings_continuity_bridge_summary">ซิงค์สถานะแอปและส่งต่องานที่ต้องใช้สิทธิ์สูงระหว่างอุปกรณ์ ทำงานร่วมกับ MacroDroid สำหรับระบบอัตโนมัติข้ามอุปกรณ์</string>
     <string name="settings_ai_core_plus_summary">API ลำดับความสำคัญสำหรับ NPU และบริบทหน้าจอ ช่วยให้ Gemini และ LLM ในเครื่องรับรู้หน้าจอด้วยสิทธิ์พิเศษ</string>
     <string name="settings_window_manager_plus">Window Tuner</string>
@@ -260,7 +259,6 @@
     <string name="help_avf_manager_title">เกี่ยวกับตัวจัดการ AVF</string>
     <string name="help_avf_manager_detail">ตัวจัดการ Android Virtualization Framework (AVF) ช่วยให้คุณรันเครื่องเสมือน Linux หรือ Microdroid แบบแยกส่วนได้ บนฮาร์ดแวร์ที่รองรับ (Snapdragon 8 Gen 1+, Tensor G2+) จะเปิดใช้การจำลองเสมือนแบบเร่งด้วยฮาร์ดแวร์พร้อมรองรับ VirtIO-GPU สำหรับรันสภาพแวดล้อม Linux เดสก์ท็อปหรืองานที่ปลอดภัยแบบแยกส่วน</string>
     <string name="help_storage_proxy_title">เกี่ยวกับ Storage Bridge</string>
-    <string name="help_storage_proxy_detail">Storage Bridge ให้การเข้าถึงเส้นทางระบบไฟล์ที่ถูกจำกัดอย่าง /data/data/ (ข้อมูลแอป) และ /data/app/ (ไฟล์ APK) แบบผ่านการยืนยันตัวตนและความเร็วสูง ช่วยให้เครื่องมือสำรองข้อมูลอย่าง Neo Backup ทำงานได้โดยไม่ต้องมี root เต็มรูปแบบ พร้อมรักษาความปลอดภัยด้วยโมเดลสิทธิ์ของ Shizuku</string>
     <string name="help_continuity_bridge_title">เกี่ยวกับความต่อเนื่องหลายอุปกรณ์</string>
     <string name="help_continuity_bridge_detail">Continuity Bridge ช่วยให้อุปกรณ์ Shizuku+ ในเครือข่ายเดียวกันส่งต่องานและซิงค์คลิปบอร์ด/สถานะแอปได้ โดยใช้ Android 17 Handoff API (พอร์ตย้อนหลังเท่าที่ทำได้) เพื่อให้การย้ายงานอัตโนมัติระหว่างโทรศัพท์และแท็บเล็ตเป็นไปอย่างราบรื่น</string>
     <string name="help_ai_core_plus_title">เกี่ยวกับ Intelligence Bridge</string>

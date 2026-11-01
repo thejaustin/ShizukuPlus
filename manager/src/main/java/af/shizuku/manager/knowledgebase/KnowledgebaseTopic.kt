@@ -98,7 +98,8 @@ object KnowledgebaseRegistry {
 
             "stealth_mode", "binder_firewall", "shadow_binder", "shadow_binder_enabled",
             "shadow_binder_hidden_packages", "binder_logging", "spoof_device", "spoof_device_enabled",
-            "spoof_target", "package_governor_plus", "category_security",
+            "spoof_target", "package_governor_plus", "category_security", "category_unrestricted_access",
+            "unrestricted_app_data_enabled", "unrestricted_personal_data_enabled",
             -> TOPIC_SECURITY_PRIVACY
 
             else -> null

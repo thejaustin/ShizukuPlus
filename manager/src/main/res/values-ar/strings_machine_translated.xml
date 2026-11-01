@@ -193,7 +193,6 @@
     <string name="settings_shell_interceptor_summary">تسريع أوامر الصدفة عبر واجهات برمجية أصلية. يحسّن الأداء لمهام MacroDroid وTasker.</string>
     <string name="settings_avf_manager_summary">تشغيل أجهزة Microdroid أو Linux الافتراضية المعزولة. يُستخدم مع Hyperbox وTermux-VM لإدارة البيئات الافتراضية.</string>
     <string name="settings_storage_proxy">جسر التخزين</string>
-    <string name="settings_storage_proxy_summary">وصول مباشر إلى /data/data/ والمسارات المقيّدة. يستخدمه Neo Backup وSD Maid لإدارة بيانات التطبيقات.</string>
     <string name="settings_continuity_bridge_summary">مزامنة حالات التطبيقات وتسليم المهام المميزة بين الأجهزة. يعمل مع MacroDroid للأتمتة عبر الأجهزة.</string>
     <string name="settings_ai_core_plus_summary">واجهات ذات أولوية لوحدة NPU وسياق الشاشة. تعزز Gemini ونماذج LLM المحلية بوعي مميز بالشاشة.</string>
     <string name="settings_window_manager_plus">ضبط النوافذ</string>
@@ -260,7 +259,6 @@
     <string name="help_avf_manager_title">حول مدير AVF</string>
     <string name="help_avf_manager_detail">يتيح لك مدير Android Virtualization Framework (AVF) تشغيل أجهزة Linux أو Microdroid افتراضية معزولة. على العتاد المدعوم (Snapdragon 8 Gen 1+ وTensor G2+)، يتيح ذلك المحاكاة الافتراضية المسرّعة عتاديًا مع دعم VirtIO-GPU لتشغيل بيئات Linux المكتبية أو مهام آمنة معزولة.</string>
     <string name="help_storage_proxy_title">حول جسر التخزين</string>
-    <string name="help_storage_proxy_detail">يوفر جسر التخزين وصولًا موثقًا وعالي السرعة إلى مسارات نظام الملفات المقيّدة مثل /data/data/ (بيانات التطبيقات) و/data/app/ (ملفات APK). يتيح ذلك لأدوات النسخ الاحتياطي مثل Neo Backup العمل دون root كامل، مع الحفاظ على الأمان عبر نموذج أذونات Shizuku.</string>
     <string name="help_continuity_bridge_title">حول الاستمرارية بين الأجهزة</string>
     <string name="help_continuity_bridge_detail">يتيح جسر الاستمرارية لأجهزة Shizuku+ على الشبكة نفسها تسليم المهام ومزامنة الحافظة وحالة التطبيقات. يستخدم واجهات Android 17 Handoff (مع نقلها لإصدارات أقدم حيثما أمكن) للسماح بانتقال سلس لمهام الأتمتة بين هاتفك وجهازك اللوحي.</string>
     <string name="help_ai_core_plus_title">حول جسر الذكاء</string>

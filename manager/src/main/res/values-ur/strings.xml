@@ -331,7 +331,6 @@
     <string name="settings_shell_interceptor_summary">native APIs کے ذریعے shell کمانڈز تیز کریں۔ MacroDroid اور Tasker tasks کی کارکردگی بہتر ہوتی ہے۔</string>
     <string name="settings_avf_manager_summary">isolated Microdroid یا Linux VMs چلائیں۔ Hyperbox اور Termux-VM کے ساتھ virtual environments کے انتظام کے لیے استعمال ہوتا ہے۔</string>
     <string name="settings_storage_proxy">Storage Bridge</string>
-    <string name="settings_storage_proxy_summary">/data/data/ اور restricted paths تک براہِ راست رسائی دیں۔ Neo Backup اور SD Maid کے ذریعے app data manage کرنے کے لیے استعمال ہوتا ہے۔</string>
     <string name="settings_continuity_bridge_summary">ڈیوائسز کے درمیان app states اور privileged tasks کو sync اور hand off کریں۔ MacroDroid کے ساتھ cross-device automation کے لیے کام کرتا ہے۔</string>
     <string name="settings_ai_core_plus_summary">ترجیحی NPU اور screen context APIs۔ Gemini اور local LLMs کو privileged screen awareness فراہم کرتا ہے۔</string>
     <string name="settings_window_manager_plus">Window Tuner</string>
@@ -369,7 +368,6 @@
     <string name="help_avf_manager_title">AVF Manager کے بارے میں</string>
     <string name="help_avf_manager_detail">Android Virtualization Framework (AVF) Manager isolated Linux یا Microdroid virtual machines چلانے کی اجازت دیتا ہے۔ معاون hardware (Snapdragon 8 Gen 1+، Tensor G2+) پر یہ VirtIO-GPU support کے ساتھ hardware-accelerated virtualization فراہم کرتا ہے۔</string>
     <string name="help_storage_proxy_title">Storage Bridge کے بارے میں</string>
-    <string name="help_storage_proxy_detail">Storage Bridge /data/data/ (app data) اور /data/app/ (APK files) جیسی restricted filesystem paths تک authenticated، high-speed access فراہم کرتا ہے۔ اس سے Neo Backup جیسے backup tools مکمل root access کے بغیر کام کر سکتے ہیں، جبکہ Shizuku کے اجازت model کے ذریعے سیکیورٹی برقرار رہتی ہے۔</string>
     <string name="help_continuity_bridge_title">Multi-Device Continuity کے بارے میں</string>
     <string name="help_continuity_bridge_detail">Continuity Bridge ایک ہی نیٹ ورک پر موجود Shizuku+ ڈیوائسز کو tasks hand off کرنے اور clipboard/app state synchronize کرنے کی اجازت دیتا ہے۔ یہ Android 17 Handoff APIs استعمال کرتا ہے (جہاں ممکن ہو backported) تاکہ فون اور tablet کے درمیان automation tasks کی ہموار منتقلی ممکن ہو۔</string>
     <string name="help_ai_core_plus_title">Intelligence Bridge کے بارے میں</string>

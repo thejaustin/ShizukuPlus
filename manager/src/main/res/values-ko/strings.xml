@@ -354,7 +354,6 @@
     <string name="settings_shell_interceptor_summary">네이티브 API를 통해 셸 명령을 가속합니다. MacroDroid와 Tasker 작업의 성능을 향상시킵니다.</string>
     <string name="settings_avf_manager_summary">격리된 Microdroid 또는 Linux VM을 실행합니다. 가상 환경을 관리하기 위해 Hyperbox 및 Termux-VM과 함께 사용합니다.</string>
     <string name="settings_storage_proxy">스토리지 브리지</string>
-    <string name="settings_storage_proxy_summary">/data/data/ 및 제한된 경로에 직접 액세스합니다. 앱 데이터를 관리하기 위해 Neo Backup 및 SD Maid에서 사용합니다.</string>
     <string name="settings_continuity_bridge_summary">기기 간에 앱 상태를 동기화하고 권한 작업을 넘겨줍니다. 기기 간 자동화를 위해 MacroDroid와 함께 작동합니다.</string>
     <string name="settings_ai_core_plus_summary">우선 NPU 및 화면 컨텍스트 API. 권한 있는 화면 인식을 통해 Gemini와 로컬 LLM을 향상시킵니다.</string>
     <string name="settings_window_manager_plus">창 튜너</string>
@@ -426,7 +425,6 @@
     <string name="help_avf_manager_title">AVF Manager 정보</string>
     <string name="help_avf_manager_detail">Android Virtualization Framework(AVF) Manager를 사용하면 격리된 Linux 또는 Microdroid 가상 머신을 실행할 수 있습니다. 지원되는 하드웨어(Snapdragon 8 Gen 1 이상, Tensor G2 이상)에서는 VirtIO-GPU 지원을 통한 하드웨어 가속 가상화를 통해 데스크톱 Linux 환경이나 격리된 보안 작업을 실행할 수 있습니다.</string>
     <string name="help_storage_proxy_title">Storage Bridge 정보</string>
-    <string name="help_storage_proxy_detail">Storage Bridge는 /data/data/(앱 데이터) 및 /data/app/(APK 파일)와 같은 제한된 파일 시스템 경로에 대한 인증된 고속 액세스를 제공합니다. 이를 통해 Neo Backup과 같은 백업 도구가 완전한 루트 액세스 없이 동작할 수 있으며, Shizuku의 권한 모델을 통해 보안이 유지됩니다.</string>
     <string name="help_continuity_bridge_title">Multi-Device Continuity 정보</string>
     <string name="help_continuity_bridge_detail">Continuity Bridge를 사용하면 같은 네트워크상의 Shizuku+ 기기 간에 작업을 인계하고 클립보드/앱 상태를 동기화할 수 있습니다. Android 17 Handoff API(가능한 경우 백포트됨)를 활용하여 휴대폰과 태블릿 간에 자동화 작업을 원활하게 전환할 수 있습니다.</string>
     <string name="help_ai_core_plus_title">Intelligence Bridge 정보</string>

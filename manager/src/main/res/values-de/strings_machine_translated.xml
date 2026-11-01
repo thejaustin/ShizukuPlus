@@ -193,7 +193,6 @@
     <string name="settings_shell_interceptor_summary">Shell-Befehle über native APIs beschleunigen. Verbessert die Leistung von MacroDroid- und Tasker-Aufgaben.</string>
     <string name="settings_avf_manager_summary">Isolierte Microdroid- oder Linux-VMs ausführen. Wird mit Hyperbox und Termux-VM zur Verwaltung virtueller Umgebungen verwendet.</string>
     <string name="settings_storage_proxy">Speicherbrücke</string>
-    <string name="settings_storage_proxy_summary">Direkter Zugriff auf /data/data/ und eingeschränkte Pfade. Wird von Neo Backup und SD Maid zur Verwaltung von App-Daten verwendet.</string>
     <string name="settings_continuity_bridge_summary">App-Zustände synchronisieren und privilegierte Aufgaben zwischen Geräten übergeben. Funktioniert mit MacroDroid für geräteübergreifende Automatisierung.</string>
     <string name="settings_ai_core_plus_summary">Priorisierte NPU- und Bildschirmkontext-APIs. Erweitert Gemini und lokale LLMs um privilegiertes Bildschirmverständnis.</string>
     <string name="settings_window_manager_plus">Window Tuner</string>
@@ -260,7 +259,6 @@
     <string name="help_avf_manager_title">Über den AVF-Manager</string>
     <string name="help_avf_manager_detail">Mit dem Android Virtualization Framework (AVF) Manager kannst du isolierte Linux- oder Microdroid-Virtuelle-Maschinen ausführen. Auf unterstützter Hardware (Snapdragon 8 Gen 1+, Tensor G2+) ermöglicht dies hardwarebeschleunigte Virtualisierung mit VirtIO-GPU-Unterstützung, um Linux-Desktopumgebungen oder isolierte, sichere Aufgaben auszuführen.</string>
     <string name="help_storage_proxy_title">Über die Storage Bridge</string>
-    <string name="help_storage_proxy_detail">Die Storage Bridge bietet authentifizierten, schnellen Zugriff auf eingeschränkte Dateisystempfade wie /data/data/ (App-Daten) und /data/app/ (APK-Dateien). So können Sicherungstools wie Neo Backup ohne vollen Root-Zugriff arbeiten, während die Sicherheit durch das Berechtigungsmodell von Shizuku gewahrt bleibt.</string>
     <string name="help_continuity_bridge_title">Über Multi-Device Continuity</string>
     <string name="help_continuity_bridge_detail">Die Continuity Bridge ermöglicht es Shizuku+-Geräten im selben Netzwerk, Aufgaben zu übergeben und Zwischenablage bzw. App-Zustand zu synchronisieren. Sie nutzt die Handoff-APIs von Android 17 (wo möglich rückportiert), um Automatisierungsaufgaben nahtlos zwischen Smartphone und Tablet zu übertragen.</string>
     <string name="help_ai_core_plus_title">Über die Intelligence Bridge</string>

@@ -83,6 +83,8 @@ public class ShizukuSettings {
         public static final String KEY_PACKAGE_GOVERNOR_PLUS_ENABLED = "package_governor_plus_enabled";
         public static final String KEY_DISPLAY_TUNER_PLUS_ENABLED = "display_tuner_plus_enabled";
         public static final String KEY_EXPERIMENTAL_ROOT_COMPAT = "experimental_root_compat";
+        public static final String KEY_UNRESTRICTED_APP_DATA = "unrestricted_app_data_enabled";
+        public static final String KEY_UNRESTRICTED_PERSONAL_DATA = "unrestricted_personal_data_enabled";
         public static final String KEY_SPOOF_DEVICE_ENABLED = "spoof_device_enabled";
         public static final String KEY_SPOOF_TARGET = "spoof_target";
         public static final String KEY_VECTOR_ENABLED = "vector_enabled";
@@ -1779,6 +1781,18 @@ public class ShizukuSettings {
         if (p != null) p.edit().putBoolean(Keys.KEY_EXPERIMENTAL_ROOT_COMPAT, enable).apply();
     }
 
+    // Off by default: third-party apps can't reach other apps' private data (Storage Bridge,
+    // temp-debug, BackupRestorePlus) or personal data and device control until the user opts in.
+    public static boolean isUnrestrictedAppDataEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_UNRESTRICTED_APP_DATA, false);
+    }
+
+    public static boolean isUnrestrictedPersonalDataEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_UNRESTRICTED_PERSONAL_DATA, false);
+    }
+
     public static boolean isSpoofDeviceEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_SPOOF_DEVICE_ENABLED, false);
@@ -2007,6 +2021,8 @@ public class ShizukuSettings {
                 service.updatePlusFeatureEnabled("root_iptables_mocking", isRootIptablesMockingEnabled());
                 service.updatePlusFeatureEnabled("vector", isVectorEnabled());
                 service.updatePlusFeatureEnabled("experimental_root", isExperimentalRootCompatEnabled());
+                service.updatePlusFeatureEnabled("unrestricted_app_data", isUnrestrictedAppDataEnabled());
+                service.updatePlusFeatureEnabled("unrestricted_personal_data", isUnrestrictedPersonalDataEnabled());
                 service.updatePlusFeatureEnabled("spoof_device", isSpoofDeviceEnabled());
                 service.setPlusSetting("spoof_target", getSpoofTarget());
                 service.updatePlusFeatureEnabled("on_device_adb_tcp", isOnDeviceAdbTcpEnabled());

@@ -86,6 +86,28 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
             }
         }
 
+        // Unrestricted third-party access: confirm before turning on, sync after the switch persists.
+        listOf(KEY_UNRESTRICTED_APP_DATA, KEY_UNRESTRICTED_PERSONAL_DATA).forEach { key ->
+            findPreference<TwoStatePreference>(key)?.setOnPreferenceChangeListener { pref, v ->
+                val enabled = v as? Boolean ?: return@setOnPreferenceChangeListener false
+                if (!enabled) {
+                    view?.post { ShizukuSettings.syncAllPlusFeaturesToServer() }
+                    return@setOnPreferenceChangeListener true
+                }
+                val ctx = context ?: return@setOnPreferenceChangeListener false
+                showDialog(
+                    MaterialAlertDialogBuilder(ctx)
+                        .setTitle(R.string.settings_unrestricted_confirm_title)
+                        .setMessage(R.string.settings_unrestricted_confirm_message)
+                        .setPositiveButton(R.string.settings_unrestricted_confirm_positive) { _, _ ->
+                            (pref as TwoStatePreference).isChecked = true
+                            ShizukuSettings.syncAllPlusFeaturesToServer()
+                        }.setNegativeButton(android.R.string.cancel, null),
+                )
+                false
+            }
+        }
+
         // Device Identity Spoofing
         findPreference<TwoStatePreference>(KEY_SPOOF_DEVICE_ENABLED)?.apply {
             isChecked = ShizukuSettings.isSpoofDeviceEnabled()
