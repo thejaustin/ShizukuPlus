@@ -12,9 +12,16 @@ import rikka.hidden.compat.ActivityManagerApis
 import rikka.shizuku.server.util.InputValidationUtils
 import rikka.shizuku.server.util.BinderCallLogger
 import rikka.shizuku.server.util.ShellExecutor
+import rikka.shizuku.server.util.ArchiveVetting
+import rikka.shizuku.server.util.StorageAccessPolicy
 import java.io.File
+import java.util.function.BooleanSupplier
 
-class StorageProxyImpl : IStorageProxy.Stub() {
+/**
+ * @param unrestricted the "Unrestricted app data access" developer option. While it is off,
+ *     [StorageAccessPolicy] keeps third-party callers out of other apps' private data.
+ */
+class StorageProxyImpl(private val unrestricted: BooleanSupplier) : IStorageProxy.Stub() {
 
     // Cached once per process — getuid() is a syscall, not a field.
     private val serverUid: Int by lazy { android.system.Os.getuid() }
@@ -25,24 +32,45 @@ class StorageProxyImpl : IStorageProxy.Stub() {
         return super.onTransact(code, data, reply, flags)
     }
 
+    /**
+     * The canonical form of [path] if the caller may touch it, else null. Every method works on
+     * this canonical string so a symlink or `..` can't pass the check and then reach elsewhere.
+     */
+    private fun allowedPath(path: String?, write: Boolean): String? {
+        if (path.isNullOrEmpty() || !InputValidationUtils.isSafePath(path)) return null
+        val canonical = runCatching { File(path).canonicalPath }.getOrNull() ?: return null
+        if (!StorageAccessPolicy.isAllowed(canonical, write, unrestricted.asBoolean)) {
+            Log.w("StorageProxy", "denied ${if (write) "write" else "read"} of $canonical (developer option off)")
+            return null
+        }
+        return canonical
+    }
+
+    private fun isAppDataPath(path: String) = path.startsWith("/data/data/") || path.startsWith("/data/user/")
+
+    // Shared storage is case-insensitive, so /android/DATA reaches the same folder.
+    private fun isExternalAppPath(path: String) =
+        path.contains("/Android/data", ignoreCase = true) || path.contains("/Android/obb", ignoreCase = true)
+
     override fun openFile(path: String?, mode: Int): ParcelFileDescriptor? {
-        val path = path ?: return null
-        if (!InputValidationUtils.isSafePath(path)) return null
+        val write = mode and WRITE_MODE_BITS != 0
+        val path = allowedPath(path, write) ?: return null
         return try {
             try {
                 ParcelFileDescriptor.open(File(path), mode)
             } catch (e: Exception) {
+                // The fallbacks below are read-only pipes; never hand one out for a write request.
+                if (write) throw e
                 // Android 13+ (API 33) progressively restricts /Android/data and /Android/obb to the owning
                 // app's UID; Android 16 (API 36) + OneUI 8 tightened it further. The shell-pipe fallback
                 // works from API 33 onwards — not just the API 36+ check that was here before.
-                if (android.os.Build.VERSION.SDK_INT >= 33 && (path.contains("/Android/data") || path.contains("/Android/obb"))) {
+                if (android.os.Build.VERSION.SDK_INT >= 33 && isExternalAppPath(path)) {
                     return openViaShellPipe(arrayOf("sh", "-c", "cat \"$1\"", "sh", path))
                 }
                 // ADB mode (UID 2000): /data/data/<pkg>/ is owned by the app UID, but `run-as`
                 // lets the shell impersonate the target app if it is debuggable. Only attempt
                 // this when direct open already failed — no-op for non-debuggable or root mode.
-                if (serverUid == 2000 &&
-                    (path.startsWith("/data/data/") || path.startsWith("/data/user/"))) {
+                if (serverUid == 2000 && isAppDataPath(path)) {
                     val pkg = extractPackageName(path)
                     if (pkg != null) {
                         return openViaShellPipe(arrayOf("run-as", pkg, "cat", path))
@@ -103,39 +131,35 @@ class StorageProxyImpl : IStorageProxy.Stub() {
     }
 
     override fun exists(path: String?): Boolean {
-        val path = path ?: return false
-        if (!InputValidationUtils.isSafePath(path)) return false
+        val path = allowedPath(path, write = false) ?: return false
         val file = File(path)
         if (file.exists()) return true
-        if (path.contains("/Android/data") || path.contains("/Android/obb")) {
+        if (isExternalAppPath(path)) {
             return ShellExecutor.execBool("sh", "-c", "[ -e \"$1\" ]", "sh", path)
         }
         return false
     }
 
     override fun delete(path: String?): Boolean {
-        val path = path ?: return false
-        if (!InputValidationUtils.isSafePath(path)) return false
+        val path = allowedPath(path, write = true) ?: return false
         val file = File(path)
         if (file.delete()) return true
-        if (path.contains("/Android/data") || path.contains("/Android/obb")) {
+        if (isExternalAppPath(path)) {
             return ShellExecutor.execBool("sh", "-c", "rm -rf \"$1\"", "sh", path)
         }
         return false
     }
 
     override fun listFiles(path: String?): List<String> {
-        val path = path ?: return emptyList()
-        if (!InputValidationUtils.isSafePath(path)) return emptyList()
+        val path = allowedPath(path, write = false) ?: return emptyList()
         val direct = File(path).list()
         if (!direct.isNullOrEmpty()) return direct.toList()
-        if (path.contains("/Android/data") || path.contains("/Android/obb")) {
+        if (isExternalAppPath(path)) {
             return ShellExecutor.exec("sh", "-c", "ls -1 \"$1\"", "sh", path)
                 .lines().filter { it.isNotBlank() }
         }
         // For /data/data/<pkg>/ paths (ADB mode, debuggable apps only)
-        if (serverUid == 2000 &&
-            (path.startsWith("/data/data/") || path.startsWith("/data/user/"))) {
+        if (serverUid == 2000 && isAppDataPath(path)) {
             val pkg = extractPackageName(path) ?: return emptyList()
             return ShellExecutor.exec("run-as", pkg, "ls", path)
                 .lines().filter { it.isNotBlank() }
@@ -145,65 +169,54 @@ class StorageProxyImpl : IStorageProxy.Stub() {
 
     override fun getFileInfo(path: String?): Bundle {
         val bundle = Bundle()
-        val safePath = if (!path.isNullOrEmpty() && InputValidationUtils.isSafePath(path)) path else null
-        if (safePath != null) {
-            val file = File(safePath)
-            if (file.exists()) {
-                bundle.putBoolean("exists", true)
-                bundle.putLong("size", file.length())
-                bundle.putLong("lastModified", file.lastModified())
-                bundle.putBoolean("isDirectory", file.isDirectory)
-            } else if (safePath.contains("/Android/data") || safePath.contains("/Android/obb")) {
-                val out = ShellExecutor.exec("sh", "-c", "stat -c '%s %Y %F' \"$1\" 2>/dev/null", "sh", safePath)
-                    .lines().firstOrNull { it.isNotBlank() }
-                if (!out.isNullOrBlank()) {
-                    val parts = out.trim().split(" ")
-                    if (parts.size >= 2) {
-                        bundle.putBoolean("exists", true)
-                        bundle.putLong("size", parts[0].toLongOrNull() ?: 0L)
-                        bundle.putLong("lastModified", (parts[1].toLongOrNull() ?: 0L) * 1000)
-                        bundle.putBoolean("isDirectory", out.contains("directory", ignoreCase = true))
-                        return bundle
-                    }
+        bundle.putBoolean("exists", false)
+        val safePath = allowedPath(path, write = false) ?: return bundle
+        val file = File(safePath)
+        if (file.exists()) {
+            bundle.putBoolean("exists", true)
+            bundle.putLong("size", file.length())
+            bundle.putLong("lastModified", file.lastModified())
+            bundle.putBoolean("isDirectory", file.isDirectory)
+        } else if (isExternalAppPath(safePath)) {
+            val out = ShellExecutor.exec("sh", "-c", "stat -c '%s %Y %F' \"$1\" 2>/dev/null", "sh", safePath)
+                .lines().firstOrNull { it.isNotBlank() }
+            if (!out.isNullOrBlank()) {
+                val parts = out.trim().split(" ")
+                if (parts.size >= 2) {
+                    bundle.putBoolean("exists", true)
+                    bundle.putLong("size", parts[0].toLongOrNull() ?: 0L)
+                    bundle.putLong("lastModified", (parts[1].toLongOrNull() ?: 0L) * 1000)
+                    bundle.putBoolean("isDirectory", out.contains("directory", ignoreCase = true))
                 }
-                bundle.putBoolean("exists", false)
-            } else {
-                bundle.putBoolean("exists", false)
             }
-        } else {
-            bundle.putBoolean("exists", false)
         }
         return bundle
     }
 
     override fun mkdir(path: String?): Boolean {
-        val path = path ?: return false
-        if (!InputValidationUtils.isSafePath(path)) return false
+        val path = allowedPath(path, write = true) ?: return false
         val file = File(path)
         if (file.mkdirs()) return true
-        if (path.contains("/Android/data") || path.contains("/Android/obb")) {
+        if (isExternalAppPath(path)) {
             return ShellExecutor.execBool("sh", "-c", "mkdir -p \"$1\"", "sh", path)
         }
         return false
     }
 
     override fun copyFile(srcPath: String?, destPath: String?): Boolean {
-        val srcPath = srcPath ?: return false
-        val destPath = destPath ?: return false
-        if (!InputValidationUtils.isSafePath(srcPath) || !InputValidationUtils.isSafePath(destPath)) return false
+        val srcPath = allowedPath(srcPath, write = false) ?: return false
+        val destPath = allowedPath(destPath, write = true) ?: return false
         return try {
             File(srcPath).inputStream().use { src ->
                 File(destPath).outputStream().use { dst -> src.copyTo(dst) }
             }
             true
         } catch (_: Exception) {
-            if (srcPath.contains("/Android/data") || srcPath.contains("/Android/obb") ||
-                destPath.contains("/Android/data") || destPath.contains("/Android/obb")) {
+            if (isExternalAppPath(srcPath) || isExternalAppPath(destPath)) {
                 return ShellExecutor.execBool("sh", "-c", "cp -rf \"$1\" \"$2\"", "sh", srcPath, destPath)
             }
             // For /data/data/<pkg>/ paths, fall back to run-as cp
-            if (serverUid == 2000 &&
-                (srcPath.startsWith("/data/data/") || srcPath.startsWith("/data/user/"))) {
+            if (serverUid == 2000 && isAppDataPath(srcPath)) {
                 val pkg = extractPackageName(srcPath) ?: return false
                 return ShellExecutor.execBool("run-as", pkg, "cp", srcPath, destPath)
             }
@@ -241,10 +254,8 @@ class StorageProxyImpl : IStorageProxy.Stub() {
     }
 
     override fun tarDirectory(dirPath: String?, packageContext: String?): ParcelFileDescriptor? {
-        val dir = dirPath ?: return null
-        if (!InputValidationUtils.isSafePath(dir)) return null
-        return if (InputValidationUtils.isValidPackageName(packageContext) && serverUid == 2000 &&
-            (dir.startsWith("/data/data/") || dir.startsWith("/data/user/"))) {
+        val dir = allowedPath(dirPath, write = false) ?: return null
+        return if (InputValidationUtils.isValidPackageName(packageContext) && serverUid == 2000 && isAppDataPath(dir)) {
             // run-as <pkg> tar for debuggable-app data directories; isValidPackageName guards non-null
             openViaShellPipe(arrayOf("run-as", packageContext!!, "tar", "-czf", "-", "-C", dir, "."))
         } else {
@@ -257,41 +268,59 @@ class StorageProxyImpl : IStorageProxy.Stub() {
         packageContext: String?,
         tarPfd: ParcelFileDescriptor?
     ): Boolean {
-        val dir = destDirPath ?: return false
-        if (!InputValidationUtils.isSafePath(dir) || tarPfd == null) return false
-        val cmd = if (InputValidationUtils.isValidPackageName(packageContext) && serverUid == 2000 &&
-            (dir.startsWith("/data/data/") || dir.startsWith("/data/user/"))) {
-            arrayOf("run-as", packageContext!!, "tar", "-xf", "-", "-C", dir)
-        } else {
-            arrayOf("tar", "-xf", "-", "-C", dir)
-        }
+        val dir = allowedPath(destDirPath, write = true) ?: return false
+        if (tarPfd == null) return false
+        // Stage the archive so it can be vetted before anything is extracted: a symlink entry
+        // followed by a file written through it would land outside the allowed directory.
+        val staged = File(STAGING_DIR, "splus-restore-${System.nanoTime()}.archive")
         return try {
-            val proc = ProcessBuilder(*cmd)
-                .start()
-            // Drain stderr on a daemon thread to prevent the child from blocking if its stderr
-            // pipe buffer fills up (e.g., verbose tar warnings). We collect it for logging only.
-            val errBuf = StringBuilder()
-            val stderrThread = Thread {
-                try {
-                    proc.errorStream.bufferedReader().forEachLine { errBuf.appendLine(it) }
-                } catch (_: Exception) {}
-            }.also { it.isDaemon = true; it.start() }
-            // Pipe the tar stream into the process's stdin, then close stdin so tar sees EOF.
             ParcelFileDescriptor.AutoCloseInputStream(tarPfd).use { input ->
-                proc.outputStream.use { output ->
-                    input.copyTo(output)
-                }
+                staged.outputStream().use { input.copyTo(it) }
             }
-            stderrThread.join(5_000)
+            if (!isArchiveSafe(staged)) {
+                Log.e("StorageProxy", "restoreTarDirectory refused: archive writes through a link or outside the folder")
+                return false
+            }
+            val cmd = if (InputValidationUtils.isValidPackageName(packageContext) && serverUid == 2000 && isAppDataPath(dir)) {
+                arrayOf("run-as", packageContext!!, "tar", "-xf", "-", "-C", dir)
+            } else {
+                arrayOf("tar", "-xf", "-", "-C", dir)
+            }
+            // Fed on stdin: under run-as the app's uid can't open a file the server staged.
+            val proc = ProcessBuilder(*cmd).redirectInput(staged).redirectErrorStream(true).start()
+            val output = proc.inputStream.bufferedReader().readText()
             val exitCode = proc.waitFor()
             if (exitCode != 0) {
-                Log.e("StorageProxy", "restoreTarDirectory exitCode=$exitCode: $errBuf")
+                Log.e("StorageProxy", "restoreTarDirectory exitCode=$exitCode: $output")
             }
             exitCode == 0
         } catch (e: Exception) {
             Log.e("StorageProxy", "restoreTarDirectory failed", e)
             false
+        } finally {
+            staged.delete()
         }
     }
-}
 
+    private fun isArchiveSafe(archive: File): Boolean {
+        val names = runTar("-tf", archive.path) ?: return false
+        val verbose = runTar("-tvf", archive.path) ?: return false
+        return ArchiveVetting.isSafe(names, verbose)
+    }
+
+    private fun runTar(vararg args: String): List<String>? = try {
+        val proc = ProcessBuilder("tar", *args).start()
+        val lines = proc.inputStream.bufferedReader().readLines().filter { it.isNotBlank() }
+        if (proc.waitFor() == 0) lines else null
+    } catch (_: Exception) {
+        null
+    }
+
+    private companion object {
+        const val WRITE_MODE_BITS = ParcelFileDescriptor.MODE_WRITE_ONLY or ParcelFileDescriptor.MODE_CREATE or
+            ParcelFileDescriptor.MODE_TRUNCATE or ParcelFileDescriptor.MODE_APPEND
+
+        // Writable by both the shell (2000) and root server; the manager already stages files here.
+        val STAGING_DIR = File("/data/local/tmp")
+    }
+}

@@ -15,7 +15,13 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class ApkPatcherImpl : IApkPatcher.Stub() {
+/**
+ * @param unrestricted the "Unrestricted app data access" developer option. Making an app
+ *     debuggable lets the shell read and replace its private data, so starting a temp-debug
+ *     session or moving data through one needs it on. Restoring the original APK never does,
+ *     so turning the option off can't strand a patched app.
+ */
+class ApkPatcherImpl(private val unrestricted: java.util.function.BooleanSupplier) : IApkPatcher.Stub() {
 
     companion object {
         private const val TMP_DIR = "/data/local/tmp/splus_td"
@@ -386,8 +392,15 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
         }
     }
 
+    private fun dataAccessAllowed(): Boolean {
+        if (unrestricted.asBoolean) return true
+        Log.w(TAG, "temp-debug data access refused: developer option off")
+        return false
+    }
+
     override fun prepareTempDebug(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
+        if (!dataAccessAllowed()) return false
         if (!InputValidationUtils.isValidPackageName(packageName)) return false
         if (sessionPaths(packageName) != null) return true
         if (!synchronized(sweepLock) { preparing.add(packageName) }) return false
@@ -465,6 +478,7 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
 
     override fun streamDataDir(packageName: String?): ParcelFileDescriptor? {
         if (packageName.isNullOrBlank()) return null
+        if (!dataAccessAllowed()) return null
         if (!InputValidationUtils.isValidPackageName(packageName)) return null
         if (sessionPaths(packageName) == null) return null
         return pipe("run-as", packageName, "tar", "-czf", "-", "-C", "/data/data/$packageName", ".")
@@ -472,6 +486,7 @@ class ApkPatcherImpl : IApkPatcher.Stub() {
 
     override fun restoreDataDir(packageName: String?, tarStream: ParcelFileDescriptor?): Boolean {
         if (packageName.isNullOrBlank() || tarStream == null) return false
+        if (!dataAccessAllowed()) return false
         if (!InputValidationUtils.isValidPackageName(packageName)) return false
         if (sessionPaths(packageName) == null) return false
         return pipeFrom(tarStream, "run-as", packageName, "tar", "-xzf", "-", "-C", "/data/data/$packageName")

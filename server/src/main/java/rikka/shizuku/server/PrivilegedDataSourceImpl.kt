@@ -21,7 +21,13 @@ import rikka.shizuku.server.util.ShellExecutor
  * Implements IPrivilegedDataSource entirely through shell commands executed under uid 2000.
  * No Android Context is required — uid 2000 can reach all data through ADB-accessible APIs.
  */
-class PrivilegedDataSourceImpl : IPrivilegedDataSource.Stub() {
+/** @param allowed whether the calling app may use this binder right now (see [RiskyBinderGate]). */
+class PrivilegedDataSourceImpl(private val allowed: java.util.function.BooleanSupplier) : IPrivilegedDataSource.Stub() {
+
+    override fun onTransact(code: Int, data: android.os.Parcel, reply: android.os.Parcel?, flags: Int): Boolean {
+        rikka.shizuku.server.util.RiskyBinderGate.enforce(code, allowed, "PrivilegedDataSource")
+        return super.onTransact(code, data, reply, flags)
+    }
 
     private fun pipeProcess(vararg args: String): ParcelFileDescriptor? = try {
         val (readSide, writeSide) = ParcelFileDescriptor.createPipe()

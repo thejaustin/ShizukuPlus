@@ -168,8 +168,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private volatile long lastManagerAppIdRefresh;
     // Created on first use: none of these is needed to start serving, and loading all fifteen
     // implementation classes up front sat on the server's cold-start path.
+    // Developer options that bring back the riskier third-party APIs; both default off.
+    // "App data": other apps' private files (Storage Bridge, temp-debug, BackupRestorePlus).
+    // "Personal data": SMS, contacts, location, clipboard, screenshots, input, logcat, reboot.
+    private static final String FEATURE_UNRESTRICTED_APP_DATA = "unrestricted_app_data";
+    private static final String FEATURE_UNRESTRICTED_PERSONAL_DATA = "unrestricted_personal_data";
+
     private final Lazy<VirtualMachineManagerImpl> virtualMachineManager = new Lazy<>(VirtualMachineManagerImpl::new);
-    private final Lazy<StorageProxyImpl> storageProxy = new Lazy<>(StorageProxyImpl::new);
+    private final Lazy<StorageProxyImpl> storageProxy = new Lazy<>(() -> new StorageProxyImpl(() -> isFeatureEnabled(FEATURE_UNRESTRICTED_APP_DATA)));
     private final AICorePlusImpl aiCorePlus;
     private final Lazy<WindowManagerPlusImpl> windowManagerPlus = new Lazy<>(WindowManagerPlusImpl::new);
     private final Lazy<ContinuityBridgeImpl> continuityBridge = new Lazy<>(ContinuityBridgeImpl::new);
@@ -179,11 +185,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private final Lazy<StatusBarGovernorPlusImpl> statusBarGovernorPlus = new Lazy<>(StatusBarGovernorPlusImpl::new);
     private final Lazy<PackageGovernorPlusImpl> packageGovernorPlus = new Lazy<>(PackageGovernorPlusImpl::new);
     private final Lazy<DisplayTunerPlusImpl> displayTunerPlus = new Lazy<>(DisplayTunerPlusImpl::new);
-    private final Lazy<AppInspectorImpl> appInspector = new Lazy<>(AppInspectorImpl::new);
-    private final Lazy<PrivilegedDataSourceImpl> privilegedDataSource = new Lazy<>(PrivilegedDataSourceImpl::new);
-    private final Lazy<BackupRestorePlusImpl> backupRestorePlus = new Lazy<>(BackupRestorePlusImpl::new);
-    private final Lazy<ApkPatcherImpl> apkPatcher = new Lazy<>(ApkPatcherImpl::new);
-    private final Lazy<DeviceControlPlusImpl> deviceControlPlus = new Lazy<>(DeviceControlPlusImpl::new);
+    private final Lazy<AppInspectorImpl> appInspector = new Lazy<>(() -> new AppInspectorImpl(() -> isRiskyBinderAllowed("AppInspector", FEATURE_UNRESTRICTED_PERSONAL_DATA)));
+    private final Lazy<PrivilegedDataSourceImpl> privilegedDataSource = new Lazy<>(() -> new PrivilegedDataSourceImpl(() -> isRiskyBinderAllowed("PrivilegedDataSource", FEATURE_UNRESTRICTED_PERSONAL_DATA)));
+    private final Lazy<BackupRestorePlusImpl> backupRestorePlus = new Lazy<>(() -> new BackupRestorePlusImpl(() -> isRiskyBinderAllowed("BackupRestorePlus", FEATURE_UNRESTRICTED_APP_DATA)));
+    private final Lazy<ApkPatcherImpl> apkPatcher = new Lazy<>(() -> new ApkPatcherImpl(() -> isFeatureEnabled(FEATURE_UNRESTRICTED_APP_DATA)));
+    private final Lazy<DeviceControlPlusImpl> deviceControlPlus = new Lazy<>(() -> new DeviceControlPlusImpl(() -> isRiskyBinderAllowed("DeviceControlPlus", FEATURE_UNRESTRICTED_PERSONAL_DATA)));
 
     // One-time backfill: re-grants the OS-level runtime permission for every already-authorized app.
     // Prior to the 741df2f4 fix (2026-07-19), grantRuntimePermission silently failed because no
@@ -3318,19 +3324,31 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public IAppInspector getAppInspector() {
         enforceCallingPermission("getAppInspector");
+        if (!isRiskyBinderAllowed("getAppInspector", FEATURE_UNRESTRICTED_PERSONAL_DATA)) return null;
         return appInspector.get();
     }
 
     @Override
     public IPrivilegedDataSource getPrivilegedDataSource() {
         enforceCallingPermission("getPrivilegedDataSource");
+        if (!isRiskyBinderAllowed("getPrivilegedDataSource", FEATURE_UNRESTRICTED_PERSONAL_DATA)) return null;
         return privilegedDataSource.get();
     }
 
     @Override
     public IBackupRestorePlus getBackupRestorePlus() {
         enforceCallingPermission("getBackupRestorePlus");
+        if (!isRiskyBinderAllowed("getBackupRestorePlus", FEATURE_UNRESTRICTED_APP_DATA)) return null;
         return backupRestorePlus.get();
+    }
+
+    /**
+     * The manager always gets the risky sub-binders (its own backup screen uses BackupRestorePlus);
+     * third-party apps only while the user has turned on the matching developer option.
+     */
+    private boolean isRiskyBinderAllowed(String func, String featureKey) {
+        if (isFeatureEnabled(featureKey)) return true;
+        return checkCallerManagerPermission(func, Binder.getCallingUid(), Binder.getCallingPid());
     }
 
     @Override
@@ -3342,6 +3360,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public IDeviceControlPlus getDeviceControlPlus() {
         enforceCallingPermission("getDeviceControlPlus");
+        if (!isRiskyBinderAllowed("getDeviceControlPlus", FEATURE_UNRESTRICTED_PERSONAL_DATA)) return null;
         return deviceControlPlus.get();
     }
 

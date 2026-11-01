@@ -12,7 +12,13 @@ import rikka.shizuku.server.util.ShellExecutor
  * Shell has WRITE_SETTINGS and WRITE_SECURE_SETTINGS as install-time grants, and is
  * authorised to call svc/media/reboot utilities without additional permissions.
  */
-class DeviceControlPlusImpl : IDeviceControlPlus.Stub() {
+/** @param allowed whether the calling app may use this binder right now (see [RiskyBinderGate]). */
+class DeviceControlPlusImpl(private val allowed: java.util.function.BooleanSupplier) : IDeviceControlPlus.Stub() {
+
+    override fun onTransact(code: Int, data: android.os.Parcel, reply: android.os.Parcel?, flags: Int): Boolean {
+        rikka.shizuku.server.util.RiskyBinderGate.enforce(code, allowed, "DeviceControlPlus")
+        return super.onTransact(code, data, reply, flags)
+    }
 
     companion object {
         private const val TAG = "DeviceControlPlus"

@@ -19,7 +19,13 @@ import rikka.shizuku.server.util.ShellExecutor
 import java.io.File
 import java.io.InputStream
 
-class BackupRestorePlusImpl : IBackupRestorePlus.Stub() {
+/** @param allowed whether the calling app may use this binder right now (see [RiskyBinderGate]). */
+class BackupRestorePlusImpl(private val allowed: java.util.function.BooleanSupplier) : IBackupRestorePlus.Stub() {
+
+    override fun onTransact(code: Int, data: android.os.Parcel, reply: android.os.Parcel?, flags: Int): Boolean {
+        rikka.shizuku.server.util.RiskyBinderGate.enforce(code, allowed, "BackupRestorePlus")
+        return super.onTransact(code, data, reply, flags)
+    }
 
     companion object {
         private const val TAG = "BackupRestorePlus"

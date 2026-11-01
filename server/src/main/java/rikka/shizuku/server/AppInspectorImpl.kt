@@ -17,7 +17,13 @@ import rikka.shizuku.server.util.ShellExecutor
 import java.io.File
 import java.nio.file.Files
 
-class AppInspectorImpl : IAppInspector.Stub() {
+/** @param allowed whether the calling app may use this binder right now (see [RiskyBinderGate]). */
+class AppInspectorImpl(private val allowed: java.util.function.BooleanSupplier) : IAppInspector.Stub() {
+
+    override fun onTransact(code: Int, data: android.os.Parcel, reply: android.os.Parcel?, flags: Int): Boolean {
+        rikka.shizuku.server.util.RiskyBinderGate.enforce(code, allowed, "AppInspector")
+        return super.onTransact(code, data, reply, flags)
+    }
 
     companion object {
         private const val TAG = "AppInspector"
