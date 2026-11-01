@@ -343,10 +343,18 @@
             android:name=".shell.ShellTutorialActivity"
             android:exported="false"
             android:label="@string/home_terminal_title" />
+        <!-- Not exported: its extras (port, root, user gesture) are trusted. Other apps start the
+             service through ExternalStartActivity, which passes none of theirs. -->
         <activity
             android:name=".starter.StarterActivity"
+            android:exported="false"
+            android:label="@string/starter" />
+        <activity
+            android:name=".starter.ExternalStartActivity"
             android:exported="true"
-            android:label="@string/starter">
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="af.shizuku.manager.action.START_SERVICE" />
                 <category android:name="android.intent.category.DEFAULT" />
