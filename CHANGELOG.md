@@ -5,6 +5,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ## [Unreleased]
 
 ### 🛠 Fixes
+- **Stopping Shizuku+ keeps it stopped** — a status check running at the same moment as a stop could undo it, and Watchdog then restarted the service you had just stopped. Stops from the Quick Settings tile, its options and automation now count as deliberate too, and a stop that never completes no longer leaves "Stopping…" on screen forever.
 - **Security: your ADB key stays on the device** — settings backups (Google backup, device transfer and the copy kept for reinstalls, which other apps could read) included the private key your device trusts for ADB. It's no longer backed up; after restoring onto a fresh install, approve the "Allow USB debugging" prompt once.
 - **Security: apps can no longer give themselves Shizuku+ access** — an app could declare one of the Shizuku permission names itself, have Android grant it at install, and be treated as authorized without you ever seeing the request. Shizuku+ now only trusts that permission when Shizuku+, the Compat Hub or stock Shizuku defines it.
 - **Security: root mode asks before granting access** — when started with root, Shizuku+ allowed every app that connected, so any app on a rooted device could get root without asking. Apps now get the same Allow/Deny request as in ADB mode; apps you already allowed keep their access.

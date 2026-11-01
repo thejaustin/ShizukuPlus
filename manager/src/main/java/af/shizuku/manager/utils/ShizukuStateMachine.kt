@@ -39,6 +39,13 @@ object ShizukuStateMachine {
         java.util.concurrent.atomic
             .AtomicLong(0L)
     private const val STARTING_TIMEOUT_MS = 90_000L
+    private val stoppingTimestamp =
+        java.util.concurrent.atomic
+            .AtomicLong(0L)
+
+    // A stop whose binder never reported death (no binder held by this process, exit() that
+    // threw) used to stay STOPPING for good.
+    private const val STOPPING_TIMEOUT_MS = 15_000L
     private const val COLD_START_GRACE_MS = 2_500L
 
     @Volatile
@@ -116,6 +123,11 @@ object ShizukuStateMachine {
     fun get(): State = state.get()
 
     private fun transition(transform: (State) -> State) {
+        transitionAndGet(transform)
+    }
+
+    /** [transition], returning the state it produced. */
+    private fun transitionAndGet(transform: (State) -> State): State {
         // Capture the value our own CAS produced: a separate state.get() after getAndUpdate can
         // observe a concurrent transition's later write, making oldState == newState and silently
         // skipping listener/broadcast side effects for a transition that did occur.
@@ -131,6 +143,13 @@ object ShizukuStateMachine {
             // (AdbStarter, ShizukuReceiverStarter, tile, StarterActivity) funnel through STARTING,
             // so this captures every fresh start centrally and lets isServerVersionSkewed() later
             // detect a running server left behind by a pre-update build.
+            if (newState == State.STOPPING) stoppingTimestamp.set(System.currentTimeMillis())
+            // Running again, however it was started: a stop the user made earlier no longer
+            // stands (root and other non-ADB starts never cleared it, so Watchdog and reconnect
+            // would have kept treating Shizuku+ as stopped on purpose).
+            if (newState == State.RUNNING) {
+                runCatching { UserStopFlag.clear() }
+            }
             if (newState == State.STARTING) {
                 startingTimestamp.set(System.currentTimeMillis())
                 try {
@@ -297,6 +316,7 @@ object ShizukuStateMachine {
                 Timber.tag("ShizukuStateMachine").w("Skipping broadcast: appContext not initialized yet")
             }
         }
+        return newState
     }
 
     fun set(newState: State) = transition { newState }
@@ -334,56 +354,69 @@ object ShizukuStateMachine {
             } finally {
                 span?.finish()
             }
+        // Re-verify before calling a RUNNING server crashed, in case it attached between the
+        // first ping and now. Done here, not in the transition below, which may run again.
+        val verifiedAlive =
+            !isAlive &&
+                get() == State.RUNNING &&
+                try {
+                    Shizuku.pingBinder()
+                } catch (_: Exception) {
+                    false
+                }
+        val sinceProcessStart = android.os.SystemClock.elapsedRealtime() - processStartElapsedMs
+        val inColdStartGrace = !binderReceivedThisProcess.get() && sinceProcessStart in 0L until COLD_START_GRACE_MS
+        var needsColdStartRecheck = false
 
-        val currentState = get()
-        val state =
-            when {
-                isAlive -> State.RUNNING
-                currentState == State.STARTING -> {
-                    // Break out of STARTING after 90 s so a failed start (server process died,
-                    // ADB connection refused, etc.) never leaves the UI permanently locked.
-                    val elapsed = System.currentTimeMillis() - startingTimestamp.get()
-                    // A start waiting on adbd's authorisation dialog is still in progress; calling
-                    // it STOPPED would invite a second start, and with it a second dialog.
-                    if (elapsed > STARTING_TIMEOUT_MS &&
-                        !af.shizuku.manager.adb.AdbAuthWait
-                            .isWaiting()
-                    ) {
-                        State.STOPPED
-                    } else {
-                        State.STARTING
-                    }
-                }
-                currentState == State.STOPPING -> State.STOPPING
-                currentState == State.CRASHED -> State.CRASHED
-                // Was RUNNING (or, thanks to loadPersistedSettledState(), a freshly cold-started
-                // process that persisted RUNNING before it died) and the binder isn't answering: that's
-                // a crash, not a stop. Re-verify pingBinder() to prevent a false crash transition if
-                // the server attached between our initial check and reading currentState.
-                currentState == State.RUNNING -> {
-                    val verifiedAlive =
-                        try {
-                            Shizuku.pingBinder()
-                        } catch (_: Exception) {
-                            false
-                        }
-                    if (verifiedAlive) {
-                        binderReceivedThisProcess.set(true)
-                        State.RUNNING
-                    } else {
-                        val elapsedSinceProcessStart = android.os.SystemClock.elapsedRealtime() - processStartElapsedMs
-                        if (!binderReceivedThisProcess.get() && elapsedSinceProcessStart in 0L until COLD_START_GRACE_MS) {
-                            scheduleColdStartRecheck(COLD_START_GRACE_MS - elapsedSinceProcessStart + 50L)
-                            State.RUNNING
+        // Decided against the state as it is at the moment of the change, not as it was read
+        // before the ping: deciding first and then setting unconditionally let a stale read win
+        // (a STOPPING the user just made went back to RUNNING, then CRASHED, and Watchdog
+        // restarted the server they had stopped; or RUNNING went back to STARTING).
+        val result =
+            transitionAndGet { current ->
+                needsColdStartRecheck = false
+                when {
+                    // A stop is under way and the server hasn't gone yet: stay stopping.
+                    isAlive && current == State.STOPPING -> State.STOPPING
+                    isAlive -> State.RUNNING
+                    current == State.STARTING -> {
+                        // Break out of STARTING after 90 s so a failed start (server process died,
+                        // ADB connection refused, etc.) never leaves the UI permanently locked.
+                        val elapsed = System.currentTimeMillis() - startingTimestamp.get()
+                        // A start waiting on adbd's authorisation dialog is still in progress;
+                        // calling it STOPPED would invite a second start, and a second dialog.
+                        if (elapsed > STARTING_TIMEOUT_MS &&
+                            !af.shizuku.manager.adb.AdbAuthWait
+                                .isWaiting()
+                        ) {
+                            State.STOPPED
                         } else {
-                            State.CRASHED
+                            State.STARTING
                         }
                     }
+                    current == State.STOPPING -> {
+                        val elapsed = System.currentTimeMillis() - stoppingTimestamp.get()
+                        if (elapsed > STOPPING_TIMEOUT_MS) State.STOPPED else State.STOPPING
+                    }
+                    current == State.CRASHED -> State.CRASHED
+                    // Was RUNNING (or, thanks to loadPersistedSettledState(), a freshly cold-started
+                    // process that persisted RUNNING before it died) and the binder isn't
+                    // answering: that's a crash, not a stop.
+                    current == State.RUNNING ->
+                        when {
+                            verifiedAlive -> State.RUNNING
+                            inColdStartGrace -> {
+                                needsColdStartRecheck = true
+                                State.RUNNING
+                            }
+                            else -> State.CRASHED
+                        }
+                    else -> State.STOPPED
                 }
-                else -> State.STOPPED
             }
-        set(state)
-        return state
+        if (verifiedAlive) binderReceivedThisProcess.set(true)
+        if (needsColdStartRecheck) scheduleColdStartRecheck(COLD_START_GRACE_MS - sinceProcessStart + 50L)
+        return result
     }
 
     private fun scheduleColdStartRecheck(delayMs: Long) {

@@ -102,6 +102,9 @@ class TileOptionsActivity : AppCompatActivity() {
 
     private fun stopShizuku() {
         ShizukuTileService.cancelSupervision()
+        // A deliberate stop: Watchdog and reconnect leave it stopped.
+        af.shizuku.manager.utils.UserStopFlag
+            .mark()
         ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPING)
         AdbStartWorker.cancel(this)
         kotlin.runCatching { rikka.shizuku.Shizuku.exit() }

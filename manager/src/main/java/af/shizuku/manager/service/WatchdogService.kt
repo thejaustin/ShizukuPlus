@@ -118,6 +118,15 @@ class WatchdogService : Service() {
                             return@collectLatest
                         }
 
+                        // The user stopped it; a crash reported in the middle of their stop must
+                        // not bring it back.
+                        if (af.shizuku.manager.utils.UserStopFlag
+                                .isSet()
+                        ) {
+                            stabilityJob?.cancel()
+                            pendingRecoveryJob?.cancel()
+                            return@collectLatest
+                        }
                         // Restarting is off: only the status shows here, and the stop is
                         // reported by ShizukuIssues.onServerLost like with no Watchdog at all.
                         if (!ShizukuSettings.isWatchdogAutoRestartEnabled()) {

@@ -156,6 +156,9 @@ class ShizukuTileService : TileService() {
 
     internal fun stopShizuku() {
         watchdog?.cancel()
+        // A deliberate stop: Watchdog and reconnect leave it stopped.
+        af.shizuku.manager.utils.UserStopFlag
+            .mark()
         ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPING)
         updateTile()
         AdbStartWorker.cancel(this)

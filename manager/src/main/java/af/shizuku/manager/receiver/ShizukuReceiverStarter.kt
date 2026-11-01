@@ -128,6 +128,9 @@ object ShizukuReceiverStarter {
      *  receiver and the Tasker/Locale plugin's fire receiver. */
     fun stop() {
         if (!ShizukuStateMachine.isRunning()) return
+        // A deliberate stop (manual broadcast or automation): Watchdog and reconnect leave it.
+        af.shizuku.manager.utils.UserStopFlag
+            .mark()
         ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPING)
         runCatching { Shizuku.exit() }
             .onFailure { Timber.tag(AppConstants.TAG).w(it, "Shizuku.exit failed") }
