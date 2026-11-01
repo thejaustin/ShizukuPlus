@@ -19,7 +19,7 @@ When crash reporting is on, Sentry also counts app sessions, for a crash-free ra
 - Warnings from the Shizuku+ service have other apps' commands, package names and file paths removed.
 - No screenshots, no view hierarchy, and no default personal info (`isSendDefaultPii = false`). See [`ShizukuApplication.kt`](../manager/src/main/java/af/shizuku/manager/ShizukuApplication.kt).
 - Pairing breadcrumbs don't include your device's address or port.
-- **Manual crash reports** (Developer options → Report a problem) go wherever you send them, often a public GitHub issue. Other apps' package names are replaced with "app 1", "app 2", and addresses, network names and emails are stripped. Read the report before posting it.
+- **Manual crash reports** (Developer Options → Manual Crash Report) go wherever you send them, often a public GitHub issue. Other apps' package names are replaced with "app 1", "app 2", and addresses, network names and emails are stripped. Read the report before posting it.
 
 Turning it off stops all sending right away. Your choice isn't backed up, so a new device asks again.
 
