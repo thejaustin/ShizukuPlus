@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           submodules: 'recursive'
           fetch-depth: 0
@@ -41,19 +41,19 @@ jobs:
       ANDROID_HOME: "/usr/local/lib/android/sdk"
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           submodules: 'recursive'
           fetch-depth: 0
 
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: 'temurin'
           java-version: '21'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
 
       - name: Accept SDK Licenses
         run: yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
@@ -68,19 +68,19 @@ jobs:
       ANDROID_HOME: "/usr/local/lib/android/sdk"
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           submodules: 'recursive'
           fetch-depth: 0
 
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: 'temurin'
           java-version: '21'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
 
       - name: Accept SDK Licenses
         run: yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
@@ -92,7 +92,7 @@ jobs:
 
       - name: Upload test reports
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: unit-test-reports
           path: |
@@ -106,7 +106,9 @@ jobs:
 
     env:
       ANDROID_HOME: "/usr/local/lib/android/sdk"
-      KEYSTORE: ${{ secrets.KEYSTORE }}
+      # Only whether a keystore exists is job-wide; the keystore itself is given to the one step
+      # that writes it, so other steps and third-party actions never see it.
+      HAS_KEYSTORE: ${{ secrets.KEYSTORE != '' }}
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       IS_DEBUG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug == true }}
@@ -125,13 +127,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           submodules: 'recursive'
           fetch-depth: 0
 
       - name: Cache Android SDK
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: |
             ${{ env.ANDROID_HOME }}/build-tools
@@ -144,22 +146,35 @@ jobs:
 
 
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: 'temurin'
           java-version: '21'
 
       - name: Create signing.properties
-        if: ${{ env.IS_DEBUG == 'false' && env.KEYSTORE != '' }}
+        if: ${{ env.IS_DEBUG == 'false' && env.HAS_KEYSTORE == 'true' }}
+        env:
+          KEYSTORE: ${{ secrets.KEYSTORE }}
+          KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+          KS_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          KS_ALIAS_PASS: ${{ secrets.KEYSTORE_ALIAS_PASSWORD }}
         run: |
-          echo KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} > signing.properties
-          echo KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} >> signing.properties
-          echo KEYSTORE_ALIAS_PASSWORD='${{ secrets.KEYSTORE_ALIAS_PASSWORD }}' >> signing.properties
-          echo KEYSTORE_FILE=${{ github.workspace }}/key.jks >> signing.properties
-          printf "%s" "${{ secrets.KEYSTORE }}" | base64 --decode > key.jks
+          # Values come from env, never pasted into the script, so a quote or $ in one can't break
+          # out of the command.
+          {
+            printf 'KEYSTORE_PASSWORD=%s\n' "$KS_PASS"
+            printf 'KEYSTORE_ALIAS=%s\n' "$KS_ALIAS"
+            printf 'KEYSTORE_ALIAS_PASSWORD=%s\n' "$KS_ALIAS_PASS"
+            printf 'KEYSTORE_FILE=%s\n' "$GITHUB_WORKSPACE/key.jks"
+          } > signing.properties
+          printf "%s" "$KEYSTORE" | base64 --decode > key.jks
+
+      # Refuse a gradle-wrapper.jar that doesn't match an official Gradle release.
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
         with:
           build-scan-publish: true
           build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
@@ -173,6 +188,10 @@ jobs:
 
       - name: Build with Gradle
         id: buildWithGradle
+        env:
+          SIGN_KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGN_KEY_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+          SIGN_KEY_PASS: ${{ secrets.KEYSTORE_ALIAS_PASSWORD }}
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
           [ -n "$SENTRY_DSN" ] && echo "SENTRY_DSN=${SENTRY_DSN}" >> gradle.properties || true
@@ -227,10 +246,11 @@ jobs:
                 echo "WARNING: APK appears unsigned: $FILE"
                 if [ -f "key.jks" ]; then
                   BUILD_TOOLS_VERSION=$(ls $ANDROID_HOME/build-tools | sort -V | tail -n 1)
+                  # Passwords come from step env (below), never pasted into the script text.
                   $ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION/apksigner sign --ks key.jks \
-                    --ks-pass "pass:${{ secrets.KEYSTORE_PASSWORD }}" \
-                    --ks-key-alias "${{ secrets.KEYSTORE_ALIAS }}" \
-                    --key-pass "pass:${{ secrets.KEYSTORE_ALIAS_PASSWORD }}" \
+                    --ks-pass env:SIGN_KS_PASS \
+                    --ks-key-alias "$SIGN_KEY_ALIAS" \
+                    --key-pass env:SIGN_KEY_PASS \
                     "$FILE"
                 fi
               fi
@@ -270,27 +290,27 @@ jobs:
           ./gradlew :manager:uploadSentryProguardMappingsShizukuplusRelease :manager:uploadSentryNativeSymbolsForShizukuplusRelease
 
       - name: Upload ShizukuPlus Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ${{ steps.buildWithGradle.outputs.artifactName }}
           path: ${{ steps.buildWithGradle.outputs.filePath }}
 
       - name: Upload Drop-in Artifact
         if: ${{ steps.buildWithGradle.outputs.dropinPath != '' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: shizuku-dropin.apk
           path: ${{ steps.buildWithGradle.outputs.dropinPath }}
 
       - name: Upload Compat Stub Artifact
         if: ${{ steps.buildWithGradle.outputs.compatPath != '' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: shizuku-compat.apk
           path: ${{ steps.buildWithGradle.outputs.compatPath }}
 
       - name: Upload Version File
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: version-file
           path: version.txt
@@ -302,19 +322,19 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           submodules: 'recursive'
           fetch-depth: 0
 
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
         with:
           distribution: 'temurin'
           java-version: '21'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
 
       - name: Enable KVM hardware acceleration
         run: |
@@ -336,7 +356,7 @@ jobs:
             -dname "CN=Smoke Test, O=CI, C=US" 2>/dev/null
 
       - name: Run JNI smoke tests on emulator
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2
         with:
           api-level: 30
           arch: x86_64
@@ -356,7 +376,7 @@ jobs:
 
       - name: Upload smoke test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: smoke-test-results
           path: manager/build/outputs/androidTest-results/
@@ -398,12 +418,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           fetch-depth: 0
 
       - name: Download Version File
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: version-file
 
@@ -436,20 +456,20 @@ jobs:
           git tag "$TAG_NAME" "${{ github.sha }}" 2>/dev/null || true
 
       - name: Download ShizukuPlus Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: ${{ needs.build.outputs.artifactName }}
           path: files/main
 
       - name: Download Drop-in Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         continue-on-error: true
         with:
           name: shizuku-dropin.apk
           path: files/dropin
 
       - name: Download Compat Stub Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         continue-on-error: true
         with:
           name: shizuku-compat.apk

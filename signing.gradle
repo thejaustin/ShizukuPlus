@@ -10,6 +10,17 @@ if (ksFile.canRead()) {
         android.signingConfigs.sign.keyPassword props["KEYSTORE_ALIAS_PASSWORD"]
     }
 } else {
+    // A release built on CI without the real key would ship signed with a throwaway one: users
+    // couldn't update over it, and anyone could make an APK signed the same way. Fail instead.
+    // Local builds and CI debug builds keep the fallback below.
+    if (System.getenv("CI") == "true") {
+        gradle.taskGraph.whenReady { graph ->
+            def release = graph.allTasks.find { it.name ==~ /(assemble|bundle|package)\w*Release/ }
+            if (release != null) {
+                throw new GradleException("${release.path} needs the release keystore (signing.properties) on CI; refusing to sign with a throwaway key.")
+            }
+        }
+    }
     // Fall back to the Android SDK debug keystore when no signing.properties is present.
     // On CI runners, ANDROID_USER_HOME may point to a non-standard path
     // (e.g. ~/.config/.android/) where the keystore hasn't been generated yet.
