@@ -25,7 +25,7 @@ When crash reporting is on, Sentry also counts app sessions, for a crash-free ra
 Turning it off stops all sending right away. Your choice isn't backed up, so a new device asks again.
 
 ### App safety check
-When an app asks for Shizuku+ access, the request shows:
+Off by default (Settings → App safety check). When turned on, a Shizuku+ access request shows:
 - where the app was installed from (a store, an APK file, another app, or unknown);
 - when it was installed;
 - the start of its signing certificate.

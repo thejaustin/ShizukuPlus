@@ -198,8 +198,9 @@ class RequestPermissionActivity : AppActivity() {
     }
 
     /**
-     * The quick safety check under the request: install source, signer, and VirusTotal / Pithus
-     * verdicts when the user turned those on and added a key. Fills in as answers arrive; the
+     * The quick safety check under the request, all opt-in (Settings → App safety check): install
+     * source, signer, and VirusTotal / Pithus verdicts when the user turned those on and added a key.
+     * With everything off, nothing runs and the request looks like stock Shizuku's. Fills in as answers arrive; the
      * buttons work the whole time.
      */
     private fun bindSafetyCheck(
@@ -209,7 +210,7 @@ class RequestPermissionActivity : AppActivity() {
         val prefs =
             af.shizuku.manager.ShizukuSettings
                 .getPreferences()
-        val showLocal = prefs?.getBoolean("verify_apk_local", true) ?: true
+        val showLocal = prefs?.getBoolean("verify_apk_local", false) == true
         val vtKey =
             af.shizuku.manager.ShizukuSettings
                 .getVirusTotalApiKey()

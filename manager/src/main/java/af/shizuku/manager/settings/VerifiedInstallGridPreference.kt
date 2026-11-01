@@ -76,7 +76,8 @@ class VerifiedInstallGridPreference
                     titleRes = R.string.settings_verify_apk_local_title,
                     badgeRes = R.string.settings_verify_apk_local_badge,
                     iconRes = R.drawable.ic_shield_24,
-                    defaultVal = true,
+                    // Off by default, like the online checks: the request stays as slim as stock Shizuku.
+                    defaultVal = false,
                 ),
                 EngineItem(
                     key = "verify_apk_virustotal",
