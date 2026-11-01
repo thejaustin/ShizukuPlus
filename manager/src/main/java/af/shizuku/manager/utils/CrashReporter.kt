@@ -121,7 +121,14 @@ object CrashReporter {
         }
         sb.append("```\n")
 
-        return sb.toString()
+        // Reports end up in public GitHub issues: don't reveal which other apps this person uses,
+        // or their addresses and network names.
+        val otherApps =
+            ActivityLogManager.logs.value
+                .map { it.packageName }
+                .filter { it.isNotBlank() && it != context.packageName && it != "android" }
+                .distinct()
+        return TelemetryScrubber.scrub(anonymizePackages(sb.toString(), otherApps)).orEmpty()
     }
 
     /**
@@ -179,4 +186,21 @@ object CrashReporter {
             }
         context.startActivity(android.content.Intent.createChooser(intent, "Share Crash Report"))
     }
+}
+
+/**
+ * Replaces each of [packages] in [text] with "app N" (numbered in order), matching whole names
+ * only, so com.example doesn't eat com.example.plugin and vice versa.
+ */
+internal fun anonymizePackages(
+    text: String,
+    packages: List<String>,
+): String {
+    var out = text
+    // Longest first, so a longer name is replaced before a shorter prefix of it.
+    val numbered = packages.distinct().withIndex().associate { (i, pkg) -> pkg to "app ${i + 1}" }
+    for (pkg in numbered.keys.sortedByDescending { it.length }) {
+        out = out.replace(Regex("(?<![\\w.])" + Regex.escape(pkg) + "(?![\\w.]*\\w)"), numbered.getValue(pkg))
+    }
+    return out
 }
