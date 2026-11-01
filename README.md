@@ -47,11 +47,14 @@ Get the latest release from [GitHub Releases](https://github.com/thejaustin/Shiz
 *   **Customizable Gestures**: Swipe left, swipe right, and long-press actions, configurable per app.
 *   **In-App Changelogs**: See what's new after an update without leaving the app.
 *   **Bulk Management**: Multi-select apps to grant/revoke permissions or hide them in one tap.
+*   **App list sorting up front**: A sort chip leads the filter row: name, last installed, last updated or granted first, and tap again to reverse.
 *   **In-App Knowledgebase**: Clean, offline-first Material 3 peek dialogs with rich guides, copyable command snippets, and direct action buttons without navigating away.
 *   **Activity Log with Morphe Timeline**: Visual node rails with dynamic pulsing status halos, repetitive activity occurrence grouping, and multi-criteria sorting.
 *   **Root Compatibility Hub & Enhanced SU Bridge**: Seamless translation of legacy `su -c` commands into Shizuku IPC with POSIX argument parsing and Android 14–17 support.
 *   **Universal SU Automation**: One-tap 'Magic Setup' to configure installed root apps to use the Shizuku+ SU Bridge.
-*   **Adaptive Service Doctor**: Proactively diagnoses and fixes service startup, Knox Auto Blocker, and OEM background battery restrictions.
+*   **Adaptive Service Doctor**: Diagnoses and fixes service startup, Samsung Auto Blocker (read from its real settings now) and OEM battery restrictions. Its background self-healing has its own switches, including whether it may turn the Pairing Helper back on and whether to tell you about fixes that failed.
+*   **Helper notifications**: Problems show up in one place. With the Watchdog on, its notification says whether Shizuku+ is running and offers a fix button when something's wrong; without it, one quiet notification updates in place. You pick how much you hear (off, only when it stops or needs you, or every problem), and nothing pops up over the app you're using.
+*   **Expressive morphing icons**: Setting icons morph from an "off" shape into your chosen shape when you switch them on, with Spin, Morph, Pop, Sweep or Liquid motion. There are Material's shapes plus the original hand-built "classic" ones, and experimental switch designs where the icon itself is the switch.
 *   **Integrated Feature Guides & Smart Tooltips**: Long-press any setting for contextual explanations and direct links to the relevant knowledgebase guide.
 *   **Quick Settings Tile**: Check and toggle the service status from your notification panel.
 
@@ -61,10 +64,10 @@ Get the latest release from [GitHub Releases](https://github.com/thejaustin/Shiz
 Shizuku+ provides exclusive system interfaces for advanced automation and tools — none of these exist in stock Shizuku:
 
 *   **AICore+ Automation Bridge**: Privileged UI automation (hierarchy dumps, tap/swipe) for AI-driven tools — no root needed. ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
-*   **AVF (Virtual Machine) Manager**: Run isolated Linux/Microdroid VMs with GPU acceleration. ([added](https://github.com/thejaustin/ShizukuPlus/commit/c8e962f6))
+*   **AVF (Virtual Machine) Manager**: Create, start and stop AVF virtual machines, on devices whose firmware supports AVF. ([added](https://github.com/thejaustin/ShizukuPlus/commit/c8e962f6))
 *   **Privileged Storage Proxy**: Authenticated access to restricted paths for backups and file management. `/data/app/` and external `/Android/data/` work in ADB mode; `/data/data/` requires root (the server must run as UID 0 to cross app-private directory boundaries). ([added](https://github.com/thejaustin/ShizukuPlus/commit/c8e962f6))
 *   **Device Spoofing** (*Spoof Device Identity* in Settings): Present a different device identity to bypass device-specific restrictions. ([added](https://github.com/thejaustin/ShizukuPlus/commit/11867f44))
-*   **Intelligence Bridge** (*AI Core Plus*): Privileged NPU scheduling and screen context intelligence. ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
+*   **Intelligence Bridge** (*AI Core Plus*): Screen context for AI tools (pixel colors, layer captures, system context). NPU scheduling isn't offered: there's no public API for it, so the call says "not supported" instead of pretending ([#633](https://github.com/thejaustin/ShizukuPlus/issues/633)). ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
 *   **Window Manager Plus**: Force free-form resizing, manage the Bubble Bar, and resilient overlays. ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
 *   **System Theming Bridge** (*Overlay Manager Plus*): Privileged overlay management for rootless theming (e.g. Hex Installer). ([added](https://github.com/thejaustin/ShizukuPlus/commit/55f6b7c7))
 *   **Network & DNS Governor**: Manage Private DNS and firewall routing for rootless ad-blockers. ([added](https://github.com/thejaustin/ShizukuPlus/commit/55f6b7c7))
