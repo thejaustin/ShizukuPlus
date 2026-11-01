@@ -426,7 +426,6 @@
     <string name="stock_shizuku_conflict_dialog_title">خادم غير متوافق قيد التشغيل</string>
     <string name="stock_shizuku_conflict_dialog_message">خادم Shizuku الأصلي يعمل حاليًا في الخلفية. بسبب قيود أمان Android، لا يستطيع Shizuku+ التواصل مع الخادم الأصلي أو إنهاءه.\n\nيرجى إعادة تشغيل جهازك بالكامل لإنهاء الخادم الأصلي، ثم شغّل Shizuku+ باستخدام ADB أو Root.</string>
     <string name="stock_shizuku_restarting_via_root">جارٍ إعادة التشغيل عبر Root…</string>
-    <string name="backup_plain_exported">تم تصدير نسخة احتياطية غير مشفرة. أبقِ هذا الملف خاصًا — فهو غير مشفر.</string>
     <string name="backup_exported_success">تم تصدير النسخة الاحتياطية بنجاح</string>
     <string name="backup_restored_success">تمت استعادة النسخة الاحتياطية بنجاح</string>
     <string name="backup_restored_restart_hint">تمت استعادة الإعدادات. أعد التشغيل لتطبيق تغييرات السمة/اللغة.</string>

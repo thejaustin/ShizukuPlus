@@ -426,7 +426,6 @@
     <string name="stock_shizuku_conflict_dialog_title">互換性のないサーバーが実行中</string>
     <string name="stock_shizuku_conflict_dialog_message">元のShizukuサーバーが現在バックグラウンドで実行されています。Androidのセキュリティ上の制約により、Shizuku+ は元のサーバーと通信したり終了させたりできません。\n\nデバイスを完全に再起動して元のサーバーを終了させてから、ADBまたはrootでShizuku+ を起動してください。</string>
     <string name="stock_shizuku_restarting_via_root">root経由で再起動中…</string>
-    <string name="backup_plain_exported">暗号化されていないバックアップをエクスポートしました。このファイルは暗号化されていないため、非公開で保管してください。</string>
     <string name="backup_exported_success">バックアップをエクスポートしました</string>
     <string name="backup_restored_success">バックアップを復元しました</string>
     <string name="backup_restored_restart_hint">設定を復元しました。テーマや言語の変更を反映するには再起動してください。</string>

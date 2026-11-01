@@ -909,7 +909,6 @@
     <string name="stock_shizuku_conflict_dialog_message">Orijinal Shizuku serveri hazırda fonda işləyir. Android təhlükəsizlik məhdudiyyətlərinə görə, Shizuku+ orijinal serverlə əlaqə qura bilməz və ya onu dayandıra bilməz.\n\nZəhmət olmasa, orijinal serveri dayandırmaq üçün cihazınızı tamamilə yenidən başladın, sonra ADB və ya Root istifadə edərək Shizuku+-ı başladın.</string>
     <string name="stock_shizuku_restarting_via_root">Root vasitəsilə yenidən başladılır…</string>
     <string name="stock_shizuku_restarting">Yenidən başladılır…</string>
-    <string name="backup_plain_exported">Adi ehtiyat nüsxə ixrac edildi. Bu faylı məxfi saxlayın — o, şifrələnməyib.</string>
     <string name="backup_exported_success">Ehtiyat nüsxə uğurla ixrac edildi</string>
     <string name="backup_restored_success">Ehtiyat nüsxə uğurla bərpa edildi</string>
     <string name="backup_restored_restart_hint">Tənzimləmələr bərpa edildi. Tema/dil dəyişikliklərini tətbiq etmək üçün yenidən başladın.</string>

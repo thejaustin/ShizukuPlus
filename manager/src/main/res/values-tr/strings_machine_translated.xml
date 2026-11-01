@@ -423,7 +423,6 @@
     <string name="stock_shizuku_conflict_dialog_title">Uyumsuz Sunucu Çalışıyor</string>
     <string name="stock_shizuku_conflict_dialog_message">Orijinal Shizuku sunucusu şu anda arka planda çalışıyor. Android güvenlik kısıtlamaları nedeniyle Shizuku+ orijinal sunucuyla iletişim kuramaz veya onu sonlandıramaz.\n\nOrijinal sunucuyu sonlandırmak için lütfen cihazınızı tamamen yeniden başlatın, ardından Shizuku+\'ı ADB veya Root ile başlatın.</string>
     <string name="stock_shizuku_restarting_via_root">Root ile yeniden başlatılıyor…</string>
-    <string name="backup_plain_exported">Düz yedek dışa aktarıldı. Bu dosyayı gizli tutun: şifreli değildir.</string>
     <string name="backup_exported_success">Yedek başarıyla dışa aktarıldı</string>
     <string name="backup_restored_success">Yedek başarıyla geri yüklendi</string>
     <string name="backup_restored_restart_hint">Ayarlar geri yüklendi. Tema/dil değişikliklerini uygulamak için yeniden başlatın.</string>

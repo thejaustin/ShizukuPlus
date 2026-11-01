@@ -16,6 +16,8 @@ Reports affecting unsupported versions may be closed without action.
 
 ## Reporting a Vulnerability
 
+For what Shizuku+ collects, sends and backs up, see [docs/PRIVACY.md](docs/PRIVACY.md). A gap between that page and what the app actually does counts as a security issue.
+
 If you discover a security vulnerability in Shizuku+, please report it **privately** and practice responsible disclosure. [See how](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/report-a-vulnerability/privately-reporting-a-security-vulnerability).
 
 Shizuku+ provides access to **ADB-level and/or root-level privileges**, so security issues may have a high impact.

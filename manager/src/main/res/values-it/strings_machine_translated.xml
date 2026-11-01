@@ -426,7 +426,6 @@
     <string name="stock_shizuku_conflict_dialog_title">Server incompatibile in esecuzione</string>
     <string name="stock_shizuku_conflict_dialog_message">Il server Shizuku originale è attualmente in esecuzione in background. A causa dei vincoli di sicurezza di Android, Shizuku+ non può comunicare con il server originale né terminarlo.\n\nRiavvia completamente il dispositivo per terminare il server originale, quindi avvia Shizuku+ tramite ADB o root.</string>
     <string name="stock_shizuku_restarting_via_root">Riavvio tramite root…</string>
-    <string name="backup_plain_exported">Backup in chiaro esportato. Tieni questo file privato: non è crittografato.</string>
     <string name="backup_exported_success">Backup esportato correttamente</string>
     <string name="backup_restored_success">Backup ripristinato correttamente</string>
     <string name="backup_restored_restart_hint">Impostazioni ripristinate. Riavvia per applicare le modifiche a tema/lingua.</string>

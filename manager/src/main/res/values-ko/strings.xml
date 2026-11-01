@@ -620,7 +620,6 @@
     <string name="stock_shizuku_conflict_dialog_title">호환되지 않는 서버가 실행 중</string>
     <string name="stock_shizuku_conflict_dialog_message">원본 Shizuku 서버가 현재 백그라운드에서 실행 중입니다. Android 보안 제약으로 인해 Shizuku+는 원본 서버와 통신하거나 종료할 수 없습니다.\n\n원본 서버를 종료하려면 기기를 완전히 다시 시작한 후 ADB 또는 루트를 사용해 Shizuku+를 시작하세요.</string>
     <string name="stock_shizuku_restarting_via_root">루트를 통해 다시 시작하는 중…</string>
-    <string name="backup_plain_exported">일반 백업이 내보내졌습니다. 이 파일은 암호화되지 않으므로 비공개로 보관하세요.</string>
     <string name="backup_exported_success">백업이 성공적으로 내보내졌습니다</string>
     <string name="backup_restored_success">백업이 성공적으로 복원되었습니다</string>
     <string name="backup_restored_restart_hint">설정이 복원되었습니다. 테마/언어 변경을 적용하려면 다시 시작하세요.</string>

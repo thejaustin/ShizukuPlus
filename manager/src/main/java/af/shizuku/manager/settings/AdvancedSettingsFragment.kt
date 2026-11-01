@@ -473,11 +473,9 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
 
     private fun onRestoreSuccess() {
         if (!isAdded) return
-        // Toast, not snackbar: the restart-hint snackbar below would replace it straight away.
-        android.widget.Toast
-            .makeText(requireContext(), R.string.backup_restored_success, android.widget.Toast.LENGTH_SHORT)
-            .show()
-        confirmHeldBackPrivilegedSettings()
+        af.shizuku.manager.utils.showRestoreSummary(requireContext()) {
+            if (isAdded) confirmHeldBackPrivilegedSettings()
+        }
         Snackbar
             .make(
                 requireView(),

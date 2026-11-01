@@ -42,7 +42,7 @@ class ShizukuBackupAgent : BackupAgent() {
         newState: ParcelFileDescriptor,
     ) {
         try {
-            val bytes = SettingsBackupManager.export(this).toByteArray(Charsets.UTF_8)
+            val bytes = SettingsBackupManager.withoutSecrets(SettingsBackupManager.export(this)).toByteArray(Charsets.UTF_8)
             data.writeEntityHeader(SETTINGS_KEY, bytes.size)
             data.writeEntityData(bytes, bytes.size)
             FileOutputStream(newState.fileDescriptor).use { fos ->
@@ -82,7 +82,7 @@ class ShizukuBackupAgent : BackupAgent() {
         // it on the way back and routes the content to DE storage rather than writing it to CE.
         val tmpFile = File(filesDir, SETTINGS_KEY)
         try {
-            tmpFile.writeText(SettingsBackupManager.export(this), Charsets.UTF_8)
+            tmpFile.writeText(SettingsBackupManager.withoutSecrets(SettingsBackupManager.export(this)), Charsets.UTF_8)
             fullBackupFile(tmpFile, data)
             Timber.tag(TAG).d("onFullBackup: wrote %d bytes", tmpFile.length())
         } catch (e: Exception) {

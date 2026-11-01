@@ -920,7 +920,9 @@
     <string name="stock_shizuku_conflict_dialog_message">The original Shizuku server is currently running in the background. Because of Android security constraints, Shizuku+ cannot communicate with or kill the original server.\n\nPlease completely restart your device to kill the original server, then start Shizuku+ using ADB or Root.</string>
     <string name="stock_shizuku_restarting_via_root">Restarting via Root…</string>
     <string name="stock_shizuku_restarting">Restarting…</string>
-    <string name="backup_plain_exported">Plain backup exported. Keep this file private — it is not encrypted.</string>
+    <string name="backup_plain_exported">Plain backup exported. It isn\'t encrypted, so API keys, trusted Wi-Fi names and your hidden-apps list were left out. Keep the file private anyway.</string>
+    <string name="restore_summary_title">Settings restored</string>
+    <string name="restore_summary_message">Your settings are back. For your security, a backup never brings back:\n\n• Which apps you allowed. Each app asks again the first time it needs Shizuku+.\n• Shizuku+\'s ADB key. Approve the \"Allow USB debugging\" prompt once.\n• Crash reporting and accessibility consent. You\'re asked again on this device.\n• API keys, trusted Wi-Fi names and hidden apps, unless this was an encrypted backup made in Settings.\n\nSensitive switches, like the Unrestricted access developer options, stay off until you choose to turn them on.</string>
     <string name="backup_exported_success">Backup exported successfully</string>
     <string name="backup_restored_success">Backup restored successfully</string>
     <string name="backup_restored_restart_hint">Settings restored. Restart to apply theme/language changes.</string>

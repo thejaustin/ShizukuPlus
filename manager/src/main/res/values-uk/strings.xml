@@ -560,7 +560,6 @@
     <string name="stock_shizuku_conflict_dialog_title">Працює несумісний сервер</string>
     <string name="stock_shizuku_conflict_dialog_message">Оригінальний сервер Shizuku наразі працює у фоновому режимі. Через обмеження безпеки Android, Shizuku+ не може взаємодіяти або закрити оригінальний сервер.\n\nБудь ласка, повністю перезавантажте ваш пристрій, щоб закрити оригінальний сервер, а потім запустіть Shizuku+ за допомогою ADB або Root.</string>
     <string name="stock_shizuku_restarting_via_root">Перезапуск через Root…</string>
-    <string name="backup_plain_exported">Просту резервну копію експортовано. Зберігайте цей файл у безпеці — він не зашифрований.</string>
     <string name="backup_exported_success">Резервну копію успішно експортовано</string>
     <string name="backup_restored_success">Резервну копію успішно відновлено. Будь ласка, перезапустіть додаток.</string>
     <string name="backup_failed_generic">Помилка резервного копіювання: %1$s</string>

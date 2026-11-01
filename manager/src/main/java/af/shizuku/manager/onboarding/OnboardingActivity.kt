@@ -375,7 +375,11 @@ class OnboardingActivity : AppActivity() {
         if (file != null) UpdateInstaller.consumeBackup(this, file)
         SettingsBackupManager.markRestoreChecked()
         SettingsBackupManager.applyRestoredLive(this)
-        Toast.makeText(this, R.string.backup_restored_success, Toast.LENGTH_LONG).show()
+        af.shizuku.manager.utils
+            .showRestoreSummary(this) { confirmHeldBackAndFinish() }
+    }
+
+    private fun confirmHeldBackAndFinish() {
         val held = SettingsBackupManager.heldBack
         if (held.isEmpty()) {
             completeOnboarding()

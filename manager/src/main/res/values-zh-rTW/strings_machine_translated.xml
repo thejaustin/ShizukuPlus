@@ -416,7 +416,6 @@
     <string name="stock_shizuku_conflict_dialog_title">不相容的伺服器正在執行</string>
     <string name="stock_shizuku_conflict_dialog_message">原版 Shizuku 伺服器目前正在背景執行。受限於 Android 安全性限制，Shizuku+ 無法與原版伺服器通訊或將其終止。\n\n請完全重新啟動您的裝置以終止原版伺服器，然後使用 ADB 或 Root 啟動 Shizuku+。</string>
     <string name="stock_shizuku_restarting_via_root">正在透過 Root 重新啟動…</string>
-    <string name="backup_plain_exported">已匯出未加密備份。請妥善保管此檔案，它未經加密。</string>
     <string name="backup_exported_success">備份已成功匯出</string>
     <string name="backup_restored_success">備份已成功還原</string>
     <string name="backup_restored_restart_hint">設定已還原。請重新啟動以套用主題/語言變更。</string>

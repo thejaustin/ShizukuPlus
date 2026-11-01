@@ -426,7 +426,6 @@
     <string name="stock_shizuku_conflict_dialog_title">เซิร์ฟเวอร์ที่เข้ากันไม่ได้กำลังทำงาน</string>
     <string name="stock_shizuku_conflict_dialog_message">เซิร์ฟเวอร์ Shizuku ดั้งเดิมกำลังทำงานในเบื้องหลัง เนื่องจากข้อจำกัดด้านความปลอดภัยของ Android Shizuku+ จึงไม่สามารถสื่อสารหรือปิดเซิร์ฟเวอร์ดั้งเดิมได้\n\nโปรดรีสตาร์ทอุปกรณ์ให้สมบูรณ์เพื่อปิดเซิร์ฟเวอร์ดั้งเดิม จากนั้นเริ่ม Shizuku+ โดยใช้ ADB หรือ Root</string>
     <string name="stock_shizuku_restarting_via_root">กำลังรีสตาร์ทผ่าน Root…</string>
-    <string name="backup_plain_exported">ส่งออกข้อมูลสำรองแบบไม่เข้ารหัสแล้ว เก็บไฟล์นี้เป็นความลับ — ไฟล์ไม่ได้เข้ารหัส</string>
     <string name="backup_exported_success">ส่งออกข้อมูลสำรองสำเร็จ</string>
     <string name="backup_restored_success">กู้คืนข้อมูลสำรองสำเร็จ</string>
     <string name="backup_restored_restart_hint">กู้คืนการตั้งค่าแล้ว รีสตาร์ทเพื่อใช้การเปลี่ยนแปลงธีม/ภาษา</string>

@@ -527,7 +527,6 @@
     <string name="stock_shizuku_conflict_dialog_title">غیر مطابقت رکھنے والا Server چل رہا ہے</string>
     <string name="stock_shizuku_conflict_dialog_message">اصل Shizuku server اس وقت بیک گراؤنڈ میں چل رہا ہے۔ Android security constraints کی وجہ سے Shizuku+ اس سے بات چیت یا اسے ختم نہیں کر سکتا۔\n\nاصل server ختم کرنے کے لیے اپنی ڈیوائس کو مکمل طور پر restart کریں، پھر ADB یا Root سے Shizuku+ شروع کریں۔</string>
     <string name="stock_shizuku_restarting_via_root">Root کے ذریعے دوبارہ شروع ہو رہا ہے…</string>
-    <string name="backup_plain_exported">Plain backup ایکسپورٹ ہو گیا۔ اس file کو نجی رکھیں — یہ encrypted نہیں ہے۔</string>
     <string name="backup_exported_success">Backup کامیابی سے ایکسپورٹ ہو گیا</string>
     <string name="backup_restored_success">Backup کامیابی سے restore ہو گیا۔ براہِ کرم ایپ دوبارہ شروع کریں۔</string>
     <string name="backup_failed_generic">Backup ناکام: %1$s</string>

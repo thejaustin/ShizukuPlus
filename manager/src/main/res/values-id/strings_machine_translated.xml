@@ -426,7 +426,6 @@
     <string name="stock_shizuku_conflict_dialog_title">Server Tidak Kompatibel Sedang Berjalan</string>
     <string name="stock_shizuku_conflict_dialog_message">Server Shizuku asli sedang berjalan di latar belakang. Karena batasan keamanan Android, Shizuku+ tidak dapat berkomunikasi dengan atau menghentikan server asli.\n\nSilakan mulai ulang perangkat Anda sepenuhnya untuk menghentikan server asli, lalu mulai Shizuku+ menggunakan ADB atau Root.</string>
     <string name="stock_shizuku_restarting_via_root">Memulai ulang melalui Root…</string>
-    <string name="backup_plain_exported">Cadangan tanpa enkripsi diekspor. Jaga kerahasiaan file ini — file ini tidak dienkripsi.</string>
     <string name="backup_exported_success">Cadangan berhasil diekspor</string>
     <string name="backup_restored_success">Cadangan berhasil dipulihkan</string>
     <string name="backup_restored_restart_hint">Pengaturan dipulihkan. Mulai ulang untuk menerapkan perubahan tema/bahasa.</string>

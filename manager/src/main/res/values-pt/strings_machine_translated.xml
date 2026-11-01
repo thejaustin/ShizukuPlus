@@ -426,7 +426,6 @@
     <string name="stock_shizuku_conflict_dialog_title">Servidor incompatível em execução</string>
     <string name="stock_shizuku_conflict_dialog_message">O servidor Shizuku original está atualmente em execução em segundo plano. Devido às restrições de segurança do Android, o Shizuku+ não consegue comunicar com o servidor original nem terminá-lo.\n\nReinicie completamente o dispositivo para terminar o servidor original e, em seguida, inicie o Shizuku+ através de ADB ou Root.</string>
     <string name="stock_shizuku_restarting_via_root">A reiniciar através de Root…</string>
-    <string name="backup_plain_exported">Cópia de segurança simples exportada. Mantenha este ficheiro privado — não está encriptado.</string>
     <string name="backup_exported_success">Cópia de segurança exportada com sucesso</string>
     <string name="backup_restored_success">Cópia de segurança restaurada com sucesso</string>
     <string name="backup_restored_restart_hint">Definições restauradas. Reinicie para aplicar as alterações de tema/idioma.</string>

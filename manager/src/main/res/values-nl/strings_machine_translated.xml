@@ -426,7 +426,6 @@
     <string name="stock_shizuku_conflict_dialog_title">Incompatibele server actief</string>
     <string name="stock_shizuku_conflict_dialog_message">De originele Shizuku-server draait momenteel op de achtergrond. Vanwege Android-beveiligingsbeperkingen kan Shizuku+ niet met de originele server communiceren of deze beëindigen.\n\nStart je apparaat volledig opnieuw op om de originele server te beëindigen en start daarna Shizuku+ via ADB of root.</string>
     <string name="stock_shizuku_restarting_via_root">Herstarten via root…</string>
-    <string name="backup_plain_exported">Gewone back-up geëxporteerd. Houd dit bestand privé — het is niet versleuteld.</string>
     <string name="backup_exported_success">Back-up succesvol geëxporteerd</string>
     <string name="backup_restored_success">Back-up succesvol hersteld</string>
     <string name="backup_restored_restart_hint">Instellingen hersteld. Herstart om wijzigingen in thema/taal toe te passen.</string>

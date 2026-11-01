@@ -546,7 +546,6 @@ Execute este comando no PC (a depuração USB deve estar ativada):
 
 Reinicie completamente o dispositivo para encerrar o servidor original e, em seguida, inicie o Shizuku+ usando ADB ou Root.</string>
     <string name="stock_shizuku_restarting_via_root">Reiniciando via Root…</string>
-    <string name="backup_plain_exported">Backup sem criptografia exportado. Mantenha este arquivo privado — ele não é criptografado.</string>
     <string name="backup_exported_success">Backup exportado com sucesso</string>
     <string name="backup_restored_success">Backup restaurado com sucesso. Reinicie o aplicativo.</string>
     <string name="backup_failed_generic">Falha no backup: %1$s</string>

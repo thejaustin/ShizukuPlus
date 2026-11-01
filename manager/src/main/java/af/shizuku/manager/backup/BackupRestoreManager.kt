@@ -15,7 +15,7 @@ object BackupRestoreManager {
         }
 
     fun createPlainBackupPayload(context: Context): String {
-        val jsonString = SettingsBackupManager.export(context)
+        val jsonString = SettingsBackupManager.withoutSecrets(SettingsBackupManager.export(context))
         val backupJson = JSONObject()
         backupJson.put("version", 2)
         backupJson.put("encrypted", false)

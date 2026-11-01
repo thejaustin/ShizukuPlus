@@ -426,7 +426,6 @@
     <string name="stock_shizuku_conflict_dialog_title">Działa niezgodny serwer</string>
     <string name="stock_shizuku_conflict_dialog_message">Oryginalny serwer Shizuku działa obecnie w tle. Ze względu na ograniczenia bezpieczeństwa Androida Shizuku+ nie może się z nim komunikować ani go zabić.\n\nUruchom urządzenie całkowicie ponownie, aby zabić oryginalny serwer, a następnie uruchom Shizuku+ przez ADB lub root.</string>
     <string name="stock_shizuku_restarting_via_root">Ponowne uruchamianie przez root…</string>
-    <string name="backup_plain_exported">Wyeksportowano zwykłą kopię zapasową. Zachowaj ten plik w tajemnicy — nie jest zaszyfrowany.</string>
     <string name="backup_exported_success">Kopia zapasowa wyeksportowana</string>
     <string name="backup_restored_success">Kopia zapasowa przywrócona</string>
     <string name="backup_restored_restart_hint">Ustawienia przywrócone. Uruchom ponownie, aby zastosować zmiany motywu/języka.</string>

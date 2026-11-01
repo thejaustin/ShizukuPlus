@@ -65,7 +65,7 @@ Shizuku+ provides exclusive system interfaces for advanced automation and tools 
 
 *   **AICore+ Automation Bridge**: Privileged UI automation (hierarchy dumps, tap/swipe) for AI-driven tools — no root needed. ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
 *   **AVF (Virtual Machine) Manager**: Create, start and stop AVF virtual machines, on devices whose firmware supports AVF. ([added](https://github.com/thejaustin/ShizukuPlus/commit/c8e962f6))
-*   **Privileged Storage Proxy**: Authenticated access to restricted paths for backups and file management. `/data/app/` and external `/Android/data/` work in ADB mode; `/data/data/` requires root (the server must run as UID 0 to cross app-private directory boundaries). ([added](https://github.com/thejaustin/ShizukuPlus/commit/c8e962f6))
+*   **Privileged Storage Proxy**: Fast access to shared storage and read-only access to installed APKs for backup and file tools. Other apps' private data (`/data/data/`, `/Android/data/`, `/Android/obb/`) is off by default; turn on **Developer options → Unrestricted app data access** for tools like Neo Backup. `/data/data/` also needs root. ([added](https://github.com/thejaustin/ShizukuPlus/commit/c8e962f6))
 *   **Device Spoofing** (*Spoof Device Identity* in Settings): Present a different device identity to bypass device-specific restrictions. ([added](https://github.com/thejaustin/ShizukuPlus/commit/11867f44))
 *   **Intelligence Bridge** (*AI Core Plus*): Screen context for AI tools (pixel colors, layer captures, system context). NPU scheduling isn't offered: there's no public API for it, so the call says "not supported" instead of pretending ([#633](https://github.com/thejaustin/ShizukuPlus/issues/633)). ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
 *   **Window Manager Plus**: Force free-form resizing, manage the Bubble Bar, and resilient overlays. ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
@@ -109,6 +109,10 @@ Shizuku+ installs under its own package (`af.shizuku.plus.api`) so it can coexis
 3. Re-open the third-party app — it should now detect Shizuku and receive the service binder.
 
 Alternatively, install the **drop-in** build, which registers as `moe.shizuku.privileged.api` directly (do not install it alongside stock Shizuku).
+
+## 🔒 Privacy & Backups
+
+Nothing leaves your device except update checks and, only if you opt in, crash reports with addresses and other apps' commands stripped. Backups never carry your ADB key or the list of apps you allowed, and the risky APIs for other apps are off until you turn them on. The details, with links to the code, are in [docs/PRIVACY.md](docs/PRIVACY.md).
 
 ## ☑️ Requirements
 

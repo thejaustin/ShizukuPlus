@@ -666,7 +666,6 @@
     <string name="stock_shizuku_conflict_dialog_title">正在运行不兼容的服务</string>
     <string name="stock_shizuku_conflict_dialog_message">原版 Shizuku 服务当前正在后台运行。受 Android 安全限制，Shizuku+ 无法与其通信或终止它。\n\n请完全重启设备以终止原版服务，然后通过 ADB 或 Root 启动 Shizuku+。</string>
     <string name="stock_shizuku_restarting_via_root">正在通过 Root 重启…</string>
-    <string name="backup_plain_exported">已导出入明文备份。请妥善保管此文件——它未加密。</string>
     <string name="backup_exported_success">备份导出成功</string>
     <string name="backup_restored_success">备份恢复成功</string>
     <string name="backup_restored_restart_hint">设置已恢复。重启以应用主题/语言更改。</string>

@@ -426,7 +426,6 @@
     <string name="stock_shizuku_conflict_dialog_title">Máy chủ không tương thích đang chạy</string>
     <string name="stock_shizuku_conflict_dialog_message">Máy chủ Shizuku gốc hiện đang chạy nền. Do các ràng buộc bảo mật của Android, Shizuku+ không thể giao tiếp hoặc tắt máy chủ gốc.\n\nHãy khởi động lại hoàn toàn thiết bị để tắt máy chủ gốc, sau đó khởi động Shizuku+ bằng ADB hoặc Root.</string>
     <string name="stock_shizuku_restarting_via_root">Đang khởi động lại qua Root…</string>
-    <string name="backup_plain_exported">Đã xuất bản sao lưu không mã hóa. Hãy giữ tệp này riêng tư — nó không được mã hóa.</string>
     <string name="backup_exported_success">Đã xuất bản sao lưu thành công</string>
     <string name="backup_restored_success">Đã khôi phục bản sao lưu thành công</string>
     <string name="backup_restored_restart_hint">Đã khôi phục cài đặt. Hãy khởi động lại để áp dụng thay đổi giao diện/ngôn ngữ.</string>

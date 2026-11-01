@@ -426,7 +426,6 @@
     <string name="stock_shizuku_conflict_dialog_title">Serveur incompatible en cours d\'exécution</string>
     <string name="stock_shizuku_conflict_dialog_message">Le serveur Shizuku d\'origine s\'exécute actuellement en arrière-plan. En raison des contraintes de sécurité d\'Android, Shizuku+ ne peut ni communiquer avec le serveur d\'origine ni l\'arrêter.\n\nVeuillez redémarrer complètement votre appareil pour arrêter le serveur d\'origine, puis démarrez Shizuku+ via ADB ou root.</string>
     <string name="stock_shizuku_restarting_via_root">Redémarrage via root…</string>
-    <string name="backup_plain_exported">Sauvegarde non chiffrée exportée. Gardez ce fichier privé : il n\'est pas chiffré.</string>
     <string name="backup_exported_success">Sauvegarde exportée avec succès</string>
     <string name="backup_restored_success">Sauvegarde restaurée avec succès</string>
     <string name="backup_restored_restart_hint">Paramètres restaurés. Redémarrez pour appliquer les changements de thème/langue.</string>

@@ -426,7 +426,6 @@
     <string name="stock_shizuku_conflict_dialog_title">Inkompatibler Server läuft</string>
     <string name="stock_shizuku_conflict_dialog_message">Der ursprüngliche Shizuku-Server läuft derzeit im Hintergrund. Aufgrund der Android-Sicherheitsbeschränkungen kann Shizuku+ nicht mit dem ursprünglichen Server kommunizieren oder ihn beenden.\n\nBitte starte dein Gerät vollständig neu, um den ursprünglichen Server zu beenden, und starte dann Shizuku+ per ADB oder Root.</string>
     <string name="stock_shizuku_restarting_via_root">Neustart per Root…</string>
-    <string name="backup_plain_exported">Unverschlüsselte Sicherung exportiert. Halte diese Datei privat — sie ist nicht verschlüsselt.</string>
     <string name="backup_exported_success">Sicherung erfolgreich exportiert</string>
     <string name="backup_restored_success">Sicherung erfolgreich wiederhergestellt</string>
     <string name="backup_restored_restart_hint">Einstellungen wiederhergestellt. Starte neu, um Design- bzw. Sprachänderungen anzuwenden.</string>

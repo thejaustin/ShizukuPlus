@@ -221,12 +221,16 @@ object SettingsBackupManager {
         importInternal(json, synchronous = true, trustPrivileged = trustPrivileged)
 
     /** Settings left out of the reinstall copy: it is world-readable in /data/local/tmp. */
-    private val REINSTALL_COPY_SECRET_KEYS =
+    // Kept only in the encrypted export. Cloud backup, device transfer, the plain export and the
+    // reinstall copy all leave them out: they are credentials or say where you are and what you hide.
+    private val SECRET_KEYS =
         setOf(
             ShizukuSettings.Keys.KEY_VIRUSTOTAL_API_KEY,
             ShizukuSettings.Keys.KEY_PITHUS_API_KEY,
             // Which apps are hidden from other apps: readable here, it would defeat the point.
             ShizukuSettings.Keys.KEY_SHADOW_BINDER_HIDDEN_PACKAGES,
+            // Home/work Wi-Fi names reveal where the user lives and works.
+            ShizukuSettings.Keys.KEY_AUTOMATION_TRUSTED_NETWORKS,
         )
 
     /** Set once this install has checked for a backup to restore; excluded from backups. */
@@ -303,7 +307,7 @@ object SettingsBackupManager {
     private const val BACKUP_DEBOUNCE_MS = 2_000L
 
     /** [json] without the settings that must not sit in a file other apps can read. */
-    fun withoutSecrets(json: String): String = JSONObject(json).apply { REINSTALL_COPY_SECRET_KEYS.forEach { remove(it) } }.toString(2)
+    fun withoutSecrets(json: String): String = JSONObject(json).apply { SECRET_KEYS.forEach { remove(it) } }.toString(2)
 
     fun saveAutoBackup(context: Context) {
         try {
