@@ -177,6 +177,10 @@ object ServiceDoctor {
                         delay(3000)
                         ShizukuStateMachine.isRunning()
                     },
+                    // Only when tapped. In background healing (run on every crash) this force-start
+                    // raced Watchdog's own restart into a second server and could raise an ADB
+                    // authorization dialog in the background. Restarts are Watchdog's job.
+                    autoHeal = false,
                 ),
             )
 

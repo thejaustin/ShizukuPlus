@@ -4,7 +4,7 @@ import af.shizuku.manager.R
 import af.shizuku.manager.utils.ShizukuStateMachine
 import android.content.Context
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 
 /**
@@ -52,11 +52,17 @@ object Starter {
         // leaves this screen stuck on "Waiting for service…" even though the service is already
         // reachable. update() pings the binder and, when alive, sets the state to RUNNING (also
         // notifying listeners so the home screen refreshes).
-        withTimeout(20_000) {
-            while (ShizukuStateMachine.update() != ShizukuStateMachine.State.RUNNING) {
-                delay(250)
+        // withTimeoutOrNull: withTimeout's TimeoutCancellationException is a CancellationException,
+        // which callers rethrow as a cancellation, so a start that never connected ended without
+        // a retry and left STARTING in place.
+        val connected =
+            withTimeoutOrNull(20_000) {
+                while (ShizukuStateMachine.update() != ShizukuStateMachine.State.RUNNING) {
+                    delay(250)
+                }
+                true
             }
-        }
+        if (connected == null) throw java.util.concurrent.TimeoutException("The service did not connect within 20 s")
 
         val elapsed = (System.currentTimeMillis() - t0) / 1000.0
         log?.invoke("Connected in ${String.format("%.1f", elapsed)}s")

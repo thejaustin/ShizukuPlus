@@ -5,6 +5,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ## [Unreleased]
 
 ### 🛠 Fixes
+- **No second server after a crash, and a reboot isn't a crash** — background self-healing no longer restarts the service on its own (that raced Watchdog into two servers and could raise an ADB prompt in the background). Restarting after a reboot is no longer logged as an unexpected drop, a start that never connects is retried instead of staying on "Starting…", and starting with root no longer freezes the app while su answers.
 - **Failed starts are reported** — when a background start failed or Wireless ADB couldn't be found, the default helper notifications setting showed nothing. They now count as "Shizuku+ stopped or needs you". When Watchdog holds a restart back because the service crashed again too soon, it now tells you and tries again after the wait, instead of leaving the service down.
 - **Pairing results stay visible** — the pairing result notification no longer disappears the moment the pairing service closes.
 - **Stopping Shizuku+ keeps it stopped** — a status check running at the same moment as a stop could undo it, and Watchdog then restarted the service you had just stopped. Stops from the Quick Settings tile, its options and automation now count as deliberate too, and a stop that never completes no longer leaves "Stopping…" on screen forever.

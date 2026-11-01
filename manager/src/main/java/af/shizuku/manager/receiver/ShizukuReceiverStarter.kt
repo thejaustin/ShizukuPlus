@@ -103,7 +103,12 @@ object ShizukuReceiverStarter {
         }
 
         if (ShizukuSettings.getLastLaunchMode() == LaunchMethod.ROOT) {
-            rootStart(context, forceStart)
+            // Off the caller's thread: Watchdog, the boot receiver and the automation receivers
+            // call this on main, and building the root shell (an su prompt, a slow Magisk or
+            // KernelSU) then ran the starter synchronously there. One thread also keeps two
+            // root starts from running at once.
+            val app = context.applicationContext
+            rootStarts.execute { rootStart(app, forceStart) }
         } else if (ShizukuSettings.getLastLaunchMode() == LaunchMethod.ADB) {
             if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
                 AdbStartWorker.enqueue(context, explicit = forceStart)
@@ -248,6 +253,8 @@ object ShizukuReceiverStarter {
     // futures, which the main thread must never do.
     private val serial =
         Executors.newSingleThreadExecutor { r -> Thread(r, "adb-start-notification").apply { isDaemon = true } }
+    private val rootStarts =
+        Executors.newSingleThreadExecutor { r -> Thread(r, "root-start").apply { isDaemon = true } }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val observing = AtomicBoolean(false)
 

@@ -290,12 +290,38 @@ public class ShizukuSettings {
      * default (STOPPED) makes an unexpected death indistinguishable from an intentional stop, so the
      * watchdog's external re-arm (WatchdogAlarmReceiver) never sees a CRASHED transition to act on.
      */
+    /**
+     * The settled state saved by the last process, or null when it was saved before the latest
+     * reboot: a server never survives one, and reading a pre-reboot RUNNING made every boot look
+     * like a crash (a false "dropped unexpectedly", self-healing and a Watchdog restart racing
+     * start on boot).
+     */
     public static String getLastSettledState() {
-        return getPreferences().getString(Keys.KEY_LAST_SETTLED_STATE, null);
+        SharedPreferences p = getPreferences();
+        int savedBoot = p.getInt(KEY_LAST_SETTLED_BOOT, -1);
+        int boot = currentBootCount();
+        if (boot >= 0 && savedBoot != boot) return null;
+        return p.getString(Keys.KEY_LAST_SETTLED_STATE, null);
     }
 
     public static void setLastSettledState(String stateName) {
-        getPreferences().edit().putString(Keys.KEY_LAST_SETTLED_STATE, stateName).apply();
+        getPreferences().edit()
+                .putString(Keys.KEY_LAST_SETTLED_STATE, stateName)
+                .putInt(KEY_LAST_SETTLED_BOOT, currentBootCount())
+                .apply();
+    }
+
+    private static final String KEY_LAST_SETTLED_BOOT = "last_settled_state_boot";
+
+    /** Settings.Global.BOOT_COUNT, or -1 when it can't be read. */
+    private static int currentBootCount() {
+        try {
+            return android.provider.Settings.Global.getInt(
+                    af.shizuku.manager.ShizukuApplication.Companion.getAppContext().getContentResolver(),
+                    android.provider.Settings.Global.BOOT_COUNT, -1);
+        } catch (Throwable t) {
+            return -1;
+        }
     }
 
     public static boolean isSentryLimitReached() {
