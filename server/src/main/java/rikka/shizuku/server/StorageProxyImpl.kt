@@ -20,8 +20,14 @@ import java.util.function.BooleanSupplier
 /**
  * @param unrestricted the "Unrestricted app data access" developer option. While it is off,
  *     [StorageAccessPolicy] keeps third-party callers out of other apps' private data.
+ * @param personalData the "Personal data & device control" option, or the caller is the manager.
+ *     [openContentUri] reads any provider the shell can (SMS, MMS, contacts, call log), so it
+ *     needs that option, not just this one.
  */
-class StorageProxyImpl(private val unrestricted: BooleanSupplier) : IStorageProxy.Stub() {
+class StorageProxyImpl(
+    private val unrestricted: BooleanSupplier,
+    private val personalData: BooleanSupplier,
+) : IStorageProxy.Stub() {
 
     // Cached once per process — getuid() is a syscall, not a field.
     private val serverUid: Int by lazy { android.system.Os.getuid() }
@@ -226,6 +232,10 @@ class StorageProxyImpl(private val unrestricted: BooleanSupplier) : IStorageProx
 
     override fun openContentUri(contentUri: String?): ParcelFileDescriptor? {
         if (contentUri.isNullOrBlank() || !contentUri.startsWith("content://")) return null
+        if (!personalData.asBoolean) {
+            Log.w("StorageProxy", "denied openContentUri (developer option off)")
+            return null
+        }
         // Primary: IContentProvider.openFile() via Binder — no exec needed
         try {
             val uri = Uri.parse(contentUri)

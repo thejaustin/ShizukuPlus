@@ -175,7 +175,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private static final String FEATURE_UNRESTRICTED_PERSONAL_DATA = "unrestricted_personal_data";
 
     private final Lazy<VirtualMachineManagerImpl> virtualMachineManager = new Lazy<>(VirtualMachineManagerImpl::new);
-    private final Lazy<StorageProxyImpl> storageProxy = new Lazy<>(() -> new StorageProxyImpl(() -> isFeatureEnabled(FEATURE_UNRESTRICTED_APP_DATA)));
+    private final Lazy<StorageProxyImpl> storageProxy = new Lazy<>(() -> new StorageProxyImpl(
+            () -> isFeatureEnabled(FEATURE_UNRESTRICTED_APP_DATA),
+            () -> isRiskyBinderAllowed("StorageProxy.openContentUri", FEATURE_UNRESTRICTED_PERSONAL_DATA)));
     private final AICorePlusImpl aiCorePlus;
     private final Lazy<WindowManagerPlusImpl> windowManagerPlus = new Lazy<>(WindowManagerPlusImpl::new);
     private final Lazy<ContinuityBridgeImpl> continuityBridge = new Lazy<>(ContinuityBridgeImpl::new);
