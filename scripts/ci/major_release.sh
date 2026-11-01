@@ -38,7 +38,14 @@ for t in $tags; do
         ;;
     esac
     if [ "$major" = 1 ]; then
-      highlights="$entries"
+      # Feature entries first: list each added entry with its CHANGELOG section, sorting the
+      # ones under a "Fix" heading last.
+      highlights=$(printf '%s\n' "$entries" | grep . | while IFS= read -r lead; do
+        section=$(git show "${newer}:CHANGELOG.md" 2>/dev/null | awk -v lead="**${lead}" '
+          /^### / { sec = $0 }
+          index($0, "- " lead) == 1 { print sec; exit }')
+        case "$section" in *[Ff]ix*) echo "1	$lead" ;; *) echo "0	$lead" ;; esac
+      done | sort -s -k1,1 | cut -f2- || true)
       if [ -z "$highlights" ]; then
         highlights=$(git log "$range" --no-merges --pretty=format:'%s' | grep -E '^feat(\([^)]+\))?!?: ' | sed -E 's/^feat(\([^)]+\))?!?: //' || true)
       fi
