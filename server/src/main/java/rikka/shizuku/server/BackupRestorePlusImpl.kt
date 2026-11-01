@@ -257,6 +257,8 @@ class BackupRestorePlusImpl(private val allowed: java.util.function.BooleanSuppl
         includeShared: Boolean
     ): ParcelFileDescriptor? {
         if (packageName.isNullOrBlank()) return null
+        // A "package name" like -all or -shared would be read by bu as an option.
+        if (!InputValidationUtils.isValidPackageName(packageName)) return null
         if (Build.VERSION.SDK_INT >= 32) return null
         val cmd = mutableListOf("bu", "backup")
         if (!includeApk) cmd += "-noapk"

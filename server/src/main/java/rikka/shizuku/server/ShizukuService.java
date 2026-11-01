@@ -1382,6 +1382,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         }
     }
 
+    /** Single-quotes [s] for a sh -c string: 'it'\''s' → it's. */
+    private static String shellQuote(String s) {
+        return "'" + s.replace("'", "'\\''") + "'";
+    }
+
     @Override
     public IRemoteProcess newProcess(String[] cmd, String[] env, String dir) {
         // Every branch below this point (SU-bridge mocking, build.prop redirection, iptables/pm
@@ -2171,7 +2176,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         String fullCmd = String.join(" ", cmd);
                         LOGGER.i("SUBridge: mapping backup command to native bu utility: " + fullCmd);
                         java.util.regex.Matcher m = java.util.regex.Pattern.compile("/data/(?:data|app|user/\\d+)/([^/\\-\\s]+)").matcher(fullCmd);
-                        if (m.find()) {
+                        // The package name goes into a sh -c string below; anything that isn't a
+                        // plain package name (`x;reboot`, `$(...)`) skips the mapping.
+                        if (m.find() && rikka.shizuku.server.util.InputValidationUtils.isValidPackageName(m.group(1))) {
                             String targetPkg = m.group(1);
                             String archivePath = null;
                             for (int i = 1; i < cmd.length; i++) {
@@ -2189,14 +2196,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                             if (archivePath != null) {
                                 if (isRestore) {
                                     String restoreCmd = "(printf 'ANDROID BACKUP\\n1\\n1\\nnone\\n' ; ";
-                                    if (isGzip) restoreCmd += "gunzip -c " + archivePath;
-                                    else restoreCmd += "cat " + archivePath;
+                                    if (isGzip) restoreCmd += "gunzip -c " + shellQuote(archivePath);
+                                    else restoreCmd += "cat " + shellQuote(archivePath);
                                     restoreCmd += ") | bu restore";
                                     return newProcessInternal(new String[]{"sh", "-c", restoreCmd}, env, dir);
                                 } else {
                                     String backupCmd = "bu backup -apk -obb " + targetPkg + " | tail -c +25 ";
                                     if (isGzip) backupCmd += "| gzip -c ";
-                                    backupCmd += "> " + archivePath;
+                                    backupCmd += "> " + shellQuote(archivePath);
                                     return newProcessInternal(new String[]{"sh", "-c", backupCmd}, env, dir);
                                 }
                             } else {
@@ -2424,8 +2431,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                                     }
                                 }
                             }
-                        } else {
-                            // Name-based pkill/killall: treat target as package name
+                        } else if (rikka.shizuku.server.util.InputValidationUtils.isValidPackageName(target)) {
+                            // Name-based pkill/killall: treat target as package name. Anything else
+                            // (a flag, a process name with ':') runs as the real command instead.
                             LOGGER.i("Plus: %s %s → am force-stop", baseCmd, target);
                             ActivityManagerApis.forceStopPackageNoThrow(target,
                                 UserHandleCompat.getUserId(callingUid));
