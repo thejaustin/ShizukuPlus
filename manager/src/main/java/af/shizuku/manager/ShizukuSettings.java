@@ -409,6 +409,30 @@ public class ShizukuSettings {
     }
 
     /** Switch rows morph their icon container from circle to the chosen shape when turned on. */
+    /** The icon container's shape while a switch is off (and while Shizuku+ is stopped, on Home). */
+    @NonNull
+    public static String getIconMorphOffShape() {
+        SharedPreferences p = getPreferences();
+        String v = p != null ? p.getString("icon_morph_off_shape", "circle") : "circle";
+        return v != null ? v : "circle";
+    }
+
+    /** How the icon container moves between its off and on shapes; Spin by default. */
+    @NonNull
+    public static String getIconMorphMode() {
+        SharedPreferences p = getPreferences();
+        String v = p != null ? p.getString("icon_morph_mode", "spin") : "spin";
+        return v != null ? v : "spin";
+    }
+
+    /** Experimental switch row design: "standard", "icon_switch" or "shape_thumb". */
+    @NonNull
+    public static String getSwitchRowDesign() {
+        SharedPreferences p = getPreferences();
+        String v = p != null ? p.getString("switch_row_design", "standard") : "standard";
+        return v != null ? v : "standard";
+    }
+
     public static boolean isIconMorphOnToggle() {
         SharedPreferences p = getPreferences();
         return p == null || p.getBoolean("icon_morph_on_toggle", true);

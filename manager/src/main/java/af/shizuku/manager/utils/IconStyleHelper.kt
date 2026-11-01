@@ -240,26 +240,17 @@ object IconStyleHelper {
             }
         }
         val morphShape = ShizukuSettings.getIconMorphShape()
-        if (morphShape != ExpressiveShapes.OFF) return MorphShapeDrawable(color, morphShape)
-        return when (ShizukuSettings.getShapeStyle()) {
-            "zen" -> leafDrawable(context, color)
-            "classic" ->
-                GradientDrawable().apply {
-                    shape = GradientDrawable.RECTANGLE
-                    cornerRadius = 2 * context.resources.displayMetrics.density
-                    setColor(color)
-                }
-            "squircle" ->
-                GradientDrawable().apply {
-                    shape = GradientDrawable.RECTANGLE
-                    cornerRadius = 14 * context.resources.displayMetrics.density
-                    setColor(color)
-                }
-            "cut" -> cutDrawable(context, color)
-            else -> {
-                // "modern" (default) - pill curvature adapts with the corner rounding override
-                val density = context.resources.displayMetrics.density
-                val baseRadius =
+        val offShape = ShizukuSettings.getIconMorphOffShape()
+        if (morphShape != ExpressiveShapes.OFF) return MorphShapeDrawable(color, morphShape, offShape)
+        val density = context.resources.displayMetrics.density
+        // The rounded-square styles draw through the shape engine too, so their containers can
+        // morph and spin like the Expressive shapes. The corner radius stays in dp at any size.
+        val roundedCorner =
+            when (ShizukuSettings.getShapeStyle()) {
+                "zen", "cut" -> null
+                "classic" -> 2f * density
+                "squircle" -> 14f * density
+                else ->
                     when (ShizukuSettings.getPreferences().getString(ShizukuSettings.Keys.KEY_CORNER_ROUNDING_OVERRIDE, "default")) {
                         "gentle" -> 8f * density
                         "standard" -> 10f * density
@@ -267,13 +258,13 @@ object IconStyleHelper {
                         "maximum" -> 16f * density
                         else -> 12f * density
                     }
-                GradientDrawable().apply {
-                    shape = GradientDrawable.RECTANGLE
-                    cornerRadius = baseRadius
-                    setColor(color)
-                }
             }
+        if (roundedCorner != null) {
+            // Keyed for a 40dp container until bounds arrive; the drawable refits it to its size.
+            return MorphShapeDrawable(color, ExpressiveShapes.rectKey(roundedCorner / (20f * density)), offShape, roundedCorner)
         }
+        // Zen's leaf and Cut's octagon keep their own drawables; they don't morph.
+        return if (ShizukuSettings.getShapeStyle() == "cut") cutDrawable(context, color) else leafDrawable(context, color)
     }
 
     /**

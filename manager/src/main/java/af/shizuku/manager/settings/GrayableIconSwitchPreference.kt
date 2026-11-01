@@ -2,15 +2,26 @@ package af.shizuku.manager.settings
 
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.utils.MorphMode
+import af.shizuku.manager.utils.MorphShapeDrawable
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import af.shizuku.manager.utils.MotionUtils.springTo
 import af.shizuku.manager.utils.springTo
+import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.view.AccessibilityDelegateCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.preference.PreferenceViewHolder
 import androidx.preference.SwitchPreferenceCompat
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.R as MaterialR
 
@@ -20,7 +31,7 @@ open class GrayableIconSwitchPreference
         context: Context,
         attrs: AttributeSet? = null,
     ) : SwitchPreferenceCompat(context, attrs) {
-        private var lastItemView: java.lang.ref.WeakReference<android.view.View>? = null
+        private var lastItemView: java.lang.ref.WeakReference<View>? = null
 
         override fun onBindViewHolder(holder: PreferenceViewHolder) {
             super.onBindViewHolder(holder)
@@ -30,19 +41,89 @@ open class GrayableIconSwitchPreference
             holder.itemView.setTag(R.id.tag_switch_row_owner, this)
             holder.itemView.applySpringTouch(scale = 0.985f)
 
-            // Standard M3E switch: check / close icon in the thumb, whatever the row.
-            (holder.findViewById(R.id.switchWidget) as? MaterialSwitch)?.setThumbIconResource(R.drawable.m3_switch_thumb_icon)
+            val icon = holder.itemView.findViewById<ImageView>(android.R.id.icon)
+            val morph = icon?.let { morphShapeOf(it) }
+            // "Icon is the switch" needs a shape container to fill; rows without one keep a switch.
+            val design = ShizukuSettings.getSwitchRowDesign()
+            val iconSwitch = design == DESIGN_ICON_SWITCH && morph != null
+            bindSwitch(holder, if (iconSwitch) DESIGN_ICON_SWITCH else design, morph)
 
-            holder.itemView
-                .findViewById<ImageView>(android.R.id.icon)
-                ?.apply {
-                    alpha = if (isChecked) 1.0f else OFF_ICON_ALPHA
-                    scaleX = if (isChecked) 1.0f else 0.90f
-                    scaleY = if (isChecked) 1.0f else 0.90f
-                    val showShape = !ShizukuSettings.isIconMorphOnToggle() || isChecked
-                    morphShapeOf(this)?.progress = if (showShape) 1f else 0f
-                    roundedContainerOf(this)?.let { setContainerRound(it, if (showShape) 0f else 1f) }
+            if (icon != null) {
+                val showShape = !ShizukuSettings.isIconMorphOnToggle() || isChecked
+                morph?.mode = MorphMode.of(ShizukuSettings.getIconMorphMode())
+                morph?.progress = if (showShape) 1f else 0f
+                if (iconSwitch) {
+                    // The hollow-or-filled container carries the state, so no dimming.
+                    morph!!.strokeColor = MaterialColors.getColor(icon, MaterialR.attr.colorOutline)
+                    morph.strokeWidthPx = 1.5f * icon.resources.displayMetrics.density
+                    morph.fillFraction = if (isChecked) 1f else 0f
+                    icon.alpha = 1f
+                    icon.scaleX = 1f
+                    icon.scaleY = 1f
+                } else {
+                    morph?.fillFraction = 1f
+                    icon.alpha = if (isChecked) 1.0f else OFF_ICON_ALPHA
+                    icon.scaleX = if (isChecked) 1.0f else 0.90f
+                    icon.scaleY = if (isChecked) 1.0f else 0.90f
                 }
+            }
+        }
+
+        /** The trailing control for [design]: the M3E switch, a shape thumb, or an On/Off label. */
+        private fun bindSwitch(
+            holder: PreferenceViewHolder,
+            design: String,
+            morph: MorphShapeDrawable?,
+        ) {
+            val switchView = holder.findViewById(R.id.switchWidget) as? MaterialSwitch ?: return
+            val frame = switchView.parent as? ViewGroup
+            var label = frame?.findViewWithTag<TextView>(STATE_LABEL_TAG)
+            if (switchView.getTag(R.id.tag_switch_default_thumb) == null) {
+                switchView.setTag(R.id.tag_switch_default_thumb, switchView.thumbDrawable ?: NoDrawable)
+            }
+            when (design) {
+                DESIGN_ICON_SWITCH -> {
+                    switchView.visibility = View.GONE
+                    if (label == null && frame != null) {
+                        label =
+                            TextView(frame.context).apply {
+                                tag = STATE_LABEL_TAG
+                                setTextAppearance(MaterialR.style.TextAppearance_Material3_LabelMedium)
+                            }
+                        frame.addView(label)
+                    }
+                    label?.visibility = View.VISIBLE
+                    label?.let { updateStateLabel(it, isChecked) }
+                    // The switch is gone, so the row itself reports the switch and its state.
+                    ViewCompat.setAccessibilityDelegate(
+                        holder.itemView,
+                        object : AccessibilityDelegateCompat() {
+                            override fun onInitializeAccessibilityNodeInfo(
+                                host: View,
+                                info: AccessibilityNodeInfoCompat,
+                            ) {
+                                super.onInitializeAccessibilityNodeInfo(host, info)
+                                info.className = android.widget.Switch::class.java.name
+                                info.isCheckable = true
+                                info.isChecked = isChecked
+                            }
+                        },
+                    )
+                }
+                else -> {
+                    switchView.visibility = View.VISIBLE
+                    label?.visibility = View.GONE
+                    ViewCompat.setAccessibilityDelegate(holder.itemView, null)
+                    switchView.thumbDrawable =
+                        if (design == DESIGN_SHAPE_THUMB) {
+                            shapeThumb(switchView, morph)
+                        } else {
+                            switchView.getTag(R.id.tag_switch_default_thumb) as? Drawable
+                        }
+                }
+            }
+            // Standard M3E switch: check / close icon in the thumb.
+            switchView.setThumbIconResource(R.drawable.m3_switch_thumb_icon)
         }
 
         override fun onClick() {
@@ -55,34 +136,29 @@ open class GrayableIconSwitchPreference
                     notifyChanged()
                     return
                 }
-                row.let { v ->
-                    if (isChecked) {
-                        af.shizuku.manager.utils.HapticUtils
-                            .toggleOn(v)
-                    } else {
-                        af.shizuku.manager.utils.HapticUtils
-                            .toggleOff(v)
-                    }
-                    // Icon container morphs circle <-> chosen M3E shape on a spring.
-                    v.findViewById<ImageView>(android.R.id.icon)?.let { iv ->
-                        val morph = morphShapeOf(iv)
-                        if (morph != null && ShizukuSettings.isIconMorphOnToggle()) {
-                            morph.springTo(if (isChecked) 1f else 0f)
-                        }
-                        // Without an icon shape picked: the Shape style's rounded square
-                        // rounds into a circle when off, on the same spring feel.
-                        val rounded = roundedContainerOf(iv)
-                        if (rounded != null && ShizukuSettings.isIconMorphOnToggle()) {
-                            springContainerRound(iv, rounded, if (isChecked) 0f else 1f)
-                        }
-                    }
+                if (isChecked) {
+                    af.shizuku.manager.utils.HapticUtils
+                        .toggleOn(row)
+                } else {
+                    af.shizuku.manager.utils.HapticUtils
+                        .toggleOff(row)
+                }
+                row.findViewWithTag<TextView>(STATE_LABEL_TAG)?.let { updateStateLabel(it, isChecked) }
+                val icon = row.findViewById<ImageView>(android.R.id.icon) ?: return
+                val morph = morphShapeOf(icon)
+                // Off shape <-> on shape, moving in the chosen morph mode.
+                if (morph != null && ShizukuSettings.isIconMorphOnToggle()) {
+                    morph.mode = MorphMode.of(ShizukuSettings.getIconMorphMode())
+                    morph.springTo(if (isChecked) 1f else 0f)
+                }
+                if (morph != null && ShizukuSettings.getSwitchRowDesign() == DESIGN_ICON_SWITCH) {
+                    animateFill(morph, if (isChecked) 1f else 0f)
+                } else {
                     // Icon scale springs (may bounce); its dimming fades without overshoot.
-                    v.findViewById<ImageView>(android.R.id.icon)?.let { icon ->
-                        val scale = if (isChecked) 1.0f else 0.90f
-                        icon.springTo(SpringAnimation.SCALE_X, scale, MaterialR.attr.motionSpringFastSpatial)
-                        icon.springTo(SpringAnimation.SCALE_Y, scale, MaterialR.attr.motionSpringFastSpatial)
-                        icon.springTo(SpringAnimation.ALPHA, if (isChecked) 1.0f else OFF_ICON_ALPHA, MaterialR.attr.motionSpringFastEffects)
-                    }
+                    val scale = if (isChecked) 1.0f else 0.90f
+                    icon.springTo(SpringAnimation.SCALE_X, scale, MaterialR.attr.motionSpringFastSpatial)
+                    icon.springTo(SpringAnimation.SCALE_Y, scale, MaterialR.attr.motionSpringFastSpatial)
+                    icon.springTo(SpringAnimation.ALPHA, if (isChecked) 1.0f else OFF_ICON_ALPHA, MaterialR.attr.motionSpringFastEffects)
                 }
             }
         }
@@ -90,69 +166,63 @@ open class GrayableIconSwitchPreference
 
 /**
  * An off row's icon: dimmer, but well above the 38% M3 uses for disabled, so it never reads as
- * unavailable. With an icon shape picked, the container also morphs circle -> shape when on.
+ * unavailable. The container also morphs from the off shape to the on shape when switched on.
  */
 private const val OFF_ICON_ALPHA = 0.6f
 
-/**
- * The rounded-rectangle background layer of a two-tone icon (the Shape style's pill when no icon
- * shape is picked), if it has rounded corners to morph. Oval and sharp containers have none.
- */
-private fun roundedContainerOf(iv: ImageView): android.graphics.drawable.GradientDrawable? {
-    val bg =
-        (iv.drawable as? android.graphics.drawable.LayerDrawable)?.getDrawable(0) as? android.graphics.drawable.GradientDrawable
-            ?: return null
-    if (bg.shape != android.graphics.drawable.GradientDrawable.RECTANGLE) return null
-    // The style's own radius, read once before any morph changes it.
-    val base = (iv.getTag(R.id.tag_icon_container_radius) as? Float) ?: bg.cornerRadius.also { iv.setTag(R.id.tag_icon_container_radius, it) }
-    return bg.takeIf { base > 0f }
-}
+private const val DESIGN_ICON_SWITCH = "icon_switch"
+private const val DESIGN_SHAPE_THUMB = "shape_thumb"
+private const val STATE_LABEL_TAG = "switch_state_label"
 
-/** [round] 0 = the style's corner radius, 1 = a circle. */
-private fun setContainerRound(
-    bg: android.graphics.drawable.GradientDrawable,
-    round: Float,
-    base: Float,
+private object NoDrawable
+
+private fun updateStateLabel(
+    label: TextView,
+    checked: Boolean,
 ) {
-    val b = bg.bounds
-    val circle = if (b.isEmpty) base * 4f else minOf(b.width(), b.height()) / 2f
-    bg.cornerRadius = base + (maxOf(circle, base) - base) * round.coerceIn(0f, 1f)
+    label.setText(if (checked) R.string.switch_state_on else R.string.switch_state_off)
+    label.setTextColor(
+        MaterialColors.getColor(label, if (checked) androidx.appcompat.R.attr.colorPrimary else MaterialR.attr.colorOnSurfaceVariant),
+    )
 }
 
-private fun ImageView.setContainerRound(
-    bg: android.graphics.drawable.GradientDrawable,
-    round: Float,
-) {
-    val base = getTag(R.id.tag_icon_container_radius) as? Float ?: return
-    setTag(R.id.tag_icon_container_round, round)
-    setContainerRound(bg, round, base)
-}
-
-/** Springs the container between its style's radius and a circle, like the shape morph. */
-private fun springContainerRound(
-    iv: ImageView,
-    bg: android.graphics.drawable.GradientDrawable,
+/** Fades the container between an outline (0) and filled (1). */
+private fun animateFill(
+    morph: MorphShapeDrawable,
     target: Float,
 ) {
-    if (ShizukuSettings.getAnimationDurationScale() <= 0f) {
-        iv.setContainerRound(bg, target)
+    val duration = ShizukuSettings.scaledAnimationDuration(200)
+    if (duration <= 0L) {
+        morph.fillFraction = target
         return
     }
-    (iv.getTag(R.id.tag_icon_container_spring) as? SpringAnimation)?.cancel()
-    val holder =
-        androidx.dynamicanimation.animation
-            .FloatValueHolder((iv.getTag(R.id.tag_icon_container_round) as? Float) ?: (1f - target))
-    SpringAnimation(holder)
-        .setSpring(
-            androidx.dynamicanimation.animation.SpringForce(target).apply {
-                dampingRatio = androidx.dynamicanimation.animation.SpringForce.DAMPING_RATIO_NO_BOUNCY
-                stiffness = androidx.dynamicanimation.animation.SpringForce.STIFFNESS_LOW
-            },
-        ).addUpdateListener { _, value, _ -> iv.setContainerRound(bg, value) }
-        .also { iv.setTag(R.id.tag_icon_container_spring, it) }
-        .start()
+    ValueAnimator.ofFloat(morph.fillFraction, target).apply {
+        this.duration = duration
+        interpolator = af.shizuku.manager.utils.MotionUtils.EMPHASIZED_DECELERATE
+        addUpdateListener { morph.fillFraction = it.animatedValue as Float }
+        start()
+    }
+}
+
+/**
+ * A switch thumb drawn in the icon shapes: the off shape while off, morphing into the on shape
+ * as it slides (MaterialSwitch tints it and passes the checked state), and smaller while off like
+ * the M3 thumb. The check / close icon still sits on top.
+ */
+private fun shapeThumb(
+    switchView: MaterialSwitch,
+    morph: MorphShapeDrawable?,
+): Drawable {
+    val density = switchView.resources.displayMetrics.density
+    val onKey = morph?.shapeKey ?: "cookie"
+    val offKey = morph?.offKey ?: af.shizuku.manager.utils.ExpressiveShapes.CIRCLE
+    return MorphShapeDrawable(MaterialColors.getColor(switchView, MaterialR.attr.colorOnPrimary), onKey, offKey).apply {
+        mode = MorphMode.of(ShizukuSettings.getIconMorphMode())
+        intrinsicSizePx = (24 * density).toInt()
+        shrinkWhenOff = true
+        followsCheckedState = true
+    }
 }
 
 /** The morphing background layer of a two-tone icon, if the icon uses one. */
-private fun morphShapeOf(iv: ImageView): af.shizuku.manager.utils.MorphShapeDrawable? =
-    ((iv.drawable as? android.graphics.drawable.LayerDrawable)?.getDrawable(0)) as? af.shizuku.manager.utils.MorphShapeDrawable
+private fun morphShapeOf(iv: ImageView): MorphShapeDrawable? = ((iv.drawable as? android.graphics.drawable.LayerDrawable)?.getDrawable(0)) as? MorphShapeDrawable

@@ -181,17 +181,25 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             setChildAvailable(animInt, expressiveAnimationsPreference?.isChecked ?: ShizukuSettings.isExpressiveAnimationsEnabled())
         }
 
-        // M3E morph shapes: only meaningful with expressive shapes on; the toggle-morph switch
-        // only matters once a shape is picked.
+        // M3E morph shapes: only meaningful with expressive shapes on. The toggle morph works with
+        // a picked shape or any rounded Shape style; Zen's leaf and Cut's octagon don't morph.
         val morphShapePreference = findPreference<Preference>("icon_morph_shape")
-        val morphTogglePreference = findPreference<Preference>("icon_morph_on_toggle")
+        val morphTogglePreference = findPreference<androidx.preference.TwoStatePreference>("icon_morph_on_toggle")
+        val morphOffShapePreference = findPreference<Preference>("icon_morph_off_shape")
+        val morphModePreference = findPreference<Preference>("icon_morph_mode")
 
         fun syncMorphAvailability(
             shapesOn: Boolean = expressiveShapesPreference.isChecked,
             shape: String = ShizukuSettings.getIconMorphShape(),
+            morphOn: Boolean = morphTogglePreference?.isChecked ?: ShizukuSettings.isIconMorphOnToggle(),
         ) {
+            val morphable =
+                shapesOn &&
+                    (shape != af.shizuku.manager.utils.ExpressiveShapes.OFF || ShizukuSettings.getShapeStyle() !in setOf("zen", "cut"))
             morphShapePreference?.setAvailable(shapesOn)
-            morphTogglePreference?.setAvailable(shapesOn && shape != af.shizuku.manager.utils.ExpressiveShapes.OFF)
+            morphTogglePreference?.setAvailable(morphable)
+            morphOffShapePreference?.setAvailable(morphable && morphOn)
+            morphModePreference?.setAvailable(morphable && morphOn)
         }
         syncMorphAvailability()
 
@@ -214,7 +222,20 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             }
             true
         }
-        morphTogglePreference?.setOnPreferenceChangeListener { _, _ ->
+        morphTogglePreference?.setOnPreferenceChangeListener { _, newValue ->
+            syncMorphAvailability(morphOn = newValue as? Boolean ?: true)
+            view?.post { refreshIconStyles() }
+            true
+        }
+        morphOffShapePreference?.setOnPreferenceChangeListener { _, _ ->
+            // Containers are built with their off shape: restyle once the new value is saved.
+            view?.post {
+                applyTheme(requiresRecreate = false)
+                postRefreshIconStyles()
+            }
+            true
+        }
+        morphModePreference?.setOnPreferenceChangeListener { _, _ ->
             view?.post { refreshIconStyles() }
             true
         }

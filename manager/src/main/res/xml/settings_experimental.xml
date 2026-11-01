@@ -50,6 +50,15 @@
             android:defaultValue="false"
             app:badgeType="experimental" />
 
+        <!-- Switch rows only (GrayableIconSwitchPreference); Compose switches keep the standard look. -->
+        <rikka.preference.SimpleMenuPreference
+            android:key="switch_row_design"
+            android:title="@string/settings_switch_row_design_title"
+            android:entries="@array/switch_row_designs"
+            android:entryValues="@array/switch_row_designs_values"
+            android:defaultValue="standard"
+            android:icon="@drawable/ic_animation_24" />
+
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory

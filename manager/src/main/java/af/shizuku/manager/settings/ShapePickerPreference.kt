@@ -77,7 +77,7 @@ class ShapePickerPreference
             val prefIcon = icon
             cv.setPreferenceContent {
                 ComposePreferenceRow(title = title, summary = summary, enabled = enabled, icon = prefIcon) {
-                    ShapeTiles(selected.value, enabled) { key ->
+                    ShapeTiles(selected.value, enabled, offShapes = key == "icon_morph_off_shape") { key ->
                         if (key != selected.value && callChangeListener(key)) {
                             selected.value = key
                             persistString(key)
@@ -92,12 +92,15 @@ class ShapePickerPreference
 private fun ShapeTiles(
     selectedKey: String,
     enabled: Boolean,
+    // The off-shape picker: a circle first instead of "use the Shape style".
+    offShapes: Boolean = false,
     onSelect: (String) -> Unit,
 ) {
     val view = LocalView.current
     val names =
         mapOf(
             ExpressiveShapes.OFF to R.string.settings_icon_morph_shape_off,
+            ExpressiveShapes.CIRCLE to R.string.settings_icon_morph_shape_circle,
             "cookie" to R.string.custom_icon_studio_shape_cookie,
             "clover" to R.string.settings_icon_morph_shape_clover,
             "sunny" to R.string.settings_icon_morph_shape_sunny,
@@ -115,7 +118,8 @@ private fun ShapeTiles(
                 .alpha(if (enabled) 1f else 0.38f)
                 .selectableGroup(),
     ) {
-        ExpressiveShapes.KEYS.forEach { key ->
+        val keys = if (offShapes) listOf(ExpressiveShapes.CIRCLE) + ExpressiveShapes.KEYS.drop(1) else ExpressiveShapes.KEYS
+        keys.forEach { key ->
             val isSelected = key == selectedKey
             // Every option shows its real shape; a part-morphed preview read as a blob. The
             // selected one is told apart by color and size.

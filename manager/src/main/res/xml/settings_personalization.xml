@@ -130,6 +130,20 @@
             android:icon="@drawable/ic_animation_24"
             android:defaultValue="true" />
 
+        <af.shizuku.manager.settings.ShapePickerPreference
+            android:key="icon_morph_off_shape"
+            android:title="@string/settings_icon_morph_off_shape_title"
+            android:icon="@drawable/ic_interests_24"
+            android:defaultValue="circle" />
+
+        <rikka.preference.SimpleMenuPreference
+            android:key="icon_morph_mode"
+            android:title="@string/settings_icon_morph_mode_title"
+            android:entries="@array/icon_morph_modes"
+            android:entryValues="@array/icon_morph_modes_values"
+            android:defaultValue="spin"
+            android:icon="@drawable/ic_animation_24" />
+
 
         <af.shizuku.manager.settings.SliderPreference
             android:key="corner_rounding_override"

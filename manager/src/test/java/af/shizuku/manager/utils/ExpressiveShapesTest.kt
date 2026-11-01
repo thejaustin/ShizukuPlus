@@ -68,4 +68,44 @@ class ExpressiveShapesTest {
         val (cx, _) = star.areaCentroid()
         assertTrue(kotlin.math.abs(cx - 0.5f) > 0.02f)
     }
+
+    @Test
+    fun roundedRectanglesAreCenteredAndFit() {
+        for (f in listOf(0.1f, 0.3f, 0.6f)) {
+            val key = ExpressiveShapes.rectKey(f)
+            val (cx, cy) = ExpressiveShapes.polygon(key).areaCentroid()
+            assertEquals(0.5f, cx, 0.002f, "$key centroid x")
+            assertEquals(0.5f, cy, 0.002f, "$key centroid y")
+            assertEquals(4, ExpressiveShapes.symmetry(key), "$key symmetry")
+        }
+    }
+
+    @Test
+    fun spinLandsOnAnIdenticalOutline() {
+        // Spin turns by one point of the shape; the shape must map onto itself at that angle.
+        for (key in shapeKeys + ExpressiveShapes.rectKey(0.3f)) {
+            val n = ExpressiveShapes.symmetry(key)
+            if (n <= 1) continue
+            val r = ExpressiveShapes.polarRadii(key)
+            val shift = ExpressiveShapes.POLAR_BINS / n
+            var worst = 0f
+            for (i in r.indices) worst = maxOf(worst, kotlin.math.abs(r[i] - r[(i + shift) % r.size]))
+            assertTrue(worst < 0.01f, "$key: rotated by 360/$n differs by $worst")
+        }
+    }
+
+    @Test
+    fun sweepAndLiquidRestAtTheEnds() {
+        // At progress 0 and 1 every part of the outline must be fully off or fully on, so the
+        // polar drawing meets the exact shape drawn at rest.
+        for (mode in listOf(MorphMode.SWEEP, MorphMode.LIQUID)) {
+            for (forward in listOf(true, false)) {
+                for (i in 0..100) {
+                    val frac = i / 100f
+                    assertEquals(0f, ExpressiveShapes.polarProgress(frac, 0f, forward, mode), 1e-4f, "$mode $forward at 0")
+                    assertEquals(1f, ExpressiveShapes.polarProgress(frac, 1f, forward, mode), 1e-4f, "$mode $forward at 1")
+                }
+            }
+        }
+    }
 }

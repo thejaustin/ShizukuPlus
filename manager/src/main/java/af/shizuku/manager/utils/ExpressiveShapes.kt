@@ -14,6 +14,7 @@ import androidx.graphics.shapes.CornerRounding
 import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.TransformResult
+import androidx.graphics.shapes.rectangle
 import androidx.graphics.shapes.star
 import androidx.graphics.shapes.toPath
 
@@ -117,6 +118,10 @@ object ExpressiveShapes {
 
     fun polygon(key: String): RoundedPolygon =
         cache.getOrPut(key) {
+            if (key.startsWith("rect:")) {
+                val r = key.removePrefix("rect:").toFloatOrNull() ?: 0.3f
+                return@getOrPut RoundedPolygon.rectangle(width = 2f, height = 2f, rounding = CornerRounding(r)).centeredInUnitSquare()
+            }
             when (key) {
                 // Classic set, exactly as before. Only the cookie turns a quarter like the star:
                 // its 9 points left it lopsided; even point counts are already symmetric.
@@ -147,36 +152,225 @@ object ExpressiveShapes {
             }.centeredInUnitSquare()
         }
 
-    /** Path for [key] (or circle -> key at [progress]) scaled into [width] x [height]. */
+    /** The plain circle, the default off shape. */
+    const val CIRCLE = "circle"
+
+    /**
+     * Key of a rounded rectangle whose corner radius is [fraction] of half its side. The regular
+     * Shape styles' containers use it, so they morph like the Expressive shapes do.
+     */
+    fun rectKey(fraction: Float): String = "rect:" + String.format(java.util.Locale.US, "%.2f", fraction.coerceIn(0f, 1f))
+
+    /** Path for [key], or [from] -> [key] at [progress], scaled into [width] x [height]. */
     fun path(
         key: String,
         width: Float,
         height: Float,
         progress: Float = 1f,
         into: Path = Path(),
+        from: String = CIRCLE,
     ): Path {
         into.rewind()
-        val target = polygon(key)
-        if (progress >= 1f) {
-            target.toPath(into)
-        } else {
-            morphs.getOrPut(key) { Morph(circle, target) }.toPath(progress, into)
+        when {
+            progress >= 1f -> polygon(key).toPath(into)
+            progress <= 0f -> polygon(from).toPath(into)
+            else -> morphs.getOrPut("$from>$key") { Morph(polygon(from), polygon(key)) }.toPath(progress, into)
         }
         into.transform(Matrix().apply { setScale(width, height) })
         return into
     }
+
+    // Outline radius around the center, by angle (0 = up, clockwise). 2520 divides evenly by every
+    // point count from 2 to 10 and 12, which the symmetry check relies on.
+    internal const val POLAR_BINS = 2520
+    private val polar = HashMap<String, FloatArray>()
+    private val symmetries = HashMap<String, Int>()
+
+    internal fun polarRadii(key: String): FloatArray =
+        polar.getOrPut(key) {
+            val r = FloatArray(POLAR_BINS)
+            for (c in polygon(key).cubics) {
+                for (i in 0..POLAR_STEPS) {
+                    val t = i.toFloat() / POLAR_STEPS
+                    val u = 1 - t
+                    val x = u * u * u * c.anchor0X + 3 * u * u * t * c.control0X + 3 * u * t * t * c.control1X + t * t * t * c.anchor1X
+                    val y = u * u * u * c.anchor0Y + 3 * u * u * t * c.control0Y + 3 * u * t * t * c.control1Y + t * t * t * c.anchor1Y
+                    val dx = x - 0.5f
+                    val dy = y - 0.5f
+                    var a = kotlin.math.atan2(dx, -dy)
+                    if (a < 0) a += TAU
+                    val bin = ((a / TAU) * POLAR_BINS).toInt().coerceIn(0, POLAR_BINS - 1)
+                    r[bin] = maxOf(r[bin], kotlin.math.hypot(dx, dy))
+                }
+            }
+            // Bins no sample landed in take their neighbour's radius.
+            repeat(2) { for (i in r.indices) if (r[i] == 0f) r[i] = r[(i + POLAR_BINS - 1) % POLAR_BINS] }
+            r
+        }
+
+    private const val POLAR_STEPS = 400
+    private const val TAU = (2 * Math.PI).toFloat()
+
+    /**
+     * Rotational symmetry of [key]: how many identical points it has (a rounded square is 4,
+     * the 9-scallop cookie 9), 1 for none, 0 for a circle. Measured from the outline, since
+     * Material's shapes don't all have the point count their names suggest.
+     */
+    fun symmetry(key: String): Int =
+        symmetries.getOrPut(key) {
+            val r = polarRadii(key)
+            if (r.max() - r.min() < 0.004f) return@getOrPut 0
+            for (n in 12 downTo 2) {
+                if (POLAR_BINS % n != 0) continue
+                val shift = POLAR_BINS / n
+                var same = true
+                var i = 0
+                while (i < POLAR_BINS) {
+                    if (kotlin.math.abs(r[i] - r[(i + shift) % POLAR_BINS]) > 0.008f) {
+                        same = false
+                        break
+                    }
+                    i += 3
+                }
+                if (same) return@getOrPut n
+            }
+            1
+        }
+
+    /** Spin's turn for [from] -> [to]: one point of the destination, so it lands looking unrotated. */
+    fun spinDegrees(
+        from: String,
+        to: String,
+    ): Float {
+        val n = symmetry(to).takeIf { it > 0 } ?: symmetry(from).takeIf { it > 0 } ?: 4
+        return 360f / n
+    }
+
+    /**
+     * Sweep and Liquid move each part of the outline on its own timing, which a [Morph] can't, so
+     * mid-animation they interpolate the two outlines' polar radii. At rest the exact path is drawn.
+     */
+    fun polarPath(
+        from: String,
+        to: String,
+        width: Float,
+        height: Float,
+        progress: Float,
+        forward: Boolean,
+        mode: MorphMode,
+        into: Path = Path(),
+    ): Path {
+        into.rewind()
+        val a = polarRadii(from)
+        val b = polarRadii(to)
+        val p = progress.coerceIn(0f, 1f)
+        var k = 0
+        while (k < POLAR_BINS) {
+            val frac = k.toFloat() / POLAR_BINS
+            val q = polarProgress(frac, p, forward, mode)
+            val r = a[k] + (b[k] - a[k]) * q
+            val angle = frac * TAU
+            val x = (0.5f + kotlin.math.sin(angle) * r) * width
+            val y = (0.5f - kotlin.math.cos(angle) * r) * height
+            if (k == 0) into.moveTo(x, y) else into.lineTo(x, y)
+            k += POLAR_PATH_STEP
+        }
+        into.close()
+        return into
+    }
+
+    /** How far the part of the outline at [frac] of the way round is, at overall progress [p]. */
+    internal fun polarProgress(
+        frac: Float,
+        p: Float,
+        forward: Boolean,
+        mode: MorphMode,
+    ): Float =
+        if (mode == MorphMode.LIQUID) {
+            // Uneven, zero at both ends: parts of the outline lead and lag like a drop.
+            val wobble = kotlin.math.sin(Math.PI * p).toFloat()
+            (p + 0.22f * wobble * kotlin.math.sin(3 * TAU * frac + 1.3f)).coerceIn(0f, 1f)
+        } else {
+            // Sweep: the change travels clockwise from the top.
+            val delay = frac * 0.7f
+            val prog = if (forward) p else 1f - p
+            val local = ((prog - delay) / 0.3f).coerceIn(0f, 1f)
+            if (forward) local else 1f - local
+        }
+
+    private const val POLAR_PATH_STEP = 10
+}
+
+/** How an icon container moves between its off and on shapes. */
+enum class MorphMode(
+    val key: String,
+) {
+    /** The outline flows straight from one shape to the other. */
+    MORPH("morph"),
+
+    /** Turns one point of the destination shape while morphing. */
+    SPIN("spin"),
+
+    /** Swells a little midway and settles. */
+    POP("pop"),
+
+    /** The change travels clockwise from the top. */
+    SWEEP("sweep"),
+
+    /** Parts of the outline lead and lag, like a drop of water. */
+    LIQUID("liquid"),
+    ;
+
+    companion object {
+        fun of(key: String?): MorphMode = entries.firstOrNull { it.key == key } ?: SPIN
+    }
 }
 
 /**
- * Icon-container background drawn from an [ExpressiveShapes] polygon. [progress] morphs from a
- * plain circle (0) to the target shape (1), so switch rows can morph their icon on toggle.
+ * Icon-container background drawn from an [ExpressiveShapes] polygon. [progress] morphs from
+ * [offKey] (0) to [shapeKey] (1), the way switch rows and Home's status icon show on and off,
+ * moving as [mode] says. With [cornerPx] set, [shapeKey] is a rounded rectangle with that
+ * corner radius, recomputed for the drawable's size.
  */
 class MorphShapeDrawable(
-    private val color: Int,
-    val shapeKey: String,
+    private var color: Int,
+    shapeKey: String,
+    val offKey: String = ExpressiveShapes.CIRCLE,
+    private val cornerPx: Float = 0f,
 ) : Drawable() {
+    var shapeKey: String = shapeKey
+        private set
+
+    var mode: MorphMode = MorphMode.MORPH
+
+    /** 1 = filled, 0 = an outline only (the "icon is the switch" design's off state). */
+    var fillFraction: Float = 1f
+        set(value) {
+            field = value.coerceIn(0f, 1f)
+            invalidateSelf()
+        }
+
+    var strokeColor: Int = 0
+    var strokeWidthPx: Float = 0f
+
+    /** Draws smaller while off, like an M3 switch thumb. */
+    var shrinkWhenOff: Boolean = false
+
+    /** Size reported to layouts that size by drawable (a switch thumb); -1 = none. */
+    var intrinsicSizePx: Int = -1
+
+    /** Springs between off and on itself when its checked state changes (a switch thumb). */
+    var followsCheckedState: Boolean = false
+    private var lastChecked: Boolean? = null
+
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply { this.color = color }
+    private val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
     private val path = Path()
+    private var baseAlpha = 255
+    private var tint: android.content.res.ColorStateList? = null
+
+    // Direction of the running change, for Sweep.
+    internal var forward = true
 
     /** Reused by [springTo] so a rapid re-toggle retargets the running spring instead of racing it. */
     internal var morphSpring: androidx.dynamicanimation.animation.SpringAnimation? = null
@@ -193,28 +387,89 @@ class MorphShapeDrawable(
     override fun draw(canvas: Canvas) {
         val b = bounds
         if (b.isEmpty) return
-        ExpressiveShapes.path(shapeKey, b.width().toFloat(), b.height().toFloat(), progress.coerceAtMost(1f), path)
+        val w = b.width().toFloat()
+        val h = b.height().toFloat()
+        val p = progress.coerceAtMost(1f)
+        val moving = p > 0f && p < 1f
+        if (moving && (mode == MorphMode.SWEEP || mode == MorphMode.LIQUID)) {
+            ExpressiveShapes.polarPath(offKey, shapeKey, w, h, p, forward, mode, path)
+        } else {
+            ExpressiveShapes.path(shapeKey, w, h, p, path, offKey)
+        }
         canvas.save()
         canvas.translate(b.left.toFloat(), b.top.toFloat())
-        if (progress > 1f) {
-            // Overshoot reads as a quick "pop" past full size before settling.
-            val s = progress
-            canvas.scale(s, s, b.width() / 2f, b.height() / 2f)
+        var scale = if (progress > 1f) progress else 1f // overshoot reads as a quick "pop"
+        if (mode == MorphMode.POP && moving) scale *= 1f + 0.14f * kotlin.math.sin(Math.PI * p).toFloat()
+        if (shrinkWhenOff) scale *= 0.67f + 0.33f * p.coerceAtLeast(0f)
+        if (scale != 1f) canvas.scale(scale, scale, w / 2f, h / 2f)
+        if (mode == MorphMode.SPIN && moving) canvas.rotate(ExpressiveShapes.spinDegrees(offKey, shapeKey) * p, w / 2f, h / 2f)
+        if (fillFraction > 0f) {
+            paint.alpha = (baseAlpha * fillFraction).toInt()
+            canvas.drawPath(path, paint)
         }
-        canvas.drawPath(path, paint)
+        if (fillFraction < 1f && strokeWidthPx > 0f) {
+            strokePaint.color = strokeColor
+            strokePaint.strokeWidth = strokeWidthPx
+            strokePaint.alpha = (baseAlpha * (1f - fillFraction) * android.graphics.Color.alpha(strokeColor) / 255f).toInt()
+            // Inset by half the stroke so it stays inside the container.
+            val sx = (w - strokeWidthPx) / w
+            val sy = (h - strokeWidthPx) / h
+            canvas.scale(sx, sy, w / 2f, h / 2f)
+            canvas.drawPath(path, strokePaint)
+        }
         canvas.restore()
     }
 
-    override fun onBoundsChange(bounds: Rect) = invalidateSelf()
+    override fun onBoundsChange(bounds: Rect) {
+        if (cornerPx > 0f && !bounds.isEmpty) {
+            shapeKey = ExpressiveShapes.rectKey(cornerPx / (minOf(bounds.width(), bounds.height()) / 2f))
+        }
+        invalidateSelf()
+    }
+
+    override fun getIntrinsicWidth(): Int = intrinsicSizePx
+
+    override fun getIntrinsicHeight(): Int = intrinsicSizePx
 
     override fun setAlpha(alpha: Int) {
-        paint.alpha = alpha
+        baseAlpha = alpha
         invalidateSelf()
     }
 
     override fun setColorFilter(colorFilter: ColorFilter?) {
         paint.colorFilter = colorFilter
         invalidateSelf()
+    }
+
+    override fun setTintList(tint: android.content.res.ColorStateList?) {
+        this.tint = tint
+        applyTint(state)
+    }
+
+    override fun isStateful(): Boolean = tint?.isStateful == true || followsCheckedState
+
+    override fun onStateChange(state: IntArray): Boolean {
+        val changed = applyTint(state)
+        if (followsCheckedState) {
+            val checked = state.contains(android.R.attr.state_checked)
+            val previous = lastChecked
+            lastChecked = checked
+            if (previous == null) {
+                progress = if (checked) 1f else 0f
+            } else if (previous != checked) {
+                springTo(if (checked) 1f else 0f)
+            }
+        }
+        return changed
+    }
+
+    private fun applyTint(state: IntArray): Boolean {
+        val t = tint ?: return false
+        val c = t.getColorForState(state, color)
+        if (c == paint.color) return false
+        paint.color = c
+        invalidateSelf()
+        return true
     }
 
     @Deprecated("Deprecated in Java")
@@ -224,7 +479,17 @@ class MorphShapeDrawable(
     // state. Without one the copy shares this instance with the original and logs a warning.
     override fun getConstantState(): ConstantState =
         object : ConstantState() {
-            override fun newDrawable(): Drawable = MorphShapeDrawable(color, shapeKey).also { it.progress = progress }
+            override fun newDrawable(): Drawable =
+                MorphShapeDrawable(color, shapeKey, offKey, cornerPx).also {
+                    it.progress = progress
+                    it.mode = mode
+                    it.fillFraction = fillFraction
+                    it.strokeColor = strokeColor
+                    it.strokeWidthPx = strokeWidthPx
+                    it.shrinkWhenOff = shrinkWhenOff
+                    it.intrinsicSizePx = intrinsicSizePx
+                    it.followsCheckedState = followsCheckedState
+                }
 
             override fun getChangingConfigurations(): Int = 0
         }
@@ -235,6 +500,7 @@ class MorphShapeDrawable(
  * feel; jumps straight there when animations are off.
  */
 fun MorphShapeDrawable.springTo(target: Float) {
+    forward = target >= progress
     if (af.shizuku.manager.ShizukuSettings
             .getAnimationDurationScale() <= 0f
     ) {
