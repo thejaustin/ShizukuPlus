@@ -48,6 +48,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **`rish` no longer prints "Waiting for Shizuku authorization…"** on every command; the line only appears when authorization is actually taking a while.
 - **Updated translations** — Azerbaijani (thanks @Figim), plus newer strings filled in for Arabic, German, Spanish and French.
 - **Bottom cards are no longer hidden behind the floating navigation bar** (thanks @udmodz0).
+- **Samsung Auto Blocker is detected properly** — Shizuku+ looked for settings that One UI doesn't use, so it could never tell whether Auto Blocker was on. It now reads the real switch (and Maximum restrictions on One UI 8), asking the Shizuku service when the app itself isn't allowed to read it. The "Auto Blocker may be blocking ADB" message on Home now only appears when Auto Blocker is actually on, instead of on every launch, and Service Doctor says "Needs manual check" when it can't tell instead of claiming it's off. Its Fix button opens Auto Blocker's settings rather than writing a setting that doesn't turn it off.
 - **Messages sit properly on the floating navigation bar** — they line up with the bar's width and corners, and when the bar hides as you scroll they slide down with it and come back up with it, instead of hanging where the bar used to be or sitting too high above it.
 
 ### 👆 Swipe actions settings

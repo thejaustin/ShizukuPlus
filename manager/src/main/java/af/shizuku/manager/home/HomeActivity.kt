@@ -201,6 +201,19 @@ open class HomeActivity :
      * updated but the separate server process still runs old code), surface a prompt to restart the
      * service — stale servers can silently break connections for third-party apps until restarted.
      */
+    private fun showAutoBlockerSnackbar() {
+        SnackbarHelper.show(
+                        this,
+                        findViewById(android.R.id.content) ?: window.decorView,
+                        msg = getString(R.string.snackbar_samsung_auto_blocker),
+                        duration = Snackbar.LENGTH_LONG,
+                        actionText = getString(R.string.snackbar_action_check),
+                        action = {
+                            SettingsPage.Samsung.AutoBlocker.launch(this)
+                        },
+                    )
+    }
+
     private fun maybeShowVersionSkewSnackbar() {
         if (versionSkewSnackbarShown) return
         if (!ShizukuStateMachine.isServerVersionSkewed()) return
@@ -462,22 +475,21 @@ open class HomeActivity :
         }
         homeModel.checkBatteryOptimization()
 
-        // Samsung Auto Blocker hint — show at most once per session to avoid repeating on
-        // every status refresh while the service stays stopped.
+        // Samsung Auto Blocker hint: only when Auto Blocker is actually on (it blocks ADB), and at
+        // most once per session. It used to show on every launch, from the first "not running"
+        // status before the service connected, whether Auto Blocker was on or not.
         if (EnvironmentUtils.isSamsung() && EnvironmentUtils.getOneUiVersion() >= 6) {
             homeModel.onEach(HomeState::serviceStatus) {
                 if (!autoBlockerSnackbarShown && it is Success && it.invoke().isRunning == false) {
                     autoBlockerSnackbarShown = true
-                    SnackbarHelper.show(
-                        this,
-                        findViewById(android.R.id.content) ?: window.decorView,
-                        msg = getString(R.string.snackbar_samsung_auto_blocker),
-                        duration = Snackbar.LENGTH_LONG,
-                        actionText = getString(R.string.snackbar_action_check),
-                        action = {
-                            SettingsPage.Samsung.AutoBlocker.launch(this)
-                        },
-                    )
+                    lifecycleScope.launch {
+                        val on =
+                            withContext(Dispatchers.IO) {
+                                af.shizuku.manager.utils.SamsungAutoBlocker
+                                    .state(applicationContext) == af.shizuku.manager.utils.SamsungAutoBlocker.State.ON
+                            }
+                        if (on && !isFinishing && !ShizukuStateMachine.isRunning()) showAutoBlockerSnackbar()
+                    }
                 }
             }
         }

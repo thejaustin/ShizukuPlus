@@ -144,20 +144,4 @@ object SettingsHelper {
             setData(Uri.parse("package:" + context.packageName))
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-
-    fun isSamsungAutoBlockerDisabled(context: Context): Boolean =
-        try {
-            val rampart = Settings.Secure.getInt(context.contentResolver, "rampart_enabled", 0)
-            rampart == 0
-        } catch (_: Exception) {
-            true
-        }
-
-    fun isSamsungMaxRestrictionsDisabled(context: Context): Boolean =
-        try {
-            val maxRestrictions = Settings.Secure.getInt(context.contentResolver, "rampart_max_restrictions_enabled", 0)
-            maxRestrictions == 0
-        } catch (_: Exception) {
-            true
-        }
 }

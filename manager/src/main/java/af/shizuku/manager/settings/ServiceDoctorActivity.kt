@@ -290,25 +290,9 @@ class ServiceDoctorActivity : AppBarActivity() {
             "tcl_autostart" -> {
                 { SettingsPage.TCL.AutoStart.launch(this) }
             }
-            "samsung_autoblocker" -> {
-                {
-                    if (trySecureSettingOff("rampart_enabled")) {
-                        Toast.makeText(this, R.string.doctor_fix_applied, Toast.LENGTH_SHORT).show()
-                        runDiagnostics()
-                    } else {
-                        SettingsPage.Samsung.AutoBlocker.launch(this)
-                    }
-                }
-            }
-            "samsung_max_restrictions" -> {
-                {
-                    if (trySecureSettingOff("rampart_max_restrictions_enabled")) {
-                        Toast.makeText(this, R.string.doctor_fix_applied, Toast.LENGTH_SHORT).show()
-                        runDiagnostics()
-                    } else {
-                        SettingsPage.Samsung.AutoBlocker.launch(this)
-                    }
-                }
+            // Samsung's own switch: writing its settings key doesn't turn the feature off.
+            "samsung_autoblocker", "samsung_max_restrictions" -> {
+                { SettingsPage.Samsung.AutoBlocker.launch(this) }
             }
             "su_bridge_a16" -> {
                 {

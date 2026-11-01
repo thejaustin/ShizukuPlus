@@ -10,7 +10,9 @@ import af.shizuku.manager.home.tryEnableAccessibilityAutomatically
 import af.shizuku.manager.receiver.ShizukuReceiverStarter
 import af.shizuku.manager.utils.DeviceOptimizer
 import af.shizuku.manager.utils.EnvironmentUtils
+import af.shizuku.manager.utils.SamsungAutoBlocker
 import af.shizuku.manager.utils.SettingsHelper
+import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuIssues
 import af.shizuku.manager.utils.ShizukuStateMachine
 import android.Manifest
@@ -338,28 +340,36 @@ object ServiceDoctor {
             // 7. Samsung Auto Blocker (One UI 6.1+)
             if (EnvironmentUtils.isSamsung()) {
                 val oneUi = EnvironmentUtils.getOneUiVersion()
-                val isAutoBlockerOff = SettingsHelper.isSamsungAutoBlockerDisabled(context)
+                // Auto Blocker is Samsung's own: writing its settings key only desyncs it, so the
+                // fix opens its screen. Unknown (unreadable) shows as a manual check, not as OK.
+                fun statusText(
+                    state: SamsungAutoBlocker.State,
+                    onText: Int,
+                ) = when (state) {
+                    SamsungAutoBlocker.State.OFF -> context.getString(R.string.doctor_status_ok)
+                    SamsungAutoBlocker.State.ON -> context.getString(onText)
+                    SamsungAutoBlocker.State.UNKNOWN -> context.getString(R.string.doctor_status_manual_check)
+                }
+                val autoBlocker = SamsungAutoBlocker.state(context)
                 checks.add(
                     CheckItem(
                         id = "samsung_autoblocker",
                         title = context.getString(R.string.doctor_check_samsung_autoblocker),
-                        status = if (isAutoBlockerOff) context.getString(R.string.doctor_status_ok) else context.getString(R.string.doctor_status_autoblocker_on),
-                        ok = isAutoBlockerOff,
-                        canAutoFix = !isAutoBlockerOff && hasSecure,
-                        autoFix = { ctx -> trySecureSettingOff(ctx, "rampart_enabled") },
+                        status = statusText(autoBlocker, R.string.doctor_status_autoblocker_on),
+                        ok = autoBlocker != SamsungAutoBlocker.State.ON,
+                        manualAction = { ctx -> SettingsPage.Samsung.AutoBlocker.launch(ctx) },
                     ),
                 )
 
-                if (oneUi >= 8) {
-                    val isMaxRestrictionsOff = SettingsHelper.isSamsungMaxRestrictionsDisabled(context)
+                if (oneUi >= 8 && autoBlocker == SamsungAutoBlocker.State.ON) {
+                    val maxRestrictions = SamsungAutoBlocker.maxRestrictionsState(context)
                     checks.add(
                         CheckItem(
                             id = "samsung_max_restrictions",
                             title = context.getString(R.string.doctor_check_samsung_max_restrictions),
-                            status = if (isMaxRestrictionsOff) context.getString(R.string.doctor_status_ok) else context.getString(R.string.doctor_status_samsung_max_restrictions_on),
-                            ok = isMaxRestrictionsOff,
-                            canAutoFix = !isMaxRestrictionsOff && hasSecure,
-                            autoFix = { ctx -> trySecureSettingOff(ctx, "rampart_max_restrictions_enabled") },
+                            status = statusText(maxRestrictions, R.string.doctor_status_samsung_max_restrictions_on),
+                            ok = maxRestrictions != SamsungAutoBlocker.State.ON,
+                            manualAction = { ctx -> SettingsPage.Samsung.AutoBlocker.launch(ctx) },
                         ),
                     )
                 }
