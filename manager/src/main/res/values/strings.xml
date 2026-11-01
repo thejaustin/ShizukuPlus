@@ -407,8 +407,8 @@
     <string name="app_name_notes">Notes</string>
     <string name="settings_app_icon_name_title">App Icon &amp; Name</string>
     <string name="settings_app_icon_name_summary">Customize launcher icon and application label</string>
-    <string name="settings_show_home_cards_outline">Home card borders</string>
-    <string name="settings_show_home_cards_outline_summary">Show subtle outline stroke around home screen cards</string>
+    <string name="settings_show_home_cards_outline">Card borders</string>
+    <string name="settings_show_home_cards_outline_summary">Show a subtle outline around cards throughout the app</string>
     <string name="settings_custom_icon_studio_title">Custom Icon Studio</string>
     <string name="settings_custom_icon_studio_summary">Upload your own image, customize shape, padding &amp; background, and pin it as a launcher icon</string>
     <string name="custom_icon_studio_shape">Shape</string>
@@ -1183,12 +1183,6 @@
     <string name="settings_floating_nav_style_docked">Docked</string>
     <string name="settings_floating_nav_style_compact">Compact</string>
     <string name="settings_floating_nav_style_capsule">Expressive Capsule</string>
-    <string name="settings_toggle_style_title">Toggle switch style</string>
-    <string name="settings_toggle_style_summary">Customize the visual presentation, scannability and feedback of setting toggles</string>
-    <string name="settings_toggle_style_expressive">Expressive (Icon Thumb)</string>
-    <string name="settings_toggle_style_card">Card Highlight (Scannable)</string>
-    <string name="settings_toggle_style_vibrant">Vibrant Accent</string>
-    <string name="settings_toggle_style_minimal">Minimal Clean</string>
     <string name="settings_floating_nav_tabs_title">Tabs</string>
     <string name="settings_floating_nav_tabs_summary">Home and Settings always show. %1$s</string>
     <string name="settings_experimental_summary">Try features that are still being polished</string>
@@ -1204,6 +1198,7 @@
     <string name="settings_icon_morph_shape_flower">Flower</string>
     <string name="settings_icon_morph_shape_star">Star</string>
     <string name="settings_icon_morph_shape_burst">Burst</string>
+    <string name="settings_icon_morph_shape_classic">%1$s classic</string>
     <string name="settings_icon_morph_on_toggle_title">Morph when toggled</string>
     <string name="settings_icon_morph_on_toggle_summary">Switch icons morph from a circle into this shape when turned on</string>
     <string name="settings_dark_style_standard">Standard</string>

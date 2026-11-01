@@ -203,15 +203,15 @@ open class HomeActivity :
      */
     private fun showAutoBlockerSnackbar() {
         SnackbarHelper.show(
-                        this,
-                        findViewById(android.R.id.content) ?: window.decorView,
-                        msg = getString(R.string.snackbar_samsung_auto_blocker),
-                        duration = Snackbar.LENGTH_LONG,
-                        actionText = getString(R.string.snackbar_action_check),
-                        action = {
-                            SettingsPage.Samsung.AutoBlocker.launch(this)
-                        },
-                    )
+            this,
+            findViewById(android.R.id.content) ?: window.decorView,
+            msg = getString(R.string.snackbar_samsung_auto_blocker),
+            duration = Snackbar.LENGTH_LONG,
+            actionText = getString(R.string.snackbar_action_check),
+            action = {
+                SettingsPage.Samsung.AutoBlocker.launch(this)
+            },
+        )
     }
 
     private fun maybeShowVersionSkewSnackbar() {

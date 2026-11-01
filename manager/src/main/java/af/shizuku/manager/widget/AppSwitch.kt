@@ -1,7 +1,6 @@
 package af.shizuku.manager.widget
 
 import af.shizuku.manager.R
-import af.shizuku.manager.ShizukuSettings
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
@@ -26,18 +25,12 @@ fun AppSwitch(
         onCheckedChange = onCheckedChange,
         modifier = modifier,
         enabled = enabled,
-        // The "Minimal" toggle style drops the thumb icons, as the XML switches do.
-        thumbContent =
-            if (ShizukuSettings.getToggleStyle() == "minimal") {
-                null
-            } else {
-                {
-                    Icon(
-                        painter = painterResource(if (checked) R.drawable.ic_switch_check_16 else R.drawable.ic_switch_close_16),
-                        contentDescription = null,
-                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                    )
-                }
-            },
+        thumbContent = {
+            Icon(
+                painter = painterResource(if (checked) R.drawable.ic_switch_check_16 else R.drawable.ic_switch_close_16),
+                contentDescription = null,
+                modifier = Modifier.size(SwitchDefaults.IconSize),
+            )
+        },
     )
 }

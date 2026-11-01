@@ -119,7 +119,13 @@ private fun ShapeTiles(
                 if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.controlContainer,
                 label = "tileFill",
             )
-            val label = stringResource(names.getValue(key))
+            val base = key.removeSuffix(ExpressiveShapes.CLASSIC_SUFFIX)
+            val label =
+                if (base != key) {
+                    stringResource(R.string.settings_icon_morph_shape_classic, stringResource(names.getValue(base)))
+                } else {
+                    stringResource(names.getValue(key))
+                }
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier =

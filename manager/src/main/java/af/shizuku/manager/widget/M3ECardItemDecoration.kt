@@ -17,6 +17,21 @@ abstract class M3ECardItemDecoration(
     protected val context: Context,
 ) : RecyclerView.ItemDecoration() {
     protected val cardPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    // The "Card borders" setting, stroked inside each card's edge (null when off). Read at draw
+    // time, so switching it in Settings shows on the next frame.
+    private var borderCache: Paint? = null
+    protected val borderPaint: Paint?
+        get() =
+            if (!af.shizuku.manager.utils.CardBorder
+                    .isEnabled()
+            ) {
+                null
+            } else {
+                borderCache ?: af.shizuku.manager.utils.CardBorder
+                    .paint(context)
+                    .also { borderCache = it }
+            }
     protected val dividerPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     // Outer corner radius — matches the ExtraLarge shape token used by all M3E cards.
@@ -123,5 +138,9 @@ abstract class M3ECardItemDecoration(
         val actualLeft = if (left != Float.MIN_VALUE) left else cardMargin
         val actualRight = if (right != Float.MIN_VALUE) right else parent.width - cardMargin
         c.drawRoundRect(actualLeft, top, actualRight, bottom, cornerRadius, cornerRadius, cardPaint)
+        borderPaint?.let {
+            val h = it.strokeWidth / 2f
+            c.drawRoundRect(actualLeft + h, top + h, actualRight - h, bottom - h, cornerRadius - h, cornerRadius - h, it)
+        }
     }
 }

@@ -351,21 +351,11 @@ class HomeAdapter(
 
         super.onBindViewHolder(holder, position)
 
-        // Apply home cards outline if enabled
-        val showHomeOutlines = ShizukuSettings.isShowHomeCardsOutlineEnabled()
+        // Card borders setting; the status card has its own outline.
         val card = holder.itemView as? com.google.android.material.card.MaterialCardView
         if (card != null && id != ID_STATUS) {
-            if (showHomeOutlines) {
-                val density = card.context.resources.displayMetrics.density
-                card.strokeWidth = (1.5f * density + 0.5f).toInt()
-                card.strokeColor =
-                    com.google.android.material.color.MaterialColors.getColor(
-                        card,
-                        com.google.android.material.R.attr.colorOutlineVariant,
-                    )
-            } else {
-                card.strokeWidth = 0
-            }
+            af.shizuku.manager.utils.CardBorder
+                .apply(card)
         }
 
         // Fixed cards (status, apps bar) never participate in edit mode — ensure handles stay hidden.

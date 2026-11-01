@@ -828,6 +828,27 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                 // Position 0 is the status banner — draw it with the secondary container
                 // color so it reads as "live status" rather than a plain navigation card.
                 c.drawPath(path, if (pos == 0 && !isHeader(child)) statusPaint else cardPaint)
+                borderPaint?.let { border ->
+                    // Inset by half the stroke so it sits inside the card, on the same shape.
+                    val h = border.strokeWidth / 2f
+                    rect.inset(h, h)
+                    path.rewind()
+                    path.addRoundRect(
+                        rect,
+                        floatArrayOf(
+                            radii[0] - h,
+                            radii[0] - h,
+                            radii[1] - h,
+                            radii[1] - h,
+                            radii[2] - h,
+                            radii[2] - h,
+                            radii[3] - h,
+                            radii[3] - h,
+                        ).map { it.coerceAtLeast(0f) }.toFloatArray(),
+                        android.graphics.Path.Direction.CW,
+                    )
+                    c.drawPath(path, border)
+                }
             }
             if (animating) parent.postInvalidateOnAnimation()
         }

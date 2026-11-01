@@ -27,7 +27,16 @@ object ExpressiveShapes {
     const val OFF = "off"
 
     /** Picker order; [OFF] means "use the regular Shape style". */
-    val KEYS = listOf(OFF, "cookie", "clover", "sunny", "gem", "flower", "star", "burst")
+    val KEYS =
+        listOf(OFF, "cookie", "clover", "sunny", "gem", "flower", "star", "burst") +
+            CLASSIC.map { it + CLASSIC_SUFFIX }
+
+    /**
+     * The hand-built shapes from before the switch to [MaterialShapes], kept as their own options
+     * ("cookie_classic"...) for whoever preferred them. Star never changed, so it has none.
+     */
+    private val CLASSIC get() = listOf("cookie", "clover", "sunny", "gem", "flower", "burst")
+    const val CLASSIC_SUFFIX = "_classic"
 
     private val cache = HashMap<String, RoundedPolygon>()
 
@@ -109,6 +118,17 @@ object ExpressiveShapes {
     fun polygon(key: String): RoundedPolygon =
         cache.getOrPut(key) {
             when (key) {
+                // Classic set, exactly as before. Only the cookie turns a quarter like the star:
+                // its 9 points left it lopsided; even point counts are already symmetric.
+                "cookie_classic" ->
+                    RoundedPolygon
+                        .star(9, innerRadius = 0.82f, rounding = CornerRounding(0.3f, smoothing = 0.5f))
+                        .transformed { x, y -> TransformResult(y, -x) }
+                "clover_classic" -> RoundedPolygon.star(4, innerRadius = 0.45f, rounding = CornerRounding(0.42f, smoothing = 0.3f))
+                "sunny_classic" -> RoundedPolygon.star(8, innerRadius = 0.86f, rounding = CornerRounding(0.12f))
+                "gem_classic" -> RoundedPolygon(6, rounding = CornerRounding(0.3f, smoothing = 0.6f))
+                "flower_classic" -> RoundedPolygon.star(6, innerRadius = 0.62f, rounding = CornerRounding(0.36f, smoothing = 0.4f))
+                "burst_classic" -> RoundedPolygon.star(12, innerRadius = 0.84f, rounding = CornerRounding(0.12f, smoothing = 0.2f))
                 "cookie" -> MaterialShapes.Cookie9Sided
                 "clover" -> MaterialShapes.Clover4Leaf
                 "sunny" -> MaterialShapes.Sunny

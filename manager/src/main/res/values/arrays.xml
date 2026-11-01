@@ -219,18 +219,6 @@
         <item>apps</item>
         <item>hub</item>
     </string-array>
-    <string-array name="toggle_styles">
-        <item>@string/settings_toggle_style_expressive</item>
-        <item>@string/settings_toggle_style_card</item>
-        <item>@string/settings_toggle_style_vibrant</item>
-        <item>@string/settings_toggle_style_minimal</item>
-    </string-array>
-    <string-array name="toggle_styles_value" translatable="false">
-        <item>expressive</item>
-        <item>card</item>
-        <item>vibrant</item>
-        <item>minimal</item>
-    </string-array>
     <string-array name="helper_notifications">
         <item>@string/settings_helper_notifications_off</item>
         <item>@string/settings_helper_notifications_stopped</item>

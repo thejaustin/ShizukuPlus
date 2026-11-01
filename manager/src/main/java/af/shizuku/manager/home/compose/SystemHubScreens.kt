@@ -194,6 +194,9 @@ fun ServerMetricsScreen(
         when {
             isServerRunning == false -> {
                 Card(
+                    border =
+                        af.shizuku.manager.utils
+                            .cardBorder(),
                     shape = MaterialTheme.shapes.extraLarge,
                     colors =
                         CardDefaults.cardColors(
@@ -231,6 +234,9 @@ fun ServerMetricsScreen(
             }
             isServerRunning == true -> {
                 Card(
+                    border =
+                        af.shizuku.manager.utils
+                            .cardBorder(),
                     shape = MaterialTheme.shapes.extraLarge,
                     colors =
                         CardDefaults.cardColors(
@@ -283,6 +289,9 @@ fun ServerMetricsScreen(
 
         if (isStockServer) {
             Card(
+                border =
+                    af.shizuku.manager.utils
+                        .cardBorder(),
                 shape = MaterialTheme.shapes.extraLarge,
                 colors =
                     CardDefaults.cardColors(
@@ -337,6 +346,9 @@ fun ServerMetricsScreen(
             }
 
             Card(
+                border =
+                    af.shizuku.manager.utils
+                        .cardBorder(),
                 shape = MaterialTheme.shapes.extraLarge,
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -1230,6 +1242,9 @@ private fun ActivityLogTimelineRow(
 
         // M3E expressive Card with interactive elevation & animated expansion
         Card(
+            border =
+                af.shizuku.manager.utils
+                    .cardBorder(),
             shape = MaterialTheme.shapes.large,
             colors =
                 CardDefaults.cardColors(
@@ -1540,7 +1555,13 @@ private fun StatTile(
         } else {
             modifier
         }
-    Card(shape = MaterialTheme.shapes.extraLarge, modifier = cardModifier) {
+    Card(
+        shape = MaterialTheme.shapes.extraLarge,
+        border =
+            af.shizuku.manager.utils
+                .cardBorder(),
+        modifier = cardModifier,
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

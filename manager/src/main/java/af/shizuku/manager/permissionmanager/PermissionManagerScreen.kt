@@ -416,6 +416,9 @@ private fun PermissionDetailPane(
             }
             item {
                 Card(
+                    border =
+                        af.shizuku.manager.utils
+                            .cardBorder(),
                     modifier =
                         Modifier
                             .fillMaxWidth()

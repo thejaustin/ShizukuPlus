@@ -130,14 +130,6 @@
             android:icon="@drawable/ic_animation_24"
             android:defaultValue="true" />
 
-        <af.shizuku.manager.settings.SegmentedControlPreference
-            android:key="toggle_style"
-            android:title="@string/settings_toggle_style_title"
-            android:summary="@string/settings_toggle_style_summary"
-            android:defaultValue="expressive"
-            android:entries="@array/toggle_styles"
-            android:entryValues="@array/toggle_styles_value"
-            android:icon="@drawable/ic_animation_24" />
 
         <af.shizuku.manager.settings.SliderPreference
             android:key="corner_rounding_override"
@@ -146,6 +138,13 @@
             android:entries="@array/corner_rounding_entries"
             android:entryValues="@array/corner_rounding_values"
             android:icon="@drawable/ic_rounded_corner_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="show_home_cards_outline"
+            android:title="@string/settings_show_home_cards_outline"
+            android:summary="@string/settings_show_home_cards_outline_summary"
+            android:icon="@drawable/ic_border_style_24"
+            android:defaultValue="false" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
@@ -299,12 +298,6 @@
         <af.shizuku.manager.settings.StatusOutlineMasterPreference
             android:key="status_card_outline_card" />
 
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="show_home_cards_outline"
-            android:title="@string/settings_show_home_cards_outline"
-            android:summary="@string/settings_show_home_cards_outline_summary"
-            android:icon="@drawable/ic_border_style_24"
-            android:defaultValue="false" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="companion_mode"

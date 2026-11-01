@@ -522,6 +522,9 @@ fun SearchResultItem(
     // when a legacy Indication was in scope, crashing settings search (#309 / SHIZUKUPLUS-72).
     val isBoldTypography = ShizukuSettings.isBoldTypographyEnabled()
     Card(
+        border =
+            af.shizuku.manager.utils
+                .cardBorder(),
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.large,

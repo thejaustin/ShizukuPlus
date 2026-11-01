@@ -1329,12 +1329,6 @@
     <string name="settings_plus_governors_posture">%1$d von %2$d Governors aktiv</string>
     <string name="settings_plus_governors_help_hint">Halte einen Governor gedrückt, um Details zur Architektur zu sehen</string>
     <string name="settings_floating_nav_style_capsule">Expressive Kapsel</string>
-    <string name="settings_toggle_style_title">Stil der Schalter</string>
-    <string name="settings_toggle_style_summary">Passe Darstellung, Übersichtlichkeit und Rückmeldung der Einstellungsschalter an</string>
-    <string name="settings_toggle_style_expressive">Expressiv (Icon im Schieber)</string>
-    <string name="settings_toggle_style_card">Kartenhervorhebung (übersichtlich)</string>
-    <string name="settings_toggle_style_vibrant">Kräftiger Akzent</string>
-    <string name="settings_toggle_style_minimal">Minimal &amp; schlicht</string>
     <string name="settings_icon_morph_shape_star">Stern</string>
     <string name="settings_icon_morph_shape_burst">Strahlen</string>
     <string name="settings_notification_system_title">Benachrichtigungssystem</string>

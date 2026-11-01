@@ -1329,12 +1329,6 @@
     <string name="settings_plus_governors_posture">%1$d de %2$d gobernadores activos</string>
     <string name="settings_plus_governors_help_hint">Mantén pulsado un gobernador para ver los detalles de su arquitectura</string>
     <string name="settings_floating_nav_style_capsule">Cápsula expresiva</string>
-    <string name="settings_toggle_style_title">Estilo de los interruptores</string>
-    <string name="settings_toggle_style_summary">Personaliza el aspecto, la legibilidad y la respuesta de los interruptores de ajustes</string>
-    <string name="settings_toggle_style_expressive">Expresivo (icono en el control)</string>
-    <string name="settings_toggle_style_card">Tarjeta resaltada (fácil de leer)</string>
-    <string name="settings_toggle_style_vibrant">Acento vivo</string>
-    <string name="settings_toggle_style_minimal">Minimalista</string>
     <string name="settings_icon_morph_shape_star">Estrella</string>
     <string name="settings_icon_morph_shape_burst">Destello</string>
     <string name="settings_notification_system_title">Sistema de notificaciones</string>

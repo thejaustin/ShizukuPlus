@@ -340,8 +340,10 @@ object ServiceDoctor {
             // 7. Samsung Auto Blocker (One UI 6.1+)
             if (EnvironmentUtils.isSamsung()) {
                 val oneUi = EnvironmentUtils.getOneUiVersion()
+
                 // Auto Blocker is Samsung's own: writing its settings key only desyncs it, so the
-                // fix opens its screen. Unknown (unreadable) shows as a manual check, not as OK.
+                // fix opens its screen. Unknown (unreadable) is a manual check with that button,
+                // never OK.
                 fun statusText(
                     state: SamsungAutoBlocker.State,
                     onText: Int,
@@ -356,7 +358,7 @@ object ServiceDoctor {
                         id = "samsung_autoblocker",
                         title = context.getString(R.string.doctor_check_samsung_autoblocker),
                         status = statusText(autoBlocker, R.string.doctor_status_autoblocker_on),
-                        ok = autoBlocker != SamsungAutoBlocker.State.ON,
+                        ok = autoBlocker == SamsungAutoBlocker.State.OFF,
                         manualAction = { ctx -> SettingsPage.Samsung.AutoBlocker.launch(ctx) },
                     ),
                 )
@@ -368,7 +370,7 @@ object ServiceDoctor {
                             id = "samsung_max_restrictions",
                             title = context.getString(R.string.doctor_check_samsung_max_restrictions),
                             status = statusText(maxRestrictions, R.string.doctor_status_samsung_max_restrictions_on),
-                            ok = maxRestrictions != SamsungAutoBlocker.State.ON,
+                            ok = maxRestrictions == SamsungAutoBlocker.State.OFF,
                             manualAction = { ctx -> SettingsPage.Samsung.AutoBlocker.launch(ctx) },
                         ),
                     )

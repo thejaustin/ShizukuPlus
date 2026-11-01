@@ -1157,12 +1157,6 @@
     <string name="settings_floating_nav_style_docked">Bərkidilmiş</string>
     <string name="settings_floating_nav_style_compact">Kompakt</string>
     <string name="settings_floating_nav_style_capsule">İfadəli Kapsul</string>
-    <string name="settings_toggle_style_title">Keçid düyməsi üslubu</string>
-    <string name="settings_toggle_style_summary">Parametr keçidlərinin vizual təqdimatını, skan edilə bilməsini və rəyini fərdiləşdirin</string>
-    <string name="settings_toggle_style_expressive">İfadəli (İkon Başlığı)</string>
-    <string name="settings_toggle_style_card">Kart Vurğusu (Skan edilə bilən)</string>
-    <string name="settings_toggle_style_vibrant">Canlı Vurğu</string>
-    <string name="settings_toggle_style_minimal">Minimal Təmiz</string>
     <string name="settings_floating_nav_tabs_title">Pəncərələr</string>
     <string name="settings_floating_nav_tabs_summary">Əsas ekran və Tənzimləmələr həmişə görünür. %1$s</string>
     <string name="settings_experimental_summary">Hələ də cilalanmaqda olan xüsusiyyətləri sınayın</string>

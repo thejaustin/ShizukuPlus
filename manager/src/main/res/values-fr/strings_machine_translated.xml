@@ -1328,12 +1328,6 @@
     <string name="settings_plus_governors_posture">%1$d gouverneurs actifs sur %2$d</string>
     <string name="settings_plus_governors_help_hint">Maintenez un gouverneur appuyé pour afficher les détails de l\'architecture</string>
     <string name="settings_floating_nav_style_capsule">Capsule expressive</string>
-    <string name="settings_toggle_style_title">Style des interrupteurs</string>
-    <string name="settings_toggle_style_summary">Personnalisez la présentation visuelle, la lisibilité et le retour des interrupteurs de paramètres</string>
-    <string name="settings_toggle_style_expressive">Expressif (icône dans le curseur)</string>
-    <string name="settings_toggle_style_card">Carte en surbrillance (lisible)</string>
-    <string name="settings_toggle_style_vibrant">Accent vif</string>
-    <string name="settings_toggle_style_minimal">Minimal épuré</string>
     <string name="settings_icon_morph_shape_star">Étoile</string>
     <string name="settings_icon_morph_shape_burst">Éclat</string>
     <string name="settings_notification_system_title">Système de notifications</string>

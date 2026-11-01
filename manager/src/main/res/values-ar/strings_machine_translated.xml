@@ -1328,12 +1328,6 @@
     <string name="settings_plus_governors_posture">%1$d من %2$d من المتحكمات نشطة</string>
     <string name="settings_plus_governors_help_hint">اضغط مطولاً على أي متحكم لعرض تفاصيل البنية</string>
     <string name="settings_floating_nav_style_capsule">كبسولة تعبيرية</string>
-    <string name="settings_toggle_style_title">نمط مفتاح التبديل</string>
-    <string name="settings_toggle_style_summary">خصّص المظهر المرئي لمفاتيح تبديل الإعدادات وسهولة تمييزها وتفاعلها</string>
-    <string name="settings_toggle_style_expressive">تعبيري (أيقونة على المقبض)</string>
-    <string name="settings_toggle_style_card">تمييز البطاقة (سهل التمييز)</string>
-    <string name="settings_toggle_style_vibrant">لون مميز نابض</string>
-    <string name="settings_toggle_style_minimal">بسيط ونظيف</string>
     <string name="settings_icon_morph_shape_star">نجمة</string>
     <string name="settings_icon_morph_shape_burst">انفجار</string>
     <string name="settings_notification_system_title">نظام الإشعارات</string>

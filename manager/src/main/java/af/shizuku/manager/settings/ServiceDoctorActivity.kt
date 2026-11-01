@@ -124,6 +124,12 @@ class ServiceDoctorActivity : AppBarActivity() {
             insets
         }
 
+        listOf(binding.cardSummary, binding.cardAdaptiveHeal, binding.cardTips)
+            .forEach {
+                af.shizuku.manager.utils.CardBorder
+                    .apply(it)
+            }
+
         binding.checkList.layoutManager = LinearLayoutManager(this)
         checkListAdapter = CheckListAdapter()
         binding.checkList.adapter = checkListAdapter
@@ -541,6 +547,8 @@ class ServiceDoctorActivity : AppBarActivity() {
             position: Int,
         ) {
             val check = items[position]
+            af.shizuku.manager.utils.CardBorder
+                .apply(holder.binding.root)
             val context = holder.itemView.context
             holder.binding.title.text = check.title
             holder.binding.status.text = check.status
