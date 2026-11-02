@@ -220,6 +220,7 @@ private fun VerifiedInstallGridContent(
                     val isVT = engine.key == "verify_apk_virustotal"
                     val isPithus = engine.key == "verify_apk_pithus"
                     val keyNeeded = isVT && checked && !vtKeyConfigured
+                    val cornerOverride = remember { ShizukuSettings.getCornerRoundingOverride() }
 
                     val scale by animateFloatAsState(
                         targetValue = if (checked) 1.0f else 0.96f,
@@ -227,12 +228,12 @@ private fun VerifiedInstallGridContent(
                         label = "engineScale",
                     )
                     val cardCorner by animateDpAsState(
-                        targetValue = if (checked) 22.dp else 14.dp,
+                        targetValue = resolveGridCardCorner(cornerOverride, checked),
                         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
                         label = "engineCorner",
                     )
                     val iconCorner by animateDpAsState(
-                        targetValue = if (checked) 8.dp else 16.dp,
+                        targetValue = resolveGridIconCorner(cornerOverride, checked),
                         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
                         label = "engineIconCorner",
                     )

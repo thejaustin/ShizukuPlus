@@ -132,3 +132,31 @@ internal fun ComposePreferenceRow(
         }
     }
 }
+
+/** Resolves dynamic M3E corner roundness for settings grid cards based on the corner override setting. */
+internal fun resolveGridCardCorner(
+    cornerOverride: String,
+    checked: Boolean,
+): androidx.compose.ui.unit.Dp =
+    when (cornerOverride) {
+        "sharp" -> if (checked) 6.dp else 2.dp
+        "gentle" -> if (checked) 18.dp else 10.dp
+        "standard" -> if (checked) 22.dp else 12.dp
+        "large" -> if (checked) 28.dp else 16.dp
+        "maximum" -> if (checked) 36.dp else 20.dp
+        else -> if (checked) 24.dp else 14.dp
+    }
+
+/** Resolves dynamic M3E corner roundness for settings grid icons based on the corner override setting. */
+internal fun resolveGridIconCorner(
+    cornerOverride: String,
+    checked: Boolean,
+): androidx.compose.ui.unit.Dp =
+    when (cornerOverride) {
+        "sharp" -> if (checked) 2.dp else 4.dp
+        "gentle" -> if (checked) 6.dp else 12.dp
+        "standard" -> if (checked) 8.dp else 14.dp
+        "large" -> if (checked) 10.dp else 18.dp
+        "maximum" -> if (checked) 14.dp else 22.dp
+        else -> if (checked) 8.dp else 16.dp
+    }

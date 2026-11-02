@@ -9,7 +9,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
+import android.os.Bundle
 import android.os.IBinder
+import android.text.InputType
 import android.util.Log
 import androidx.lifecycle.Observer
 import kotlinx.coroutines.*
@@ -532,38 +534,45 @@ class AdbPairingService : Service() {
             ).build()
     }
 
-    private val replyNotificationAction by unsafeLazy {
-        val remoteInput =
-            RemoteInput.Builder(remoteInputResultKey).run {
-                setLabel(getString(R.string.dialog_adb_pairing_paring_code))
-                build()
-            }
+    private val replyNotificationAction: Notification.Action
+        get() {
+            val remoteInput =
+                RemoteInput.Builder(remoteInputResultKey).run {
+                    setLabel(getString(R.string.dialog_adb_pairing_paring_code))
+                    if (ShizukuSettings.isNumericalPairingKeyboardEnabled()) {
+                        val extras =
+                            Bundle().apply {
+                                putInt("android.support.remoteinput.EXTRA_INPUT_TYPE", InputType.TYPE_CLASS_NUMBER)
+                                putInt("android.content.extra.input_type", InputType.TYPE_CLASS_NUMBER)
+                            }
+                        addExtras(extras)
+                    }
+                    build()
+                }
 
-        val pendingIntent =
-            PendingIntent.getForegroundService(
-                this,
-                replyRequestId,
-                replyIntent(this, -1),
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                } else {
-                    PendingIntent.FLAG_UPDATE_CURRENT
-                },
-            )
+            val pendingIntent =
+                PendingIntent.getForegroundService(
+                    this,
+                    replyRequestId,
+                    replyIntent(this, -1),
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                    } else {
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                    },
+                )
 
-        Notification.Action
-            .Builder(
-                null,
-                getString(R.string.notification_adb_pairing_input_paring_code),
-                pendingIntent,
-            ).addRemoteInput(remoteInput)
-            .build()
-    }
+            return Notification.Action
+                .Builder(
+                    null,
+                    getString(R.string.notification_adb_pairing_input_paring_code),
+                    pendingIntent,
+                ).addRemoteInput(remoteInput)
+                .build()
+        }
 
     private fun replyNotificationAction(port: Int): Notification.Action {
         // Ensure pending intent is created
-        val action = replyNotificationAction
-
         PendingIntent.getForegroundService(
             this,
             replyRequestId,
@@ -575,7 +584,7 @@ class AdbPairingService : Service() {
             },
         )
 
-        return action
+        return replyNotificationAction
     }
 
     private val searchingNotification by unsafeLazy {

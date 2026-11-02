@@ -120,6 +120,35 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-11-02 (cont'd 7) — Antigravity (Gemini 3.8 Flash) (Update onboarding, numerical pairing keypad, home card shape isolation, swipe toggle & M3E corner animations) [master]
+
+- **Update Onboarding Gate & Returning User Highlighting:**
+  - *Problem*: `ShizukuSettings.isOnboardingSeen()` was a persistent boolean set once on fresh install. When existing users updated to new releases, onboarding was permanently bypassed, meaning they were never informed of major new features (Floating Nav Bar, Wireless ADB Pairing enhancements, One UI mode, etc.).
+  - *Fix*: Added `KEY_LAST_SEEN_ONBOARDING_VERSION` (`last_seen_onboarding_version`) to track the app version code when onboarding was last completed.
+  - In `MainActivity.kt`: If `lastSeenOnboardingVersion < currentCode` for returning users, launches `OnboardingActivity` with `EXTRA_NEW_FEATURES_ONLY = true` and `EXTRA_SINCE_VERSION_CODE = lastSeenOnboardingVersion`.
+  - In `OnboardingActivity.kt`: Reads `EXTRA_SINCE_VERSION_CODE`, completes onboarding by updating both `setLastSeenOnboardingVersion(currentCode)` and `setLastSeenChangelogVersion(currentCode)` to avoid duplicate update popups.
+  - In `page_onboarding_welcome_returning.xml`: Added dedicated feature preview cards for Layout & Navigation (`card_feat_layout_nav`) and Wireless ADB & Keypad (`card_feat_wireless`) with direct deep links to onboarding tutorial flows.
+- **Numerical Keyboard for Pairing Code (#654):**
+  - Added user toggle `KEY_NUMERICAL_PAIRING_KEYBOARD` (`numerical_pairing_keyboard`) under Wireless & ADB in `settings_behavior.xml`.
+  - In `AdbPairDialogFragment.kt`: Dynamically applies `InputType.TYPE_CLASS_NUMBER` and `DigitsKeyListener.getInstance("0123456789")` when enabled, with fallback to text input.
+  - In `AdbPairingDialogActivity.kt`: Enforces numeric keypad, 6-digit max length filter, letter spacing, and centered alignment for fluid pairing code entry.
+  - In `AdbPairingService.kt`: Passes `EXTRA_INPUT_TYPE = InputType.TYPE_CLASS_NUMBER` to notification shade inline reply `RemoteInput` for compatible IMEs and WearOS keyboards.
+- **Master Swipe Gestures Toggle & Preference Consolidation:**
+  - Added `KEY_SWIPE_GESTURES_ENABLED` (`swipe_gestures_enabled`) in `settings_personalization.xml` as a master switch in `category_app_interactions`.
+  - In `SwipePreviewPreference.kt`: Dynamically disables interaction and displays `swipe_actions_disabled_summary` when master switch is off.
+  - In `ApplicationManagementActivity.kt`: Returns `0` from `ItemTouchHelper.SimpleCallback.getMovementFlags` when disabled, cleanly deactivating swipe gestures across all app rows.
+- **Corner Rounding per Toggle & Preserving Home Card Layouts:**
+  - *Problem*: Global corner rounding theme overlays (`ThemeOverlay.CornerRounding.*`) directly modified `shapeAppearanceCornerExtraLarge`, which previously bled into `home_item_container.xml` and altered default home card aesthetics unexpectedly.
+  - *Fix*: Decoupled home cards by defining `@style/ShapeAppearance.HomeCard.ExtraLarge` (inheriting standard 28dp radius) and assigning it as default shape in `home_item_container.xml`.
+  - Added `KEY_APPLY_CORNER_ROUNDING_TO_HOME` (`apply_corner_rounding_to_home`) in `settings_personalization.xml`.
+  - In `HomeAdapter.kt`: Only overrides card corners with user custom theme radius if `apply_corner_rounding_to_home` is explicitly enabled.
+- **M3E Dynamic Grid Corner Animations & Switch Thumb Fix:**
+  - In `PreferenceCompose.kt`: Added `resolveGridCardCorner` and `resolveGridIconCorner` to respect custom corner rounding settings in M3 Expressive Jetpack Compose preference components.
+  - In `DisplayOptionsGridPreference.kt`, `VerifiedInstallGridPreference.kt`, and `PlusGovernorsPreference.kt`: Dynamically animate corners based on active corner theme override.
+  - In `SwitchDesign.kt`: Prevented standard switch design from wiping out default switch thumbs with `null`.
+- **Code Hygiene & Verification:**
+  - Ran `bash gradlew spotlessApply` and `bash gradlew spotlessCheck`. Clean and passing.
+
 ### 2026-11-02 (cont'd 5) — Antigravity (Gemini 3.8 Flash) (Release notes fix, fallback rendering, Atom feed parser, Crowdin setup) [master]
 
 - **In-App Release Notes ("What's New") Fix:**

@@ -50,6 +50,9 @@ public class ShizukuSettings {
         public static final String KEY_HELP = "help";
         public static final String KEY_REPORT_BUG = "report_bug";
         public static final String KEY_LEGACY_PAIRING = "legacy_pairing";
+        public static final String KEY_NUMERICAL_PAIRING_KEYBOARD = "numerical_pairing_keyboard";
+        public static final String KEY_SWIPE_GESTURES_ENABLED = "swipe_gestures_enabled";
+        public static final String KEY_APPLY_CORNER_ROUNDING_TO_HOME = "apply_corner_rounding_to_home";
 
         // Home screen visibility (Shizuku+ additions)
         public static final String KEY_SHOW_TERMINAL_HOME = "show_terminal_home";
@@ -228,6 +231,7 @@ public class ShizukuSettings {
         public static final String KEY_UPDATE_CHANNEL = "update_channel"; // "stable" or "dev"
         public static final String KEY_LAST_SEEN_VERSION = "last_seen_version";
         public static final String KEY_LAST_SEEN_CHANGELOG_VERSION = "last_seen_changelog_version";
+        public static final String KEY_LAST_SEEN_ONBOARDING_VERSION = "last_seen_onboarding_version";
         public static final String KEY_SERVER_STARTED_BUILD = "server_started_build";
         public static final String KEY_LAST_SETTLED_STATE = "last_settled_shizuku_state";
 
@@ -273,6 +277,14 @@ public class ShizukuSettings {
 
     public static void setLastSeenChangelogVersion(int versionCode) {
         getPreferences().edit().putInt(Keys.KEY_LAST_SEEN_CHANGELOG_VERSION, versionCode).apply();
+    }
+
+    public static int getLastSeenOnboardingVersion() {
+        return getPreferences().getInt(Keys.KEY_LAST_SEEN_ONBOARDING_VERSION, -1);
+    }
+
+    public static void setLastSeenOnboardingVersion(int versionCode) {
+        getPreferences().edit().putInt(Keys.KEY_LAST_SEEN_ONBOARDING_VERSION, versionCode).apply();
     }
 
     /** versionCode of the app build that started the currently-running privileged server (0 = unknown). */
@@ -1137,6 +1149,30 @@ public class ShizukuSettings {
 
     public static boolean getLegacyPairing() {
         return getPreferences().getBoolean(Keys.KEY_LEGACY_PAIRING, false);
+    }
+
+    public static boolean isNumericalPairingKeyboardEnabled() {
+        return getPreferences().getBoolean(Keys.KEY_NUMERICAL_PAIRING_KEYBOARD, true);
+    }
+
+    public static void setNumericalPairingKeyboardEnabled(boolean enabled) {
+        getPreferences().edit().putBoolean(Keys.KEY_NUMERICAL_PAIRING_KEYBOARD, enabled).apply();
+    }
+
+    public static boolean isSwipeGesturesEnabled() {
+        return getPreferences().getBoolean(Keys.KEY_SWIPE_GESTURES_ENABLED, true);
+    }
+
+    public static void setSwipeGesturesEnabled(boolean enabled) {
+        getPreferences().edit().putBoolean(Keys.KEY_SWIPE_GESTURES_ENABLED, enabled).apply();
+    }
+
+    public static boolean isCornerRoundingAppliedToHome() {
+        return getPreferences().getBoolean(Keys.KEY_APPLY_CORNER_ROUNDING_TO_HOME, false);
+    }
+
+    public static void setCornerRoundingAppliedToHome(boolean enabled) {
+        getPreferences().edit().putBoolean(Keys.KEY_APPLY_CORNER_ROUNDING_TO_HOME, enabled).apply();
     }
 
     @AppCompatDelegate.NightMode

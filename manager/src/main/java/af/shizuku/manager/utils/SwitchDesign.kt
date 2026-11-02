@@ -23,15 +23,17 @@ object SwitchDesign {
         onKey: String? = null,
         offKey: String? = null,
     ) {
-        if (switch.getTag(R.id.tag_switch_default_thumb) == null) {
-            switch.setTag(R.id.tag_switch_default_thumb, switch.thumbDrawable ?: NoDrawable)
-        }
-        switch.thumbDrawable =
-            if (ShizukuSettings.getSwitchRowDesign() == SHAPE_THUMB) {
-                shapeThumb(switch, onKey, offKey)
-            } else {
-                switch.getTag(R.id.tag_switch_default_thumb) as? Drawable
+        if (ShizukuSettings.getSwitchRowDesign() == SHAPE_THUMB) {
+            if (switch.getTag(R.id.tag_switch_default_thumb) == null) {
+                switch.setTag(R.id.tag_switch_default_thumb, switch.thumbDrawable ?: NoDrawable)
             }
+            switch.thumbDrawable = shapeThumb(switch, onKey, offKey)
+        } else {
+            val defaultThumb = switch.getTag(R.id.tag_switch_default_thumb)
+            if (defaultThumb != null && defaultThumb !== NoDrawable) {
+                switch.thumbDrawable = defaultThumb as? Drawable
+            }
+        }
         // Standard M3E switch: check / close icon in the thumb.
         switch.setThumbIconResource(R.drawable.m3_switch_thumb_icon)
     }

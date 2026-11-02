@@ -154,6 +154,13 @@
             android:icon="@drawable/ic_rounded_corner_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="apply_corner_rounding_to_home"
+            android:title="@string/settings_apply_corner_rounding_to_home_title"
+            android:summary="@string/settings_apply_corner_rounding_to_home_summary"
+            android:icon="@drawable/ic_home_24"
+            android:defaultValue="false" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="show_home_cards_outline"
             android:title="@string/settings_show_home_cards_outline"
             android:summary="@string/settings_show_home_cards_outline_summary"
@@ -258,18 +265,28 @@
         android:icon="@drawable/ic_swipe_24"
         android:defaultValue="true">
 
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="swipe_gestures_enabled"
+            android:title="@string/settings_swipe_gestures_title"
+            android:summary="@string/settings_swipe_gestures_summary"
+            android:icon="@drawable/ic_swipe_24"
+            android:defaultValue="true" />
+
         <af.shizuku.manager.settings.SwipePreviewPreference
-            android:key="swipe_preview" />
+            android:key="swipe_preview"
+            android:dependency="swipe_gestures_enabled" />
 
         <af.shizuku.manager.settings.SwipeActionRowPreference
             android:key="swipe_right_row"
             android:title="@string/swipe_actions_right_title"
-            android:icon="@drawable/ic_arrow_forward_24" />
+            android:icon="@drawable/ic_arrow_forward_24"
+            android:dependency="swipe_gestures_enabled" />
 
         <af.shizuku.manager.settings.SwipeActionRowPreference
             android:key="swipe_left_row"
             android:title="@string/swipe_actions_left_title"
-            android:icon="@drawable/ic_arrow_back_24" />
+            android:icon="@drawable/ic_arrow_back_24"
+            android:dependency="swipe_gestures_enabled" />
 
         <af.shizuku.manager.settings.SwipeActionRowPreference
             android:key="long_press_row"

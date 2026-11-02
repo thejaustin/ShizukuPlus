@@ -87,6 +87,7 @@ class SwipePreviewPreference
         private val right = mutableStateOf(ShizukuSettings.getSwipeRightAction())
         private val left = mutableStateOf(ShizukuSettings.getSwipeLeftAction())
         private val sandbox = mutableStateOf(false)
+        private val enabled = mutableStateOf(ShizukuSettings.isSwipeGesturesEnabled())
 
         init {
             layoutResource = R.layout.preference_compose
@@ -98,6 +99,7 @@ class SwipePreviewPreference
             right.value = ShizukuSettings.getSwipeRightAction()
             left.value = ShizukuSettings.getSwipeLeftAction()
             sandbox.value = ShizukuSettings.isSwipeSettingsSandboxEnabled()
+            enabled.value = ShizukuSettings.isSwipeGesturesEnabled()
         }
 
         override fun onAttached() {
@@ -119,6 +121,7 @@ class SwipePreviewPreference
                 ShizukuSettings.Keys.KEY_SWIPE_RIGHT_ACTION,
                 ShizukuSettings.Keys.KEY_SWIPE_LEFT_ACTION,
                 ShizukuSettings.Keys.KEY_SWIPE_SETTINGS_SANDBOX,
+                ShizukuSettings.Keys.KEY_SWIPE_GESTURES_ENABLED,
                 -> sync()
             }
         }
@@ -129,7 +132,21 @@ class SwipePreviewPreference
                 holder.findViewById(R.id.preference_compose_view) as? ComposeView
                     ?: holder.itemView as? ComposeView ?: return
             cv.setPreferenceContent {
-                if (sandbox.value) {
+                if (!enabled.value) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 14.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.swipe_actions_disabled_summary),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        )
+                    }
+                } else if (sandbox.value) {
                     SwipeSandbox(
                         right = right.value,
                         left = left.value,

@@ -701,6 +701,7 @@ open class ApplicationManagementActivity :
                     vh: RecyclerView.ViewHolder,
                 ): Int {
                     if (vh !is AppViewHolder) return 0
+                    if (!ShizukuSettings.isSwipeGesturesEnabled()) return 0
                     var dirs = 0
                     if (swipeRightAction != "none") dirs = dirs or ItemTouchHelper.RIGHT
                     if (swipeLeftAction != "none") dirs = dirs or ItemTouchHelper.LEFT

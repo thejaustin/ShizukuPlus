@@ -55,6 +55,7 @@ import java.io.File
 class OnboardingActivity : AppActivity() {
     companion object {
         const val EXTRA_NEW_FEATURES_ONLY = "extra_new_features_only"
+        const val EXTRA_SINCE_VERSION_CODE = "extra_since_version_code"
     }
 
     enum class PageType {
@@ -71,6 +72,7 @@ class OnboardingActivity : AppActivity() {
 
     private lateinit var binding: ActivityOnboardingBinding
     private var isNewFeaturesOnly = false
+    private var sinceVersionCode = -1
     private val dots = mutableListOf<View>()
     private val onboardingAdapter = OnboardingPagerAdapter()
 
@@ -168,6 +170,7 @@ class OnboardingActivity : AppActivity() {
         super.onCreate(savedInstanceState)
 
         isNewFeaturesOnly = intent.getBooleanExtra(EXTRA_NEW_FEATURES_ONLY, false)
+        sinceVersionCode = intent.getIntExtra(EXTRA_SINCE_VERSION_CODE, -1)
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -410,6 +413,16 @@ class OnboardingActivity : AppActivity() {
         SettingsBackupManager.markRestoreChecked()
         ShizukuSettings.setOnboardingSeen()
         ShizukuSettings.setOnboardingV2Seen()
+        val currentCode =
+            try {
+                packageManager.getPackageInfo(packageName, 0).versionCode
+            } catch (_: Exception) {
+                af.shizuku.manager.BuildConfig.VERSION_CODE
+            }
+        ShizukuSettings.setLastSeenOnboardingVersion(currentCode)
+        if (isNewFeaturesOnly) {
+            ShizukuSettings.setLastSeenChangelogVersion(currentCode)
+        }
         if (isTaskRoot || !isNewFeaturesOnly) {
             startActivity(Intent(this, MainActivity::class.java))
         }
@@ -505,8 +518,10 @@ class OnboardingActivity : AppActivity() {
         private fun bindWelcomeReturningPage(binding: PageOnboardingWelcomeReturningBinding) {
             binding.heroIcon.applySpringTouch()
             binding.cardFeatM3e.applySpringTouch()
+            binding.cardFeatLayoutNav.applySpringTouch()
             binding.cardFeatGestures.applySpringTouch()
             binding.cardFeatDoctor.applySpringTouch()
+            binding.cardFeatWireless.applySpringTouch()
             binding.btnJumpToApp.applySpringTouch()
 
             binding.btnJumpToApp.setOnClickListener {
@@ -520,6 +535,12 @@ class OnboardingActivity : AppActivity() {
                 if (idx >= 0) this@OnboardingActivity.binding.pager.currentItem = idx
             }
 
+            binding.cardFeatLayoutNav.setOnClickListener {
+                HapticUtils.segmentTick(it)
+                val idx = pages.indexOf(PageType.LAYOUT_NAV)
+                if (idx >= 0) this@OnboardingActivity.binding.pager.currentItem = idx
+            }
+
             binding.cardFeatGestures.setOnClickListener {
                 HapticUtils.segmentTick(it)
                 val idx = pages.indexOf(PageType.GESTURES)
@@ -530,6 +551,19 @@ class OnboardingActivity : AppActivity() {
                 HapticUtils.segmentTick(it)
                 val idx = pages.indexOf(PageType.SECURITY_DOCTOR)
                 if (idx >= 0) this@OnboardingActivity.binding.pager.currentItem = idx
+            }
+
+            binding.cardFeatWireless.setOnClickListener {
+                HapticUtils.segmentTick(it)
+                val idx = pages.indexOf(PageType.SETUP)
+                if (idx >= 0) {
+                    this@OnboardingActivity.binding.pager.currentItem = idx
+                } else {
+                    try {
+                        startActivity(Intent(this@OnboardingActivity, AdbPairingTutorialActivity::class.java))
+                    } catch (_: Exception) {
+                    }
+                }
             }
         }
 

@@ -85,6 +85,13 @@
             android:icon="@drawable/ic_wadb_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="numerical_pairing_keyboard"
+            android:title="@string/settings_numerical_pairing_keyboard"
+            android:summary="@string/settings_numerical_pairing_keyboard_summary"
+            android:icon="@drawable/ic_numeric_1_circle_outline_24"
+            android:defaultValue="true" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="on_device_adb_tcp"
             android:title="@string/settings_on_device_adb_tcp"
             android:summary="@string/settings_on_device_adb_tcp_summary"

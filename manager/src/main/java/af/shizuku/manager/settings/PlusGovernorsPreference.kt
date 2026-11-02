@@ -272,6 +272,7 @@ private fun GovernorsContent(
         // Governor Items
         governors.forEach { gov ->
             val checked = states[gov.key] ?: gov.defaultVal
+            val cornerOverride = remember { ShizukuSettings.getCornerRoundingOverride() }
 
             val scale by animateFloatAsState(
                 targetValue = if (checked) 1.0f else 0.98f,
@@ -279,12 +280,12 @@ private fun GovernorsContent(
                 label = "govScale",
             )
             val corner by animateDpAsState(
-                targetValue = if (checked) 20.dp else 14.dp,
+                targetValue = resolveGridCardCorner(cornerOverride, checked),
                 animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
                 label = "govCorner",
             )
             val iconCorner by animateDpAsState(
-                targetValue = if (checked) 8.dp else 14.dp,
+                targetValue = resolveGridIconCorner(cornerOverride, checked),
                 animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
                 label = "govIconCorner",
             )

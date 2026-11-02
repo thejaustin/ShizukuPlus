@@ -392,6 +392,10 @@
     <string name="onboarding_returning_feat_gestures_desc">Segmented swipe action groups, tactile preview cards, and customized quick actions.</string>
     <string name="onboarding_returning_feat_doctor_title">Adaptive Service Doctor</string>
     <string name="onboarding_returning_feat_doctor_desc">Proactive background diagnostics, health monitoring, and one-tap automated self-healing.</string>
+    <string name="onboarding_returning_feat_layout_nav_title">Floating Nav &amp; Modern Layouts</string>
+    <string name="onboarding_returning_feat_layout_nav_desc">Docked Floating Action Bar, customizable tab bar navigation, and collapsible settings categories.</string>
+    <string name="onboarding_returning_feat_wireless_title">Enhanced Wireless ADB &amp; Keypad</string>
+    <string name="onboarding_returning_feat_wireless_desc">Dedicated numeric keypad for pairing codes, on-device loopback ADB on 127.0.0.1, and auto-disable USB debugging.</string>
     <string name="onboarding_returning_action_jump">Jump to Dashboard</string>
 
     <!-- Swipe hint overlay -->
@@ -549,6 +553,13 @@
     <string name="brand_drop_in" translatable="false">Drop-In</string>
     <string name="settings_legacy_pairing">Legacy pairing</string>
     <string name="settings_legacy_pairing_summary">Enter the pairing code in a dialog instead of a notification</string>
+    <string name="settings_numerical_pairing_keyboard">Numerical pairing keyboard</string>
+    <string name="settings_numerical_pairing_keyboard_summary">Use a dedicated number keypad when entering wireless pairing codes</string>
+    <string name="settings_swipe_gestures_title">App row swipe actions</string>
+    <string name="settings_swipe_gestures_summary">Swipe left or right on authorized apps to trigger instant management actions</string>
+    <string name="swipe_actions_disabled_summary">Swipe actions are currently disabled</string>
+    <string name="settings_apply_corner_rounding_to_home_title">Apply corner rounding to Home cards</string>
+    <string name="settings_apply_corner_rounding_to_home_summary">Keep disabled to preserve default Home screen card layouts, or enable to apply custom corner rounding across Home cards</string>
     <string name="settings_reset_adb_keys">Reset ADB Keys</string>
     <string name="settings_reset_adb_keys_summary">Delete existing ADB keys and certificates. Useful if pairing is stuck or KeyStore is corrupted.</string>
     <string name="settings_reset_adb_keys_success">ADB keys cleared</string>

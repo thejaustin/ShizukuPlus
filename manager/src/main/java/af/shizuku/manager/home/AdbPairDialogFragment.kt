@@ -62,6 +62,18 @@ class AdbPairDialogFragment : DialogFragment() {
 
     private fun onDialogShow(dialog: AlertDialog) {
         val codeEditText = binding.pairingCode.editText
+        val isNumerical = ShizukuSettings.isNumericalPairingKeyboardEnabled()
+        if (isNumerical) {
+            codeEditText?.inputType = android.text.InputType.TYPE_CLASS_NUMBER
+            codeEditText?.keyListener =
+                android.text.method.DigitsKeyListener
+                    .getInstance("0123456789")
+        } else {
+            codeEditText?.inputType = android.text.InputType.TYPE_CLASS_TEXT
+            codeEditText?.keyListener =
+                android.text.method.TextKeyListener
+                    .getInstance()
+        }
         codeEditText?.doAfterTextChanged {
             binding.pairingCode.error = null
         }

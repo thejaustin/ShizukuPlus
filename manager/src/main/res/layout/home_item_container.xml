@@ -10,7 +10,7 @@
     app:cardBackgroundColor="?colorSurfaceContainerHigh"
     app:cardElevation="0dp"
     app:strokeWidth="0dp"
-    app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge">
+    app:shapeAppearanceOverlay="@style/ShapeAppearance.HomeCard.ExtraLarge">
 
     <!-- Content frame: inner ViewHolder layouts inflate here -->
     <FrameLayout

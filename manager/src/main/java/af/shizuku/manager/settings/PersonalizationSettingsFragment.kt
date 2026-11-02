@@ -267,6 +267,11 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
+        findPreference<Preference>("apply_corner_rounding_to_home")?.setOnPreferenceChangeListener { _, _ ->
+            view?.post { applyTheme(requiresRecreate = false) }
+            true
+        }
+
         findPreference<Preference>("expanded_headers_enabled")?.setOnPreferenceChangeListener { _, _ ->
             view?.post { applyTheme(requiresRecreate = false) }
             true
