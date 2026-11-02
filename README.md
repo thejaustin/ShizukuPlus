@@ -2,7 +2,7 @@
 [[[ UPDATE ]]]
 
 Stable Release is heading your way... soon... have had some more issues creep up on me that I want to fix firsthand.
-
+Pre-releases are back in the meantime.
 
 I've been in the process of simplifying, restructuring, and improving the code quality, and visual quality of the app locally. 
 
