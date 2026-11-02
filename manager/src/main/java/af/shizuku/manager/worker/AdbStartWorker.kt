@@ -103,7 +103,8 @@ class AdbStartWorker(
             }
 
             runCatching {
-                Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)
+                // Ensure ADB authorization does not expire across connections, without overriding
+                // user's manual USB debugging toggle in Developer Options (#656).
                 Settings.Global.putLong(cr, "adb_allowed_connection_time", 0L)
             }
 
@@ -514,7 +515,7 @@ class AdbStartWorker(
             val waitsForWifi = EnvironmentUtils.isWifiRequired() && !ShizukuSettings.isForceStartWadbEnabled()
             val cb = Constraints.Builder()
             if (waitsForWifi) {
-                cb.setRequiredNetworkType(NetworkType.UNMETERED)
+                cb.setRequiredNetworkType(NetworkType.CONNECTED)
             }
             val request =
                 OneTimeWorkRequestBuilder<AdbStartWorker>()

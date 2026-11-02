@@ -433,6 +433,25 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
+        findPreference<androidx.preference.MultiSelectListPreference>(af.shizuku.manager.widget.FloatingNavBar.KEY_TABS)?.apply {
+            fun describe(values: Set<String>) {
+                val names =
+                    entryValues
+                        .zip(entries)
+                        .filter { (v, _) -> v.toString() in values }
+                        .joinToString(", ") { it.second }
+                summary = getString(R.string.settings_floating_nav_tabs_summary, names)
+            }
+            describe(values)
+            setOnPreferenceChangeListener { _, v ->
+                @Suppress("UNCHECKED_CAST")
+                val tabs = v as Set<String>
+                if (tabs.isEmpty()) return@setOnPreferenceChangeListener false
+                describe(tabs)
+                true
+            }
+        }
+
         // 4. Language & System
         languagePreference = requireNotNull(findPreference(KEY_LANGUAGE))
         translationPreference = requireNotNull(findPreference(KEY_TRANSLATION))

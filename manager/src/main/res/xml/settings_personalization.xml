@@ -223,6 +223,15 @@
             android:defaultValue="docked"
             android:dependency="floating_nav_enabled" />
 
+        <androidx.preference.MultiSelectListPreference
+            android:key="floating_nav_tabs"
+            android:title="@string/settings_floating_nav_tabs_title"
+            android:icon="@drawable/ic_label_24"
+            android:entries="@array/floating_nav_optional_tabs"
+            android:entryValues="@array/floating_nav_optional_tabs_value"
+            android:defaultValue="@array/floating_nav_optional_tabs_value"
+            android:dependency="floating_nav_enabled" />
+
         <af.shizuku.manager.settings.SegmentedControlPreference
             android:key="floating_nav_label_mode"
             android:title="@string/settings_floating_nav_label_mode"

@@ -35,6 +35,18 @@ class BootCompleteReceiver : BroadcastReceiver() {
         if (action == Intent.ACTION_USER_PRESENT) {
             val um = context.getSystemService(android.os.UserManager::class.java)
             if (um != null && !um.isUserUnlocked) return
+
+            if (ShizukuSettings.getWatchdog()) {
+                try {
+                    if (!WatchdogService.isRunning()) {
+                        WatchdogService.start(context)
+                    }
+                    WatchdogAlarmReceiver.schedule(context)
+                } catch (e: Exception) {
+                    Timber.tag("BootCompleteReceiver").w(e, "Watchdog start on USER_PRESENT skipped")
+                }
+            }
+
             if (!ShizukuSettings.getStartOnBoot(context) ||
                 af.shizuku.manager.utils.UserStopFlag
                     .isSet()
@@ -77,7 +89,12 @@ class BootCompleteReceiver : BroadcastReceiver() {
         }
         try {
             if (ShizukuSettings.getWatchdog()) {
-                WatchdogService.start(context)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                    af.shizuku.manager.worker.WatchdogWorker
+                        .scheduleOneTimeHeal(context.applicationContext)
+                } else {
+                    WatchdogService.start(context)
+                }
                 // Exact alarms don't survive a reboot; re-arm the external watchdog (#415, #417).
                 WatchdogAlarmReceiver.schedule(context)
             }

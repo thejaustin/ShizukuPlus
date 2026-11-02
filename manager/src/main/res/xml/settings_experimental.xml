@@ -86,7 +86,8 @@
             android:icon="@drawable/ic_space_dashboard_24"
             android:entries="@array/floating_nav_styles"
             android:entryValues="@array/floating_nav_styles_value"
-            android:defaultValue="docked" />
+            android:defaultValue="docked"
+            android:dependency="floating_nav_enabled" />
 
         <androidx.preference.MultiSelectListPreference
             android:key="floating_nav_tabs"
@@ -94,7 +95,8 @@
             android:icon="@drawable/ic_label_24"
             android:entries="@array/floating_nav_optional_tabs"
             android:entryValues="@array/floating_nav_optional_tabs_value"
-            android:defaultValue="@array/floating_nav_optional_tabs_value" />
+            android:defaultValue="@array/floating_nav_optional_tabs_value"
+            android:dependency="floating_nav_enabled" />
 
 
         <af.shizuku.manager.settings.SegmentedControlPreference

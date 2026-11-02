@@ -149,6 +149,21 @@ Things discussed or sketched that we never formally decided to build.
 - **Code Hygiene & Verification:**
   - Ran `bash gradlew spotlessApply` and `bash gradlew spotlessCheck`. Both clean and passing.
 
+### 2026-11-02 (cont'd 5) — Antigravity (Gemini 3.8 Flash) (FloatingNavBar leak fix, Android 15+ boot watchdog heal, USB toggle preservation, settings polish) [master]
+
+- **FloatingNavBar Memory Leak Resolution:**
+  - `FloatingNavBar.kt`: Replaced strong `private var current: Activity?` with `WeakReference<Activity>?` in the singleton object. Clears the reference when `onActivityPaused` and `onActivityDestroyed` are called for that activity, eliminating memory leaks during theme recreations and navigation.
+- **Boot Resilience & Android 15+ Watchdog Auto-Start:**
+  - `BootCompleteReceiver.kt`: On Android 15+ (API 35+), direct foreground service starts from background broadcasts while locked throw `ForegroundServiceStartNotAllowedException`. Now uses `WatchdogWorker.scheduleOneTimeHeal` (expedited WorkManager task with foreground exemption) to safely revive Watchdog on boot.
+  - Added Watchdog revival and alarm re-arm to `ACTION_USER_PRESENT` so unlocking the phone immediately ensures Watchdog is up even if OEM cleaners killed background processes earlier.
+- **Respect User Developer Options & Start Network Flexibility:**
+  - `AdbStartWorker.kt`: Removed `Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)` from start worker startup routine (#656). Shizuku+ configures `adb_allowed_connection_time` to 0 without force-enabling USB debugging if the user manually turned it off.
+  - Relaxed WorkManager constraint from `NetworkType.UNMETERED` to `NetworkType.CONNECTED` so metered Wi-Fi, mobile hotspots, and on-device loopback setups can start without waiting for unmetered connections.
+- **Settings UI & Toggle Polish:**
+  - `PlusFeaturePreference.kt`: Removed hardcoded rectangular background color on help bottom sheets, preserving native Material 3 rounded corner radius and surface tint. Fixed embedded toggle handler to check `callChangeListener` before changing `isChecked` and revert state if rejected.
+  - `DeveloperOptionsFragment.kt`: Used safe `as? TwoStatePreference` for unrestricted access confirmation.
+  - `PersonalizationSettingsFragment.kt` & `settings_personalization.xml`: Added `floating_nav_tabs` multi-select preference alongside floating navigation styling with live summary updates, and added missing `android:dependency="floating_nav_enabled"` attributes in `settings_experimental.xml`.
+
 ### 2026-11-02 (cont'd 4) — Antigravity (Gemini 3.8 Flash) (Boot auto-start & unlock resilience, USER_PRESENT trigger, TCP probe retry) [master]
 
 - **Seamless Boot & Unlock Auto-Start Improvements:**
