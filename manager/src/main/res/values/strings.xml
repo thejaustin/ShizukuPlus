@@ -1386,6 +1386,7 @@
 
     <string name="changelog_title">What\'s New</string>
     <string name="changelog_close">Close</string>
+    <string name="changelog_loading">Loading release notes…</string>
     <string name="changelog_view_on_github">View on GitHub</string>
     <string name="changelog_fallback_message">Couldn\'t load the release notes for this update (you may be offline). Tap \"View on GitHub\" to see what changed.</string>
     <string name="changelog_earlier_releases">Earlier releases</string>

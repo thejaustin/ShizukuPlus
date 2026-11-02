@@ -207,12 +207,30 @@ object UpdateChecker {
     suspend fun fetchReleaseNotesForTag(tag: String): String? =
         withContext(Dispatchers.IO) {
             try {
-                val json = fetchJson("$RELEASES_URL/tags/$tag") as? JSONObject ?: return@withContext null
-                json.optString("body", "").takeIf { it.isNotBlank() }
+                val json = fetchJson("$RELEASES_URL/tags/$tag") as? JSONObject
+                val body = json?.optString("body", "")?.takeIf { it.isNotBlank() }
+                if (body != null) return@withContext body
             } catch (e: Exception) {
                 Timber.tag(TAG).w(e, "Failed to fetch release notes for tag $tag")
-                null
             }
+
+            try {
+                val atomReleases = fetchReleasesFromAtom(0, 15)
+                val cleanTag = tag.removePrefix("v").trim()
+                val match =
+                    atomReleases.firstOrNull {
+                        it.tagName
+                            .removePrefix("v")
+                            .trim()
+                            .equals(cleanTag, ignoreCase = true)
+                    }
+                if (match != null && match.body.isNotBlank()) {
+                    return@withContext match.body
+                }
+            } catch (e: Exception) {
+                Timber.tag(TAG).w(e, "Failed to fetch release notes for tag $tag via Atom feed")
+            }
+            null
         }
 
     /**
@@ -233,21 +251,28 @@ object UpdateChecker {
     ): List<ReleaseEntry>? =
         withContext(Dispatchers.IO) {
             try {
-                val arr = fetchJson("$RELEASES_URL?per_page=$perPage&page=$page") as? JSONArray ?: return@withContext null
-                (0 until arr.length()).mapNotNull { i ->
-                    val obj = arr.getJSONObject(i)
-                    val tag = obj.optString("tag_name", "").ifBlank { return@mapNotNull null }
-                    ReleaseEntry(
-                        tagName = tag,
-                        publishedAt = obj.optString("published_at", ""),
-                        body = obj.optString("body", ""),
-                        isPrerelease = obj.optBoolean("prerelease", false),
-                    )
+                val arr = fetchJson("$RELEASES_URL?per_page=$perPage&page=$page") as? JSONArray
+                if (arr != null) {
+                    return@withContext (0 until arr.length()).mapNotNull { i ->
+                        val obj = arr.getJSONObject(i)
+                        val tag = obj.optString("tag_name", "").ifBlank { return@mapNotNull null }
+                        ReleaseEntry(
+                            tagName = tag,
+                            publishedAt = obj.optString("published_at", ""),
+                            body = obj.optString("body", ""),
+                            isPrerelease = obj.optBoolean("prerelease", false),
+                        )
+                    }
                 }
             } catch (e: Exception) {
                 Timber.tag(TAG).w(e, "Failed to fetch releases page $page")
-                null
             }
+
+            if (page == 1) {
+                val fallback = fetchReleasesFromAtom(0, perPage)
+                if (fallback.isNotEmpty()) return@withContext fallback
+            }
+            null
         }
 
     suspend fun fetchReleasesSince(
@@ -285,8 +310,124 @@ object UpdateChecker {
             } catch (e: Exception) {
                 Timber.tag(TAG).w(e, "Failed to fetch releases since versionCode $sinceVersionCode")
             }
+
+            if (result.isEmpty()) {
+                val atomReleases = fetchReleasesFromAtom(sinceVersionCode, maxReleases)
+                if (atomReleases.isNotEmpty()) {
+                    return@withContext atomReleases
+                }
+            }
             result
         }
+
+    private fun htmlToMarkdown(html: String): String =
+        html
+            .replace(Regex("""<h1>(.*?)</h1>""", RegexOption.IGNORE_CASE), "# $1\n\n")
+            .replace(Regex("""<h2>(.*?)</h2>""", RegexOption.IGNORE_CASE), "## $1\n\n")
+            .replace(Regex("""<h3>(.*?)</h3>""", RegexOption.IGNORE_CASE), "### $1\n\n")
+            .replace(Regex("""<h4>(.*?)</h4>""", RegexOption.IGNORE_CASE), "#### $1\n\n")
+            .replace(Regex("""<li>(.*?)</li>""", RegexOption.IGNORE_CASE), "- $1\n")
+            .replace(Regex("""<a\s+[^>]*href=\"([^\"]+)\"[^>]*>(.*?)</a>""", RegexOption.IGNORE_CASE), "[$2]($1)")
+            .replace(Regex("""<blockquote>(.*?)</blockquote>""", RegexOption.IGNORE_CASE), "> $1\n\n")
+            .replace(Regex("""<br\s*/?>""", RegexOption.IGNORE_CASE), "\n")
+            .replace(Regex("""<p>(.*?)</p>""", RegexOption.IGNORE_CASE), "$1\n\n")
+            .replace(Regex("""</?[a-zA-Z0-9]+[^>]*>"""), "")
+            .replace("&lt;", "<")
+            .replace("&gt;", ">")
+            .replace("&amp;", "&")
+            .replace("&quot;", "\"")
+            .replace("&#39;", "'")
+            .trim()
+
+    private fun fetchReleasesFromAtom(
+        sinceVersionCode: Int,
+        maxReleases: Int,
+    ): List<ReleaseEntry> {
+        val connection =
+            try {
+                (URL(ATOM_URL).openConnection() as HttpURLConnection).apply {
+                    requestMethod = "GET"
+                    connectTimeout = CONNECT_TIMEOUT_MS
+                    readTimeout = READ_TIMEOUT_MS
+                    setRequestProperty("User-Agent", "Shizuku+/${BuildConfig.VERSION_NAME}")
+                }
+            } catch (e: Exception) {
+                Timber.tag(TAG).w(e, "Failed to open connection to Atom feed")
+                return emptyList()
+            }
+        try {
+            if (connection.responseCode != HttpURLConnection.HTTP_OK) {
+                Timber.tag(TAG).w("HTTP ${connection.responseCode} from Atom feed")
+                return emptyList()
+            }
+
+            val parser = Xml.newPullParser()
+            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
+            parser.setInput(connection.inputStream, null)
+
+            val results = mutableListOf<ReleaseEntry>()
+            var eventType = parser.eventType
+            var currentTag = ""
+            var currentUpdated = ""
+            var currentContent = ""
+            var inEntry = false
+
+            while (eventType != XmlPullParser.END_DOCUMENT && results.size < maxReleases) {
+                val name = parser.name
+                when (eventType) {
+                    XmlPullParser.START_TAG -> {
+                        when (name) {
+                            "entry" -> {
+                                inEntry = true
+                                currentTag = ""
+                                currentUpdated = ""
+                                currentContent = ""
+                            }
+                            "title" ->
+                                if (inEntry) {
+                                    currentTag = parser.nextText().trim()
+                                }
+                            "updated" ->
+                                if (inEntry) {
+                                    currentUpdated = parser.nextText().trim()
+                                }
+                            "content" ->
+                                if (inEntry) {
+                                    currentContent = htmlToMarkdown(parser.nextText())
+                                }
+                        }
+                    }
+                    XmlPullParser.END_TAG -> {
+                        if (name == "entry" && inEntry) {
+                            inEntry = false
+                            if (currentTag.isNotBlank()) {
+                                val vc = parseVersionCode(currentTag.removePrefix("v"))
+                                val isNew = sinceVersionCode > 0 && vc > sinceVersionCode
+                                results.add(
+                                    ReleaseEntry(
+                                        tagName = currentTag,
+                                        publishedAt = currentUpdated,
+                                        body = currentContent,
+                                        isNew = isNew,
+                                        isPrerelease =
+                                            currentTag.contains("beta", ignoreCase = true) ||
+                                                currentTag.contains("alpha", ignoreCase = true),
+                                    ),
+                                )
+                            }
+                        }
+                    }
+                }
+                eventType = parser.next()
+            }
+            return results
+        } catch (e: Exception) {
+            Timber.tag(TAG).w(e, "Failed to parse releases from Atom feed")
+            return emptyList()
+        } finally {
+            connection.disconnect()
+        }
+    }
 
     /**
      * Reads GitHub's public Atom feed as a last-resort fallback.

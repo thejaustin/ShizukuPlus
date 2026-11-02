@@ -79,17 +79,21 @@ class ChangelogDialogFragment : BottomSheetDialogFragment() {
                     }
             }
 
-        private val COMMIT_HASH_SUFFIX = Regex("""\s+\([0-9a-f]{7,8}\)$""", RegexOption.MULTILINE)
+        private val COMMIT_HASH_SUFFIX =
+            Regex(
+                """\s+\(\[?[0-9a-f]{7,40}\]?(\([^)]+\))?\)\s*$|\s+\([0-9a-f]{7,40}\)\s*$""",
+                RegexOption.MULTILINE,
+            )
         private val CC_PREFIX =
             Regex(
-                """^(fix|feat|chore|refactor|perf|test|docs|build|ci|style|revert)(\([^)]+\))?:\s*""",
+                """^(fix|feat|chore|refactor|perf|test|docs|build|ci|style|revert|i18n)(\([^)]+\))?!?:\s*""",
                 RegexOption.IGNORE_CASE,
             )
 
         private fun stripConventionalPrefixes(text: String): String =
             text.lines().joinToString("\n") { line ->
                 val bulletEnd =
-                    Regex("""^[-*]\s+""")
+                    Regex("""^[-*•+]\s+""")
                         .find(line)
                         ?.range
                         ?.last
@@ -107,17 +111,87 @@ class ChangelogDialogFragment : BottomSheetDialogFragment() {
 
         // README / docs-only bullets are repo housekeeping, not something users care about.
         private val README_BULLET =
-            Regex("""^\s*[-*]\s+.*\breadme(\.md)?\b.*$""", RegexOption.IGNORE_CASE)
+            Regex("""^\s*[-*•+]\s+.*\breadme(\.md)?\b.*$""", RegexOption.IGNORE_CASE)
 
-        fun formatNotes(rawNotes: String): String =
-            rawNotes
-                .substringBefore("## 📦 Recent Releases")
-                .replace(COMMIT_HASH_SUFFIX, "")
-                .lines()
-                .filterNot { README_BULLET.matches(it) }
-                .joinToString("\n")
-                .let { stripConventionalPrefixes(it) }
-                .trim()
+        private fun cleanEmptyHeadings(lines: List<String>): List<String> {
+            val result = mutableListOf<String>()
+            for (i in lines.indices) {
+                val line = lines[i]
+                if (Regex("""^#{1,6}\s+""").containsMatchIn(line)) {
+                    var hasContent = false
+                    for (j in (i + 1) until lines.size) {
+                        val next = lines[j].trim()
+                        if (next.isEmpty()) continue
+                        if (Regex("""^#{1,6}\s+""").containsMatchIn(next)) break
+                        hasContent = true
+                        break
+                    }
+                    if (hasContent) {
+                        result.add(line)
+                    }
+                } else {
+                    result.add(line)
+                }
+            }
+            return result
+        }
+
+        fun formatNotes(rawNotes: String): String {
+            if (rawNotes.isBlank()) return ""
+
+            val unwrapped =
+                rawNotes
+                    .replace(Regex("""<details>\s*<summary>(.*?)</summary>""", RegexOption.IGNORE_CASE), "\n\n#### $1\n\n")
+                    .replace(Regex("""</details>""", RegexOption.IGNORE_CASE), "")
+
+            val hasRecentSection = unwrapped.contains("## 📦 Recent Releases")
+            val primary = unwrapped.substringBefore("## 📦 Recent Releases")
+            val recent = if (hasRecentSection) "## 📦 Recent Releases" + unwrapped.substringAfter("## 📦 Recent Releases") else ""
+
+            val pLines = primary.lines().map { COMMIT_HASH_SUFFIX.replace(it, "") }
+            val pFiltered = pLines.filterNot { README_BULLET.matches(it) }.toMutableList()
+
+            // Remove redundant top-level # version header (dialog header already displays it)
+            if (pFiltered.isNotEmpty() && Regex("""^#\s+\S+""").matches(pFiltered.first().trim())) {
+                pFiltered.removeAt(0)
+            }
+
+            val pClean = cleanEmptyHeadings(pFiltered)
+            val hasSubstance =
+                pClean.any { line ->
+                    val trimmed = line.trim()
+                    Regex("""^[-*•+]\s+\S+""").containsMatchIn(trimmed) || (trimmed.isNotEmpty() && !trimmed.startsWith("#"))
+                }
+
+            if (hasSubstance) {
+                val cleanedText = pClean.joinToString("\n").let { stripConventionalPrefixes(it) }.trim()
+                return cleanedText.replace(Regex("""\n{3,}"""), "\n\n")
+            }
+
+            // Fallback: If primary notes had no substantive changes (e.g. docs/maintenance only),
+            // extract the recent release highlights and rollup table from Recent Releases.
+            if (recent.isNotBlank()) {
+                val recLines = recent.lines().filterNot { it.trim() == "## 📦 Recent Releases" }
+                val highlights =
+                    recLines
+                        .filter { l ->
+                            val t = l.trim()
+                            t.startsWith(">") ||
+                                t.startsWith("|") ||
+                                t.startsWith("###") ||
+                                t.startsWith("-") ||
+                                t.startsWith("•") ||
+                                t.startsWith("*")
+                        }.joinToString("\n")
+                        .trim()
+
+                if (highlights.isNotEmpty()) {
+                    return "*Maintenance and stability updates.*\n\n### Recent Highlights\n\n$highlights"
+                }
+            }
+
+            return "*Maintenance and stability updates.*"
+        }
     }
 
     override fun onCreateView(
@@ -384,7 +458,17 @@ class ChangelogDialogFragment : BottomSheetDialogFragment() {
             displayRelease(releases.first())
         } else {
             versionText.text = tagName
-            notesView.setText(R.string.changelog_fallback_message)
+            notesView.setText(R.string.changelog_loading)
+            lifecycleScope.launch {
+                val fetched = UpdateChecker.fetchReleaseNotesForTag(tagName)
+                if (isAdded && !isDetached) {
+                    if (fetched != null && fetched.isNotBlank()) {
+                        displayRelease(ReleaseItem(tag = tagName, date = "", body = fetched))
+                    } else {
+                        notesView.setText(R.string.changelog_fallback_message)
+                    }
+                }
+            }
         }
         notesView.movementMethod = LinkMovementMethod.getInstance()
 

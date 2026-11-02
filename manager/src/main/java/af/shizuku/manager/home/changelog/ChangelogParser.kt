@@ -7,8 +7,9 @@ package af.shizuku.manager.home.changelog
  */
 object ChangelogParser {
     private val HEADING = Regex("""^#{2,4}\s+(.+?)\s*$""")
-    private val BULLET = Regex("""^\s*[-*]\s+(.+)$""")
-    private val COMMIT_HASH = Regex("""\s+\([0-9a-f]{7,8}\)\s*$""")
+    private val BULLET = Regex("""^\s*[-*•+]\s+(.+)$""")
+    private val COMMIT_HASH =
+        Regex("""\s+\(\[?[0-9a-f]{7,40}\]?(\([^)]+\))?\)\s*$|\s+\([0-9a-f]{7,40}\)\s*$""")
     private val CC_PREFIX =
         Regex(
             """^(fix|feat|chore|refactor|perf|test|docs|build|ci|style|revert|i18n)(\([^)]+\))?!?:\s*""",
@@ -27,7 +28,12 @@ object ChangelogParser {
     private val README_ONLY = Regex("""\breadme(\.md)?\b""", RegexOption.IGNORE_CASE)
 
     fun parse(body: String): List<ChangeSection> {
-        val cleaned = body.substringBefore("## 📦 Recent Releases").lines()
+        val unwrapped =
+            body
+                .replace(Regex("""<details>\s*<summary>(.*?)</summary>""", RegexOption.IGNORE_CASE), "\n\n#### $1\n\n")
+                .replace(Regex("""</details>""", RegexOption.IGNORE_CASE), "")
+
+        val cleaned = unwrapped.substringBefore("## 📦 Recent Releases").lines()
         val classified = mutableListOf<Pair<ChangeKind, String>>()
         var title = ""
         var items = mutableListOf<String>()
@@ -74,6 +80,26 @@ object ChangelogParser {
             }
         }
         flushSection()
+
+        // Fallback: If no classified sections were produced from the primary body,
+        // extract highlights from the recent releases table/rollup.
+        if (classified.isEmpty() && unwrapped.contains("## 📦 Recent Releases")) {
+            val recentPart = unwrapped.substringAfter("## 📦 Recent Releases")
+            val tableRowRegex = Regex("""\|\s*\[([^\]]+)\]\([^)]+\)[^|]*\|\s*([^|]+)\|""")
+            for (line in recentPart.lines()) {
+                val match = tableRowRegex.find(line) ?: continue
+                val tag = match.groupValues[1].trim()
+                val subj = match.groupValues[2].trim()
+                if (subj.isBlank() || subj.equals("Highlight", ignoreCase = true) || README_ONLY.containsMatchIn(subj)) continue
+                val desc = "$tag: $subj"
+                val kind = classify(subj, null)
+                classified.add(kind to clean(desc))
+            }
+        }
+
+        if (classified.isEmpty()) {
+            classified.add(ChangeKind.OTHER to "Maintenance and stability updates")
+        }
 
         val order = ChangeKind.values()
         return classified

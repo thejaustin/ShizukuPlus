@@ -154,16 +154,25 @@ class MainActivity : HomeActivity() {
                     emptyList()
                 }
 
-            // Mark seen regardless of fetch outcome so offline users aren't re-prompted every launch.
-            ShizukuSettings.setLastSeenChangelogVersion(currentCode)
-
             if (isFinishing || isDestroyed) return@launch
-            try {
-                ChangelogDialogFragment
-                    .newInstance(releases, tagName, showStylePicker = forceStylePicker)
-                    .show(supportFragmentManager, ChangelogDialogFragment.TAG)
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to show changelog dialog")
+
+            if (releases.isNotEmpty()) {
+                ShizukuSettings.setLastSeenChangelogVersion(currentCode)
+                try {
+                    ChangelogDialogFragment
+                        .newInstance(releases, tagName, showStylePicker = forceStylePicker)
+                        .show(supportFragmentManager, ChangelogDialogFragment.TAG)
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to show changelog dialog")
+                }
+            } else if (forceStylePicker) {
+                try {
+                    ChangelogDialogFragment
+                        .newInstance(emptyList(), tagName, showStylePicker = true)
+                        .show(supportFragmentManager, ChangelogDialogFragment.TAG)
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to show changelog dialog")
+                }
             }
         }
     }
