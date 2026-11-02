@@ -4,6 +4,12 @@ on:
   pull_request:
     branches:
       - master
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/pull_request_template.md'
+      - 'LICENSE*'
 
 jobs:
   lint-and-build:
@@ -42,6 +48,9 @@ jobs:
 
       - name: Accept SDK Licenses
         run: yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
+
+      - name: Verify Code Formatting
+        run: ./gradlew spotlessCheck
 
       - name: Run Lint
         run: ./gradlew :manager:lint

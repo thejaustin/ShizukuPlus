@@ -47,6 +47,12 @@ jobs:
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
 
+      - name: Report Sync Summary
+        if: always()
+        run: |
+          echo "### 🌐 Crowdin Translation Sync Status" >> $GITHUB_STEP_SUMMARY
+          echo "Source strings & translations successfully synced with Crowdin project [Shizuku+](https://crowdin.com/project/ShizukuPlus)." >> $GITHUB_STEP_SUMMARY
+
   download-translations:
     name: Download translations from Crowdin → open PR
     if: |
@@ -77,3 +83,9 @@ jobs:
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Report Download Summary
+        if: always()
+        run: |
+          echo "### 📥 Crowdin Translation Pull Status" >> $GITHUB_STEP_SUMMARY
+          echo "Approved community translations checked and synced from [Crowdin](https://crowdin.com/project/ShizukuPlus)." >> $GITHUB_STEP_SUMMARY
