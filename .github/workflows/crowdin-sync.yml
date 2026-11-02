@@ -6,25 +6,27 @@ on:
     paths:
       - 'manager/src/main/res/values/strings.xml'
       - 'manager/src/main/res/values/strings_companion.xml'
+      - 'manager/src/main/res/values-*/strings.xml'
+      - 'manager/src/main/res/values-*/strings_companion.xml'
   schedule:
     # Weekly Monday 06:00 UTC — pull approved translations and open a PR
     - cron: '0 6 * * 1'
   workflow_dispatch:
     inputs:
       direction:
-        description: 'upload (push sources to Crowdin) or download (pull translations)'
+        description: 'upload (push sources & translations to Crowdin) or download (pull translations)'
         required: true
         default: 'upload'
         type: choice
         options: [upload, download]
 
-# Required secrets:
-#   CROWDIN_PROJECT_ID   — numeric project ID from Crowdin project settings
-#   CROWDIN_TOKEN        — Crowdin personal API token with project scope
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   upload-sources:
-    name: Upload source strings to Crowdin
+    name: Upload source strings & translations to Crowdin
     if: |
       github.event_name == 'push' ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.direction == 'upload')
@@ -32,11 +34,13 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - name: Upload sources
+      - name: Upload sources & existing translations
         uses: crowdin/github-action@8f01d54f70f1713ee3f09d82c2bbb2daeac28689 # v2
         with:
           upload_sources: true
-          download_translations: false
+          upload_translations: true
+          auto_approve_imported: true
+          import_eq_suggestions: true
           crowdin_branch_name: master
           config: crowdin.yml
         env:
