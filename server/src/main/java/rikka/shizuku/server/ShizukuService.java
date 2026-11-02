@@ -466,8 +466,17 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     @Override
     public ShizukuUserServiceManager onCreateUserServiceManager() {
-        // A user service runs the app's own code with Shizuku's access, so it falls under "shell".
-        return new ShizukuUserServiceManager(uid -> isAppScopeDisabled(uid, null, "shell"));
+        // A user service runs the app's own code with Shizuku's access: it can run pm, am or
+        // settings without newProcess, so no scope can be checked inside it. Like an interactive
+        // shell, it's refused while "shell" or any tool scope is off for the app (#648: aShell
+        // suspended apps through its user service with package_manager off).
+        return new ShizukuUserServiceManager(uid -> {
+            if (isAppScopeDisabled(uid, null, "shell")) return true;
+            for (String scope : rikka.shizuku.server.util.ScopeCommandMatcher.TOOL_SCOPES) {
+                if (isAppScopeDisabled(uid, null, scope)) return true;
+            }
+            return false;
+        });
     }
 
     @Override

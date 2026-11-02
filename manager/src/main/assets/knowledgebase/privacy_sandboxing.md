@@ -12,7 +12,7 @@ ShizukuPlus strictly operates within Android's `android.uid.shell` (UID 2000) se
 ### What an Allowed App Can Do
 - An app you allow gets Shizuku's shell access (`uid 2000`, or root in root mode). Only allow apps you trust.
 - **Riskier Plus APIs are off for other apps by default**: other apps' private data, and personal data and device control (SMS, contacts, call log, location, clipboard, notifications, screenshots, input injection, reboot). Turn them on in **Developer options → Unrestricted access**. They apply to every allowed app and stop the moment you turn them off.
-- **Per-app API scopes** (in an app's details under Authorized apps) limit one app further. With any scope off, that app can't open an interactive shell or run commands that can't be checked.
+- **Per-app API scopes** (in an app's details under Authorized apps) limit one app further. With any scope off, that app can't open an interactive shell, start its own background services, or run commands that can't be checked.
 - **Quick safety check** (optional, Settings → App safety check): the access request shows where the app came from, when it was installed and its signer, plus VirusTotal or Pithus results if you add a key. Only the APK's hash is looked up.
 
 ### Backups & Crash Reports

@@ -845,6 +845,18 @@
     <string name="doctor_status_running">Running</string>
     <string name="doctor_status_stopped">Stopped</string>
     <string name="doctor_status_not_enabled">Not enabled</string>
+    <string name="doctor_status_root_not_needed">Not rooted. Not needed: ADB mode works without it</string>
+    <string name="doctor_status_root_not_granted">Available, not granted to Shizuku+. Not needed in ADB mode</string>
+    <string name="doctor_check_port_discovery">Finding the Wireless debugging port</string>
+    <string name="doctor_status_port_discovery_failed">Timed out %1$d times in a row</string>
+    <string name="doctor_tip_port_discovery">Port discovery keeps timing out on this network. The fix turns on TCP mode (port 5555), so Shizuku+ can start without searching for the port.</string>
+    <string name="doctor_check_adb_key">ADB key</string>
+    <string name="doctor_status_adb_key_broken">Couldn\'t be read from the keystore</string>
+    <string name="doctor_status_adb_auth_unanswered">The "Allow USB debugging" prompt keeps going unanswered</string>
+    <string name="doctor_tip_adb_key">The fix makes a new ADB key. Then tap Start and allow the "Allow USB debugging" prompt once.</string>
+    <string name="doctor_fix_choose_title">Choose what to fix</string>
+    <string name="doctor_fix_choose_message">Unchecked repairs are remembered, and background self-healing skips them too.</string>
+    <string name="doctor_fix_choose_positive">Fix selected</string>
     <string name="doctor_status_optimized">Optimized (May kill service)</string>
     <string name="doctor_check_xiaomi_adb">Xiaomi/HyperOS USB Debugging (Security Settings)</string>
     <string name="doctor_status_xiaomi_adb_unknown">Enable in Developer Options</string>
@@ -1939,7 +1951,7 @@
     <string name="app_management_context_select_multiple">Select multiple apps</string>
     <string name="app_management_selected_count">%1$d selected</string>
     <string name="api_scopes_dialog_title">API Scopes · %1$s</string>
-    <string name="api_scopes_dialog_note">Commands are checked when the app starts them, including through sh -c. While any of these is off, the app can\'t open an interactive shell or run commands that build what they run, since those can\'t be checked. Turning off Shell also stops the app\'s own background services that run with Shizuku access.</string>
+    <string name="api_scopes_dialog_note">Commands are checked when the app starts them, including through sh -c. While any of these is off, the app can\'t open an interactive shell or run commands that build what they run, since those can\'t be checked. It also can\'t start its own background services that run with Shizuku access, since what they run can\'t be checked either.</string>
     <string name="api_scopes_restricted_badge">Scopes: %1$d/%2$d allowed</string>
     <string name="api_scope_shell">Shell, processes &amp; user services</string>
     <string name="api_scope_package_manager">Package Manager (install, uninstall, suspend)</string>
