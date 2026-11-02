@@ -1092,9 +1092,15 @@ open class HomeActivity :
 
         val showInAppChangelog = {
             lifecycleScope.launch {
+                val currentCode =
+                    try {
+                        packageManager.getPackageInfo(packageName, 0).versionCode
+                    } catch (_: Exception) {
+                        0
+                    }
                 val releases =
                     try {
-                        UpdateChecker.fetchReleasesSince(sinceVersionCode = 0, maxReleases = 25)
+                        UpdateChecker.fetchReleasesSince(sinceVersionCode = currentCode, maxReleases = 25)
                     } catch (e: Exception) {
                         Timber.w(e, "Failed to fetch releases for in-app changelog")
                         emptyList()

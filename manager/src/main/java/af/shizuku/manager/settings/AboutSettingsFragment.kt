@@ -94,9 +94,19 @@ class AboutSettingsFragment : BaseSettingsFragment() {
             val activity = activity as? androidx.fragment.app.FragmentActivity ?: return@setOnPreferenceClickListener true
             activity.lifecycleScope.launch {
                 val currentTag = BuildConfig.VERSION_NAME.removePrefix("Shizuku+ ").trim()
+                val currentCode =
+                    try {
+                        activity.packageManager.getPackageInfo(activity.packageName, 0).versionCode
+                    } catch (_: Exception) {
+                        0
+                    }
+                val lastSeenCode =
+                    af.shizuku.manager.ShizukuSettings
+                        .getLastSeenChangelogVersion()
+                val since = if (lastSeenCode > 0 && lastSeenCode < currentCode) lastSeenCode else 0
                 val releases =
                     try {
-                        UpdateChecker.fetchReleasesSince(sinceVersionCode = 0, maxReleases = 25)
+                        UpdateChecker.fetchReleasesSince(sinceVersionCode = since, maxReleases = 25)
                     } catch (e: Exception) {
                         Timber.w(e, "Failed to fetch releases for in-app changelog")
                         emptyList()
@@ -302,9 +312,15 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                 .setNeutralButton(R.string.update_release_notes) { _, _ ->
                     val activity = activity as? androidx.fragment.app.FragmentActivity ?: return@setNeutralButton
                     activity.lifecycleScope.launch {
+                        val currentCode =
+                            try {
+                                activity.packageManager.getPackageInfo(activity.packageName, 0).versionCode
+                            } catch (_: Exception) {
+                                0
+                            }
                         val releases =
                             try {
-                                UpdateChecker.fetchReleasesSince(sinceVersionCode = 0, maxReleases = 25)
+                                UpdateChecker.fetchReleasesSince(sinceVersionCode = currentCode, maxReleases = 25)
                             } catch (e: Exception) {
                                 Timber.w(e, "Failed to fetch releases for in-app changelog")
                                 emptyList()
