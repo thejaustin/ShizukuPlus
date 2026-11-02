@@ -120,6 +120,28 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-11-02 (cont'd) — Antigravity (Gemini 3.8 Flash) (USB disconnect persistence, cgroup isolation, ADB TCP 5555 auto-binding) [master]
+
+- **USB Disconnect & Server Termination Root-Cause & Resolution:**
+  - *Problem*: User reported that when enabling ADB via USB (e.g., using aShell You on a separate device via OTG or a PC), the Shizuku server immediately disconnected when the USB cable was pulled, and the on-device app could not restart without reconnecting USB.
+  - *Root Cause 1 (CGroup / init kill)*: In `starter.cpp`, `switch_cgroup()` was only called if `uid == 0 || uid == 1000`. Shell sessions run with `uid == 2000`. When `adbd` is stopped upon USB disconnect by Android's `UsbDeviceManager`, Android `init` sends `SIGKILL` to all processes in `adbd`'s cgroup, instantly killing `shizuku_plus_server`.
+  - *Root Cause 2 (SIGHUP delivery)*: The child process inherited the controlling terminal/pty session of the adb shell. When the USB connection dropped, unmasked `SIGHUP` was delivered to the server.
+  - *Root Cause 3 (Missing TCP mode fallback)*: `adbd` was only listening on the USB gadget interface. With no persistent TCP port configured, pulling the cable shut down `adbd` completely, leaving loopback port `127.0.0.1:5555` closed and preventing local reconnect/restart.
+  - *Fix in `starter.cpp`*:
+    - In child process fork: added `signal(SIGHUP, SIG_IGN)`, `signal(SIGPIPE, SIG_IGN)`, `setsid()`, and `switch_cgroup()` before `exec` of `app_process`.
+    - In `main()`: enabled `switch_cgroup()` unconditionally (including for `uid == 2000`).
+    - Added automatic detection and setting of `service.adb.tcp.port 5555` and `persist.adb.tcp.port 5555` when started under `uid == 2000`.
+  - *Fix in `ShizukuService.java`*:
+    - Added `ensureAdbTcpPersistence()` on server startup.
+    - Updates settings content provider (`adb_allowed_connection_time 0` and `adb_enabled 1`) so Android does not revoke authorizations on disconnect.
+    - Sets `service.adb.tcp.port` and `persist.adb.tcp.port` to 5555 and ensures `adbd` is listening.
+  - *Fix in `Starter.kt`*:
+    - Updated `adbCommand` to prepend `adb tcpip 5555 && ` so external launchers (PC / OTG host) switch device to persistent TCP mode prior to invoking the starter script.
+  - *Documentation*:
+    - Updated `wireless_debugging_setup.md` in app assets and `ShizukuPlus-Knowledgebase.md` in the wiki repository documenting USB/OTG activation, Default USB Configuration ("No data transfer"), and ADB authorization timeout settings.
+- **Code Hygiene & Verification:**
+  - Applied `spotlessApply` and verified with `spotlessCheck`.
+
 ### 2026-11-02 — Antigravity (Gemini 3.8 Flash) (TCP Mode auto-apply on service start, Awesome-Shizuku & installed apps knowledgebase sync) [master]
 
 - **TCP Mode and Local Proxy Auto-Apply on Service Start:**

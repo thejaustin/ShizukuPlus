@@ -30,7 +30,7 @@ object Starter {
         }
 
     val adbCommand: String
-        get() = "adb shell $userCommand"
+        get() = "adb tcpip 5555 && adb shell $userCommand"
 
     val internalCommand: String
         get() = "$userCommand --apk=${getContext().applicationInfo.sourceDir}"

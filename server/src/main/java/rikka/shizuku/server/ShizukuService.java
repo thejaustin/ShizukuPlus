@@ -334,6 +334,51 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         }
     }
 
+    private void ensureAdbTcpPersistence() {
+        try {
+            int uid = android.os.Process.myUid();
+            int userId = UserHandleCompat.getUserId(uid);
+
+            // 1. Keep ADB authorization alive across USB disconnect
+            IContentProvider settingsProvider = ActivityManagerApis.getContentProviderExternal(
+                    "settings", userId, null, "com.android.shell");
+            if (settingsProvider != null) {
+                try {
+                    Bundle authTimeout = new Bundle();
+                    authTimeout.putString("value", "0");
+                    IContentProviderUtils.callCompat(
+                            settingsProvider, null, "settings",
+                            "PUT_global", "adb_allowed_connection_time", authTimeout);
+
+                    Bundle adbEnabled = new Bundle();
+                    adbEnabled.putString("value", "1");
+                    IContentProviderUtils.callCompat(
+                            settingsProvider, null, "settings",
+                            "PUT_global", "adb_enabled", adbEnabled);
+                } catch (Exception e) {
+                    LOGGER.w("failed to update adb settings via ContentProvider", e);
+                }
+            }
+
+            // 2. Ensure TCP port 5555 is configured so adbd stays listening after USB is unplugged
+            if (uid == 2000 || uid == 0) {
+                String currentPort = android.os.SystemProperties.get("service.adb.tcp.port", "");
+                String persistPort = android.os.SystemProperties.get("persist.adb.tcp.port", "");
+                int port = 5555;
+                if (currentPort.isEmpty() || "-1".equals(currentPort) || "0".equals(currentPort)) {
+                    LOGGER.i("Ensuring ADB TCP mode (port %d) so connection survives USB disconnect", port);
+                    android.os.SystemProperties.set("service.adb.tcp.port", Integer.toString(port));
+                    android.os.SystemProperties.set("persist.adb.tcp.port", Integer.toString(port));
+                    android.os.SystemProperties.set("ctl.restart", "adbd");
+                } else if (persistPort.isEmpty() || "-1".equals(persistPort)) {
+                    android.os.SystemProperties.set("persist.adb.tcp.port", currentPort);
+                }
+            }
+        } catch (Throwable t) {
+            LOGGER.w("Failed to ensure ADB TCP persistence", t);
+        }
+    }
+
     public ShizukuService() {
         super();
 
@@ -351,6 +396,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         // Disable Phantom Process Killer on Android 12+ — must run after waitSystemService so the
         // ContentProvider path for the settings write has a live activity-manager binder.
         disablePhantomProcessKiller();
+        ensureAdbTcpPersistence();
 
         ApplicationInfo ai = getManagerApplicationInfo();
         if (ai == null) {

@@ -12,6 +12,7 @@
 #include <string>
 #include <termios.h>
 #include <poll.h>
+#include <csignal>
 #include "android.h"
 #include "misc.h"
 #include "selinux.h"
@@ -137,7 +138,10 @@ static void start_server(const char *path, const char *main_class, const char *p
         case 0: {
             LOGD("child");
             close(fds[0]);
+            signal(SIGHUP, SIG_IGN);
+            signal(SIGPIPE, SIG_IGN);
             setsid();
+            switch_cgroup();
             chdir("/");
             int fd = open("/dev/null", O_RDWR);
             if (fd != -1) {
@@ -240,9 +244,21 @@ int main(int argc, char *argv[]) {
 
     se::init();
 
-    if (uid == 0 || uid == 1000) {
-        switch_cgroup();
+    switch_cgroup();
 
+    if (uid == 2000) {
+        char port_buf[PROP_VALUE_MAX + 1] = {0};
+        __system_property_get("service.adb.tcp.port", port_buf);
+        int current_port = atoi(port_buf);
+        if (current_port <= 0) {
+            printf("info: configuring adbd TCP mode (port 5555) to persist across USB disconnect...\n");
+            fflush(stdout);
+            __system_property_set("service.adb.tcp.port", "5555");
+            __system_property_set("persist.adb.tcp.port", "5555");
+        }
+    }
+
+    if (uid == 0 || uid == 1000) {
         if (android_get_device_api_level() >= 29) {
             printf("info: switching mount namespace to init...\n");
             switch_mnt_ns(1);
