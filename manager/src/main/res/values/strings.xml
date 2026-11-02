@@ -144,6 +144,7 @@
     <string name="dialog_adb_loopback_found">Found active ADB service on port %1$d! Connecting...</string>
     <string name="dialog_adb_port">Port</string>
     <string name="dialog_adb_invalid_port">Port is an integer ranging from 1 to 65535.</string>
+    <string name="dialog_adb_invalid_code">Pairing code must be 6 digits.</string>
     <string name="adb_pairing">Pairing</string>
     <string name="dialog_adb_pairing_title">Pair with device</string>
     <string name="dialog_adb_pairing_discovery">Searching for pairing service</string>

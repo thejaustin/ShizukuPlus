@@ -96,13 +96,19 @@ class RootCompatibilityActivity : AppBarActivity() {
         // tmp deploy is always skipped. Show a banner directing the user to the export flow instead.
         if (isAdbMode && Build.VERSION.SDK_INT >= 36) {
             binding.api36AdbWarningCard.visibility = View.VISIBLE
-            binding.btnApi36Export.setContent {
-                af.shizuku.core.ui.compose.Button(
-                    onClick = {
-                        startActivity(Intent(this@RootCompatibilityActivity, ShellTutorialActivity::class.java))
-                    },
-                ) {
-                    androidx.compose.material3.Text(getString(R.string.su_bridge_export_files))
+            binding.btnApi36Export.apply {
+                setViewCompositionStrategy(
+                    androidx.compose.ui.platform.ViewCompositionStrategy
+                        .DisposeOnLifecycleDestroyed(lifecycle),
+                )
+                setContent {
+                    af.shizuku.core.ui.compose.Button(
+                        onClick = {
+                            startActivity(Intent(this@RootCompatibilityActivity, ShellTutorialActivity::class.java))
+                        },
+                    ) {
+                        androidx.compose.material3.Text(getString(R.string.su_bridge_export_files))
+                    }
                 }
             }
         }
@@ -112,16 +118,22 @@ class RootCompatibilityActivity : AppBarActivity() {
         val kernelSuInstalled = RootCompatHelper.isKernelSuInstalled(this)
         if (kernelSuInstalled && isAdbMode) {
             binding.kernelsuUpgradeCard.visibility = View.VISIBLE
-            binding.btnKernelsuRestart.setContent {
-                af.shizuku.core.ui.compose.Button(
-                    onClick = {
-                        startActivity(
-                            Intent(this@RootCompatibilityActivity, StarterActivity::class.java)
-                                .putExtra(StarterActivity.EXTRA_IS_ROOT, true),
-                        )
-                    },
-                ) {
-                    androidx.compose.material3.Text(getString(R.string.su_bridge_kernelsu_restart_shizuku))
+            binding.btnKernelsuRestart.apply {
+                setViewCompositionStrategy(
+                    androidx.compose.ui.platform.ViewCompositionStrategy
+                        .DisposeOnLifecycleDestroyed(lifecycle),
+                )
+                setContent {
+                    af.shizuku.core.ui.compose.Button(
+                        onClick = {
+                            startActivity(
+                                Intent(this@RootCompatibilityActivity, StarterActivity::class.java)
+                                    .putExtra(StarterActivity.EXTRA_IS_ROOT, true),
+                            )
+                        },
+                    ) {
+                        androidx.compose.material3.Text(getString(R.string.su_bridge_kernelsu_restart_shizuku))
+                    }
                 }
             }
         }
@@ -135,12 +147,18 @@ class RootCompatibilityActivity : AppBarActivity() {
         }
         binding.globalSetupCard.isVisible = exportPath != null || Shizuku.pingBinder()
 
-        binding.btnCopyGlobal.setContent {
-            af.shizuku.core.ui.compose.Button(
-                // Read the field at click time so a later /data/local/tmp deploy is reflected.
-                onClick = { copyToClipboard(resolvedSuPath ?: return@Button) },
-            ) {
-                androidx.compose.material3.Text(getString(R.string.su_bridge_copy_path))
+        binding.btnCopyGlobal.apply {
+            setViewCompositionStrategy(
+                androidx.compose.ui.platform.ViewCompositionStrategy
+                    .DisposeOnLifecycleDestroyed(lifecycle),
+            )
+            setContent {
+                af.shizuku.core.ui.compose.Button(
+                    // Read the field at click time so a later /data/local/tmp deploy is reflected.
+                    onClick = { copyToClipboard(resolvedSuPath ?: return@Button) },
+                ) {
+                    androidx.compose.material3.Text(getString(R.string.su_bridge_copy_path))
+                }
             }
         }
 
@@ -165,27 +183,33 @@ class RootCompatibilityActivity : AppBarActivity() {
         }
 
         // "Setup All" works for both root (all automatable apps) and ADB mode (GLOBAL_SETTINGS_APPS only).
-        binding.btnSetupAll.setContent {
-            af.shizuku.core.ui.compose.Button(
-                onClick = {
-                    val path =
-                        resolvedSuPath ?: run {
-                            Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_no_export, Toast.LENGTH_SHORT).show()
-                            return@Button
-                        }
-                    lifecycleScope.launch {
-                        val count = RootCompatHelper.autoSetupAll(this@RootCompatibilityActivity, path)
-                        if (!isFinishing && !isDestroyed) {
-                            if (count > 0) {
-                                Toast.makeText(this@RootCompatibilityActivity, getString(R.string.su_bridge_magic_setup_all_summary, count), Toast.LENGTH_LONG).show()
-                            } else {
-                                Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_magic_setup_all_no_apps, Toast.LENGTH_SHORT).show()
+        binding.btnSetupAll.apply {
+            setViewCompositionStrategy(
+                androidx.compose.ui.platform.ViewCompositionStrategy
+                    .DisposeOnLifecycleDestroyed(lifecycle),
+            )
+            setContent {
+                af.shizuku.core.ui.compose.Button(
+                    onClick = {
+                        val path =
+                            resolvedSuPath ?: run {
+                                Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_no_export, Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+                        lifecycleScope.launch {
+                            val count = RootCompatHelper.autoSetupAll(this@RootCompatibilityActivity, path)
+                            if (!isFinishing && !isDestroyed) {
+                                if (count > 0) {
+                                    Toast.makeText(this@RootCompatibilityActivity, getString(R.string.su_bridge_magic_setup_all_summary, count), Toast.LENGTH_LONG).show()
+                                } else {
+                                    Toast.makeText(this@RootCompatibilityActivity, R.string.su_bridge_magic_setup_all_no_apps, Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
-                    }
-                },
-            ) {
-                androidx.compose.material3.Text(getString(R.string.su_bridge_setup_all))
+                    },
+                ) {
+                    androidx.compose.material3.Text(getString(R.string.su_bridge_setup_all))
+                }
             }
         }
 

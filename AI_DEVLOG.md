@@ -149,6 +149,17 @@ Things discussed or sketched that we never formally decided to build.
 - **Code Hygiene & Verification:**
   - Ran `bash gradlew spotlessApply` and `bash gradlew spotlessCheck`. Both clean and passing.
 
+### 2026-11-02 (cont'd 6) — Antigravity (Gemini 3.8 Flash) (Settings icon theme consistency, ADB pair dialog multi-window polish, ComposeView lifecycle) [master]
+
+- **Settings Category Icon Theme Consistency (#641):**
+  - `CollapsiblePreferenceCategory.kt`: Now respects `IconStyleHelper.current()` when icon mode is `OUTLINED` by tinting the category icon with `colorOnSurfaceVariant` instead of defaulting to `colorPrimary`, ensuring full color harmony with the outlined items below it.
+- **ADB Pairing Dialog Multi-Window & Validation Polish (#654):**
+  - `AdbPairDialogFragment.kt`: Eliminated the UI bug where both `text1` (general guidance) and `text2` (split-screen requirement note) were rendered simultaneously when not in multi-screen mode. Also ensured `text2` is dismissed once the pairing port is discovered.
+  - Migrated lifecycle from deprecated `onActivityCreated` to `onStart`.
+  - Added strict 6-digit numeric validation on pairing codes with error feedback (`dialog_adb_invalid_code`) before initiating the pairing handshake, preventing malformed/empty attempts.
+- **Root Compatibility ComposeView Scoping:**
+  - `RootCompatibilityActivity.kt`: Added explicit `ViewCompositionStrategy.DisposeOnLifecycleDestroyed(lifecycle)` across all embedded compose buttons (`btnApi36Export`, `btnKernelsuRestart`, `btnCopyGlobal`, `btnSetupAll`) for clean lifecycle disposal.
+
 ### 2026-11-02 (cont'd 5) — Antigravity (Gemini 3.8 Flash) (FloatingNavBar leak fix, Android 15+ boot watchdog heal, USB toggle preservation, settings polish) [master]
 
 - **FloatingNavBar Memory Leak Resolution:**

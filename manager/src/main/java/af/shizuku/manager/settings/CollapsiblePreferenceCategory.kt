@@ -131,15 +131,23 @@ class CollapsiblePreferenceCategory
                     } else {
                         iconView.setPadding(0, 0, 0, 0)
                         iconView.background = null
-                        val primaryColor =
-                            com.google.android.material.color.MaterialColors.getColor(
-                                ctx,
-                                R.attr.colorPrimary,
-                                android.graphics.Color.BLUE,
-                            )
+                        val iconColor =
+                            if (style == af.shizuku.manager.utils.IconStyleHelper.Style.OUTLINED) {
+                                com.google.android.material.color.MaterialColors.getColor(
+                                    ctx,
+                                    com.google.android.material.R.attr.colorOnSurfaceVariant,
+                                    android.graphics.Color.GRAY,
+                                )
+                            } else {
+                                com.google.android.material.color.MaterialColors.getColor(
+                                    ctx,
+                                    com.google.android.material.R.attr.colorPrimary,
+                                    android.graphics.Color.BLUE,
+                                )
+                            }
                         iconView.imageTintList =
                             android.content.res.ColorStateList
-                                .valueOf(primaryColor)
+                                .valueOf(iconColor)
                     }
                 } else {
                     iconView.visibility = android.view.View.GONE
