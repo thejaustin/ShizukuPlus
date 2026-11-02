@@ -120,6 +120,21 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-11-02 — Antigravity (Gemini 3.8 Flash) (TCP Mode auto-apply on service start, Awesome-Shizuku & installed apps knowledgebase sync) [master]
+
+- **TCP Mode and Local Proxy Auto-Apply on Service Start:**
+  - Resolved issue where options like TCP Mode (port 5555), On-Device ADB TCP (`on_device_adb_tcp`), and the Local ADB Proxy (`adb_proxy_enabled`) had to be manually toggled in Behavior settings after every reboot or restart to take effect.
+  - `AdbStarter.startAdb()` now automatically pushes `setprop service.adb.tcp.port $port` and `setprop persist.adb.tcp.port $port` when TCP mode or on-device ADB TCP is active, ensuring persistent port binding across network drops and reboots.
+  - `AdbProxyService.enableAdbTcp()` checks whether the active port already matches the target port before restarting adbd, avoiding unnecessary connection churn while still ensuring `persist.adb.tcp.port` is updated.
+  - `StarterActivity.startRoot()` ensures TCP mode is applied immediately upon successful root startup if configured.
+  - `ShizukuApplication` state listener detects transitions to `RUNNING` and automatically verifies TCP mode and starts `AdbProxyService` if enabled. `onCreate()` and `BootCompleteReceiver` also ensure `AdbProxyService` lifecycle alignment.
+- **Knowledgebase & App Context DB (Revision 2):**
+  - Updated `database/src/main/assets/app_context_db.json` from revision 1 to revision 2 with 34+ newly cataloged apps, incorporating on-device packages verified via `rish` as well as the upstream `awesome-shizuku` index.
+  - Added verified metadata and Plus feature recommendations (e.g. `storage_proxy`, `shell_interceptor`, `overlay_manager_plus`, `network_governor_plus`) for popular file managers: Material Files (`me.zhanghai.android.files`), Cx File Explorer (`com.ace.ex.file.manager`), FV File Explorer (`com.folderv.file`), MiXplorer (`com.mixplorer`), Solid Explorer, ZArchiver, Butler (`eu.darken.butler`), and app management utilities: App Manager (`io.github.muntashirakon.AppManager`), Canta (`io.github.samolego.canta`), Inure, Install with Options, ShizuStore, LinkSheet, ColorBlendr, SystemUI Tuner, and ShizuWall.
+  - Updated `root_compat_su_bridge.md` in app assets and the wiki `ShizukuPlus-Knowledgebase.md` to document the full range of supported file managers and system tools.
+- **Code Hygiene & Verification:**
+  - `./gradlew spotlessApply` and `./gradlew spotlessCheck` passed with zero errors.
+
 ### 2026-10-30 (late night) — Claude (icon shapes, card drag, trusted-network picker, 5-agent review) [master]
 
 - **Icon shapes:** Material's `MaterialShapes` (SoftBurst for "burst"; star rotated point-up), each centered on its area centroid, icon sized per shape from the inradius (`ExpressiveShapes.iconFraction`), one 40dp container for every settings icon style. `ExpressiveShapesTest` checks centroid, symmetry and that the glyph fits. Morphs are cached.

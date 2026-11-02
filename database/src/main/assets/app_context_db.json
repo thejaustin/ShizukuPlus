@@ -1,5 +1,5 @@
 {
-  "revision": 1,
+  "revision": 2,
   "apps": {
     "com.topjohnwu.magisk": {
       "description": "Magisk: The systemless root solution. Shizuku+ spoofs its presence to other apps.",
@@ -24,13 +24,18 @@
     "org.adaway": {
       "description": "AdAway: Open-source ad blocker. SU path auto-configured; use 'Network Governor' in Shizuku+ for rootless DNS blocking.",
       "verified": true,
-      "enhancements": ["network_governor_plus"]
+      "enhancements": [
+        "network_governor_plus"
+      ]
     },
     "dev.ukanth.ufirewall": {
       "description": "AFWall+: Firewall app. Fully functional rootless under Shizuku+ via automatic local iptables fallback mocking.",
       "verified": true,
       "su_path_nav": "Menu > Preferences > SU path",
-      "enhancements": ["network_governor_plus", "shell_interceptor"]
+      "enhancements": [
+        "network_governor_plus",
+        "shell_interceptor"
+      ]
     },
     "com.ramdaas.ramexe": {
       "description": "RamExe: RAM manager and process killer. SU path auto-configured via Android global settings (no root needed).",
@@ -43,30 +48,43 @@
     "com.samsung.android.hexinstall": {
       "description": "Hex Installer: Theming engine for Samsung. Shizuku+ provides the necessary Overlay Bridge for OneUI 8+.",
       "verified": true,
-      "enhancements": ["overlay_manager_plus"]
+      "enhancements": [
+        "overlay_manager_plus"
+      ]
     },
     "com.samsung.android.themepark": {
       "description": "Theme Park: Official Samsung customization. Enhanced by Shizuku+ Overlay API.",
       "verified": true,
-      "enhancements": ["overlay_manager_plus"]
+      "enhancements": [
+        "overlay_manager_plus"
+      ]
     },
     "com.keramidas.TitaniumBackup": {
       "description": "Titanium Backup: App data backup and restore fully works via SU Bridge using native 'bu' mapping.",
       "verified": true,
       "su_path_nav": "Menu > More > Preferences > su executable path",
-      "enhancements": ["shell_interceptor", "storage_proxy"]
+      "enhancements": [
+        "shell_interceptor",
+        "storage_proxy"
+      ]
     },
     "eu.darken.sdm": {
       "description": "SD Maid (Legacy): Fully functional via SU Bridge; deep system paths and shell execution are safely routed.",
       "verified": true,
       "su_path_nav": "Settings > Root > Binary path",
-      "enhancements": ["shell_interceptor", "storage_proxy"]
+      "enhancements": [
+        "shell_interceptor",
+        "storage_proxy"
+      ]
     },
     "com.speedsoftware.rootexplorer": {
       "description": "Root Explorer: File manager with elevated access. SU path auto-configured; Storage Bridge handles deep system browsing.",
       "verified": true,
       "su_path_nav": "Settings > Root access > SU path",
-      "enhancements": ["storage_proxy", "shell_interceptor"]
+      "enhancements": [
+        "storage_proxy",
+        "shell_interceptor"
+      ]
     },
     "com.speedsoftware.explorer": {
       "description": "Speed Explorer: File manager by Speed Software.",
@@ -76,7 +94,10 @@
       "description": "Root Browser: File manager with elevated access. SU path auto-configured; Storage Bridge handles system browsing.",
       "verified": true,
       "su_path_nav": "Settings > Superuser > SU binary path",
-      "enhancements": ["storage_proxy", "shell_interceptor"]
+      "enhancements": [
+        "storage_proxy",
+        "shell_interceptor"
+      ]
     },
     "com.estrongs.android.pop": {
       "description": "ES File Explorer: All-in-one file manager. SU path auto-configured via shared_prefs when running as root.",
@@ -315,6 +336,210 @@
     "com.rosan.dhizuku": {
       "description": "Dhizuku: Device Owner sharing bridge.",
       "verified": true
+    },
+    "io.github.muntashirakon.AppManager": {
+      "description": "App Manager: Comprehensive open-source package manager, permission controller, and AppOps manager with native Shizuku support.",
+      "verified": true,
+      "shizuku_aware": true,
+      "enhancements": [
+        "shell_interceptor",
+        "storage_proxy"
+      ]
+    },
+    "in.hridayan.ashell": {
+      "description": "aShell: Local ADB shell runner with prebuilt command shortcuts, batch actions, and package tools powered by Shizuku.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "me.zhanghai.android.files": {
+      "description": "Material Files: Open-source Material Design file manager with full rootless access to Android/data and Android/obb via Shizuku.",
+      "verified": true,
+      "shizuku_aware": true,
+      "enhancements": [
+        "storage_proxy"
+      ]
+    },
+    "dev.zwander.installwithoptions": {
+      "description": "Install with Options: Advanced APK installer utilizing Shizuku/ADB to configure install flags like bypass low target SDK, force downgrade, and multi-package splits.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "io.github.samolego.canta": {
+      "description": "Canta: Rootless system debloater powered by Shizuku and the Universal Android Debloater database.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "com.arslan.shizuwall": {
+      "description": "ShizuWall: Per-app firewall and network blocker using Shizuku and Android Network Policy without a VPN.",
+      "verified": true,
+      "shizuku_aware": true,
+      "enhancements": [
+        "network_governor_plus"
+      ]
+    },
+    "com.drdisagree.colorblendr": {
+      "description": "ColorBlendr: Material You dynamic color theme customizer that applies system overlay color changes via Shizuku.",
+      "verified": true,
+      "shizuku_aware": true,
+      "enhancements": [
+        "overlay_manager_plus"
+      ]
+    },
+    "app.simple.inure": {
+      "description": "Inure App Manager: Feature-packed app manager and analyzer with batch uninstaller, sensor monitor, and tracker disablement via Shizuku.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "io.github.sds100.keymapper": {
+      "description": "Key Mapper: Powerful key, button, and gesture remapping tool utilizing Shizuku for privileged input events and system actions.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "me.timschneeberger.rootlessjamesdsp": {
+      "description": "RootlessJamesDSP: Audio processing engine implementing JamesDSP system-wide audio effects via Shizuku audio policy.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "me.timschneeberger.shizustore": {
+      "description": "ShizuStore: Open-source app store curated for Shizuku-compatible apps, with silent installs and updates.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "com.f0x1d.logfox": {
+      "description": "LogFox: Modern Material logcat viewer and crash log analyzer with Shizuku log capture.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "fe.linksheet": {
+      "description": "LinkSheet: Open-source Android URL resolver and intent interceptor with Shizuku integration to configure default browser and app links.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "fe.linksheet.nightly": {
+      "description": "LinkSheet Nightly: Preview channel for LinkSheet URL resolver with Shizuku integration.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "project.vivid.hex.module.installer": {
+      "description": "Hex Installer: Custom theming engine for Samsung One UI devices with Shizuku/ADB overlay bridge support.",
+      "verified": true,
+      "shizuku_aware": true,
+      "enhancements": [
+        "overlay_manager_plus"
+      ]
+    },
+    "tk.zwander.rootactivitylauncher": {
+      "description": "Root Activity Launcher: Launch hidden and unexported activities, services, and receivers via root or Shizuku.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "tk.zwander.lockscreenwidgets": {
+      "description": "Lockscreen Widgets: Puts any widget on the lock screen with privileged system settings management via Shizuku.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "tk.zwander.fabricateoverlay": {
+      "description": "Fabricate Overlay: Create and manage runtime resource overlays on Android 12+ via Shizuku or root.",
+      "verified": true,
+      "shizuku_aware": true,
+      "enhancements": [
+        "overlay_manager_plus"
+      ]
+    },
+    "com.zacharee1.systemuituner": {
+      "description": "SystemUI Tuner: Customization utility for lockscreen shortcuts, status bar icons, and hidden Android flags via Shizuku.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "com.ace.ex.file.manager": {
+      "description": "Cx File Explorer: Popular file manager with clean UI, network shares, and Android/data access using Shizuku.",
+      "verified": true,
+      "shizuku_aware": true,
+      "enhancements": [
+        "storage_proxy"
+      ]
+    },
+    "com.folderv.file": {
+      "description": "FV File Explorer: Multi-functional file manager with Android/data and Android/obb access on Android 14+ via Shizuku.",
+      "verified": true,
+      "shizuku_aware": true,
+      "enhancements": [
+        "storage_proxy"
+      ]
+    },
+    "com.mixplorer": {
+      "description": "MiXplorer: Advanced file manager supporting archive management, batch APK installation, and Android/data access via Shizuku.",
+      "verified": true,
+      "shizuku_aware": true,
+      "enhancements": [
+        "storage_proxy"
+      ]
+    },
+    "com.mixplorer.silver": {
+      "description": "MiXplorer Silver: Premium edition of MiXplorer supporting archive management and Android/data access via Shizuku.",
+      "verified": true,
+      "shizuku_aware": true,
+      "enhancements": [
+        "storage_proxy"
+      ]
+    },
+    "top.nkbe.npatch": {
+      "description": "NPatch: Android APK patcher and dex injector with Shizuku installation support.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "deltazero.amarok.foss": {
+      "description": "Amarok Hider: Hide apps and files behind biometric protection using Shizuku package manager commands.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "cn.ac.lz233.tarnhelm": {
+      "description": "Tarnhelm: Disable unwanted components, receivers, and background trackers with Shizuku.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "com.bintianqi.owndroid": {
+      "description": "Owndroid: Device policy and permissions controller using Dhizuku / Shizuku.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "sk.henrichg.phoneprofilesplus": {
+      "description": "PhoneProfilesPlus: Advanced profile switcher automating airplane mode, Wi-Fi, and sound settings via Shizuku.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "cu.axel.smartdock": {
+      "description": "SmartDock: Desktop mode launcher and taskbar with window management powered by Shizuku.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "me.biplobsd.rsm": {
+      "description": "Rootless Shizuku Manager: Shell utility and command runner leveraging Shizuku IPC.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "eu.darken.butler": {
+      "description": "Butler: File explorer and storage organizer by Darken with root and Shizuku support for restricted paths.",
+      "verified": true,
+      "shizuku_aware": true,
+      "enhancements": [
+        "storage_proxy"
+      ]
+    },
+    "eu.darken.myperm": {
+      "description": "MyPerm: Permission manager for inspecting and controlling system permissions with Shizuku.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "com.yassernull.shappky": {
+      "description": "Shappky: App shortcut and activity manager utilizing Shizuku.",
+      "verified": true,
+      "shizuku_aware": true
+    },
+    "com.cleanbar.hider": {
+      "description": "CleanBar: Status bar and system UI tuner leveraging Shizuku elevated commands.",
+      "verified": true,
+      "shizuku_aware": true
     }
   }
 }

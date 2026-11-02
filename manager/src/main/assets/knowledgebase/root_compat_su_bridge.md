@@ -15,6 +15,12 @@ ShizukuPlus enables root-only applications to function **without permanent root 
 4. Paste `/data/local/tmp/su` as the executable path.
 5. Grant the app permission in ShizukuPlus when prompted.
 
+### Popular Supported Apps
+- **File Managers**: Material Files, Solid Explorer, Cx File Explorer, FV File Explorer, MiXplorer, ZArchiver, Total Commander, X-Plore, Butler.
+- **Package Management & System Debloat**: App Manager, Canta, Install with Options, Inure, ShizuStore.
+- **Theming & System Tweaks**: ColorBlendr, Hex Installer, SystemUI Tuner, LinkSheet, Fabricate Overlay, Root Activity Launcher, Lockscreen Widgets.
+- **Network, Audio & Security**: ShizuWall, RootlessJamesDSP, AdAway, Amarok Hider, Key Mapper, Termux (`rish`).
+
 ### Command Translation & Sandboxing
 - **Real Execution**: System properties (`resetprop`, `getprop`, `setprop`), package management (`pm`), activity management (`am`), app ops, network policies.
 - **Ghosted / Mocked Success**: Kernel module loading (`insmod`/`rmmod`), raw block partition writes, system reboot commands.
