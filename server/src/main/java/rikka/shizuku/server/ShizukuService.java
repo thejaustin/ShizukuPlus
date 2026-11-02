@@ -2320,9 +2320,22 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         if (binder != null) {
                             Class<?> stub = Class.forName("com.android.internal.app.IAppOpsService$Stub");
                             Object service = stub.getMethod("asInterface", IBinder.class).invoke(null, binder);
-                            int intOp = (int) service.getClass().getMethod("strOpToOp", String.class).invoke(service, modeOrOp);
-                            int intMode = value.equals("allow") ? 0 : (value.equals("ignore") || value.equals("deny")) ? 1 : 2; 
-                            
+                            // strOpToOp wants "android:system_alert_window"; users type the op name
+                            // (SYSTEM_ALERT_WINDOW), which the real appops tool also accepts.
+                            String opStr = modeOrOp.startsWith("android:") ? modeOrOp : "android:" + modeOrOp.toLowerCase(java.util.Locale.ROOT);
+                            int intOp = (int) service.getClass().getMethod("strOpToOp", String.class).invoke(service, opStr);
+                            // AppOpsManager.MODE_*: "default" used to fall into 2 (errored), so
+                            // resetting an op errored it instead (#648).
+                            int intMode;
+                            switch (value) {
+                                case "allow": intMode = 0; break;
+                                case "ignore": intMode = 1; break;
+                                case "deny": case "errored": intMode = 2; break;
+                                case "default": intMode = 3; break;
+                                case "foreground": intMode = 4; break;
+                                default: intMode = -1;
+                            }
+
                             int targetUid = -1;
                             try {
                                 targetUid = Integer.parseInt(pkg);
@@ -2331,13 +2344,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                                 if (ai != null) targetUid = ai.uid;
                             }
                             
-                            if (targetUid != -1) {
+                            // Anything unrecognized runs the real appops tool below instead.
+                            if (targetUid != -1 && intOp >= 0 && intMode >= 0) {
                                 service.getClass().getMethod("setMode", int.class, int.class, String.class, int.class).invoke(service, intOp, targetUid, pkg, intMode);
                                 return syntheticProcess(0, "");
                             }
                         }
                     } catch (Throwable tr) {
-                        LOGGER.e(tr, "Plus Optimization: appops failed");
+                        LOGGER.w(tr, "Plus Optimization: appops shortcut failed, running appops itself");
                     }
                 }
             } else if (baseCmd.equals("service") && cmd.length >= 4 && cmd[1].equals("call")) {

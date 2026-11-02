@@ -46,6 +46,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Safer settings backup** — the copy that survives a reinstall is no longer kept in public Downloads, where any app could read or replace it. Scanner API keys and the hidden-apps list aren't stored in it.
 
 ### 🛠 Fixes
+- **`appops set … default` resets an app op again** — through Shizuku+, it set the op to "errored" instead of back to default, and "foreground" did the same. Op names like `SYSTEM_ALERT_WINDOW` now work the same as `android:system_alert_window` ([#648](https://github.com/thejaustin/ShizukuPlus/issues/648)).
 - **Not being rooted is no longer a Service Doctor problem** — root shows as information ("Not needed: ADB mode works without it") instead of an issue to fix.
 - **Fewer crashes from old crash reports** — apps using Shizuku+'s API no longer crash when they reach a different Shizuku server. Tapping a settings search result while Settings is closing no longer crashes, and a garbled pairing port fails cleanly instead of crashing. Routine conditions (Wi-Fi changes during discovery, an app without a Shizuku provider, a stale background service) are no longer reported as crashes.
 - **In-app guides match the new defaults** — the Security & Privacy and Root Compatibility guides now explain which APIs are off for other apps, per-app scopes, the safety check, and what backups and crash reports contain.
