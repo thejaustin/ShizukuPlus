@@ -12,7 +12,7 @@ Pre-releases will return for simple things like bugs, crashes, issues and such.
 
 I'm creating more checkpoints for myself and this project as I shift my focus to stability and improvement in visual quality & user experience ahead of new feature implementation.
 
-It's time to truly stabilize things instead of simply moving forward with development at lightspeed
+It's time to truly stabilize things instead of simply moving forward with development at lightspeed.
 Thank you for your patience, and much love to you all!
 
 
