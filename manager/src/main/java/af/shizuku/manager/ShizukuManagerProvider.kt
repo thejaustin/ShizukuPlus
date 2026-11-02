@@ -81,7 +81,13 @@ class ShizukuManagerProvider : ShizukuProvider() {
                     reply.putBinder("binder", serviceBinder)
                     reply
                 } catch (e: Throwable) {
-                    LOGGER.e(e, "attachUserService $token")
+                    // A user service whose token the server no longer knows (it restarted, or the
+                    // app's service was already torn down) is routine (SHIZUKUPLUS-9B).
+                    if (e is IllegalArgumentException && e.message?.contains("unable to find token") == true) {
+                        LOGGER.w(e, "attachUserService $token")
+                    } else {
+                        LOGGER.e(e, "attachUserService $token")
+                    }
                     null
                 }
             } catch (e: Throwable) {

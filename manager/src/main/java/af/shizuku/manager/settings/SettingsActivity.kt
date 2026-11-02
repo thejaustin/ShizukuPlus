@@ -290,7 +290,12 @@ class SettingsActivity :
         }
     }
 
+    // A tap can land after the screen is closing (SHIZUKUPLUS-A2: "FragmentManager has been
+    // destroyed"); a commit then throws, so drop the navigation instead.
+    private fun canNavigate() = !isFinishing && !isDestroyed && !supportFragmentManager.isDestroyed && !supportFragmentManager.isStateSaved
+
     private fun navigateToSetting(item: SettingsSearchEngine.SettingItem) {
+        if (!canNavigate()) return
         val fragment = supportFragmentManager.fragmentFactory.instantiate(classLoader, item.fragmentClass)
         fragment.arguments =
             Bundle().apply {
@@ -312,6 +317,7 @@ class SettingsActivity :
         pref: Preference,
     ): Boolean {
         val fragmentName = pref.fragment ?: return false
+        if (!canNavigate()) return true
         val fragment = supportFragmentManager.fragmentFactory.instantiate(classLoader, fragmentName)
         fragment.arguments = pref.extras
 

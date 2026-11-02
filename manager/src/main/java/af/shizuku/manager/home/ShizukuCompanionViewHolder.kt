@@ -245,7 +245,14 @@ class ShizukuCompanionViewHolder(
 
                     val success = installOutput.contains("EXIT:0")
                     if (!success && installOutput != "NEWPROCESS_NULL") {
-                        Timber.tag("ShizukuCompanion").e("compat hub install failed: %s", installOutput.take(1000))
+                        // No privileged access or no output means Shizuku+ wasn't usable at that
+                        // moment, not a bug (SHIZUKUPLUS-93/77/9N); only a real pm error is one.
+                        val expected = installOutput.isBlank() || installOutput.contains("no privileged access")
+                        if (expected) {
+                            Timber.tag("ShizukuCompanion").w("compat hub install failed: %s", installOutput.take(1000))
+                        } else {
+                            Timber.tag("ShizukuCompanion").e("compat hub install failed: %s", installOutput.take(1000))
+                        }
                     }
                     withContext(Dispatchers.Main) {
                         updateProgress(v.context.getString(if (success) R.string.compat_hub_install_success else R.string.compat_hub_progress_finishing), 100)

@@ -356,9 +356,6 @@ class AdbStartWorker(
             // not authorised.
             return Result.failure()
         } catch (e: Exception) {
-            timber.log.Timber
-                .tag("AdbStartWorker")
-                .e(e, "doWork: failed on runAttempt %d: %s", runAttemptCount, e.message)
             val ignored =
                 listOf(
                     EOFException::class,
@@ -368,6 +365,12 @@ class AdbStartWorker(
                     java.net.SocketException::class,
                     java.net.SocketTimeoutException::class,
                 )
+            // mDNS timeouts, an untrusted network and dropped sockets are expected while Wi-Fi
+            // changes; as errors they were the top crash-report source (SHIZUKUPLUS-9K/9T/9R).
+            val transient = ignored.any { it.isInstance(e) }
+            timber.log.Timber
+                .tag("AdbStartWorker")
+                .log(if (transient) android.util.Log.WARN else android.util.Log.ERROR, e, "doWork: failed on runAttempt %d: %s", runAttemptCount, e.message)
             // Only show error notification if it's not a common transient error,
             // or if we've already tried several times and it's still failing.
             if (ignored.none { it.isInstance(e) } || runAttemptCount >= 5) {

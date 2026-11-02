@@ -2261,7 +2261,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         rikka.shizuku.server.api.IContentProviderUtils.callCompat(provider, null, "settings", "PUT_" + namespace, key, extras);
                     }
                 } catch (Throwable tr) {
-                    LOGGER.e(tr, "Plus Optimization: settings put pre-write failed (native will retry)");
+                    // Expected on some ROMs; the real `settings put` below still runs (SHIZUKUPLUS-9M).
+                    LOGGER.w(tr, "Plus Optimization: settings put pre-write failed (native will retry)");
                 }
                 // Fall through to super.newProcessInternal() for authoritative execution.
             } else if (baseCmd.equals("pm") && cmd.length >= 2 && cmd[1].equals("install")) {
@@ -3154,7 +3155,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         try {
             provider = ActivityManagerApis.getContentProviderExternal(name, userId, token, "com.android.shell");
             if (provider == null) {
-                LOGGER.e("provider is null %s %d", name, userId);
+                // The client app has no exported ShizukuProvider for this user: its setup, not a
+                // server fault. WARN stays out of crash reports (SHIZUKUPLUS-8R/8P/9P).
+                LOGGER.w("provider is null %s %d", name, userId);
                 return false;
             }
             if (!provider.asBinder().pingBinder()) {
