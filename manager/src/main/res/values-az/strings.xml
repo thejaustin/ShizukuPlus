@@ -1127,7 +1127,7 @@
     <string name="empty_state_title_no_results">Heç bir nəticə tapılmadı</string>
     <string name="empty_state_description_no_results">Cari filtrinizə və ya axtarış meyarlarınıza heç bir tətbiq uyğun gəlmir.</string>
     <string name="empty_state_title_no_home_cards">Bütün kartlar gizlədilib</string>
-    <string name="home_all_cards_hidden_description">Hər digər kart gizlədilib</string>
+    <string name="home_all_cards_hidden_description">Başqa hər bir kart gizlədilib</string>
     <string name="empty_state_action_restore_home_cards">Kartları bərpa et</string>
     <string name="home_restore_default">İlkin vəziyyətə qaytar</string>
     <string name="home_restore_default_dialog_title">İlkin vəziyyətə qaytar</string>
@@ -1232,7 +1232,7 @@
     <string name="settings_icon_morph_mode_liquid">Maye</string>
     <string name="settings_switch_row_design_title">Keçid sətrinin dizaynı</string>
     <string name="settings_switch_row_design_standard">Standart keçid</string>
-    <string name="settings_switch_row_design_icon_switch">İkon keçiddir</string>
+    <string name="settings_switch_row_design_icon_switch">İkon keçidlidir</string>
     <string name="settings_switch_row_design_shape_thumb">Forma düyməsi</string>
     <string name="switch_state_on">Aktiv</string>
     <string name="switch_state_off">Deaktiv</string>
@@ -1295,7 +1295,7 @@
     <string name="settings_unrestricted_personal_data_title">Şəxsi məlumatlar və cihaz nəzarəti</string>
     <string name="settings_unrestricted_personal_data_summary">Səlahiyyətli tətbiqlərə SMS, kontaktlar, zəng tarixçəsi, məkan, mübadilə buferi, bildirişlər, ekran şəkilləri, giriş inyeksiyası, logcat, heap dumper və yenidən başlatma üçün Plus API-lərindən istifadə etməyə icazə verin.</string>
     <string name="settings_unrestricted_confirm_title">Riskli giriş aktivləşdirilsin?</string>
-    <string name="settings_unrestricted_confirm_message">Shizuku+-da icazə verdiyiniz hər bir tətbiq, yalnız nəzərdə tutduğunuz deyil, bu girişə sahib olacaq. Yalnız hamısına etibar edirsinizsə aktivləşdirin.</string>
+    <string name="settings_unrestricted_confirm_message">Shizuku+-da icazə verdiyiniz hər bir tətbiq bu girişi əldə edəcək, yalnız nəzərinizdə olan tətbiq deyil. Yalnız hamısına etibar etdiyiniz təqdirdə onu aktivləşdirin.</string>
     <string name="settings_unrestricted_confirm_positive">Aktivləşdir</string>
     <string name="settings_plus_category_device_owner_tools">Cihaz Sahibi Alətləri</string>
     
