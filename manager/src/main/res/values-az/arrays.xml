@@ -67,6 +67,9 @@
         <item>tcl_50_pro</item>
     </string-array>
 
+
+
+  
     <string-array name="corner_rounding_entries">
         <item>@string/corner_style_sharp</item>
         <item>Zərif — 20dp</item>
@@ -135,7 +138,8 @@
         <item>unlabeled</item>
     </string-array>
 
-    <string-array name="changelog_styles">
+   
+  <string-array name="changelog_styles">
         <item>@string/changelog_style_classic</item>
         <item>@string/changelog_style_timeline</item>
     </string-array>
