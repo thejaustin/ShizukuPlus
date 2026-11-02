@@ -120,6 +120,16 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-11-02 (cont'd 2) — Antigravity (Gemini 3.8 Flash) (CI paths-ignore, USB debugging setting preservation, GitHub community triage) [master]
+
+- **GitHub Actions CI Trigger Suppression for Docs/README:**
+  - Added `paths-ignore` (`'**.md'`, `'docs/**'`, `'.github/ISSUE_TEMPLATE/**'`, `'.github/pull_request_template.md'`, `'LICENSE*'`) to `.github/workflows/app.yml`, `dependency-submission.yml`, `security.yml`, and `gitguardian.yaml`.
+  - Pushing changes to `README.md` or markdown documentation will no longer trigger full Gradle compilation, lint checks, or secret scanning.
+- **USB Debugging Setting Preservation (Issue #656):**
+  - In `ShizukuService.java`: Removed unconditional write of `adb_enabled = "1"`. Setting `adb_allowed_connection_time` to 0 is sufficient to keep authorizations alive without overriding user's manual toggling of USB debugging in Developer Options. Resolves user report in #656 where manual USB debugging toggles were undone automatically by the Shizuku server.
+- **GitHub Issues & Community Feedback Triage:**
+  - Triaged #656 (ADB auth persistence and auto-enabling USB debugging query; confirmed root cause and addressed), #660 (per-app network firewall feature request via Network Governor), #655 (Storage Bridge vs DAC `/data/data` restrictions), and #651 (auto-backup in Downloads folder removed).
+
 ### 2026-11-02 (cont'd) — Antigravity (Gemini 3.8 Flash) (USB disconnect persistence, cgroup isolation, ADB TCP 5555 auto-binding) [master]
 
 - **USB Disconnect & Server Termination Root-Cause & Resolution:**

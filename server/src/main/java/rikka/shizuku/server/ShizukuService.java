@@ -349,12 +349,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     IContentProviderUtils.callCompat(
                             settingsProvider, null, "settings",
                             "PUT_global", "adb_allowed_connection_time", authTimeout);
-
-                    Bundle adbEnabled = new Bundle();
-                    adbEnabled.putString("value", "1");
-                    IContentProviderUtils.callCompat(
-                            settingsProvider, null, "settings",
-                            "PUT_global", "adb_enabled", adbEnabled);
+                    // Note: Never forcefully overwrite adb_enabled to "1", as that overrides
+                    // user Developer Options preference and causes issues for apps checking debugging status.
                 } catch (Exception e) {
                     LOGGER.w("failed to update adb settings via ContentProvider", e);
                 }
