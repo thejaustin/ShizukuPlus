@@ -490,7 +490,7 @@
     <string name="settings_title">Tənzimləmələr</string>
     <string name="settings_start_on_boot">Yüklənmədə başlat</string>
     <string name="settings_start_on_boot_summary">Android 11+ və ya root tələb edir</string>
-    <string name="settings_start_on_boot_bug">Android 11-12-dəki səhvə görə simsiz sazlama heç bir səlahiyyətli şəbəkəni saxlamır.\n\nHər yenidən başlatmada icazə dialoqu açıldıqda \"İcazə ver\" düyməsinə toxunmaqla şəbəkəyə yenidən icazə verməli olaçaqsınız.</string>
+    <string name="settings_start_on_boot_bug">Android 11-12-dəki səhvə görə simsiz sazlama heç bir səlahiyyətli şəbəkəni saxlamır.\n\nHər yenidən başlatmada icazə dialoqu açıldıqda \"İcazə ver\" düyməsinə toxunmaqla şəbəkəyə yenidən icazə verməli olacaqsınız.</string>
     <string name="settings_use_system_color">Sistem tema rəngindən istifadə et</string>
     <string name="settings_watchdog">Gözətçi</string>
     <string name="settings_watchdog_summary">Qəza və ya gözlənilməz dayanmadan sonra Shizuku+-ı avtomatik yenidən başladın. Əsas şəbəkə bağlantısı kəsildikdə yenidən qoşula bilməz (məsələn, RNDIS/USB ADB istifadə edərkən USB kabelin çıxarılması).</string>
@@ -689,7 +689,7 @@
     <string name="restore_privileged_turn_on">Aktivləşdir</string>
     <string name="restore_privileged_keep_off">Söndürülmüş saxla</string>
     <string name="settings_allow_automation_plugin_title">Avtomatlaşdırma tətbiqlərinə icazə ver</string>
-    <string name="settings_allow_automation_plugin_summary">Tasker və digər Locale ilə uyğun tətbiqlərə Shizuku+-ı başladıب dayandırmağa icazə verir. Quraşdırılmış istənilən tətbiq bundan istifadə edə bilər, ona görə də yalnız bu cür avtomatlaşdırmalardan istifadə edirsinizsə aktivləşdirin.</string>
+    <string name="settings_allow_automation_plugin_summary">Tasker və digər Locale ilə uyğun tətbiqlərə Shizuku+-ı başladıb dayandırmağa icazə verir. Quraşdırılmış istənilən tətbiq bundan istifadə edə bilər, ona görə də yalnız bu cür avtomatlaşdırmalardan istifadə edirsinizsə aktivləşdirin.</string>
     <string name="settings_root_auto_grant_summary">WRITE_SECURE_SETTINGS kimi həssas icazələr daxil olmaqla, əvvəlcədən icazə verdiyiniz tətbiqlərdən gələn \'pm grant\' sorğularını təsdiqləyir. Onu söndürmək verdiyi icazələri ləğv edir.</string>
     <string name="settings_root_file_interceptor">Ağıllı Fayl Tutucusu</string>
     <string name="settings_root_file_interceptor_summary">Həssas sistem yollarını hədəf alan fayl əməliyyatlarına icazə qorunması bayraqlarını avtomatik əlavə edir.</string>
@@ -763,7 +763,7 @@
     <string name="su_bridge_report_not_connected">Shizuku qoşulmayıb. Ana ekrandan Shizuku xidmətini başladın və yenidən cəhd edin.</string>
     <string name="su_bridge_report_deploy_failed">❌ Körpünü /data/local/tmp qovluğuna yerləşdirmək mümkün olmadı.</string>
     <string name="su_bridge_report_deploy_reason">Səbəb: %1$s</string>
-    <string name="su_bridge_report_deploy_hint_shell">ADB/shell rejimi aşkar edildi. Cihazınız shell prosesindən /data/local/tmp qovluğuna yazmağı məhdudlaşdırırsa, bunun əvəzinə ixrac edilmiş yoldan istifadə edin. Uyğunluq mərkəzində \"İcrac et\" düyməsinə toxunun və root tətbiqlərini həmin yola yönəldin və ya tam giriş üçün root rejiminə keçin.</string>
+    <string name="su_bridge_report_deploy_hint_shell">ADB/shell rejimi aşkar edildi. Cihazınız shell prosesindən /data/local/tmp qovluğuna yazmağı məhdudlaşdırırsa, bunun əvəzinə ixrac edilmiş yoldan istifadə edin. Uyğunluq mərkəzində \"İxrac et\" düyməsinə toxunun və root tətbiqlərini həmin yola yönəldin və ya tam giriş üçün root rejiminə keçin.</string>
     <string name="su_bridge_report_deploy_hint_retry">Shizuku xidmətinin işlədiyinə əmin olun və yenidən cəhd edin.</string>
     <string name="su_bridge_report_deployed">✅ Körpü %1$s ünvanına yerləşdirildi</string>
     <string name="su_bridge_report_missing">❌ Körpü faylları %1$s altında tapılmadı</string>
@@ -923,7 +923,7 @@
     <string name="stock_shizuku_restarting">Yenidən başladılır…</string>
     <string name="backup_plain_exported">Sadə ehtiyat nüsxə ixrac edildi. O şifrələnməyib, ona görə də API açarları, etibarlı Wi-Fi adları və gizli tətbiqlər siyahısı daxil edilmədi. Yenə də faylı gizli saxlayın.</string>
     <string name="restore_summary_title">Tənzimləmələr bərpa edildi</string>
-    <string name="restore_summary_message">Parametrləriniz geri qayıtdı. Təhlükəsizliyiniz üçün ehtiyat nüsxə heç vaxt bunları bərpa etmir:\n\n• Hansı tətbiqlərə icazə verdiyiniz. Hər tətbiq Shizuku+-a ilk ehtiyacı olanda yenidən soruşur.\n• Shizuku+-ın ADB açarı. \"USB sazlamasına icazə verilsin\" sorğusunu bir dəfə təsdiqləyin.\n• Qəza hesabatı və əlçatanlıq razılığı. Bu cihazda sizdən yenidən soruşulur.\n• Parametrlərdə hazırlanmış şifrələnmiş ehtiyat nüsxə olmadığı təqdirdə API açarları, etibarlı Wi-Fi adları və gizli tətbiqlər.\n\nMəhdudiyyətsiz giriş tərtibatçı seçimləri kimi həssas keçidlər siz onları yandırmağı seçənə qədər söndürülü qalır.</string>
+    <string name="restore_summary_message">Tənzimləmələriniz geri qayıtdı. Təhlükəsizliyiniz üçün ehtiyat nüsxə heç vaxt bunları bərpa etmir:\n\n• Hansı tətbiqlərə icazə verdiyiniz. Hər tətbiq Shizuku+-a ilk ehtiyacı olanda yenidən soruşur.\n• Shizuku+-ın ADB açarı. \"USB sazlamasına icazə verilsin\" sorğusunu bir dəfə təsdiqləyin.\n• Qəza hesabatı və əlçatanlıq razılığı. Bu cihazda sizdən yenidən soruşulur.\n• Tənzimləmələrdə hazırlanmış şifrələnmiş ehtiyat nüsxə olmadığı təqdirdə API açarları, etibarlı Wi-Fi adları və gizli tətbiqlər.\n\nMəhdudiyyətsiz giriş, tərtibatçı seçimləri kimi həssas keçidlər siz onları yandırmağı seçənə qədər söndürülü qalır.</string>
     <string name="backup_exported_success">Ehtiyat nüsxə uğurla ixrac edildi</string>
     <string name="backup_restored_success">Ehtiyat nüsxə uğurla bərpa edildi</string>
     <string name="backup_restored_restart_hint">Tənzimləmələr bərpa edildi. Tema/dil dəyişikliklərini tətbiq etmək üçün yenidən başladın.</string>
@@ -1362,7 +1362,7 @@
     <string name="update_checking">Yeniləmələr yoxlanılır…</string>
     <string name="ok">Oldu</string>
     <string name="no_file_picker">Bu cihazda heç bir fayl seçici tətbiqi tapılmadı</string>
-    <string name="shell_export_success">Fayllər uğurla ixrac edildi</string>
+    <string name="shell_export_success">Fayllar uğurla ixrac edildi</string>
     <string name="shell_export_failed">İxrac uğursuz oldu — heç bir fayl yazıla bilmədi</string>
     <string name="shell_export_partial">%2$d fayldan %1$d-i ixrac edildi (bəziləri uğursuz oldu)</string>
 
