@@ -149,6 +149,10 @@ object ShizukuStateMachine {
             // would have kept treating Shizuku+ as stopped on purpose).
             if (newState == State.RUNNING) {
                 runCatching { UserStopFlag.clear() }
+                runCatching {
+                    af.shizuku.manager.doctor.StartFailureLog
+                        .clear()
+                }
             }
             if (newState == State.STARTING) {
                 startingTimestamp.set(System.currentTimeMillis())

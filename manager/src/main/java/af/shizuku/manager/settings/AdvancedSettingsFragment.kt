@@ -25,7 +25,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import javax.crypto.AEADBadTagException
@@ -221,19 +220,12 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                 .setTitle(R.string.settings_reset_adb_keys)
                 .setMessage(R.string.settings_reset_adb_keys_summary)
                 .setPositiveButton(R.string.settings_reset_adb_keys) { _, _ ->
-                    try {
-                        ShizukuSettings
-                            .getPreferences()
-                            .edit()
-                            .remove("adbkey")
-                            .apply()
-                        val keyStore = java.security.KeyStore.getInstance("AndroidKeyStore")
-                        keyStore.load(null)
-                        keyStore.deleteEntry("_adbkey_encryption_key_")
+                    if (af.shizuku.manager.adb.AdbKeyReset
+                            .reset()
+                    ) {
                         notifyUser(R.string.settings_reset_adb_keys_success)
                         (activity as? SettingsActivity)?.onThemeChanged()
-                    } catch (e: Exception) {
-                        Timber.tag("AdvancedSettings").e(e, "Failed to reset ADB keys")
+                    } else {
                         notifyUser(R.string.settings_reset_adb_keys_error, long = true)
                     }
                 }.setNegativeButton(android.R.string.cancel, null)

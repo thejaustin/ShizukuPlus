@@ -74,7 +74,7 @@ class ServiceDoctorActivity : AppBarActivity() {
         binding.btnAutoHeal.applySpringTouch()
         binding.btnAutoHeal.setOnClickListener {
             HapticUtils.tap(it)
-            performAutoHeal()
+            chooseFixes()
         }
 
         binding.switchAdaptiveAutoHeal.isChecked = ShizukuSettings.isAdaptiveDoctorAutoHealEnabled()
@@ -433,6 +433,7 @@ class ServiceDoctorActivity : AppBarActivity() {
     private fun runDiagnostics() {
         serviceScope.launch {
             val diag = withContext(Dispatchers.IO) { ServiceDoctor.runFullDiagnostics(this@ServiceDoctorActivity) }
+            lastDiagnostics = diag
             val checks =
                 diag.checks.map { item ->
                     DoctorCheck(
@@ -481,13 +482,63 @@ class ServiceDoctorActivity : AppBarActivity() {
         }
     }
 
-    private fun performAutoHeal() {
+    private var lastDiagnostics: ServiceDoctor.DiagnosticResult? = null
+
+    /**
+     * "Fix all" lists the repairs it would run, each with a checkbox, so the user decides. What
+     * they uncheck is remembered here and by background self-healing.
+     */
+    private fun chooseFixes() {
+        val fixable = lastDiagnostics?.let { ServiceDoctor.fixableChecks(it) }.orEmpty()
+        if (fixable.isEmpty()) {
+            performAutoHeal(null)
+            return
+        }
+        val excluded = ServiceDoctor.excludedFixes()
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        val boxes =
+            fixable.map { check ->
+                com.google.android.material.checkbox.MaterialCheckBox(this).apply {
+                    text = check.title
+                    isChecked = check.id !in excluded
+                }
+            }
+        val content =
+            android.widget.LinearLayout(this).apply {
+                orientation = android.widget.LinearLayout.VERTICAL
+                setPadding(pad, pad / 2, pad, 0)
+                addView(
+                    android.widget.TextView(context).apply {
+                        setText(R.string.doctor_fix_choose_message)
+                        setPadding(0, 0, 0, pad / 2)
+                    },
+                )
+                boxes.forEach { addView(it) }
+            }
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.doctor_fix_choose_title)
+            .setView(android.widget.ScrollView(this).apply { addView(content) })
+            .setPositiveButton(R.string.doctor_fix_choose_positive) { _, _ ->
+                val picked =
+                    fixable
+                        .zip(boxes)
+                        .filter { (_, box) -> box.isChecked }
+                        .map { it.first.id }
+                        .toSet()
+                // Keep earlier choices for repairs not on screen now; update the ones shown.
+                ServiceDoctor.setExcludedFixes(excluded - fixable.map { it.id }.toSet() + (fixable.map { it.id }.toSet() - picked))
+                if (picked.isNotEmpty()) performAutoHeal(picked)
+            }.setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun performAutoHeal(only: Set<String>?) {
         binding.btnAutoHeal.isEnabled = false
         binding.btnAutoHeal.text = getString(R.string.doctor_action_auto_fix_all_running)
         binding.autoFixProgress.visibility = View.VISIBLE
 
         serviceScope.launch {
-            val report = ServiceDoctor.autoHeal(this@ServiceDoctorActivity, tapped = true)
+            val report = ServiceDoctor.autoHeal(this@ServiceDoctorActivity, tapped = true, only = only)
             withContext(Dispatchers.Main) {
                 binding.autoFixProgress.visibility = View.GONE
                 HapticUtils.success(binding.btnAutoHeal)

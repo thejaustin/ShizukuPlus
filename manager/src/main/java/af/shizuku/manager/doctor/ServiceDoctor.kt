@@ -150,17 +150,38 @@ object ServiceDoctor {
                 if (!lnpGranted) tips.add("• " + context.getString(R.string.doctor_tip_local_network, lnpPermName))
             }
 
-            // 3. Root Access
+            // 3. Root Access: information, never a problem. Most devices can't be rooted, and ADB
+            // mode does everything Shizuku+ needs. (Later: a device that can only be temp-rooted
+            // could be offered adaptive repair that uses it while it lasts.)
             val isRooted = EnvironmentUtils.isRooted()
+            val rootGranted =
+                isRooted &&
+                    runCatching {
+                        com.topjohnwu.superuser.Shell
+                            .isAppGrantedRoot() == true
+                    }.getOrDefault(false)
             checks.add(
                 CheckItem(
                     id = "root_access",
                     title = context.getString(R.string.doctor_check_root),
-                    status = if (isRooted) context.getString(R.string.doctor_status_ok) else context.getString(R.string.doctor_status_not_enabled),
-                    ok = isRooted,
+                    status =
+                        context.getString(
+                            when {
+                                rootGranted -> R.string.doctor_status_ok
+                                isRooted -> R.string.doctor_status_root_not_granted
+                                else -> R.string.doctor_status_root_not_needed
+                            },
+                        ),
+                    ok = true,
                     canAutoFix = false,
                 ),
             )
+
+            // 3b. Why recent starts failed (the most common causes in crash reports), with the
+            // repair that fits. Tap-only: these change how Shizuku+ connects.
+            if (!ShizukuStateMachine.isRunning()) {
+                StartFailureLog.recent()?.let { recent -> startFailureCheck(context, recent)?.let(checks::add) }
+            }
 
             // 4. Shizuku Server
             val isRunning = ShizukuStateMachine.isRunning()
@@ -498,11 +519,79 @@ object ServiceDoctor {
             DiagnosticResult(checks, issues, fixable, tips)
         }
 
-    /** [tapped]: the user pressed "Fix all", so fixes kept out of background healing run too. */
+    private fun startFailureCheck(
+        context: Context,
+        recent: StartFailureLog.Recent,
+    ): CheckItem? =
+        when (recent.kind) {
+            StartFailureLog.Kind.MDNS_TIMEOUT ->
+                if (recent.count < 2 || ShizukuSettings.getTcpMode()) {
+                    null
+                } else {
+                    CheckItem(
+                        id = "start_mdns_timeout",
+                        title = context.getString(R.string.doctor_check_port_discovery),
+                        status = context.getString(R.string.doctor_status_port_discovery_failed, recent.count),
+                        ok = false,
+                        canAutoFix = true,
+                        autoHeal = false,
+                        autoFix = {
+                            ShizukuSettings.setTcpMode(true)
+                            ShizukuSettings.setTcpPort(5555)
+                            true
+                        },
+                        tip = "• " + context.getString(R.string.doctor_tip_port_discovery),
+                    )
+                }
+            StartFailureLog.Kind.AUTH_TIMEOUT, StartFailureLog.Kind.ADB_KEY ->
+                if (recent.kind == StartFailureLog.Kind.AUTH_TIMEOUT && recent.count < 2) {
+                    null
+                } else {
+                    CheckItem(
+                        id = "start_adb_key",
+                        title = context.getString(R.string.doctor_check_adb_key),
+                        status =
+                            context.getString(
+                                if (recent.kind == StartFailureLog.Kind.ADB_KEY) R.string.doctor_status_adb_key_broken else R.string.doctor_status_adb_auth_unanswered,
+                            ),
+                        ok = false,
+                        canAutoFix = true,
+                        autoHeal = false,
+                        autoFix = {
+                            af.shizuku.manager.adb.AdbKeyReset
+                                .reset()
+                                .also { if (it) StartFailureLog.clear() }
+                        },
+                        tip = "• " + context.getString(R.string.doctor_tip_adb_key),
+                    )
+                }
+        }
+
+    /** Fixes the user unchecked in "Fix all"; background self-healing skips them too. */
+    fun excludedFixes(): Set<String> = ShizukuSettings.getPreferences()?.getStringSet(KEY_EXCLUDED_FIXES, null)?.toSet() ?: emptySet()
+
+    fun setExcludedFixes(ids: Set<String>) {
+        ShizukuSettings
+            .getPreferences()
+            ?.edit()
+            ?.putStringSet(KEY_EXCLUDED_FIXES, ids)
+            ?.apply()
+    }
+
+    private const val KEY_EXCLUDED_FIXES = "doctor_excluded_fixes"
+
+    /** Checks "Fix all" can repair right now: failing, with an automatic fix. */
+    fun fixableChecks(diag: DiagnosticResult): List<CheckItem> = diag.checks.filter { !it.ok && it.canAutoFix && it.autoFix != null }
+
+    /**
+     * [tapped]: the user pressed "Fix all", so fixes kept out of background healing run too.
+     * [only]: the fixes the user picked; null means all of them except [excludedFixes].
+     */
     suspend fun autoHeal(
         context: Context,
         onProgress: ((step: String) -> Unit)? = null,
         tapped: Boolean = false,
+        only: Set<String>? = null,
     ): AutoHealReport =
         withContext(Dispatchers.IO) {
             val applied = mutableListOf<String>()
@@ -510,8 +599,10 @@ object ServiceDoctor {
             val failed = mutableListOf<String>()
 
             val diag = runFullDiagnostics(context)
+            val excluded = if (only == null) excludedFixes() else emptySet()
             for (check in diag.checks) {
-                if (!check.ok && check.canAutoFix && (check.autoHeal || tapped) && check.autoFix != null) {
+                val chosen = if (only != null) check.id in only else check.id !in excluded
+                if (!check.ok && check.canAutoFix && (check.autoHeal || tapped) && check.autoFix != null && chosen) {
                     onProgress?.invoke(check.title)
                     try {
                         val success = check.autoFix.invoke(context)

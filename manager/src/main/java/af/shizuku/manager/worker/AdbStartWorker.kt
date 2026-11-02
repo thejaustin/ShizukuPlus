@@ -348,6 +348,8 @@ class AdbStartWorker(
             timber.log.Timber
                 .tag("AdbStartWorker")
                 .w(e, "doWork: authorisation dialog not answered, not retrying")
+            af.shizuku.manager.doctor.StartFailureLog
+                .record(af.shizuku.manager.doctor.StartFailureLog.Kind.AUTH_TIMEOUT)
             if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
                 ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
             }
@@ -368,6 +370,16 @@ class AdbStartWorker(
             // mDNS timeouts, an untrusted network and dropped sockets are expected while Wi-Fi
             // changes; as errors they were the top crash-report source (SHIZUKUPLUS-9K/9T/9R).
             val transient = ignored.any { it.isInstance(e) }
+            // Remembered for Service Doctor, which offers the matching repair.
+            when {
+                e is TimeoutException && e.message?.contains("mDNS") == true ->
+                    af.shizuku.manager.doctor.StartFailureLog
+                        .record(af.shizuku.manager.doctor.StartFailureLog.Kind.MDNS_TIMEOUT)
+                af.shizuku.manager.doctor.StartFailureLog
+                    .isAdbKeyFailure(e) ->
+                    af.shizuku.manager.doctor.StartFailureLog
+                        .record(af.shizuku.manager.doctor.StartFailureLog.Kind.ADB_KEY)
+            }
             timber.log.Timber
                 .tag("AdbStartWorker")
                 .log(if (transient) android.util.Log.WARN else android.util.Log.ERROR, e, "doWork: failed on runAttempt %d: %s", runAttemptCount, e.message)
