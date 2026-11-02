@@ -246,15 +246,30 @@ int main(int argc, char *argv[]) {
 
     switch_cgroup();
 
+    bool enable_tcp = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--tcp") == 0 || strcmp(argv[i], "--tcpip") == 0) {
+            enable_tcp = true;
+            break;
+        }
+    }
+
     if (uid == 2000) {
         char port_buf[PROP_VALUE_MAX + 1] = {0};
-        __system_property_get("service.adb.tcp.port", port_buf);
-        int current_port = atoi(port_buf);
-        if (current_port <= 0) {
-            printf("info: configuring adbd TCP mode (port 5555) to persist across USB disconnect...\n");
-            fflush(stdout);
-            __system_property_set("service.adb.tcp.port", "5555");
-            __system_property_set("persist.adb.tcp.port", "5555");
+        __system_property_get("persist.adb.tcp.port", port_buf);
+        int persist_port = atoi(port_buf);
+        if (enable_tcp || persist_port > 0) {
+            int target_port = persist_port > 0 ? persist_port : 5555;
+            char active_buf[PROP_VALUE_MAX + 1] = {0};
+            __system_property_get("service.adb.tcp.port", active_buf);
+            if (atoi(active_buf) <= 0) {
+                char target_str[16];
+                snprintf(target_str, sizeof(target_str), "%d", target_port);
+                printf("info: configuring adbd TCP mode (port %s) as configured...\n", target_str);
+                fflush(stdout);
+                __system_property_set("service.adb.tcp.port", target_str);
+                __system_property_set("persist.adb.tcp.port", target_str);
+            }
         }
     }
 

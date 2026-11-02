@@ -1933,6 +1933,10 @@
     <string name="recommendation_tcp_mode_title">Enable TCP Mode (Port 5555)?</string>
     <string name="recommendation_tcp_mode_message">Enabling TCP Mode keeps Wireless Debugging listening on port 5555 so Shizuku+ can start, reconnect, and auto-recover instantly—even without Wi-Fi or mDNS port discovery.\n\nWould you like to enable TCP Mode and Force Start without Wi-Fi?</string>
     <string name="recommendation_tcp_mode_enable">Enable TCP Mode</string>
+    <string name="recommendation_usb_tcp_title">Keep Shizuku+ alive after unplugging USB?</string>
+    <string name="recommendation_usb_tcp_message">By default, Android terminates ADB sessions when you disconnect the USB cable. Enabling TCP Mode (port 5555) keeps ADB listening locally so Shizuku+ survives unplugging and can reconnect on-device.</string>
+    <string name="recommendation_usb_tcp_enable">Enable TCP Mode (Port 5555)</string>
+    <string name="home_adb_dialog_tcp_toggle">Keep alive after unplugging USB (enable TCP mode)</string>
     <string name="tip_tcp_mode_desc">Keep ADB listening on port 5555 so Shizuku+ can reconnect and start without Wi-Fi or mDNS discovery</string>
     <string name="tip_device_hardening_desc">Apply privileged OS optimizations to prevent phantom process kills and background freezes</string>
     <string name="diagnostics_warning_tcp_mode_disabled">TCP Mode (port 5555) is disabled. Tap to enable instant Wireless ADB reconnection without Wi-Fi.</string>

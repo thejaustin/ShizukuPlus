@@ -20,6 +20,7 @@ object AdaptiveRecommendationManager {
     const val KEY_DISMISSED_RECOMMENDATIONS = "dismissed_adaptive_recommendations"
 
     const val ID_TCP_MODE = "tcp_mode"
+    const val ID_USB_TCP_PERSISTENCE = "usb_tcp_persistence"
     const val ID_STABILITY_TIPS = "stability_tips"
     const val ID_TCP_NETWORK_GUARD = "tcp_network_guard"
 
@@ -187,6 +188,40 @@ object AdaptiveRecommendationManager {
                 onEnabled()
                 // Same follow-up as turning TCP Mode on in Settings: offer open Wi-Fi protection
                 // while the port is about to stay open.
+                maybeRecommendTcpNetworkGuard(context)
+            },
+        )
+    }
+
+    /**
+     * Proactively recommends enabling TCP Mode (Port 5555) when the device is connected
+     * via USB or started via ADB, so that disconnecting the USB cable does not terminate the
+     * server session or prevent loopback reconnection.
+     */
+    @JvmStatic
+    fun maybeRecommendUsbTcpMode(
+        context: Context,
+        onEnabled: () -> Unit = {},
+    ): Boolean {
+        if (ShizukuSettings.getTcpMode()) return false
+        if (ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ROOT) return false
+
+        return showRecommendationDialog(
+            context = context,
+            id = ID_USB_TCP_PERSISTENCE,
+            title = context.getString(R.string.recommendation_usb_tcp_title),
+            message = context.getString(R.string.recommendation_usb_tcp_message),
+            positiveLabel = context.getString(R.string.recommendation_usb_tcp_enable),
+            iconRes = R.drawable.ic_settings_suggest_24,
+            onAccept = {
+                ShizukuSettings.setTcpMode(true)
+                Toast
+                    .makeText(
+                        context,
+                        R.string.diagnostics_tcp_mode_enabled_toast,
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                onEnabled()
                 maybeRecommendTcpNetworkGuard(context)
             },
         )

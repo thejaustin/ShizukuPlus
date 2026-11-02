@@ -356,18 +356,16 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 }
             }
 
-            // 2. Ensure TCP port 5555 is configured so adbd stays listening after USB is unplugged
+            // 2. Only ensure active TCP port if persistent TCP mode is configured/enabled by the user
             if (uid == 2000 || uid == 0) {
-                String currentPort = android.os.SystemProperties.get("service.adb.tcp.port", "");
                 String persistPort = android.os.SystemProperties.get("persist.adb.tcp.port", "");
-                int port = 5555;
-                if (currentPort.isEmpty() || "-1".equals(currentPort) || "0".equals(currentPort)) {
-                    LOGGER.i("Ensuring ADB TCP mode (port %d) so connection survives USB disconnect", port);
-                    android.os.SystemProperties.set("service.adb.tcp.port", Integer.toString(port));
-                    android.os.SystemProperties.set("persist.adb.tcp.port", Integer.toString(port));
-                    android.os.SystemProperties.set("ctl.restart", "adbd");
-                } else if (persistPort.isEmpty() || "-1".equals(persistPort)) {
-                    android.os.SystemProperties.set("persist.adb.tcp.port", currentPort);
+                String currentPort = android.os.SystemProperties.get("service.adb.tcp.port", "");
+                if (!persistPort.isEmpty() && !"-1".equals(persistPort) && !"0".equals(persistPort)) {
+                    if (currentPort.isEmpty() || "-1".equals(currentPort) || "0".equals(currentPort)) {
+                        LOGGER.i("Restoring active ADB TCP mode (port %s) from persistent configuration", persistPort);
+                        android.os.SystemProperties.set("service.adb.tcp.port", persistPort);
+                        android.os.SystemProperties.set("ctl.restart", "adbd");
+                    }
                 }
             }
         } catch (Throwable t) {

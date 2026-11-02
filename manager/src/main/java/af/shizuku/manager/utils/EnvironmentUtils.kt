@@ -42,6 +42,19 @@ object EnvironmentUtils {
         af.shizuku.common.util.EnvironmentUtils
             .isTlsSupported(appContext)
 
+    @JvmStatic
+    fun isUsbConnected(context: Context? = null): Boolean =
+        try {
+            val ctx = context ?: appContext
+            val filter = android.content.IntentFilter(android.content.Intent.ACTION_BATTERY_CHANGED)
+            val batteryStatus = ctx.registerReceiver(null, filter)
+            val plugged = batteryStatus?.getIntExtra(android.os.BatteryManager.EXTRA_PLUGGED, -1) ?: -1
+            plugged == android.os.BatteryManager.BATTERY_PLUGGED_USB
+        } catch (_: Exception) {
+            val state = SystemProperties.get("sys.usb.state", "")
+            state.contains("adb")
+        }
+
     fun isWifiRequired(allowNetworkProbe: Boolean = true): Boolean {
         if (ShizukuSettings.getTcpMode()) return false
         if (getAdbTcpPort() > 0) return false

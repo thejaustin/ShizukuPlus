@@ -162,8 +162,15 @@ open class HomeActivity :
                     if (!isFinishing && !isDestroyed && lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) {
                         val uid = runCatching { rikka.shizuku.Shizuku.getUid() }.getOrDefault(-1)
                         if (uid == 2000 && !ShizukuSettings.getTcpMode()) {
-                            af.shizuku.manager.utils.AdaptiveRecommendationManager
-                                .maybeRecommendTcpMode(this)
+                            if (af.shizuku.manager.utils.EnvironmentUtils
+                                    .isUsbConnected(this)
+                            ) {
+                                af.shizuku.manager.utils.AdaptiveRecommendationManager
+                                    .maybeRecommendUsbTcpMode(this)
+                            } else {
+                                af.shizuku.manager.utils.AdaptiveRecommendationManager
+                                    .maybeRecommendTcpMode(this)
+                            }
                         }
                     }
                 }

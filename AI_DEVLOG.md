@@ -120,6 +120,14 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-11-02 (cont'd 3) — Antigravity (Gemini 3.8 Flash) (Opt-in TCP persistence, USB disconnect adaptive suggestion, interactive command dialog) [master]
+
+- **Opt-in TCP Mode & USB Disconnect Suggestion:**
+  - *Starter & Server*: Updated `manager/src/main/jni/starter.cpp` and `server/src/main/java/rikka/shizuku/server/ShizukuService.java` so `service.adb.tcp.port` and `persist.adb.tcp.port` are ONLY configured if TCP mode is explicitly enabled by the user in settings (`persist.adb.tcp.port > 0`) or requested via `--tcp`/`--tcpip` in command arguments. Never forces TCP mode on users who intentionally want USB-only debugging.
+  - *Starter Commands*: `Starter.kt` dynamically emits `--tcp` and `adb tcpip 5555 && ` only when `ShizukuSettings.getTcpMode()` is true.
+  - *Interactive Command Dialog*: `StartAdbViewHolder.showViewCommandDialog` now features an embedded `MaterialCheckBox` allowing users to toggle TCP mode live before copying or sending the command. Toggling immediately updates the displayed command text and preferences.
+  - *Adaptive USB Disconnect Suggestion*: Added `AdaptiveRecommendationManager.maybeRecommendUsbTcpMode()` and `EnvironmentUtils.isUsbConnected()`. When Shizuku starts via ADB while connected to USB, if TCP mode is not enabled, an adaptive recommendation offers to enable TCP mode (port 5555) with chained open Wi-Fi network guard recommendations before disconnecting.
+
 ### 2026-11-02 (cont'd 2) — Antigravity (Gemini 3.8 Flash) (CI paths-ignore, USB debugging setting preservation, GitHub community triage) [master]
 
 - **GitHub Actions CI Trigger Suppression for Docs/README:**
