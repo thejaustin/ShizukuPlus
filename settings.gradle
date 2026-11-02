@@ -54,6 +54,12 @@ if (propFile.canRead()) {
     }
 }
 
+// The API modules live in the api/ git submodule. Without it Gradle fails with "Configuring
+// project ':rish' without an existing directory"; say what to do instead.
+if (!file("$root${File.separator}api").isDirectory()) {
+    throw new GradleException("The api submodule is missing. Run: git submodule update --init --recursive")
+}
+
 include ":aidl"
 project(":aidl").projectDir = file("$root${File.separator}aidl")
 
