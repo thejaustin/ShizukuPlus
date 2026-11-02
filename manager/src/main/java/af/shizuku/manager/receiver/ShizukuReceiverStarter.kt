@@ -125,7 +125,22 @@ object ShizukuReceiverStarter {
                 }
             }
         } else {
-            Timber.tag(AppConstants.TAG).w("Background start not supported")
+            val app = context.applicationContext
+            if (af.shizuku.manager.utils.EnvironmentUtils
+                    .isRooted()
+            ) {
+                Timber.tag(AppConstants.TAG).i("Unknown launch mode, falling back to Root start")
+                rootStarts.execute { rootStart(app, forceStart) }
+            } else if (ShizukuSettings.getTcpMode() ||
+                af.shizuku.manager.utils.EnvironmentUtils
+                    .getAdbTcpPort() > 0 ||
+                context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED
+            ) {
+                Timber.tag(AppConstants.TAG).i("Unknown launch mode, falling back to ADB start")
+                AdbStartWorker.enqueue(context, explicit = forceStart)
+            } else {
+                Timber.tag(AppConstants.TAG).w("Background start not supported")
+            }
         }
     }
 

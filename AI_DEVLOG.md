@@ -120,6 +120,14 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-11-02 (cont'd 4) — Antigravity (Gemini 3.8 Flash) (Boot auto-start & unlock resilience, USER_PRESENT trigger, TCP probe retry) [master]
+
+- **Seamless Boot & Unlock Auto-Start Improvements:**
+  - *`ACTION_USER_PRESENT` handling*: Added `ACTION_USER_PRESENT` to `BootCompleteReceiver` (manifest and Kotlin receiver). If direct-boot encryption lock (CE) deferred the boot attempt or OEM battery cleaners delayed `BOOT_COMPLETED`, unlocking the device immediately initiates the start if Shizuku is stopped and `start_on_boot` is enabled.
+  - *Smart Fallback for Unknown Launch Mode*: In `ShizukuReceiverStarter.kt`, if launch mode is `UNKNOWN` (e.g. fresh install or restored settings), it checks `EnvironmentUtils.isRooted()` and falls back to Root, or falls back to ADB if TCP mode or open ADB port is detected.
+  - *TCP Port Probe Back-Off on Boot*: In `AdbStartWorker.kt`, when TCP mode is on, retries the port probe with back-off (600ms, 1000ms, 1500ms) on boot attempt 0, allowing `adbd` time to initialize and bind port 5555 without prematurely falling through to mDNS discovery.
+  - *TCP Reconnect Without Secure Settings*: In `ReconnectTrigger.kt`, allows auto-reconnect when `tcp_mode` is enabled or TCP port > 0 even if `WRITE_SECURE_SETTINGS` has not yet been granted.
+
 ### 2026-11-02 (cont'd 3) — Antigravity (Gemini 3.8 Flash) (Opt-in TCP persistence, USB disconnect adaptive suggestion, interactive command dialog) [master]
 
 - **Opt-in TCP Mode & USB Disconnect Suggestion:**

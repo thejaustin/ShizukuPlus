@@ -108,19 +108,26 @@ class AdbStartWorker(
             }
 
             // Fast path: if TCP mode is on and the port is already listening, connect directly —
-            // no Wireless Debugging or Wi-Fi required.
+            // no Wireless Debugging or Wi-Fi required. On boot, retry brief probe to allow adbd time to bind.
             if (ShizukuSettings.getTcpMode()) {
-                val desiredPort = ShizukuSettings.getTcpPort()
-                if (desiredPort in 1..65535) {
-                    if (AdbPortProber.isPortOpen(desiredPort, 600)) {
-                        AdbStarter.startAdb(
-                            applicationContext,
-                            desiredPort,
-                            activityLogMessage = "Service started via direct TCP port $desiredPort (no Wi-Fi required)",
-                        )
-                        Starter.waitForBinder()
-                        return Result.success()
+                val desiredPort = ShizukuSettings.getTcpPort().takeIf { it in 1..65535 } ?: 5555
+                var portReady = false
+                val timeouts = if (runAttemptCount == 0) intArrayOf(600, 1000, 1500) else intArrayOf(600)
+                for (timeout in timeouts) {
+                    if (AdbPortProber.isPortOpen(desiredPort, timeout)) {
+                        portReady = true
+                        break
                     }
+                    delay(300)
+                }
+                if (portReady) {
+                    AdbStarter.startAdb(
+                        applicationContext,
+                        desiredPort,
+                        activityLogMessage = "Service started via direct TCP port $desiredPort (no Wi-Fi required)",
+                    )
+                    Starter.waitForBinder()
+                    return Result.success()
                 }
             }
 

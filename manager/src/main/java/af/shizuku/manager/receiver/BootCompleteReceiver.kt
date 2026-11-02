@@ -22,6 +22,7 @@ class BootCompleteReceiver : BroadcastReceiver() {
                 Intent.ACTION_BOOT_COMPLETED,
                 Intent.ACTION_LOCKED_BOOT_COMPLETED,
                 Intent.ACTION_MY_PACKAGE_REPLACED,
+                Intent.ACTION_USER_PRESENT,
                 "android.intent.action.QUICKBOOT_POWERON",
                 "com.htc.intent.action.QUICKBOOT_POWERON",
                 -> true
@@ -30,6 +31,31 @@ class BootCompleteReceiver : BroadcastReceiver() {
         if (!handled) return
 
         Timber.tag("BootCompleteReceiver").i("Triggered by: $action")
+
+        if (action == Intent.ACTION_USER_PRESENT) {
+            val um = context.getSystemService(android.os.UserManager::class.java)
+            if (um != null && !um.isUserUnlocked) return
+            if (!ShizukuSettings.getStartOnBoot(context) ||
+                af.shizuku.manager.utils.UserStopFlag
+                    .isSet()
+            ) {
+                return
+            }
+            if (af.shizuku.manager.utils.ShizukuStateMachine
+                    .isRunning() ||
+                af.shizuku.manager.utils.ShizukuStateMachine
+                    .get() == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING
+            ) {
+                return
+            }
+            Timber.tag("BootCompleteReceiver").i("User unlocked device while Shizuku is stopped — triggering start on boot")
+            try {
+                ShizukuReceiverStarter.start(context)
+            } catch (e: Exception) {
+                Timber.tag("BootCompleteReceiver").w(e, "USER_PRESENT auto-start failed")
+            }
+            return
+        }
         // LOCKED_BOOT_COMPLETED fires before credential-encrypted storage is unlocked, so prefs
         // (launch mode, shell commands, etc.) are unavailable. Attempting to start here would either
         // crash or spawn a server using stale defaults, and BOOT_COMPLETED fires seconds later once
