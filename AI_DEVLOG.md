@@ -137,9 +137,15 @@ Things discussed or sketched that we never formally decided to build.
     - In `MainActivity.kt`: Only burns `lastSeenChangelogVersion` when releases are successfully retrieved or style picker is explicitly handled, avoiding showing empty dialogs on offline startup and preserving What's New for when online.
     - Added unit tests in `ChangelogFormatAndParseTest.kt` verifying all markdown formats, Unicode bullets, details unwrapping, and fallback highlights.
     - Added string `changelog_loading` to `strings.xml`.
-- **Crowdin Localization Setup:**
+- **Crowdin Localization & CI Workflow Enhancements:**
   - Crowdin project configured at `https://crowdin.com/project/shizukuplus` under `@thejaustin`.
-  - Prepared repository secrets documentation (`CROWDIN_PROJECT_ID` and `CROWDIN_TOKEN`) for `.github/workflows/crowdin-sync.yml`.
+  - Configured repository secrets `CROWDIN_PROJECT_ID` (`943373`) and `CROWDIN_TOKEN` in GitHub Actions.
+  - Installed native `crowdin` CLI v5.5.0 on Termux via glibc runner.
+  - Expanded project target locales to 65 languages and configured full `languages_mapping` in `crowdin.yml`.
+  - Backfilled and imported all existing translations for all 40 codebase languages into Crowdin with `--auto-approve-imported`.
+  - Updated `app.yml` to automatically pull latest approved Crowdin translations before assembling release APKs so releases always ship with up-to-date localization.
+  - Updated `pr-check.yml` to enforce `./gradlew spotlessCheck` on PRs and ignore doc-only markdown changes.
+  - Updated `crowdin-sync.yml` with bidirectional translation sync and step summary reporting.
 - **Code Hygiene & Verification:**
   - Ran `bash gradlew spotlessApply` and `bash gradlew spotlessCheck`. Both clean and passing.
 
