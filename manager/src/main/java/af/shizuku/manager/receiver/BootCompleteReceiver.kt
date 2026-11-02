@@ -68,6 +68,13 @@ class BootCompleteReceiver : BroadcastReceiver() {
                 Timber.tag("BootCompleteReceiver").w(e, "AutomationService start skipped")
             }
         }
+        if (ShizukuSettings.isAdbProxyEnabled()) {
+            try {
+                context.startService(Intent(context, af.shizuku.manager.service.AdbProxyService::class.java))
+            } catch (e: Exception) {
+                Timber.tag("BootCompleteReceiver").w(e, "AdbProxyService auto-start skipped")
+            }
+        }
         if (action == Intent.ACTION_MY_PACKAGE_REPLACED && ShizukuSettings.isSuBridgeEnabled()) {
             // The su/rish_shizuku.dex bridge deployed to /data/local/tmp is version-specific
             // bytecode compiled against this exact APK build; previously it was only ever

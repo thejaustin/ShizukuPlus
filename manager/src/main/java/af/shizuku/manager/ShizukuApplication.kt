@@ -630,6 +630,37 @@ class ShizukuApplication :
                     } catch (e: Exception) {
                         Timber.tag("ShizukuApplication").w(e, "SU bridge sync on service start failed")
                     }
+
+                    // Auto-apply TCP mode and On-Device ADB TCP settings without requiring manual re-toggle
+                    try {
+                        val tcpMode =
+                            ShizukuSettings.getTcpMode() &&
+                                !af.shizuku.manager.utils.NetworkTrust
+                                    .shouldBlockTcp(this@ShizukuApplication)
+                        val onDeviceAdbTcp = ShizukuSettings.isOnDeviceAdbTcpEnabled()
+                        if (tcpMode || onDeviceAdbTcp) {
+                            val desiredPort = if (tcpMode) ShizukuSettings.getTcpPort().takeIf { it in 1..65535 } ?: 5555 else 5555
+                            val currentPort =
+                                af.shizuku.manager.utils.EnvironmentUtils
+                                    .getAdbTcpPort()
+                            if (currentPort != desiredPort) {
+                                af.shizuku.manager.service.AdbProxyService
+                                    .enableAdbTcp(desiredPort)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Timber.tag("ShizukuApplication").w(e, "TCP mode auto-apply on service start failed")
+                    }
+
+                    // Ensure Local ADB Proxy is running if enabled in settings
+                    try {
+                        if (ShizukuSettings.isAdbProxyEnabled()) {
+                            val proxyIntent = Intent(this@ShizukuApplication, af.shizuku.manager.service.AdbProxyService::class.java)
+                            startService(proxyIntent)
+                        }
+                    } catch (e: Exception) {
+                        Timber.tag("ShizukuApplication").w(e, "ADB Proxy Service start failed")
+                    }
                 }
         }
         AppContextManager.initialize(AppContextSettingsImpl(applicationContext))
@@ -882,6 +913,9 @@ class ShizukuApplication :
         try {
             initializeManagers()
             initPeerSettingsSync()
+            if (ShizukuSettings.isAdbProxyEnabled()) {
+                startService(Intent(this, af.shizuku.manager.service.AdbProxyService::class.java))
+            }
         } catch (e: Throwable) {
             Timber.e(e, "Failed to initialize managers")
             Sentry.captureException(e)
