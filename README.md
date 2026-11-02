@@ -28,8 +28,9 @@ Shizuku lets normal apps use system-level APIs directly via a privileged process
 [![Stars](https://img.shields.io/github/stars/thejaustin/ShizukuPlus?style=for-the-badge&color=bfb330&labelColor=807820)](https://github.com/thejaustin/ShizukuPlus/stargazers)
 [![Downloads](https://img.shields.io/github/downloads/thejaustin/ShizukuPlus/total?style=for-the-badge&color=bf7830&labelColor=805020)](https://github.com/thejaustin/ShizukuPlus/releases)
 [![Latest Release](https://img.shields.io/github/v/release/thejaustin/ShizukuPlus?include_prereleases&sort=date&style=for-the-badge&color=3060bf&labelColor=204080&label=Latest)](https://github.com/thejaustin/ShizukuPlus/releases)
+[![Crowdin](https://badges.crowdin.net/ShizukuPlus/localized.svg)](https://crowdin.com/project/ShizukuPlus)
 
-**🌐 Languages:** **English** · [Simplified Chinese](README.zh-CN.md)
+**🌐 Languages:** **English** · [Simplified Chinese](README.zh-CN.md) · [Help Translate on Crowdin](https://crowdin.com/project/ShizukuPlus)
 
 </div>
 
@@ -225,7 +226,7 @@ Full license texts and per-library details: [OPEN_SOURCE_LICENSES.md](OPEN_SOURC
 | Italian | [Dany-coder778](https://github.com/Dany-coder778) |
 | Japanese | [MES-mitutti](https://github.com/MES-mitutti) |
 
-*Plus many more via community translation through Weblate — thank you to all translators!*
+*Plus many more via community translation through [Crowdin](https://crowdin.com/project/ShizukuPlus) — thank you to all translators!*
 
 > **Machine-assisted drafts:** where a language was still incomplete, missing strings were filled with AI-assisted drafts in `strings_machine_translated.xml` and are **flagged for native review**. If you speak the language, corrections are very welcome — see [TRANSLATING.md](TRANSLATING.md).
 

@@ -1,3 +1,6 @@
+project_id: 943373
+preserve_hierarchy: true
+
 files:
   - source: /manager/src/main/res/values/strings.xml
     translation: /manager/src/main/res/values-%android_code%/%original_file_name%
