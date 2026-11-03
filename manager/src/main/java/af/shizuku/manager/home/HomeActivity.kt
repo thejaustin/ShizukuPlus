@@ -148,7 +148,10 @@ open class HomeActivity :
             }
         }
 
+    private var wasServerRunningOnStart: Boolean? = null
+
     private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
+        val wasRunning = isServerRunning
         isServerRunning = ShizukuStateMachine.isRunning()
         when (state) {
             ShizukuStateMachine.State.RUNNING -> {
@@ -157,18 +160,26 @@ open class HomeActivity :
                 appsModel.load()
                 ShizukuSettings.syncAllPlusFeaturesToServer()
                 maybeShowVersionSkewSnackbar()
-                window.decorView.post {
-                    if (!isFinishing && !isDestroyed && lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) {
-                        val uid = runCatching { rikka.shizuku.Shizuku.getUid() }.getOrDefault(-1)
-                        if (uid == 2000 && !ShizukuSettings.getTcpMode()) {
-                            if (af.shizuku.manager.utils.EnvironmentUtils
-                                    .isUsbConnected(this)
-                            ) {
-                                af.shizuku.manager.utils.AdaptiveRecommendationManager
-                                    .maybeRecommendUsbTcpMode(this)
-                            } else {
-                                af.shizuku.manager.utils.AdaptiveRecommendationManager
-                                    .maybeRecommendTcpMode(this)
+                val isColdStartRegistration = (wasServerRunningOnStart == null)
+                if (isColdStartRegistration) {
+                    wasServerRunningOnStart = true
+                }
+                // Only recommend TCP mode on an actual transition from non-running -> running,
+                // never when the user simply launches the app with Shizuku already running.
+                if (!isColdStartRegistration && !wasRunning) {
+                    window.decorView.post {
+                        if (!isFinishing && !isDestroyed && lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) {
+                            val uid = runCatching { rikka.shizuku.Shizuku.getUid() }.getOrDefault(-1)
+                            if (uid == 2000 && !ShizukuSettings.getTcpMode()) {
+                                if (af.shizuku.manager.utils.EnvironmentUtils
+                                        .isUsbConnected(this)
+                                ) {
+                                    af.shizuku.manager.utils.AdaptiveRecommendationManager
+                                        .maybeRecommendUsbTcpMode(this)
+                                } else {
+                                    af.shizuku.manager.utils.AdaptiveRecommendationManager
+                                        .maybeRecommendTcpMode(this)
+                                }
                             }
                         }
                     }
@@ -177,6 +188,9 @@ open class HomeActivity :
             ShizukuStateMachine.State.STOPPED,
             ShizukuStateMachine.State.CRASHED,
             -> {
+                if (wasServerRunningOnStart == null) {
+                    wasServerRunningOnStart = false
+                }
                 // Shizuku stopped or crashed - refresh status display
                 checkServerStatus()
                 if (state == ShizukuStateMachine.State.CRASHED &&

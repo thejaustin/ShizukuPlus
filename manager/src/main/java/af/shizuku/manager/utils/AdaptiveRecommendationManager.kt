@@ -24,8 +24,24 @@ object AdaptiveRecommendationManager {
     const val ID_STABILITY_TIPS = "stability_tips"
     const val ID_TCP_NETWORK_GUARD = "tcp_network_guard"
 
+    private const val KEY_LAST_PROMPT_PREFIX = "adaptive_last_prompt_"
+    private const val COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000L // 3-day cooldown between automatic prompts
+
     // In-memory session guard so we don't prompt the same recommendation twice in one process session
     private val shownThisSession = mutableSetOf<String>()
+
+    @JvmStatic
+    fun isCoolingDown(id: String): Boolean {
+        val sp = ShizukuSettings.getPreferences() ?: return false
+        val lastPrompt = sp.getLong(KEY_LAST_PROMPT_PREFIX + id, 0L)
+        return (System.currentTimeMillis() - lastPrompt) < COOLDOWN_MS
+    }
+
+    @JvmStatic
+    fun markPrompted(id: String) {
+        val sp = ShizukuSettings.getPreferences() ?: return
+        sp.edit().putLong(KEY_LAST_PROMPT_PREFIX + id, System.currentTimeMillis()).apply()
+    }
 
     @JvmStatic
     fun isDismissed(id: String): Boolean {
@@ -63,12 +79,16 @@ object AdaptiveRecommendationManager {
         shownThisSession.clear()
         ShizukuSettings.setAdaptiveRecommendationsEnabled(true)
         val sp = ShizukuSettings.getPreferences() ?: return
-        sp
-            .edit()
-            .remove(KEY_DISMISSED_RECOMMENDATIONS)
-            .remove("diagnostics_dismissed")
-            .putBoolean("diagnostics_enabled", true)
-            .apply()
+        val editor =
+            sp
+                .edit()
+                .remove(KEY_DISMISSED_RECOMMENDATIONS)
+                .remove("diagnostics_dismissed")
+                .putBoolean("diagnostics_enabled", true)
+        listOf(ID_TCP_MODE, ID_USB_TCP_PERSISTENCE, ID_STABILITY_TIPS, ID_TCP_NETWORK_GUARD).forEach {
+            editor.remove(KEY_LAST_PROMPT_PREFIX + it)
+        }
+        editor.apply()
     }
 
     /**
@@ -89,11 +109,14 @@ object AdaptiveRecommendationManager {
         onDecline: () -> Unit = {},
     ): Boolean {
         if (isDismissed(id)) return false
+        if (respectSessionGuard && isCoolingDown(id)) return false
         // Callers often post this from async state callbacks; a dialog on a finishing or
         // destroyed activity throws BadTokenException.
         val activity = context as? android.app.Activity
         if (activity != null && (activity.isFinishing || activity.isDestroyed)) return false
         if (respectSessionGuard && !shownThisSession.add(id)) return false
+
+        markPrompted(id)
 
         val density = context.resources.displayMetrics.density
         val padH = (24 * density).toInt()
@@ -178,7 +201,10 @@ object AdaptiveRecommendationManager {
             positiveLabel = context.getString(R.string.recommendation_tcp_mode_enable),
             onAccept = {
                 ShizukuSettings.setTcpMode(true)
+                ShizukuSettings.setTcpPort(5555)
                 ShizukuSettings.setForceStartWadbEnabled(true)
+                af.shizuku.manager.adb.AdbProxyService
+                    .enableAdbTcp(5555)
                 Toast
                     .makeText(
                         context,
@@ -186,9 +212,6 @@ object AdaptiveRecommendationManager {
                         Toast.LENGTH_SHORT,
                     ).show()
                 onEnabled()
-                // Same follow-up as turning TCP Mode on in Settings: offer open Wi-Fi protection
-                // while the port is about to stay open.
-                maybeRecommendTcpNetworkGuard(context)
             },
         )
     }
@@ -215,6 +238,9 @@ object AdaptiveRecommendationManager {
             iconRes = R.drawable.ic_settings_suggest_24,
             onAccept = {
                 ShizukuSettings.setTcpMode(true)
+                ShizukuSettings.setTcpPort(5555)
+                af.shizuku.manager.adb.AdbProxyService
+                    .enableAdbTcp(5555)
                 Toast
                     .makeText(
                         context,
@@ -222,7 +248,6 @@ object AdaptiveRecommendationManager {
                         Toast.LENGTH_SHORT,
                     ).show()
                 onEnabled()
-                maybeRecommendTcpNetworkGuard(context)
             },
         )
     }

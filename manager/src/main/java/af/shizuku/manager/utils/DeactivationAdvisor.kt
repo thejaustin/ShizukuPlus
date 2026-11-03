@@ -145,9 +145,16 @@ object DeactivationAdvisor {
         onDismiss: () -> Unit = {},
     ) {
         if (isAutomaticPrompt &&
-            AdaptiveRecommendationManager.isDismissed(AdaptiveRecommendationManager.ID_STABILITY_TIPS)
+            (
+                AdaptiveRecommendationManager.isDismissed(AdaptiveRecommendationManager.ID_STABILITY_TIPS) ||
+                    AdaptiveRecommendationManager.isCoolingDown(AdaptiveRecommendationManager.ID_STABILITY_TIPS)
+            )
         ) {
             return
+        }
+
+        if (isAutomaticPrompt) {
+            AdaptiveRecommendationManager.markPrompted(AdaptiveRecommendationManager.ID_STABILITY_TIPS)
         }
 
         val tips = getTips(context)
