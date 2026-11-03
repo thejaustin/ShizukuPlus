@@ -20,7 +20,7 @@
         style="@style/CardTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/m3e_spacing_medium"
+        android:layout_marginStart="@dimen/m3e_spacing_large"
         android:duplicateParentState="true"
         android:text="@string/home_adb_is_limited_title"
         android:textColor="?colorOnErrorContainer"

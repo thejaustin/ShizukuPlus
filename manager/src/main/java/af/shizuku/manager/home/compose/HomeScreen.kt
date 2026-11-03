@@ -256,7 +256,7 @@ fun HomeScreen(
                     // Title: slides from center (expanded) → start (collapsed) via BiasAlignment.
                     // horizontalBias: 0 = center, -1 = start.
                     val horizontalBias = -curvedFraction
-                    val startPadding = lerp(start = 24.dp, stop = 20.dp, fraction = curvedFraction)
+                    val startPadding = lerp(start = 24.dp, stop = 16.dp, fraction = curvedFraction)
                     val endPaddingStop by animateDpAsState(
                         targetValue = if (isEditMode) 120.dp else 96.dp,
                         animationSpec = if (motionOn) motionScheme.defaultSpatialSpec() else snap(),

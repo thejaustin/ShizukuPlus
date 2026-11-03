@@ -58,11 +58,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.core.ktx.unsafeLazy
 import rikka.lifecycle.Status
-import rikka.recyclerview.addEdgeSpacing
-import rikka.recyclerview.addItemSpacing
 import rikka.recyclerview.fixEdgeEffect
 import rikka.shizuku.Shizuku
 import timber.log.Timber
+import kotlin.math.roundToInt
 import com.google.android.material.R as MaterialR
 
 open class HomeActivity :
@@ -585,13 +584,7 @@ open class HomeActivity :
         val marginHorizontal = resources.getDimension(R.dimen.margin_horizontal)
         val marginVertical = resources.getDimension(R.dimen.margin_vertical)
 
-        val itemSpacing = cardSpacing / 2f
-        val edgeSpacingH = marginHorizontal
-        val edgeSpacingTop = marginVertical + itemSpacing
-        val edgeSpacingBottom = marginVertical
-
-        recyclerView.addItemSpacing(top = itemSpacing, bottom = itemSpacing)
-        recyclerView.addEdgeSpacing(top = edgeSpacingTop, bottom = edgeSpacingBottom, left = edgeSpacingH, right = edgeSpacingH)
+        recyclerView.addItemDecoration(HomeCardSpacingDecoration(cardSpacing, marginHorizontal, marginVertical))
 
         // Drag-to-reorder support
 
@@ -1148,5 +1141,50 @@ private object CardRadiusProperty : FloatPropertyCompat<android.view.View>("card
         value: Float,
     ) {
         (view as? com.google.android.material.card.MaterialCardView)?.radius = value
+    }
+}
+
+/**
+ * Responsive edge and item spacing decoration for home cards across single-column
+ * and multi-column grid layouts. Guarantees uniform horizontal margins for full-span
+ * cards, symmetric spacing for multi-column spans, and consistent outer margins.
+ */
+private class HomeCardSpacingDecoration(
+    private val cardSpacing: Float,
+    private val marginHorizontal: Float,
+    private val marginVertical: Float,
+) : RecyclerView.ItemDecoration() {
+    override fun getItemOffsets(
+        outRect: android.graphics.Rect,
+        view: View,
+        parent: RecyclerView,
+        state: RecyclerView.State,
+    ) {
+        val adapter = parent.adapter ?: return
+        val layoutManager = parent.layoutManager as? androidx.recyclerview.widget.GridLayoutManager
+        val position = parent.getChildAdapterPosition(view)
+        if (position == RecyclerView.NO_POSITION) return
+
+        val itemCount = adapter.itemCount
+        val spanCount = layoutManager?.spanCount ?: 1
+        val spanSizeLookup = layoutManager?.spanSizeLookup
+
+        val spanIndex = spanSizeLookup?.getSpanIndex(position, spanCount) ?: 0
+        val spanSize = spanSizeLookup?.getSpanSize(position) ?: 1
+        val spanGroupIndex = spanSizeLookup?.getSpanGroupIndex(position, spanCount) ?: position
+        val lastSpanGroupIndex = spanSizeLookup?.getSpanGroupIndex(itemCount - 1, spanCount) ?: (itemCount - 1)
+
+        val halfSpacing = (cardSpacing / 2f).roundToInt()
+        val marginH = marginHorizontal.roundToInt()
+        val marginV = marginVertical.roundToInt()
+
+        // Horizontal edge spacing: outer edges get marginH, inner column gaps get halfSpacing.
+        // Full-width items (spanSize >= spanCount) get marginH on both left and right.
+        outRect.left = if (spanIndex == 0) marginH else halfSpacing
+        outRect.right = if (spanIndex + spanSize >= spanCount) marginH else halfSpacing
+
+        // Vertical edge spacing: outer edges get marginV, inter-card gaps get halfSpacing.
+        outRect.top = if (spanGroupIndex == 0) marginV else halfSpacing
+        outRect.bottom = if (spanGroupIndex == lastSpanGroupIndex) marginV else halfSpacing
     }
 }
