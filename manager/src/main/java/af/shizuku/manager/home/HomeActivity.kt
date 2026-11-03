@@ -412,7 +412,9 @@ open class HomeActivity :
                 }
 
                 adapter.updateData()
-                ShizukuSettings.setLastLaunchMode(if (status.uid == 0) ShizukuSettings.LaunchMethod.ROOT else ShizukuSettings.LaunchMethod.ADB)
+                if (status.isRunning) {
+                    ShizukuSettings.setLastLaunchMode(if (status.uid == 0) ShizukuSettings.LaunchMethod.ROOT else ShizukuSettings.LaunchMethod.ADB)
+                }
 
                 if (status.isRunning && previouslyRunning == false) {
                     recyclerView.post {

@@ -620,8 +620,8 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                         onClosing()
                         try {
                             AdbStarter.stopTcp(context, EnvironmentUtils.getAdbTcpPort())
-                            if (EnvironmentUtils.getAdbTcpPort() <= 0) applyChange()
                         } finally {
+                            applyChange()
                             onFinished()
                         }
                     }

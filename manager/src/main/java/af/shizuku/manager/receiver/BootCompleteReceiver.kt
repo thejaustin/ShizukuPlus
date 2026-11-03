@@ -95,16 +95,26 @@ class BootCompleteReceiver : BroadcastReceiver() {
         // crash or spawn a server using stale defaults, and BOOT_COMPLETED fires seconds later once
         // the user unlocks and handles the actual start (#504). Skip auto-start for LOCKED_BOOT_COMPLETED.
         if (action != Intent.ACTION_LOCKED_BOOT_COMPLETED) {
-            try {
-                // A real boot may raise adbd's authorisation dialog once more; the QUICKBOOT
-                // look-alikes do not reset that.
-                if (action == Intent.ACTION_BOOT_COMPLETED) {
-                    af.shizuku.manager.adb.AdbAuthWait
-                        .clearUnanswered()
+            val shouldStartOnBoot =
+                ShizukuSettings.getStartOnBoot(context) ||
+                    (ShizukuSettings.getWatchdog() && ShizukuSettings.isWatchdogAutoRestartEnabled())
+            if (shouldStartOnBoot &&
+                !af.shizuku.manager.utils.UserStopFlag
+                    .isSet()
+            ) {
+                try {
+                    // A real boot may raise adbd's authorisation dialog once more; the QUICKBOOT
+                    // look-alikes do not reset that.
+                    if (action == Intent.ACTION_BOOT_COMPLETED) {
+                        af.shizuku.manager.adb.AdbAuthWait
+                            .clearUnanswered()
+                    }
+                    ShizukuReceiverStarter.start(context)
+                } catch (e: Exception) {
+                    Timber.tag("BootCompleteReceiver").w(e, "Auto-start skipped (service not ready, e.g. direct boot)")
                 }
-                ShizukuReceiverStarter.start(context)
-            } catch (e: Exception) {
-                Timber.tag("BootCompleteReceiver").w(e, "Auto-start skipped (service not ready, e.g. direct boot)")
+            } else {
+                Timber.tag("BootCompleteReceiver").d("Start on boot disabled or user stopped; skipping boot start")
             }
         } else {
             Timber.tag("BootCompleteReceiver").d("LOCKED_BOOT_COMPLETED — deferring start to BOOT_COMPLETED")

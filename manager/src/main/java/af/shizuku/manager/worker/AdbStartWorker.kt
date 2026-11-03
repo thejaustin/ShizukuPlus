@@ -133,13 +133,6 @@ class AdbStartWorker(
             }
 
             val tcpPort = EnvironmentUtils.getAdbTcpPort()
-            if (tcpPort > 0 && !ShizukuSettings.getTcpMode()) {
-                if (!AdbStarter.stopTcp(applicationContext, tcpPort)) {
-                    // Connecting again for the start would raise the dialog a second time.
-                    throw AdbAuthTimeoutException("adbd authorisation was not accepted while leaving TCP mode")
-                }
-            }
-
             val savedPort = ShizukuSettings.getLastPort()
             val isWifiOk = !EnvironmentUtils.isWifiRequired() || ShizukuSettings.isForceStartWadbEnabled()
 

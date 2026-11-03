@@ -65,7 +65,14 @@ class WatchdogService : Service() {
                         acquireTemporaryWakeLock(5_000L)
                         if (ShizukuSettings.getTcpMode() || ShizukuSettings.isOnDeviceAdbTcpEnabled()) {
                             val port = if (ShizukuSettings.getTcpMode()) ShizukuSettings.getTcpPort().takeIf { it in 1..65535 } ?: 5555 else 5555
-                            AdbProxyService.enableAdbTcp(port)
+                            if (ShizukuStateMachine.isRunning() &&
+                                af.shizuku.manager.adb.AdbPortProber
+                                    .isPortOpen(port, 300)
+                            ) {
+                                Timber.tag(TAG).d("TCP port $port already listening and Shizuku is running; keeping session intact")
+                            } else {
+                                AdbProxyService.enableAdbTcp(port)
+                            }
                         }
                         ShizukuStateMachine.update()
                     }

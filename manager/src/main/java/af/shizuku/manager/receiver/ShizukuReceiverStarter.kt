@@ -113,9 +113,11 @@ object ShizukuReceiverStarter {
             if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
                 AdbStartWorker.enqueue(context, explicit = forceStart)
             } else {
-                // Fallback: if TCP mode is enabled or an ADB TCP port is already active,
+                // Fallback: if TCP mode or force-start WADB is enabled, or an ADB TCP/saved port is active,
                 // AdbStartWorker can connect without WRITE_SECURE_SETTINGS and auto-regrant it.
                 if (ShizukuSettings.getTcpMode() ||
+                    ShizukuSettings.isForceStartWadbEnabled() ||
+                    ShizukuSettings.getLastPort() > 0 ||
                     af.shizuku.manager.utils.EnvironmentUtils
                         .getAdbTcpPort() > 0
                 ) {
