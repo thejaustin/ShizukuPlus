@@ -356,11 +356,13 @@ class HomeAdapter(
         if (card != null) {
             if (ShizukuSettings.isCornerRoundingAppliedToHome()) {
                 val tv = android.util.TypedValue()
-                if (card.context.theme.resolveAttribute(com.google.android.material.R.attr.shapeAppearanceCornerExtraLarge, tv, true)) {
-                    card.shapeAppearanceModel =
-                        com.google.android.material.shape.ShapeAppearanceModel
-                            .builder(card.context, tv.resourceId, 0)
-                            .build()
+                if (card.context.theme.resolveAttribute(com.google.android.material.R.attr.shapeAppearanceCornerExtraLarge, tv, true) && tv.resourceId != 0) {
+                    runCatching {
+                        card.shapeAppearanceModel =
+                            com.google.android.material.shape.ShapeAppearanceModel
+                                .builder(card.context, tv.resourceId, 0)
+                                .build()
+                    }
                 }
             }
             if (id != ID_STATUS) {

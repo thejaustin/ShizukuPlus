@@ -56,13 +56,18 @@ fun Context.themeColor(
 fun Context.themeCornerSizePx(
     @AttrRes attr: Int,
 ): Float {
+    val fallback = 28f * resources.displayMetrics.density
     val tv = TypedValue()
-    theme.resolveAttribute(attr, tv, true)
-    val shapeAppearanceModel =
-        com.google.android.material.shape.ShapeAppearanceModel
-            .builder(this, 0, tv.resourceId)
-            .build()
-    return shapeAppearanceModel.topLeftCornerSize.getCornerSize(android.graphics.RectF())
+    if (!theme.resolveAttribute(attr, tv, true) || tv.resourceId == 0) {
+        return fallback
+    }
+    return runCatching {
+        val shapeAppearanceModel =
+            com.google.android.material.shape.ShapeAppearanceModel
+                .builder(this, tv.resourceId, 0)
+                .build()
+        shapeAppearanceModel.topLeftCornerSize.getCornerSize(android.graphics.RectF())
+    }.getOrDefault(fallback)
 }
 
 val Context.application: ShizukuApplication

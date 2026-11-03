@@ -2,6 +2,7 @@ package af.shizuku.manager.adb
 
 import af.shizuku.manager.ShizukuSettings
 import android.content.Context
+import android.net.ConnectivityManager
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
@@ -21,6 +22,7 @@ class AdbMdns(
     private val serviceType: String,
     private val observer: Observer<Int>,
 ) {
+    private val context: Context = context.applicationContext
     private var registered = false
     private var running = false
     private var serviceName: String? = null
@@ -124,26 +126,66 @@ class AdbMdns(
         if (info.serviceName == serviceName) observer.onChanged(-1)
     }
 
+    private fun isDeviceAddress(
+        hosts: List<InetAddress>,
+        cleanHostAddress: String?,
+    ): Boolean {
+        // 1. Try ConnectivityManager LinkProperties (works in background on Android 15/16/One UI 7)
+        val cmMatched =
+            runCatching {
+                val cm = context.getSystemService(ConnectivityManager::class.java)
+                val activeNetwork = cm?.activeNetwork
+                val linkProps = activeNetwork?.let { cm.getLinkProperties(it) }
+                linkProps?.linkAddresses?.any { linkAddr ->
+                    val addr = linkAddr.address
+                    val cleanAddr = addr.hostAddress?.substringBefore('%')
+                    hosts.any { it == addr } || (cleanHostAddress != null && cleanHostAddress == cleanAddr)
+                } == true
+            }.getOrDefault(false)
+
+        if (cmMatched) return true
+
+        // 2. Try NetworkInterface.getNetworkInterfaces()
+        val netInterfaceMatched =
+            runCatching {
+                NetworkInterface
+                    .getNetworkInterfaces()
+                    ?.asSequence()
+                    ?.any { networkInterface ->
+                        networkInterface.inetAddresses
+                            .asSequence()
+                            .any { addr ->
+                                hosts.any { it == addr } || (cleanHostAddress != null && cleanHostAddress == addr.hostAddress?.substringBefore('%'))
+                            }
+                    } == true
+            }.getOrDefault(false)
+
+        if (netInterfaceMatched) return true
+
+        // 3. For pairing service, if background netlink is restricted on One UI 7, allow if the address is a site-local or link-local IP
+        // when pairing was actively requested on this device
+        if (serviceType == TLS_PAIRING && hosts.any { it.isSiteLocalAddress || it.isLinkLocalAddress }) {
+            return true
+        }
+
+        return false
+    }
+
     private fun onServiceResolved(resolvedService: NsdServiceInfo) {
-        val rawHost = resolvedService.host
+        val allHosts: List<InetAddress> =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                resolvedService.hostAddresses.ifEmpty { listOfNotNull(resolvedService.host) }
+            } else {
+                listOfNotNull(resolvedService.host)
+            }
+        val rawHost = allHosts.firstOrNull() ?: resolvedService.host
         val hostAddress = rawHost?.hostAddress
         val cleanHostAddress = hostAddress?.substringBefore('%')
-        val isLocal = cleanHostAddress == "127.0.0.1" || cleanHostAddress == "::1" || rawHost?.isLoopbackAddress == true
+        val isLocal =
+            cleanHostAddress == "127.0.0.1" || cleanHostAddress == "::1" || rawHost?.isLoopbackAddress == true ||
+                allHosts.any { it.isLoopbackAddress || it.hostAddress?.substringBefore('%') == "127.0.0.1" }
 
-        val isKnownInterface =
-            isLocal ||
-                runCatching {
-                    NetworkInterface
-                        .getNetworkInterfaces()
-                        ?.asSequence()
-                        ?.any { networkInterface ->
-                            networkInterface.inetAddresses
-                                .asSequence()
-                                .any { addr ->
-                                    addr == rawHost || cleanHostAddress == addr.hostAddress?.substringBefore('%')
-                                }
-                        } == true
-                }.getOrDefault(false)
+        val isKnownInterface = isLocal || isDeviceAddress(allHosts, cleanHostAddress)
 
         if (running &&
             isKnownInterface &&
