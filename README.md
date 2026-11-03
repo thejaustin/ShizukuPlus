@@ -3,6 +3,7 @@
 
 Stable Release is heading your way... soon... have had some more issues creep up on me that I want to fix firsthand.
 
+Pre-releases are back in the meantime.
 
 I've been in the process of simplifying, restructuring, and improving the code quality, and visual quality of the app locally. 
 
@@ -11,7 +12,7 @@ Pre-releases will return for simple things like bugs, crashes, issues and such.
 
 I'm creating more checkpoints for myself and this project as I shift my focus to stability and improvement in visual quality & user experience ahead of new feature implementation.
 
-It's time to truly stabilize things instead of simply moving forward with development at lightspeed
+It's time to truly stabilize things instead of simply moving forward with development at lightspeed.
 Thank you for your patience, and much love to you all!
 
 
