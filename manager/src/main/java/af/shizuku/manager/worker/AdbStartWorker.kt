@@ -98,8 +98,20 @@ class AdbStartWorker(
                 }
             }
 
-            if (NetworkTrust.shouldBlockTcp(applicationContext)) {
-                throw SecurityException("Wireless debugging start blocked: current network is untrusted")
+            if (NetworkTrust.mode() != NetworkTrust.MODE_OFF) {
+                val assessment = NetworkTrust.assess(applicationContext)
+                if (assessment.verdict == NetworkTrust.Verdict.UNTRUSTED) {
+                    // If Shizuku is down, resolveSsid cannot query the shell for SSID.
+                    // Do not deadlock startup when SSID is unresolvable unless it's explicitly an open network or captive portal.
+                    if (!ShizukuStateMachine.isRunning() &&
+                        assessment.reason == NetworkTrust.Reason.NOT_TRUSTED &&
+                        assessment.ssid == null
+                    ) {
+                        Timber.tag(TAG).i("NetworkTrust: SSID unresolvable while Shizuku is down; proceeding with local startup")
+                    } else {
+                        throw SecurityException("Wireless debugging start blocked: current network is untrusted (${assessment.reason})")
+                    }
+                }
             }
 
             runCatching {

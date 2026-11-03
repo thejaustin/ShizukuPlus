@@ -572,8 +572,12 @@
         <receiver
             android:name=".receiver.NotifAttemptReceiver"
             android:exported="false" />
-        <receiver android:name=".receiver.NotifCancelReceiver" />
-        <receiver android:name=".receiver.NotifRestoreReceiver" />
+        <receiver
+            android:name=".receiver.NotifCancelReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".receiver.NotifRestoreReceiver"
+            android:exported="false" />
 
         <!-- WorkManager is initialized manually via Configuration.Provider in ShizukuApplication.
              Removing WorkManagerInitializer here prevents the "already initialized" crash (#126). -->

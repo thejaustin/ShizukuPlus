@@ -282,8 +282,12 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        savedInstanceState?.getParcelable<Parcelable>(KEY_RV_SCROLL_STATE)?.let {
-            listView?.layoutManager?.onRestoreInstanceState(it)
+        val savedScroll = savedInstanceState?.getParcelable<Parcelable>(KEY_RV_SCROLL_STATE) ?: return
+        listView?.layoutManager?.onRestoreInstanceState(savedScroll)
+        // Also post to ensure that once adapter population and header padding completes,
+        // the list doesn't get pushed back to position 0.
+        listView?.post {
+            listView?.layoutManager?.onRestoreInstanceState(savedScroll)
         }
     }
 
@@ -421,7 +425,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         val systemBarsInsets = rootWindowInsets?.getInsets(Type.systemBars() or Type.displayCutout())
         val navBarClearancePx =
             if (ShizukuSettings.isFloatingNavBarEnabled()) {
-                (112 * resources.displayMetrics.density).toInt()
+                (160 * resources.displayMetrics.density).toInt()
             } else {
                 (20 * resources.displayMetrics.density).toInt()
             }

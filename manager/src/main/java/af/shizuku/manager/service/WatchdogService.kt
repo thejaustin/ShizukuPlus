@@ -38,6 +38,7 @@ class WatchdogService : Service() {
     private var pendingRecoveryJob: Job? = null
     private var stabilityJob: Job? = null
     private var cooldownRetryJob: Job? = null
+    private var graceRestartJob: Job? = null
     private var wakeLock: android.os.PowerManager.WakeLock? = null
 
     private fun acquireTemporaryWakeLock(durationMs: Long = 10_000L) {
@@ -63,18 +64,20 @@ class WatchdogService : Service() {
                     Intent.ACTION_POWER_DISCONNECTED -> {
                         Timber.tag(TAG).i("Power disconnected (USB unplugged)")
                         acquireTemporaryWakeLock(5_000L)
-                        if (ShizukuSettings.getTcpMode() || ShizukuSettings.isOnDeviceAdbTcpEnabled()) {
-                            val port = if (ShizukuSettings.getTcpMode()) ShizukuSettings.getTcpPort().takeIf { it in 1..65535 } ?: 5555 else 5555
-                            if (ShizukuStateMachine.isRunning() &&
-                                af.shizuku.manager.adb.AdbPortProber
-                                    .isPortOpen(port, 300)
-                            ) {
-                                Timber.tag(TAG).d("TCP port $port already listening and Shizuku is running; keeping session intact")
-                            } else {
-                                AdbProxyService.enableAdbTcp(port)
+                        scope.launch(Dispatchers.IO) {
+                            if (ShizukuSettings.getTcpMode() || ShizukuSettings.isOnDeviceAdbTcpEnabled()) {
+                                val port = if (ShizukuSettings.getTcpMode()) ShizukuSettings.getTcpPort().takeIf { it in 1..65535 } ?: 5555 else 5555
+                                if (ShizukuStateMachine.isRunning() &&
+                                    af.shizuku.manager.adb.AdbPortProber
+                                        .isPortOpen(port, 300)
+                                ) {
+                                    Timber.tag(TAG).d("TCP port $port already listening and Shizuku is running; keeping session intact")
+                                } else {
+                                    AdbProxyService.enableAdbTcp(port)
+                                }
                             }
+                            ShizukuStateMachine.update()
                         }
-                        ShizukuStateMachine.update()
                     }
                     android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED -> {
                         Timber.tag(TAG).i("Power save mode changed")
@@ -189,6 +192,8 @@ class WatchdogService : Service() {
                         ) {
                             stabilityJob?.cancel()
                             pendingRecoveryJob?.cancel()
+                            graceRestartJob?.cancel()
+                            cooldownRetryJob?.cancel()
                             return@collectLatest
                         }
                         // Restarting is off: only the status shows here, and the stop is
@@ -196,6 +201,8 @@ class WatchdogService : Service() {
                         if (!ShizukuSettings.isWatchdogAutoRestartEnabled()) {
                             stabilityJob?.cancel()
                             pendingRecoveryJob?.cancel()
+                            graceRestartJob?.cancel()
+                            cooldownRetryJob?.cancel()
                             return@collectLatest
                         }
 
@@ -209,6 +216,7 @@ class WatchdogService : Service() {
                         // duplicate heads-up for this same outage, or a later restart's
                         // server would be logged as "came back after restart #1".
                         pendingRecoveryJob?.cancel()
+                        graceRestartJob?.cancel()
                         val now = System.currentTimeMillis()
                         val cooldown = backoffMs(consecutiveCrashes)
                         if (now - lastRestartMs > cooldown) {
@@ -250,14 +258,20 @@ class WatchdogService : Service() {
                             // it again, automation, the starter) is often already starting a new
                             // one. Starting ours on top raced it: both starters killed the old
                             // server and two servers ran. Skip if a binder arrived meanwhile.
-                            scope.launch {
-                                delay(RESTART_GRACE_MS)
-                                if (ShizukuStateMachine.update() == ShizukuStateMachine.State.RUNNING) {
-                                    Timber.tag(TAG).d("Watchdog: a server came back by itself; restart skipped")
-                                } else {
-                                    ShizukuReceiverStarter.start(applicationContext)
+                            graceRestartJob?.cancel()
+                            graceRestartJob =
+                                scope.launch {
+                                    delay(RESTART_GRACE_MS)
+                                    if (!af.shizuku.manager.utils.UserStopFlag
+                                            .isSet() &&
+                                        ShizukuSettings.isWatchdogAutoRestartEnabled() &&
+                                        ShizukuStateMachine.update() != ShizukuStateMachine.State.RUNNING
+                                    ) {
+                                        ShizukuReceiverStarter.start(applicationContext)
+                                    } else {
+                                        Timber.tag(TAG).d("Watchdog: server running or restart suppressed; restart skipped")
+                                    }
                                 }
-                            }
                             Timber.tag(TAG).d("Watchdog: restart #$consecutiveCrashes (cooldown was ${cooldown}ms)")
                         } else {
                             Timber.tag(TAG).d("Watchdog: restart suppressed (cooldown active, ${now - lastRestartMs}ms / ${cooldown}ms)")

@@ -790,8 +790,9 @@ open class HomeActivity :
                     if (progress > 0.1f && !backThresholdReached) {
                         backThresholdReached = true
                         HapticUtils.gestureThreshold(recyclerView)
-                    } else if (progress < 0.1f) {
+                    } else if (progress <= 0.1f && backThresholdReached) {
                         backThresholdReached = false
+                        HapticUtils.gestureThresholdRelease(recyclerView)
                     }
 
                     if (ShizukuSettings.isExpressiveAnimationsEnabled()) {

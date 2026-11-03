@@ -1,7 +1,12 @@
 package af.shizuku.manager.utils
 
 import af.shizuku.manager.ShizukuSettings
+import android.content.Context
 import android.os.Build
+import android.os.CombinedVibration
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.view.HapticFeedbackConstants
 import android.view.View
 
@@ -15,21 +20,48 @@ object HapticUtils {
     // normally VIBRATE-exempt system haptic path, and throw a SecurityException
     // if the VIBRATE permission isn't held. Haptics are decorative, never worth
     // crashing over, so every call goes through this guard.
-    //
-    // The dedicated haptic-feedback setting is checked once here so every call
-    // site is governed by a single flag, instead of ad-hoc per-call-site checks
-    // of unrelated toggles (e.g. expressive animations).
-    private inline fun safeHaptic(
+    private fun safeHaptic(
         view: View,
         constant: Int,
+        fallbackEffect: Int? = null,
     ) {
         if (!ShizukuSettings.isHapticFeedbackEnabled()) return
+
+        // Respect user preference: only ignore view setting if "Always On" is selected
+        val flags =
+            if (ShizukuSettings.isFollowSystemHapticsEnabled()) {
+                0
+            } else {
+                HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING
+            }
+
+        val performed =
+            try {
+                view.performHapticFeedback(constant, flags)
+            } catch (_: SecurityException) {
+                false
+            }
+
+        if (!performed && fallbackEffect != null) {
+            performVibration(view.context, fallbackEffect)
+        }
+    }
+
+    private fun performVibration(
+        context: Context,
+        effectId: Int,
+    ) {
         try {
-            // The app's own setting above decides; views that turn off the system's automatic
-            // haptics (Home cards, so a long-press doesn't buzz twice) still get these.
-            view.performHapticFeedback(constant, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING)
-        } catch (_: SecurityException) {
-            // Swallow - see comment above.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vm = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+                val effect = VibrationEffect.createPredefined(effectId)
+                vm?.vibrate(CombinedVibration.createParallel(effect))
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+                vibrator?.vibrate(VibrationEffect.createPredefined(effectId))
+            }
+        } catch (_: Throwable) {
+            // Best effort only
         }
     }
 
@@ -37,7 +69,7 @@ object HapticUtils {
      * Standard click feedback (vibration)
      */
     fun tap(view: View) {
-        safeHaptic(view, HapticFeedbackConstants.KEYBOARD_TAP)
+        safeHaptic(view, HapticFeedbackConstants.KEYBOARD_TAP, VibrationEffect.EFFECT_CLICK)
     }
 
     /**
@@ -45,9 +77,9 @@ object HapticUtils {
      */
     fun success(view: View) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            safeHaptic(view, HapticFeedbackConstants.CONFIRM)
+            safeHaptic(view, HapticFeedbackConstants.CONFIRM, VibrationEffect.EFFECT_CLICK)
         } else {
-            safeHaptic(view, HapticFeedbackConstants.LONG_PRESS)
+            safeHaptic(view, HapticFeedbackConstants.LONG_PRESS, VibrationEffect.EFFECT_HEAVY_CLICK)
         }
     }
 
@@ -56,9 +88,9 @@ object HapticUtils {
      */
     fun error(view: View) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            safeHaptic(view, HapticFeedbackConstants.REJECT)
+            safeHaptic(view, HapticFeedbackConstants.REJECT, VibrationEffect.EFFECT_DOUBLE_CLICK)
         } else {
-            safeHaptic(view, HapticFeedbackConstants.LONG_PRESS)
+            safeHaptic(view, HapticFeedbackConstants.LONG_PRESS, VibrationEffect.EFFECT_HEAVY_CLICK)
         }
     }
 
@@ -67,7 +99,7 @@ object HapticUtils {
      */
     fun tick(view: View) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            safeHaptic(view, HapticFeedbackConstants.CLOCK_TICK)
+            safeHaptic(view, HapticFeedbackConstants.CLOCK_TICK, VibrationEffect.EFFECT_TICK)
         } else {
             safeHaptic(view, HapticFeedbackConstants.VIRTUAL_KEY)
         }
@@ -78,7 +110,7 @@ object HapticUtils {
      */
     fun gestureStart(view: View) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            safeHaptic(view, HapticFeedbackConstants.GESTURE_START)
+            safeHaptic(view, HapticFeedbackConstants.GESTURE_START, VibrationEffect.EFFECT_CLICK)
         } else {
             safeHaptic(view, HapticFeedbackConstants.LONG_PRESS)
         }
@@ -89,11 +121,11 @@ object HapticUtils {
      */
     fun toggleOn(view: View) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            safeHaptic(view, HapticFeedbackConstants.TOGGLE_ON)
+            safeHaptic(view, HapticFeedbackConstants.TOGGLE_ON, VibrationEffect.EFFECT_CLICK)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            safeHaptic(view, HapticFeedbackConstants.CONFIRM)
+            safeHaptic(view, HapticFeedbackConstants.CONFIRM, VibrationEffect.EFFECT_CLICK)
         } else {
-            safeHaptic(view, HapticFeedbackConstants.KEYBOARD_TAP)
+            safeHaptic(view, HapticFeedbackConstants.KEYBOARD_TAP, VibrationEffect.EFFECT_CLICK)
         }
     }
 
@@ -102,9 +134,9 @@ object HapticUtils {
      */
     fun toggleOff(view: View) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            safeHaptic(view, HapticFeedbackConstants.TOGGLE_OFF)
+            safeHaptic(view, HapticFeedbackConstants.TOGGLE_OFF, VibrationEffect.EFFECT_TICK)
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            safeHaptic(view, HapticFeedbackConstants.CLOCK_TICK)
+            safeHaptic(view, HapticFeedbackConstants.CLOCK_TICK, VibrationEffect.EFFECT_TICK)
         } else {
             safeHaptic(view, HapticFeedbackConstants.VIRTUAL_KEY)
         }
@@ -115,7 +147,7 @@ object HapticUtils {
      */
     fun segmentTick(view: View) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            safeHaptic(view, HapticFeedbackConstants.SEGMENT_TICK)
+            safeHaptic(view, HapticFeedbackConstants.SEGMENT_TICK, VibrationEffect.EFFECT_TICK)
         } else {
             tick(view)
         }
@@ -125,9 +157,8 @@ object HapticUtils {
      * Feedback for reaching a threshold during a gesture
      */
     fun gestureThreshold(view: View) {
-        // The constant is API 34; on 33 it was an unknown id and played nothing.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            safeHaptic(view, HapticFeedbackConstants.GESTURE_THRESHOLD_ACTIVATE)
+            safeHaptic(view, HapticFeedbackConstants.GESTURE_THRESHOLD_ACTIVATE, VibrationEffect.EFFECT_HEAVY_CLICK)
         } else {
             tick(view)
         }
@@ -136,7 +167,7 @@ object HapticUtils {
     /** Feedback for backing out past a threshold during a gesture (the undo of [gestureThreshold]). */
     fun gestureThresholdRelease(view: View) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            safeHaptic(view, HapticFeedbackConstants.GESTURE_THRESHOLD_DEACTIVATE)
+            safeHaptic(view, HapticFeedbackConstants.GESTURE_THRESHOLD_DEACTIVATE, VibrationEffect.EFFECT_TICK)
         } else {
             tick(view)
         }
@@ -145,7 +176,7 @@ object HapticUtils {
     /** Feedback for picking an item up to drag it. */
     fun dragStart(view: View) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            safeHaptic(view, HapticFeedbackConstants.DRAG_START)
+            safeHaptic(view, HapticFeedbackConstants.DRAG_START, VibrationEffect.EFFECT_HEAVY_CLICK)
         } else {
             gestureStart(view)
         }
@@ -156,7 +187,7 @@ object HapticUtils {
      */
     fun gestureEnd(view: View) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            safeHaptic(view, HapticFeedbackConstants.GESTURE_END)
+            safeHaptic(view, HapticFeedbackConstants.GESTURE_END, VibrationEffect.EFFECT_CLICK)
         } else {
             safeHaptic(view, HapticFeedbackConstants.LONG_PRESS)
         }
