@@ -120,6 +120,21 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-11-03 (cont'd) — Antigravity (Gemini 3.8 Flash) (Dependabot advisory audit, Bouncy Castle 1.86 upgrade, CI graph scoping & TLS fallback) [master]
+
+- **Dependabot Security Alerts & Root Cause Analysis:**
+  - *Why notifications arrived now*: The recent push of commit `816cdada` triggered `.github/workflows/dependency-submission.yml`, which ran `gradle/actions/dependency-submission` on `master`. This submitted the first fresh dependency graph snapshot in a while, prompting GitHub's advisory database to generate alerts.
+  - *Why alerts were reported on `settings.gradle`*: By default, `gradle/actions/dependency-submission` extracts dependencies from ALL configurations across the entire Gradle build, including internal buildscript classpaths, compiler plugins, and formatting plugins (e.g. Spotless's internal JGit, AGP's internal XML parser JDOM, etc.).
+  - *Fix in CI*: Updated `.github/workflows/dependency-submission.yml` to set `DEPENDENCY_GRAPH_EXCLUDE_CONFIGURATIONS` (`(?i)(^|:)(classpath|.*PluginClasspath|kotlinCompilerClasspath|kaptClasspath|annotationProcessor|detachedConfiguration.*)$`). This filters out internal build-tooling artifacts from cluttering security reports while keeping project compile and runtime dependencies actively monitored.
+- **Bouncy Castle & Transitive Security Upgrades:**
+  - Upgraded `bouncycastle = "1.86"` in `gradle/libs.versions.toml`.
+  - In `manager/build.gradle`: Added explicit `org.bouncycastle:bcprov-jdk18on:1.86` and configured `configurations.all.resolutionStrategy` to force `1.86` across all configurations, and force `com.google.guava:guava:33.4.0-android` to prevent insecure temporary directory vulnerabilities.
+  - Resolves 5 Bouncy Castle advisories: GHSA-9pwp-9qqc-pr26 (Critical, Name Constraints bypass), GHSA-574f-3g2m-x479 (Critical, GOST 28147 CTR mode), GHSA-qp49-qgx5-5m26 (High, Lazy ASN.1 sequence nesting depth), GHSA-c3fc-8qff-9hwx (Medium, LDAP injection), and GHSA-wg6q-6289-32hp (Medium, bcpkix algorithm).
+- **Layered Security & Device Fallback in `AdbKey.kt`:**
+  - In `AdbKey.kt`: Wrapped `SSLContext.getInstance("TLSv1.3")` in a graceful fallback to `SSLContext.getInstance("TLS")`. Ensures ADB TLS pairing succeeds even on custom vendor ROMs, older security providers, or Android Go/TV variants where `"TLSv1.3"` is not registered by that exact identifier.
+- **Verification**:
+  - Ran `bash gradlew spotlessApply` and `bash gradlew spotlessCheck`. Clean and passing.
+
 ### 2026-11-03 — Antigravity (Gemini 3.8 Flash) (TCP persistence on USB disconnect, screen-lock/battery-saver resilience, settings scroll & morph polish) [master]
 
 - **TCP Mode Persistence Across USB Disconnection (#656):**
