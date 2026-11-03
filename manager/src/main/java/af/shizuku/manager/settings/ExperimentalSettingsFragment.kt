@@ -38,6 +38,12 @@ class ExperimentalSettingsFragment : BaseSettingsFragment() {
             true
         }
 
+        // Switch row design: recreate to apply custom switch thumb / icon design immediately.
+        findPreference<androidx.preference.Preference>("switch_row_design")?.setOnPreferenceChangeListener { _, _ ->
+            view?.post { (activity as? af.shizuku.core.ui.AppActivity)?.recreateWithoutTransition() }
+            true
+        }
+
         // Floating navigation bar: its options only matter while it's on - hide, don't grey out.
         val navToggle = findPreference<TwoStatePreference>(af.shizuku.manager.widget.FloatingNavBar.KEY_ENABLED)
         val navChildren =

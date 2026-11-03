@@ -560,6 +560,7 @@
     <string name="swipe_actions_disabled_summary">Swipe actions are currently disabled</string>
     <string name="settings_apply_corner_rounding_to_home_title">Apply corner rounding to Home cards</string>
     <string name="settings_apply_corner_rounding_to_home_summary">Keep disabled to preserve default Home screen card layouts, or enable to apply custom corner rounding across Home cards</string>
+    <string name="settings_apply_corner_rounding_to_home_disabled_hint">Select a corner rounding style other than Default to enable</string>
     <string name="settings_reset_adb_keys">Reset ADB Keys</string>
     <string name="settings_reset_adb_keys_summary">Delete existing ADB keys and certificates. Useful if pairing is stuck or KeyStore is corrupted.</string>
     <string name="settings_reset_adb_keys_success">ADB keys cleared</string>

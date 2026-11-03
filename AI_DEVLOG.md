@@ -120,6 +120,32 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-11-03 — Antigravity (Gemini 3.8 Flash) (TCP persistence on USB disconnect, screen-lock/battery-saver resilience, settings scroll & morph polish) [master]
+
+- **TCP Mode Persistence Across USB Disconnection (#656):**
+  - *Problem*: Starting Shizuku over USB with TCP mode enabled resulted in Shizuku stopping shortly after unplugging the USB cable, especially when locking the screen or entering battery saver.
+  - *Root Cause 1 (`persist.adb.tcp.port` skipped)*: In `starter.cpp`, `__system_property_set("persist.adb.tcp.port", ...)` was only executed when `service.adb.tcp.port <= 0`. When a user ran `adb tcpip 5555` prior to starter, active port was already 5555, so `persist.adb.tcp.port` was never written. On USB unplug, Android resets USB configs, clearing non-persistent TCP mode and dropping `adbd`.
+  - *Root Cause 2 (Session Teardown Signals)*: When `adbd` handles USB detachment, it sends `SIGHUP` and `SIGTERM` to active shell sessions. The child process in `starter.cpp` only ignored `SIGHUP` and `SIGPIPE`, allowing `SIGTERM` to terminate `shizuku_plus_server`.
+  - *Root Cause 3 (Missing Persistent Port in Application Startup)*: In `ShizukuApplication.kt`, `AdbProxyService.enableAdbTcp` was only called if `currentPort != desiredPort`, skipping the persistent setprop when active port was already 5555.
+  - *Root Cause 4 (Android 12–16 Phantom Process Killer & Battery Saver)*: On screen lock and battery saver activation, Android's ActivityManager trims phantom processes exceeding default limits and restricts background apps without active standby buckets or `RUN_ANY_IN_BACKGROUND` AppOps.
+  - *Fixes*:
+    - In `starter.cpp`: Added `signal(SIGTERM, SIG_IGN)`, `signal(SIGQUIT, SIG_IGN)`, and `signal(SIGTSTP, SIG_IGN)` in the spawned server process. Always updates `persist.adb.tcp.port` to `target_port` whenever TCP mode is requested.
+    - In `ShizukuApplication.kt`: Ensured `AdbProxyService.enableAdbTcp(desiredPort)` runs on service start when TCP mode is on so persistent properties are confirmed.
+    - In `DeviceOptimizer.kt`: Automatically applies `cmd appops set $pkg RUN_ANY_IN_BACKGROUND allow`, `cmd appops set $pkg RUN_IN_BACKGROUND allow`, `am set-standby-bucket $pkg active`, and disables phantom process limits (`device_config put activity_manager max_phantom_processes 2147483647`) on service start.
+    - In `WatchdogService.kt`: Added `WAKE_LOCK` permission in `AndroidManifest.xml` and temporary partial wake locks during crash recovery to prevent CPU suspension during restart delays. Added dynamic receiver for `ACTION_POWER_DISCONNECTED` (to immediately safeguard TCP port on USB unplug) and `ACTION_POWER_SAVE_MODE_CHANGED` (to reinforce background hardening on battery saver).
+    - In `BootCompleteReceiver.kt`: Automatically revives stopped Shizuku on `ACTION_USER_PRESENT` if Watchdog auto-restart is active, so unlocking the device heals any drop that occurred while asleep.
+- **Settings Screen Scroll Jump & Jitter Elimination:**
+  - *Problem*: Changing settings toggles or icon morph shapes caused the settings list to jump/scroll to the top and jitter, breaking the fluid M3 Expressive morph animation.
+  - *Root Cause 1 (Adapter Reset on Icon Refresh)*: `refreshIconStyles()` re-applied styled drawables across all preferences, triggering `notifyDataSetChanged()` without preserving scroll position.
+  - *Root Cause 2 (Unnecessary Activity Recomposition)*: Toggles like `icon_morph_shape`, `expanded_headers_enabled`, `expressive_animations`, and `apply_corner_rounding_to_home` called `applyTheme(requiresRecreate = false)`. This triggered `SettingsActivity.onThemeChanged()`, incrementing `themeVersion++` and causing the entire Compose `SettingsScreen` to recompose and re-measure `TopAppBarState`.
+  - *Fixes*:
+    - In `BaseSettingsFragment.kt`: `refreshIconStyles()` and `updateHeaderPadding()` now capture the exact first visible item position and pixel offset (`findFirstVisibleItemPosition()`, `firstView.top`) and restore them via `layoutManager.scrollToPositionWithOffset(firstPos, offsetTop)`.
+    - In `SettingsActivity.kt`: `onThemeChanged()` now checks whether `isOneUi` or `isOneHanded` actually changed before incrementing `themeVersion++` and updating padding.
+    - In `PersonalizationSettingsFragment.kt`: Removed redundant `applyTheme(requiresRecreate = false)` calls from icon shape, morph mode, and animation settings.
+    - In `ExperimentalSettingsFragment.kt`: Added listener to `switch_row_design` for clean immediate recreation.
+- **Verification**:
+  - Ran `bash gradlew spotlessApply` and `bash gradlew spotlessCheck`. Both clean and passing.
+
 ### 2026-11-02 (cont'd 7) — Antigravity (Gemini 3.8 Flash) (Update onboarding, numerical pairing keypad, home card shape isolation, swipe toggle & M3E corner animations) [master]
 
 - **Update Onboarding Gate & Returning User Highlighting:**

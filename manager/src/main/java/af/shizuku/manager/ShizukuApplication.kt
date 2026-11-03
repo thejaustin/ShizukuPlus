@@ -640,13 +640,8 @@ class ShizukuApplication :
                         val onDeviceAdbTcp = ShizukuSettings.isOnDeviceAdbTcpEnabled()
                         if (tcpMode || onDeviceAdbTcp) {
                             val desiredPort = if (tcpMode) ShizukuSettings.getTcpPort().takeIf { it in 1..65535 } ?: 5555 else 5555
-                            val currentPort =
-                                af.shizuku.manager.utils.EnvironmentUtils
-                                    .getAdbTcpPort()
-                            if (currentPort != desiredPort) {
-                                af.shizuku.manager.service.AdbProxyService
-                                    .enableAdbTcp(desiredPort)
-                            }
+                            af.shizuku.manager.service.AdbProxyService
+                                .enableAdbTcp(desiredPort)
                         }
                     } catch (e: Exception) {
                         Timber.tag("ShizukuApplication").w(e, "TCP mode auto-apply on service start failed")

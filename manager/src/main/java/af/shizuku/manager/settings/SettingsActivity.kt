@@ -105,14 +105,18 @@ class SettingsActivity :
     }
 
     fun onThemeChanged() {
-        isOneUi =
+        val newOneUi =
             af.shizuku.manager.ShizukuSettings
                 .isOneUiThemeEnabled()
-        isOneHanded =
+        val newOneHanded =
             af.shizuku.manager.ShizukuSettings
                 .isOneHandedModeEnabled()
-        themeVersion++
-        (supportFragmentManager.findFragmentById(R.id.fragment_container) as? BaseSettingsFragment)?.updateHeaderPadding()
+        if (isOneUi != newOneUi || isOneHanded != newOneHanded) {
+            isOneUi = newOneUi
+            isOneHanded = newOneHanded
+            themeVersion++
+            (supportFragmentManager.findFragmentById(R.id.fragment_container) as? BaseSettingsFragment)?.updateHeaderPadding()
+        }
     }
 
     override fun onDestroy() {

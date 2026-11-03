@@ -104,9 +104,22 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
     fun refreshIconStyles() {
         val screen = preferenceScreen ?: return
         val ctx = context ?: return
+        val rv = listView
+        val layoutManager = rv?.layoutManager as? androidx.recyclerview.widget.LinearLayoutManager
+        val firstPos = layoutManager?.findFirstVisibleItemPosition() ?: RecyclerView.NO_POSITION
+        val firstView = if (firstPos != RecyclerView.NO_POSITION) layoutManager?.findViewByPosition(firstPos) else null
+        val offsetTop = firstView?.top ?: 0
+
         val style = IconStyleHelper.current()
         val colorMode = IconStyleHelper.currentColorMode()
         reapplyIconStyles(ctx, screen, style, colorMode)
+
+        if (firstPos != RecyclerView.NO_POSITION && layoutManager != null) {
+            layoutManager.scrollToPositionWithOffset(firstPos, offsetTop)
+            rv?.post {
+                layoutManager.scrollToPositionWithOffset(firstPos, offsetTop)
+            }
+        }
     }
 
     private fun reapplyIconStyles(
@@ -425,7 +438,16 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             rv.paddingRight != targetRight ||
             rv.paddingBottom != targetBottom
         ) {
+            val layoutManager = rv.layoutManager as? androidx.recyclerview.widget.LinearLayoutManager
+            val firstPos = layoutManager?.findFirstVisibleItemPosition() ?: RecyclerView.NO_POSITION
+            val firstView = if (firstPos != RecyclerView.NO_POSITION) layoutManager?.findViewByPosition(firstPos) else null
+            val offsetTop = firstView?.top ?: 0
+
             rv.setPadding(targetLeft, targetTop, targetRight, targetBottom)
+
+            if (firstPos != RecyclerView.NO_POSITION && layoutManager != null) {
+                layoutManager.scrollToPositionWithOffset(firstPos, offsetTop)
+            }
         }
         ViewCompat.requestApplyInsets(rv)
     }

@@ -140,6 +140,9 @@ static void start_server(const char *path, const char *main_class, const char *p
             close(fds[0]);
             signal(SIGHUP, SIG_IGN);
             signal(SIGPIPE, SIG_IGN);
+            signal(SIGTERM, SIG_IGN);
+            signal(SIGQUIT, SIG_IGN);
+            signal(SIGTSTP, SIG_IGN);
             setsid();
             switch_cgroup();
             chdir("/");
@@ -260,15 +263,19 @@ int main(int argc, char *argv[]) {
         int persist_port = atoi(port_buf);
         if (enable_tcp || persist_port > 0) {
             int target_port = persist_port > 0 ? persist_port : 5555;
+            char target_str[16];
+            snprintf(target_str, sizeof(target_str), "%d", target_port);
+            if (persist_port != target_port) {
+                printf("info: configuring adbd persistent TCP mode (port %s)...\n", target_str);
+                fflush(stdout);
+                __system_property_set("persist.adb.tcp.port", target_str);
+            }
             char active_buf[PROP_VALUE_MAX + 1] = {0};
             __system_property_get("service.adb.tcp.port", active_buf);
-            if (atoi(active_buf) <= 0) {
-                char target_str[16];
-                snprintf(target_str, sizeof(target_str), "%d", target_port);
-                printf("info: configuring adbd TCP mode (port %s) as configured...\n", target_str);
+            if (atoi(active_buf) != target_port) {
+                printf("info: configuring adbd active TCP mode (port %s)...\n", target_str);
                 fflush(stdout);
                 __system_property_set("service.adb.tcp.port", target_str);
-                __system_property_set("persist.adb.tcp.port", target_str);
             }
         }
     }

@@ -47,6 +47,28 @@ class BootCompleteReceiver : BroadcastReceiver() {
                 }
             }
 
+            // If Watchdog auto-restart is enabled and the server died while locked/sleeping,
+            // revive it immediately upon unlock instead of waiting for the 15-minute alarm.
+            if (ShizukuSettings.getWatchdog() &&
+                ShizukuSettings.isWatchdogAutoRestartEnabled() &&
+                !af.shizuku.manager.utils.UserStopFlag
+                    .isSet()
+            ) {
+                if (!af.shizuku.manager.utils.ShizukuStateMachine
+                        .isRunning() &&
+                    af.shizuku.manager.utils.ShizukuStateMachine
+                        .get() != af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING
+                ) {
+                    Timber.tag("BootCompleteReceiver").i("User unlocked device while server stopped — triggering Watchdog revival")
+                    try {
+                        ShizukuReceiverStarter.start(context)
+                    } catch (e: Exception) {
+                        Timber.tag("BootCompleteReceiver").w(e, "Watchdog revival on USER_PRESENT failed")
+                    }
+                    return
+                }
+            }
+
             if (!ShizukuSettings.getStartOnBoot(context) ||
                 af.shizuku.manager.utils.UserStopFlag
                     .isSet()

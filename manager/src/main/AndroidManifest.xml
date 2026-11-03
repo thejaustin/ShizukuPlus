@@ -7,6 +7,7 @@
          canScheduleExactAlarms() if declined/unavailable (see WatchdogAlarmReceiver). -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Normal-protection, auto-granted - declared so HapticFeedbackConstants calls (which
          don't need this on stock AOSP) actually work on OEM skins whose haptics stack routes
