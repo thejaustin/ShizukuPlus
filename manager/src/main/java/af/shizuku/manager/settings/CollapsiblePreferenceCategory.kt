@@ -141,7 +141,7 @@ class CollapsiblePreferenceCategory
                             } else {
                                 com.google.android.material.color.MaterialColors.getColor(
                                     ctx,
-                                    com.google.android.material.R.attr.colorPrimary,
+                                    androidx.appcompat.R.attr.colorPrimary,
                                     android.graphics.Color.BLUE,
                                 )
                             }

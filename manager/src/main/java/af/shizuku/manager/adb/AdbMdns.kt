@@ -182,7 +182,9 @@ class AdbMdns(
         val hostAddress = rawHost?.hostAddress
         val cleanHostAddress = hostAddress?.substringBefore('%')
         val isLocal =
-            cleanHostAddress == "127.0.0.1" || cleanHostAddress == "::1" || rawHost?.isLoopbackAddress == true ||
+            cleanHostAddress == "127.0.0.1" ||
+                cleanHostAddress == "::1" ||
+                rawHost?.isLoopbackAddress == true ||
                 allHosts.any { it.isLoopbackAddress || it.hostAddress?.substringBefore('%') == "127.0.0.1" }
 
         val isKnownInterface = isLocal || isDeviceAddress(allHosts, cleanHostAddress)
