@@ -19,6 +19,9 @@ class AdbPermissionLimitedViewHolder(
         val CREATOR =
             Creator<Any> { inflater: LayoutInflater, parent: ViewGroup? ->
                 val outer = HomeItemContainerBinding.inflate(inflater, parent, false)
+                (outer.root as? com.google.android.material.card.MaterialCardView)?.setCardBackgroundColor(
+                    outer.root.context.themeColor(com.google.android.material.R.attr.colorErrorContainer),
+                )
                 val inner = HomeExtraStepRequiredBinding.inflate(inflater, outer.cardContent, true)
                 AdbPermissionLimitedViewHolder(inner, outer.root)
             }

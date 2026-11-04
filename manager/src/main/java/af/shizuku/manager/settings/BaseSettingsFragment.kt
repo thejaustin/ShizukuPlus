@@ -108,7 +108,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         val layoutManager = rv?.layoutManager as? androidx.recyclerview.widget.LinearLayoutManager
         val firstPos = layoutManager?.findFirstVisibleItemPosition() ?: RecyclerView.NO_POSITION
         val firstView = if (firstPos != RecyclerView.NO_POSITION) layoutManager?.findViewByPosition(firstPos) else null
-        val offsetTop = firstView?.top ?: 0
+        val offsetTop = (firstView?.top ?: (rv?.paddingTop ?: 0)) - (rv?.paddingTop ?: 0)
 
         val style = IconStyleHelper.current()
         val colorMode = IconStyleHelper.currentColorMode()
@@ -129,11 +129,29 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         colorMode: IconStyleHelper.ColorMode,
     ) {
         var count = 0
+        val morphShape =
+            af.shizuku.manager.ShizukuSettings
+                .getIconMorphShape()
+        val morphMode =
+            af.shizuku.manager.utils.MorphMode
+                .of(
+                    af.shizuku.manager.ShizukuSettings
+                        .getIconMorphMode(),
+                )
         for (i in 0 until group.preferenceCount) {
             val pref = group.getPreference(i)
             if (pref is androidx.preference.PreferenceGroup) {
                 reapplyIconStyles(ctx, pref, style, colorMode)
                 if (pref is androidx.preference.PreferenceCategory) continue
+            }
+            val existingIcon = pref.icon
+            val morph = ((existingIcon as? android.graphics.drawable.LayerDrawable)?.getDrawable(0)) as? af.shizuku.manager.utils.MorphShapeDrawable
+            if (morph != null && morphShape != af.shizuku.manager.utils.ExpressiveShapes.OFF) {
+                morph.setShapeKey(morphShape)
+                morph.mode = morphMode
+                morph.springTo(1f)
+                count++
+                continue
             }
             val key = getPrefIconCacheKey(pref, i)
             val original = originalIcons[key] ?: continue
@@ -445,7 +463,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             val layoutManager = rv.layoutManager as? androidx.recyclerview.widget.LinearLayoutManager
             val firstPos = layoutManager?.findFirstVisibleItemPosition() ?: RecyclerView.NO_POSITION
             val firstView = if (firstPos != RecyclerView.NO_POSITION) layoutManager?.findViewByPosition(firstPos) else null
-            val offsetTop = firstView?.top ?: 0
+            val offsetTop = (firstView?.top ?: rv.paddingTop) - rv.paddingTop
 
             rv.setPadding(targetLeft, targetTop, targetRight, targetBottom)
 

@@ -161,6 +161,15 @@ object HomeEditMode {
         val ctx = binding.root.context
         val density = binding.root.resources.displayMetrics.density
 
+        val defaultPadding = (20 * density).toInt()
+        val endPadding = if (isActive) (116 * density).toInt() else defaultPadding
+        binding.cardContent.setPaddingRelative(
+            defaultPadding,
+            binding.cardContent.paddingTop,
+            endPadding,
+            binding.cardContent.paddingBottom,
+        )
+
         fun attrColor(attr: Int): Int {
             val tv = android.util.TypedValue()
             ctx.theme.resolveAttribute(attr, tv, true)

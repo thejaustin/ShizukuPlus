@@ -596,6 +596,10 @@ fun SafePreferenceIcon(
             }
         },
         update = { imageView ->
+            if (iconResId == 0) {
+                imageView.setImageDrawable(null)
+                return@AndroidView
+            }
             try {
                 val drawable =
                     androidx.appcompat.content.res.AppCompatResources

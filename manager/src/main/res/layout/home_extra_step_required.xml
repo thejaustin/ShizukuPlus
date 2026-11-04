@@ -2,8 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/Card.Large"
-    android:background="?colorErrorContainer">
+    style="@style/Card.Large">
 
     <ImageView
         android:id="@android:id/icon"

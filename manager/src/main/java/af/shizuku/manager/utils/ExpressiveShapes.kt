@@ -341,6 +341,13 @@ class MorphShapeDrawable(
     var shapeKey: String = shapeKey
         private set
 
+    fun setShapeKey(newKey: String) {
+        if (shapeKey != newKey) {
+            shapeKey = newKey
+            invalidateSelf()
+        }
+    }
+
     var mode: MorphMode = MorphMode.MORPH
 
     /** 1 = filled, 0 = an outline only (the "icon is the switch" design's off state). */

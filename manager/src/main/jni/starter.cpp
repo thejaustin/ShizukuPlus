@@ -54,6 +54,8 @@
 #define ABI "arm64"
 #endif
 
+static int switch_cgroup();
+
 static void run_server(const char *dex_path, const char *main_class, const char *process_name) {
     if (setenv("CLASSPATH", dex_path, true)) {
         LOGE("can't set CLASSPATH\n");
