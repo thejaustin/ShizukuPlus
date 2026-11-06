@@ -67,9 +67,9 @@
         <item>tcl_50_pro</item>
     </string-array>
 
-   
 
 
+  
     <string-array name="corner_rounding_entries">
         <item>@string/corner_style_sharp</item>
         <item>Zərif — 20dp</item>
@@ -218,5 +218,39 @@
     <string-array name="floating_nav_optional_tabs_value" translatable="false">
         <item>apps</item>
         <item>hub</item>
+    </string-array>
+    <string-array name="helper_notifications">
+        <item>@string/settings_helper_notifications_off</item>
+        <item>@string/settings_helper_notifications_stopped</item>
+        <item>@string/settings_helper_notifications_all</item>
+    </string-array>
+    <string-array name="helper_notifications_values" translatable="false">
+        <item>off</item>
+        <item>stopped</item>
+        <item>all</item>
+    </string-array>
+    <string-array name="icon_morph_modes">
+        <item>@string/settings_icon_morph_mode_spin</item>
+        <item>@string/settings_icon_morph_mode_morph</item>
+        <item>@string/settings_icon_morph_mode_pop</item>
+        <item>@string/settings_icon_morph_mode_sweep</item>
+        <item>@string/settings_icon_morph_mode_liquid</item>
+    </string-array>
+    <string-array name="icon_morph_modes_values" translatable="false">
+        <item>spin</item>
+        <item>morph</item>
+        <item>pop</item>
+        <item>sweep</item>
+        <item>liquid</item>
+    </string-array>
+    <string-array name="switch_row_designs">
+        <item>@string/settings_switch_row_design_standard</item>
+        <item>@string/settings_switch_row_design_icon_switch</item>
+        <item>@string/settings_switch_row_design_shape_thumb</item>
+    </string-array>
+    <string-array name="switch_row_designs_values" translatable="false">
+        <item>standard</item>
+        <item>icon_switch</item>
+        <item>shape_thumb</item>
     </string-array>
 </resources>
