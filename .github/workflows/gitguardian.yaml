@@ -1,10 +1,22 @@
 name: GitGuardian scan
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
 
 jobs:
   scanning:
     name: GitGuardian scan
+    # GitHub withholds secrets from pull requests opened from forks, so the scan can only fail
+    # there ("Invalid GitGuardian API key"). Gitleaks and TruffleHog (security.yml) need no key and
+    # still scan those PRs; GitGuardian runs on pushes and same-repo PRs.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

@@ -53,7 +53,8 @@ class LegacyRishKeepAliveService : Service() {
         }
         foregrounded.set(true)
         // If the server is not (or no longer) running there is nothing to keep alive for.
-        if (!ShizukuSettings.isLegacyRishKeepaliveEnabled() ||
+        if (!shouldBeRunning ||
+            !ShizukuSettings.isLegacyRishKeepaliveEnabled() ||
             ShizukuStateMachine.get() != ShizukuStateMachine.State.RUNNING
         ) {
             stopSelf()
@@ -165,6 +166,8 @@ class LegacyRishKeepAliveService : Service() {
         // True only once startForeground() succeeded, until onDestroy().
         private val foregrounded = AtomicBoolean(false)
 
+        @Volatile private var shouldBeRunning = false
+
         fun isRunning(): Boolean = foregrounded.get()
 
         /**
@@ -185,7 +188,9 @@ class LegacyRishKeepAliveService : Service() {
 
         /** Starts the keep-alive service if the feature is enabled; safe to call from any thread. */
         fun start(context: Context) {
-            if (!ShizukuSettings.isLegacyRishKeepaliveEnabled() || foregrounded.get()) return
+            if (!ShizukuSettings.isLegacyRishKeepaliveEnabled()) return
+            shouldBeRunning = true
+            if (foregrounded.get()) return
             try {
                 ContextCompat.startForegroundService(
                     context,
@@ -199,6 +204,7 @@ class LegacyRishKeepAliveService : Service() {
         }
 
         fun stop(context: Context) {
+            shouldBeRunning = false
             // Never stopService() an instance that has not reached startForeground() yet: the
             // system then kills the whole process with "did not then call startForeground()".
             // That happens on cold start, when the persisted RUNNING state flips to CRASHED a few

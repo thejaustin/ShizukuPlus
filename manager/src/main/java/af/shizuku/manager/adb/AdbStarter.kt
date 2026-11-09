@@ -163,6 +163,13 @@ object AdbStarter {
                         client.runCommand("shell:cmd appops set ${context.packageName} ACCESS_RESTRICTED_SETTINGS allow")
                         client.runCommand("shell:pm grant ${context.packageName} android.permission.WRITE_SECURE_SETTINGS")
                     }.onFailure { Timber.tag(TAG).w(it, "Failed to auto-elevate privileges on ADB start") }
+                    if (tcpMode || ShizukuSettings.isOnDeviceAdbTcpEnabled()) {
+                        val desiredTcpPort = if (tcpMode) ShizukuSettings.getTcpPort().takeIf { it in 1..65535 } ?: 5555 else 5555
+                        runCatching {
+                            client.runCommand("shell:setprop service.adb.tcp.port $desiredTcpPort")
+                            client.runCommand("shell:setprop persist.adb.tcp.port $desiredTcpPort")
+                        }.onFailure { Timber.tag(TAG).w(it, "Failed to persist TCP properties on ADB start") }
+                    }
                     ShizukuSettings.setLastPort(activePort)
                     af.shizuku.manager.utils.UserStopFlag
                         .clear()

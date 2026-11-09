@@ -208,7 +208,6 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                 setChildAvailable(shapeStylePreference, newValue)
                 syncMorphAvailability(shapesOn = newValue)
             }
-            applyTheme(requiresRecreate = false)
             postRefreshIconStyles()
             true
         }
@@ -217,7 +216,6 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             syncMorphAvailability(shape = shape)
             // Restyle once the new value has been persisted.
             view?.post {
-                applyTheme(requiresRecreate = false)
                 postRefreshIconStyles()
             }
             true
@@ -230,7 +228,6 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         morphOffShapePreference?.setOnPreferenceChangeListener { _, _ ->
             // Containers are built with their off shape: restyle once the new value is saved.
             view?.post {
-                applyTheme(requiresRecreate = false)
                 postRefreshIconStyles()
             }
             true
@@ -249,7 +246,6 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         iconStylePreference.setOnPreferenceChangeListener { _, newValue ->
             // Show/hide the color-mode sub-option immediately rather than on next recreate.
             setChildAvailable(iconColorModePreference, newValue == "twotone")
-            applyTheme(requiresRecreate = false)
             postRefreshIconStyles()
             true
         }
@@ -262,8 +258,27 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
         // One corner control (Sharp ... Maximum): Sharp swaps every shape token, which only a
         // recreate re-applies; post so the new value is saved first.
-        findPreference<Preference>("corner_rounding_override")?.setOnPreferenceChangeListener { _, _ ->
+        val cornerPref = findPreference<androidx.preference.ListPreference>("corner_rounding_override")
+        val homeCornerPref = findPreference<androidx.preference.TwoStatePreference>("apply_corner_rounding_to_home")
+
+        fun syncCornerAvailability(value: String?) {
+            val isCustom = value != null && value != "default"
+            homeCornerPref?.isEnabled = isCustom
+            if (!isCustom) {
+                homeCornerPref?.summary = getString(R.string.settings_apply_corner_rounding_to_home_disabled_hint)
+            } else {
+                homeCornerPref?.setSummary(R.string.settings_apply_corner_rounding_to_home_summary)
+            }
+        }
+        syncCornerAvailability(cornerPref?.value ?: ShizukuSettings.getCornerRoundingOverride())
+
+        cornerPref?.setOnPreferenceChangeListener { _, newValue ->
+            syncCornerAvailability(newValue as? String)
             view?.post { applyTheme(requiresRecreate = true) }
+            true
+        }
+
+        homeCornerPref?.setOnPreferenceChangeListener { _, _ ->
             true
         }
 
@@ -275,12 +290,10 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         expressiveAnimationsPreference?.setOnPreferenceChangeListener { _, _ ->
             // isChecked updates after this returns; re-sync once it has.
             view?.post { syncIntensityAvailability() }
-            applyTheme(requiresRecreate = false)
             true
         }
 
         animationIntensityPreference?.setOnPreferenceChangeListener { _, _ ->
-            applyTheme(requiresRecreate = false)
             true
         }
 
@@ -309,7 +322,6 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         syncIntensityAvailability()
         findPreference<TwoStatePreference>("follow_system_animations")?.setOnPreferenceChangeListener { _, _ ->
             view?.post { syncIntensityAvailability() }
-            applyTheme(requiresRecreate = false)
             true
         }
 
@@ -431,6 +443,25 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                 view?.post { applyTheme(requiresRecreate = true) }
             }
             true
+        }
+
+        findPreference<androidx.preference.MultiSelectListPreference>(af.shizuku.manager.widget.FloatingNavBar.KEY_TABS)?.apply {
+            fun describe(values: Set<String>) {
+                val names =
+                    entryValues
+                        .zip(entries)
+                        .filter { (v, _) -> v.toString() in values }
+                        .joinToString(", ") { it.second }
+                summary = getString(R.string.settings_floating_nav_tabs_summary, names)
+            }
+            describe(values)
+            setOnPreferenceChangeListener { _, v ->
+                @Suppress("UNCHECKED_CAST")
+                val tabs = v as Set<String>
+                if (tabs.isEmpty()) return@setOnPreferenceChangeListener false
+                describe(tabs)
+                true
+            }
         }
 
         // 4. Language & System

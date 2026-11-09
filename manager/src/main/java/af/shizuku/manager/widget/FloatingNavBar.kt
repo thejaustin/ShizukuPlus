@@ -72,7 +72,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     private const val SIDE_MARGIN_DP = 24
     private const val BOTTOM_MARGIN_DP = 12
 
-    private var current: Activity? = null
+    private var current: java.lang.ref.WeakReference<Activity>? = null
 
     // Held strongly: SharedPreferences keeps listeners in a weak map.
     private val prefsListener =
@@ -84,7 +84,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 key == ShizukuSettings.Keys.KEY_FLOATING_NAV_AUTOHIDE ||
                 key == ShizukuSettings.Keys.KEY_SHAPE_STYLE
             ) {
-                current?.let { sync(it) }
+                current?.get()?.let { sync(it) }
             }
         }
 
@@ -692,12 +692,12 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     }
 
     override fun onActivityResumed(activity: Activity) {
-        current = activity
+        current = java.lang.ref.WeakReference(activity)
         sync(activity)
     }
 
     override fun onActivityPaused(activity: Activity) {
-        if (current === activity) current = null
+        if (current?.get() === activity) current = null
     }
 
     override fun onActivityCreated(
@@ -727,5 +727,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         outState: Bundle,
     ) = Unit
 
-    override fun onActivityDestroyed(activity: Activity) = Unit
+    override fun onActivityDestroyed(activity: Activity) {
+        if (current?.get() === activity) current = null
+    }
 }

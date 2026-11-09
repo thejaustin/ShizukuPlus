@@ -12,6 +12,7 @@
 #include <string>
 #include <termios.h>
 #include <poll.h>
+#include <csignal>
 #include "android.h"
 #include "misc.h"
 #include "selinux.h"
@@ -52,6 +53,8 @@
 #elif defined(__aarch64__)
 #define ABI "arm64"
 #endif
+
+static int switch_cgroup();
 
 static void run_server(const char *dex_path, const char *main_class, const char *process_name) {
     if (setenv("CLASSPATH", dex_path, true)) {
@@ -137,7 +140,13 @@ static void start_server(const char *path, const char *main_class, const char *p
         case 0: {
             LOGD("child");
             close(fds[0]);
+            signal(SIGHUP, SIG_IGN);
+            signal(SIGPIPE, SIG_IGN);
+            signal(SIGTERM, SIG_IGN);
+            signal(SIGQUIT, SIG_IGN);
+            signal(SIGTSTP, SIG_IGN);
             setsid();
+            switch_cgroup();
             chdir("/");
             int fd = open("/dev/null", O_RDWR);
             if (fd != -1) {
@@ -240,9 +249,40 @@ int main(int argc, char *argv[]) {
 
     se::init();
 
-    if (uid == 0 || uid == 1000) {
-        switch_cgroup();
+    switch_cgroup();
 
+    bool enable_tcp = false;
+    for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--tcp") == 0 || strcmp(argv[i], "--tcpip") == 0) {
+            enable_tcp = true;
+            break;
+        }
+    }
+
+    if (uid == 2000) {
+        char port_buf[PROP_VALUE_MAX + 1] = {0};
+        __system_property_get("persist.adb.tcp.port", port_buf);
+        int persist_port = atoi(port_buf);
+        if (enable_tcp || persist_port > 0) {
+            int target_port = persist_port > 0 ? persist_port : 5555;
+            char target_str[16];
+            snprintf(target_str, sizeof(target_str), "%d", target_port);
+            if (persist_port != target_port) {
+                printf("info: configuring adbd persistent TCP mode (port %s)...\n", target_str);
+                fflush(stdout);
+                __system_property_set("persist.adb.tcp.port", target_str);
+            }
+            char active_buf[PROP_VALUE_MAX + 1] = {0};
+            __system_property_get("service.adb.tcp.port", active_buf);
+            if (atoi(active_buf) != target_port) {
+                printf("info: configuring adbd active TCP mode (port %s)...\n", target_str);
+                fflush(stdout);
+                __system_property_set("service.adb.tcp.port", target_str);
+            }
+        }
+    }
+
+    if (uid == 0 || uid == 1000) {
         if (android_get_device_api_level() >= 29) {
             printf("info: switching mount namespace to init...\n");
             switch_mnt_ns(1);

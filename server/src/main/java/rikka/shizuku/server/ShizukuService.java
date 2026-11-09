@@ -334,6 +334,45 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         }
     }
 
+    private void ensureAdbTcpPersistence() {
+        try {
+            int uid = android.os.Process.myUid();
+            int userId = UserHandleCompat.getUserId(uid);
+
+            // 1. Keep ADB authorization alive across USB disconnect
+            IContentProvider settingsProvider = ActivityManagerApis.getContentProviderExternal(
+                    "settings", userId, null, "com.android.shell");
+            if (settingsProvider != null) {
+                try {
+                    Bundle authTimeout = new Bundle();
+                    authTimeout.putString("value", "0");
+                    IContentProviderUtils.callCompat(
+                            settingsProvider, null, "settings",
+                            "PUT_global", "adb_allowed_connection_time", authTimeout);
+                    // Note: Never forcefully overwrite adb_enabled to "1", as that overrides
+                    // user Developer Options preference and causes issues for apps checking debugging status.
+                } catch (Exception e) {
+                    LOGGER.w("failed to update adb settings via ContentProvider", e);
+                }
+            }
+
+            // 2. Only ensure active TCP port if persistent TCP mode is configured/enabled by the user
+            if (uid == 2000 || uid == 0) {
+                String persistPort = android.os.SystemProperties.get("persist.adb.tcp.port", "");
+                String currentPort = android.os.SystemProperties.get("service.adb.tcp.port", "");
+                if (!persistPort.isEmpty() && !"-1".equals(persistPort) && !"0".equals(persistPort)) {
+                    if (currentPort.isEmpty() || "-1".equals(currentPort) || "0".equals(currentPort)) {
+                        LOGGER.i("Restoring active ADB TCP mode (port %s) from persistent configuration", persistPort);
+                        android.os.SystemProperties.set("service.adb.tcp.port", persistPort);
+                        android.os.SystemProperties.set("ctl.restart", "adbd");
+                    }
+                }
+            }
+        } catch (Throwable t) {
+            LOGGER.w("Failed to ensure ADB TCP persistence", t);
+        }
+    }
+
     public ShizukuService() {
         super();
 
@@ -351,6 +390,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         // Disable Phantom Process Killer on Android 12+ — must run after waitSystemService so the
         // ContentProvider path for the settings write has a live activity-manager binder.
         disablePhantomProcessKiller();
+        ensureAdbTcpPersistence();
 
         ApplicationInfo ai = getManagerApplicationInfo();
         if (ai == null) {
@@ -466,8 +506,17 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
 
     @Override
     public ShizukuUserServiceManager onCreateUserServiceManager() {
-        // A user service runs the app's own code with Shizuku's access, so it falls under "shell".
-        return new ShizukuUserServiceManager(uid -> isAppScopeDisabled(uid, null, "shell"));
+        // A user service runs the app's own code with Shizuku's access: it can run pm, am or
+        // settings without newProcess, so no scope can be checked inside it. Like an interactive
+        // shell, it's refused while "shell" or any tool scope is off for the app (#648: aShell
+        // suspended apps through its user service with package_manager off).
+        return new ShizukuUserServiceManager(uid -> {
+            if (isAppScopeDisabled(uid, null, "shell")) return true;
+            for (String scope : rikka.shizuku.server.util.ScopeCommandMatcher.TOOL_SCOPES) {
+                if (isAppScopeDisabled(uid, null, scope)) return true;
+            }
+            return false;
+        });
     }
 
     @Override
@@ -2311,9 +2360,22 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         if (binder != null) {
                             Class<?> stub = Class.forName("com.android.internal.app.IAppOpsService$Stub");
                             Object service = stub.getMethod("asInterface", IBinder.class).invoke(null, binder);
-                            int intOp = (int) service.getClass().getMethod("strOpToOp", String.class).invoke(service, modeOrOp);
-                            int intMode = value.equals("allow") ? 0 : (value.equals("ignore") || value.equals("deny")) ? 1 : 2; 
-                            
+                            // strOpToOp wants "android:system_alert_window"; users type the op name
+                            // (SYSTEM_ALERT_WINDOW), which the real appops tool also accepts.
+                            String opStr = modeOrOp.startsWith("android:") ? modeOrOp : "android:" + modeOrOp.toLowerCase(java.util.Locale.ROOT);
+                            int intOp = (int) service.getClass().getMethod("strOpToOp", String.class).invoke(service, opStr);
+                            // AppOpsManager.MODE_*: "default" used to fall into 2 (errored), so
+                            // resetting an op errored it instead (#648).
+                            int intMode;
+                            switch (value) {
+                                case "allow": intMode = 0; break;
+                                case "ignore": intMode = 1; break;
+                                case "deny": case "errored": intMode = 2; break;
+                                case "default": intMode = 3; break;
+                                case "foreground": intMode = 4; break;
+                                default: intMode = -1;
+                            }
+
                             int targetUid = -1;
                             try {
                                 targetUid = Integer.parseInt(pkg);
@@ -2322,13 +2384,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                                 if (ai != null) targetUid = ai.uid;
                             }
                             
-                            if (targetUid != -1) {
+                            // Anything unrecognized runs the real appops tool below instead.
+                            if (targetUid != -1 && intOp >= 0 && intMode >= 0) {
                                 service.getClass().getMethod("setMode", int.class, int.class, String.class, int.class).invoke(service, intOp, targetUid, pkg, intMode);
                                 return syntheticProcess(0, "");
                             }
                         }
                     } catch (Throwable tr) {
-                        LOGGER.e(tr, "Plus Optimization: appops failed");
+                        LOGGER.w(tr, "Plus Optimization: appops shortcut failed, running appops itself");
                     }
                 }
             } else if (baseCmd.equals("service") && cmd.length >= 4 && cmd[1].equals("call")) {

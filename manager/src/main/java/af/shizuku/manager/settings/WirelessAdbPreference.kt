@@ -253,7 +253,10 @@ class WirelessAdbPreference
                                     value = isOn,
                                     enabled = switchEnabled,
                                     role = Role.Switch,
-                                    onValueChange = { requestTcpMode(it) },
+                                    onValueChange = {
+                                        if (it) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
+                                        requestTcpMode(it)
+                                    },
                                 ),
                     ) {
                         Icon(

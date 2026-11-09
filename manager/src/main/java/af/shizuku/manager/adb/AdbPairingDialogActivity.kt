@@ -2,8 +2,13 @@ package af.shizuku.manager.adb
 
 import af.shizuku.core.ui.AppActivity
 import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
 import android.os.Bundle
+import android.text.InputFilter
 import android.text.InputType
+import android.text.method.DigitsKeyListener
+import android.text.method.TextKeyListener
+import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -24,6 +29,8 @@ class AdbPairingDialogActivity : AppActivity() {
                 EditText(this).apply {
                     hint = getString(R.string.dialog_adb_port)
                     inputType = InputType.TYPE_CLASS_NUMBER
+                    keyListener = DigitsKeyListener.getInstance("0123456789")
+                    filters = arrayOf(InputFilter.LengthFilter(5))
                     layoutParams =
                         ViewGroup
                             .MarginLayoutParams(
@@ -35,10 +42,20 @@ class AdbPairingDialogActivity : AppActivity() {
                 null
             }
 
+        val isNumerical = ShizukuSettings.isNumericalPairingKeyboardEnabled()
         val codeEditText =
             EditText(this).apply {
                 hint = getString(R.string.dialog_adb_pairing_paring_code)
-                inputType = InputType.TYPE_CLASS_NUMBER
+                inputType = if (isNumerical) InputType.TYPE_CLASS_NUMBER else InputType.TYPE_CLASS_TEXT
+                keyListener =
+                    if (isNumerical) {
+                        DigitsKeyListener.getInstance("0123456789")
+                    } else {
+                        TextKeyListener.getInstance()
+                    }
+                filters = arrayOf(InputFilter.LengthFilter(6))
+                letterSpacing = 0.15f
+                gravity = Gravity.CENTER
                 layoutParams =
                     ViewGroup
                         .MarginLayoutParams(

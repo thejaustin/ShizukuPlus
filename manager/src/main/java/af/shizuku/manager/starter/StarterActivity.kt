@@ -435,6 +435,17 @@ class ViewModel(
                             if (proc.waitFor() == 0) {
                                 ShizukuStateMachine.update()
                                 ActivityLogManager.log("Shizuku", appContext.packageName, "Service started via root ($fallbackSu)")
+                                if (ShizukuSettings.isOnDeviceAdbTcpEnabled() ||
+                                    (
+                                        ShizukuSettings.getTcpMode() &&
+                                            !af.shizuku.manager.utils.NetworkTrust
+                                                .shouldBlockTcp(appContext)
+                                    )
+                                ) {
+                                    val tcpPort = ShizukuSettings.getTcpPort().takeIf { it in 1..65535 } ?: 5555
+                                    af.shizuku.manager.service.AdbProxyService
+                                        .enableAdbTcp(tcpPort)
+                                }
                                 return@withContext
                             }
                         } catch (e: Exception) {
@@ -460,6 +471,17 @@ class ViewModel(
                             if (it.isSuccess) {
                                 ShizukuStateMachine.update()
                                 ActivityLogManager.log("Shizuku", appContext.packageName, "Service started via root")
+                                if (ShizukuSettings.isOnDeviceAdbTcpEnabled() ||
+                                    (
+                                        ShizukuSettings.getTcpMode() &&
+                                            !af.shizuku.manager.utils.NetworkTrust
+                                                .shouldBlockTcp(appContext)
+                                    )
+                                ) {
+                                    val tcpPort = ShizukuSettings.getTcpPort().takeIf { it in 1..65535 } ?: 5555
+                                    af.shizuku.manager.service.AdbProxyService
+                                        .enableAdbTcp(tcpPort)
+                                }
                                 cont.resume(Unit)
                             } else {
                                 cont.resumeWithException(Exception("Failed to start with root"))

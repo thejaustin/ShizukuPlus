@@ -22,6 +22,7 @@ class BootCompleteReceiver : BroadcastReceiver() {
                 Intent.ACTION_BOOT_COMPLETED,
                 Intent.ACTION_LOCKED_BOOT_COMPLETED,
                 Intent.ACTION_MY_PACKAGE_REPLACED,
+                Intent.ACTION_USER_PRESENT,
                 "android.intent.action.QUICKBOOT_POWERON",
                 "com.htc.intent.action.QUICKBOOT_POWERON",
                 -> true
@@ -30,28 +31,102 @@ class BootCompleteReceiver : BroadcastReceiver() {
         if (!handled) return
 
         Timber.tag("BootCompleteReceiver").i("Triggered by: $action")
+
+        if (action == Intent.ACTION_USER_PRESENT) {
+            val um = context.getSystemService(android.os.UserManager::class.java)
+            if (um != null && !um.isUserUnlocked) return
+
+            if (ShizukuSettings.getWatchdog()) {
+                try {
+                    if (!WatchdogService.isRunning()) {
+                        WatchdogService.start(context)
+                    }
+                    WatchdogAlarmReceiver.schedule(context)
+                } catch (e: Exception) {
+                    Timber.tag("BootCompleteReceiver").w(e, "Watchdog start on USER_PRESENT skipped")
+                }
+            }
+
+            // If Watchdog auto-restart is enabled and the server died while locked/sleeping,
+            // revive it immediately upon unlock instead of waiting for the 15-minute alarm.
+            if (ShizukuSettings.getWatchdog() &&
+                ShizukuSettings.isWatchdogAutoRestartEnabled() &&
+                !af.shizuku.manager.utils.UserStopFlag
+                    .isSet()
+            ) {
+                if (!af.shizuku.manager.utils.ShizukuStateMachine
+                        .isRunning() &&
+                    af.shizuku.manager.utils.ShizukuStateMachine
+                        .get() != af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING
+                ) {
+                    Timber.tag("BootCompleteReceiver").i("User unlocked device while server stopped — triggering Watchdog revival")
+                    try {
+                        ShizukuReceiverStarter.start(context)
+                    } catch (e: Exception) {
+                        Timber.tag("BootCompleteReceiver").w(e, "Watchdog revival on USER_PRESENT failed")
+                    }
+                    return
+                }
+            }
+
+            if (!ShizukuSettings.getStartOnBoot(context) ||
+                af.shizuku.manager.utils.UserStopFlag
+                    .isSet()
+            ) {
+                return
+            }
+            if (af.shizuku.manager.utils.ShizukuStateMachine
+                    .isRunning() ||
+                af.shizuku.manager.utils.ShizukuStateMachine
+                    .get() == af.shizuku.manager.utils.ShizukuStateMachine.State.STARTING
+            ) {
+                return
+            }
+            Timber.tag("BootCompleteReceiver").i("User unlocked device while Shizuku is stopped — triggering start on boot")
+            try {
+                ShizukuReceiverStarter.start(context)
+            } catch (e: Exception) {
+                Timber.tag("BootCompleteReceiver").w(e, "USER_PRESENT auto-start failed")
+            }
+            return
+        }
         // LOCKED_BOOT_COMPLETED fires before credential-encrypted storage is unlocked, so prefs
         // (launch mode, shell commands, etc.) are unavailable. Attempting to start here would either
         // crash or spawn a server using stale defaults, and BOOT_COMPLETED fires seconds later once
         // the user unlocks and handles the actual start (#504). Skip auto-start for LOCKED_BOOT_COMPLETED.
         if (action != Intent.ACTION_LOCKED_BOOT_COMPLETED) {
-            try {
-                // A real boot may raise adbd's authorisation dialog once more; the QUICKBOOT
-                // look-alikes do not reset that.
-                if (action == Intent.ACTION_BOOT_COMPLETED) {
-                    af.shizuku.manager.adb.AdbAuthWait
-                        .clearUnanswered()
+            val shouldStartOnBoot =
+                ShizukuSettings.getStartOnBoot(context) ||
+                    (ShizukuSettings.getWatchdog() && ShizukuSettings.isWatchdogAutoRestartEnabled())
+            if (shouldStartOnBoot &&
+                !af.shizuku.manager.utils.UserStopFlag
+                    .isSet()
+            ) {
+                try {
+                    // A real boot may raise adbd's authorisation dialog once more; the QUICKBOOT
+                    // look-alikes do not reset that.
+                    if (action == Intent.ACTION_BOOT_COMPLETED) {
+                        af.shizuku.manager.adb.AdbAuthWait
+                            .clearUnanswered()
+                    }
+                    ShizukuReceiverStarter.start(context)
+                } catch (e: Exception) {
+                    Timber.tag("BootCompleteReceiver").w(e, "Auto-start skipped (service not ready, e.g. direct boot)")
                 }
-                ShizukuReceiverStarter.start(context)
-            } catch (e: Exception) {
-                Timber.tag("BootCompleteReceiver").w(e, "Auto-start skipped (service not ready, e.g. direct boot)")
+            } else {
+                Timber.tag("BootCompleteReceiver").d("Start on boot disabled or user stopped; skipping boot start")
             }
         } else {
             Timber.tag("BootCompleteReceiver").d("LOCKED_BOOT_COMPLETED — deferring start to BOOT_COMPLETED")
         }
         try {
             if (ShizukuSettings.getWatchdog()) {
-                WatchdogService.start(context)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                    af.shizuku.manager.worker.WatchdogWorker
+                        .scheduleOneTimeHeal(context.applicationContext)
+                } else {
+                    WatchdogService.start(context)
+                }
                 // Exact alarms don't survive a reboot; re-arm the external watchdog (#415, #417).
                 WatchdogAlarmReceiver.schedule(context)
             }
@@ -66,6 +141,13 @@ class BootCompleteReceiver : BroadcastReceiver() {
                     .startIfNeeded(context)
             } catch (e: Exception) {
                 Timber.tag("BootCompleteReceiver").w(e, "AutomationService start skipped")
+            }
+        }
+        if (ShizukuSettings.isAdbProxyEnabled()) {
+            try {
+                context.startService(Intent(context, af.shizuku.manager.service.AdbProxyService::class.java))
+            } catch (e: Exception) {
+                Timber.tag("BootCompleteReceiver").w(e, "AdbProxyService auto-start skipped")
             }
         }
         if (action == Intent.ACTION_MY_PACKAGE_REPLACED && ShizukuSettings.isSuBridgeEnabled()) {

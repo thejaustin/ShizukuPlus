@@ -251,6 +251,22 @@ static void PairingContext_Destroy(JNIEnv *env, jobject obj, jlong ptr) {
 
 // ---------------------------------------------------------
 
+static jboolean AdbPairingClient_Available(JNIEnv *env, jclass clazz) {
+    return JNI_TRUE;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_af_shizuku_manager_adb_AdbPairingClient_available(JNIEnv *env, jclass clazz) {
+    return JNI_TRUE;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_af_shizuku_manager_adb_AdbPairingClient_00024Companion_available(JNIEnv *env, jobject thiz) {
+    return JNI_TRUE;
+}
+
+// ---------------------------------------------------------
+
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     JNIEnv *env = nullptr;
 
@@ -266,8 +282,24 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
             {"nativeDestroy",     "(J)V",    (void *) PairingContext_Destroy},
     };
 
-    env->RegisterNatives(env->FindClass("af/shizuku/manager/adb/PairingContext"), methods_PairingContext,
-                         sizeof(methods_PairingContext) / sizeof(JNINativeMethod));
+    jclass pairingClass = env->FindClass("af/shizuku/manager/adb/PairingContext");
+    if (pairingClass != nullptr) {
+        env->RegisterNatives(pairingClass, methods_PairingContext,
+                             sizeof(methods_PairingContext) / sizeof(JNINativeMethod));
+    } else {
+        env->ExceptionClear();
+    }
+
+    jclass clientClass = env->FindClass("af/shizuku/manager/adb/AdbPairingClient");
+    if (clientClass != nullptr) {
+        JNINativeMethod methods_AdbPairingClient[] = {
+                {"available", "()Z", (void *) AdbPairingClient_Available},
+        };
+        env->RegisterNatives(clientClass, methods_AdbPairingClient,
+                             sizeof(methods_AdbPairingClient) / sizeof(JNINativeMethod));
+    } else {
+        env->ExceptionClear();
+    }
 
     return JNI_VERSION_1_6;
 }

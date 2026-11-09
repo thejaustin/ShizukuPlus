@@ -98,40 +98,53 @@ class AdbStartWorker(
                 }
             }
 
-            if (NetworkTrust.shouldBlockTcp(applicationContext)) {
-                throw SecurityException("Wireless debugging start blocked: current network is untrusted")
-            }
-
-            runCatching {
-                Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)
-                Settings.Global.putLong(cr, "adb_allowed_connection_time", 0L)
-            }
-
-            // Fast path: if TCP mode is on and the port is already listening, connect directly —
-            // no Wireless Debugging or Wi-Fi required.
-            if (ShizukuSettings.getTcpMode()) {
-                val desiredPort = ShizukuSettings.getTcpPort()
-                if (desiredPort in 1..65535) {
-                    if (AdbPortProber.isPortOpen(desiredPort, 600)) {
-                        AdbStarter.startAdb(
-                            applicationContext,
-                            desiredPort,
-                            activityLogMessage = "Service started via direct TCP port $desiredPort (no Wi-Fi required)",
-                        )
-                        Starter.waitForBinder()
-                        return Result.success()
+            if (NetworkTrust.mode() != NetworkTrust.MODE_OFF) {
+                val assessment = NetworkTrust.assess(applicationContext)
+                if (assessment.verdict == NetworkTrust.Verdict.UNTRUSTED) {
+                    // If Shizuku is down, resolveSsid cannot query the shell for SSID.
+                    // Do not deadlock startup when SSID is unresolvable unless it's explicitly an open network or captive portal.
+                    if (!ShizukuStateMachine.isRunning() &&
+                        assessment.reason == NetworkTrust.Reason.NOT_TRUSTED &&
+                        assessment.ssid == null
+                    ) {
+                        Timber.tag(TAG).i("NetworkTrust: SSID unresolvable while Shizuku is down; proceeding with local startup")
+                    } else {
+                        throw SecurityException("Wireless debugging start blocked: current network is untrusted (${assessment.reason})")
                     }
                 }
             }
 
-            val tcpPort = EnvironmentUtils.getAdbTcpPort()
-            if (tcpPort > 0 && !ShizukuSettings.getTcpMode()) {
-                if (!AdbStarter.stopTcp(applicationContext, tcpPort)) {
-                    // Connecting again for the start would raise the dialog a second time.
-                    throw AdbAuthTimeoutException("adbd authorisation was not accepted while leaving TCP mode")
+            runCatching {
+                // Ensure ADB authorization does not expire across connections, without overriding
+                // user's manual USB debugging toggle in Developer Options (#656).
+                Settings.Global.putLong(cr, "adb_allowed_connection_time", 0L)
+            }
+
+            // Fast path: if TCP mode is on and the port is already listening, connect directly —
+            // no Wireless Debugging or Wi-Fi required. On boot, retry brief probe to allow adbd time to bind.
+            if (ShizukuSettings.getTcpMode()) {
+                val desiredPort = ShizukuSettings.getTcpPort().takeIf { it in 1..65535 } ?: 5555
+                var portReady = false
+                val timeouts = if (runAttemptCount == 0) intArrayOf(600, 1000, 1500) else intArrayOf(600)
+                for (timeout in timeouts) {
+                    if (AdbPortProber.isPortOpen(desiredPort, timeout)) {
+                        portReady = true
+                        break
+                    }
+                    delay(300)
+                }
+                if (portReady) {
+                    AdbStarter.startAdb(
+                        applicationContext,
+                        desiredPort,
+                        activityLogMessage = "Service started via direct TCP port $desiredPort (no Wi-Fi required)",
+                    )
+                    Starter.waitForBinder()
+                    return Result.success()
                 }
             }
 
+            val tcpPort = EnvironmentUtils.getAdbTcpPort()
             val savedPort = ShizukuSettings.getLastPort()
             val isWifiOk = !EnvironmentUtils.isWifiRequired() || ShizukuSettings.isForceStartWadbEnabled()
 
@@ -348,6 +361,8 @@ class AdbStartWorker(
             timber.log.Timber
                 .tag("AdbStartWorker")
                 .w(e, "doWork: authorisation dialog not answered, not retrying")
+            af.shizuku.manager.doctor.StartFailureLog
+                .record(af.shizuku.manager.doctor.StartFailureLog.Kind.AUTH_TIMEOUT)
             if (ShizukuStateMachine.get() == ShizukuStateMachine.State.STARTING) {
                 ShizukuStateMachine.set(ShizukuStateMachine.State.STOPPED)
             }
@@ -368,6 +383,16 @@ class AdbStartWorker(
             // mDNS timeouts, an untrusted network and dropped sockets are expected while Wi-Fi
             // changes; as errors they were the top crash-report source (SHIZUKUPLUS-9K/9T/9R).
             val transient = ignored.any { it.isInstance(e) }
+            // Remembered for Service Doctor, which offers the matching repair.
+            when {
+                e is TimeoutException && e.message?.contains("mDNS") == true ->
+                    af.shizuku.manager.doctor.StartFailureLog
+                        .record(af.shizuku.manager.doctor.StartFailureLog.Kind.MDNS_TIMEOUT)
+                af.shizuku.manager.doctor.StartFailureLog
+                    .isAdbKeyFailure(e) ->
+                    af.shizuku.manager.doctor.StartFailureLog
+                        .record(af.shizuku.manager.doctor.StartFailureLog.Kind.ADB_KEY)
+            }
             timber.log.Timber
                 .tag("AdbStartWorker")
                 .log(if (transient) android.util.Log.WARN else android.util.Log.ERROR, e, "doWork: failed on runAttempt %d: %s", runAttemptCount, e.message)
@@ -495,7 +520,7 @@ class AdbStartWorker(
             val waitsForWifi = EnvironmentUtils.isWifiRequired() && !ShizukuSettings.isForceStartWadbEnabled()
             val cb = Constraints.Builder()
             if (waitsForWifi) {
-                cb.setRequiredNetworkType(NetworkType.UNMETERED)
+                cb.setRequiredNetworkType(NetworkType.CONNECTED)
             }
             val request =
                 OneTimeWorkRequestBuilder<AdbStartWorker>()

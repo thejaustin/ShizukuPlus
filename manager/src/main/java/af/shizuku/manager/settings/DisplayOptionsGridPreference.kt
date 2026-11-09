@@ -175,6 +175,7 @@ private fun DisplayGridContent(
             ) {
                 rowItems.forEach { option ->
                     val checked = states[option.key] ?: option.defaultVal
+                    val cornerOverride = remember { ShizukuSettings.getCornerRoundingOverride() }
 
                     val scale by animateFloatAsState(
                         targetValue = if (checked) 1.0f else 0.96f,
@@ -182,12 +183,12 @@ private fun DisplayGridContent(
                         label = "cardScale",
                     )
                     val cardCorner by animateDpAsState(
-                        targetValue = if (checked) 24.dp else 14.dp,
+                        targetValue = resolveGridCardCorner(cornerOverride, checked),
                         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
                         label = "cardCorner",
                     )
                     val iconCorner by animateDpAsState(
-                        targetValue = if (checked) 8.dp else 16.dp,
+                        targetValue = resolveGridIconCorner(cornerOverride, checked),
                         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
                         label = "iconCorner",
                     )

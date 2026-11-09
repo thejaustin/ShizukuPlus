@@ -82,6 +82,16 @@ class AdbProxyService : Service() {
                 return false
             }
             return try {
+                val currentPort = EnvironmentUtils.getAdbTcpPort()
+                if (currentPort == port ||
+                    af.shizuku.manager.adb.AdbPortProber
+                        .isPortOpen(port, 300)
+                ) {
+                    // Port is already active; ensure persistent property is set so it survives reboot
+                    execShellCommand(arrayOf("setprop", "persist.adb.tcp.port", port.toString()))
+                    return true
+                }
+
                 // Step 1: Set the TCP port property
                 execShellCommand(arrayOf("setprop", "service.adb.tcp.port", port.toString()))
 

@@ -71,7 +71,7 @@ Only the settings file goes to Android Backup ([`ShizukuBackupAgent.kt`](../mana
 
 ## What other apps can do through Shizuku+
 
-An app you allow gets Shizuku's usual access: it can run shell commands as the ADB shell user, or as root in root mode. Only allow apps you trust. On top of that, Shizuku+ adds its own APIs, and the risky ones are **off for other apps by default**:
+An app you allow gets Shizuku's usual access: it can run shell commands as the ADB shell user, or as root in root mode. Only allow apps you trust. On top of that, Shizuku+ adds its own APIs, and the risky ones are **off for other apps by default**. To bring them back, unlock Developer options by tapping the version 7 times in Settings → About:
 
 - **Other apps' private data** (`/data/data`, Android/data, Android/obb, temp-debug backups, app data restore). Turn on **Developer options → Unrestricted app data access** for backup tools like Neo Backup or SD Maid.
 - **Personal data and device control** (SMS, contacts, call log, location, clipboard, notifications, screenshots, input injection, logcat, heap dumps, reboot, reading other apps' content providers). Turn on **Developer options → Personal data & device control**.

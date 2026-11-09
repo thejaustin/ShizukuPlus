@@ -432,8 +432,8 @@ class AdbPairingClient(
                 try {
                     available()
                 } catch (t: Throwable) {
-                    Timber.tag(TAG).w(t, "libadb.so available() check failed")
-                    false
+                    Timber.tag(TAG).w(t, "libadb.so available() check threw, falling back to nativeLoaded")
+                    nativeLoaded
                 }
 
         @JvmStatic

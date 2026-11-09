@@ -3,6 +3,7 @@
 
 Stable Release is heading your way... soon... have had some more issues creep up on me that I want to fix firsthand.
 
+Pre-releases are back in the meantime.
 
 I've been in the process of simplifying, restructuring, and improving the code quality, and visual quality of the app locally. 
 
@@ -11,7 +12,7 @@ Pre-releases will return for simple things like bugs, crashes, issues and such.
 
 I'm creating more checkpoints for myself and this project as I shift my focus to stability and improvement in visual quality & user experience ahead of new feature implementation.
 
-It's time to truly stabilize things instead of simply moving forward with development at lightspeed
+It's time to truly stabilize things instead of simply moving forward with development at lightspeed.
 Thank you for your patience, and much love to you all!
 
 
@@ -28,8 +29,9 @@ Shizuku lets normal apps use system-level APIs directly via a privileged process
 [![Stars](https://img.shields.io/github/stars/thejaustin/ShizukuPlus?style=for-the-badge&color=bfb330&labelColor=807820)](https://github.com/thejaustin/ShizukuPlus/stargazers)
 [![Downloads](https://img.shields.io/github/downloads/thejaustin/ShizukuPlus/total?style=for-the-badge&color=bf7830&labelColor=805020)](https://github.com/thejaustin/ShizukuPlus/releases)
 [![Latest Release](https://img.shields.io/github/v/release/thejaustin/ShizukuPlus?include_prereleases&sort=date&style=for-the-badge&color=3060bf&labelColor=204080&label=Latest)](https://github.com/thejaustin/ShizukuPlus/releases)
+[![Crowdin](https://badges.crowdin.net/ShizukuPlus/localized.svg)](https://crowdin.com/project/ShizukuPlus)
 
-**🌐 Languages:** **English** · [Simplified Chinese](README.zh-CN.md)
+**🌐 Languages:** **English** · [Simplified Chinese](README.zh-CN.md) · [Help Translate on Crowdin](https://crowdin.com/project/ShizukuPlus)
 
 </div>
 
@@ -49,7 +51,7 @@ Get the latest release from [GitHub Releases](https://github.com/thejaustin/Shiz
 *   **Bulk Management**: Multi-select apps to grant/revoke permissions or hide them in one tap.
 *   **Per-app API scopes**: Limit what each authorized app can do (shell, package manager, activity manager, app ops, system settings). An app with a scope off can't get around it with an interactive shell or its own background services.
 *   **Quick safety check** (optional, off by default): When an app asks for access, see where it was installed from, when, and its signing certificate. Add your own VirusTotal or Pithus key to also see whether scanners flag that exact APK; only its hash is looked up.
-*   **Safe by default for other apps**: Shizuku+'s riskier APIs for other apps (other apps' private data, SMS, contacts, location, screenshots, input, reboot) stay off until you turn them on in **Developer options → Unrestricted access**.
+*   **Safe by default for other apps**: Shizuku+'s riskier APIs for other apps (other apps' private data, SMS, contacts, location, screenshots, input, reboot) stay off until you turn them on in **Developer options → Unrestricted access** (unlock Developer options by tapping the version 7 times in Settings → About).
 *   **App list sorting up front**: A sort chip leads the filter row: name, last installed, last updated or granted first, and tap again to reverse.
 *   **In-App Knowledgebase**: Clean, offline-first Material 3 peek dialogs with rich guides, copyable command snippets, and direct action buttons without navigating away.
 *   **Activity Log with Morphe Timeline**: Visual node rails with dynamic pulsing status halos, repetitive activity occurrence grouping, and multi-criteria sorting.
@@ -225,7 +227,7 @@ Full license texts and per-library details: [OPEN_SOURCE_LICENSES.md](OPEN_SOURC
 | Italian | [Dany-coder778](https://github.com/Dany-coder778) |
 | Japanese | [MES-mitutti](https://github.com/MES-mitutti) |
 
-*Plus many more via community translation through Weblate — thank you to all translators!*
+*Plus many more via community translation through [Crowdin](https://crowdin.com/project/ShizukuPlus) — thank you to all translators!*
 
 > **Machine-assisted drafts:** where a language was still incomplete, missing strings were filled with AI-assisted drafts in `strings_machine_translated.xml` and are **flagged for native review**. If you speak the language, corrections are very welcome — see [TRANSLATING.md](TRANSLATING.md).
 

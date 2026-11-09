@@ -213,6 +213,17 @@ object DeviceOptimizer {
             runCommand("dumpsys deviceidle whitelist +$pkgName")
             onAppWhitelistedForTesting?.invoke(pkgName)
 
+            // 1b. AppOps for background execution and standby bucket resilience
+            runCommand("cmd appops set $pkgName RUN_ANY_IN_BACKGROUND allow")
+            runCommand("cmd appops set $pkgName RUN_IN_BACKGROUND allow")
+            runCommand("am set-standby-bucket $pkgName active")
+
+            // 1c. Android 12+ (API 31+) / 14+ / 16 Phantom Process Killer bypass
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                runCommand("device_config put activity_manager max_phantom_processes 2147483647")
+                runCommand("device_config set_sync_disabled_for_tests persistent")
+            }
+
             // 2. Whitelist known terminal and companion packages if installed
             val clientPackages =
                 listOf(

@@ -62,6 +62,18 @@ class AdbPairDialogFragment : DialogFragment() {
 
     private fun onDialogShow(dialog: AlertDialog) {
         val codeEditText = binding.pairingCode.editText
+        val isNumerical = ShizukuSettings.isNumericalPairingKeyboardEnabled()
+        if (isNumerical) {
+            codeEditText?.inputType = android.text.InputType.TYPE_CLASS_NUMBER
+            codeEditText?.keyListener =
+                android.text.method.DigitsKeyListener
+                    .getInstance("0123456789")
+        } else {
+            codeEditText?.inputType = android.text.InputType.TYPE_CLASS_TEXT
+            codeEditText?.keyListener =
+                android.text.method.TextKeyListener
+                    .getInstance()
+        }
         codeEditText?.doAfterTextChanged {
             binding.pairingCode.error = null
         }
@@ -89,7 +101,11 @@ class AdbPairDialogFragment : DialogFragment() {
                 return@setOnClickListener
             }
 
-            val password = codeEditText?.text.toString() ?: ""
+            val password = codeEditText?.text?.toString()?.trim() ?: ""
+            if (password.length != 6 || !password.all { it.isDigit() }) {
+                binding.pairingCode.error = context.getString(R.string.dialog_adb_invalid_code)
+                return@setOnClickListener
+            }
 
             viewModel.run(port, password)
         }
@@ -98,7 +114,17 @@ class AdbPairDialogFragment : DialogFragment() {
             val portEditText = binding.port.editText
             if (portValue == -1) {
                 dialog.setTitle(R.string.dialog_adb_pairing_discovery)
-                binding.text1.isVisible = true
+                val inMultiScreen =
+                    activity?.isInMultiWindowMode == true ||
+                        (
+                            activity
+                                ?.window
+                                ?.decorView
+                                ?.display
+                                ?.displayId ?: -1
+                        ) > 0
+                binding.text1.isVisible = inMultiScreen
+                binding.text2.isVisible = !inMultiScreen
                 binding.pairingCode.isVisible = true
                 binding.port.isVisible = true
                 binding.progress.isVisible = true
@@ -126,6 +152,7 @@ class AdbPairDialogFragment : DialogFragment() {
             } else {
                 dialog.setTitle(R.string.dialog_adb_pairing_title)
                 binding.text1.isVisible = false
+                binding.text2.isVisible = false
                 binding.pairingCode.isVisible = true
                 binding.port.isVisible = true
                 binding.progress.isVisible = false
@@ -137,8 +164,8 @@ class AdbPairDialogFragment : DialogFragment() {
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onStart() {
+        super.onStart()
 
         val context = requireContext()
         val inMultiScreenOrDisplay = (

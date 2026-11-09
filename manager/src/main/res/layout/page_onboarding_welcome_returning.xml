@@ -167,7 +167,7 @@
             android:id="@+id/card_feat_doctor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="12dp"
             app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge"
             app:strokeWidth="0dp"
             app:cardElevation="0dp"
@@ -205,6 +205,110 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/onboarding_returning_feat_doctor_desc"
+                        android:textAppearance="?textAppearanceBodySmall"
+                        android:textColor="?colorOnSurfaceVariant" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Highlight Card 4: Modern Layouts & Floating Nav -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_feat_layout_nav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge"
+            app:strokeWidth="0dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="?colorSurfaceContainer">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_smartphone_24"
+                    app:tint="?colorPrimary"
+                    android:contentDescription="@null" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/onboarding_returning_feat_layout_nav_title"
+                        android:textAppearance="?textAppearanceTitleSmall"
+                        android:textColor="?colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/onboarding_returning_feat_layout_nav_desc"
+                        android:textAppearance="?textAppearanceBodySmall"
+                        android:textColor="?colorOnSurfaceVariant" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Highlight Card 5: Enhanced Wireless ADB & Keypad -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_feat_wireless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge"
+            app:strokeWidth="0dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="?colorSurfaceContainer">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_wadb_24"
+                    app:tint="?colorSecondary"
+                    android:contentDescription="@null" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/onboarding_returning_feat_wireless_title"
+                        android:textAppearance="?textAppearanceTitleSmall"
+                        android:textColor="?colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/onboarding_returning_feat_wireless_desc"
                         android:textAppearance="?textAppearanceBodySmall"
                         android:textColor="?colorOnSurfaceVariant" />
 

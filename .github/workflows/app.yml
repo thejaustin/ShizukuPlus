@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/pull_request_template.md'
+      - 'LICENSE*'
   workflow_dispatch:
     inputs:
       debug:
@@ -109,6 +115,7 @@ jobs:
       # Only whether a keystore exists is job-wide; the keystore itself is given to the one step
       # that writes it, so other steps and third-party actions never see it.
       HAS_KEYSTORE: ${{ secrets.KEYSTORE != '' }}
+      HAS_CROWDIN: ${{ secrets.CROWDIN_TOKEN != '' && secrets.CROWDIN_PROJECT_ID != '' }}
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       IS_DEBUG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug == true }}
@@ -185,6 +192,20 @@ jobs:
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
           chmod +x pre-push-guard/scripts/pre_push_check.sh
           bash pre-push-guard/scripts/pre_push_check.sh
+
+      - name: Fetch latest approved translations from Crowdin
+        if: ${{ env.HAS_CROWDIN == 'true' }}
+        continue-on-error: true
+        uses: crowdin/github-action@8f01d54f70f1713ee3f09d82c2bbb2daeac28689 # v2
+        with:
+          upload_sources: false
+          download_translations: true
+          create_pull_request: false
+          skip_untranslated_strings: false
+          config: crowdin.yml
+        env:
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
 
       - name: Build with Gradle
         id: buildWithGradle

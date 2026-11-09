@@ -674,7 +674,13 @@ class AdbKey(
 
     @delegate:RequiresApi(Build.VERSION_CODES.R)
     val sslContext: SSLContext by unsafeLazy {
-        val sslContext = SSLContext.getInstance("TLSv1.3")
+        val sslContext =
+            try {
+                SSLContext.getInstance("TLSv1.3")
+            } catch (e: Exception) {
+                Timber.tag(TAG).w(e, "TLSv1.3 not supported on this device/provider, falling back to TLS")
+                SSLContext.getInstance("TLS")
+            }
         sslContext.init(arrayOf(keyManager), arrayOf(trustManager), SecureRandom())
         sslContext
     }

@@ -353,9 +353,22 @@ class HomeAdapter(
 
         // Card borders setting; the status card has its own outline.
         val card = holder.itemView as? com.google.android.material.card.MaterialCardView
-        if (card != null && id != ID_STATUS) {
-            af.shizuku.manager.utils.CardBorder
-                .apply(card)
+        if (card != null) {
+            if (ShizukuSettings.isCornerRoundingAppliedToHome()) {
+                val tv = android.util.TypedValue()
+                if (card.context.theme.resolveAttribute(com.google.android.material.R.attr.shapeAppearanceCornerExtraLarge, tv, true) && tv.resourceId != 0) {
+                    runCatching {
+                        card.shapeAppearanceModel =
+                            com.google.android.material.shape.ShapeAppearanceModel
+                                .builder(card.context, tv.resourceId, 0)
+                                .build()
+                    }
+                }
+            }
+            if (id != ID_STATUS) {
+                af.shizuku.manager.utils.CardBorder
+                    .apply(card)
+            }
         }
 
         // Fixed cards (status, apps bar) never participate in edit mode — ensure handles stay hidden.

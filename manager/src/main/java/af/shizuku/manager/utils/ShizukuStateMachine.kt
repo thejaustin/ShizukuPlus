@@ -135,7 +135,13 @@ object ShizukuStateMachine {
         val oldState = state.getAndUpdate { current -> transform(current).also { computed = it } }
         val newState = computed ?: error("getAndUpdate lambda must always execute synchronously")
         if (oldState != newState) {
-            listeners.forEach { it(newState) }
+            if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
+                listeners.forEach { it(newState) }
+            } else {
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    listeners.forEach { it(newState) }
+                }
+            }
             Timber.tag("ShizukuStateMachine").d(newState.toString())
             logConnectionTransition(oldState, newState)
 
@@ -149,6 +155,10 @@ object ShizukuStateMachine {
             // would have kept treating Shizuku+ as stopped on purpose).
             if (newState == State.RUNNING) {
                 runCatching { UserStopFlag.clear() }
+                runCatching {
+                    af.shizuku.manager.doctor.StartFailureLog
+                        .clear()
+                }
             }
             if (newState == State.STARTING) {
                 startingTimestamp.set(System.currentTimeMillis())
@@ -269,9 +279,13 @@ object ShizukuStateMachine {
                     }
                 }
 
-                if ((newState == State.STOPPED || newState == State.CRASHED) &&
-                    ShizukuSettings.isAutoCloseTcpPortEnabled()
-                ) {
+                val shouldAutoClose =
+                    ShizukuSettings.isAutoCloseTcpPortEnabled() &&
+                        (
+                            newState == State.STOPPED ||
+                                (newState == State.CRASHED && !ShizukuSettings.isWatchdogAutoRestartEnabled())
+                        )
+                if (shouldAutoClose) {
                     try {
                         val context = ShizukuApplication.appContext
                         if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {

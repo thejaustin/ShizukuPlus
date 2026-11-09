@@ -7,6 +7,7 @@
          canScheduleExactAlarms() if declined/unavailable (see WatchdogAlarmReceiver). -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Normal-protection, auto-granted - declared so HapticFeedbackConstants calls (which
          don't need this on stock AOSP) actually work on OEM skins whose haptics stack routes
@@ -521,6 +522,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
@@ -570,8 +572,12 @@
         <receiver
             android:name=".receiver.NotifAttemptReceiver"
             android:exported="false" />
-        <receiver android:name=".receiver.NotifCancelReceiver" />
-        <receiver android:name=".receiver.NotifRestoreReceiver" />
+        <receiver
+            android:name=".receiver.NotifCancelReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".receiver.NotifRestoreReceiver"
+            android:exported="false" />
 
         <!-- WorkManager is initialized manually via Configuration.Provider in ShizukuApplication.
              Removing WorkManagerInitializer here prevents the "already initialized" crash (#126). -->

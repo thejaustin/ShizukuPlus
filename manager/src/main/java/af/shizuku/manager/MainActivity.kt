@@ -33,8 +33,16 @@ class MainActivity : HomeActivity() {
             // Auto-restore settings if a force-update or migration backup exists before checking onboarding
             markRestoreCheckedForExistingInstall()
 
-            Timber.d("Checking onboarding status")
-            Sentry.addBreadcrumb(Breadcrumb("Checking onboarding status"))
+            val currentCode =
+                try {
+                    packageManager.getPackageInfo(packageName, 0).versionCode
+                } catch (_: Exception) {
+                    BuildConfig.VERSION_CODE
+                }
+            val lastSeenOnboardingVersion = ShizukuSettings.getLastSeenOnboardingVersion()
+
+            Timber.d("Checking onboarding status: lastSeen=$lastSeenOnboardingVersion, current=$currentCode")
+            Sentry.addBreadcrumb(Breadcrumb("Checking onboarding status: lastSeen=$lastSeenOnboardingVersion, current=$currentCode"))
             if (!ShizukuSettings.isOnboardingSeen()) {
                 val intent = Intent(this, af.shizuku.manager.onboarding.OnboardingActivity::class.java)
                 val isExistingUser =
@@ -44,7 +52,18 @@ class MainActivity : HomeActivity() {
                         ShizukuStateMachine.isRunning()
                 if (isExistingUser) {
                     intent.putExtra(af.shizuku.manager.onboarding.OnboardingActivity.EXTRA_NEW_FEATURES_ONLY, true)
+                    intent.putExtra(af.shizuku.manager.onboarding.OnboardingActivity.EXTRA_SINCE_VERSION_CODE, lastSeenOnboardingVersion)
                 }
+                startActivity(intent)
+                finish()
+                return
+            } else if (lastSeenOnboardingVersion < currentCode) {
+                // Existing user updated to a newer version: show new features added since last update
+                val intent =
+                    Intent(this, af.shizuku.manager.onboarding.OnboardingActivity::class.java).apply {
+                        putExtra(af.shizuku.manager.onboarding.OnboardingActivity.EXTRA_NEW_FEATURES_ONLY, true)
+                        putExtra(af.shizuku.manager.onboarding.OnboardingActivity.EXTRA_SINCE_VERSION_CODE, lastSeenOnboardingVersion)
+                    }
                 startActivity(intent)
                 finish()
                 return
@@ -154,16 +173,25 @@ class MainActivity : HomeActivity() {
                     emptyList()
                 }
 
-            // Mark seen regardless of fetch outcome so offline users aren't re-prompted every launch.
-            ShizukuSettings.setLastSeenChangelogVersion(currentCode)
-
             if (isFinishing || isDestroyed) return@launch
-            try {
-                ChangelogDialogFragment
-                    .newInstance(releases, tagName, showStylePicker = forceStylePicker)
-                    .show(supportFragmentManager, ChangelogDialogFragment.TAG)
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to show changelog dialog")
+
+            if (releases.isNotEmpty()) {
+                ShizukuSettings.setLastSeenChangelogVersion(currentCode)
+                try {
+                    ChangelogDialogFragment
+                        .newInstance(releases, tagName, showStylePicker = forceStylePicker)
+                        .show(supportFragmentManager, ChangelogDialogFragment.TAG)
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to show changelog dialog")
+                }
+            } else if (forceStylePicker) {
+                try {
+                    ChangelogDialogFragment
+                        .newInstance(emptyList(), tagName, showStylePicker = true)
+                        .show(supportFragmentManager, ChangelogDialogFragment.TAG)
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to show changelog dialog")
+                }
             }
         }
     }

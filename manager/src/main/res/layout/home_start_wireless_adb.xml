@@ -25,7 +25,7 @@
             style="@style/CardTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/m3e_spacing_medium"
+            android:layout_marginStart="@dimen/m3e_spacing_large"
             android:layout_weight="1"
             android:text="@string/home_wireless_adb_title" />
 
@@ -41,7 +41,9 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:showDividers="middle"
+        android:divider="@drawable/spacing_list_item_vertical">
 
         <com.google.android.material.button.MaterialButton
         android:id="@android:id/button3"

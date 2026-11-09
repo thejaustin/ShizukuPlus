@@ -77,6 +77,9 @@ object ReconnectTrigger {
                     (um == null || um.isUserUnlocked) &&
                     (
                         ShizukuSettings.getLastLaunchMode() != ShizukuSettings.LaunchMethod.ADB ||
+                            ShizukuSettings.getTcpMode() ||
+                            af.shizuku.manager.utils.EnvironmentUtils
+                                .getAdbTcpPort() > 0 ||
                             context.checkSelfPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS) == android.content.pm.PackageManager.PERMISSION_GRANTED
                     )
             }.getOrDefault(false)

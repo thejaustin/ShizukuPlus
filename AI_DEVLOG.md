@@ -120,6 +120,194 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-11-03 (cont'd) — Antigravity (Gemini 3.8 Flash) (Dependabot advisory audit, Bouncy Castle 1.86 upgrade, CI graph scoping & TLS fallback) [master]
+
+- **Dependabot Security Alerts & Root Cause Analysis:**
+  - *Why notifications arrived now*: The recent push of commit `816cdada` triggered `.github/workflows/dependency-submission.yml`, which ran `gradle/actions/dependency-submission` on `master`. This submitted the first fresh dependency graph snapshot in a while, prompting GitHub's advisory database to generate alerts.
+  - *Why alerts were reported on `settings.gradle`*: By default, `gradle/actions/dependency-submission` extracts dependencies from ALL configurations across the entire Gradle build, including internal buildscript classpaths, compiler plugins, and formatting plugins (e.g. Spotless's internal JGit, AGP's internal XML parser JDOM, etc.).
+  - *Fix in CI*: Updated `.github/workflows/dependency-submission.yml` to set `DEPENDENCY_GRAPH_EXCLUDE_CONFIGURATIONS` (`(?i)(^|:)(classpath|.*PluginClasspath|kotlinCompilerClasspath|kaptClasspath|annotationProcessor|detachedConfiguration.*)$`). This filters out internal build-tooling artifacts from cluttering security reports while keeping project compile and runtime dependencies actively monitored.
+- **Bouncy Castle & Transitive Security Upgrades:**
+  - Upgraded `bouncycastle = "1.86"` in `gradle/libs.versions.toml`.
+  - In `manager/build.gradle`: Added explicit `org.bouncycastle:bcprov-jdk18on:1.86` and configured `configurations.all.resolutionStrategy` to force `1.86` across all configurations, and force `com.google.guava:guava:33.4.0-android` to prevent insecure temporary directory vulnerabilities.
+  - Resolves 5 Bouncy Castle advisories: GHSA-9pwp-9qqc-pr26 (Critical, Name Constraints bypass), GHSA-574f-3g2m-x479 (Critical, GOST 28147 CTR mode), GHSA-qp49-qgx5-5m26 (High, Lazy ASN.1 sequence nesting depth), GHSA-c3fc-8qff-9hwx (Medium, LDAP injection), and GHSA-wg6q-6289-32hp (Medium, bcpkix algorithm).
+- **Layered Security & Device Fallback in `AdbKey.kt`:**
+  - In `AdbKey.kt`: Wrapped `SSLContext.getInstance("TLSv1.3")` in a graceful fallback to `SSLContext.getInstance("TLS")`. Ensures ADB TLS pairing succeeds even on custom vendor ROMs, older security providers, or Android Go/TV variants where `"TLSv1.3"` is not registered by that exact identifier.
+- **Verification**:
+  - Ran `bash gradlew spotlessApply` and `bash gradlew spotlessCheck`. Clean and passing.
+
+### 2026-11-03 — Antigravity (Gemini 3.8 Flash) (TCP persistence on USB disconnect, screen-lock/battery-saver resilience, settings scroll & morph polish) [master]
+
+- **TCP Mode Persistence Across USB Disconnection (#656):**
+  - *Problem*: Starting Shizuku over USB with TCP mode enabled resulted in Shizuku stopping shortly after unplugging the USB cable, especially when locking the screen or entering battery saver.
+  - *Root Cause 1 (`persist.adb.tcp.port` skipped)*: In `starter.cpp`, `__system_property_set("persist.adb.tcp.port", ...)` was only executed when `service.adb.tcp.port <= 0`. When a user ran `adb tcpip 5555` prior to starter, active port was already 5555, so `persist.adb.tcp.port` was never written. On USB unplug, Android resets USB configs, clearing non-persistent TCP mode and dropping `adbd`.
+  - *Root Cause 2 (Session Teardown Signals)*: When `adbd` handles USB detachment, it sends `SIGHUP` and `SIGTERM` to active shell sessions. The child process in `starter.cpp` only ignored `SIGHUP` and `SIGPIPE`, allowing `SIGTERM` to terminate `shizuku_plus_server`.
+  - *Root Cause 3 (Missing Persistent Port in Application Startup)*: In `ShizukuApplication.kt`, `AdbProxyService.enableAdbTcp` was only called if `currentPort != desiredPort`, skipping the persistent setprop when active port was already 5555.
+  - *Root Cause 4 (Android 12–16 Phantom Process Killer & Battery Saver)*: On screen lock and battery saver activation, Android's ActivityManager trims phantom processes exceeding default limits and restricts background apps without active standby buckets or `RUN_ANY_IN_BACKGROUND` AppOps.
+  - *Fixes*:
+    - In `starter.cpp`: Added `signal(SIGTERM, SIG_IGN)`, `signal(SIGQUIT, SIG_IGN)`, and `signal(SIGTSTP, SIG_IGN)` in the spawned server process. Always updates `persist.adb.tcp.port` to `target_port` whenever TCP mode is requested.
+    - In `ShizukuApplication.kt`: Ensured `AdbProxyService.enableAdbTcp(desiredPort)` runs on service start when TCP mode is on so persistent properties are confirmed.
+    - In `DeviceOptimizer.kt`: Automatically applies `cmd appops set $pkg RUN_ANY_IN_BACKGROUND allow`, `cmd appops set $pkg RUN_IN_BACKGROUND allow`, `am set-standby-bucket $pkg active`, and disables phantom process limits (`device_config put activity_manager max_phantom_processes 2147483647`) on service start.
+    - In `WatchdogService.kt`: Added `WAKE_LOCK` permission in `AndroidManifest.xml` and temporary partial wake locks during crash recovery to prevent CPU suspension during restart delays. Added dynamic receiver for `ACTION_POWER_DISCONNECTED` (to immediately safeguard TCP port on USB unplug) and `ACTION_POWER_SAVE_MODE_CHANGED` (to reinforce background hardening on battery saver).
+    - In `BootCompleteReceiver.kt`: Automatically revives stopped Shizuku on `ACTION_USER_PRESENT` if Watchdog auto-restart is active, so unlocking the device heals any drop that occurred while asleep.
+- **Settings Screen Scroll Jump & Jitter Elimination:**
+  - *Problem*: Changing settings toggles or icon morph shapes caused the settings list to jump/scroll to the top and jitter, breaking the fluid M3 Expressive morph animation.
+  - *Root Cause 1 (Adapter Reset on Icon Refresh)*: `refreshIconStyles()` re-applied styled drawables across all preferences, triggering `notifyDataSetChanged()` without preserving scroll position.
+  - *Root Cause 2 (Unnecessary Activity Recomposition)*: Toggles like `icon_morph_shape`, `expanded_headers_enabled`, `expressive_animations`, and `apply_corner_rounding_to_home` called `applyTheme(requiresRecreate = false)`. This triggered `SettingsActivity.onThemeChanged()`, incrementing `themeVersion++` and causing the entire Compose `SettingsScreen` to recompose and re-measure `TopAppBarState`.
+  - *Fixes*:
+    - In `BaseSettingsFragment.kt`: `refreshIconStyles()` and `updateHeaderPadding()` now capture the exact first visible item position and pixel offset (`findFirstVisibleItemPosition()`, `firstView.top`) and restore them via `layoutManager.scrollToPositionWithOffset(firstPos, offsetTop)`.
+    - In `SettingsActivity.kt`: `onThemeChanged()` now checks whether `isOneUi` or `isOneHanded` actually changed before incrementing `themeVersion++` and updating padding.
+    - In `PersonalizationSettingsFragment.kt`: Removed redundant `applyTheme(requiresRecreate = false)` calls from icon shape, morph mode, and animation settings.
+    - In `ExperimentalSettingsFragment.kt`: Added listener to `switch_row_design` for clean immediate recreation.
+- **Verification**:
+  - Ran `bash gradlew spotlessApply` and `bash gradlew spotlessCheck`. Both clean and passing.
+
+### 2026-11-02 (cont'd 7) — Antigravity (Gemini 3.8 Flash) (Update onboarding, numerical pairing keypad, home card shape isolation, swipe toggle & M3E corner animations) [master]
+
+- **Update Onboarding Gate & Returning User Highlighting:**
+  - *Problem*: `ShizukuSettings.isOnboardingSeen()` was a persistent boolean set once on fresh install. When existing users updated to new releases, onboarding was permanently bypassed, meaning they were never informed of major new features (Floating Nav Bar, Wireless ADB Pairing enhancements, One UI mode, etc.).
+  - *Fix*: Added `KEY_LAST_SEEN_ONBOARDING_VERSION` (`last_seen_onboarding_version`) to track the app version code when onboarding was last completed.
+  - In `MainActivity.kt`: If `lastSeenOnboardingVersion < currentCode` for returning users, launches `OnboardingActivity` with `EXTRA_NEW_FEATURES_ONLY = true` and `EXTRA_SINCE_VERSION_CODE = lastSeenOnboardingVersion`.
+  - In `OnboardingActivity.kt`: Reads `EXTRA_SINCE_VERSION_CODE`, completes onboarding by updating both `setLastSeenOnboardingVersion(currentCode)` and `setLastSeenChangelogVersion(currentCode)` to avoid duplicate update popups.
+  - In `page_onboarding_welcome_returning.xml`: Added dedicated feature preview cards for Layout & Navigation (`card_feat_layout_nav`) and Wireless ADB & Keypad (`card_feat_wireless`) with direct deep links to onboarding tutorial flows.
+- **Numerical Keyboard for Pairing Code (#654):**
+  - Added user toggle `KEY_NUMERICAL_PAIRING_KEYBOARD` (`numerical_pairing_keyboard`) under Wireless & ADB in `settings_behavior.xml`.
+  - In `AdbPairDialogFragment.kt`: Dynamically applies `InputType.TYPE_CLASS_NUMBER` and `DigitsKeyListener.getInstance("0123456789")` when enabled, with fallback to text input.
+  - In `AdbPairingDialogActivity.kt`: Enforces numeric keypad, 6-digit max length filter, letter spacing, and centered alignment for fluid pairing code entry.
+  - In `AdbPairingService.kt`: Passes `EXTRA_INPUT_TYPE = InputType.TYPE_CLASS_NUMBER` to notification shade inline reply `RemoteInput` for compatible IMEs and WearOS keyboards.
+- **Master Swipe Gestures Toggle & Preference Consolidation:**
+  - Added `KEY_SWIPE_GESTURES_ENABLED` (`swipe_gestures_enabled`) in `settings_personalization.xml` as a master switch in `category_app_interactions`.
+  - In `SwipePreviewPreference.kt`: Dynamically disables interaction and displays `swipe_actions_disabled_summary` when master switch is off.
+  - In `ApplicationManagementActivity.kt`: Returns `0` from `ItemTouchHelper.SimpleCallback.getMovementFlags` when disabled, cleanly deactivating swipe gestures across all app rows.
+- **Corner Rounding per Toggle & Preserving Home Card Layouts:**
+  - *Problem*: Global corner rounding theme overlays (`ThemeOverlay.CornerRounding.*`) directly modified `shapeAppearanceCornerExtraLarge`, which previously bled into `home_item_container.xml` and altered default home card aesthetics unexpectedly.
+  - *Fix*: Decoupled home cards by defining `@style/ShapeAppearance.HomeCard.ExtraLarge` (inheriting standard 28dp radius) and assigning it as default shape in `home_item_container.xml`.
+  - Added `KEY_APPLY_CORNER_ROUNDING_TO_HOME` (`apply_corner_rounding_to_home`) in `settings_personalization.xml`.
+  - In `HomeAdapter.kt`: Only overrides card corners with user custom theme radius if `apply_corner_rounding_to_home` is explicitly enabled.
+- **M3E Dynamic Grid Corner Animations & Switch Thumb Fix:**
+  - In `PreferenceCompose.kt`: Added `resolveGridCardCorner` and `resolveGridIconCorner` to respect custom corner rounding settings in M3 Expressive Jetpack Compose preference components.
+  - In `DisplayOptionsGridPreference.kt`, `VerifiedInstallGridPreference.kt`, and `PlusGovernorsPreference.kt`: Dynamically animate corners based on active corner theme override.
+  - In `SwitchDesign.kt`: Prevented standard switch design from wiping out default switch thumbs with `null`.
+- **Code Hygiene & Verification:**
+  - Ran `bash gradlew spotlessApply` and `bash gradlew spotlessCheck`. Clean and passing.
+
+### 2026-11-02 (cont'd 5) — Antigravity (Gemini 3.8 Flash) (Release notes fix, fallback rendering, Atom feed parser, Crowdin setup) [master]
+
+- **In-App Release Notes ("What's New") Fix:**
+  - *Problem*: In recent releases (`13.7.0.r3214`, `13.7.0.r3215`, `13.7.0.r3216`), the in-app What's New dialog showed "No release notes available" or empty section headers (`# 13.7.0.r3216 \n\n ### Other`).
+  - *Root Cause 1 (Truncation & Empty Pruning)*: `formatNotes` called `substringBefore("## 📦 Recent Releases")` and filtered out README lines (`README_BULLET`). When a maintenance release only had docs/README updates, all bullets were removed leaving empty header lines, or no text at all, cutting off the entire recent releases digest and major release highlights table.
+  - *Root Cause 2 (HTML Details Wrapping)*: Workflow release notes wrap commits in `<details><summary>All commits in this release</summary>`. Without HTML parsing in Markwon, raw tags were rendered or hidden.
+  - *Root Cause 3 (Bullet & Hash Regex Limitations)*: Bullet regexes matched only `[-*]`, failing on Unicode `•` (`\u2022`) bullets generated by CI. Hash regexes failed on markdown links.
+  - *Root Cause 4 (Burned Version on Network Failure)*: In `MainActivity.kt`, `setLastSeenChangelogVersion(currentCode)` was called even when `fetchReleasesSince` returned an empty list, permanently burning the version so What's New could never display once network was restored.
+  - *Root Cause 5 (GitHub API Rate Limiting)*: Unauthenticated GitHub API requests hit the 60 req/hr rate limit on shared mobile carrier CGNAT, failing release fetch with no fallback.
+  - *Fixes*:
+    - In `ChangelogDialogFragment.kt`: Added `cleanEmptyHeadings` to prune empty header hierarchies; unwrapped `<details><summary>` into clean markdown headers; expanded bullet regex to `[-*•+]`; when the primary notes section has no substantive changes, gracefully fall back to displaying recent release highlights (`### Recent Highlights`) from the rollup block.
+    - In `ChangelogDialogFragment.kt`: If opened with an empty release list, asynchronously loads notes via `UpdateChecker.fetchReleaseNotesForTag(tagName)` while displaying a loading message instead of an immediate dead-end fallback.
+    - In `ChangelogParser.kt`: Added support for `[-*•+]` bullets, unwrapped details markup, and added fallback table parsing from `## 📦 Recent Releases` to categorize recent changes into Timeline sections so Timeline mode never drops releases or renders empty cards.
+    - In `UpdateChecker.kt`: Added `fetchReleasesFromAtom()` and `htmlToMarkdown()` to parse `https://github.com/thejaustin/ShizukuPlus/releases.atom` as an automatic CDN fallback when GitHub API rate-limits or fails.
+    - In `MainActivity.kt`: Only burns `lastSeenChangelogVersion` when releases are successfully retrieved or style picker is explicitly handled, avoiding showing empty dialogs on offline startup and preserving What's New for when online.
+    - Added unit tests in `ChangelogFormatAndParseTest.kt` verifying all markdown formats, Unicode bullets, details unwrapping, and fallback highlights.
+    - Added string `changelog_loading` to `strings.xml`.
+- **Crowdin Localization & CI Workflow Enhancements:**
+  - Crowdin project configured at `https://crowdin.com/project/shizukuplus` under `@thejaustin`.
+  - Configured repository secrets `CROWDIN_PROJECT_ID` (`943373`) and `CROWDIN_TOKEN` in GitHub Actions.
+  - Installed native `crowdin` CLI v5.5.0 on Termux via glibc runner.
+  - Expanded project target locales to 65 languages and configured full `languages_mapping` in `crowdin.yml`.
+  - Backfilled and imported all existing translations for all 40 codebase languages into Crowdin with `--auto-approve-imported`.
+  - Updated `app.yml` to automatically pull latest approved Crowdin translations before assembling release APKs so releases always ship with up-to-date localization.
+  - Updated `pr-check.yml` to enforce `./gradlew spotlessCheck` on PRs and ignore doc-only markdown changes.
+  - Updated `crowdin-sync.yml` with bidirectional translation sync and step summary reporting.
+- **Code Hygiene & Verification:**
+  - Ran `bash gradlew spotlessApply` and `bash gradlew spotlessCheck`. Both clean and passing.
+
+### 2026-11-02 (cont'd 6) — Antigravity (Gemini 3.8 Flash) (Settings icon theme consistency, ADB pair dialog multi-window polish, ComposeView lifecycle) [master]
+
+- **Settings Category Icon Theme Consistency (#641):**
+  - `CollapsiblePreferenceCategory.kt`: Now respects `IconStyleHelper.current()` when icon mode is `OUTLINED` by tinting the category icon with `colorOnSurfaceVariant` instead of defaulting to `colorPrimary`, ensuring full color harmony with the outlined items below it.
+- **ADB Pairing Dialog Multi-Window & Validation Polish (#654):**
+  - `AdbPairDialogFragment.kt`: Eliminated the UI bug where both `text1` (general guidance) and `text2` (split-screen requirement note) were rendered simultaneously when not in multi-screen mode. Also ensured `text2` is dismissed once the pairing port is discovered.
+  - Migrated lifecycle from deprecated `onActivityCreated` to `onStart`.
+  - Added strict 6-digit numeric validation on pairing codes with error feedback (`dialog_adb_invalid_code`) before initiating the pairing handshake, preventing malformed/empty attempts.
+- **Root Compatibility ComposeView Scoping:**
+  - `RootCompatibilityActivity.kt`: Added explicit `ViewCompositionStrategy.DisposeOnLifecycleDestroyed(lifecycle)` across all embedded compose buttons (`btnApi36Export`, `btnKernelsuRestart`, `btnCopyGlobal`, `btnSetupAll`) for clean lifecycle disposal.
+
+### 2026-11-02 (cont'd 5) — Antigravity (Gemini 3.8 Flash) (FloatingNavBar leak fix, Android 15+ boot watchdog heal, USB toggle preservation, settings polish) [master]
+
+- **FloatingNavBar Memory Leak Resolution:**
+  - `FloatingNavBar.kt`: Replaced strong `private var current: Activity?` with `WeakReference<Activity>?` in the singleton object. Clears the reference when `onActivityPaused` and `onActivityDestroyed` are called for that activity, eliminating memory leaks during theme recreations and navigation.
+- **Boot Resilience & Android 15+ Watchdog Auto-Start:**
+  - `BootCompleteReceiver.kt`: On Android 15+ (API 35+), direct foreground service starts from background broadcasts while locked throw `ForegroundServiceStartNotAllowedException`. Now uses `WatchdogWorker.scheduleOneTimeHeal` (expedited WorkManager task with foreground exemption) to safely revive Watchdog on boot.
+  - Added Watchdog revival and alarm re-arm to `ACTION_USER_PRESENT` so unlocking the phone immediately ensures Watchdog is up even if OEM cleaners killed background processes earlier.
+- **Respect User Developer Options & Start Network Flexibility:**
+  - `AdbStartWorker.kt`: Removed `Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)` from start worker startup routine (#656). Shizuku+ configures `adb_allowed_connection_time` to 0 without force-enabling USB debugging if the user manually turned it off.
+  - Relaxed WorkManager constraint from `NetworkType.UNMETERED` to `NetworkType.CONNECTED` so metered Wi-Fi, mobile hotspots, and on-device loopback setups can start without waiting for unmetered connections.
+- **Settings UI & Toggle Polish:**
+  - `PlusFeaturePreference.kt`: Removed hardcoded rectangular background color on help bottom sheets, preserving native Material 3 rounded corner radius and surface tint. Fixed embedded toggle handler to check `callChangeListener` before changing `isChecked` and revert state if rejected.
+  - `DeveloperOptionsFragment.kt`: Used safe `as? TwoStatePreference` for unrestricted access confirmation.
+  - `PersonalizationSettingsFragment.kt` & `settings_personalization.xml`: Added `floating_nav_tabs` multi-select preference alongside floating navigation styling with live summary updates, and added missing `android:dependency="floating_nav_enabled"` attributes in `settings_experimental.xml`.
+
+### 2026-11-02 (cont'd 4) — Antigravity (Gemini 3.8 Flash) (Boot auto-start & unlock resilience, USER_PRESENT trigger, TCP probe retry) [master]
+
+- **Seamless Boot & Unlock Auto-Start Improvements:**
+  - *`ACTION_USER_PRESENT` handling*: Added `ACTION_USER_PRESENT` to `BootCompleteReceiver` (manifest and Kotlin receiver). If direct-boot encryption lock (CE) deferred the boot attempt or OEM battery cleaners delayed `BOOT_COMPLETED`, unlocking the device immediately initiates the start if Shizuku is stopped and `start_on_boot` is enabled.
+  - *Smart Fallback for Unknown Launch Mode*: In `ShizukuReceiverStarter.kt`, if launch mode is `UNKNOWN` (e.g. fresh install or restored settings), it checks `EnvironmentUtils.isRooted()` and falls back to Root, or falls back to ADB if TCP mode or open ADB port is detected.
+  - *TCP Port Probe Back-Off on Boot*: In `AdbStartWorker.kt`, when TCP mode is on, retries the port probe with back-off (600ms, 1000ms, 1500ms) on boot attempt 0, allowing `adbd` time to initialize and bind port 5555 without prematurely falling through to mDNS discovery.
+  - *TCP Reconnect Without Secure Settings*: In `ReconnectTrigger.kt`, allows auto-reconnect when `tcp_mode` is enabled or TCP port > 0 even if `WRITE_SECURE_SETTINGS` has not yet been granted.
+
+### 2026-11-02 (cont'd 3) — Antigravity (Gemini 3.8 Flash) (Opt-in TCP persistence, USB disconnect adaptive suggestion, interactive command dialog) [master]
+
+- **Opt-in TCP Mode & USB Disconnect Suggestion:**
+  - *Starter & Server*: Updated `manager/src/main/jni/starter.cpp` and `server/src/main/java/rikka/shizuku/server/ShizukuService.java` so `service.adb.tcp.port` and `persist.adb.tcp.port` are ONLY configured if TCP mode is explicitly enabled by the user in settings (`persist.adb.tcp.port > 0`) or requested via `--tcp`/`--tcpip` in command arguments. Never forces TCP mode on users who intentionally want USB-only debugging.
+  - *Starter Commands*: `Starter.kt` dynamically emits `--tcp` and `adb tcpip 5555 && ` only when `ShizukuSettings.getTcpMode()` is true.
+  - *Interactive Command Dialog*: `StartAdbViewHolder.showViewCommandDialog` now features an embedded `MaterialCheckBox` allowing users to toggle TCP mode live before copying or sending the command. Toggling immediately updates the displayed command text and preferences.
+  - *Adaptive USB Disconnect Suggestion*: Added `AdaptiveRecommendationManager.maybeRecommendUsbTcpMode()` and `EnvironmentUtils.isUsbConnected()`. When Shizuku starts via ADB while connected to USB, if TCP mode is not enabled, an adaptive recommendation offers to enable TCP mode (port 5555) with chained open Wi-Fi network guard recommendations before disconnecting.
+
+### 2026-11-02 (cont'd 2) — Antigravity (Gemini 3.8 Flash) (CI paths-ignore, USB debugging setting preservation, GitHub community triage) [master]
+
+- **GitHub Actions CI Trigger Suppression for Docs/README:**
+  - Added `paths-ignore` (`'**.md'`, `'docs/**'`, `'.github/ISSUE_TEMPLATE/**'`, `'.github/pull_request_template.md'`, `'LICENSE*'`) to `.github/workflows/app.yml`, `dependency-submission.yml`, `security.yml`, and `gitguardian.yaml`.
+  - Pushing changes to `README.md` or markdown documentation will no longer trigger full Gradle compilation, lint checks, or secret scanning.
+- **USB Debugging Setting Preservation (Issue #656):**
+  - In `ShizukuService.java`: Removed unconditional write of `adb_enabled = "1"`. Setting `adb_allowed_connection_time` to 0 is sufficient to keep authorizations alive without overriding user's manual toggling of USB debugging in Developer Options. Resolves user report in #656 where manual USB debugging toggles were undone automatically by the Shizuku server.
+- **GitHub Issues & Community Feedback Triage:**
+  - Triaged #656 (ADB auth persistence and auto-enabling USB debugging query; confirmed root cause and addressed), #660 (per-app network firewall feature request via Network Governor), #655 (Storage Bridge vs DAC `/data/data` restrictions), and #651 (auto-backup in Downloads folder removed).
+
+### 2026-11-02 (cont'd) — Antigravity (Gemini 3.8 Flash) (USB disconnect persistence, cgroup isolation, ADB TCP 5555 auto-binding) [master]
+
+- **USB Disconnect & Server Termination Root-Cause & Resolution:**
+  - *Problem*: User reported that when enabling ADB via USB (e.g., using aShell You on a separate device via OTG or a PC), the Shizuku server immediately disconnected when the USB cable was pulled, and the on-device app could not restart without reconnecting USB.
+  - *Root Cause 1 (CGroup / init kill)*: In `starter.cpp`, `switch_cgroup()` was only called if `uid == 0 || uid == 1000`. Shell sessions run with `uid == 2000`. When `adbd` is stopped upon USB disconnect by Android's `UsbDeviceManager`, Android `init` sends `SIGKILL` to all processes in `adbd`'s cgroup, instantly killing `shizuku_plus_server`.
+  - *Root Cause 2 (SIGHUP delivery)*: The child process inherited the controlling terminal/pty session of the adb shell. When the USB connection dropped, unmasked `SIGHUP` was delivered to the server.
+  - *Root Cause 3 (Missing TCP mode fallback)*: `adbd` was only listening on the USB gadget interface. With no persistent TCP port configured, pulling the cable shut down `adbd` completely, leaving loopback port `127.0.0.1:5555` closed and preventing local reconnect/restart.
+  - *Fix in `starter.cpp`*:
+    - In child process fork: added `signal(SIGHUP, SIG_IGN)`, `signal(SIGPIPE, SIG_IGN)`, `setsid()`, and `switch_cgroup()` before `exec` of `app_process`.
+    - In `main()`: enabled `switch_cgroup()` unconditionally (including for `uid == 2000`).
+    - Added automatic detection and setting of `service.adb.tcp.port 5555` and `persist.adb.tcp.port 5555` when started under `uid == 2000`.
+  - *Fix in `ShizukuService.java`*:
+    - Added `ensureAdbTcpPersistence()` on server startup.
+    - Updates settings content provider (`adb_allowed_connection_time 0` and `adb_enabled 1`) so Android does not revoke authorizations on disconnect.
+    - Sets `service.adb.tcp.port` and `persist.adb.tcp.port` to 5555 and ensures `adbd` is listening.
+  - *Fix in `Starter.kt`*:
+    - Updated `adbCommand` to prepend `adb tcpip 5555 && ` so external launchers (PC / OTG host) switch device to persistent TCP mode prior to invoking the starter script.
+  - *Documentation*:
+    - Updated `wireless_debugging_setup.md` in app assets and `ShizukuPlus-Knowledgebase.md` in the wiki repository documenting USB/OTG activation, Default USB Configuration ("No data transfer"), and ADB authorization timeout settings.
+- **Code Hygiene & Verification:**
+  - Applied `spotlessApply` and verified with `spotlessCheck`.
+
+### 2026-11-02 — Antigravity (Gemini 3.8 Flash) (TCP Mode auto-apply on service start, Awesome-Shizuku & installed apps knowledgebase sync) [master]
+
+- **TCP Mode and Local Proxy Auto-Apply on Service Start:**
+  - Resolved issue where options like TCP Mode (port 5555), On-Device ADB TCP (`on_device_adb_tcp`), and the Local ADB Proxy (`adb_proxy_enabled`) had to be manually toggled in Behavior settings after every reboot or restart to take effect.
+  - `AdbStarter.startAdb()` now automatically pushes `setprop service.adb.tcp.port $port` and `setprop persist.adb.tcp.port $port` when TCP mode or on-device ADB TCP is active, ensuring persistent port binding across network drops and reboots.
+  - `AdbProxyService.enableAdbTcp()` checks whether the active port already matches the target port before restarting adbd, avoiding unnecessary connection churn while still ensuring `persist.adb.tcp.port` is updated.
+  - `StarterActivity.startRoot()` ensures TCP mode is applied immediately upon successful root startup if configured.
+  - `ShizukuApplication` state listener detects transitions to `RUNNING` and automatically verifies TCP mode and starts `AdbProxyService` if enabled. `onCreate()` and `BootCompleteReceiver` also ensure `AdbProxyService` lifecycle alignment.
+- **Knowledgebase & App Context DB (Revision 2):**
+  - Updated `database/src/main/assets/app_context_db.json` from revision 1 to revision 2 with 34+ newly cataloged apps, incorporating on-device packages verified via `rish` as well as the upstream `awesome-shizuku` index.
+  - Added verified metadata and Plus feature recommendations (e.g. `storage_proxy`, `shell_interceptor`, `overlay_manager_plus`, `network_governor_plus`) for popular file managers: Material Files (`me.zhanghai.android.files`), Cx File Explorer (`com.ace.ex.file.manager`), FV File Explorer (`com.folderv.file`), MiXplorer (`com.mixplorer`), Solid Explorer, ZArchiver, Butler (`eu.darken.butler`), and app management utilities: App Manager (`io.github.muntashirakon.AppManager`), Canta (`io.github.samolego.canta`), Inure, Install with Options, ShizuStore, LinkSheet, ColorBlendr, SystemUI Tuner, and ShizuWall.
+  - Updated `root_compat_su_bridge.md` in app assets and the wiki `ShizukuPlus-Knowledgebase.md` to document the full range of supported file managers and system tools.
+- **Code Hygiene & Verification:**
+  - `./gradlew spotlessApply` and `./gradlew spotlessCheck` passed with zero errors.
+
 ### 2026-10-30 (late night) — Claude (icon shapes, card drag, trusted-network picker, 5-agent review) [master]
 
 - **Icon shapes:** Material's `MaterialShapes` (SoftBurst for "burst"; star rotated point-up), each centered on its area centroid, icon sized per shape from the inradius (`ExpressiveShapes.iconFraction`), one 40dp container for every settings icon style. `ExpressiveShapesTest` checks centroid, symmetry and that the glyph fits. Morphs are cached.

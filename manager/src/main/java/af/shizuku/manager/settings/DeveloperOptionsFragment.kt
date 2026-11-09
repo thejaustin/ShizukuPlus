@@ -100,7 +100,7 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
                         .setTitle(R.string.settings_unrestricted_confirm_title)
                         .setMessage(R.string.settings_unrestricted_confirm_message)
                         .setPositiveButton(R.string.settings_unrestricted_confirm_positive) { _, _ ->
-                            (pref as TwoStatePreference).isChecked = true
+                            (pref as? TwoStatePreference)?.isChecked = true
                             ShizukuSettings.syncAllPlusFeaturesToServer()
                         }.setNegativeButton(android.R.string.cancel, null),
                 )

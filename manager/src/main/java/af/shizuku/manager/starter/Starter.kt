@@ -1,6 +1,7 @@
 package af.shizuku.manager.starter
 
 import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.utils.ShizukuStateMachine
 import android.content.Context
 import kotlinx.coroutines.delay
@@ -26,11 +27,15 @@ object Starter {
     val userCommand: String
         get() {
             val nativeLibDir = getContext().applicationInfo.nativeLibraryDir
-            return "LD_LIBRARY_PATH=$nativeLibDir ${starterFile.absolutePath}"
+            val tcpFlag = if (ShizukuSettings.getTcpMode()) " --tcp" else ""
+            return "LD_LIBRARY_PATH=$nativeLibDir ${starterFile.absolutePath}$tcpFlag"
         }
 
     val adbCommand: String
-        get() = "adb shell $userCommand"
+        get() {
+            val baseCmd = "adb shell $userCommand"
+            return if (ShizukuSettings.getTcpMode()) "adb tcpip 5555 && $baseCmd" else baseCmd
+        }
 
     val internalCommand: String
         get() = "$userCommand --apk=${getContext().applicationInfo.sourceDir}"

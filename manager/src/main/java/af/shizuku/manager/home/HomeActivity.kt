@@ -58,11 +58,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.core.ktx.unsafeLazy
 import rikka.lifecycle.Status
-import rikka.recyclerview.addEdgeSpacing
-import rikka.recyclerview.addItemSpacing
 import rikka.recyclerview.fixEdgeEffect
 import rikka.shizuku.Shizuku
 import timber.log.Timber
+import kotlin.math.roundToInt
 import com.google.android.material.R as MaterialR
 
 open class HomeActivity :
@@ -149,7 +148,10 @@ open class HomeActivity :
             }
         }
 
+    private var wasServerRunningOnStart: Boolean? = null
+
     private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
+        val wasRunning = isServerRunning
         isServerRunning = ShizukuStateMachine.isRunning()
         when (state) {
             ShizukuStateMachine.State.RUNNING -> {
@@ -158,12 +160,27 @@ open class HomeActivity :
                 appsModel.load()
                 ShizukuSettings.syncAllPlusFeaturesToServer()
                 maybeShowVersionSkewSnackbar()
-                window.decorView.post {
-                    if (!isFinishing && !isDestroyed && lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) {
-                        val uid = runCatching { rikka.shizuku.Shizuku.getUid() }.getOrDefault(-1)
-                        if (uid == 2000 && !ShizukuSettings.getTcpMode()) {
-                            af.shizuku.manager.utils.AdaptiveRecommendationManager
-                                .maybeRecommendTcpMode(this)
+                val isColdStartRegistration = (wasServerRunningOnStart == null)
+                if (isColdStartRegistration) {
+                    wasServerRunningOnStart = true
+                }
+                // Only recommend TCP mode on an actual transition from non-running -> running,
+                // never when the user simply launches the app with Shizuku already running.
+                if (!isColdStartRegistration && !wasRunning) {
+                    window.decorView.post {
+                        if (!isFinishing && !isDestroyed && lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) {
+                            val uid = runCatching { rikka.shizuku.Shizuku.getUid() }.getOrDefault(-1)
+                            if (uid == 2000 && !ShizukuSettings.getTcpMode()) {
+                                if (af.shizuku.manager.utils.EnvironmentUtils
+                                        .isUsbConnected(this)
+                                ) {
+                                    af.shizuku.manager.utils.AdaptiveRecommendationManager
+                                        .maybeRecommendUsbTcpMode(this)
+                                } else {
+                                    af.shizuku.manager.utils.AdaptiveRecommendationManager
+                                        .maybeRecommendTcpMode(this)
+                                }
+                            }
                         }
                     }
                 }
@@ -171,6 +188,9 @@ open class HomeActivity :
             ShizukuStateMachine.State.STOPPED,
             ShizukuStateMachine.State.CRASHED,
             -> {
+                if (wasServerRunningOnStart == null) {
+                    wasServerRunningOnStart = false
+                }
                 // Shizuku stopped or crashed - refresh status display
                 checkServerStatus()
                 if (state == ShizukuStateMachine.State.CRASHED &&
@@ -392,7 +412,9 @@ open class HomeActivity :
                 }
 
                 adapter.updateData()
-                ShizukuSettings.setLastLaunchMode(if (status.uid == 0) ShizukuSettings.LaunchMethod.ROOT else ShizukuSettings.LaunchMethod.ADB)
+                if (status.isRunning) {
+                    ShizukuSettings.setLastLaunchMode(if (status.uid == 0) ShizukuSettings.LaunchMethod.ROOT else ShizukuSettings.LaunchMethod.ADB)
+                }
 
                 if (status.isRunning && previouslyRunning == false) {
                     recyclerView.post {
@@ -578,13 +600,7 @@ open class HomeActivity :
         val marginHorizontal = resources.getDimension(R.dimen.margin_horizontal)
         val marginVertical = resources.getDimension(R.dimen.margin_vertical)
 
-        val itemSpacing = cardSpacing / 2f
-        val edgeSpacingH = marginHorizontal
-        val edgeSpacingTop = marginVertical + itemSpacing
-        val edgeSpacingBottom = marginVertical
-
-        recyclerView.addItemSpacing(top = itemSpacing, bottom = itemSpacing)
-        recyclerView.addEdgeSpacing(top = edgeSpacingTop, bottom = edgeSpacingBottom, left = edgeSpacingH, right = edgeSpacingH)
+        recyclerView.addItemDecoration(HomeCardSpacingDecoration(cardSpacing, marginHorizontal, marginVertical))
 
         // Drag-to-reorder support
 
@@ -774,8 +790,9 @@ open class HomeActivity :
                     if (progress > 0.1f && !backThresholdReached) {
                         backThresholdReached = true
                         HapticUtils.gestureThreshold(recyclerView)
-                    } else if (progress < 0.1f) {
+                    } else if (progress <= 0.1f && backThresholdReached) {
                         backThresholdReached = false
+                        HapticUtils.gestureThresholdRelease(recyclerView)
                     }
 
                     if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
@@ -1085,9 +1102,15 @@ open class HomeActivity :
 
         val showInAppChangelog = {
             lifecycleScope.launch {
+                val currentCode =
+                    try {
+                        packageManager.getPackageInfo(packageName, 0).versionCode
+                    } catch (_: Exception) {
+                        0
+                    }
                 val releases =
                     try {
-                        UpdateChecker.fetchReleasesSince(sinceVersionCode = 0, maxReleases = 25)
+                        UpdateChecker.fetchReleasesSince(sinceVersionCode = currentCode, maxReleases = 25)
                     } catch (e: Exception) {
                         Timber.w(e, "Failed to fetch releases for in-app changelog")
                         emptyList()
@@ -1135,5 +1158,50 @@ private object CardRadiusProperty : FloatPropertyCompat<android.view.View>("card
         value: Float,
     ) {
         (view as? com.google.android.material.card.MaterialCardView)?.radius = value
+    }
+}
+
+/**
+ * Responsive edge and item spacing decoration for home cards across single-column
+ * and multi-column grid layouts. Guarantees uniform horizontal margins for full-span
+ * cards, symmetric spacing for multi-column spans, and consistent outer margins.
+ */
+private class HomeCardSpacingDecoration(
+    private val cardSpacing: Float,
+    private val marginHorizontal: Float,
+    private val marginVertical: Float,
+) : RecyclerView.ItemDecoration() {
+    override fun getItemOffsets(
+        outRect: android.graphics.Rect,
+        view: View,
+        parent: RecyclerView,
+        state: RecyclerView.State,
+    ) {
+        val adapter = parent.adapter ?: return
+        val layoutManager = parent.layoutManager as? androidx.recyclerview.widget.GridLayoutManager
+        val position = parent.getChildAdapterPosition(view)
+        if (position == RecyclerView.NO_POSITION) return
+
+        val itemCount = adapter.itemCount
+        val spanCount = layoutManager?.spanCount ?: 1
+        val spanSizeLookup = layoutManager?.spanSizeLookup
+
+        val spanIndex = spanSizeLookup?.getSpanIndex(position, spanCount) ?: 0
+        val spanSize = spanSizeLookup?.getSpanSize(position) ?: 1
+        val spanGroupIndex = spanSizeLookup?.getSpanGroupIndex(position, spanCount) ?: position
+        val lastSpanGroupIndex = spanSizeLookup?.getSpanGroupIndex(itemCount - 1, spanCount) ?: (itemCount - 1)
+
+        val halfSpacing = (cardSpacing / 2f).roundToInt()
+        val marginH = marginHorizontal.roundToInt()
+        val marginV = marginVertical.roundToInt()
+
+        // Horizontal edge spacing: outer edges get marginH, inner column gaps get halfSpacing.
+        // Full-width items (spanSize >= spanCount) get marginH on both left and right.
+        outRect.left = if (spanIndex == 0) marginH else halfSpacing
+        outRect.right = if (spanIndex + spanSize >= spanCount) marginH else halfSpacing
+
+        // Vertical edge spacing: outer edges get marginV, inter-card gaps get halfSpacing.
+        outRect.top = if (spanGroupIndex == 0) marginV else halfSpacing
+        outRect.bottom = if (spanGroupIndex == lastSpanGroupIndex) marginV else halfSpacing
     }
 }

@@ -38,6 +38,60 @@ class WatchdogService : Service() {
     private var pendingRecoveryJob: Job? = null
     private var stabilityJob: Job? = null
     private var cooldownRetryJob: Job? = null
+    private var graceRestartJob: Job? = null
+    private var wakeLock: android.os.PowerManager.WakeLock? = null
+
+    private fun acquireTemporaryWakeLock(durationMs: Long = 10_000L) {
+        try {
+            if (wakeLock == null) {
+                val pm = getSystemService(Context.POWER_SERVICE) as? android.os.PowerManager
+                wakeLock = pm?.newWakeLock(android.os.PowerManager.PARTIAL_WAKE_LOCK, "ShizukuPlus:WatchdogRecovery")
+                wakeLock?.setReferenceCounted(false)
+            }
+            wakeLock?.acquire(durationMs)
+        } catch (e: Exception) {
+            Timber.tag(TAG).w(e, "Failed to acquire temporary wake lock")
+        }
+    }
+
+    private val powerReceiver =
+        object : android.content.BroadcastReceiver() {
+            override fun onReceive(
+                context: Context,
+                intent: Intent?,
+            ) {
+                when (intent?.action) {
+                    Intent.ACTION_POWER_DISCONNECTED -> {
+                        Timber.tag(TAG).i("Power disconnected (USB unplugged)")
+                        acquireTemporaryWakeLock(5_000L)
+                        scope.launch(Dispatchers.IO) {
+                            if (ShizukuSettings.getTcpMode() || ShizukuSettings.isOnDeviceAdbTcpEnabled()) {
+                                val port = if (ShizukuSettings.getTcpMode()) ShizukuSettings.getTcpPort().takeIf { it in 1..65535 } ?: 5555 else 5555
+                                if (ShizukuStateMachine.isRunning() &&
+                                    af.shizuku.manager.adb.AdbPortProber
+                                        .isPortOpen(port, 300)
+                                ) {
+                                    Timber.tag(TAG).d("TCP port $port already listening and Shizuku is running; keeping session intact")
+                                } else {
+                                    AdbProxyService.enableAdbTcp(port)
+                                }
+                            }
+                            ShizukuStateMachine.update()
+                        }
+                    }
+                    android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED -> {
+                        Timber.tag(TAG).i("Power save mode changed")
+                        val pm = context.getSystemService(Context.POWER_SERVICE) as? android.os.PowerManager
+                        if (pm?.isPowerSaveMode == true) {
+                            scope.launch(Dispatchers.IO) {
+                                af.shizuku.manager.utils.DeviceOptimizer
+                                    .applyFixes(context)
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
     // Only true when the user explicitly taps "Turn off" from the notification — keeps
     // onDestroy() from clearing the watchdog setting when the service self-stops due to a
@@ -105,12 +159,24 @@ class WatchdogService : Service() {
         // Problems shown in their own notification until now move into this one.
         ShizukuIssues.render(applicationContext)
 
+        val powerFilter =
+            android.content.IntentFilter().apply {
+                addAction(Intent.ACTION_POWER_DISCONNECTED)
+                addAction(android.os.PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
+            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(powerReceiver, powerFilter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(powerReceiver, powerFilter)
+        }
+
         job =
             scope.launch {
                 ShizukuStateMachine.asFlow().collectLatest { state ->
                     // The title says whether the server is up.
                     refreshNotification(applicationContext)
                     if (state == ShizukuStateMachine.State.CRASHED) {
+                        acquireTemporaryWakeLock(15_000L)
                         // Suppress false crash alert if disconnected from Wi-Fi on Wireless ADB
                         if (ShizukuIssues.droppedWithNetwork(applicationContext)) {
                             Timber.tag(TAG).d("Watchdog: server dropped because Wi-Fi/network is disconnected; suppressing crash alert")
@@ -126,6 +192,8 @@ class WatchdogService : Service() {
                         ) {
                             stabilityJob?.cancel()
                             pendingRecoveryJob?.cancel()
+                            graceRestartJob?.cancel()
+                            cooldownRetryJob?.cancel()
                             return@collectLatest
                         }
                         // Restarting is off: only the status shows here, and the stop is
@@ -133,6 +201,8 @@ class WatchdogService : Service() {
                         if (!ShizukuSettings.isWatchdogAutoRestartEnabled()) {
                             stabilityJob?.cancel()
                             pendingRecoveryJob?.cancel()
+                            graceRestartJob?.cancel()
+                            cooldownRetryJob?.cancel()
                             return@collectLatest
                         }
 
@@ -146,6 +216,7 @@ class WatchdogService : Service() {
                         // duplicate heads-up for this same outage, or a later restart's
                         // server would be logged as "came back after restart #1".
                         pendingRecoveryJob?.cancel()
+                        graceRestartJob?.cancel()
                         val now = System.currentTimeMillis()
                         val cooldown = backoffMs(consecutiveCrashes)
                         if (now - lastRestartMs > cooldown) {
@@ -187,14 +258,20 @@ class WatchdogService : Service() {
                             // it again, automation, the starter) is often already starting a new
                             // one. Starting ours on top raced it: both starters killed the old
                             // server and two servers ran. Skip if a binder arrived meanwhile.
-                            scope.launch {
-                                delay(RESTART_GRACE_MS)
-                                if (ShizukuStateMachine.update() == ShizukuStateMachine.State.RUNNING) {
-                                    Timber.tag(TAG).d("Watchdog: a server came back by itself; restart skipped")
-                                } else {
-                                    ShizukuReceiverStarter.start(applicationContext)
+                            graceRestartJob?.cancel()
+                            graceRestartJob =
+                                scope.launch {
+                                    delay(RESTART_GRACE_MS)
+                                    if (!af.shizuku.manager.utils.UserStopFlag
+                                            .isSet() &&
+                                        ShizukuSettings.isWatchdogAutoRestartEnabled() &&
+                                        ShizukuStateMachine.update() != ShizukuStateMachine.State.RUNNING
+                                    ) {
+                                        ShizukuReceiverStarter.start(applicationContext)
+                                    } else {
+                                        Timber.tag(TAG).d("Watchdog: server running or restart suppressed; restart skipped")
+                                    }
                                 }
-                            }
                             Timber.tag(TAG).d("Watchdog: restart #$consecutiveCrashes (cooldown was ${cooldown}ms)")
                         } else {
                             Timber.tag(TAG).d("Watchdog: restart suppressed (cooldown active, ${now - lastRestartMs}ms / ${cooldown}ms)")
@@ -254,6 +331,15 @@ class WatchdogService : Service() {
     }
 
     override fun onDestroy() {
+        try {
+            unregisterReceiver(powerReceiver)
+        } catch (_: Exception) {
+        }
+        wakeLock?.let {
+            if (it.isHeld) it.release()
+        }
+        wakeLock = null
+
         stabilityJob?.cancel()
         cooldownRetryJob?.cancel()
         pendingRecoveryJob?.cancel()

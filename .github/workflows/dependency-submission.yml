@@ -1,0 +1,35 @@
+name: Dependency Submission
+
+# Submits the Gradle dependency graph (Dependabot alerts) with the api/ submodule checked out.
+# GitHub's automatic submission checks out without submodules and fails on every push; turn it
+# off in Settings > Code security > Dependency graph > Automatic dependency submission.
+on:
+  push:
+    branches: [master]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/pull_request_template.md'
+      - 'LICENSE*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          submodules: 'recursive'
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - uses: gradle/actions/dependency-submission@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
+        with:
+          dependency-graph-exclude-configurations: '(?i)(^|:)(classpath|buildscriptClasspath|.*PluginClasspath|kotlinCompilerClasspath|kaptClasspath|annotationProcessor|detachedConfiguration.*)$'
+        env:
+          DEPENDENCY_GRAPH_EXCLUDE_CONFIGURATIONS: "(?i)(^|:)(classpath|buildscriptClasspath|.*PluginClasspath|kotlinCompilerClasspath|kaptClasspath|annotationProcessor|detachedConfiguration.*)$"

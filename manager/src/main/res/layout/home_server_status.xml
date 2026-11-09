@@ -31,7 +31,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginStart="@dimen/m3e_spacing_large"
-        android:layout_marginEnd="16dp"
         android:duplicateParentState="true"
         app:layout_constraintStart_toEndOf="@android:id/icon"
         app:layout_constraintEnd_toEndOf="parent"

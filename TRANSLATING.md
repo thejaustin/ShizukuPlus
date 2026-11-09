@@ -1,8 +1,24 @@
 # Translating Shizuku+
 
-Thank you for helping! Strings live in `manager/src/main/res/values-<locale>/` (and `core/ui`).
+Thank you for helping translate Shizuku+!
 
-## Machine-assisted drafts need review
+## 🌐 Translate online via Crowdin (Recommended)
+
+You can translate Shizuku+ directly in your browser without dealing with XML files or git:
+
+👉 **[Translate Shizuku+ on Crowdin](https://crowdin.com/project/ShizukuPlus)**
+
+- Over 65 languages supported with automatic in-context suggestions and glossary.
+- Approved translations in Crowdin automatically sync into the repository and release builds.
+- All community translators are credited in the project README!
+
+---
+
+## 🛠️ Contributing via Pull Requests (Direct XML)
+
+If you prefer to edit XML files directly, strings live in `manager/src/main/res/values-<locale>/` (and `core/ui`). Pull requests modifying `values-*/strings.xml` are automatically bidirectional-synced with Crowdin upon merging.
+
+### Machine-assisted drafts need review
 Locales that lacked translations were filled with **AI-assisted drafts** in
 `values-<locale>/strings_machine_translated.xml`. They are functional but unreviewed.
 

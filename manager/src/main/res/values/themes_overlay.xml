@@ -425,6 +425,12 @@
         <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.CornerRounding.Maximum.ExtraLarge</item>
     </style>
 
+    <!-- Default Home screen card shape: preserves default 28dp roundedness unless override is toggled on -->
+    <style name="ShapeAppearance.HomeCard.ExtraLarge" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">28dp</item>
+    </style>
+
     <!-- "Expressive animations" off: MDC components move on the Standard springs (no bounce)
          instead of the Expressive ones the base theme sets. -->
     <style name="ThemeOverlay.Motion.Standard" parent="" tools:ignore="PrivateResource">

@@ -298,8 +298,6 @@ class PlusFeaturePreference(
                         (24 * context.resources.displayMetrics.density).toInt(),
                         (24 * context.resources.displayMetrics.density).toInt(),
                     )
-                    // Use theme surface background
-                    setBackgroundColor(resolveColor(com.google.android.material.R.attr.colorSurface, 0xFFFFFFFF.toInt()))
                 }
 
             // Drag handle indicator
@@ -421,8 +419,11 @@ class PlusFeaturePreference(
                             af.shizuku.manager.utils.HapticUtils
                                 .toggleOff(view)
                         }
-                        this@PlusFeaturePreference.isChecked = isCheckedVal
-                        this@PlusFeaturePreference.callChangeListener(isCheckedVal)
+                        if (this@PlusFeaturePreference.callChangeListener(isCheckedVal)) {
+                            this@PlusFeaturePreference.isChecked = isCheckedVal
+                        } else {
+                            view.isChecked = this@PlusFeaturePreference.isChecked
+                        }
                     }
                 }
             switchLayout.addView(mSwitch)

@@ -199,10 +199,15 @@ class TimelineChangelogController(
                     val total = pool.sumOf { it.changeCount }
                     if (total == 0) "" else ctx.resources.getQuantityString(R.plurals.changelog_change_count, total, total)
                 }
-        val headline =
-            if (newOnes.isNotEmpty()) ctx.getString(R.string.changelog_summary_new_releases, newOnes.size) else ctx.getString(R.string.changelog_summary_up_to_date)
         // A local/dev build can be ahead of the newest release; that is not an upgrade path.
         val installedAhead = revision(installedTag) >= revision(latest.tag) && revision(latest.tag) > 0
+        val isUpToDate = installedAhead || latest.isInstalled || installedTag.equals(latest.tag.removePrefix("v"), ignoreCase = true)
+        val headline =
+            when {
+                newOnes.isNotEmpty() -> ctx.getString(R.string.changelog_summary_new_releases, newOnes.size)
+                isUpToDate -> ctx.getString(R.string.changelog_summary_up_to_date)
+                else -> ctx.getString(R.string.update_available_title)
+            }
         val from = if (!latest.isInstalled && !installedAhead) "v$installedTag" else null
         return TimelineRow.Summary(from, latest.tag, headline, tally)
     }

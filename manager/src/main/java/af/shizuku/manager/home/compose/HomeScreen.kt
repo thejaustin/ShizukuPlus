@@ -3,6 +3,7 @@ package af.shizuku.manager.home.compose
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.utils.EnvironmentUtils
+import af.shizuku.manager.utils.HapticUtils
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
@@ -22,6 +23,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
@@ -30,6 +32,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -204,18 +207,25 @@ fun HomeScreen(
                                 .height(collapsedHeight),
                         label = "topBarActions",
                     ) { editMode ->
+                        val localView = LocalView.current
                         Row(
                             modifier = Modifier.padding(end = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             if (editMode) {
-                                IconButton(onClick = onRestoreHomeCards) {
+                                IconButton(onClick = {
+                                    HapticUtils.tap(localView)
+                                    onRestoreHomeCards()
+                                }) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_restore_24),
                                         contentDescription = stringResource(id = R.string.home_restore_default),
                                     )
                                 }
-                                TextButton(onClick = onDoneClick) {
+                                TextButton(onClick = {
+                                    HapticUtils.success(localView)
+                                    onDoneClick()
+                                }) {
                                     Text(
                                         text = stringResource(R.string.home_edit_mode_done),
                                         style = MaterialTheme.typography.labelLarge,
@@ -229,21 +239,30 @@ fun HomeScreen(
                                 // Help / Learn More is shown when stopped.
                                 // Settings is always available.
                                 if (isServerRunning) {
-                                    IconButton(onClick = onStopClick) {
+                                    IconButton(onClick = {
+                                        HapticUtils.tap(localView)
+                                        onStopClick()
+                                    }) {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_close_24),
                                             contentDescription = stringResource(id = R.string.action_stop),
                                         )
                                     }
                                 } else {
-                                    IconButton(onClick = onHelpClick) {
+                                    IconButton(onClick = {
+                                        HapticUtils.tap(localView)
+                                        onHelpClick()
+                                    }) {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_help_outline_24),
                                             contentDescription = stringResource(id = R.string.settings_plus_learn_more),
                                         )
                                     }
                                 }
-                                IconButton(onClick = onSettingsClick) {
+                                IconButton(onClick = {
+                                    HapticUtils.tap(localView)
+                                    onSettingsClick()
+                                }) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.ic_settings_outline_24),
                                         contentDescription = stringResource(id = R.string.settings_title),
@@ -256,7 +275,7 @@ fun HomeScreen(
                     // Title: slides from center (expanded) → start (collapsed) via BiasAlignment.
                     // horizontalBias: 0 = center, -1 = start.
                     val horizontalBias = -curvedFraction
-                    val startPadding = lerp(start = 24.dp, stop = 20.dp, fraction = curvedFraction)
+                    val startPadding = lerp(start = 24.dp, stop = 16.dp, fraction = curvedFraction)
                     val endPaddingStop by animateDpAsState(
                         targetValue = if (isEditMode) 120.dp else 96.dp,
                         animationSpec = if (motionOn) motionScheme.defaultSpatialSpec() else snap(),
@@ -495,31 +514,41 @@ fun AnimatedGradientBackground(
         return
     }
     val animationsEnabled = ShizukuSettings.isExpressiveAnimationsEnabled()
-    val infiniteTransition = rememberInfiniteTransition()
-    val alpha by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = if (animationsEnabled) 1f else 0f,
-        animationSpec =
-            infiniteRepeatable(
-                animation = tween(15000, easing = LinearEasing),
-                repeatMode = RepeatMode.Reverse,
-            ),
-    )
+    val infiniteTransition = rememberInfiniteTransition(label = "gradientTransition")
+    val alphaAnim =
+        infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = if (animationsEnabled) 1f else 0f,
+            animationSpec =
+                infiniteRepeatable(
+                    animation = tween(15000, easing = LinearEasing),
+                    repeatMode = RepeatMode.Reverse,
+                ),
+            label = "gradientAlpha",
+        )
 
-    val color1 = MaterialTheme.colorScheme.primary.copy(alpha = 0.03f + 0.05f * alpha)
-    val color2 = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.03f + 0.05f * (1f - alpha))
-    val color3 = MaterialTheme.colorScheme.secondary.copy(alpha = 0.03f)
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val tertiaryColor = MaterialTheme.colorScheme.tertiary
+    val secondaryColor = MaterialTheme.colorScheme.secondary
 
     Box(
         modifier =
             Modifier
                 .fillMaxSize()
-                .background(
-                    Brush.sweepGradient(
-                        colors = listOf(color1, color2, color3, color1),
-                        center = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
-                    ),
-                ),
+                .drawBehind {
+                    val a = alphaAnim.value
+                    val c1 = primaryColor.copy(alpha = 0.03f + 0.05f * a)
+                    val c2 = tertiaryColor.copy(alpha = 0.03f + 0.05f * (1f - a))
+                    val c3 = secondaryColor.copy(alpha = 0.03f)
+
+                    drawRect(
+                        brush =
+                            Brush.sweepGradient(
+                                colors = listOf(c1, c2, c3, c1),
+                                center = Offset(size.width, size.height),
+                            ),
+                    )
+                },
     ) {
         content()
     }
