@@ -284,7 +284,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         val hasSkew = ShizukuStateMachine.isServerVersionSkewed()
         if ((hasUpdate || hasSkew) && isTabShown(R.id.nav_settings)) {
             val badge = nav.getOrCreateBadge(R.id.nav_settings)
-            badge.backgroundColor = MaterialColors.getColor(activity, com.google.android.material.R.attr.colorError, Color.RED)
+            badge.backgroundColor = MaterialColors.getColor(activity, androidx.appcompat.R.attr.colorError, Color.RED)
             badge.clearNumber()
             badge.isVisible = true
         } else {

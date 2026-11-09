@@ -116,7 +116,7 @@
             style="@style/Widget.Material3.Chip.Assist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:chipIcon="@drawable/ic_arrow_downward_24"
+            app:chipIcon="@drawable/ic_outline_arrow_downward_24"
             app:chipIconSize="16dp" />
     </LinearLayout>
 
