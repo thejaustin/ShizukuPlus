@@ -53,6 +53,8 @@ class ServerStatusViewHolder(
 
     override fun onBind() {
         val context = itemView.context
+        af.shizuku.manager.utils.CardBorder
+            .apply(cardView)
         val status = data
         val ok = status.isRunning
         val state =

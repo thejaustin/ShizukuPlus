@@ -418,7 +418,15 @@ jobs:
          !startsWith(github.event.head_commit.message, 'ci') &&
          !startsWith(github.event.head_commit.message, 'style') &&
          !startsWith(github.event.head_commit.message, 'refactor') &&
-         !contains(github.event.head_commit.message, '[skip release]')) ||
+         !startsWith(github.event.head_commit.message, 'Chore') &&
+         !startsWith(github.event.head_commit.message, 'Docs') &&
+         !startsWith(github.event.head_commit.message, 'Ci') &&
+         !startsWith(github.event.head_commit.message, 'Style') &&
+         !startsWith(github.event.head_commit.message, 'Refactor') &&
+         !contains(github.event.head_commit.message, 'README') &&
+         !contains(github.event.head_commit.message, 'readme') &&
+         !contains(github.event.head_commit.message, '[skip release]') &&
+         !contains(github.event.head_commit.message, '[skip ci]')) ||
         (github.event_name == 'push' && github.ref_name == 'master' &&
          contains(github.event.head_commit.message, '[force release]')) ||
         (github.event_name == 'workflow_dispatch' && github.event.inputs.debug != true)
@@ -541,9 +549,8 @@ jobs:
             echo
 
             # Collect raw commits (with conventional-commit prefix) for classification,
-            # then strip the prefix for display. Classifying on stripped commits broke
-            # Added/Fixed sections because ^- feat / ^- fix never matched post-strip (#577).
-            RAW_COMMITS=$(git log "$RANGE" --no-merges --pretty=format:"- %s (%h)" || true)
+            # excluding docs/README, translation syncs, and automated housekeeping noise.
+            RAW_COMMITS=$(git log "$RANGE" --no-merges --pretty=format:"- %s (%h)" | grep -viE "^- (Update README|.*readme(\.md)?|docs?(\([^)]+\))?:|chore\(deps\):|chore\(crowdin\):|chore\(translations?\):)" || true)
             strip_prefix() {
               sed -E 's/^(- )(feat|fix|chore|refactor|perf|test|docs|build|ci|style|revert)(\([^)]+\))?: (.)(.*)$/\1\u\4\5/'
             }
@@ -559,11 +566,11 @@ jobs:
             if [ -n "$RAW_EXCLUDE" ]; then
               ADDED=$(printf '%s\n' "$RAW_COMMITS" | grep -E "^- feat" | grep -vFf <(printf '%s\n' "$RAW_EXCLUDE") | strip_prefix || true)
               FIXED=$(printf '%s\n' "$RAW_COMMITS" | grep -E "^- fix" | grep -vFf <(printf '%s\n' "$RAW_EXCLUDE") | strip_prefix || true)
-              OTHER=$(printf '%s\n' "$RAW_COMMITS" | grep -vE "^- (feat|fix)" | grep -vFf <(printf '%s\n' "$RAW_EXCLUDE") | strip_prefix || true)
+              OTHER=$(printf '%s\n' "$RAW_COMMITS" | grep -vE "^- (feat|fix)" | grep -vFf <(printf '%s\n' "$RAW_EXCLUDE") | strip_prefix | grep -viE "readme|crowdin|dependabot" || true)
             else
               ADDED=$(printf '%s\n' "$RAW_COMMITS" | grep -E "^- feat" | strip_prefix || true)
               FIXED=$(printf '%s\n' "$RAW_COMMITS" | grep -E "^- fix" | strip_prefix || true)
-              OTHER=$(printf '%s\n' "$RAW_COMMITS" | grep -vE "^- (feat|fix)" | strip_prefix || true)
+              OTHER=$(printf '%s\n' "$RAW_COMMITS" | grep -vE "^- (feat|fix)" | strip_prefix | grep -viE "readme|crowdin|dependabot" || true)
             fi
 
             # Lead with what changed for users: the CHANGELOG entries this release added. The
@@ -581,6 +588,11 @@ jobs:
             if [ -n "$ADDED" ]; then echo "### Added"; echo "$ADDED"; echo; fi
             if [ -n "$FIXED" ]; then echo "### Fixed"; echo "$FIXED"; echo; fi
             if [ -n "$OTHER" ]; then echo "### Other"; echo "$OTHER"; echo; fi
+            if [ -z "$WHATS_NEW" ] && [ -z "$SECURITY" ] && [ -z "$BREAKING" ] && [ -z "$ADDED" ] && [ -z "$FIXED" ] && [ -z "$OTHER" ]; then
+              echo "### Performance & Stability"
+              echo "- Internal system optimizations, compatibility refinements, and core service stability updates."
+              echo
+            fi
             if [ -n "$WHATS_NEW" ]; then echo "</details>"; echo; fi
 
             # Surface how many distinct GitHub issues this release touches. Promoting a
@@ -624,7 +636,10 @@ jobs:
               PREV_OF_T=$(printf '%s\n' "$RELEASE_TAGS" | grep -A1 -xF "$t" | sed -n 2p)
               REF_T="$t"; git rev-parse -q --verify "refs/tags/$t" >/dev/null || REF_T=HEAD
               SUBJ=$( { [ -n "$PREV_OF_T" ] && python3 -I scripts/ci/whats_new.py "$PREV_OF_T" "$REF_T" --title 2>/dev/null; } || true)
-              [ -z "$SUBJ" ] && SUBJ=$(git log -1 --pretty=%s "$REF_T" 2>/dev/null)
+              if [ -z "$SUBJ" ] || echo "$SUBJ" | grep -qiE "readme|chore\(deps\)|crowdin"; then
+                SUBJ=$(git log -n 10 --no-merges --pretty=%s "$REF_T" 2>/dev/null | grep -viE "readme|chore\(deps\)|crowdin|docs" | head -1 || true)
+              fi
+              [ -z "$SUBJ" ] && SUBJ="System compatibility and stability improvements"
               SUBJ=$(printf '%s' "$SUBJ" | sed 's/|/\\|/g')
               MARK=""
               if [ "$t" = "$MAJOR_RELEASE" ]; then MARK=" 🚀 **major**"; fi

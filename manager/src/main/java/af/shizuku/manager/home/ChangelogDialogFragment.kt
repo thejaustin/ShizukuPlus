@@ -176,12 +176,16 @@ class ChangelogDialogFragment : BottomSheetDialogFragment() {
                     recLines
                         .filter { l ->
                             val t = l.trim()
-                            t.startsWith(">") ||
-                                t.startsWith("|") ||
-                                t.startsWith("###") ||
-                                t.startsWith("-") ||
-                                t.startsWith("•") ||
-                                t.startsWith("*")
+                            !t.contains("readme", ignoreCase = true) &&
+                                !t.contains("crowdin", ignoreCase = true) &&
+                                (
+                                    t.startsWith(">") ||
+                                        t.startsWith("|") ||
+                                        t.startsWith("###") ||
+                                        t.startsWith("-") ||
+                                        t.startsWith("•") ||
+                                        t.startsWith("*")
+                                )
                         }.joinToString("\n")
                         .trim()
 

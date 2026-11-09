@@ -4,27 +4,46 @@ import af.shizuku.core.ui.AppBarActivity
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.databinding.ActivityAppBackupBinding
+import af.shizuku.manager.ktx.overrideAppCloseTransition
+import af.shizuku.manager.utils.HapticUtils
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class AppBackupActivity : AppBarActivity() {
+    enum class BackupFilter { ALL, USER, SYSTEM, FROZEN }
+
+    enum class BackupSortOrder { NAME, PACKAGE, FROZEN_FIRST }
+
     private val viewModel: BackupViewModel by viewModels()
     private lateinit var binding: ActivityAppBackupBinding
     private lateinit var adapter: BackupAdapter
-    private var includeSystem = false
+    private var includeSystem = true
     private var backupAllItem: MenuItem? = null
+
+    private var currentFilter = BackupFilter.ALL
+    private var sortOrder = BackupSortOrder.NAME
+    private var sortReversed = false
+    private var searchQuery = ""
+    private var rawApps: List<BackupViewModel.AppEntry> = emptyList()
+    private var sortArrow: android.graphics.drawable.RotateDrawable? = null
 
     private var pendingRestoreEntry: BackupViewModel.AppEntry? = null
     private val restoreFilePicker =
@@ -33,6 +52,11 @@ class AppBackupActivity : AppBarActivity() {
             pendingRestoreEntry = null
             if (uri != null) viewModel.restoreExternalData(entry, uri)
         }
+
+    override fun finish() {
+        super.finish()
+        overrideAppCloseTransition()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +72,21 @@ class AppBackupActivity : AppBarActivity() {
         adapter = BackupAdapter()
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
+        binding.recyclerView.clipToPadding = false
+        val navClearance = (160 * resources.displayMetrics.density + 0.5f).toInt()
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars =
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+                )
+            binding.recyclerView.setPadding(
+                binding.recyclerView.paddingLeft,
+                binding.recyclerView.paddingTop,
+                binding.recyclerView.paddingRight,
+                systemBars.bottom + navClearance,
+            )
+            insets
+        }
 
         adapter.onBackupClick = { entry ->
             val safUri = getSafUri()
@@ -65,6 +104,83 @@ class AppBackupActivity : AppBarActivity() {
             viewModel.toggleFreeze(entry)
         }
 
+        // Search bar: M3 Expressive shape morphing (28dp pill -> 16dp squircle) with tick feedback
+        val pillRadius = 28f * resources.displayMetrics.density
+        val squircleRadius = 16f * resources.displayMetrics.density
+        var cornerAnimator: android.animation.ValueAnimator? = null
+
+        fun animateSearchCorners(toRadius: Float) {
+            cornerAnimator?.cancel()
+            val currentRadius = binding.searchLayout.boxCornerRadiusTopStart
+            if (kotlin.math.abs(currentRadius - toRadius) < 0.5f) return
+            cornerAnimator =
+                android.animation.ValueAnimator.ofFloat(currentRadius, toRadius).apply {
+                    duration = 250L
+                    interpolator =
+                        androidx.interpolator.view.animation
+                            .FastOutSlowInInterpolator()
+                    addUpdateListener { animator ->
+                        val r = animator.animatedValue as Float
+                        binding.searchLayout.setBoxCornerRadii(r, r, r, r)
+                    }
+                    start()
+                }
+        }
+
+        binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                HapticUtils.tick(binding.searchEditText)
+                animateSearchCorners(squircleRadius)
+            } else if (binding.searchEditText.text.isNullOrEmpty()) {
+                animateSearchCorners(pillRadius)
+            }
+        }
+
+        var debounceJob: Job? = null
+        binding.searchEditText.addTextChangedListener(
+            object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int,
+                ) = Unit
+
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int,
+                ) = Unit
+
+                override fun afterTextChanged(s: Editable?) {
+                    debounceJob?.cancel()
+                    debounceJob =
+                        lifecycleScope.launch {
+                            delay(150)
+                            searchQuery = s?.toString()?.trim() ?: ""
+                            applyFilterAndSort()
+                        }
+                }
+            },
+        )
+
+        binding.filterChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
+            if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
+            HapticUtils.segmentTick(group)
+            currentFilter =
+                when (checkedIds.first()) {
+                    R.id.chip_filter_all -> BackupFilter.ALL
+                    R.id.chip_filter_user -> BackupFilter.USER
+                    R.id.chip_filter_system -> BackupFilter.SYSTEM
+                    R.id.chip_filter_frozen -> BackupFilter.FROZEN
+                    else -> BackupFilter.ALL
+                }
+            applyFilterAndSort()
+        }
+
+        setUpSortChip(binding.chipSort)
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.state.collect { state ->
@@ -72,7 +188,8 @@ class AppBackupActivity : AppBarActivity() {
                         is BackupViewModel.UiState.Loading -> showLoading()
                         is BackupViewModel.UiState.Loaded -> {
                             showContent()
-                            adapter.submitList(state.apps)
+                            rawApps = state.apps
+                            applyFilterAndSort()
                         }
                         is BackupViewModel.UiState.Error -> showError(state.msg)
                         is BackupViewModel.UiState.ServiceNotRunning ->
@@ -214,6 +331,112 @@ class AppBackupActivity : AppBarActivity() {
         binding.progressBar.visibility = View.GONE
         binding.recyclerView.visibility = View.VISIBLE
         binding.errorText.visibility = View.GONE
+    }
+
+    private fun setUpSortChip(chip: com.google.android.material.chip.Chip) {
+        val arrow =
+            androidx.core.content.ContextCompat
+                .getDrawable(this, R.drawable.ic_outline_arrow_downward_24)
+                ?.mutate()
+        val rotateDrawable =
+            if (arrow != null) {
+                android.graphics.drawable.RotateDrawable().apply {
+                    drawable = arrow
+                    fromDegrees = 0f
+                    toDegrees = 360f
+                    level = if (sortReversed) 5000 else 0
+                }
+            } else {
+                null
+            }
+        sortArrow = rotateDrawable
+        chip.chipIcon = rotateDrawable
+
+        fun updateSortUi() {
+            chip.text =
+                when (sortOrder) {
+                    BackupSortOrder.NAME -> getString(R.string.sort_order_name)
+                    BackupSortOrder.PACKAGE -> getString(R.string.sort_order_package)
+                    BackupSortOrder.FROZEN_FIRST -> getString(R.string.sort_order_frozen)
+                }
+            androidx.appcompat.widget.TooltipCompat
+                .setTooltipText(chip, chip.text)
+            rotateDrawable?.let { rd ->
+                val targetLevel = if (sortReversed) 5000 else 0
+                val anim = android.animation.ObjectAnimator.ofInt(rd, "level", rd.level, targetLevel)
+                anim.duration = 200L
+                anim.interpolator =
+                    androidx.interpolator.view.animation
+                        .FastOutSlowInInterpolator()
+                anim.start()
+            }
+        }
+
+        updateSortUi()
+
+        chip.setOnClickListener {
+            HapticUtils.tick(it)
+            val popup = androidx.appcompat.widget.PopupMenu(this, chip)
+            popup.menu.add(0, 1, 0, getString(R.string.sort_order_name)).apply {
+                isCheckable = true
+                isChecked = sortOrder == BackupSortOrder.NAME
+            }
+            popup.menu.add(0, 2, 1, getString(R.string.sort_order_package)).apply {
+                isCheckable = true
+                isChecked = sortOrder == BackupSortOrder.PACKAGE
+            }
+            popup.menu.add(0, 3, 2, getString(R.string.sort_order_frozen)).apply {
+                isCheckable = true
+                isChecked = sortOrder == BackupSortOrder.FROZEN_FIRST
+            }
+
+            popup.setOnMenuItemClickListener { item ->
+                val chosenOrder =
+                    when (item.itemId) {
+                        1 -> BackupSortOrder.NAME
+                        2 -> BackupSortOrder.PACKAGE
+                        3 -> BackupSortOrder.FROZEN_FIRST
+                        else -> BackupSortOrder.NAME
+                    }
+                if (chosenOrder == sortOrder) {
+                    sortReversed = !sortReversed
+                } else {
+                    sortOrder = chosenOrder
+                    sortReversed = false
+                }
+                updateSortUi()
+                applyFilterAndSort()
+                true
+            }
+            popup.show()
+        }
+    }
+
+    private fun applyFilterAndSort() {
+        var list = rawApps
+        if (searchQuery.isNotEmpty()) {
+            val q = searchQuery.lowercase()
+            list = list.filter { it.label.lowercase().contains(q) || it.packageName.lowercase().contains(q) }
+        }
+        list =
+            when (currentFilter) {
+                BackupFilter.ALL -> list
+                BackupFilter.USER -> list.filter { !it.isSystem }
+                BackupFilter.SYSTEM -> list.filter { it.isSystem }
+                BackupFilter.FROZEN -> list.filter { it.isFrozen }
+            }
+
+        val comparator =
+            when (sortOrder) {
+                BackupSortOrder.NAME -> compareBy<BackupViewModel.AppEntry> { it.label.lowercase() }
+                BackupSortOrder.PACKAGE -> compareBy { it.packageName.lowercase() }
+                BackupSortOrder.FROZEN_FIRST -> compareBy({ !it.isFrozen }, { it.label.lowercase() })
+            }
+
+        list = if (sortReversed) list.sortedWith(comparator.reversed()) else list.sortedWith(comparator)
+        adapter.submitList(list)
+        binding.errorText.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+        if (list.isEmpty()) binding.errorText.text = getString(R.string.app_management_empty)
     }
 
     private fun showError(msg: String) {

@@ -13,12 +13,12 @@
             android:entryValues="@array/night_mode_value"
             android:key="night_mode"
             android:title="@string/dark_theme"
-            android:icon="@drawable/ic_outline_dark_mode_24" />
+            android:icon="@drawable/ic_bedtime_24" />
         <af.shizuku.manager.settings.SegmentedControlPreference
             android:key="dark_style"
             android:persistent="false"
             android:title="@string/settings_dark_style_title"
-            android:icon="@drawable/ic_bedtime_24"
+            android:icon="@drawable/ic_contrast_24"
             android:entries="@array/dark_styles"
             android:entryValues="@array/dark_styles_value" />
 
@@ -230,13 +230,10 @@
             android:defaultValue="docked"
             android:dependency="floating_nav_enabled" />
 
-        <androidx.preference.MultiSelectListPreference
+        <androidx.preference.Preference
             android:key="floating_nav_tabs"
             android:title="@string/settings_floating_nav_tabs_title"
             android:icon="@drawable/ic_label_24"
-            android:entries="@array/floating_nav_optional_tabs"
-            android:entryValues="@array/floating_nav_optional_tabs_value"
-            android:defaultValue="@array/floating_nav_optional_tabs_value"
             android:dependency="floating_nav_enabled" />
 
         <af.shizuku.manager.settings.SegmentedControlPreference
@@ -297,7 +294,7 @@
             android:key="show_app_descriptions"
             android:title="@string/settings_show_app_descriptions"
             android:summary="@string/settings_show_app_descriptions_summary"
-            android:icon="@drawable/ic_outline_info_24"
+            android:icon="@drawable/ic_info_24"
             android:defaultValue="true" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference

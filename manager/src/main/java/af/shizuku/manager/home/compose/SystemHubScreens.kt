@@ -23,6 +23,7 @@ import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -328,19 +329,22 @@ fun ServerMetricsScreen(
             }
         } else if (isServerRunning == true) {
             // Metrics Diagnostic Cards
-            // Two glanceable tiles side by side instead of two full-width rows.
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+            // Two glanceable tiles side by side with synchronized height (IntrinsicSize.Max)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max),
+            ) {
                 StatTile(
                     title = stringResource(R.string.server_uptime),
                     value = uptimeText,
                     iconRes = R.drawable.ic_history_24,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
                 StatTile(
                     title = stringResource(R.string.active_connections),
                     value = clientCountText,
                     iconRes = R.drawable.ic_server_24,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
                     onClick = onConnectedAppsClick,
                 )
             }
@@ -711,85 +715,201 @@ fun ActivityLogScreen(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
                         .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                // Search toggle chip
-                FilterChip(
-                    selected = isSearchActive,
-                    onClick = {
-                        HapticUtils.segmentTick(view)
-                        isSearchActive = !isSearchActive
-                        if (!isSearchActive) searchQuery = ""
-                    },
-                    label = { Text(stringResource(R.string.cd_settings_search)) },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_search_24),
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                        )
-                    },
-                )
-
-                // Connected Apps Filter Pill
-                FilterChip(
-                    selected = isConnectedAppsOnly,
-                    onClick = {
-                        HapticUtils.segmentTick(view)
-                        isConnectedAppsOnly = !isConnectedAppsOnly
-                        if (isConnectedAppsOnly) {
-                            currentGrouping = ActivityLogGrouping.APP
-                            currentSort = ActivityLogSort.MOST_ACTIVE
-                        }
-                    },
-                    label = { Text(stringResource(R.string.active_connections)) },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_server_24),
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                        )
-                    },
-                )
-
-                // Grouping Dropdown Chip
-                Box {
+                // Scrollable filters and toggles on the left
+                Row(
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    // Search toggle chip
                     FilterChip(
-                        selected = currentGrouping != ActivityLogGrouping.NONE,
+                        selected = isSearchActive,
                         onClick = {
-                            HapticUtils.tap(view)
-                            showGroupingMenu = true
+                            HapticUtils.segmentTick(view)
+                            isSearchActive = !isSearchActive
+                            if (!isSearchActive) searchQuery = ""
                         },
-                        label = { Text(stringResource(currentGrouping.labelRes)) },
-                        trailingIcon = {
+                        label = { Text(stringResource(R.string.cd_settings_search)) },
+                        leadingIcon = {
                             Icon(
-                                painterResource(R.drawable.ic_outline_expand_more_24),
+                                painterResource(R.drawable.ic_search_24),
                                 contentDescription = null,
-                                modifier = Modifier.size(18.dp),
+                                modifier = Modifier.size(16.dp),
                             )
                         },
                     )
-                    DropdownMenu(
-                        expanded = showGroupingMenu,
-                        onDismissRequest = { showGroupingMenu = false },
-                    ) {
-                        ActivityLogGrouping.values().forEach { grouping ->
-                            DropdownMenuItem(
-                                text = { Text(stringResource(grouping.labelRes)) },
-                                onClick = {
-                                    HapticUtils.segmentTick(view)
-                                    currentGrouping = grouping
-                                    showGroupingMenu = false
-                                },
+
+                    // Connected Apps Filter Pill
+                    FilterChip(
+                        selected = isConnectedAppsOnly,
+                        onClick = {
+                            HapticUtils.segmentTick(view)
+                            isConnectedAppsOnly = !isConnectedAppsOnly
+                            if (isConnectedAppsOnly) {
+                                currentGrouping = ActivityLogGrouping.APP
+                                currentSort = ActivityLogSort.MOST_ACTIVE
+                            }
+                        },
+                        label = { Text(stringResource(R.string.active_connections)) },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_server_24),
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
                             )
+                        },
+                    )
+
+                    // Grouping Dropdown Chip
+                    Box {
+                        FilterChip(
+                            selected = currentGrouping != ActivityLogGrouping.NONE,
+                            onClick = {
+                                HapticUtils.tap(view)
+                                showGroupingMenu = true
+                            },
+                            label = { Text(stringResource(currentGrouping.labelRes)) },
+                            trailingIcon = {
+                                Icon(
+                                    painterResource(R.drawable.ic_outline_expand_more_24),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                )
+                            },
+                        )
+                        DropdownMenu(
+                            expanded = showGroupingMenu,
+                            onDismissRequest = { showGroupingMenu = false },
+                        ) {
+                            ActivityLogGrouping.values().forEach { grouping ->
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(grouping.labelRes)) },
+                                    onClick = {
+                                        HapticUtils.segmentTick(view)
+                                        currentGrouping = grouping
+                                        showGroupingMenu = false
+                                    },
+                                )
+                            }
                         }
+                    }
+
+                    // Stacking Chip (Morphe style)
+                    FilterChip(
+                        selected = stackRepetitive,
+                        onClick = {
+                            HapticUtils.segmentTick(view)
+                            stackRepetitive = !stackRepetitive
+                        },
+                        label = { Text(stringResource(R.string.activity_log_stack_activities)) },
+                    )
+
+                    // Export Logs Chip
+                    FilterChip(
+                        selected = false,
+                        onClick = {
+                            HapticUtils.tap(view)
+                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            val text =
+                                rawLogs.joinToString("\n") { r ->
+                                    "[${dateFormat.format(Date(r.timestamp))}] [${r.eventType}] ${r.appName} (${r.packageName}): ${r.action}"
+                                }
+                            clipboard.setPrimaryClip(
+                                af.shizuku.manager.utils
+                                    .sensitivePlainText("Activity Log", text),
+                            )
+                            Toast
+                                .makeText(
+                                    context,
+                                    context.getString(R.string.activity_log_export_copied, rawLogs.size),
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                        },
+                        label = { Text(stringResource(R.string.activity_log_export)) },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_copy),
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                            )
+                        },
+                    )
+
+                    // Clear Logs Chip
+                    FilterChip(
+                        selected = false,
+                        onClick = {
+                            HapticUtils.tap(view)
+                            showClearDialog = true
+                        },
+                        label = { Text(stringResource(R.string.settings_activity_log_clear)) },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_delete_24),
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.error,
+                            )
+                        },
+                    )
+
+                    // "All" Chip
+                    FilterChip(
+                        selected = selectedTypes.isEmpty(),
+                        onClick = {
+                            HapticUtils.segmentTick(view)
+                            selectedTypes = emptySet()
+                        },
+                        label = { Text(stringResource(R.string.activity_log_filter_all)) },
+                    )
+
+                    // Multi-select Event Type Chips
+                    ActivityEventType.values().forEach { type ->
+                        val labelRes =
+                            when (type) {
+                                ActivityEventType.SERVICE_START -> R.string.activity_log_type_start
+                                ActivityEventType.SERVICE_STOP -> R.string.activity_log_type_stop
+                                ActivityEventType.CONNECTION -> R.string.activity_log_type_connection
+                                ActivityEventType.PERMISSION -> R.string.activity_log_type_permission
+                                ActivityEventType.APP_MANAGEMENT -> R.string.activity_log_type_app_mgmt
+                                ActivityEventType.WATCHDOG -> R.string.activity_log_type_watchdog
+                                ActivityEventType.SYSTEM -> R.string.activity_log_type_system
+                                ActivityEventType.OTHER -> R.string.activity_log_type_other
+                            }
+                        val isSelected = type in selectedTypes
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = {
+                                HapticUtils.segmentTick(view)
+                                selectedTypes =
+                                    if (isSelected) {
+                                        selectedTypes - type
+                                    } else {
+                                        selectedTypes + type
+                                    }
+                            },
+                            label = { Text(stringResource(labelRes)) },
+                        )
                     }
                 }
 
-                // Sort Dropdown Chip
+                // Vertical divider line separating scrollable chips from static sort chip
+                Box(
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 8.dp)
+                            .width(1.dp)
+                            .height(24.dp)
+                            .background(MaterialTheme.colorScheme.outlineVariant),
+                )
+
+                // Static Sort Dropdown Chip on the right for one-handed reachability
                 Box {
                     FilterChip(
                         selected = false,
@@ -821,104 +941,6 @@ fun ActivityLogScreen(
                             )
                         }
                     }
-                }
-
-                // Stacking Chip (Morphe style)
-                FilterChip(
-                    selected = stackRepetitive,
-                    onClick = {
-                        HapticUtils.segmentTick(view)
-                        stackRepetitive = !stackRepetitive
-                    },
-                    label = { Text(stringResource(R.string.activity_log_stack_activities)) },
-                )
-
-                // Export Logs Chip
-                FilterChip(
-                    selected = false,
-                    onClick = {
-                        HapticUtils.tap(view)
-                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        val text =
-                            rawLogs.joinToString("\n") { r ->
-                                "[${dateFormat.format(Date(r.timestamp))}] [${r.eventType}] ${r.appName} (${r.packageName}): ${r.action}"
-                            }
-                        clipboard.setPrimaryClip(
-                            af.shizuku.manager.utils
-                                .sensitivePlainText("Activity Log", text),
-                        )
-                        Toast
-                            .makeText(
-                                context,
-                                context.getString(R.string.activity_log_export_copied, rawLogs.size),
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                    },
-                    label = { Text(stringResource(R.string.activity_log_export)) },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_copy),
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                        )
-                    },
-                )
-
-                // Clear Logs Chip
-                FilterChip(
-                    selected = false,
-                    onClick = {
-                        HapticUtils.tap(view)
-                        showClearDialog = true
-                    },
-                    label = { Text(stringResource(R.string.settings_activity_log_clear)) },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_delete_24),
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.error,
-                        )
-                    },
-                )
-
-                // "All" Chip
-                FilterChip(
-                    selected = selectedTypes.isEmpty(),
-                    onClick = {
-                        HapticUtils.segmentTick(view)
-                        selectedTypes = emptySet()
-                    },
-                    label = { Text(stringResource(R.string.activity_log_filter_all)) },
-                )
-
-                // Multi-select Event Type Chips
-                ActivityEventType.values().forEach { type ->
-                    val labelRes =
-                        when (type) {
-                            ActivityEventType.SERVICE_START -> R.string.activity_log_type_start
-                            ActivityEventType.SERVICE_STOP -> R.string.activity_log_type_stop
-                            ActivityEventType.CONNECTION -> R.string.activity_log_type_connection
-                            ActivityEventType.PERMISSION -> R.string.activity_log_type_permission
-                            ActivityEventType.APP_MANAGEMENT -> R.string.activity_log_type_app_mgmt
-                            ActivityEventType.WATCHDOG -> R.string.activity_log_type_watchdog
-                            ActivityEventType.SYSTEM -> R.string.activity_log_type_system
-                            ActivityEventType.OTHER -> R.string.activity_log_type_other
-                        }
-                    val isSelected = type in selectedTypes
-                    FilterChip(
-                        selected = isSelected,
-                        onClick = {
-                            HapticUtils.segmentTick(view)
-                            selectedTypes =
-                                if (isSelected) {
-                                    selectedTypes - type
-                                } else {
-                                    selectedTypes + type
-                                }
-                        },
-                        label = { Text(stringResource(labelRes)) },
-                    )
                 }
             }
 
@@ -1566,9 +1588,15 @@ private fun StatTile(
         border =
             af.shizuku.manager.utils
                 .cardBorder(),
-        modifier = cardModifier,
+        modifier = cardModifier.fillMaxHeight(),
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxHeight()
+                    .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -1590,18 +1618,21 @@ private fun StatTile(
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                value,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 2,
-            )
-            Text(
-                title,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 2,
-            )
+            Column {
+                Text(
+                    value,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2,
+                )
+                Text(
+                    title,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    minLines = 2,
+                    maxLines = 2,
+                )
+            }
         }
     }
 }

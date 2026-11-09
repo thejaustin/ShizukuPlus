@@ -445,21 +445,10 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        findPreference<androidx.preference.MultiSelectListPreference>(af.shizuku.manager.widget.FloatingNavBar.KEY_TABS)?.apply {
-            fun describe(values: Set<String>) {
-                val names =
-                    entryValues
-                        .zip(entries)
-                        .filter { (v, _) -> v.toString() in values }
-                        .joinToString(", ") { it.second }
-                summary = getString(R.string.settings_floating_nav_tabs_summary, names)
-            }
-            describe(values)
-            setOnPreferenceChangeListener { _, v ->
-                @Suppress("UNCHECKED_CAST")
-                val tabs = v as Set<String>
-                if (tabs.isEmpty()) return@setOnPreferenceChangeListener false
-                describe(tabs)
+        findPreference<androidx.preference.Preference>(af.shizuku.manager.widget.FloatingNavBar.KEY_TABS)?.apply {
+            updateNavTabsSummary()
+            setOnPreferenceClickListener {
+                NavCustomizerSheet.show(parentFragmentManager)
                 true
             }
         }
@@ -643,6 +632,21 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                 resources.getStringArray(R.array.custom_accents).getOrNull(values.indexOf(currentValue))
                     ?: getString(R.string.settings_accent_default_applied)
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateNavTabsSummary()
+    }
+
+    private fun updateNavTabsSummary() {
+        findPreference<androidx.preference.Preference>(af.shizuku.manager.widget.FloatingNavBar.KEY_TABS)?.let { pref ->
+            val context = context ?: return
+            val names =
+                af.shizuku.manager.widget.FloatingNavBar
+                    .getActiveTabOrderNames(context)
+            pref.summary = getString(R.string.settings_floating_nav_tabs_summary, names.joinToString(" • "))
         }
     }
 }

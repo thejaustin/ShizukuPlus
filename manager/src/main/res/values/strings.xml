@@ -1232,7 +1232,25 @@
     <string name="settings_floating_nav_style_compact">Compact</string>
     <string name="settings_floating_nav_style_capsule">Expressive Capsule</string>
     <string name="settings_floating_nav_tabs_title">Tabs</string>
-    <string name="settings_floating_nav_tabs_summary">Home and Settings always show. %1$s</string>
+    <string name="settings_floating_nav_tabs_summary">Customize and reorganize up to 5 categories: %1$s</string>
+    <string name="nav_customizer_title">Customize Navigation Bar</string>
+    <string name="nav_customizer_subtitle">Choose 2 to 5 categories and arrange them in your preferred order</string>
+    <string name="nav_customizer_active_tabs">Active Tabs (%1$d/5)</string>
+    <string name="nav_customizer_available_tabs">Available Tabs</string>
+    <string name="nav_customizer_preset_center_5">Home Center (5)</string>
+    <string name="nav_customizer_preset_center_3">Home Center (3)</string>
+    <string name="nav_customizer_preset_default">Default (4)</string>
+    <string name="nav_customizer_preset_all">Doctor + Settings (5)</string>
+    <string name="nav_customizer_preset_terminal">Terminal + Settings (5)</string>
+    <string name="nav_customizer_center_badge">Center</string>
+    <string name="nav_customizer_min_error">At least 2 tabs required</string>
+    <string name="nav_customizer_max_error">Maximum of 5 tabs allowed</string>
+    <string name="nav_tab_home_desc">Main launchpad &amp; service status</string>
+    <string name="nav_tab_apps_desc">App permissions, profiles &amp; backup</string>
+    <string name="nav_tab_hub_desc">System metrics, controls &amp; scripts</string>
+    <string name="nav_tab_doctor_desc">Diagnostic engine &amp; health repair</string>
+    <string name="nav_tab_terminal_desc">Interactive shell &amp; command runner</string>
+    <string name="nav_tab_settings_desc">Appearance, behavior &amp; system options</string>
     <string name="settings_experimental_summary">Try features that are still being polished</string>
     <string name="settings_experimental_category_personalization">Home &amp; app identity</string>
     <string name="settings_experimental_app_identity_title">App icon &amp; name customization</string>
@@ -1654,6 +1672,10 @@
     <string name="app_profile_state_allow">Allow</string>
     <string name="app_profile_search_hint">Search apps…</string>
     <string name="app_profile_empty">No apps found</string>
+    <string name="app_profile_filter_configured">Configured</string>
+    <string name="app_profile_sort_configured">Configured</string>
+    <string name="app_profile_sort_name">Name</string>
+    <string name="app_profile_sort_package">Package</string>
     <string name="su_bridge_api36_adb_warning_title">Android 16 ADB Limitation</string>
     <string name="su_bridge_api36_adb_warning_body">The ADB shell process cannot write to /data/local/tmp on Android 16+. Export Shizuku files to a folder instead — the SU Bridge will use that exported path.</string>
     <string name="su_bridge_export_files">Export Files…</string>
@@ -1763,6 +1785,14 @@
     <string name="permission_manager_section_privileged">Privileged Permissions (shell-grantable)</string>
     <string name="permission_manager_section_runtime">Runtime Permissions</string>
     <string name="permission_manager_privileged_note">These permissions are normally restricted to system or root apps, but can be granted by the ADB shell process. Useful for backup apps (Neo Backup, Swift Backup) that need DUMP, READ_LOGS, or similar access.</string>
+    <string name="permission_manager_filter_all">All</string>
+    <string name="permission_manager_filter_privileged">Privileged</string>
+    <string name="permission_manager_filter_runtime">Runtime</string>
+    <string name="permission_manager_filter_granted">Granted</string>
+    <string name="permission_manager_filter_revoked">Revoked</string>
+    <string name="permission_manager_sort_name">Name</string>
+    <string name="permission_manager_sort_status">Status</string>
+    <string name="permission_manager_sort_type">Type</string>
 
     <!-- Home layout simulator accessibility labels (decorative preview widget — a11y toggles) -->
     <string name="accessibility_sim_toggle_adb">Toggle ADB start card visibility</string>
@@ -2019,4 +2049,13 @@
     <string name="onboarding_icon_style_title">Icon Style</string>
     <string name="onboarding_m3e_desc">Personalize your experience with adaptive icon styles, AMOLED+ contrast, and fluid motion.</string>
     <string name="onboarding_m3e_title">Expressive Look &amp; Feel</string>
+    <!-- App Reachability & Filtering -->
+    <string name="app_management_filter_user">User</string>
+    <string name="app_management_filter_system">System</string>
+    <string name="backup_filter_frozen">Frozen</string>
+    <string name="app_picker_filter_selected">Selected</string>
+    <string name="sort_order_name">Name</string>
+    <string name="sort_order_package">Package</string>
+    <string name="sort_order_selected">Selected</string>
+    <string name="sort_order_frozen">Frozen</string>
 </resources>

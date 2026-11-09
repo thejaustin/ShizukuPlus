@@ -253,19 +253,23 @@ object ServiceDoctor {
             )
 
             // 5d. Google Wallet & Play Integrity
+            // SU bridge is an optional root-style setting: if enabled, its presence in tmp is intentional
+            // and must NOT be flagged as a defect or wiped by Service Doctor fixes.
+            val isSuBridgeEnabled = ShizukuSettings.isSuBridgeEnabled()
             val hasTmpSu =
                 File("/data/local/tmp/su").exists() ||
                     File("/data/local/su").exists() ||
                     File("/data/local/bin/su").exists() ||
                     File("/data/local/xbin/su").exists()
+            val hasOrphanSu = hasTmpSu && !isSuBridgeEnabled
             val isMagiskMocking = ShizukuSettings.isRootMagiskMockingEnabled()
             val isBusyboxMocking = ShizukuSettings.isRootBusyboxMockingEnabled()
             val isSpoofing = ShizukuSettings.isSpoofDeviceEnabled()
-            val walletSecurityOk = !hasTmpSu && !isMagiskMocking && !isBusyboxMocking && !isSpoofing
+            val walletSecurityOk = !hasOrphanSu && !isMagiskMocking && !isBusyboxMocking && !isSpoofing
 
             val walletStatus =
                 when {
-                    hasTmpSu -> context.getString(R.string.doctor_wallet_risk_tmp_su)
+                    hasOrphanSu -> context.getString(R.string.doctor_wallet_risk_tmp_su)
                     isMagiskMocking -> context.getString(R.string.doctor_wallet_risk_magisk)
                     isBusyboxMocking -> context.getString(R.string.doctor_wallet_risk_busybox)
                     isSpoofing -> context.getString(R.string.doctor_wallet_risk_spoof)
@@ -279,10 +283,13 @@ object ServiceDoctor {
                     ok = walletSecurityOk,
                     canAutoFix = !walletSecurityOk && DeviceOptimizer.hasPrivilegedShell(),
                     autoFix = { ctx ->
-                        RootCompatHelper.cleanupBridgeFromTmp(ctx)
+                        // Clean up orphan su files only when SU bridge is NOT intentionally enabled
+                        if (!ShizukuSettings.isSuBridgeEnabled()) {
+                            RootCompatHelper.cleanupBridgeFromTmp(ctx)
+                        }
                         if (isMagiskMocking) ShizukuSettings.setRootMagiskMockingEnabled(false)
                         if (isBusyboxMocking) ShizukuSettings.setRootBusyboxMockingEnabled(false)
-                        if (ShizukuSettings.isSuBridgeEnabled()) ShizukuSettings.setSuBridgeEnabled(false)
+                        // SU Bridge is an optional root style setting: DO NOT disable it in Service Doctor fixes
                         if (isSpoofing) ShizukuSettings.setSpoofDeviceEnabled(false)
                         ShizukuSettings.syncAllPlusFeaturesToServer()
                         RootCompatHelper.refreshGoogleWalletAttestation(ctx)
@@ -425,7 +432,9 @@ object ServiceDoctor {
             }
 
             // 8b. SU Bridge — Android 16+ ADB mode limitation
-            if (Build.VERSION.SDK_INT >= 36) {
+            // Excluded from Service Doctor fixes: SU Bridge is an optional root style setting.
+            // Only report informational status if SU Bridge is actively enabled by the user.
+            if (Build.VERSION.SDK_INT >= 36 && ShizukuSettings.isSuBridgeEnabled()) {
                 val isAdbMode =
                     try {
                         Shizuku.pingBinder() && Shizuku.getUid() == 2000
@@ -444,14 +453,11 @@ object ServiceDoctor {
                                 } else {
                                     context.getString(R.string.doctor_status_su_bridge_no_path)
                                 },
-                            ok = hasExportedPath,
+                            ok = true,
                             canAutoFix = false,
-                            tip = if (!hasExportedPath) "• " + context.getString(R.string.doctor_tip_su_bridge_a16) else null,
+                            tip = null,
                         ),
                     )
-                    if (!hasExportedPath) {
-                        tips.add("• " + context.getString(R.string.doctor_tip_su_bridge_a16))
-                    }
                 }
             }
 

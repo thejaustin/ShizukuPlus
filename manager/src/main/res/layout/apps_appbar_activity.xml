@@ -85,22 +85,71 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <HorizontalScrollView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="none"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:paddingHorizontal="@dimen/margin_horizontal"
-            android:paddingVertical="8dp"
-            android:clipToPadding="false">
+            android:paddingVertical="8dp">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <HorizontalScrollView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_weight="1"
+                android:scrollbars="none"
+                android:clipToPadding="false"
+                android:requiresFadingEdge="horizontal"
+                android:fadingEdgeLength="16dp">
 
-            <!-- Sort, always in view: shows the current order and opens the choices; the arrow
-                 flips when the order is reversed. -->
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/filter_chip_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:singleLine="true"
+                    app:singleSelection="true"
+                    app:selectionRequired="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_all"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_management_filter_all"
+                        android:checked="true" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_granted"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_management_filter_granted" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_denied"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_management_filter_denied" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_hidden"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_management_filter_hidden" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+            </HorizontalScrollView>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="24dp"
+                android:layout_marginHorizontal="8dp"
+                android:background="?colorOutlineVariant" />
+
+            <!-- Sort, static on the right: easily reachable by thumb, shows the current order and opens choices; arrow flips when order is reversed. -->
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_sort"
                 style="@style/Widget.Material3.Chip.Assist"
@@ -110,53 +159,7 @@
                 app:closeIconVisible="true"
                 app:chipIconVisible="true" />
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="24dp"
-                android:layout_marginHorizontal="8dp"
-                android:background="?colorOutlineVariant" />
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/filter_chip_group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:singleSelection="true"
-                app:selectionRequired="true">
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_all"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/app_management_filter_all"
-                    android:checked="true" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_granted"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/app_management_filter_granted" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_denied"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/app_management_filter_denied" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_hidden"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/app_management_filter_hidden" />
-
-            </com.google.android.material.chip.ChipGroup>
-
-            </LinearLayout>
-
-        </HorizontalScrollView>
+        </LinearLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 

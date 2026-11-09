@@ -71,7 +71,7 @@ internal fun PreferenceIconView(
             iv.setImageDrawable(drawable)
             iv.alpha = if (enabled) 1.0f else disabledAlpha
         },
-        modifier = modifier.size(36.dp),
+        modifier = modifier.size(40.dp),
     )
 }
 

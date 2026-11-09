@@ -377,6 +377,23 @@ class SettingsActivity :
         }
         return super.onSupportNavigateUp()
     }
+
+    override fun finish() {
+        super.finish()
+        if (android.os.Build.VERSION.SDK_INT >= 34) {
+            overrideActivityTransition(
+                android.app.Activity.OVERRIDE_TRANSITION_CLOSE,
+                R.anim.activity_app_close_enter,
+                R.anim.activity_app_close_exit,
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(
+                R.anim.activity_app_close_enter,
+                R.anim.activity_app_close_exit,
+            )
+        }
+    }
 }
 
 /**

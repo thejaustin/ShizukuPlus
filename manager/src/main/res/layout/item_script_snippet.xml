@@ -59,6 +59,7 @@
         android:layout_marginStart="4dp"
         android:background="?android:attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_outline_play_arrow_24"
-        android:contentDescription="@string/scripting_run" />
+        android:contentDescription="@string/scripting_run"
+        android:tooltipText="@string/scripting_run" />
 
 </LinearLayout>

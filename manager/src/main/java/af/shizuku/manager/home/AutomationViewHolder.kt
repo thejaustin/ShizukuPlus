@@ -6,6 +6,8 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.databinding.HomeAutomationBinding
 import af.shizuku.manager.databinding.HomeAutomationBottomSheetBinding
 import af.shizuku.manager.databinding.HomeItemContainerBinding
+import af.shizuku.manager.ktx.findActivity
+import af.shizuku.manager.ktx.startWithSceneTransition
 import af.shizuku.manager.ktx.toHtml
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.IconStyleHelper
@@ -46,6 +48,12 @@ class AutomationViewHolder(
 
     init {
         HomeEditMode.bindCardGestures(containerBinding, this)
+        binding.buttonProfiles.setOnClickListener { v ->
+            val activity = v.context.findActivity<android.app.Activity>() ?: return@setOnClickListener
+            activity.startWithSceneTransition(
+                android.content.Intent(activity, af.shizuku.manager.automation.AppProfilesActivity::class.java),
+            )
+        }
         binding.button1.setOnClickListener { v ->
             val context = v.context
             val authToken =

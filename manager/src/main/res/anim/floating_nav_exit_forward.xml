@@ -3,12 +3,21 @@
     android:shareInterpolator="false">
     <translate
         android:fromXDelta="0"
-        android:toXDelta="-12%p"
-        android:duration="240"
+        android:toXDelta="-30%p"
+        android:duration="280"
+        android:interpolator="@interpolator/m3e_emphasized_accelerate" />
+    <scale
+        android:fromXScale="1.0"
+        android:toXScale="0.95"
+        android:fromYScale="1.0"
+        android:toYScale="0.95"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:duration="280"
         android:interpolator="@interpolator/m3e_emphasized_accelerate" />
     <alpha
-        android:fromAlpha="1"
-        android:toAlpha="0"
-        android:duration="150"
+        android:fromAlpha="1.0"
+        android:toAlpha="0.0"
+        android:duration="180"
         android:interpolator="@interpolator/m3e_emphasized_accelerate" />
 </set>

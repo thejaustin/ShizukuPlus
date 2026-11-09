@@ -23,19 +23,57 @@ fun Activity.startWithSceneTransition(
                     this,
                     androidx.core.util.Pair(sharedView, transitionName),
                 ).toBundle()
+        } else if (sharedView != null && sharedView.width > 0 && sharedView.height > 0) {
+            androidx.core.app.ActivityOptionsCompat
+                .makeScaleUpAnimation(sharedView, 0, 0, sharedView.width, sharedView.height)
+                .toBundle()
         } else {
             androidx.core.app.ActivityOptionsCompat
-                .makeSceneTransitionAnimation(this)
-                .toBundle()
+                .makeCustomAnimation(
+                    this,
+                    af.shizuku.manager.R.anim.activity_app_launch_enter,
+                    af.shizuku.manager.R.anim.activity_app_launch_exit,
+                ).toBundle()
         }
     startActivity(intent, bundle)
+    if (android.os.Build.VERSION.SDK_INT >= 34) {
+        overrideActivityTransition(
+            Activity.OVERRIDE_TRANSITION_OPEN,
+            af.shizuku.manager.R.anim.activity_app_launch_enter,
+            af.shizuku.manager.R.anim.activity_app_launch_exit,
+        )
+        overrideActivityTransition(
+            Activity.OVERRIDE_TRANSITION_CLOSE,
+            af.shizuku.manager.R.anim.activity_app_close_enter,
+            af.shizuku.manager.R.anim.activity_app_close_exit,
+        )
+    } else {
+        @Suppress("DEPRECATION")
+        overridePendingTransition(
+            af.shizuku.manager.R.anim.activity_app_launch_enter,
+            af.shizuku.manager.R.anim.activity_app_launch_exit,
+        )
+    }
 }
 
 fun Activity.startWithSceneTransition(intent: Intent) {
-    val options =
-        androidx.core.app.ActivityOptionsCompat
-            .makeSceneTransitionAnimation(this)
-    startActivity(intent, options.toBundle())
+    startWithSceneTransition(intent, null, null)
+}
+
+fun Activity.overrideAppCloseTransition() {
+    if (android.os.Build.VERSION.SDK_INT >= 34) {
+        overrideActivityTransition(
+            Activity.OVERRIDE_TRANSITION_CLOSE,
+            af.shizuku.manager.R.anim.activity_app_close_enter,
+            af.shizuku.manager.R.anim.activity_app_close_exit,
+        )
+    } else {
+        @Suppress("DEPRECATION")
+        overridePendingTransition(
+            af.shizuku.manager.R.anim.activity_app_close_enter,
+            af.shizuku.manager.R.anim.activity_app_close_exit,
+        )
+    }
 }
 
 @ColorInt

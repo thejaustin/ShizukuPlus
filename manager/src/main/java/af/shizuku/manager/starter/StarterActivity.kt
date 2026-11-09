@@ -3,6 +3,7 @@ package af.shizuku.manager.starter
 import af.shizuku.core.ui.AppBarActivity
 import af.shizuku.manager.AppConstants.EXTRA
 import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.adb.AdbAuthWait
 import af.shizuku.manager.adb.AdbKeyException
 import af.shizuku.manager.adb.AdbStarter
@@ -51,6 +52,17 @@ class StarterActivity : AppBarActivity() {
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close_24)
 
         binding = StarterActivityBinding.inflate(layoutInflater, rootView, true)
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val bars =
+                insets.getInsets(
+                    androidx.core.view.WindowInsetsCompat.Type
+                        .systemBars() or
+                        androidx.core.view.WindowInsetsCompat.Type
+                            .displayCutout(),
+                )
+            view.setPadding(bars.left, 0, bars.right, bars.bottom)
+            insets
+        }
 
         val isRoot = intent.getBooleanExtra(EXTRA_IS_ROOT, false)
         // ADB start connects to the wireless-debugging service over the local network / loopback,

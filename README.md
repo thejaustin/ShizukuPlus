@@ -57,7 +57,11 @@ Get the latest release from [GitHub Releases](https://github.com/thejaustin/Shiz
 *   **Activity Log with Morphe Timeline**: Visual node rails with dynamic pulsing status halos, repetitive activity occurrence grouping, and multi-criteria sorting.
 *   **Root Compatibility Hub & Enhanced SU Bridge**: Seamless translation of legacy `su -c` commands into Shizuku IPC with POSIX argument parsing and Android 14–17 support.
 *   **Universal SU Automation**: One-tap 'Magic Setup' to configure installed root apps to use the Shizuku+ SU Bridge.
-*   **Adaptive Service Doctor**: Diagnoses and fixes service startup, Samsung Auto Blocker (read from its real settings now) and OEM battery restrictions. Its background self-healing has its own switches, including whether it may turn the Pairing Helper back on and whether to tell you about fixes that failed.
+*   **Customizable Floating Navigation Bar**: Configurable 2 to 5 tab destinations (Home, Apps, Hub, Service Doctor, Terminal, Settings) with an interactive M3 Compose bottom sheet customizer, haptic feedback, live AMOLED+ surface preview, quick presets (Home Center, Terminal, Doctor), and physical direction-aware slide transitions.
+*   **AMOLED+ Specular Rim Theming**: True black AMOLED+ mode elevated with frosted glass luminous rim highlights (`rgba(255, 255, 255, 0.3)`), backed by a unified recursive card border engine across Home, Settings, Service Doctor, and Root Compatibility.
+*   **App Profiles Automation**: Per-app foreground Binder Firewall rules (Default, Block, Allow) automatically adjusting system permissions as you switch between apps.
+*   **Privileged App Backup & Restore**: Comprehensive backup and restore of split APKs and user data using native SAF tree picker, freeze/unfreeze controls, and glanceable filter chips.
+*   **Adaptive Service Doctor**: Diagnoses and fixes service startup, Samsung Auto Blocker (read from its real settings now) and OEM battery restrictions, with diagnostic checks safely excluding optional root bridges (like the SU bridge) from false positive fixes.
 *   **Helper notifications**: Problems show up in one place. With the Watchdog on, its notification says whether Shizuku+ is running and offers a fix button when something's wrong; without it, one quiet notification updates in place. You pick how much you hear (off, only when it stops or needs you, or every problem), and nothing pops up over the app you're using.
 *   **Expressive morphing icons**: Setting icons morph from an "off" shape into your chosen shape when you switch them on, with Spin, Morph, Pop, Sweep or Liquid motion. There are Material's shapes plus the original hand-built "classic" ones, and experimental switch designs where the icon itself is the switch.
 *   **Integrated Feature Guides & Smart Tooltips**: Long-press any setting for contextual explanations and direct links to the relevant knowledgebase guide.
@@ -145,25 +149,34 @@ Thanks to the following upstream contributors and projects whose work makes Shiz
 - **[RikkaApps / Rikka](https://github.com/RikkaApps)** — For the foundational Shizuku project and its elegant API design.
 - **[thedjchi](https://github.com/thedjchi)** — For the intermediate fork and quality-of-life improvements, and for carrying the **Android 17 (SDK 37) compatibility** work that Shizuku+'s A17 support is adapted from.
 - **[kerneldroid / Nightzuku](https://github.com/kerneldroid/Nightzuku)** — Origin of the Android 17 hidden-API `deviceId` compatibility approach (the `Android17Compat` / `InstalledPackagesCompat` reflection layer) and Local Network Protection handling that this fork's A17 support descends from.
+- **[rushiranpise / Shizuku-Next](https://github.com/rushiranpise/Shizuku-Next)** — For high-reliability fork improvements: watchdog auto-recovery, persistent TCP handling, Google TV remote pairing optimization, and APK observer re-arming across manager updates.
+- **[HmnDev-Tech / Shevery](https://github.com/HmnDev-Tech/shevery)** — For inspiring modern Jetpack Compose M3 Expressive layouts, side-by-side namespace isolation concepts, biometric authorization gates, and modular extensions.
+- **[roro2239 / Stellar](https://github.com/roro2239/Stellar)** — For architectural concepts in multi-dimensional granular permissions and companion lifecycle startup bindings.
 - **[LandonMoran](https://github.com/LandonMoran)** — For porting Nightzuku's Android 17 support into the thedjchi fork and **verifying it end-to-end on a physical Android 17 device** (pairing, service start, and the authorized-apps list), which is the field validation Shizuku+'s port builds on.
-- **[Muntashir Akon](https://github.com/MuntashirAkon)** — For the aShell You codebase, which inspired the terminal and shell automation features.
+- **[Muntashir Akon](https://github.com/MuntashirAkon)** & **[DP-Hridayan](https://github.com/DP-Hridayan)** — For the aShell You codebase, which inspired the terminal, snippet, and shell automation features.
 - **[iamr0s](https://github.com/iamr0s)** — For Dhizuku, enabling the unified Device Owner privilege mode, and AndroidAppProcess for standalone Java process execution.
 - **[pascua28](https://github.com/pascua28)** — For native Samsung System UID 1000 escalation integration.
-- **[kerneldroid](https://github.com/kerneldroid)** — For the Nightzuku fork, which inspired our Android 16/17 (SDK 37) hidden API resilience (handling `deviceId`) and UI modernizations.
 - **[ShizukuExt-SystemUID](https://github.com/ShizukuExt)** — For conceptualizing systemic UID 1000 privilege escalation beyond standard limits.
+- **[XiaoTong6666 / Sui](https://github.com/XiaoTong6666/Sui)** & **[RikkaApps / Sui](https://github.com/RikkaApps/Sui)** — For system-level superuser interface architecture and root bridging concepts.
+- **[timschneeb / awesome-shizuku](https://github.com/timschneeb/awesome-shizuku)** — For ecosystem cataloging and curation of Shizuku-compatible applications.
 
-### Upstream Projects
+### Upstream & Sister Projects
 
 | Project | Author | License | Role |
 |---------|--------|---------|------|
 | [Shizuku](https://github.com/RikkaApps/Shizuku) | RikkaApps / Rikka | Apache 2.0 | Foundational privileged-process architecture |
 | [Shizuku (fork)](https://github.com/thedjchi/Shizuku) | thedjchi | Apache 2.0 | Intermediate fork with QoL improvements; carried the Android 17 compat work Shizuku+ adapted |
 | [Nightzuku](https://github.com/kerneldroid/Nightzuku) | kerneldroid | Apache 2.0 | Origin of the Android 17 hidden-API `deviceId` + Local Network Protection compatibility approach |
+| [Shizuku-Next](https://github.com/rushiranpise/Shizuku-Next) | rushiranpise | Apache 2.0 | High-reliability fork: watchdog auto-recovery, TCP persistence, and APK re-arm updates |
+| [Shevery](https://github.com/HmnDev-Tech/shevery) | HmnDev-Tech | GPL-3.0 | Modernized Compose UI, biometric gates, and modular extensibility inspiration |
+| [Stellar](https://github.com/roro2239/Stellar) | roro2239 | Apache 2.0 | Granular multi-dimensional permission system and lifecycle bindings inspiration |
 | [Shizuku (fork)](https://github.com/pascua28/Shizuku) | pascua28 | Apache 2.0 | Samsung UID 1000 system execution exploit |
-| [Nightzuku](https://github.com/kerneldroid/Nightzuku) | kerneldroid | Apache 2.0 | Android 16/17 API resilience & UI modernizations |
 | [ShizukuExt-SystemUID](https://github.com/ShizukuExt) | ShizukuExt Team | Apache 2.0 | System UID privilege escalation concepts |
 | [Dhizuku](https://github.com/iamr0s/Dhizuku) | iamr0s | Apache 2.0 | Device Owner binder sharing (Dhizuku Mode) |
 | [AndroidAppProcess](https://github.com/iamr0s/AndroidAppProcess) | iamr0s | LGPL-3.0 | Standalone high-privileged Java process wrapper |
+| [aShell You](https://github.com/DP-Hridayan/aShellYou) | DP-Hridayan / Muntashir Akon | GPL-3.0 | Privileged shell execution and script snippet terminal inspiration |
+| [Sui](https://github.com/XiaoTong6666/Sui) | XiaoTong6666 / RikkaApps | Apache 2.0 | Superuser interface architecture and root bridge concepts |
+| [awesome-shizuku](https://github.com/timschneeb/awesome-shizuku) | timschneeb | CC0-1.0 | Ecosystem curation and community application directory |
 
 ### Open Source Libraries
 
@@ -211,6 +224,7 @@ Full license texts and per-library details: [OPEN_SOURCE_LICENSES.md](OPEN_SOURC
 | [Haruue Icymoon](https://github.com/haruue) | Documentation & README improvements |
 | [djbclark](https://github.com/djbclark) | Fork-migration guide (`FORK_MIGRATION.md`); stock-API transaction-code, `onTransact` logging, locked-device ADB foreground-service, CI release-notes and bug-report link fixes (#572–#582) |
 | [Enursha](https://github.com/Enursha) | BinderContainer keep-rules and binder delivery to stock clients; manager "not running" status fix (#307, #308) |
+| [udmodz0](https://github.com/udmodz0) | Ecosystem tooling, repository automation, and awesome-shizuku curation |
 
 **Translation Contributors**
 
@@ -240,5 +254,10 @@ Full license texts and per-library details: [OPEN_SOURCE_LICENSES.md](OPEN_SOURC
 - Thank you to **gmm96** for extensive multi-round logcat debugging across several builds that pinned down the Cached Apps Freezer binder-delivery bug (#371).
 - Thank you to **bilemke** for isolating the stock-API regression that led to removing the legacy binder proxy (#584), and to everyone who filed crash reports and tested builds recently.
 - Thank you to **[odorizzioficial](https://github.com/odorizzioficial)** for the complete Brazilian Portuguese translation (#409), and for the detailed report on the Samsung "Sleeping apps" Watchdog freeze (#415).
+- Thank you to **[deathgamer29016](https://github.com/deathgamer29016)** for isolating the Samsung One UI 8 / Android 16 Dhizuku mode authorization regression (#670).
+- Thank you to **[alexyao2015](https://github.com/alexyao2015)** for reporting the Wireless ADB custom port persistence issue on Pixel 9 running Android 17 (#668).
+- Thank you to **[NickShlyft05](https://github.com/NickShlyft05)** for providing manual crash logs and hardware reproduction on Motorola Moto G Power running Android 16 (#649).
+- Thank you to **[0xlne](https://github.com/0xlne)** for architectural insights on package name randomization and enterprise profile stealth detection (#469).
+- Thank you to **[starboyopunole](https://github.com/starboyopunole)** for Awesome-Shizuku community coordination and ecosystem tool integration.
 
 </details>

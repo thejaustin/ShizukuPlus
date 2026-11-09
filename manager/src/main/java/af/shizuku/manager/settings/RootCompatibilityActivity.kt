@@ -9,6 +9,7 @@ import af.shizuku.manager.database.RootSupportLevel
 import af.shizuku.manager.databinding.ActivityRootCompatibilityBinding
 import af.shizuku.manager.databinding.AppListItemBinding
 import af.shizuku.manager.databinding.ListSectionHeaderBinding
+import af.shizuku.manager.ktx.overrideAppCloseTransition
 import af.shizuku.manager.shell.ShellTutorialActivity
 import af.shizuku.manager.starter.StarterActivity
 import android.content.BroadcastReceiver
@@ -74,6 +75,8 @@ class RootCompatibilityActivity : AppBarActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityRootCompatibilityBinding.inflate(layoutInflater, rootView, true)
+        af.shizuku.manager.utils.CardBorder
+            .applyAll(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Cache privilege mode once — avoids repeated Shizuku IPC in onBindViewHolder.
@@ -420,6 +423,11 @@ class RootCompatibilityActivity : AppBarActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_root_compatibility, menu)
         return true
+    }
+
+    override fun finish() {
+        super.finish()
+        overrideAppCloseTransition()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

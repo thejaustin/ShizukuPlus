@@ -203,7 +203,7 @@ object AdaptiveRecommendationManager {
                 ShizukuSettings.setTcpMode(true)
                 ShizukuSettings.setTcpPort(5555)
                 ShizukuSettings.setForceStartWadbEnabled(true)
-                af.shizuku.manager.adb.AdbProxyService
+                af.shizuku.manager.service.AdbProxyService
                     .enableAdbTcp(5555)
                 Toast
                     .makeText(
@@ -239,7 +239,7 @@ object AdaptiveRecommendationManager {
             onAccept = {
                 ShizukuSettings.setTcpMode(true)
                 ShizukuSettings.setTcpPort(5555)
-                af.shizuku.manager.adb.AdbProxyService
+                af.shizuku.manager.service.AdbProxyService
                     .enableAdbTcp(5555)
                 Toast
                     .makeText(

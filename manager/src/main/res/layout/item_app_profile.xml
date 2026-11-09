@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:checkable="false"
         android:focusable="false"
-        android:textSize="12sp"
+        android:textAppearance="?attr/textAppearanceLabelSmall"
         tools:text="Default" />
 
 </LinearLayout>

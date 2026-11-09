@@ -48,7 +48,9 @@ open class GrayableIconSwitchPreference
             bindSwitch(holder, if (iconSwitch) DESIGN_ICON_SWITCH else design, morph)
 
             if (icon != null) {
-                val showShape = !ShizukuSettings.isIconMorphOnToggle() || isChecked
+                val morphShape = ShizukuSettings.getIconMorphShape()
+                val isMorphShapeActive = morphShape != af.shizuku.manager.utils.ExpressiveShapes.OFF
+                val showShape = !ShizukuSettings.isIconMorphOnToggle() || !isMorphShapeActive || isChecked
                 morph?.mode = MorphMode.of(ShizukuSettings.getIconMorphMode())
                 morph?.progress = if (showShape) 1f else 0f
                 if (iconSwitch) {
@@ -136,8 +138,10 @@ open class GrayableIconSwitchPreference
                 row.findViewWithTag<TextView>(STATE_LABEL_TAG)?.let { updateStateLabel(it, isChecked) }
                 val icon = row.findViewById<ImageView>(android.R.id.icon) ?: return
                 val morph = morphShapeOf(icon)
+                val morphShape = ShizukuSettings.getIconMorphShape()
+                val isMorphShapeActive = morphShape != af.shizuku.manager.utils.ExpressiveShapes.OFF
                 // Off shape <-> on shape, moving in the chosen morph mode.
-                if (morph != null && ShizukuSettings.isIconMorphOnToggle()) {
+                if (morph != null && ShizukuSettings.isIconMorphOnToggle() && isMorphShapeActive) {
                     morph.mode = MorphMode.of(ShizukuSettings.getIconMorphMode())
                     morph.springTo(if (isChecked) 1f else 0f)
                 }

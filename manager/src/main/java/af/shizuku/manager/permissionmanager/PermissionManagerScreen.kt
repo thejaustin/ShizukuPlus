@@ -4,6 +4,7 @@ package af.shizuku.manager.permissionmanager
 
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.widget.AppSwitch
 import af.shizuku.manager.widget.GuardHeightOffset
 import af.shizuku.manager.widget.nonNegative
@@ -12,10 +13,13 @@ import android.content.pm.PackageManager
 import android.content.pm.PermissionInfo
 import androidx.activity.compose.PredictiveBackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
@@ -27,6 +31,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -77,6 +82,24 @@ data class PermItem(
     val isGranted: Boolean,
     val isPrivileged: Boolean,
 )
+
+private enum class PermFilter(
+    val labelRes: Int,
+) {
+    ALL(R.string.permission_manager_filter_all),
+    PRIVILEGED(R.string.permission_manager_filter_privileged),
+    RUNTIME(R.string.permission_manager_filter_runtime),
+    GRANTED(R.string.permission_manager_filter_granted),
+    REVOKED(R.string.permission_manager_filter_revoked),
+}
+
+private enum class PermSortOrder(
+    val labelRes: Int,
+) {
+    DEFAULT(R.string.permission_manager_sort_type),
+    NAME(R.string.permission_manager_sort_name),
+    STATUS(R.string.permission_manager_sort_status),
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -262,6 +285,24 @@ private fun AppListPane(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
             placeholder = { Text(stringResource(R.string.permission_manager_search_hint)) },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_search_24),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                )
+            },
+            trailingIcon = {
+                if (query.isNotEmpty()) {
+                    IconButton(onClick = { onQueryChange("") }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_close_24),
+                            contentDescription = stringResource(R.string.cd_settings_search_clear),
+                            modifier = Modifier.size(18.dp),
+                        )
+                    }
+                }
+            },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = {}),
@@ -365,9 +406,6 @@ private fun PermissionDetailPane(
     paddingValues: PaddingValues,
     onToggle: (PermItem, Boolean) -> Unit,
 ) {
-    val privileged = perms.filter { it.isPrivileged }
-    val runtime = perms.filter { !it.isPrivileged }
-
     if (isLoading) {
         Box(
             Modifier
@@ -396,59 +434,183 @@ private fun PermissionDetailPane(
         return
     }
 
+    var filter by remember { mutableStateOf(PermFilter.ALL) }
+    var sortOrder by remember { mutableStateOf(PermSortOrder.DEFAULT) }
+    var showSortMenu by remember { mutableStateOf(false) }
+    val view = LocalView.current
+
+    val displayedPerms =
+        remember(perms, filter, sortOrder) {
+            val list =
+                when (filter) {
+                    PermFilter.ALL -> perms
+                    PermFilter.PRIVILEGED -> perms.filter { it.isPrivileged }
+                    PermFilter.RUNTIME -> perms.filter { !it.isPrivileged }
+                    PermFilter.GRANTED -> perms.filter { it.isGranted }
+                    PermFilter.REVOKED -> perms.filter { !it.isGranted }
+                }
+            when (sortOrder) {
+                PermSortOrder.DEFAULT ->
+                    list.sortedWith(
+                        compareBy({ !it.isPrivileged }, { it.shortName.lowercase() }),
+                    )
+                PermSortOrder.NAME -> list.sortedBy { it.shortName.lowercase() }
+                PermSortOrder.STATUS ->
+                    list.sortedWith(
+                        compareBy({ !it.isGranted }, { it.shortName.lowercase() }),
+                    )
+            }
+        }
+
     val isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
     val isOneUi = ShizukuSettings.isOneUiThemeEnabled()
     val screenHeightDp = LocalConfiguration.current.screenHeightDp
     val oneHandedTop = if (isOneHanded || isOneUi) (screenHeightDp * 0.16f).dp else 0.dp
 
-    LazyColumn(
+    Column(
         modifier =
             Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
     ) {
-        if (oneHandedTop > 0.dp) {
-            item { Spacer(Modifier.height(oneHandedTop)) }
-        }
-        if (privileged.isNotEmpty()) {
-            item {
-                PermSectionHeader(stringResource(R.string.permission_manager_section_privileged))
-            }
-            item {
-                Card(
-                    border =
-                        af.shizuku.manager.utils
-                            .cardBorder(),
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp),
-                ) {
-                    Text(
-                        text = stringResource(R.string.permission_manager_privileged_note),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(12.dp),
+        // Filter & Sort Row matching Application Management & Activity Log ergonomics
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            // Scrollable filter chips on the left
+            Row(
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                PermFilter.values().forEach { f ->
+                    FilterChip(
+                        selected = filter == f,
+                        onClick = {
+                            HapticUtils.segmentTick(view)
+                            filter = f
+                        },
+                        label = { Text(stringResource(f.labelRes)) },
                     )
                 }
             }
-            items(privileged, key = { "priv_${it.name}" }) { perm ->
-                PermToggleRow(perm = perm, onToggle = onToggle)
-                HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
+
+            // Vertical divider line
+            Box(
+                modifier =
+                    Modifier
+                        .padding(horizontal = 8.dp)
+                        .width(1.dp)
+                        .height(24.dp)
+                        .background(MaterialTheme.colorScheme.outlineVariant),
+            )
+
+            // Static right-pinned Sort Dropdown Chip
+            Box {
+                FilterChip(
+                    selected = false,
+                    onClick = {
+                        HapticUtils.tap(view)
+                        showSortMenu = true
+                    },
+                    label = { Text(stringResource(sortOrder.labelRes)) },
+                    trailingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_outline_expand_more_24),
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                        )
+                    },
+                )
+                DropdownMenu(
+                    expanded = showSortMenu,
+                    onDismissRequest = { showSortMenu = false },
+                ) {
+                    PermSortOrder.values().forEach { order ->
+                        DropdownMenuItem(
+                            text = { Text(stringResource(order.labelRes)) },
+                            onClick = {
+                                HapticUtils.segmentTick(view)
+                                sortOrder = order
+                                showSortMenu = false
+                            },
+                        )
+                    }
+                }
             }
         }
 
-        if (runtime.isNotEmpty()) {
-            item {
-                PermSectionHeader(stringResource(R.string.permission_manager_section_runtime))
+        if (displayedPerms.isEmpty()) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    stringResource(R.string.empty_state_title_no_results),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
-            items(runtime, key = { "rt_${it.name}" }) { perm ->
-                PermToggleRow(perm = perm, onToggle = onToggle)
-                HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                if (oneHandedTop > 0.dp) {
+                    item { Spacer(Modifier.height(oneHandedTop)) }
+                }
+
+                if (sortOrder == PermSortOrder.DEFAULT && filter == PermFilter.ALL) {
+                    val priv = displayedPerms.filter { it.isPrivileged }
+                    val rt = displayedPerms.filter { !it.isPrivileged }
+                    if (priv.isNotEmpty()) {
+                        item {
+                            PermSectionHeader(stringResource(R.string.permission_manager_section_privileged))
+                        }
+                        item {
+                            Card(
+                                border =
+                                    af.shizuku.manager.utils
+                                        .cardBorder(),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.permission_manager_privileged_note),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(12.dp),
+                                )
+                            }
+                        }
+                        items(priv, key = { "priv_${it.name}" }) { perm ->
+                            PermToggleRow(perm = perm, onToggle = onToggle)
+                            HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
+                        }
+                    }
+
+                    if (rt.isNotEmpty()) {
+                        item {
+                            PermSectionHeader(stringResource(R.string.permission_manager_section_runtime))
+                        }
+                        items(rt, key = { "rt_${it.name}" }) { perm ->
+                            PermToggleRow(perm = perm, onToggle = onToggle)
+                            HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
+                        }
+                    }
+                } else {
+                    items(displayedPerms, key = { "${it.isPrivileged}_${it.name}" }) { perm ->
+                        PermToggleRow(perm = perm, onToggle = onToggle)
+                        HorizontalDivider(modifier = Modifier.padding(start = 16.dp))
+                    }
+                }
+
+                item { Spacer(Modifier.height(16.dp)) }
             }
         }
-
-        item { Spacer(Modifier.height(16.dp)) }
     }
 }
 

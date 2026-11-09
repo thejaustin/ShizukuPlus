@@ -44,12 +44,29 @@
         android:visibility="gone"
         tools:text="@string/home_automation_description_2" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@android:id/button1"
-        style="@style/CardButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/home_automation_button_view_intents"
-        app:icon="@drawable/ic_code_24" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@android:id/button1"
+            style="@style/CardButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/home_automation_button_view_intents"
+            app:icon="@drawable/ic_code_24" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_profiles"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/app_profiles_title"
+            app:icon="@drawable/ic_admin_panel_settings_24" />
+
+    </LinearLayout>
 
 </LinearLayout>

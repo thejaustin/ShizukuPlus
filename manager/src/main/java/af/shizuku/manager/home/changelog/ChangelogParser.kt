@@ -25,7 +25,7 @@ object ChangelogParser {
     private val FEATURE_WORDS = Regex("""^(add|added|adds|new|introduce[sd]?|support|supports|implement(ed)?|enable[sd]?|allow|auto|expand|unify|let|use|scope|improve[sd]?)\b|\bfeature\b|auto-""")
     private val DOCS_WORDS = Regex("""\b(readme|docs?|documentation|changelog|wiki|translat\w*|devlog|ai_devlog|i18n|locali[sz]\w*)\b""")
 
-    private val README_ONLY = Regex("""\breadme(\.md)?\b""", RegexOption.IGNORE_CASE)
+    private val NOISE_WORDS = Regex("""\b(readme(\.md)?|crowdin|dependabot|translation[s]?)\b""", RegexOption.IGNORE_CASE)
 
     fun parse(body: String): List<ChangeSection> {
         val unwrapped =
@@ -53,8 +53,8 @@ object ChangelogParser {
             val headingKind = kindOfHeading(title)
             for (raw in items) {
                 for (piece in splitCommits(raw)) {
-                    // README edits are repo housekeeping, not user-facing changes.
-                    if (README_ONLY.containsMatchIn(piece)) continue
+                    // Filter out README and bot housekeeping from user-facing changes.
+                    if (NOISE_WORDS.containsMatchIn(piece)) continue
                     classified.add(classify(piece, headingKind) to clean(piece))
                 }
             }
@@ -90,7 +90,7 @@ object ChangelogParser {
                 val match = tableRowRegex.find(line) ?: continue
                 val tag = match.groupValues[1].trim()
                 val subj = match.groupValues[2].trim()
-                if (subj.isBlank() || subj.equals("Highlight", ignoreCase = true) || README_ONLY.containsMatchIn(subj)) continue
+                if (subj.isBlank() || subj.equals("Highlight", ignoreCase = true) || NOISE_WORDS.containsMatchIn(subj)) continue
                 val desc = "$tag: $subj"
                 val kind = classify(subj, null)
                 classified.add(kind to clean(desc))

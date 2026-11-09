@@ -28,8 +28,9 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="4dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="6dp"
             app:startIconDrawable="@drawable/ic_search_24"
+            app:endIconMode="clear_text"
             app:boxCornerRadiusTopStart="28dp"
             app:boxCornerRadiusTopEnd="28dp"
             app:boxCornerRadiusBottomStart="28dp"
@@ -45,6 +46,82 @@
                 android:imeOptions="actionSearch" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="8dp">
+
+            <HorizontalScrollView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:scrollbars="none"
+                android:clipToPadding="false"
+                android:requiresFadingEdge="horizontal"
+                android:fadingEdgeLength="16dp">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/filter_chip_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:singleLine="true"
+                    app:singleSelection="true"
+                    app:selectionRequired="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_all"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_management_filter_all"
+                        android:checked="true" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_configured"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_profile_filter_configured" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_blocked"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_profile_state_block" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_allowed"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_profile_state_allow" />
+
+                </com.google.android.material.chip.ChipGroup>
+
+            </HorizontalScrollView>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="24dp"
+                android:layout_marginHorizontal="8dp"
+                android:background="?colorOutlineVariant" />
+
+            <!-- Sort, static on the right: easily reachable by thumb -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_sort"
+                style="@style/Widget.Material3.Chip.Assist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:closeIcon="@drawable/ic_outline_expand_more_24"
+                app:closeIconVisible="true"
+                app:chipIconVisible="true" />
+
+        </LinearLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 

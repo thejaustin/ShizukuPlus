@@ -42,6 +42,10 @@ class ManageAppsViewHolder(
 
     override fun onBind() {
         val context = itemView.context
+        (itemView as? com.google.android.material.card.MaterialCardView)?.let {
+            af.shizuku.manager.utils.CardBorder
+                .apply(it)
+        }
         IconStyleHelper.applyToCardIcon(iconView, originalIcon, "home_manage_apps")
 
         if (!data.first.isRunning) {

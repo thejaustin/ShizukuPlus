@@ -278,14 +278,16 @@ object AdbStarter {
         var lastException: Exception? = null
 
         val finished = AtomicBoolean(false)
-        var currentClient: AdbClient? = null
+        val currentClient =
+            java.util.concurrent.atomic
+                .AtomicReference<AdbClient?>(null)
         val watcher =
             launch {
                 try {
                     awaitCancellation()
                 } finally {
                     if (!finished.get()) {
-                        currentClient?.close()
+                        currentClient.get()?.close()
                     }
                 }
             }
@@ -299,7 +301,7 @@ object AdbStarter {
 
                 for (targetHost in candidateHosts) {
                     val client = AdbClient(targetHost, port, key, onPending)
-                    currentClient = client
+                    currentClient.set(client)
                     try {
                         Timber.tag(TAG).d("Connecting to ADB attempt %d/%d (host=%s, port=%d)", attempt, maxAttempts, targetHost, port)
                         client.connect()

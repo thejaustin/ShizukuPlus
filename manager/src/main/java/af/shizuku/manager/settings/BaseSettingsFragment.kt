@@ -129,32 +129,19 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         colorMode: IconStyleHelper.ColorMode,
     ) {
         var count = 0
-        val morphShape =
-            af.shizuku.manager.ShizukuSettings
-                .getIconMorphShape()
-        val morphMode =
-            af.shizuku.manager.utils.MorphMode
-                .of(
-                    af.shizuku.manager.ShizukuSettings
-                        .getIconMorphMode(),
-                )
         for (i in 0 until group.preferenceCount) {
             val pref = group.getPreference(i)
             if (pref is androidx.preference.PreferenceGroup) {
                 reapplyIconStyles(ctx, pref, style, colorMode)
                 if (pref is androidx.preference.PreferenceCategory) continue
             }
-            val existingIcon = pref.icon
-            val morph = ((existingIcon as? android.graphics.drawable.LayerDrawable)?.getDrawable(0)) as? af.shizuku.manager.utils.MorphShapeDrawable
-            if (morph != null && morphShape != af.shizuku.manager.utils.ExpressiveShapes.OFF) {
-                morph.setShapeKey(morphShape)
-                morph.mode = morphMode
-                morph.springTo(1f)
-                count++
-                continue
-            }
             val key = getPrefIconCacheKey(pref, i)
-            val original = originalIcons[key] ?: continue
+            val original =
+                originalIcons[key] ?: pref.icon?.let {
+                    val copy = it.constantState?.newDrawable(ctx.resources) ?: it
+                    originalIcons[key] = copy
+                    copy
+                } ?: continue
             // A fresh copy each time: mutate() on the cached original returns that same object, so
             // tinting it also changed the copy the previous styled icon still held.
             val fresh = original.constantState?.newDrawable(ctx.resources)?.mutate() ?: original.mutate()
@@ -162,9 +149,11 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             count++
         }
         timber.log.Timber.tag("BaseSettings").d(
-            "reapplyIconStyles: updated %d icons in group '%s'",
+            "reapplyIconStyles: updated %d icons in group '%s' (style=%s, mode=%s)",
             count,
             group.key ?: group.title ?: "root",
+            style,
+            colorMode,
         )
     }
 
@@ -654,6 +643,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
     protected fun maybePromptRestart(
         setting: String,
         newValue: Any? = null,
+        onCancel: (() -> Unit)? = null,
         applyChange: () -> Unit,
     ) {
         val context = requireContext()
@@ -675,7 +665,11 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                     .setPositiveButton(android.R.string.ok) { _, _ ->
                         applyChange()
                         ShizukuReceiverStarter.start(context, true)
-                    }.setNegativeButton(android.R.string.cancel, null),
+                    }.setNegativeButton(android.R.string.cancel) { _, _ ->
+                        onCancel?.invoke()
+                    }.setOnCancelListener {
+                        onCancel?.invoke()
+                    },
             )
         }
     }
