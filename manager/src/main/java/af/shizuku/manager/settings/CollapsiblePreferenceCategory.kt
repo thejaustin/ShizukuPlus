@@ -104,25 +104,39 @@ class CollapsiblePreferenceCategory
                     val style =
                         af.shizuku.manager.utils.IconStyleHelper
                             .current()
-                    if (style == af.shizuku.manager.utils.IconStyleHelper.Style.TWO_TONE && activeCount > 0 && collapsible) {
+                    if (style == af.shizuku.manager.utils.IconStyleHelper.Style.TWO_TONE) {
                         val bgColor =
-                            com.google.android.material.color.MaterialColors.getColor(
-                                ctx,
-                                com.google.android.material.R.attr.colorPrimaryContainer,
-                                0xFFE8DEF8.toInt(),
-                            )
-                        val fgColor =
-                            com.google.android.material.color.MaterialColors.getColor(
-                                ctx,
-                                com.google.android.material.R.attr.colorOnPrimaryContainer,
-                                0xFF21005D.toInt(),
-                            )
-                        val pill =
-                            android.graphics.drawable.GradientDrawable().apply {
-                                shape = android.graphics.drawable.GradientDrawable.OVAL
-                                setColor(bgColor)
+                            if (activeCount > 0 && collapsible) {
+                                com.google.android.material.color.MaterialColors.getColor(
+                                    ctx,
+                                    com.google.android.material.R.attr.colorPrimaryContainer,
+                                    0xFFE8DEF8.toInt(),
+                                )
+                            } else {
+                                com.google.android.material.color.MaterialColors.getColor(
+                                    ctx,
+                                    com.google.android.material.R.attr.colorSurfaceContainerHigh,
+                                    0xFF2A2D34.toInt(),
+                                )
                             }
-                        val pad = (5 * density).toInt()
+                        val fgColor =
+                            if (activeCount > 0 && collapsible) {
+                                com.google.android.material.color.MaterialColors.getColor(
+                                    ctx,
+                                    com.google.android.material.R.attr.colorOnPrimaryContainer,
+                                    0xFF21005D.toInt(),
+                                )
+                            } else {
+                                com.google.android.material.color.MaterialColors.getColor(
+                                    ctx,
+                                    androidx.appcompat.R.attr.colorPrimary,
+                                    0xFF4285F4.toInt(),
+                                )
+                            }
+                        val pill =
+                            af.shizuku.manager.utils.IconStyleHelper
+                                .pillBackground(ctx, bgColor)
+                        val pad = (6 * density).toInt()
                         iconView.setPadding(pad, pad, pad, pad)
                         iconView.background = pill
                         iconView.imageTintList =

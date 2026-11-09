@@ -150,7 +150,10 @@ class ShellTutorialActivity : AppBarActivity() {
             )
         }
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(
+            !af.shizuku.manager.widget.FloatingNavBar
+                .isTopLevel(this),
+        )
 
         binding.apply {
             if (DeviceCompatibility.isMiui()) {

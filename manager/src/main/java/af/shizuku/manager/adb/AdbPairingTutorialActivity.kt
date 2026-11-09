@@ -20,6 +20,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
@@ -74,6 +76,16 @@ class AdbPairingTutorialActivity : AppBarActivity() {
         }
 
         binding = AdbPairingTutorialActivityBinding.inflate(layoutInflater, rootView, true)
+        af.shizuku.manager.utils.CardBorder
+            .applyAll(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val bars =
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+                )
+            view.setPadding(bars.left, 0, bars.right, bars.bottom)
+            insets
+        }
 
         binding.header.apply {
             headerIcon.setImageResource(R.drawable.ic_wadb_24)

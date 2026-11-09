@@ -269,7 +269,7 @@ class BehaviorSettingsFragment :
                 }
             }
             onPortChangeRequest = { port, randomized, apply ->
-                maybePromptRestart(KEY_TCP_PORT, port ?: 5555) {
+                maybePromptRestart(KEY_TCP_PORT, port ?: 5555, onCancel = { reload() }) {
                     apply()
                     if (randomized && port != null) {
                         SnackbarHelper.show(

@@ -3,6 +3,7 @@ package af.shizuku.manager.automation
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.databinding.ActivityAppProfilesBinding
+import af.shizuku.manager.ktx.overrideAppCloseTransition
 import af.shizuku.manager.ktx.themeColor
 import af.shizuku.manager.utils.HapticUtils
 import android.content.pm.PackageManager
@@ -11,11 +12,14 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -43,6 +47,10 @@ import org.json.JSONObject
 class AppProfilesActivity : AppCompatActivity() {
     enum class ProfileState { DEFAULT, BLOCK, ALLOW }
 
+    enum class ProfileFilter { ALL, CONFIGURED, BLOCKED, ALLOWED }
+
+    enum class ProfileSortOrder { CONFIGURED_FIRST, NAME, PACKAGE }
+
     data class AppEntry(
         val label: String,
         val packageName: String,
@@ -56,6 +64,23 @@ class AppProfilesActivity : AppCompatActivity() {
     private var filteredApps: List<AppEntry> = emptyList()
     private var adapter: ProfileAdapter? = null
     private var searchQuery = ""
+    private var currentFilter = ProfileFilter.ALL
+    private var sortOrder = ProfileSortOrder.CONFIGURED_FIRST
+    private var sortReversed = false
+    private var sortArrow: android.graphics.drawable.RotateDrawable? = null
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun finish() {
+        super.finish()
+        overrideAppCloseTransition()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +96,72 @@ class AppProfilesActivity : AppCompatActivity() {
         profiles.putAll(loadProfilesFromJson())
 
         binding.recycler.layoutManager = LinearLayoutManager(this)
+        binding.recycler.clipToPadding = false
+        val navClearance = (160 * resources.displayMetrics.density + 0.5f).toInt()
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars =
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+                )
+            binding.appBar.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+            binding.recycler.setPadding(
+                binding.recycler.paddingLeft,
+                binding.recycler.paddingTop,
+                binding.recycler.paddingRight,
+                systemBars.bottom + navClearance,
+            )
+            insets
+        }
+
+        // Search bar: M3 Expressive shape morphing (28dp pill -> 16dp squircle) with tick feedback
+        val pillRadius = 28f * resources.displayMetrics.density
+        val squircleRadius = 16f * resources.displayMetrics.density
+        var cornerAnimator: android.animation.ValueAnimator? = null
+
+        fun animateSearchCorners(toRadius: Float) {
+            cornerAnimator?.cancel()
+            val currentRadius = binding.searchLayout.boxCornerRadiusTopStart
+            if (kotlin.math.abs(currentRadius - toRadius) < 0.5f) return
+            cornerAnimator =
+                android.animation.ValueAnimator.ofFloat(currentRadius, toRadius).apply {
+                    duration = 250L
+                    interpolator =
+                        androidx.interpolator.view.animation
+                            .FastOutSlowInInterpolator()
+                    addUpdateListener { animator ->
+                        val r = animator.animatedValue as Float
+                        binding.searchLayout.setBoxCornerRadii(r, r, r, r)
+                    }
+                    start()
+                }
+        }
+
+        binding.searchEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                HapticUtils.tick(binding.searchEditText)
+                animateSearchCorners(squircleRadius)
+            } else if (binding.searchEditText.text.isNullOrEmpty()) {
+                animateSearchCorners(pillRadius)
+            }
+        }
+
+        // Filter chips setup
+        binding.filterChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
+            if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
+            HapticUtils.segmentTick(group)
+            currentFilter =
+                when (checkedIds.first()) {
+                    R.id.chip_all -> ProfileFilter.ALL
+                    R.id.chip_configured -> ProfileFilter.CONFIGURED
+                    R.id.chip_blocked -> ProfileFilter.BLOCKED
+                    R.id.chip_allowed -> ProfileFilter.ALLOWED
+                    else -> ProfileFilter.ALL
+                }
+            applyFilterAndSort()
+        }
+
+        // Static right-pinned Sort chip setup
+        setUpSortChip(binding.chipSort)
 
         lifecycleScope.launch {
             binding.progress.visibility = View.VISIBLE
@@ -78,7 +169,7 @@ class AppProfilesActivity : AppCompatActivity() {
             binding.progress.visibility = View.GONE
             adapter = ProfileAdapter()
             binding.recycler.adapter = adapter
-            applyFilter(searchQuery)
+            applyFilterAndSort()
         }
 
         var debounceJob: Job? = null
@@ -103,11 +194,106 @@ class AppProfilesActivity : AppCompatActivity() {
                     debounceJob =
                         lifecycleScope.launch {
                             delay(200)
-                            applyFilter(s?.toString() ?: "")
+                            searchQuery = s?.toString() ?: ""
+                            applyFilterAndSort()
                         }
                 }
             },
         )
+    }
+
+    private fun setUpSortChip(chip: Chip) {
+        sortArrow =
+            android.graphics.drawable.RotateDrawable().apply {
+                drawable =
+                    androidx.core.content.ContextCompat
+                        .getDrawable(this@AppProfilesActivity, R.drawable.ic_outline_arrow_downward_24)
+                fromDegrees = 0f
+                toDegrees = 180f
+                level = if (sortReversed) 10000 else 0
+            }
+        chip.chipIcon = sortArrow
+        with(af.shizuku.manager.utils.MotionUtils) { chip.applySpringTouch() }
+        val open = { _: View ->
+            HapticUtils.tap(chip)
+            showSortMenu(chip)
+        }
+        chip.setOnClickListener(open)
+        chip.setOnCloseIconClickListener(open)
+        updateSortChip(chip, animate = false)
+    }
+
+    private fun showSortMenu(anchor: View) {
+        val popup = androidx.appcompat.widget.PopupMenu(this, anchor)
+        val orders =
+            listOf(
+                ProfileSortOrder.CONFIGURED_FIRST to getString(R.string.app_profile_sort_configured),
+                ProfileSortOrder.NAME to getString(R.string.app_profile_sort_name),
+                ProfileSortOrder.PACKAGE to getString(R.string.app_profile_sort_package),
+            )
+        orders.forEachIndexed { i, (order, label) ->
+            popup.menu
+                .add(1, i, i, label)
+                .setCheckable(true)
+                .isChecked = order == sortOrder
+        }
+        popup.menu.setGroupCheckable(1, true, true)
+        val reverseItemId = 100
+        popup.menu
+            .add(2, reverseItemId, orders.size, R.string.app_management_sort_reverse)
+            .setCheckable(true)
+            .isChecked = sortReversed
+
+        popup.setOnMenuItemClickListener { item ->
+            HapticUtils.segmentTick(anchor)
+            if (item.itemId == reverseItemId) {
+                sortReversed = !sortReversed
+                item.isChecked = sortReversed
+                updateSortChip(binding.chipSort, animate = true)
+                applyFilterAndSort()
+                true
+            } else if (item.itemId in orders.indices) {
+                sortOrder = orders[item.itemId].first
+                updateSortChip(binding.chipSort, animate = false)
+                applyFilterAndSort()
+                true
+            } else {
+                false
+            }
+        }
+        popup.show()
+    }
+
+    private fun updateSortChip(
+        chip: Chip,
+        animate: Boolean,
+    ) {
+        val label =
+            when (sortOrder) {
+                ProfileSortOrder.CONFIGURED_FIRST -> getString(R.string.app_profile_sort_configured)
+                ProfileSortOrder.NAME -> getString(R.string.app_profile_sort_name)
+                ProfileSortOrder.PACKAGE -> getString(R.string.app_profile_sort_package)
+            }
+        chip.text = label
+        androidx.appcompat.widget.TooltipCompat
+            .setTooltipText(chip, label)
+
+        val targetLevel = if (sortReversed) 10000 else 0
+        val arrow = sortArrow ?: return
+        if (!animate || arrow.level == targetLevel) {
+            arrow.level = targetLevel
+            return
+        }
+        android.animation.ValueAnimator.ofInt(arrow.level, targetLevel).apply {
+            duration = 200L
+            interpolator =
+                androidx.interpolator.view.animation
+                    .FastOutSlowInInterpolator()
+            addUpdateListener { animator ->
+                arrow.level = animator.animatedValue as Int
+            }
+            start()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -145,39 +331,68 @@ class AppProfilesActivity : AppCompatActivity() {
             ).toList()
     }
 
-    private fun applyFilter(query: String) {
-        searchQuery = query
-        val newList =
-            if (query.isEmpty()) {
-                allApps
-            } else {
-                allApps.filter {
-                    it.label.contains(query, ignoreCase = true) ||
-                        it.packageName.contains(query, ignoreCase = true)
+    private fun applyFilterAndSort() {
+        var list = allApps
+
+        // 1. Filter by search query
+        if (searchQuery.isNotEmpty()) {
+            list =
+                list.filter {
+                    it.label.contains(searchQuery, ignoreCase = true) ||
+                        it.packageName.contains(searchQuery, ignoreCase = true)
                 }
+        }
+
+        // 2. Filter by chip state
+        list =
+            when (currentFilter) {
+                ProfileFilter.ALL -> list
+                ProfileFilter.CONFIGURED -> list.filter { it.state != ProfileState.DEFAULT }
+                ProfileFilter.BLOCKED -> list.filter { it.state == ProfileState.BLOCK }
+                ProfileFilter.ALLOWED -> list.filter { it.state == ProfileState.ALLOW }
             }
+
+        // 3. Sort
+        val comparator =
+            when (sortOrder) {
+                ProfileSortOrder.CONFIGURED_FIRST ->
+                    compareBy<AppEntry>(
+                        { it.state == ProfileState.DEFAULT },
+                        { it.label.lowercase() },
+                    )
+                ProfileSortOrder.NAME ->
+                    compareBy { it.label.lowercase() }
+                ProfileSortOrder.PACKAGE ->
+                    compareBy { it.packageName.lowercase() }
+            }
+
+        list =
+            if (sortReversed) {
+                list.sortedWith(comparator.reversed())
+            } else {
+                list.sortedWith(comparator)
+            }
+
         val old = filteredApps
-        filteredApps = newList
-        binding.emptyText.visibility = if (newList.isEmpty()) View.VISIBLE else View.GONE
+        filteredApps = list
+        binding.emptyText.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
         adapter?.let { a ->
             val diff =
                 DiffUtil.calculateDiff(
                     object : DiffUtil.Callback() {
                         override fun getOldListSize() = old.size
 
-                        override fun getNewListSize() = newList.size
+                        override fun getNewListSize() = list.size
 
                         override fun areItemsTheSame(
                             op: Int,
                             np: Int,
-                        ) =
-                            old[op].packageName == newList[np].packageName
+                        ) = old[op].packageName == list[np].packageName
 
                         override fun areContentsTheSame(
                             op: Int,
                             np: Int,
-                        ) =
-                            old[op].state == newList[np].state
+                        ) = old[op].state == list[np].state && old[op].label == list[np].label
                     },
                 )
             diff.dispatchUpdatesTo(a)
@@ -295,6 +510,15 @@ class AppProfilesActivity : AppCompatActivity() {
             val (bg, fg) = chipColorsForState(app.state)
             chip.chipBackgroundColor = ColorStateList.valueOf(bg)
             chip.setTextColor(fg)
+            val iconRes =
+                when (app.state) {
+                    ProfileState.DEFAULT -> R.drawable.ic_settings_suggest_24
+                    ProfileState.BLOCK -> R.drawable.ic_close_24
+                    ProfileState.ALLOW -> R.drawable.ic_server_ok_24
+                }
+            chip.setChipIconResource(iconRes)
+            chip.chipIconTint = ColorStateList.valueOf(fg)
+            chip.isChipIconVisible = true
 
             chip.setOnClickListener {
                 val newState =
@@ -312,18 +536,8 @@ class AppProfilesActivity : AppCompatActivity() {
                 bindChip(chip, app)
                 HapticUtils.tick(chip)
 
-                // Re-sort so configured apps remain at the top of the list.
-                lifecycleScope.launch {
-                    val sorted =
-                        allApps.sortedWith(
-                            compareBy(
-                                { it.state == ProfileState.DEFAULT },
-                                { it.label.lowercase() },
-                            ),
-                        )
-                    allApps = sorted
-                    applyFilter(searchQuery)
-                }
+                // Re-apply filter and sort
+                applyFilterAndSort()
             }
         }
     }

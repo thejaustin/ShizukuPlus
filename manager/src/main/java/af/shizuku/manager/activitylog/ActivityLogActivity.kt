@@ -137,35 +137,19 @@ class ActivityLogFragment : Fragment() {
     private fun buildFilterBar(parent: android.widget.LinearLayout) {
         val ctx = parent.context
         val d = resources.displayMetrics.density
+
+        val container =
+            android.widget.LinearLayout(ctx).apply {
+                orientation = android.widget.LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                setPadding((16 * d).toInt(), (4 * d).toInt(), (16 * d).toInt(), (4 * d).toInt())
+            }
+
         val group =
             com.google.android.material.chip.ChipGroup(ctx).apply {
                 isSingleLine = true
                 chipSpacingHorizontal = (8 * d).toInt()
             }
-        val sortChip =
-            com.google.android.material.chip.Chip(ctx).apply {
-                setText(sort.label)
-                chipIcon =
-                    androidx.core.content.ContextCompat
-                        .getDrawable(ctx, R.drawable.ic_outline_expand_more_24)
-                isChipIconVisible = true
-                setOnClickListener { anchor ->
-                    HapticUtils.tap(anchor)
-                    androidx.appcompat.widget
-                        .PopupMenu(ctx, anchor)
-                        .apply {
-                            Sort.values().forEachIndexed { i, s -> menu.add(0, i, i, s.label) }
-                            setOnMenuItemClickListener { item ->
-                                sort = Sort.values()[item.itemId]
-                                (anchor as? com.google.android.material.chip.Chip)?.setText(sort.label)
-                                HapticUtils.segmentTick(anchor)
-                                applyFilterSort()
-                                true
-                            }
-                        }.show()
-                }
-            }
-        group.addView(sortChip)
 
         val stackChip =
             com.google.android.material.chip.Chip(ctx).apply {
@@ -193,14 +177,76 @@ class ActivityLogFragment : Fragment() {
                 },
             )
         }
+
         val scroll =
             android.widget.HorizontalScrollView(ctx).apply {
                 isHorizontalScrollBarEnabled = false
                 clipToPadding = false
-                setPadding((16 * d).toInt(), (4 * d).toInt(), (16 * d).toInt(), (4 * d).toInt())
+                isHorizontalFadingEdgeEnabled = true
+                setFadingEdgeLength((16 * d).toInt())
+                layoutParams =
+                    android.widget.LinearLayout.LayoutParams(
+                        0,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        1f,
+                    )
                 addView(group)
             }
-        parent.addView(scroll, 0)
+        container.addView(scroll)
+
+        val typedValue = android.util.TypedValue()
+        val outlineColor =
+            if (ctx.theme.resolveAttribute(com.google.android.material.R.attr.colorOutlineVariant, typedValue, true)) {
+                typedValue.data
+            } else {
+                0x33888888
+            }
+        val divider =
+            View(ctx).apply {
+                setBackgroundColor(outlineColor)
+                layoutParams =
+                    android.widget.LinearLayout
+                        .LayoutParams(
+                            (1 * d).toInt().coerceAtLeast(1),
+                            (24 * d).toInt(),
+                        ).apply {
+                            marginStart = (8 * d).toInt()
+                            marginEnd = (8 * d).toInt()
+                        }
+            }
+        container.addView(divider)
+
+        val sortChip =
+            com.google.android.material.chip.Chip(ctx).apply {
+                setText(sort.label)
+                chipIcon =
+                    androidx.core.content.ContextCompat
+                        .getDrawable(ctx, R.drawable.ic_outline_expand_more_24)
+                isChipIconVisible = true
+                layoutParams =
+                    android.widget.LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                    )
+                setOnClickListener { anchor ->
+                    HapticUtils.tap(anchor)
+                    androidx.appcompat.widget
+                        .PopupMenu(ctx, anchor)
+                        .apply {
+                            Sort.values().forEachIndexed { i, s -> menu.add(0, i, i, s.label) }
+                            setOnMenuItemClickListener { item ->
+                                sort = Sort.values()[item.itemId]
+                                (anchor as? com.google.android.material.chip.Chip)?.setText(sort.label)
+                                HapticUtils.segmentTick(anchor)
+                                applyFilterSort()
+                                true
+                            }
+                        }.show()
+                }
+            }
+        container.addView(sortChip)
+
+        parent.addView(container, 0)
     }
 
     private fun typeLabel(type: ActivityEventType) =

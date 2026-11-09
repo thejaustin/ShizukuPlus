@@ -60,22 +60,10 @@ class ExperimentalSettingsFragment : BaseSettingsFragment() {
             syncNavChildren((v as? Boolean) == true)
             true
         }
-        findPreference<androidx.preference.MultiSelectListPreference>(af.shizuku.manager.widget.FloatingNavBar.KEY_TABS)?.apply {
-            fun describe(values: Set<String>) {
-                val names =
-                    entryValues
-                        .zip(entries)
-                        .filter { (v, _) -> v.toString() in values }
-                        .joinToString(", ") { it.second }
-                summary = getString(R.string.settings_floating_nav_tabs_summary, names)
-            }
-            describe(values)
-            setOnPreferenceChangeListener { _, v ->
-                @Suppress("UNCHECKED_CAST")
-                val tabs = v as Set<String>
-                // M3: a navigation bar has at least 3 destinations (Home and Settings always show).
-                if (tabs.isEmpty()) return@setOnPreferenceChangeListener false
-                describe(tabs)
+        findPreference<androidx.preference.Preference>(af.shizuku.manager.widget.FloatingNavBar.KEY_TABS)?.apply {
+            updateNavTabsSummary()
+            setOnPreferenceClickListener {
+                NavCustomizerSheet.show(parentFragmentManager)
                 true
             }
         }
@@ -85,6 +73,21 @@ class ExperimentalSettingsFragment : BaseSettingsFragment() {
         findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_DEVICE_CONTROL_HOME_ENABLED)?.setOnPreferenceChangeListener { _, _ ->
             view?.post { ShizukuSettings.syncAllPlusFeaturesToServer() }
             true
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateNavTabsSummary()
+    }
+
+    private fun updateNavTabsSummary() {
+        findPreference<androidx.preference.Preference>(af.shizuku.manager.widget.FloatingNavBar.KEY_TABS)?.let { pref ->
+            val context = context ?: return
+            val names =
+                af.shizuku.manager.widget.FloatingNavBar
+                    .getActiveTabOrderNames(context)
+            pref.summary = getString(R.string.settings_floating_nav_tabs_summary, names.joinToString(" • "))
         }
     }
 }

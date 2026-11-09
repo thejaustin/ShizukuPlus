@@ -2,9 +2,11 @@ package af.shizuku.manager.settings
 
 import af.shizuku.manager.R
 import af.shizuku.manager.utils.HapticUtils
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.graphics.drawable.RotateDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -12,12 +14,17 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.preference.Preference
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
@@ -27,6 +34,10 @@ class AppPickerPreference(
     context: Context,
     attrs: AttributeSet?,
 ) : Preference(context, attrs) {
+    enum class PickerFilter { ALL, SELECTED, USER, SYSTEM }
+
+    enum class PickerSortOrder { NAME, SELECTED_FIRST }
+
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
     companion object {
@@ -81,33 +92,50 @@ class AppPickerPreference(
         private val onItemChecked: (String, Boolean) -> Unit,
     ) : RecyclerView.Adapter<AppAdapter.ViewHolder>() {
         private var filteredItems = allItems
-        private var showSystem = false
+        private var currentFilter = PickerFilter.ALL
+        private var sortOrder = PickerSortOrder.NAME
+        private var sortReversed = false
         private var currentQuery = ""
 
         fun setFilters(
             query: String,
-            showSystem: Boolean,
+            filter: PickerFilter = currentFilter,
+            sort: PickerSortOrder = sortOrder,
+            reversed: Boolean = sortReversed,
         ) {
             this.currentQuery = query
-            this.showSystem = showSystem
+            this.currentFilter = filter
+            this.sortOrder = sort
+            this.sortReversed = reversed
             applyFilters()
         }
 
         private fun applyFilters() {
-            val newItems =
+            var newItems =
                 allItems.filter { item ->
                     val matchesSearch =
                         currentQuery.isEmpty() ||
                             item.label.contains(currentQuery, ignoreCase = true) ||
                             item.packageName.contains(currentQuery, ignoreCase = true)
 
-                    val matchesSystem = showSystem || !item.isSystem
+                    val matchesFilter =
+                        when (currentFilter) {
+                            PickerFilter.ALL -> true
+                            PickerFilter.SELECTED -> item.isChecked
+                            PickerFilter.USER -> !item.isSystem
+                            PickerFilter.SYSTEM -> item.isSystem
+                        }
 
-                    matchesSearch && matchesSystem
+                    matchesSearch && matchesFilter
                 }
-            // This runs on every keystroke (200ms debounce) against the full installed-app list -
-            // notifyDataSetChanged() rebound every visible row (icon reload + all) on each one.
-            // DiffUtil only touches rows that actually entered/left/moved in the filtered result.
+
+            val comparator =
+                when (sortOrder) {
+                    PickerSortOrder.NAME -> compareBy<AppItem> { it.label.lowercase() }
+                    PickerSortOrder.SELECTED_FIRST -> compareBy({ !it.isChecked }, { it.label.lowercase() })
+                }
+            newItems = if (sortReversed) newItems.sortedWith(comparator.reversed()) else newItems.sortedWith(comparator)
+
             val oldItems = filteredItems
             val diff =
                 DiffUtil.calculateDiff(
@@ -126,7 +154,8 @@ class AppPickerPreference(
                             oldItemPosition: Int,
                             newItemPosition: Int,
                         ) =
-                            oldItems[oldItemPosition].isChecked == newItems[newItemPosition].isChecked
+                            oldItems[oldItemPosition].isChecked == newItems[newItemPosition].isChecked &&
+                                oldItems[oldItemPosition].label == newItems[newItemPosition].label
                     },
                 )
             filteredItems = newItems
@@ -194,7 +223,8 @@ class AppPickerPreference(
         val counterView = dialogView.findViewById<TextView>(R.id.selection_count)
         val emptyView = dialogView.findViewById<View>(R.id.empty_text)
         val btnClearAll = dialogView.findViewById<MaterialButton>(R.id.btn_clear_all)
-        val btnFilterSystem = dialogView.findViewById<MaterialButton>(R.id.btn_filter_system)
+        val chipGroup = dialogView.findViewById<ChipGroup>(R.id.picker_chip_group)
+        val chipSort = dialogView.findViewById<Chip>(R.id.chip_sort)
 
         titleView.text = title
         searchView.isIconified = false
@@ -205,7 +235,9 @@ class AppPickerPreference(
         scope.launch {
             val currentPackages = getPersistedString("").split(",").filter { it.isNotBlank() }.toSet()
             val selectedPackages = currentPackages.toMutableSet()
-            var showSystemApps = false
+            var currentFilter = PickerFilter.ALL
+            var sortOrder = PickerSortOrder.NAME
+            var sortReversed = false
 
             val updateCounter = {
                 counterView.text =
@@ -229,7 +261,7 @@ class AppPickerPreference(
                     updateCounter()
                 }
             recyclerView.adapter = adapter
-            adapter.setFilters("", false)
+            adapter.setFilters("", currentFilter, sortOrder, sortReversed)
 
             btnClearAll.setOnClickListener {
                 HapticUtils.success(it)
@@ -239,11 +271,79 @@ class AppPickerPreference(
                 updateCounter()
             }
 
-            btnFilterSystem.setOnClickListener {
-                showSystemApps = !showSystemApps
+            chipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
+                if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
+                HapticUtils.segmentTick(group)
+                currentFilter =
+                    when (checkedIds.first()) {
+                        R.id.chip_filter_all -> PickerFilter.ALL
+                        R.id.chip_filter_selected -> PickerFilter.SELECTED
+                        R.id.chip_filter_user -> PickerFilter.USER
+                        R.id.chip_filter_system -> PickerFilter.SYSTEM
+                        else -> PickerFilter.ALL
+                    }
+                adapter.setFilters(searchView.query.toString(), currentFilter, sortOrder, sortReversed)
+                emptyView.visibility = if (adapter.isEmpty()) View.VISIBLE else View.GONE
+            }
+
+            // Static sort chip
+            val arrow = ContextCompat.getDrawable(context, R.drawable.ic_outline_arrow_downward_24)?.mutate()
+            val rotateDrawable =
+                if (arrow != null) {
+                    RotateDrawable().apply {
+                        drawable = arrow
+                        fromDegrees = 0f
+                        toDegrees = 360f
+                        level = if (sortReversed) 5000 else 0
+                    }
+                } else {
+                    null
+                }
+            chipSort.chipIcon = rotateDrawable
+
+            fun updateSortUi() {
+                chipSort.text =
+                    when (sortOrder) {
+                        PickerSortOrder.NAME -> context.getString(R.string.sort_order_name)
+                        PickerSortOrder.SELECTED_FIRST -> context.getString(R.string.sort_order_selected)
+                    }
+                androidx.appcompat.widget.TooltipCompat
+                    .setTooltipText(chipSort, chipSort.text)
+                rotateDrawable?.let { rd ->
+                    val targetLevel = if (sortReversed) 5000 else 0
+                    val anim = ObjectAnimator.ofInt(rd, "level", rd.level, targetLevel)
+                    anim.duration = 200L
+                    anim.interpolator = FastOutSlowInInterpolator()
+                    anim.start()
+                }
+            }
+            updateSortUi()
+
+            chipSort.setOnClickListener {
                 HapticUtils.tick(it)
-                btnFilterSystem.setIconTintResource(if (showSystemApps) R.color.color_primary else R.color.color_on_surface_variant)
-                adapter.setFilters(searchView.query.toString(), showSystemApps)
+                val popup = PopupMenu(context, chipSort)
+                popup.menu.add(0, 1, 0, context.getString(R.string.sort_order_name)).apply {
+                    isCheckable = true
+                    isChecked = sortOrder == PickerSortOrder.NAME
+                }
+                popup.menu.add(0, 2, 1, context.getString(R.string.sort_order_selected)).apply {
+                    isCheckable = true
+                    isChecked = sortOrder == PickerSortOrder.SELECTED_FIRST
+                }
+                popup.setOnMenuItemClickListener { item ->
+                    val chosen = if (item.itemId == 2) PickerSortOrder.SELECTED_FIRST else PickerSortOrder.NAME
+                    if (chosen == sortOrder) {
+                        sortReversed = !sortReversed
+                    } else {
+                        sortOrder = chosen
+                        sortReversed = false
+                    }
+                    updateSortUi()
+                    adapter.setFilters(searchView.query.toString(), currentFilter, sortOrder, sortReversed)
+                    emptyView.visibility = if (adapter.isEmpty()) View.VISIBLE else View.GONE
+                    true
+                }
+                popup.show()
             }
 
             var searchJob: Job? = null
@@ -256,7 +356,7 @@ class AppPickerPreference(
                         searchJob =
                             scope.launch {
                                 delay(200)
-                                adapter.setFilters(newText ?: "", showSystemApps)
+                                adapter.setFilters(newText ?: "", currentFilter, sortOrder, sortReversed)
                                 emptyView.visibility = if (adapter.isEmpty()) View.VISIBLE else View.GONE
                             }
                         return true

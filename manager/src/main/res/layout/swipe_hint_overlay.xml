@@ -55,7 +55,8 @@
                     android:src="@drawable/ic_swipe_24"
                     android:background="@drawable/bg_circle_primary_container"
                     app:tint="?attr/colorOnPrimaryContainer"
-                    android:contentDescription="@null" />
+                    android:contentDescription="@null"
+                    android:importantForAccessibility="no" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -85,13 +86,14 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/hint_button_close"
                     style="@style/Widget.Material3.Button.IconButton"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     app:icon="@drawable/ic_close_24"
                     app:iconTint="?attr/colorOnSurfaceVariant"
-                    android:contentDescription="@string/action_close" />
+                    android:contentDescription="@string/action_close"
+                    android:tooltipText="@string/action_close" />
 
             </RelativeLayout>
 
@@ -119,7 +121,8 @@
                         android:layout_width="38dp"
                         android:layout_height="38dp"
                         android:padding="8dp"
-                        android:contentDescription="@null" />
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -186,6 +189,8 @@
                         android:layout_width="38dp"
                         android:layout_height="38dp"
                         android:padding="8dp"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no" />
                         android:contentDescription="@null" />
 
                     <LinearLayout

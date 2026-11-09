@@ -177,7 +177,7 @@
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_behavior_notifications"
         android:title="@string/settings_behavior_category_notifications"
-        android:icon="@drawable/ic_outline_notifications_active_24"
+        android:icon="@drawable/ic_notifications_24"
         android:defaultValue="false">
 
 
@@ -188,7 +188,7 @@
             android:title="@string/settings_helper_notifications"
             android:entries="@array/helper_notifications"
             android:entryValues="@array/helper_notifications_values"
-            android:icon="@drawable/ic_outline_notifications_active_24" />
+            android:icon="@drawable/ic_notifications_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="problems_on_home"

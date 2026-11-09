@@ -9,6 +9,7 @@ import af.shizuku.manager.databinding.ActivityServiceDoctorBinding
 import af.shizuku.manager.databinding.ItemDoctorCheckBinding
 import af.shizuku.manager.doctor.ServiceDoctor
 import af.shizuku.manager.home.tryEnableAccessibilityAutomatically
+import af.shizuku.manager.ktx.overrideAppCloseTransition
 import af.shizuku.manager.ktx.themeColor
 import af.shizuku.manager.utils.DeviceOptimizer
 import af.shizuku.manager.utils.EnvironmentUtils
@@ -61,7 +62,10 @@ class ServiceDoctorActivity : AppBarActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityServiceDoctorBinding.inflate(layoutInflater, rootView, true)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(
+            !af.shizuku.manager.widget.FloatingNavBar
+                .isTopLevel(this),
+        )
 
         tipsTextView = binding.tipsText
 
@@ -165,6 +169,11 @@ class ServiceDoctorActivity : AppBarActivity() {
                 dialog.dismiss()
             }.setNegativeButton(android.R.string.cancel, null)
             .show()
+    }
+
+    override fun finish() {
+        super.finish()
+        overrideAppCloseTransition()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -300,11 +309,6 @@ class ServiceDoctorActivity : AppBarActivity() {
             "samsung_autoblocker", "samsung_max_restrictions" -> {
                 { SettingsPage.Samsung.AutoBlocker.launch(this) }
             }
-            "su_bridge_a16" -> {
-                {
-                    startActivity(Intent(this, RootCompatibilityActivity::class.java))
-                }
-            }
             "background_limits" -> {
                 {
                     SettingsHelper.requestIgnoreBatteryOptimizations(this, batteryOptimizationListener)
@@ -366,11 +370,17 @@ class ServiceDoctorActivity : AppBarActivity() {
                     val isBusyboxMocking = ShizukuSettings.isRootBusyboxMockingEnabled()
                     val isSpoofing = ShizukuSettings.isSpoofDeviceEnabled()
 
-                    val cleaned = RootCompatHelper.cleanupBridgeFromTmp(this@ServiceDoctorActivity)
+                    // SU bridge is an optional root style setting: only clean up orphan tmp binary if SU bridge is not enabled
+                    val cleaned =
+                        if (!ShizukuSettings.isSuBridgeEnabled()) {
+                            RootCompatHelper.cleanupBridgeFromTmp(this@ServiceDoctorActivity)
+                        } else {
+                            false
+                        }
 
                     if (isMagiskMocking) ShizukuSettings.setRootMagiskMockingEnabled(false)
                     if (isBusyboxMocking) ShizukuSettings.setRootBusyboxMockingEnabled(false)
-                    if (ShizukuSettings.isSuBridgeEnabled()) ShizukuSettings.setSuBridgeEnabled(false)
+                    // SU Bridge is excluded from Service Doctor fixes
                     if (isSpoofing) ShizukuSettings.setSpoofDeviceEnabled(false)
                     ShizukuSettings.syncAllPlusFeaturesToServer()
 

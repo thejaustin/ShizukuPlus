@@ -2,6 +2,7 @@ package af.shizuku.manager.home
 
 import af.shizuku.manager.R
 import af.shizuku.manager.databinding.HomeItemContainerBinding
+import af.shizuku.manager.utils.CardBorder
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import af.shizuku.manager.utils.MotionUtils.cancelSpring
 import af.shizuku.manager.utils.MotionUtils.springTo
@@ -121,6 +122,7 @@ object HomeEditMode {
      * only visibility + animation needs to be handled here.
      */
     fun applyOverlayDirect(itemView: android.view.View) {
+        (itemView as? com.google.android.material.card.MaterialCardView)?.let { CardBorder.apply(it) }
         val removeBtn = itemView.findViewById<android.view.View>(R.id.remove_btn) ?: return
         val dragHandle = itemView.findViewById<android.view.View>(R.id.drag_handle) ?: return
         val wasVisible = removeBtn.isVisible
@@ -141,6 +143,7 @@ object HomeEditMode {
     /** Toggle drag handle / remove button visibility AND reserve end-padding so
      *  the overlay icons don't sit on top of card title/summary text. */
     fun applyOverlay(binding: HomeItemContainerBinding) {
+        CardBorder.apply(binding.root)
         val wasVisible = binding.removeBtn.isVisible
         if (isActive) {
             binding.removeBtn.isVisible = true

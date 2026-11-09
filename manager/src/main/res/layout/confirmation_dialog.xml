@@ -25,7 +25,8 @@
         android:padding="24dp"
         android:paddingTop="16dp"
         android:textColor="?android:textColorPrimary"
-        android:textSize="20sp"
+        android:textAppearance="?attr/textAppearanceTitleLarge"
+        android:accessibilityHeading="true"
         tools:text="@string/permission_warning_template" />
 
     <!-- Quick safety check for the app asking (permission requests only). -->

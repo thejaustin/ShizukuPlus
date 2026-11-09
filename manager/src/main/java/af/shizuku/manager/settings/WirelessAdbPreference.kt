@@ -45,6 +45,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -365,6 +366,23 @@ class WirelessAdbPreference
             val invalid =
                 text.isNotBlank() && text.trim().toIntOrNull().let { it == null || it !in 1..65535 }
 
+            fun save() {
+                if (text != committed) {
+                    if (!commitPort(text)) {
+                        text = committed
+                    }
+                }
+            }
+
+            DisposableEffect(Unit) {
+                onDispose {
+                    try {
+                        save()
+                    } catch (_: Throwable) {
+                    }
+                }
+            }
+
             SectionLabel(stringResource(R.string.settings_tcp_port_label))
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(
@@ -378,18 +396,16 @@ class WirelessAdbPreference
                     keyboardActions =
                         KeyboardActions(
                             onDone = {
+                                save()
                                 focusManager.clearFocus()
-                                if (text != committed) {
-                                    if (!commitPort(text)) text = committed
-                                }
                             },
                         ),
                     modifier =
                         Modifier
                             .weight(1f)
                             .onFocusChanged { state ->
-                                if (!state.isFocused && text != committed) {
-                                    text = committed
+                                if (!state.isFocused) {
+                                    save()
                                 }
                             },
                 )
@@ -398,7 +414,9 @@ class WirelessAdbPreference
                     enabled = enabled,
                     onClick = {
                         focusManager.clearFocus()
-                        commitPort((49152..65535).random().toString(), randomized = true)
+                        val randomPort = (49152..65535).random().toString()
+                        text = randomPort
+                        commitPort(randomPort, randomized = true)
                     },
                 ) {
                     Icon(

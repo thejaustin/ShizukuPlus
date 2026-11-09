@@ -2,13 +2,22 @@
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:shareInterpolator="false">
     <translate
-        android:fromXDelta="-12%p"
+        android:fromXDelta="-30%p"
         android:toXDelta="0"
-        android:duration="280"
+        android:duration="320"
+        android:interpolator="@interpolator/m3e_emphasized_decelerate" />
+    <scale
+        android:fromXScale="0.95"
+        android:toXScale="1.0"
+        android:fromYScale="0.95"
+        android:toYScale="1.0"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:duration="320"
         android:interpolator="@interpolator/m3e_emphasized_decelerate" />
     <alpha
-        android:fromAlpha="0"
-        android:toAlpha="1"
-        android:duration="180"
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0"
+        android:duration="200"
         android:interpolator="@interpolator/m3e_emphasized_decelerate" />
 </set>

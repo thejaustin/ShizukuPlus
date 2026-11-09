@@ -459,6 +459,8 @@ open class ApplicationManagementActivity :
                 if (viewModel.sortReversed) R.string.app_management_sort_chip_cd_reversed else R.string.app_management_sort_chip_cd,
                 label,
             )
+        androidx.appcompat.widget.TooltipCompat
+            .setTooltipText(chip, chip.contentDescription)
         val arrow = sortArrow ?: return
         val target = if (viewModel.sortReversed) 10000 else 0
         val duration = ShizukuSettings.scaledAnimationDuration(250)
