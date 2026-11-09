@@ -64,7 +64,10 @@ def main():
         sys.exit(__doc__)
     frm, to = sys.argv[1], sys.argv[2]
     skip = reworded_titles()
-    entries = [e for e in added_entries(frm, to) if title_of(e) not in skip]
+    entries = [
+        e for e in added_entries(frm, to)
+        if title_of(e) not in skip and not re.search(r"\breadme(\.md)?\b", e, re.IGNORECASE)
+    ]
     if not entries:
         return
     sections = section_of(git("show", f"{to}:CHANGELOG.md").splitlines())
