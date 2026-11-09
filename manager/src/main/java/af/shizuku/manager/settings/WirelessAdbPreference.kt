@@ -34,6 +34,7 @@ import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
@@ -50,6 +51,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -232,6 +234,7 @@ class WirelessAdbPreference
             cardTitle: String,
             enabled: Boolean,
         ) {
+            val view = LocalView.current
             val colors = MaterialTheme.colorScheme
             val isOn = tcpMode.value
             val closing = closingPort.value
@@ -362,7 +365,10 @@ class WirelessAdbPreference
         private fun PortSection(enabled: Boolean) {
             val committed = port.value
             var text by remember(committed) { mutableStateOf(committed) }
+            val currentText by rememberUpdatedState(text)
+            val currentCommitted by rememberUpdatedState(committed)
             val focusManager = LocalFocusManager.current
+            val view = LocalView.current
             val invalid =
                 text.isNotBlank() && text.trim().toIntOrNull().let { it == null || it !in 1..65535 }
 
@@ -377,7 +383,9 @@ class WirelessAdbPreference
             DisposableEffect(Unit) {
                 onDispose {
                     try {
-                        save()
+                        if (currentText != currentCommitted) {
+                            commitPort(currentText)
+                        }
                     } catch (_: Throwable) {
                     }
                 }
@@ -400,6 +408,23 @@ class WirelessAdbPreference
                                 focusManager.clearFocus()
                             },
                         ),
+                    trailingIcon = {
+                        if (text != committed && !invalid) {
+                            IconButton(
+                                onClick = {
+                                    HapticUtils.tap(view)
+                                    save()
+                                    focusManager.clearFocus()
+                                },
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_check_24),
+                                    contentDescription = stringResource(android.R.string.ok),
+                                    tint = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                        }
+                    },
                     modifier =
                         Modifier
                             .weight(1f)

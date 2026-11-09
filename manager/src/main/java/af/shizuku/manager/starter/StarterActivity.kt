@@ -3,6 +3,7 @@ package af.shizuku.manager.starter
 import af.shizuku.core.ui.AppBarActivity
 import af.shizuku.manager.AppConstants.EXTRA
 import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.adb.AdbAuthWait
 import af.shizuku.manager.adb.AdbKeyException
 import af.shizuku.manager.adb.AdbStarter

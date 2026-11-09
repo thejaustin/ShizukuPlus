@@ -1,5 +1,6 @@
 package af.shizuku.manager.worker
 
+import af.shizuku.manager.AppConstants.TAG
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.adb.AdbAuthPendingException
@@ -35,6 +36,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.EOFException
 import java.util.concurrent.TimeoutException
 

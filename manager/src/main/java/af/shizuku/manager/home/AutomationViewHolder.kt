@@ -49,7 +49,7 @@ class AutomationViewHolder(
     init {
         HomeEditMode.bindCardGestures(containerBinding, this)
         binding.buttonProfiles.setOnClickListener { v ->
-            val activity = v.context.findActivity() ?: return@setOnClickListener
+            val activity = v.context.findActivity<android.app.Activity>() ?: return@setOnClickListener
             activity.startWithSceneTransition(
                 android.content.Intent(activity, af.shizuku.manager.automation.AppProfilesActivity::class.java),
             )
