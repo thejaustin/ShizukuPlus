@@ -72,6 +72,12 @@ class ShizukuTileService : TileService() {
     }
 
     override fun onClick() {
+        if (isLocked) {
+            unlockAndRun {
+                onClick()
+            }
+            return
+        }
         val state = ShizukuStateMachine.get()
         try {
             when (state) {

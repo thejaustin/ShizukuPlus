@@ -108,7 +108,8 @@ class AdbPairingAccessibilityService : AccessibilityService() {
                     if (pairingStarted) return@launch
                 }
                 val now = SystemClock.elapsedRealtime()
-                if (now - lastEventAt > IDLE_TIMEOUT_MS || now - connectedAt > MAX_LIFETIME_MS) {
+                val idleTimeout = if (isTv) 180_000L else IDLE_TIMEOUT_MS
+                if (now - lastEventAt > idleTimeout || now - connectedAt > MAX_LIFETIME_MS) {
                     Timber.tag(TAG).w("Pairing discovery timed out")
                     Sentry.addBreadcrumb(
                         Breadcrumb("Pairing discovery timed out").apply {

@@ -125,7 +125,7 @@ void foreach_proc(foreach_proc_function *func) {
         return;
 
     while ((entry = readdir(dir))) {
-        if (entry->d_type != DT_DIR) continue;
+        if (entry->d_type != DT_DIR && entry->d_type != DT_UNKNOWN) continue;
         if (!is_num(entry->d_name)) continue;
         pid_t pid = atoi(entry->d_name);
         func(pid);

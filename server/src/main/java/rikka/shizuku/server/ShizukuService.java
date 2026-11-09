@@ -415,12 +415,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         clientManager = getClientManager();
         aiCorePlus = new AICorePlusImpl(clientManager, this);
 
-        ApkChangedObservers.start(ai.sourceDir, () -> {
-            if (getManagerApplicationInfo() == null) {
-                LOGGER.w("manager app is uninstalled in user 0, exiting...");
-                saveConfigAndExit(ServerConstants.MANAGER_APP_NOT_FOUND);
-            }
-        });
+        watchManagerApk(ai.sourceDir);
 
         BinderSender.register(this);
 
@@ -609,6 +604,26 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         secondaryManagerAppId = secondaryAi != null && isSignedLikeManager(otherApplicationId) ? secondaryAi.uid : -1;
         LOGGER.i("Re-resolved manager appId=%d secondary=%d", managerAppId, secondaryManagerAppId);
         return true;
+    }
+
+    private static final long MANAGER_APK_SETTLE_MS = 1500;
+
+    /**
+     * Watches the manager's APK and automatically re-arms after updates.
+     * When the manager is updated, Android moves the APK to a new directory.
+     * Re-arming the watch on the new folder ensures subsequent updates or uninstalls are detected.
+     */
+    private void watchManagerApk(String sourceDir) {
+        ApkChangedObservers.start(sourceDir, () -> mainHandler.postDelayed(() -> {
+            ApplicationInfo now = getManagerApplicationInfo();
+            if (now == null) {
+                LOGGER.w("manager app is uninstalled in user 0, exiting...");
+                saveConfigAndExit(ServerConstants.MANAGER_APP_NOT_FOUND);
+                return;
+            }
+            refreshManagerAppIdsThrottled();
+            watchManagerApk(now.sourceDir);
+        }, MANAGER_APK_SETTLE_MS));
     }
 
     // Packages allowed to define a Shizuku API permission: the two manager flavors, the second of
@@ -856,7 +871,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         }
 
         synchronized (this) {
-            ClientRecord existing = clientManager.findClient(callingUid, callingPid);
+            ClientRecord existing = clientManager.findClientExact(callingUid, callingPid);
             if (existing == null) {
                 clientRecord = clientManager.addClient(callingUid, callingPid, application, requestPackageName, apiVersion);
                 if (clientRecord == null) {
@@ -938,6 +953,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private static void scheduleBindApplicationRetry(IShizukuApplication application, Bundle reply,
                                                        String requestPackageName, int userId, int attempt) {
         HandlerUtil.getMainHandler().postDelayed(() -> {
+            IBinder binder = application.asBinder();
+            if (binder != null && !binder.isBinderAlive()) {
+                LOGGER.w("Skipping bindApplication retry for %s: binder is dead", requestPackageName);
+                return;
+            }
             // Re-apply the whitelist on each retry: the initial addPowerSaveTempWhitelistApp()
             // in attachApplication() may have been called while the process was still frozen,
             // and some OEM schedulers (Xiaomi/Samsung) need the signal refreshed to actually
@@ -3472,8 +3492,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         enforceCallingPermission("elevateApp");
         if (packageName == null || packageName.isEmpty()) return;
 
-        ClientRecord caller = clientManager.findClient(Binder.getCallingUid(), Binder.getCallingPid());
-        if (caller == null || !packageName.equals(caller.packageName)) {
+        int callingUid = Binder.getCallingUid();
+        boolean isManager = (callingUid == managerAppId || (secondaryManagerAppId != -1 && callingUid == secondaryManagerAppId));
+        ClientRecord caller = clientManager.findClient(callingUid, Binder.getCallingPid());
+        if (!isManager && (caller == null || !packageName.equals(caller.packageName))) {
             LOGGER.e("elevateApp: caller may only elevate its own package, requested: " + packageName);
             return;
         }

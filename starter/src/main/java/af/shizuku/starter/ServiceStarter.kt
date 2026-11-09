@@ -35,7 +35,7 @@ object ServiceStarter {
 
     private const val USER_SERVICE_CMD_FORMAT = "(CLASSPATH='%s' %s%s /system/bin " +
             "--nice-name='%s' af.shizuku.starter.ServiceStarter " +
-            "--token='%s' --package='%s' --class='%s' --uid=%d --manager='%s'%s)&"
+            "--token='%s' --package='%s' --class='%s' --uid=%d --manager='%s'%s </dev/null >/dev/null 2>&1)&"
 
     @JvmStatic
     @Volatile
@@ -54,6 +54,8 @@ object ServiceStarter {
         managerPackageName: String
     ): String {
         // Sanitize single quotes to prevent shell injection escapes
+        val safeManagerApkPath = managerApkPath.replace("'", "'\\''")
+        val safeToken = token.replace("'", "'\\''")
         val safePackageName = packageName.replace("'", "'\\''")
         val safeClassname = classname.replace("'", "'\\''")
         val safeProcessNameSuffix = processNameSuffix.replace("'", "'\\''")
@@ -62,9 +64,9 @@ object ServiceStarter {
         val processName = "$safePackageName:$safeProcessNameSuffix"
         return String.format(
             Locale.ENGLISH, USER_SERVICE_CMD_FORMAT,
-            managerApkPath, appProcess, if (debug) " $DEBUG_ARGS" else "",
+            safeManagerApkPath, appProcess, if (debug) " $DEBUG_ARGS" else "",
             processName,
-            token, safePackageName, safeClassname, callingUid, safeManagerPackageName,
+            safeToken, safePackageName, safeClassname, callingUid, safeManagerPackageName,
             if (debug) " --debug-name=$processName" else ""
         )
     }
@@ -157,10 +159,14 @@ object ServiceStarter {
 
                 if (container?.binder != null && container.binder.pingBinder()) {
                     shizukuBinder = container.binder
-                    shizukuBinder?.linkToDeath({
-                        Log.i(TAG, "exiting...")
-                        System.exit(0)
-                    }, 0)
+                    try {
+                        shizukuBinder?.linkToDeath({
+                            Log.i(TAG, "exiting...")
+                            System.exit(0)
+                        }, 0)
+                    } catch (t: Throwable) {
+                        Log.w(TAG, "linkToDeath failed", t)
+                    }
                     return@withContext true
                 } else {
                     Log.w(TAG, "server binder not received")

@@ -70,6 +70,8 @@ class ApkChangedObserver(private val path: String) : FileObserver(path, DELETE) 
 
         if (path == "base.apk") {
             stopWatching()
+            // Remove from observers map so a subsequent start() on the same folder isn't handed a stopped observer
+            observers.remove(this.path, this)
             ArrayList(listeners).forEach { it.onApkChanged() }
         }
     }
