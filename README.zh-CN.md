@@ -106,25 +106,34 @@ Shizuku+ 是一个社区驱动的增强项目，fork 自 [thedjchi/Shizuku](http
 - **[RikkaApps / Rikka](https://github.com/RikkaApps)** —— 奠定了 Shizuku 项目及其优雅的 API 设计。
 - **[thedjchi](https://github.com/thedjchi)** —— 提供了中间 fork 与易用性改进，并承接了 **Android 17（SDK 37）兼容性** 工作，Shizuku+ 的 A17 支持正是由此改编而来。
 - **[kerneldroid / Nightzuku](https://github.com/kerneldroid/Nightzuku)** —— Android 17 隐藏 API `deviceId` 兼容方案（`Android17Compat` / `InstalledPackagesCompat` 反射层）以及本地网络保护处理方式的源头，本 fork 的 A17 支持即由此演化而来。
+- **[rushiranpise / Shizuku-Next](https://github.com/rushiranpise/Shizuku-Next)** —— 高可靠性分支，贡献了看门狗自动恢复、持久 TCP 处理、Google TV 遥控配对优化以及跨应用更新重置 APK 观察者的稳定性方案。
+- **[HmnDev-Tech / Shevery](https://github.com/HmnDev-Tech/shevery)** —— 启发了现代 Jetpack Compose M3 Expressive 布局、独立包命名空间隔离、生物识别安全门禁与模块化扩展架构。
+- **[roro2239 / Stellar](https://github.com/roro2239/Stellar)** —— 启发了多维细粒度权限控制与伴随生命周期启动绑定的架构思路。
 - **[LandonMoran](https://github.com/LandonMoran)** —— 将 Nightzuku 的 Android 17 支持移植进 thedjchi fork，并在**实体 Android 17 设备上端到端验证**（配对、服务启动与已授权应用列表），这正是 Shizuku+ 移植所依据的实机验证。
-- **[Muntashir Akon](https://github.com/MuntashirAkon)** —— 提供了 aShell You 代码库，启发了终端与 shell 自动化功能。
+- **[Muntashir Akon](https://github.com/MuntashirAkon)** 与 **[DP-Hridayan](https://github.com/DP-Hridayan)** —— 提供了 aShell You 代码库，启发了终端、代码片段与 shell 自动化功能。
 - **[iamr0s](https://github.com/iamr0s)** —— 提供了 Dhizuku，实现统一的设备所有者特权模式；以及 AndroidAppProcess，用于独立的 Java 进程执行。
 - **[pascua28](https://github.com/pascua28)** —— 提供了三星原生 System UID 1000 提权集成。
-- **[kerneldroid](https://github.com/kerneldroid)** —— 提供了 Nightzuku fork，启发了我们在 Android 16/17（SDK 37）隐藏 API 上的韧性处理（应对 `deviceId`）与界面现代化。
 - **[ShizukuExt-SystemUID](https://github.com/ShizukuExt)** —— 提出了超越常规限制的系统性 UID 1000 提权构想。
+- **[XiaoTong6666 / Sui](https://github.com/XiaoTong6666/Sui)** 与 **[RikkaApps / Sui](https://github.com/RikkaApps/Sui)** —— 提供了系统级超级用户接口架构与 root 桥接思路。
+- **[timschneeb / awesome-shizuku](https://github.com/timschneeb/awesome-shizuku)** —— 维护了 Shizuku 生态兼容应用的索引与目录。
 
-### 上游项目
+### 上游与姐妹项目
 
 | 项目 | 作者 | 许可证 | 作用 |
 |---------|--------|---------|------|
 | [Shizuku](https://github.com/RikkaApps/Shizuku) | RikkaApps / Rikka | Apache 2.0 | 奠定特权进程架构 |
 | [Shizuku（fork）](https://github.com/thedjchi/Shizuku) | thedjchi | Apache 2.0 | 带易用性改进的中间 fork；承接了 Shizuku+ 所改编的 Android 17 兼容工作 |
 | [Nightzuku](https://github.com/kerneldroid/Nightzuku) | kerneldroid | Apache 2.0 | Android 17 隐藏 API `deviceId` + 本地网络保护兼容方案的源头 |
+| [Shizuku-Next](https://github.com/rushiranpise/Shizuku-Next) | rushiranpise | Apache 2.0 | 高可靠性 fork：看门狗自动恢复、TCP 持久化与 APK 重新监听更新 |
+| [Shevery](https://github.com/HmnDev-Tech/shevery) | HmnDev-Tech | GPL-3.0 | 现代 Compose UI、生物识别门禁与模块化扩展启发 |
+| [Stellar](https://github.com/roro2239/Stellar) | roro2239 | Apache 2.0 | 细粒度多维权限体系与伴随生命周期绑定启发 |
 | [Shizuku（fork）](https://github.com/pascua28/Shizuku) | pascua28 | Apache 2.0 | 三星 UID 1000 系统执行利用 |
-| [Nightzuku](https://github.com/kerneldroid/Nightzuku) | kerneldroid | Apache 2.0 | Android 16/17 API 韧性与界面现代化 |
 | [ShizukuExt-SystemUID](https://github.com/ShizukuExt) | ShizukuExt Team | Apache 2.0 | 系统 UID 提权构想 |
 | [Dhizuku](https://github.com/iamr0s/Dhizuku) | iamr0s | Apache 2.0 | 设备所有者 binder 共享（Dhizuku 模式） |
 | [AndroidAppProcess](https://github.com/iamr0s/AndroidAppProcess) | iamr0s | LGPL-3.0 | 独立的高特权 Java 进程包装 |
+| [aShell You](https://github.com/DP-Hridayan/aShellYou) | DP-Hridayan / Muntashir Akon | GPL-3.0 | 特权 shell 执行与脚本终端功能启发 |
+| [Sui](https://github.com/XiaoTong6666/Sui) | XiaoTong6666 / RikkaApps | Apache 2.0 | 超级用户接口架构与 root 桥接设计 |
+| [awesome-shizuku](https://github.com/timschneeb/awesome-shizuku) | timschneeb | CC0-1.0 | 生态索引与社区兼容应用目录 |
 
 ### 开源库
 
@@ -173,6 +182,9 @@ Shizuku+ 是一个社区驱动的增强项目，fork 自 [thedjchi/Shizuku](http
 | [Ryfter](https://github.com/Ryfter) | mDNS 超时改进、前台服务子类型重构、通知体验 |
 | [vvb2060](https://github.com/vvb2060) | AGP 构建系统更新、LTO 优化、许可证澄清 |
 | [Haruue Icymoon](https://github.com/haruue) | 文档与 README 改进 |
+| [djbclark](https://github.com/djbclark) | Fork 迁移指南 (`FORK_MIGRATION.md`)；原生 API 事务码、`onTransact` 日志记录与锁屏 ADB 前台服务修复 (#572–#582) |
+| [Enursha](https://github.com/Enursha) | BinderContainer keep 规则与向原生客户端投递 binder；修复管理器「未运行」状态 (#307, #308) |
+| [udmodz0](https://github.com/udmodz0) | 生态工具、仓库自动化与 awesome-shizuku 维护 |
 
 **翻译贡献者**
 
@@ -195,6 +207,11 @@ Shizuku+ 是一个社区驱动的增强项目，fork 自 [thedjchi/Shizuku](http
 - 感谢 **aragortsantiago6-beep**、**Scoop2389**（Pixel 9a）与 **ConversionRituals**（小米）进行实体机 Android 16/17 测试、提交崩溃报告与日志，推动了 SDK 37 隐藏 API 与本地网络保护的兼容性修复（#317、#323）。
 - 感谢 **gmm96** 跨多个构建进行多轮 logcat 调试，定位到 Cached Apps Freezer 的 binder 投递 bug（#371）。
 - 感谢 **[odorizzioficial](https://github.com/odorizzioficial)** 提供完整的巴西葡萄牙语翻译（#409），并提交关于三星「休眠应用」看门狗冻结的详细报告（#415）。
+- 感谢 **[deathgamer29016](https://github.com/deathgamer29016)** 定位三星 One UI 8 / Android 16 下 Dhizuku 模式授权回退问题（#670）。
+- 感谢 **[alexyao2015](https://github.com/alexyao2015)** 反馈 Pixel 9 Android 17 无线 ADB 自定义端口持久化问题（#668）。
+- 感谢 **[NickShlyft05](https://github.com/NickShlyft05)** 提供摩托罗拉 Moto G Power Android 16 实体机手动崩溃日志（#649）。
+- 感谢 **[0xlne](https://github.com/0xlne)** 提供包名随机化与企业配置文件隐身检测的架构思路（#469）。
+- 感谢 **[starboyopunole](https://github.com/starboyopunole)** 协调 Awesome-Shizuku 社区并推进生态工具集成。
 
 ## 🇨🇳 简体中文（zh-rCN）本地化
 
