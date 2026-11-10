@@ -262,7 +262,8 @@ fun HomeScreen(
                                 }
                                 var hasSettingsInNavBar by remember {
                                     mutableStateOf(
-                                        FloatingNavBar.isEnabled() &&
+                                        ShizukuSettings.isHideTopSettingsWithNavbarEnabled() &&
+                                            FloatingNavBar.isEnabled() &&
                                             FloatingNavBar.getActiveTabs().any { it.key == "settings" },
                                     )
                                 }
@@ -272,9 +273,11 @@ fun HomeScreen(
                                         android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
                                             if (key == FloatingNavBar.KEY_ENABLED ||
                                                 key == FloatingNavBar.KEY_TAB_ORDER ||
-                                                key == FloatingNavBar.KEY_TABS
+                                                key == FloatingNavBar.KEY_TABS ||
+                                                key == ShizukuSettings.Keys.KEY_HIDE_TOP_SETTINGS_WITH_NAVBAR
                                             ) {
                                                 hasSettingsInNavBar =
+                                                    ShizukuSettings.isHideTopSettingsWithNavbarEnabled() &&
                                                     FloatingNavBar.isEnabled() &&
                                                     FloatingNavBar.getActiveTabs().any { it.key == "settings" }
                                             }

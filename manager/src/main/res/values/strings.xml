@@ -1349,6 +1349,8 @@
     <string name="settings_notification_system_summary">Allow Shizuku+ to post status, diagnostic, and crash recovery notifications</string>
     <string name="settings_setting_disabling_optional_title">Make setting disabling optional</string>
     <string name="settings_setting_disabling_optional_summary">Bypass dependency checks and lockouts so all settings remain enabled and configurable</string>
+    <string name="settings_hide_top_settings_with_navbar_title">Hide header Settings when in nav bar</string>
+    <string name="settings_hide_top_settings_with_navbar_summary">Automatically hide the top app bar Settings button when Settings is active in the navigation bar</string>
     <string name="settings_auto_update_title">Auto-check for updates</string>
     <string name="settings_auto_update_summary">Automatically check for new versions on app startup</string>
     <string name="settings_auto_install_title">Auto-install updates</string>

@@ -43,6 +43,13 @@
             android:icon="@drawable/ic_settings_suggest_24"
             android:defaultValue="false" />
 
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="hide_top_settings_with_navbar"
+            android:title="@string/settings_hide_top_settings_with_navbar_title"
+            android:summary="@string/settings_hide_top_settings_with_navbar_summary"
+            android:icon="@drawable/ic_settings_outline_24"
+            android:defaultValue="true" />
+
         <Preference
             android:key="reset_recommendations"
             android:title="@string/settings_reset_recommendations_title"

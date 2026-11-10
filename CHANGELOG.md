@@ -9,7 +9,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Service Doctor start repairs** — Automatically offers TCP mode when port discovery times out, and generates fresh ADB keys when pairing stalls ([#656](https://github.com/thejaustin/ShizukuPlus/issues/656)).
 - **App access safety checks** — Requests now display installation source, install date, and certificates, with optional VirusTotal and Pithus hash lookups in Settings.
 - **Enhanced navigation bar** — Reorder tabs with drag-and-drop, choose between Floating, Docked, Compact, and Capsule styles, and customize directly from Home Edit Mode.
-- **Smart toolbar integration** — Settings button in the top app bar automatically hides when Settings is pinned to the navigation bar.
+- **Smart toolbar integration** — Settings button in the top app bar automatically hides when Settings is pinned to the navigation bar (configurable in Developer Options).
 - **Per-app API scopes** — Granularly restrict what authorized apps can access (shell, package manager, activity manager, app ops, system settings) instead of all-or-nothing permissions ([#645](https://github.com/thejaustin/ShizukuPlus/issues/645)).
 - **Batch app management** — Grant, revoke, or hide multiple authorized apps simultaneously ([#1](https://github.com/thejaustin/ShizukuPlus/issues/1)).
 - **Unified problem notifications** — Active service problems and quick fixes update in place in a single notification instead of piling up.

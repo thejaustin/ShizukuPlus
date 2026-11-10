@@ -216,6 +216,7 @@ public class ShizukuSettings {
         public static final String KEY_FLOATING_NAV_AUTOHIDE = "floating_nav_autohide";
         public static final String KEY_HIGH_CONTRAST = "high_contrast_mode";
         public static final String KEY_SETTING_DISABLING_OPTIONAL = "setting_disabling_optional";
+        public static final String KEY_HIDE_TOP_SETTINGS_WITH_NAVBAR = "hide_top_settings_with_navbar";
 
         // Migration (Shizuku+ additions)
         public static final String KEY_MIGRATION_OFFERED = "migration_offered";
@@ -2588,6 +2589,18 @@ public class ShizukuSettings {
         SharedPreferences p = getPreferences();
         if (p != null) {
             p.edit().putBoolean(Keys.KEY_SETTING_DISABLING_OPTIONAL, enabled).apply();
+        }
+    }
+
+    public static boolean isHideTopSettingsWithNavbarEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_HIDE_TOP_SETTINGS_WITH_NAVBAR, true);
+    }
+
+    public static void setHideTopSettingsWithNavbarEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) {
+            p.edit().putBoolean(Keys.KEY_HIDE_TOP_SETTINGS_WITH_NAVBAR, enabled).apply();
         }
     }
 }
