@@ -50,7 +50,28 @@ object HomeEditMode {
     var wasForced: Boolean = false
         private set
 
-    var onChanged: (() -> Unit)? = null
+    private val listeners = java.util.concurrent.CopyOnWriteArrayList<() -> Unit>()
+
+    fun addListener(listener: () -> Unit) {
+        if (!listeners.contains(listener)) listeners.add(listener)
+    }
+
+    fun removeListener(listener: () -> Unit) {
+        listeners.remove(listener)
+    }
+
+    var onChanged: (() -> Unit)?
+        get() = listeners.firstOrNull()
+        set(value) {
+            if (value != null && !listeners.contains(value)) {
+                listeners.add(value)
+            }
+        }
+
+    private fun notifyChanged() {
+        listeners.forEach { runCatching { it.invoke() } }
+    }
+
     var startDragCallback: ((RecyclerView.ViewHolder) -> Unit)? = null
     var removeCardCallback: ((Long) -> Unit)? = null
 
@@ -100,7 +121,7 @@ object HomeEditMode {
         if (!isActive) {
             isActive = true
             io.sentry.Sentry.addBreadcrumb("HomeEditMode: enter()")
-            onChanged?.invoke()
+            notifyChanged()
         }
     }
 
@@ -108,7 +129,7 @@ object HomeEditMode {
         wasForced = false
         if (isActive) {
             isActive = false
-            onChanged?.invoke()
+            notifyChanged()
         }
     }
 

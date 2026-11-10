@@ -58,6 +58,22 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     private const val DEFAULT_TAB_ORDER = "home,apps,hub,settings"
     private const val COMPACT_MAX_WIDTH_DP = 300
 
+    const val STYLE_FLOATING = "floating"
+    const val STYLE_DOCKED = "docked"
+    const val STYLE_COMPACT = "compact"
+    const val STYLE_CAPSULE = "capsule"
+
+    fun getStyle(): String =
+        runCatching { ShizukuSettings.getPreferences().getString(KEY_STYLE, STYLE_DOCKED) }.getOrNull() ?: STYLE_DOCKED
+
+    fun setStyle(style: String) {
+        ShizukuSettings
+            .getPreferences()
+            .edit()
+            .putString(KEY_STYLE, style)
+            .apply()
+    }
+
     data class TabSpec(
         val key: String,
         val id: Int,
@@ -127,9 +143,6 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
 
     fun currentOrder(): List<Int> = getActiveTabs().map { it.id }
 
-    private fun style(): String =
-        runCatching { ShizukuSettings.getPreferences().getString(KEY_STYLE, "docked") }.getOrNull() ?: "docked"
-
     private fun isTabShown(itemId: Int): Boolean = itemId in currentOrder()
 
     /** Which tab the user came from, so the new screen can slide the indicator to its own tab. */
@@ -164,6 +177,15 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         app.registerActivityLifecycleCallbacks(this)
         runCatching { ShizukuSettings.getPreferences().registerOnSharedPreferenceChangeListener(prefsListener) }
             .onFailure { Timber.tag(TAG).w(it, "Could not observe floating-nav setting") }
+        af.shizuku.manager.home.HomeEditMode.addListener {
+            current?.get()?.let { act ->
+                val content = act.findViewById<ViewGroup>(android.R.id.content)
+                val root = content?.findViewById<View>(R.id.floating_nav_root)
+                if (root != null) {
+                    updateEditModeVisuals(act, root)
+                }
+            }
+        }
     }
 
     fun isEnabled(): Boolean = runCatching { ShizukuSettings.getPreferences().getBoolean(KEY_ENABLED, false) }.getOrDefault(false)
@@ -255,6 +277,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         if (isNew) watchScrolling(content, root)
 
         layoutBar(activity, root)
+        updateEditModeVisuals(activity, root)
         root.bringToFront()
         ViewCompat.requestApplyInsets(root)
         root.post {
@@ -597,15 +620,16 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     /** The corner radius a message sitting on the bar uses, so the two read as one stack. */
     fun messageRadius(context: Context): Float {
         val density = context.resources.displayMetrics.density
-        return when (style()) {
-            "capsule" -> 38f * density
-            "docked" -> baseRadius(context).coerceAtMost(28f * density)
+        return when (getStyle()) {
+            STYLE_CAPSULE -> 38f * density
+            STYLE_COMPACT -> baseRadius(context).coerceAtMost(24f * density)
+            STYLE_DOCKED -> baseRadius(context).coerceAtMost(28f * density)
             else -> baseRadius(context)
         }
     }
 
     /** Whether the bar spans the screen width (a message then keeps its own width). */
-    fun isDocked(): Boolean = style() == "docked"
+    fun isDocked(): Boolean = getStyle() == STYLE_DOCKED
 
     private fun layoutBar(
         activity: Activity,
@@ -613,13 +637,13 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     ) {
         val density = activity.resources.displayMetrics.density
         val screenWidth = activity.resources.displayMetrics.widthPixels
-        val barStyle = style()
+        val barStyle = getStyle()
         val width =
             when (barStyle) {
                 // Docked: edge to edge along the bottom, like a classic navigation bar.
-                "docked" -> screenWidth
-                "compact" -> min((COMPACT_MAX_WIDTH_DP * density).toInt(), screenWidth - (2 * SIDE_MARGIN_DP * density).toInt())
-                "capsule" -> min((330 * density).toInt(), screenWidth - (2 * 16 * density).toInt())
+                STYLE_DOCKED -> screenWidth
+                STYLE_COMPACT -> min((COMPACT_MAX_WIDTH_DP * density).toInt(), screenWidth - (2 * SIDE_MARGIN_DP * density).toInt())
+                STYLE_CAPSULE -> min((330 * density).toInt(), screenWidth - (2 * 16 * density).toInt())
                 else -> min((MAX_WIDTH_DP * density).toInt(), screenWidth - (2 * SIDE_MARGIN_DP * density).toInt())
             }
         val lp = root.layoutParams as FrameLayout.LayoutParams
@@ -676,24 +700,43 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 }
             card.strokeColor = glassRim
             card.strokeWidth = (1.0f * density).toInt()
-            if (barStyle == "docked") {
-                // Only the top corners round off; the bottom sits flush on the screen edge.
-                val top = card.radius.coerceAtMost(28f * density)
-                card.shapeAppearanceModel =
-                    card.shapeAppearanceModel
-                        .toBuilder()
-                        .setTopLeftCornerSize(top)
-                        .setTopRightCornerSize(top)
-                        .setBottomLeftCornerSize(0f)
-                        .setBottomRightCornerSize(0f)
-                        .build()
-            } else {
-                val r = if (barStyle == "capsule") 38f * density else card.radius
-                card.shapeAppearanceModel =
-                    card.shapeAppearanceModel
-                        .toBuilder()
-                        .setAllCornerSizes(r)
-                        .build()
+            when (barStyle) {
+                STYLE_DOCKED -> {
+                    // Only the top corners round off; the bottom sits flush on the screen edge.
+                    val top = card.radius.coerceAtMost(28f * density)
+                    card.shapeAppearanceModel =
+                        card.shapeAppearanceModel
+                            .toBuilder()
+                            .setTopLeftCornerSize(top)
+                            .setTopRightCornerSize(top)
+                            .setBottomLeftCornerSize(0f)
+                            .setBottomRightCornerSize(0f)
+                            .build()
+                }
+                STYLE_CAPSULE -> {
+                    card.shapeAppearanceModel =
+                        card.shapeAppearanceModel
+                            .toBuilder()
+                            .setAllCornerSizes(
+                                com.google.android.material.shape
+                                    .RelativeCornerSize(0.5f),
+                            ).build()
+                }
+                STYLE_COMPACT -> {
+                    val r = card.radius.coerceAtMost(24f * density)
+                    card.shapeAppearanceModel =
+                        card.shapeAppearanceModel
+                            .toBuilder()
+                            .setAllCornerSizes(r)
+                            .build()
+                }
+                else -> {
+                    card.shapeAppearanceModel =
+                        card.shapeAppearanceModel
+                            .toBuilder()
+                            .setAllCornerSizes(card.radius)
+                            .build()
+                }
             }
             // No elevation: the shadow of a translucent card renders *through* its fill as a
             // dark band under the bar (the recurring "black bar"). The rim defines the edge.
@@ -716,50 +759,72 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 }
 
             val navLp = nav.layoutParams
-            val desiredHeight = if (labelMode == "unlabeled") (64 * density).toInt() else (80 * density).toInt()
+            val desiredHeight =
+                when (barStyle) {
+                    STYLE_COMPACT -> if (labelMode == "unlabeled") (58 * density).toInt() else (72 * density).toInt()
+                    STYLE_CAPSULE -> if (labelMode == "unlabeled") (60 * density).toInt() else (70 * density).toInt()
+                    else -> if (labelMode == "unlabeled") (64 * density).toInt() else (80 * density).toInt()
+                }
             if (navLp != null && navLp.height != desiredHeight) {
                 navLp.height = desiredHeight
                 nav.layoutParams = navLp
             }
 
+            if (barStyle == STYLE_COMPACT) {
+                nav.itemPaddingTop = (2 * density).toInt()
+                nav.itemPaddingBottom = (2 * density).toInt()
+            } else {
+                nav.itemPaddingTop = (4 * density).toInt()
+                nav.itemPaddingBottom = (4 * density).toInt()
+            }
+
             // Material 3 Expressive active indicator shape morphing
             val shapeStyle = ShizukuSettings.getShapeStyle()
             val indicatorShape =
-                when (shapeStyle) {
-                    "squircle" ->
-                        com.google.android.material.shape.ShapeAppearanceModel
-                            .builder()
-                            .setAllCornerSizes(16f * density)
-                            .build()
-                    "cut" ->
-                        com.google.android.material.shape.ShapeAppearanceModel
-                            .builder()
-                            .setAllCorners(com.google.android.material.shape.CornerFamily.CUT, 10f * density)
-                            .build()
-                    "zen" ->
-                        com.google.android.material.shape.ShapeAppearanceModel
-                            .builder()
-                            .setTopLeftCornerSize(
-                                com.google.android.material.shape
-                                    .RelativeCornerSize(0.5f),
-                            ).setBottomRightCornerSize(
-                                com.google.android.material.shape
-                                    .RelativeCornerSize(0.5f),
-                            ).setTopRightCornerSize(8f * density)
-                            .setBottomLeftCornerSize(8f * density)
-                            .build()
-                    "classic" ->
-                        com.google.android.material.shape.ShapeAppearanceModel
-                            .builder()
-                            .setAllCornerSizes(6f * density)
-                            .build()
-                    else ->
-                        com.google.android.material.shape.ShapeAppearanceModel
-                            .builder()
-                            .setAllCornerSizes(
-                                com.google.android.material.shape
-                                    .RelativeCornerSize(0.5f),
-                            ).build()
+                if (barStyle == STYLE_CAPSULE) {
+                    com.google.android.material.shape.ShapeAppearanceModel
+                        .builder()
+                        .setAllCornerSizes(
+                            com.google.android.material.shape
+                                .RelativeCornerSize(0.5f),
+                        ).build()
+                } else {
+                    when (shapeStyle) {
+                        "squircle" ->
+                            com.google.android.material.shape.ShapeAppearanceModel
+                                .builder()
+                                .setAllCornerSizes(16f * density)
+                                .build()
+                        "cut" ->
+                            com.google.android.material.shape.ShapeAppearanceModel
+                                .builder()
+                                .setAllCorners(com.google.android.material.shape.CornerFamily.CUT, 10f * density)
+                                .build()
+                        "zen" ->
+                            com.google.android.material.shape.ShapeAppearanceModel
+                                .builder()
+                                .setTopLeftCornerSize(
+                                    com.google.android.material.shape
+                                        .RelativeCornerSize(0.5f),
+                                ).setBottomRightCornerSize(
+                                    com.google.android.material.shape
+                                        .RelativeCornerSize(0.5f),
+                                ).setTopRightCornerSize(8f * density)
+                                .setBottomLeftCornerSize(8f * density)
+                                .build()
+                        "classic" ->
+                            com.google.android.material.shape.ShapeAppearanceModel
+                                .builder()
+                                .setAllCornerSizes(6f * density)
+                                .build()
+                        else ->
+                            com.google.android.material.shape.ShapeAppearanceModel
+                                .builder()
+                                .setAllCornerSizes(
+                                    com.google.android.material.shape
+                                        .RelativeCornerSize(0.5f),
+                                ).build()
+                    }
                 }
             nav.itemActiveIndicatorShapeAppearance = indicatorShape
 
@@ -788,7 +853,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             val bottom = rootInsets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
             val imeVisible = rootInsets.isVisible(WindowInsetsCompat.Type.ime())
             val params = v.layoutParams as FrameLayout.LayoutParams
-            val docked = style() == "docked"
+            val docked = getStyle() == STYLE_DOCKED
             // Docked sits on the screen edge and pads its content above the gesture/nav bar;
             // floating styles hover above it with a margin.
             val margin = if (docked) 0 else bottom + (BOTTOM_MARGIN_DP * density).toInt()
@@ -799,6 +864,138 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             }
             v.visibility = if (imeVisible) View.GONE else View.VISIBLE
             insets
+        }
+    }
+
+    private fun updateEditModeVisuals(
+        activity: Activity,
+        root: View,
+    ) {
+        val card = root as? MaterialCardView ?: return
+        val nav = root.findViewById<BottomNavigationView>(R.id.floating_nav) ?: return
+        val density = activity.resources.displayMetrics.density
+        val isNight = ResourceUtils.isNightMode(activity.resources.configuration)
+        val isAmoled = ShizukuSettings.isAmoledPlusEnabled() && isNight
+        val primary = MaterialColors.getColor(activity, androidx.appcompat.R.attr.colorPrimary, 0xFF4285F4.toInt())
+
+        val glassRim =
+            if (isAmoled) {
+                Color.argb(85, 255, 255, 255)
+            } else if (isNight) {
+                Color.argb(70, 255, 255, 255)
+            } else {
+                Color.argb(120, 255, 255, 255)
+            }
+
+        val isHome = activity is MainActivity || activity is HomeActivity
+        val inEditMode = isHome && af.shizuku.manager.home.HomeEditMode.isActive
+
+        if (inEditMode) {
+            card.strokeColor = primary
+            card.strokeWidth = (2.0f * density).toInt()
+            card.setOnClickListener {
+                HapticUtils.tap(card)
+                if (activity is FragmentActivity) {
+                    NavCustomizerSheet.show(activity.supportFragmentManager)
+                }
+            }
+        } else {
+            card.strokeColor = glassRim
+            card.strokeWidth = (1.0f * density).toInt()
+            card.setOnClickListener(null)
+        }
+
+        bindDraggableTabs(activity, nav, inEditMode)
+    }
+
+    private fun bindDraggableTabs(
+        activity: Activity,
+        nav: BottomNavigationView,
+        inEditMode: Boolean,
+    ) {
+        val activeTabs = getActiveTabs()
+        val density = activity.resources.displayMetrics.density
+
+        activeTabs.forEach { tab ->
+            val itemView = nav.findViewById<View>(tab.id) ?: return@forEach
+            if (!inEditMode) {
+                itemView.setOnTouchListener(null)
+                return@forEach
+            }
+
+            var downX = 0f
+            var downY = 0f
+            var isDragging = false
+            var accumulatedDx = 0f
+
+            itemView.setOnTouchListener { v, event ->
+                if (!af.shizuku.manager.home.HomeEditMode.isActive) return@setOnTouchListener false
+                when (event.actionMasked) {
+                    android.view.MotionEvent.ACTION_DOWN -> {
+                        downX = event.rawX
+                        downY = event.rawY
+                        accumulatedDx = 0f
+                        isDragging = false
+                        v.parent?.requestDisallowInterceptTouchEvent(true)
+                        true
+                    }
+                    android.view.MotionEvent.ACTION_MOVE -> {
+                        val dx = event.rawX - downX
+                        val dy = event.rawY - downY
+                        if (!isDragging && (kotlin.math.abs(dx) > 8 * density || kotlin.math.abs(dy) > 8 * density)) {
+                            isDragging = true
+                            HapticUtils.gestureStart(v)
+                        }
+                        if (isDragging) {
+                            accumulatedDx += (event.rawX - downX)
+                            downX = event.rawX
+                            val itemWidth = v.width.toFloat().coerceAtLeast(44f * density)
+                            val threshold = itemWidth * 0.45f
+                            val currentTabs = getActiveTabs().toMutableList()
+                            val currentIndex = currentTabs.indexOfFirst { it.id == tab.id }
+                            if (currentIndex >= 0) {
+                                if (accumulatedDx > threshold && currentIndex < currentTabs.size - 1) {
+                                    val item = currentTabs.removeAt(currentIndex)
+                                    currentTabs.add(currentIndex + 1, item)
+                                    accumulatedDx -= threshold
+                                    HapticUtils.segmentTick(v)
+                                    setActiveTabOrder(currentTabs.map { it.key })
+                                    sync(activity)
+                                } else if (accumulatedDx < -threshold && currentIndex > 0) {
+                                    val item = currentTabs.removeAt(currentIndex)
+                                    currentTabs.add(currentIndex - 1, item)
+                                    accumulatedDx += threshold
+                                    HapticUtils.segmentTick(v)
+                                    setActiveTabOrder(currentTabs.map { it.key })
+                                    sync(activity)
+                                }
+                            }
+                        }
+                        true
+                    }
+                    android.view.MotionEvent.ACTION_UP -> {
+                        v.parent?.requestDisallowInterceptTouchEvent(false)
+                        if (isDragging) {
+                            HapticUtils.gestureEnd(v)
+                        } else {
+                            // Tapped in edit mode: open nav customizer sheet
+                            HapticUtils.tap(v)
+                            if (activity is FragmentActivity) {
+                                NavCustomizerSheet.show(activity.supportFragmentManager)
+                            }
+                        }
+                        isDragging = false
+                        true
+                    }
+                    android.view.MotionEvent.ACTION_CANCEL -> {
+                        v.parent?.requestDisallowInterceptTouchEvent(false)
+                        if (isDragging) HapticUtils.gestureEnd(v)
+                        isDragging = false
+                        true
+                    }
+                    else -> false
+                }
+            }
         }
     }
 

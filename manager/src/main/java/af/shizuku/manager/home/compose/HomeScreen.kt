@@ -4,6 +4,7 @@ import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.HapticUtils
+import af.shizuku.manager.widget.FloatingNavBar
 import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
@@ -259,14 +260,40 @@ fun HomeScreen(
                                         )
                                     }
                                 }
-                                IconButton(onClick = {
-                                    HapticUtils.tap(localView)
-                                    onSettingsClick()
-                                }) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_settings_outline_24),
-                                        contentDescription = stringResource(id = R.string.settings_title),
+                                var hasSettingsInNavBar by remember {
+                                    mutableStateOf(
+                                        FloatingNavBar.isEnabled() &&
+                                            FloatingNavBar.getActiveTabs().any { it.key == "settings" },
                                     )
+                                }
+                                DisposableEffect(context) {
+                                    val prefs = ShizukuSettings.getPreferences()
+                                    val listener =
+                                        android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                                            if (key == FloatingNavBar.KEY_ENABLED ||
+                                                key == FloatingNavBar.KEY_TAB_ORDER ||
+                                                key == FloatingNavBar.KEY_TABS
+                                            ) {
+                                                hasSettingsInNavBar =
+                                                    FloatingNavBar.isEnabled() &&
+                                                    FloatingNavBar.getActiveTabs().any { it.key == "settings" }
+                                            }
+                                        }
+                                    prefs.registerOnSharedPreferenceChangeListener(listener)
+                                    onDispose {
+                                        prefs.unregisterOnSharedPreferenceChangeListener(listener)
+                                    }
+                                }
+                                if (!hasSettingsInNavBar) {
+                                    IconButton(onClick = {
+                                        HapticUtils.tap(localView)
+                                        onSettingsClick()
+                                    }) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_settings_outline_24),
+                                            contentDescription = stringResource(id = R.string.settings_title),
+                                        )
+                                    }
                                 }
                             }
                         }

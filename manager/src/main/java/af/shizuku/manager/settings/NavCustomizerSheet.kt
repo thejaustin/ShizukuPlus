@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,12 +36,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -80,6 +86,16 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
                     addAll(FloatingNavBar.getActiveTabs().map { it.key })
                 }
             }
+
+        var currentStyle by remember {
+            mutableStateOf(FloatingNavBar.getStyle())
+        }
+
+        fun selectStyle(style: String) {
+            HapticUtils.segmentTick(view)
+            currentStyle = style
+            FloatingNavBar.setStyle(style)
+        }
 
         fun persist() {
             FloatingNavBar.setActiveTabOrder(activeKeys.toList())
@@ -178,8 +194,44 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
                 )
             }
 
+            Spacer(Modifier.height(8.dp))
+            SheetSectionLabel(stringResource(R.string.settings_floating_nav_style_title))
+
+            // Bar Style Chips Row
+            Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 20.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                PresetChip(
+                    label = stringResource(R.string.settings_floating_nav_style_floating),
+                    selected = currentStyle == FloatingNavBar.STYLE_FLOATING,
+                    onClick = { selectStyle(FloatingNavBar.STYLE_FLOATING) },
+                )
+                PresetChip(
+                    label = stringResource(R.string.settings_floating_nav_style_docked),
+                    selected = currentStyle == FloatingNavBar.STYLE_DOCKED,
+                    onClick = { selectStyle(FloatingNavBar.STYLE_DOCKED) },
+                )
+                PresetChip(
+                    label = stringResource(R.string.settings_floating_nav_style_compact),
+                    selected = currentStyle == FloatingNavBar.STYLE_COMPACT,
+                    onClick = { selectStyle(FloatingNavBar.STYLE_COMPACT) },
+                )
+                PresetChip(
+                    label = stringResource(R.string.settings_floating_nav_style_capsule),
+                    selected = currentStyle == FloatingNavBar.STYLE_CAPSULE,
+                    onClick = { selectStyle(FloatingNavBar.STYLE_CAPSULE) },
+                )
+            }
+
+            Spacer(Modifier.height(8.dp))
+
             // Live Preview Card
-            LiveBarPreview(activeKeys.toList())
+            LiveBarPreview(keys = activeKeys.toList(), style = currentStyle)
 
             Spacer(Modifier.height(12.dp))
 
@@ -272,7 +324,52 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
     }
 
     @Composable
-    private fun LiveBarPreview(keys: List<String>) {
+    private fun LiveBarPreview(
+        keys: List<String>,
+        style: String,
+    ) {
+        val previewShape =
+            when (style) {
+                FloatingNavBar.STYLE_DOCKED ->
+                    RoundedCornerShape(
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
+                        bottomStart = 0.dp,
+                        bottomEnd = 0.dp,
+                    )
+                FloatingNavBar.STYLE_CAPSULE -> CircleShape
+                FloatingNavBar.STYLE_COMPACT -> RoundedCornerShape(18.dp)
+                else -> RoundedCornerShape(26.dp)
+            }
+
+        val previewModifier =
+            when (style) {
+                FloatingNavBar.STYLE_DOCKED ->
+                    Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                FloatingNavBar.STYLE_CAPSULE ->
+                    Modifier
+                        .width(300.dp)
+                        .height(56.dp)
+                FloatingNavBar.STYLE_COMPACT ->
+                    Modifier
+                        .width(260.dp)
+                        .height(54.dp)
+                else ->
+                    Modifier
+                        .fillMaxWidth(0.92f)
+                        .height(60.dp)
+            }
+
+        val tabShape =
+            when (style) {
+                FloatingNavBar.STYLE_CAPSULE -> CircleShape
+                FloatingNavBar.STYLE_COMPACT -> RoundedCornerShape(12.dp)
+                else -> RoundedCornerShape(18.dp)
+            }
+        val iconSize = if (style == FloatingNavBar.STYLE_COMPACT) 18.dp else 20.dp
+
         Box(
             modifier =
                 Modifier
@@ -281,11 +378,8 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
             contentAlignment = Alignment.Center,
         ) {
             Surface(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(60.dp),
-                shape = RoundedCornerShape(30.dp),
+                modifier = previewModifier,
+                shape = previewShape,
                 color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.85f),
                 border =
                     androidx.compose.foundation.BorderStroke(
@@ -298,7 +392,7 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
                     modifier =
                         Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 12.dp),
+                            .padding(horizontal = 10.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -311,7 +405,7 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
                                 Modifier
                                     .weight(1f)
                                     .height(44.dp)
-                                    .clip(RoundedCornerShape(22.dp))
+                                    .clip(tabShape)
                                     .background(
                                         if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
                                     ),
@@ -330,7 +424,7 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
                                         } else {
                                             MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                                         },
-                                    modifier = Modifier.size(20.dp),
+                                    modifier = Modifier.size(iconSize),
                                 )
                                 Spacer(Modifier.height(2.dp))
                                 Text(
@@ -366,6 +460,9 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
         onMoveDown: () -> Unit,
         onRemove: () -> Unit,
     ) {
+        val view = LocalView.current
+        var accumulatedDragY by remember { mutableFloatStateOf(0f) }
+
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
@@ -384,10 +481,53 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                        .padding(horizontal = 10.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                // Drag handle for smooth vertical drag-to-reorder
+                Box(
+                    modifier =
+                        Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .pointerInput(tab.key) {
+                                detectDragGestures(
+                                    onDragStart = {
+                                        accumulatedDragY = 0f
+                                        HapticUtils.gestureStart(view)
+                                    },
+                                    onDragEnd = {
+                                        accumulatedDragY = 0f
+                                        HapticUtils.gestureEnd(view)
+                                    },
+                                    onDragCancel = {
+                                        accumulatedDragY = 0f
+                                    },
+                                    onDrag = { change, dragAmount ->
+                                        change.consume()
+                                        accumulatedDragY += dragAmount.y
+                                        val threshold = 38.dp.toPx()
+                                        if (accumulatedDragY > threshold && index < totalCount - 1) {
+                                            onMoveDown()
+                                            accumulatedDragY -= threshold
+                                        } else if (accumulatedDragY < -threshold && index > 0) {
+                                            onMoveUp()
+                                            accumulatedDragY += threshold
+                                        }
+                                    },
+                                )
+                            },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_drag_handle),
+                        contentDescription = "Drag to reorder",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+
                 // Index or Center badge
                 Box(
                     modifier =

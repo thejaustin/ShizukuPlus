@@ -28,8 +28,22 @@ object ChangelogParser {
     private val NOISE_WORDS = Regex("""\b(readme(\.md)?|crowdin|dependabot|translation[s]?)\b""", RegexOption.IGNORE_CASE)
 
     fun parse(body: String): List<ChangeSection> {
+        val hasCuratedNotes =
+            body.contains("## What's new") &&
+                body.substringAfter("## What's new").substringBefore("<details>").lines().any { line ->
+                    Regex("""^[-*•+]\s+\S+""").containsMatchIn(line.trim())
+                }
+        val effectiveBody =
+            if (hasCuratedNotes) {
+                val beforeDetails = body.substringBefore("<details>")
+                val afterDetails = if (body.contains("</details>")) body.substringAfter("</details>") else ""
+                beforeDetails + "\n\n" + afterDetails
+            } else {
+                body
+            }
+
         val unwrapped =
-            body
+            effectiveBody
                 .replace(Regex("""<details>\s*<summary>(.*?)</summary>""", RegexOption.IGNORE_CASE), "\n\n#### $1\n\n")
                 .replace(Regex("""</details>""", RegexOption.IGNORE_CASE), "")
 

@@ -142,8 +142,24 @@ class ChangelogDialogFragment : BottomSheetDialogFragment() {
         fun formatNotes(rawNotes: String): String {
             if (rawNotes.isBlank()) return ""
 
+            // When a release contains a curated "What's new" section, use it directly instead of
+            // unrolling folded developer commit dumps into the user dialog.
+            val hasCuratedNotes =
+                rawNotes.contains("## What's new") &&
+                    rawNotes.substringAfter("## What's new").substringBefore("<details>").lines().any { line ->
+                        Regex("""^[-*•+]\s+\S+""").containsMatchIn(line.trim())
+                    }
+            val notesToProcess =
+                if (hasCuratedNotes) {
+                    val beforeDetails = rawNotes.substringBefore("<details>")
+                    val afterDetails = if (rawNotes.contains("</details>")) rawNotes.substringAfter("</details>") else ""
+                    beforeDetails + "\n\n" + afterDetails
+                } else {
+                    rawNotes
+                }
+
             val unwrapped =
-                rawNotes
+                notesToProcess
                     .replace(Regex("""<details>\s*<summary>(.*?)</summary>""", RegexOption.IGNORE_CASE), "\n\n#### $1\n\n")
                     .replace(Regex("""</details>""", RegexOption.IGNORE_CASE), "")
 
