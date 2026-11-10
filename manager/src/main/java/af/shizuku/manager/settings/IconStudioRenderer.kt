@@ -215,6 +215,7 @@ internal object IconStudioRenderer {
         size: Int = SIZE,
     ): Bitmap {
         val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        if (glyph.resId == 0) return bitmap
         val drawable = ContextCompat.getDrawable(context, glyph.resId)?.mutate() ?: return bitmap
         if (glyph.isAdaptiveForeground) {
             // Crop the 108dp adaptive canvas to its 72dp visible area so presets size like the

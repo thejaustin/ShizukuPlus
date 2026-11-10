@@ -287,11 +287,15 @@ private fun AppIconPickerContent(
                                     },
                                     update = { imageView ->
                                         imageView.contentDescription = option.label
-                                        runCatching {
-                                            imageView.setImageDrawable(
-                                                AppCompatResources.getDrawable(imageView.context, option.iconRes),
-                                            )
-                                        }.onFailure {
+                                        if (option.iconRes != 0) {
+                                            runCatching {
+                                                imageView.setImageDrawable(
+                                                    AppCompatResources.getDrawable(imageView.context, option.iconRes),
+                                                )
+                                            }.onFailure {
+                                                imageView.setImageDrawable(null)
+                                            }
+                                        } else {
                                             imageView.setImageDrawable(null)
                                         }
                                     },
