@@ -642,6 +642,21 @@ open class HomeActivity :
                         makeMovementFlags(0, 0)
                     }
 
+                override fun getMoveThreshold(viewHolder: RecyclerView.ViewHolder): Float = 0.35f
+
+                override fun interpolateOutOfBoundsScroll(
+                    recyclerView: RecyclerView,
+                    viewSize: Int,
+                    viewSizeOutOfBounds: Int,
+                    totalSize: Int,
+                    msSinceStartDirChange: Long,
+                ): Int {
+                    val standard = super.interpolateOutOfBoundsScroll(recyclerView, viewSize, viewSizeOutOfBounds, totalSize, msSinceStartDirChange)
+                    val direction = if (viewSizeOutOfBounds > 0) 1 else -1
+                    val capped = kotlin.math.min(kotlin.math.abs(standard), (20 * resources.displayMetrics.density).toInt())
+                    return capped * direction
+                }
+
                 override fun onMove(
                     rv: RecyclerView,
                     src: RecyclerView.ViewHolder,
@@ -661,9 +676,8 @@ open class HomeActivity :
                 ) = adapter.isDraggable(target.bindingAdapterPosition)
 
                 /**
-                 * Swap only once the held card's center passes the target's center. The default
-                 * swaps on edge overlap, so a tall card over a short one swapped back and forth
-                 * and the cards jumped over each other.
+                 * Dynamic bounding-box overlap and center containment target resolution.
+                 * Prevents tall-vs-short card deadlock and provides seamless vertical and grid reordering.
                  */
                 override fun chooseDropTarget(
                     selected: RecyclerView.ViewHolder,
@@ -672,30 +686,31 @@ open class HomeActivity :
                     curY: Int,
                 ): RecyclerView.ViewHolder? {
                     val view = selected.itemView
-                    val centerX = curX + view.width / 2
-                    val centerY = curY + view.height / 2
+                    val curTop = curY
+                    val curBottom = curY + view.height
+                    val curLeft = curX
+                    val curRight = curX + view.width
+                    val curCenterX = curLeft + view.width / 2
+                    val curCenterY = curTop + view.height / 2
+
                     var best: RecyclerView.ViewHolder? = null
-                    var bestDistance = Int.MAX_VALUE
+                    var maxScore = -1
+
                     for (target in dropTargets) {
                         val t = target.itemView
-                        val tCenterX = (t.left + t.right) / 2
-                        val tCenterY = (t.top + t.bottom) / 2
-                        val passed =
-                            when {
-                                t.top > view.top -> centerY > tCenterY
-                                t.top < view.top -> centerY < tCenterY
-                                t.left > view.left -> centerX > tCenterX
-                                t.left < view.left -> centerX < tCenterX
-                                else -> false
-                            }
-                        if (!passed) continue
-                        val distance = kotlin.math.abs(centerY - tCenterY) + kotlin.math.abs(centerX - tCenterX)
-                        if (distance < bestDistance) {
-                            bestDistance = distance
+                        val overlapX = (kotlin.math.min(curRight, t.right) - kotlin.math.max(curLeft, t.left)).coerceAtLeast(0)
+                        val overlapY = (kotlin.math.min(curBottom, t.bottom) - kotlin.math.max(curTop, t.top)).coerceAtLeast(0)
+                        val overlapArea = overlapX * overlapY
+
+                        val centerInside = (curCenterX in t.left..t.right) && (curCenterY in t.top..t.bottom)
+                        val score = overlapArea + if (centerInside) 1_000_000 else 0
+
+                        if (score > maxScore && (overlapArea > 0 || centerInside)) {
+                            maxScore = score
                             best = target
                         }
                     }
-                    return best
+                    return best ?: super.chooseDropTarget(selected, dropTargets, curX, curY)
                 }
 
                 override fun onSelectedChanged(
@@ -715,9 +730,10 @@ open class HomeActivity :
                                 HomeEditMode.applyOverlayDirect(child)
                             }
                         }
-                        viewHolder?.itemView?.let { HapticUtils.dragStart(it) }
-                        if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
-                            viewHolder?.itemView?.let { card ->
+                        viewHolder?.itemView?.let { card ->
+                            HapticUtils.dragStart(card)
+                            (card as? com.google.android.material.card.MaterialCardView)?.cardElevation = 6f * resources.displayMetrics.density
+                            if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
                                 morphCardRadius(card, lifted = true)
                                 // A small lift: at 1.06 the held card covered its neighbours' gaps.
                                 card.springTo(SpringAnimation.SCALE_X, 1.03f, MaterialR.attr.motionSpringFastSpatial)
@@ -744,13 +760,18 @@ open class HomeActivity :
                     adapter.isDragging = false
                     HapticUtils.gestureEnd(vh.itemView)
                     morphCardRadius(vh.itemView, lifted = false)
+                    (vh.itemView as? com.google.android.material.card.MaterialCardView)?.cardElevation = 0f
                     // Settles with the spatial spring's bounce; alpha and elevation never overshoot.
                     vh.itemView.springTo(SpringAnimation.SCALE_X, 1f, MaterialR.attr.motionSpringDefaultSpatial)
                     vh.itemView.springTo(SpringAnimation.SCALE_Y, 1f, MaterialR.attr.motionSpringDefaultSpatial)
                     vh.itemView.springTo(SpringAnimation.ALPHA, 1f, MaterialR.attr.motionSpringDefaultEffects)
                     vh.itemView.springTo(SpringAnimation.TRANSLATION_Z, 0f, MaterialR.attr.motionSpringDefaultEffects)
                     adapter.persistCardOrder()
-                    adapter.updateData()
+                    vh.itemView.post {
+                        if (!adapter.isDragging) {
+                            adapter.updateData()
+                        }
+                    }
                 }
             }
         val itemTouchHelper = ItemTouchHelper(dragCallback)

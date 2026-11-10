@@ -36,6 +36,13 @@
             android:icon="@drawable/ic_swipe_24"
             android:defaultValue="false" />
 
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="setting_disabling_optional"
+            android:title="@string/settings_setting_disabling_optional_title"
+            android:summary="@string/settings_setting_disabling_optional_summary"
+            android:icon="@drawable/ic_settings_suggest_24"
+            android:defaultValue="false" />
+
         <Preference
             android:key="reset_recommendations"
             android:title="@string/settings_reset_recommendations_title"

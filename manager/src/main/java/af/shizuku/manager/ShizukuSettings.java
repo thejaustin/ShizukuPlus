@@ -215,6 +215,7 @@ public class ShizukuSettings {
         public static final String KEY_FLOATING_NAV_LABEL_MODE = "floating_nav_label_mode";
         public static final String KEY_FLOATING_NAV_AUTOHIDE = "floating_nav_autohide";
         public static final String KEY_HIGH_CONTRAST = "high_contrast_mode";
+        public static final String KEY_SETTING_DISABLING_OPTIONAL = "setting_disabling_optional";
 
         // Migration (Shizuku+ additions)
         public static final String KEY_MIGRATION_OFFERED = "migration_offered";
@@ -2575,6 +2576,18 @@ public class ShizukuSettings {
         SharedPreferences p = getPreferences();
         if (p != null) {
             p.edit().putBoolean(Keys.KEY_DPM_FREEZE_ENABLED, enabled).apply();
+        }
+    }
+
+    public static boolean isSettingDisablingOptional() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_SETTING_DISABLING_OPTIONAL, false);
+    }
+
+    public static void setSettingDisablingOptional(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) {
+            p.edit().putBoolean(Keys.KEY_SETTING_DISABLING_OPTIONAL, enabled).apply();
         }
     }
 }

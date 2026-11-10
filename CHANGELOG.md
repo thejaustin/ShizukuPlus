@@ -17,6 +17,8 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Quick app sorting** — Dedicated sort chip in the filter row lets you instantly sort by name, install date, update date, or granted status.
 - **Trusted Wi-Fi picker** — Select saved networks directly from a list for Wireless ADB protection without needing location permission.
 - **Restore confirmation** — Settings backups discovered on first launch ask before applying, with security-sensitive options requiring explicit confirmation.
+- **Optional setting disabling** — Developer option to bypass dependency checks and lockouts so all settings remain enabled and configurable.
+- **Fluid Home card dragging** — Dynamic overlap-area and center-containment target resolution, card-wide drag touches in edit mode, and smooth edge auto-scrolling.
 
 ### 🔒 Security & Privacy
 - **Protected Plus APIs** — Sensitive device control and private app data APIs are restricted to user-confirmed apps in Developer options.

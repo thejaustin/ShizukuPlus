@@ -96,6 +96,12 @@ object HomeEditMode {
             applySpringTouch()
             isHapticFeedbackEnabled = false
             setOnLongClickListener(enterEditMode)
+            setOnTouchListener { _, event ->
+                if (isActive && event.action == android.view.MotionEvent.ACTION_DOWN) {
+                    startDragCallback?.invoke(holder)
+                }
+                false
+            }
         }
         container.dragHandle.apply {
             isHapticFeedbackEnabled = false

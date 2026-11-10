@@ -74,6 +74,9 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             captureOriginalIcons(it)
             IconStyleHelper.applyToTree(requireContext(), it)
             fixDeprecatedListPreferenceSummaries(it)
+            if (ShizukuSettings.isSettingDisablingOptional()) {
+                bypassSettingDisabling(it)
+            }
         }
     }
 
@@ -185,6 +188,17 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    protected fun bypassSettingDisabling(group: androidx.preference.PreferenceGroup) {
+        for (i in 0 until group.preferenceCount) {
+            val pref = group.getPreference(i)
+            if (pref is androidx.preference.PreferenceGroup) {
+                bypassSettingDisabling(pref)
+            }
+            pref.dependency = null
+            pref.isEnabled = true
+        }
+    }
+
     abstract fun onCreateSettingsPreferences(
         savedInstanceState: Bundle?,
         rootKey: String?,
@@ -207,6 +221,12 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
             (activity as? SettingsActivity)?.updateTitle(title.toString())
         }
         updateHeaderPadding()
+
+        if (ShizukuSettings.isSettingDisablingOptional()) {
+            view?.post {
+                preferenceScreen?.let { bypassSettingDisabling(it) }
+            }
+        }
 
         val highlightKey = arguments?.getString("highlight_key")
         if (!highlightKey.isNullOrEmpty()) {

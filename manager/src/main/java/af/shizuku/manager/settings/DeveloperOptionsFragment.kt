@@ -50,6 +50,18 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
             }
         }
 
+        findPreference<TwoStatePreference>(KEY_SETTING_DISABLING_OPTIONAL)?.apply {
+            isChecked = ShizukuSettings.isSettingDisablingOptional()
+            setOnPreferenceChangeListener { _, v ->
+                val enabled = v as? Boolean ?: return@setOnPreferenceChangeListener false
+                ShizukuSettings.setSettingDisablingOptional(enabled)
+                if (enabled) {
+                    preferenceScreen?.let { bypassSettingDisabling(it) }
+                }
+                true
+            }
+        }
+
         findPreference<Preference>("reset_recommendations")?.setOnPreferenceClickListener {
             af.shizuku.manager.utils.AdaptiveRecommendationManager
                 .resetAll()
