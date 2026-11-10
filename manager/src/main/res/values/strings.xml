@@ -659,7 +659,7 @@
 
     <!-- Detailed Help Strings -->
     <string name="help_dhizuku_title">About Dhizuku Mode</string>
-    <string name="help_dhizuku_detail">Dhizuku allows Shizuku to share its Device Owner (DevicePolicyManager) privileges with third-party apps. This is essential for apps like Dhizuku Manager or certain kiosk-mode tools that need to manage system policies without being the sole Device Owner themselves.</string>
+    <string name="help_dhizuku_detail">Dhizuku allows Shizuku to share its Device Owner (DevicePolicyManager) privileges with third-party apps. This is essential for apps like Dhizuku Manager or certain kiosk-mode tools that need to manage system policies without being the sole Device Owner themselves.\n\nWhen an app asks for Dhizuku access, Shizuku+ shows an Allow/Deny prompt. Apps built with an older Dhizuku library only look for the official Dhizuku app and won\'t find Shizuku+ until they update (for example, Amarok 0.10.1).</string>
 
     <string name="help_shell_interceptor_title">About Shell Accelerator</string>
     <string name="help_shell_interceptor_detail">The Shell Accelerator intercepts standard shell commands (am, pm, settings) and translates them directly into Shizuku server API calls. This avoids the high overhead of spawning a new /system/bin/sh process for every command, making automation in MacroDroid or Tasker significantly faster and more battery-efficient.</string>
@@ -1388,6 +1388,9 @@
     <string name="update_installing_progress">Installing Shizuku+ %1$s…</string>
     <string name="update_run_in_background">Run in background</string>
     <string name="update_installed_success">Update installed successfully!</string>
+    <string name="update_install_blocked_title">Update couldn\'t be installed</string>
+    <string name="update_install_blocked_conflict">Android blocked this update because it clashes with %1$s, which is also installed. This is a Shizuku+ bug, so please report it on GitHub. Your current version keeps working.</string>
+    <string name="update_install_blocked_unknown_app">another app</string>
     <string name="update_signature_mismatch_title">Signature Mismatch</string>
     <string name="update_signature_mismatch_migrate_message">Your currently installed app is signed with a different key than this official release (such as a local debug build). Android prevents standard in-place updates when signing keys differ.\n\nSince Shizuku is active, Shizuku+ can back up your settings, reinstall the update, and restore your configuration automatically.\n\nMigrate now?</string>
     <string name="update_signature_mismatch_manual_message">The downloaded update is signed with the official release key, but your currently installed app has a different signing key (such as a local debug build). Android prevents in-place updates when keys differ.\n\nTo update, back up your settings in Settings → Backup &amp; Restore, uninstall this version, and install the new update.</string>

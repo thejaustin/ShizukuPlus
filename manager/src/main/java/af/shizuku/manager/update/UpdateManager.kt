@@ -430,9 +430,19 @@ class UpdateManager(
                     is InstallResult.NeedsSystemInstaller -> {
                         launchSystemInstaller(result.file)
                     }
+                    is InstallResult.Failed -> {
+                        // The system installer would hit the same wall and only say "App not
+                        // installed", so name the real reason when we know it.
+                        val blocked = describeBlockedInstall(result.message)
+                        if (blocked != null) {
+                            _state.value = UpdateState.Error(blocked)
+                            showInstallBlockedNotification(blocked)
+                        } else {
+                            showInstallNotification(readyApk, versionName)
+                        }
+                    }
                     is InstallResult.SignatureMismatchCanMigrate,
                     is InstallResult.SignatureMismatchManualRequired,
-                    is InstallResult.Failed,
                     -> {
                         showInstallNotification(readyApk, versionName)
                     }
@@ -495,11 +505,11 @@ class UpdateManager(
                         }
                     }
                     hasShizuku -> {
-                        val success = installViaShizukuStdin(file)
-                        if (success) {
+                        val failure = installViaShizukuStdin(file)
+                        if (failure == null) {
                             InstallResult.Success
                         } else {
-                            InstallResult.Failed("Shizuku install failed")
+                            InstallResult.Failed(failure)
                         }
                     }
                     else -> {
@@ -704,7 +714,48 @@ class UpdateManager(
         notificationManager.notify(NOTIFICATION_ID + 2, notification)
     }
 
-    private fun installViaShizukuStdin(file: File): Boolean {
+    /**
+     * Plain-language text for `pm install` failures that no installer can get past, or null when
+     * trying the system installer is still worth it.
+     */
+    private fun describeBlockedInstall(pmOutput: String): String? {
+        val code = Regex("INSTALL_FAILED_[A-Z_]+").find(pmOutput)?.value ?: return null
+        val otherPackage = Regex("""(?:already used by|already owned by) ([\w.]+)""").find(pmOutput)?.groupValues?.get(1)
+        val otherLabel =
+            otherPackage?.let { pkg ->
+                runCatching {
+                    context.packageManager
+                        .getApplicationInfo(pkg, 0)
+                        .loadLabel(context.packageManager)
+                        .toString()
+                }.getOrDefault(pkg)
+            } ?: context.getString(R.string.update_install_blocked_unknown_app)
+        return when (code) {
+            "INSTALL_FAILED_CONFLICTING_PROVIDER",
+            "INSTALL_FAILED_DUPLICATE_PERMISSION",
+            -> context.getString(R.string.update_install_blocked_conflict, otherLabel)
+            "INSTALL_FAILED_INSUFFICIENT_STORAGE" -> context.getString(R.string.update_download_failed_storage)
+            else -> null
+        }
+    }
+
+    private fun showInstallBlockedNotification(message: String) {
+        val notification =
+            NotificationCompat
+                .Builder(context, NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_notification_icon)
+                .setContentTitle(context.getString(R.string.update_install_blocked_title))
+                .setContentText(message)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                .build()
+        notificationManager.notify(NOTIFICATION_ID + 2, notification)
+    }
+
+    // Returns null on success, else the "Failure ..." line pm printed.
+    private fun installViaShizukuStdin(file: File): String? {
         return try {
             val apkBytes = file.readBytes()
             val script =
@@ -714,7 +765,7 @@ class UpdateManager(
                 rikka.shizuku.Shizuku.newProcess(arrayOf("sh", "-c", script), null, null)
                     ?: run {
                         Timber.tag(TAG).w("Shizuku.newProcess returned null")
-                        return false
+                        return "Shizuku install failed"
                     }
             process.outputStream.use { it.write(apkBytes) }
             val output = process.inputStream.bufferedReader().readText()
@@ -728,13 +779,14 @@ class UpdateManager(
             val success = exitCode == 0
             if (success) {
                 Timber.tag(TAG).i("Shizuku stdin install succeeded")
+                null
             } else {
                 Timber.tag(TAG).w("Shizuku stdin install failed (exit=$exitCode): $output")
+                output.lineSequence().firstOrNull { it.startsWith("Failure") } ?: "Shizuku install failed"
             }
-            success
         } catch (e: Exception) {
             Timber.tag(TAG).e(e, "installViaShizukuStdin failed")
-            false
+            "Shizuku install failed"
         }
     }
 
