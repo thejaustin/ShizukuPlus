@@ -436,6 +436,24 @@ else
     echo -e "${COLOR_GREEN}PASS${COLOR_RESET}"
 fi
 
+# 27. Provider authorities owned by other apps. An authority is device-unique, so claiming one
+# that another installed app declares makes Android refuse our install/update with
+# INSTALL_FAILED_CONFLICTING_PROVIDER ("App not installed"). 8f1caec8 shipped Dhizuku's own
+# server authorities and blocked updates for everyone with Dhizuku installed (#670).
+step "Checking manifests don't claim other apps' provider authorities"
+FOREIGN_AUTH=$(grep -rnoE 'android:authorities="[^"]*"' --include=AndroidManifest.xml manager/src compat/src 2>/dev/null \
+    | grep -E '[";]com\.rosan\.dhizuku\.(server|dhizuku_server)\.provider[";]' || true)
+# The stock Shizuku authority belongs only to the Drop-In flavor (same package as stock Shizuku).
+FOREIGN_AUTH+=$(grep -rnoE 'android:authorities="[^"]*"' manager/src/main/AndroidManifest.xml manager/src/shizukuplus/AndroidManifest.xml 2>/dev/null \
+    | grep -E '[";]moe\.shizuku\.privileged\.api[";]' || true)
+if [ -z "$FOREIGN_AUTH" ]; then
+    echo -e "${COLOR_GREEN}PASS${COLOR_RESET}"
+else
+    echo -e "${COLOR_RED}FAIL${COLOR_RESET} (authority owned by another app; installs will fail next to it)"
+    echo "$FOREIGN_AUTH"
+    ERRORS=$((ERRORS + 1))
+fi
+
 # 17. Dry-Run Build Validation
 step "Validating Gradle build configuration (dry-run)"
 if [ -n "${SKIP_GRADLE_CHECK:-}" ]; then
