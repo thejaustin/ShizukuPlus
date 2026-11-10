@@ -32,11 +32,16 @@
     </string-array>
     <string-array name="corner_rounding_entries">
         <item>@string/corner_style_sharp</item>
+        <item>콤팩트 — 8dp</item>
+        <item>미세하게 — 14dp</item>
         <item>은은하게 — 20dp</item>
+        <item>적당하게 — 24dp</item>
         <item>표준 M3 — 28dp</item>
         <item>강조 — 32dp (기본값)</item>
         <item>크게 — 36dp</item>
+        <item>확장 — 40dp</item>
         <item>최대 — 44dp</item>
+        <item>울트라 필 — 52dp</item>
         <item>시스템 기본값</item>
     </string-array>
     <string-array name="update_channel_entries">

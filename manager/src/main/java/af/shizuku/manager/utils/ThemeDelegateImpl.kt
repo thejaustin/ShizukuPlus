@@ -84,10 +84,15 @@ class ThemeDelegateImpl : ThemeDelegate {
         // "default" = Modern's 32dp ExtraLarge (already set by shape overlay); "system" = no overlay.
         val cornerOverlayRes =
             when (ShizukuSettings.getCornerRoundingOverride()) {
+                "compact" -> R.style.ThemeOverlay_CornerRounding_Compact
+                "subtle" -> R.style.ThemeOverlay_CornerRounding_Subtle
                 "gentle" -> R.style.ThemeOverlay_CornerRounding_Gentle
+                "moderate" -> R.style.ThemeOverlay_CornerRounding_Moderate
                 "standard" -> R.style.ThemeOverlay_CornerRounding_Standard
                 "large" -> R.style.ThemeOverlay_CornerRounding_Large
+                "expanded" -> R.style.ThemeOverlay_CornerRounding_Expanded
                 "maximum" -> R.style.ThemeOverlay_CornerRounding_Maximum
+                "ultra" -> R.style.ThemeOverlay_CornerRounding_Ultra
                 else -> 0
             }
         if (cornerOverlayRes != 0) {

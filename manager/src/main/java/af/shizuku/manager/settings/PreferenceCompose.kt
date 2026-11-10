@@ -140,10 +140,15 @@ internal fun resolveGridCardCorner(
 ): androidx.compose.ui.unit.Dp =
     when (cornerOverride) {
         "sharp" -> if (checked) 6.dp else 2.dp
+        "compact" -> if (checked) 10.dp else 4.dp
+        "subtle" -> if (checked) 14.dp else 8.dp
         "gentle" -> if (checked) 18.dp else 10.dp
+        "moderate" -> if (checked) 20.dp else 11.dp
         "standard" -> if (checked) 22.dp else 12.dp
         "large" -> if (checked) 28.dp else 16.dp
+        "expanded" -> if (checked) 32.dp else 18.dp
         "maximum" -> if (checked) 36.dp else 20.dp
+        "ultra" -> if (checked) 42.dp else 24.dp
         else -> if (checked) 24.dp else 14.dp
     }
 
@@ -154,9 +159,14 @@ internal fun resolveGridIconCorner(
 ): androidx.compose.ui.unit.Dp =
     when (cornerOverride) {
         "sharp" -> if (checked) 2.dp else 4.dp
+        "compact" -> if (checked) 3.dp else 6.dp
+        "subtle" -> if (checked) 4.dp else 8.dp
         "gentle" -> if (checked) 6.dp else 12.dp
+        "moderate" -> if (checked) 7.dp else 13.dp
         "standard" -> if (checked) 8.dp else 14.dp
         "large" -> if (checked) 10.dp else 18.dp
+        "expanded" -> if (checked) 12.dp else 20.dp
         "maximum" -> if (checked) 14.dp else 22.dp
+        "ultra" -> if (checked) 18.dp else 26.dp
         else -> if (checked) 8.dp else 16.dp
     }

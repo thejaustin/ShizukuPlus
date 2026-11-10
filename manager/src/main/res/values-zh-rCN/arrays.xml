@@ -38,11 +38,16 @@
 
     <string-array name="corner_rounding_entries">
         <item>@string/corner_style_sharp</item>
+        <item>紧凑 — 8dp</item>
+        <item>细微 — 14dp</item>
         <item>柔和 — 20dp</item>
+        <item>适度 — 24dp</item>
         <item>标准 M3 — 28dp</item>
         <item>增强 — 32dp（默认）</item>
         <item>大 — 36dp</item>
+        <item>宽展 — 40dp</item>
         <item>最大 — 44dp</item>
+        <item>极限胶囊 — 52dp</item>
         <item>系统默认</item>
     </string-array>
 

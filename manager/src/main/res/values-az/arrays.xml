@@ -72,21 +72,31 @@
 
     <string-array name="corner_rounding_entries">
         <item>@string/corner_style_sharp</item>
+        <item>Kompakt — 8dp</item>
+        <item>İncə — 14dp</item>
         <item>Zərif — 20dp</item>
+        <item>Mülayim — 24dp</item>
         <item>Standart — 28dp</item>
         <item>Təkmilləşdirilmiş — 32dp (Standart)</item>
         <item>Böyük — 36dp</item>
+        <item>Genişləndirilmiş — 40dp</item>
         <item>Maksimum — 44dp</item>
+        <item>Ultra / Həb — 52dp</item>
         <item>Sistem Standartı</item>
     </string-array>
 
     <string-array name="corner_rounding_values" translatable="false">
         <item>sharp</item>
+        <item>compact</item>
+        <item>subtle</item>
         <item>gentle</item>
+        <item>moderate</item>
         <item>standard</item>
         <item>default</item>
         <item>large</item>
+        <item>expanded</item>
         <item>maximum</item>
+        <item>ultra</item>
         <item>system</item>
     </string-array>
 

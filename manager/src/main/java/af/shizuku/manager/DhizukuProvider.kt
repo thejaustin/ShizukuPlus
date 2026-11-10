@@ -50,7 +50,18 @@ class DhizukuProvider : ContentProvider() {
         override fun transact(
             code: Int,
             data: Bundle?,
-        ): Bundle = Bundle()
+        ): Bundle {
+            val reply = Bundle()
+            val adminComponent =
+                android.content.ComponentName(
+                    context?.packageName ?: "af.shizuku.plus",
+                    af.shizuku.manager.admin.DhizukuAdminReceiver::class.java.name,
+                )
+            reply.putParcelable("component", adminComponent)
+            reply.putParcelable("admin", adminComponent)
+            reply.putParcelable("owner", adminComponent)
+            return reply
+        }
     }
 
     private inner class DhizukuV2Binder : Binder() {
@@ -92,10 +103,21 @@ class DhizukuProvider : ContentProvider() {
                 val targetBinder = data.readStrongBinder() ?: return false
                 val targetCode = data.readInt()
                 val targetFlags = data.readInt()
-                return targetBinder.transact(targetCode, data, reply, targetFlags)
+                val targetData = android.os.Parcel.obtain()
+                return try {
+                    targetData.appendFrom(data, data.dataPosition(), data.dataAvail())
+                    val identity = Binder.clearCallingIdentity()
+                    try {
+                        targetBinder.transact(targetCode, targetData, reply, targetFlags)
+                    } finally {
+                        Binder.restoreCallingIdentity(identity)
+                    }
+                } finally {
+                    targetData.recycle()
+                }
             }
 
-            if (code >= FIRST_CALL_TRANSACTION + 0 && code <= FIRST_CALL_TRANSACTION + 3) {
+            if (code >= FIRST_CALL_TRANSACTION + 0 && code <= FIRST_CALL_TRANSACTION + 4) {
                 var isV2 = true
                 try {
                     data.enforceInterface("com.rosan.dhizuku.aidl.IDhizuku")
@@ -139,7 +161,29 @@ class DhizukuProvider : ContentProvider() {
                     }
                     FIRST_CALL_TRANSACTION + 3 -> { // transact
                         reply?.writeNoException()
-                        reply?.writeBundle(Bundle())
+                        val adminComponent =
+                            android.content.ComponentName(
+                                context?.packageName ?: "af.shizuku.plus",
+                                af.shizuku.manager.admin.DhizukuAdminReceiver::class.java.name,
+                            )
+                        val bundle = Bundle()
+                        bundle.putParcelable("component", adminComponent)
+                        bundle.putParcelable("admin", adminComponent)
+                        bundle.putParcelable("owner", adminComponent)
+                        reply?.writeBundle(bundle)
+                        return true
+                    }
+                    FIRST_CALL_TRANSACTION + 4 -> { // getOwnerComponent
+                        reply?.writeNoException()
+                        val adminComponent =
+                            android.content.ComponentName(
+                                context?.packageName ?: "af.shizuku.plus",
+                                af.shizuku.manager.admin.DhizukuAdminReceiver::class.java.name,
+                            )
+                        if (reply != null) {
+                            reply.writeInt(1) // non-null Parcelable
+                            adminComponent.writeToParcel(reply, 0)
+                        }
                         return true
                     }
                 }
@@ -184,16 +228,18 @@ class DhizukuProvider : ContentProvider() {
         arg: String?,
         extras: Bundle?,
     ): Bundle? {
-        if ("getBinder" == method) {
-            val bundle = Bundle()
-            bundle.putBinder("binder", DhizukuV1Binder())
-            return bundle
-        }
-        if ("client" == method) {
-            val bundle = Bundle()
-            bundle.putBinder("dhizuku_binder", DhizukuV2Binder())
-            return bundle
-        }
-        return null
+        val bundle = Bundle()
+        val adminComponent =
+            android.content.ComponentName(
+                context?.packageName ?: "af.shizuku.plus",
+                af.shizuku.manager.admin.DhizukuAdminReceiver::class.java.name,
+            )
+        bundle.putBinder("binder", DhizukuV1Binder())
+        bundle.putBinder("dhizuku_binder", DhizukuV2Binder())
+        bundle.putParcelable("component", adminComponent)
+        bundle.putParcelable("admin", adminComponent)
+        bundle.putParcelable("owner", adminComponent)
+        bundle.putParcelable("dhizuku_component", adminComponent)
+        return bundle
     }
 }
