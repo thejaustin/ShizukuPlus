@@ -804,7 +804,8 @@
 
     <!-- Sentry Offline Notice -->
     <string name="sentry_offline_notice_title">Crash Reporting Offline</string>
-    <string name="sentry_offline_notice_summary">Automatic crash reporting via Sentry is currently disabled due to quota limits (resets May 1st). Please report any crashes manually.</string>
+    <string name="sentry_offline_notice_summary">Automatic crash reporting via Sentry is currently disabled due to quota limits (resets on the 1st of each month). Please report any crashes manually.</string>
+    <string name="sentry_offline_notice_summary_format">Automatic crash reporting via Sentry is currently disabled due to quota limits (resets %1$s). Please report any crashes manually.</string>
     <string name="sentry_offline_report_github">Report on GitHub</string>
 
     <string name="manual_report_title">Manual Crash Report</string>

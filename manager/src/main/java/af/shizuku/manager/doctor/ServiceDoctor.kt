@@ -47,6 +47,8 @@ object ServiceDoctor {
         val tip: String? = null,
         // False for a fix that is only wanted when the user taps it, never in background healing.
         val autoHeal: Boolean = true,
+        val optional: Boolean = false,
+        val actionLabelRes: Int? = null,
     )
 
     data class DiagnosticResult(
@@ -220,7 +222,7 @@ object ServiceDoctor {
                 ),
             )
 
-            // 5b. Accessibility
+            // 5b. Accessibility (optional pairing helper)
             val isAccessibilityEnabled = SettingsHelper.isAccessibilityServiceEnabled(context, AdbPairingAccessibilityService::class.java)
             checks.add(
                 CheckItem(
@@ -236,6 +238,8 @@ object ServiceDoctor {
                     // enabling it whenever the server stopped only re-armed it, over and over.
                     // Left to the user, who can allow it in Service Doctor.
                     autoHeal = ShizukuSettings.isDoctorHealPairingHelperEnabled(),
+                    optional = true,
+                    actionLabelRes = R.string.enable,
                 ),
             )
 
@@ -520,8 +524,8 @@ object ServiceDoctor {
                 }
             }
 
-            val issues = checks.count { !it.ok }
-            val fixable = checks.count { !it.ok && it.canAutoFix }
+            val issues = checks.count { !it.ok && !it.optional }
+            val fixable = checks.count { !it.ok && !it.optional && it.canAutoFix }
             DiagnosticResult(checks, issues, fixable, tips)
         }
 
@@ -586,8 +590,8 @@ object ServiceDoctor {
 
     private const val KEY_EXCLUDED_FIXES = "doctor_excluded_fixes"
 
-    /** Checks "Fix all" can repair right now: failing, with an automatic fix. */
-    fun fixableChecks(diag: DiagnosticResult): List<CheckItem> = diag.checks.filter { !it.ok && it.canAutoFix && it.autoFix != null }
+    /** Checks "Fix all" can repair right now: failing, non-optional, with an automatic fix. */
+    fun fixableChecks(diag: DiagnosticResult): List<CheckItem> = diag.checks.filter { !it.ok && !it.optional && it.canAutoFix && it.autoFix != null }
 
     /**
      * [tapped]: the user pressed "Fix all", so fixes kept out of background healing run too.

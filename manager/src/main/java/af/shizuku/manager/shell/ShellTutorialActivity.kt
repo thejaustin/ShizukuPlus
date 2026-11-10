@@ -34,67 +34,100 @@ class ShellTutorialActivity : AppBarActivity() {
             if (tree == null) return@registerForActivityResult
 
             // Persist the permission across reboots so the URI stays usable in AppBackupActivity
-            // and EnvironmentUtils.resolveExportedPath(). Without this call the grant is session-
-            // scoped only and lost when the process is killed (SHIZUKUPLUS-492).
-            contentResolver.takePersistableUriPermission(
-                tree,
-                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                    android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
-            )
+            // and EnvironmentUtils.resolveExportedPath(). Wrap in runCatching because some providers
+            // (or locations like Downloads on certain Android versions) do not support persistable
+            // grants and throw SecurityException, which previously aborted the entire export.
+            runCatching {
+                contentResolver.takePersistableUriPermission(
+                    tree,
+                    android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                        android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+                )
+            }.onFailure { e ->
+                Timber.tag(TAG).w(e, "takePersistableUriPermission not supported for $tree")
+            }
 
             val cr = contentResolver
+            val treeDir =
+                androidx.documentfile.provider.DocumentFile
+                    .fromTreeUri(this, tree)
             val doc = DocumentsContract.buildDocumentUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree))
             val child =
                 DocumentsContract.buildChildDocumentsUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree))
 
-            cr
-                .query(
-                    child,
-                    arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID, DocumentsContract.Document.COLUMN_DISPLAY_NAME),
-                    null,
-                    null,
-                    null,
-                )?.use {
-                    while (it.moveToNext()) {
-                        val id = it.getString(0)
-                        val name = it.getString(1)
-                        if (name == SH_NAME || name == DEX_NAME || name == PLUS_NAME || name == SU_NAME) {
-                            DocumentsContract.deleteDocument(cr, DocumentsContract.buildDocumentUriUsingTree(tree, id))
+            runCatching {
+                cr
+                    .query(
+                        child,
+                        arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID, DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+                        null,
+                        null,
+                        null,
+                    )?.use {
+                        while (it.moveToNext()) {
+                            val id = it.getString(0)
+                            val name = it.getString(1)
+                            if (name == SH_NAME || name == DEX_NAME || name == PLUS_NAME || name == SU_NAME) {
+                                runCatching {
+                                    DocumentsContract.deleteDocument(cr, DocumentsContract.buildDocumentUriUsingTree(tree, id))
+                                }
+                            }
                         }
                     }
-                }
+            }
 
             fun writeToDocument(name: String): Boolean {
+                // 1. First try DocumentFile approach (handles existing files and extension normalization)
+                val targetFileUri =
+                    runCatching {
+                        val existing = treeDir?.findFile(name)
+                        if (existing != null && existing.exists()) {
+                            runCatching { existing.delete() }
+                        }
+                        treeDir?.createFile("application/octet-stream", name)?.uri
+                    }.getOrNull()
+
+                // 2. Fall back to DocumentsContract.createDocument if DocumentFile returned null
                 val documentUri =
-                    try {
+                    targetFileUri ?: runCatching {
                         DocumentsContract.createDocument(contentResolver, doc, "application/octet-stream", name)
-                    } catch (e: Exception) {
-                        // The parent tree URI can be stale/revoked (removed SD card, cleared permission);
-                        // createDocument then throws FileNotFoundException (SHIZUKUPLUS-84). Don't crash.
-                        Timber.tag(TAG).e(e, "Failed to create document for $name (tree unavailable?)")
-                        return false
+                    }.getOrNull()
+
+                if (documentUri != null) {
+                    val written =
+                        runCatching {
+                            cr.openOutputStream(documentUri, "wt")?.use { outputStream ->
+                                assets.open(name).use { inputStream ->
+                                    inputStream.copyTo(outputStream)
+                                }
+                            } ?: -1L
+                        }.getOrDefault(-1L)
+
+                    if (written >= 0) {
+                        return true
+                    } else {
+                        runCatching { DocumentsContract.deleteDocument(contentResolver, documentUri) }
                     }
-                if (documentUri == null) {
-                    Timber.tag(TAG).e("Failed to create document for $name")
-                    return false
                 }
 
-                return try {
-                    cr.openOutputStream(documentUri)?.use { outputStream ->
-                        assets.open(name).use { inputStream ->
-                            inputStream.copyTo(outputStream)
+                // 3. Fallback: if SAF failed but direct filesystem path is available and writable
+                return runCatching {
+                    val fallbackPath =
+                        af.shizuku.manager.utils.EnvironmentUtils
+                            .resolveExportedPath(name)
+                    if (fallbackPath != null) {
+                        val f = java.io.File(fallbackPath)
+                        f.parentFile?.mkdirs()
+                        assets.open(name).use { input ->
+                            java.io.FileOutputStream(f).use { output ->
+                                input.copyTo(output)
+                            }
                         }
+                        f.exists() && f.length() > 0
+                    } else {
+                        false
                     }
-                    true
-                } catch (e: Exception) {
-                    Timber.tag(TAG).e(e, "Failed to write $name to document")
-                    try {
-                        DocumentsContract.deleteDocument(contentResolver, documentUri)
-                    } catch (deleteEx: Exception) {
-                        Timber.tag(TAG).e(deleteEx, "Failed to delete incomplete document for $name")
-                    }
-                    false
-                }
+                }.getOrDefault(false)
             }
 
             val results = listOf(SH_NAME, DEX_NAME, PLUS_NAME, SU_NAME).map { writeToDocument(it) }

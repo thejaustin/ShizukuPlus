@@ -41,9 +41,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:showDividers="middle"
-        android:divider="@drawable/spacing_list_item_vertical">
+        android:orientation="vertical">
 
         <com.google.android.material.button.MaterialButton
         android:id="@android:id/button3"

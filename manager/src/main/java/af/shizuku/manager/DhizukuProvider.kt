@@ -224,6 +224,13 @@ class DhizukuProvider : ContentProvider() {
     ): Int = 0
 
     override fun call(
+        authority: String,
+        method: String,
+        arg: String?,
+        extras: Bundle?,
+    ): Bundle? = call(method, arg, extras)
+
+    override fun call(
         method: String,
         arg: String?,
         extras: Bundle?,

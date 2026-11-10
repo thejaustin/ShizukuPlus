@@ -452,13 +452,15 @@ class ServiceDoctorActivity : AppBarActivity() {
                         ok = item.ok,
                         onFix = createFixAction(item),
                         topicId = item.id,
+                        actionLabelRes = item.actionLabelRes ?: R.string.doctor_button_fix,
+                        isOptional = item.optional,
                     )
                 }
 
             checkListAdapter.submitList(checks)
 
             val issueCount = diag.issuesCount
-            val fixableCount = checks.count { !it.ok && it.onFix != null }
+            val fixableCount = checks.count { !it.ok && !it.isOptional && it.onFix != null }
 
             if (fixableCount > 0) {
                 binding.autoFixContainer.visibility = View.VISIBLE
@@ -570,6 +572,8 @@ class ServiceDoctorActivity : AppBarActivity() {
         val ok: Boolean,
         val onFix: (() -> Unit)? = null,
         val topicId: String? = null,
+        val actionLabelRes: Int = R.string.doctor_button_fix,
+        val isOptional: Boolean = false,
     )
 
     private inner class CheckListAdapter : RecyclerView.Adapter<CheckViewHolder>() {
@@ -613,11 +617,22 @@ class ServiceDoctorActivity : AppBarActivity() {
             val context = holder.itemView.context
             holder.binding.title.text = check.title
             holder.binding.status.text = check.status
-            holder.binding.icon.setImageResource(if (check.ok) R.drawable.ic_server_ok_24 else R.drawable.ic_server_error_24)
-            val colorAttr = if (check.ok) com.google.android.material.R.attr.colorTertiary else android.R.attr.colorError
-            holder.binding.icon.imageTintList =
-                android.content.res.ColorStateList
-                    .valueOf(context.themeColor(colorAttr))
+            if (check.ok) {
+                holder.binding.icon.setImageResource(R.drawable.ic_server_ok_24)
+                holder.binding.icon.imageTintList =
+                    android.content.res.ColorStateList
+                        .valueOf(context.themeColor(com.google.android.material.R.attr.colorTertiary))
+            } else if (check.isOptional) {
+                holder.binding.icon.setImageResource(R.drawable.ic_info_24)
+                holder.binding.icon.imageTintList =
+                    android.content.res.ColorStateList
+                        .valueOf(context.themeColor(com.google.android.material.R.attr.colorOutline))
+            } else {
+                holder.binding.icon.setImageResource(R.drawable.ic_server_error_24)
+                holder.binding.icon.imageTintList =
+                    android.content.res.ColorStateList
+                        .valueOf(context.themeColor(android.R.attr.colorError))
+            }
 
             val topic =
                 check.topicId ?: when {
@@ -635,6 +650,7 @@ class ServiceDoctorActivity : AppBarActivity() {
 
             if (check.onFix != null) {
                 holder.binding.btnFix.visibility = View.VISIBLE
+                holder.binding.btnFix.setText(check.actionLabelRes)
                 holder.binding.btnFix.setOnClickListener { check.onFix.invoke() }
             } else {
                 holder.binding.btnFix.visibility = View.GONE

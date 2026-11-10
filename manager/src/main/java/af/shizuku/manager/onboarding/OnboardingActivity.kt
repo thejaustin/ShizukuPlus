@@ -80,23 +80,12 @@ class OnboardingActivity : AppActivity() {
         if (isNewFeaturesOnly) {
             listOf(
                 PageType.WELCOME_RETURNING,
-                PageType.M3E,
-                PageType.LAYOUT_NAV,
-                PageType.SECURITY_DOCTOR,
-                PageType.SWIPE,
-                PageType.GESTURES,
-                PageType.LONG_PRESS,
             )
         } else {
             listOf(
                 PageType.WELCOME,
                 PageType.SETUP,
-                PageType.M3E,
-                PageType.LAYOUT_NAV,
                 PageType.SECURITY_DOCTOR,
-                PageType.SWIPE,
-                PageType.GESTURES,
-                PageType.LONG_PRESS,
             )
         }
     }
@@ -531,38 +520,41 @@ class OnboardingActivity : AppActivity() {
 
             binding.cardFeatM3e.setOnClickListener {
                 HapticUtils.segmentTick(it)
-                val idx = pages.indexOf(PageType.M3E)
-                if (idx >= 0) this@OnboardingActivity.binding.pager.currentItem = idx
+                try {
+                    startActivity(Intent(this@OnboardingActivity, af.shizuku.manager.settings.SettingsActivity::class.java))
+                } catch (_: Exception) {
+                }
             }
 
             binding.cardFeatLayoutNav.setOnClickListener {
                 HapticUtils.segmentTick(it)
-                val idx = pages.indexOf(PageType.LAYOUT_NAV)
-                if (idx >= 0) this@OnboardingActivity.binding.pager.currentItem = idx
+                try {
+                    startActivity(Intent(this@OnboardingActivity, af.shizuku.manager.settings.SettingsActivity::class.java))
+                } catch (_: Exception) {
+                }
             }
 
             binding.cardFeatGestures.setOnClickListener {
                 HapticUtils.segmentTick(it)
-                val idx = pages.indexOf(PageType.GESTURES)
-                if (idx >= 0) this@OnboardingActivity.binding.pager.currentItem = idx
+                try {
+                    startActivity(Intent(this@OnboardingActivity, af.shizuku.manager.settings.SettingsActivity::class.java))
+                } catch (_: Exception) {
+                }
             }
 
             binding.cardFeatDoctor.setOnClickListener {
                 HapticUtils.segmentTick(it)
-                val idx = pages.indexOf(PageType.SECURITY_DOCTOR)
-                if (idx >= 0) this@OnboardingActivity.binding.pager.currentItem = idx
+                try {
+                    startActivity(Intent(this@OnboardingActivity, af.shizuku.manager.settings.ServiceDoctorActivity::class.java))
+                } catch (_: Exception) {
+                }
             }
 
             binding.cardFeatWireless.setOnClickListener {
                 HapticUtils.segmentTick(it)
-                val idx = pages.indexOf(PageType.SETUP)
-                if (idx >= 0) {
-                    this@OnboardingActivity.binding.pager.currentItem = idx
-                } else {
-                    try {
-                        startActivity(Intent(this@OnboardingActivity, AdbPairingTutorialActivity::class.java))
-                    } catch (_: Exception) {
-                    }
+                try {
+                    startActivity(Intent(this@OnboardingActivity, AdbPairingTutorialActivity::class.java))
+                } catch (_: Exception) {
                 }
             }
         }

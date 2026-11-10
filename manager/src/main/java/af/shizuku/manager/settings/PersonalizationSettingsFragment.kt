@@ -258,7 +258,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
         // One corner control (Sharp ... Maximum): Sharp swaps every shape token, which only a
         // recreate re-applies; post so the new value is saved first.
-        val cornerPref = findPreference<androidx.preference.ListPreference>("corner_rounding_override")
+        val cornerPref = findPreference<SliderPreference>("corner_rounding_override")
         val homeCornerPref = findPreference<androidx.preference.TwoStatePreference>("apply_corner_rounding_to_home")
 
         fun syncCornerAvailability(value: String?) {

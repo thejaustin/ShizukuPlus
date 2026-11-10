@@ -46,6 +46,19 @@ class LearnMoreViewHolder(
         val sentrySection = itemView.findViewById<View>(R.id.sentry_offline_section)
         sentrySection?.isVisible = sentryLimitReached
         if (sentryLimitReached) {
+            val summaryView = itemView.findViewById<android.widget.TextView>(R.id.sentry_offline_summary)
+            if (summaryView != null) {
+                val cal =
+                    java.util.Calendar.getInstance().apply {
+                        add(java.util.Calendar.MONTH, 1)
+                        set(java.util.Calendar.DAY_OF_MONTH, 1)
+                    }
+                val resetDate =
+                    java.text.DateFormat
+                        .getDateInstance(java.text.DateFormat.MEDIUM, java.util.Locale.getDefault())
+                        .format(cal.time)
+                summaryView.text = context.getString(R.string.sentry_offline_notice_summary_format, resetDate)
+            }
             val chipReport = itemView.findViewById<com.google.android.material.button.MaterialButton>(R.id.chip_report_issue)
             chipReport?.setOnClickListener { v ->
                 CustomTabsHelper.launchUrlOrCopy(v.context, "https://github.com/thejaustin/ShizukuPlus/issues")
