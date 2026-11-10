@@ -48,9 +48,6 @@ class ShellTutorialActivity : AppBarActivity() {
             }
 
             val cr = contentResolver
-            val treeDir =
-                androidx.documentfile.provider.DocumentFile
-                    .fromTreeUri(this, tree)
             val doc = DocumentsContract.buildDocumentUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree))
             val child =
                 DocumentsContract.buildChildDocumentsUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree))
@@ -77,20 +74,10 @@ class ShellTutorialActivity : AppBarActivity() {
             }
 
             fun writeToDocument(name: String): Boolean {
-                // 1. First try DocumentFile approach (handles existing files and extension normalization)
-                val targetFileUri =
-                    runCatching {
-                        val existing = treeDir?.findFile(name)
-                        if (existing != null && existing.exists()) {
-                            runCatching { existing.delete() }
-                        }
-                        treeDir?.createFile("application/octet-stream", name)?.uri
-                    }.getOrNull()
-
-                // 2. Fall back to DocumentsContract.createDocument if DocumentFile returned null
+                // 1. Create document in target directory via native DocumentsContract
                 val documentUri =
-                    targetFileUri ?: runCatching {
-                        DocumentsContract.createDocument(contentResolver, doc, "application/octet-stream", name)
+                    runCatching {
+                        DocumentsContract.createDocument(cr, doc, "application/octet-stream", name)
                     }.getOrNull()
 
                 if (documentUri != null) {
@@ -106,11 +93,11 @@ class ShellTutorialActivity : AppBarActivity() {
                     if (written >= 0) {
                         return true
                     } else {
-                        runCatching { DocumentsContract.deleteDocument(contentResolver, documentUri) }
+                        runCatching { DocumentsContract.deleteDocument(cr, documentUri) }
                     }
                 }
 
-                // 3. Fallback: if SAF failed but direct filesystem path is available and writable
+                // 2. Fallback: if SAF failed but direct filesystem path is available and writable
                 return runCatching {
                     val fallbackPath =
                         af.shizuku.manager.utils.EnvironmentUtils
