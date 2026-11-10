@@ -77,6 +77,21 @@ class DhizukuProvider : ContentProvider() {
                 .granted(pkgName, callingUid)
         }
 
+        private fun enforceAnyInterface(
+            data: android.os.Parcel,
+            vararg descriptors: String,
+        ): Boolean {
+            for (descriptor in descriptors) {
+                data.setDataPosition(0)
+                try {
+                    data.enforceInterface(descriptor)
+                    return true
+                } catch (_: SecurityException) {
+                }
+            }
+            return false
+        }
+
         override fun onTransact(
             code: Int,
             data: android.os.Parcel,
@@ -89,17 +104,14 @@ class DhizukuProvider : ContentProvider() {
                 // Security gate first — only authorized callers may relay transactions.
                 if (!isCallerAuthorized()) return false
 
-                // Dhizuku clients may write any of several interface descriptor variants
-                // ("com.rosan.dhizuku.server", "com.rosan.dhizuku.aidl.IDhizuku", etc.).
-                // Samsung Knox on Android 16 intercepts enforceInterface() and may throw
-                // *before* consuming the descriptor string, leaving the parcel position at 0
-                // instead of advancing past the descriptor. If we then called readStrongBinder()
-                // we'd be reading the descriptor bytes as a binder — corrupt relay.
-                // Skipping with readString() is safe here: the authorization check above already
-                // guards the relay; the descriptor is Dhizuku-internal bookkeeping, not a
-                // security boundary.
-                data.setDataPosition(0)
-                data.readString() // consume/skip the interface descriptor token
+                // Dhizuku.remoteTransact() writes the token with writeInterfaceToken(), which puts
+                // header ints before the "com.rosan.dhizuku.server" string, so it has to be read
+                // back with enforceInterface(). A plain readString() skip (84edaf5f) landed on the
+                // header instead, so readStrongBinder() got nothing and every relayed call failed
+                // (MDPC/OwnDroid route all their DevicePolicyManager calls through here, #670).
+                if (!enforceAnyInterface(data, "com.rosan.dhizuku.server", "com.rosan.dhizuku.aidl.IDhizuku")) {
+                    return false
+                }
                 val targetBinder = data.readStrongBinder() ?: return false
                 val targetCode = data.readInt()
                 val targetFlags = data.readInt()
@@ -202,7 +214,8 @@ class DhizukuProvider : ContentProvider() {
                 val packageName = data.readString()
                 val callingUid = Binder.getCallingUid()
                 val callerPackages = context?.packageManager?.getPackagesForUid(callingUid).orEmpty()
-                if (!isCallerAuthorized() || packageName == null ||
+                if (!isCallerAuthorized() ||
+                    packageName == null ||
                     (callingUid != android.os.Process.myUid() && packageName !in callerPackages)
                 ) {
                     reply?.writeException(SecurityException("Not authorized for Dhizuku scopes of $packageName"))

@@ -33,6 +33,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ### 🛠 Fixes & Improvements
 - **Clearer update errors** — If Android refuses an update because it clashes with another installed app, Shizuku+ now tells you which app and why, instead of the system's generic "App not installed".
 - **Compat Hub download is back** — The Shizuku+-Compat-Hub APK was missing from recent GitHub releases; it is attached again.
+- **Dhizuku device-policy apps work** — Apps that run their device-policy actions through Dhizuku Mode (MDPC, OwnDroid forks) were silently failing every action, so they showed no policies. Fixed ([#670](https://github.com/thejaustin/ShizukuPlus/issues/670)).
 - **Dhizuku apps like Amarok and MDPC** — Apps can now ask for Dhizuku access from inside the app (you get an Allow/Deny prompt) and set up their delegated permissions. Revoking an app also removes those permissions. This only applies when Dhizuku Mode is on ([#670](https://github.com/thejaustin/ShizukuPlus/issues/670)).
 - **Updates install again when Dhizuku is installed** — The latest build claimed provider names that belong to the Dhizuku app, so Android refused the update with "App not installed" on any phone that also has Dhizuku.
 - **Persistent USB & OTG disconnection** — Server process now isolates into an independent session and binds port 5555 so Shizuku+ stays running and reconnects locally when unplugged.
