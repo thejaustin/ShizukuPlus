@@ -15,7 +15,10 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -153,6 +156,11 @@ class AutomationViewHolder(
 
             BottomSheetDialog(context).apply {
                 setContentView(sheetBinding.root)
+                ViewCompat.setOnApplyWindowInsetsListener(sheetBinding.root) { v, insets ->
+                    val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+                    v.updatePadding(bottom = (24 * context.resources.displayMetrics.density).toInt() + nav.bottom)
+                    insets
+                }
                 show()
             }
         }

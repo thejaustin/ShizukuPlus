@@ -2,12 +2,14 @@ package af.shizuku.manager.home
 
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
+import af.shizuku.manager.app.SnackbarHelper
 import af.shizuku.manager.backup.AppBackupActivity
 import af.shizuku.manager.databinding.HomeAppBackupItemBinding
 import af.shizuku.manager.databinding.HomeItemContainerBinding
 import af.shizuku.manager.ktx.startWithSceneTransition
 import af.shizuku.manager.model.ServiceStatus
 import af.shizuku.manager.utils.EnvironmentUtils
+import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.IconStyleHelper
 import android.content.Intent
 import android.view.LayoutInflater
@@ -71,8 +73,16 @@ class AppBackupViewHolder(
     }
 
     override fun onClick(v: View) {
-        if (!data.isRunning) return
         val activity = v.context.asActivity<android.app.Activity>() ?: return
+        if (!data.isRunning) {
+            HapticUtils.tap(v)
+            SnackbarHelper.show(
+                activity,
+                v,
+                activity.getString(R.string.home_status_service_not_running, activity.getString(R.string.app_name)),
+            )
+            return
+        }
         activity.startWithSceneTransition(
             Intent(activity, AppBackupActivity::class.java),
         )

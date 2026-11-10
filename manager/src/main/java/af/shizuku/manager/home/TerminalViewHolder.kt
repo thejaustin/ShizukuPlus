@@ -50,7 +50,6 @@ class TerminalViewHolder(
     }
 
     override fun onClick(v: View) {
-        if (!data.isRunning) return
         val activity = v.context.asActivity<android.app.Activity>() ?: return
         activity.startWithSceneTransition(
             Intent(activity, ShellTutorialActivity::class.java),

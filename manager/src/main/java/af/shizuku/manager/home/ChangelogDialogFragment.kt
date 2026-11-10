@@ -16,7 +16,10 @@ import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -219,6 +222,16 @@ class ChangelogDialogFragment : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+
+        val bottomActions = view.findViewById<View>(R.id.btn_close)?.parent as? View
+        if (bottomActions != null) {
+            val initialPaddingBottom = bottomActions.paddingBottom
+            ViewCompat.setOnApplyWindowInsetsListener(bottomActions) { v, insets ->
+                val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+                v.updatePadding(bottom = initialPaddingBottom + nav.bottom)
+                insets
+            }
+        }
 
         val tagName = arguments?.getString(ARG_TAG_NAME) ?: ""
         val releases = parseReleases(arguments?.getString(ARG_RELEASES_JSON))

@@ -16,6 +16,8 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -49,6 +51,12 @@ class KnowledgebaseBottomSheet : BottomSheetDialogFragment() {
                 orientation = LinearLayout.VERTICAL
                 setPadding(dp(20), 0, dp(20), dp(20))
             }
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            view.setPadding(dp(20), 0, dp(20), dp(20) + navBars.bottom)
+            insets
+        }
 
         // M3 drag handle: accessible (tap to expand/collapse, announced by TalkBack), unlike a
         // drawn bar.
