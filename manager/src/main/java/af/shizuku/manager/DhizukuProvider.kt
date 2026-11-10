@@ -189,6 +189,50 @@ class DhizukuProvider : ContentProvider() {
                 }
             }
 
+            // getDelegatedScopes (15) / setDelegatedScopes (16) from the v2 IDhizuku AIDL. Amarok
+            // calls both right after it gets permission (#670). Like Dhizuku's own server, the
+            // calls run as us (the device owner); unlike it, a client may only touch its own
+            // package's scopes.
+            if (code == FIRST_CALL_TRANSACTION + 15 || code == FIRST_CALL_TRANSACTION + 16) {
+                try {
+                    data.enforceInterface("com.rosan.dhizuku.aidl.IDhizuku")
+                } catch (_: SecurityException) {
+                    return false
+                }
+                val packageName = data.readString()
+                val callingUid = Binder.getCallingUid()
+                val callerPackages = context?.packageManager?.getPackagesForUid(callingUid).orEmpty()
+                if (!isCallerAuthorized() || packageName == null ||
+                    (callingUid != android.os.Process.myUid() && packageName !in callerPackages)
+                ) {
+                    reply?.writeException(SecurityException("Not authorized for Dhizuku scopes of $packageName"))
+                    return true
+                }
+                val dpm = context?.getSystemService(android.app.admin.DevicePolicyManager::class.java)
+                val admin =
+                    android.content.ComponentName(
+                        context?.packageName ?: "af.shizuku.plus",
+                        af.shizuku.manager.admin.DhizukuAdminReceiver::class.java.name,
+                    )
+                try {
+                    if (dpm == null || android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) {
+                        throw UnsupportedOperationException("Delegated scopes need Android 8.0+")
+                    }
+                    if (code == FIRST_CALL_TRANSACTION + 15) {
+                        val scopes = dpm.getDelegatedScopes(admin, packageName)
+                        reply?.writeNoException()
+                        reply?.writeStringArray(scopes.toTypedArray())
+                    } else {
+                        val scopes = data.createStringArray().orEmpty().toList()
+                        dpm.setDelegatedScopes(admin, packageName, scopes)
+                        reply?.writeNoException()
+                    }
+                } catch (e: Exception) {
+                    reply?.writeException(e as? SecurityException ?: IllegalStateException(e.message))
+                }
+                return true
+            }
+
             return super.onTransact(code, data, reply, flags)
         }
     }

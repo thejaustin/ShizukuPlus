@@ -161,5 +161,23 @@ object AuthorizationManager {
         } catch (t: Throwable) {
             timber.log.Timber.w(t, "%s failed for %s (incompatible server?)", "revoke", packageName)
         }
+        clearDhizukuScopes(packageName)
+    }
+
+    // Scopes a Dhizuku client set through us outlive the Shizuku grant unless we drop them here,
+    // which is what Dhizuku itself does when an app loses access. No-op unless we're device owner.
+    private fun clearDhizukuScopes(packageName: String) {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) return
+        try {
+            val context = af.shizuku.manager.ShizukuApplication.appContext
+            val dpm = context.getSystemService(android.app.admin.DevicePolicyManager::class.java) ?: return
+            if (!dpm.isDeviceOwnerApp(context.packageName) && !dpm.isProfileOwnerApp(context.packageName)) return
+            val admin = android.content.ComponentName(context, af.shizuku.manager.admin.DhizukuAdminReceiver::class.java)
+            if (dpm.getDelegatedScopes(admin, packageName).isNotEmpty()) {
+                dpm.setDelegatedScopes(admin, packageName, emptyList())
+            }
+        } catch (t: Throwable) {
+            timber.log.Timber.w(t, "clearing Dhizuku scopes failed for %s", packageName)
+        }
     }
 }

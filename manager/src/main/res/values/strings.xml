@@ -574,6 +574,11 @@
     <string name="dhizuku_device_owner_desc">Required for Dhizuku Mode to share Device Owner privileges with authorized apps.</string>
     <string name="dhizuku_device_owner_enabled">Dhizuku Device Owner Enabled</string>
     <string name="dhizuku_device_owner_disabled">Dhizuku Device Owner Disabled</string>
+    <string name="dhizuku_request_title">Allow &lt;b&gt;%1$s&lt;/b&gt; to use Device Owner access?</string>
+    <string name="dhizuku_request_message">The app asked through Dhizuku. It will be able to change device policies, like hiding apps or blocking settings, and it also gets regular Shizuku+ access, the same as approving a Shizuku request. You can revoke both later from the app list.</string>
+    <string name="dhizuku_request_allow">Allow</string>
+    <string name="dhizuku_request_deny">Deny</string>
+    <string name="dhizuku_request_not_running">Start Shizuku+ first, then try again in the app.</string>
     <string name="settings_enhanced_api">Shizuku+ Enhanced API</string>
     <string name="settings_enhanced_api_summary">Enable advanced system interfaces for power users. Required for all exclusive Shizuku+ features.</string>
     <string name="settings_themed_icon">Themed app icon</string>

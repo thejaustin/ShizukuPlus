@@ -30,6 +30,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Safe clipboard copying** — Sensitive script outputs, logs, and crash reports are marked private to prevent display in Android clipboard previews.
 
 ### 🛠 Fixes & Improvements
+- **Dhizuku apps like Amarok and MDPC** — Apps can now ask for Dhizuku access from inside the app (you get an Allow/Deny prompt) and set up their delegated permissions. Revoking an app also removes those permissions. This only applies when Dhizuku Mode is on ([#670](https://github.com/thejaustin/ShizukuPlus/issues/670)).
 - **Updates install again when Dhizuku is installed** — The latest build claimed provider names that belong to the Dhizuku app, so Android refused the update with "App not installed" on any phone that also has Dhizuku.
 - **Persistent USB & OTG disconnection** — Server process now isolates into an independent session and binds port 5555 so Shizuku+ stays running and reconnects locally when unplugged.
 - **Manual USB debugging toggle respected** — Shizuku+ respects manual USB debugging toggles in Developer Options instead of overriding them on start ([#656](https://github.com/thejaustin/ShizukuPlus/issues/656)).

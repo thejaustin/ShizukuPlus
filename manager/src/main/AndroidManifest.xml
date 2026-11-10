@@ -375,6 +375,21 @@
             android:excludeFromRecents="true"
             android:exported="false" />
         
+        <!-- Dhizuku-API 2.5+ clients start <owner>.action.REQUEST_DHIZUKU_PERMISSION (package-scoped)
+             when Shizuku+ is device owner. No permission attribute: any client app must be able to
+             start it. Denies silently unless Dhizuku Mode is on. -->
+        <activity
+            android:name=".authorization.DhizukuRequestPermissionActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:theme="@style/GrantPermissions">
+            <intent-filter>
+                <action android:name="${applicationId}.action.REQUEST_DHIZUKU_PERMISSION" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".authorization.RequestPermissionActivity"
             android:directBootAware="true"
