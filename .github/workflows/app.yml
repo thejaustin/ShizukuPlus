@@ -294,8 +294,11 @@ jobs:
             COMPAT_FILE=$(find compat/build/outputs/apk/release -name "*.apk" -type f | head -1)
             if [ -n "$COMPAT_FILE" ]; then
               sign_apk "$COMPAT_FILE"
-              COMPAT_RENAMED="$(dirname "$COMPAT_FILE")/shizuku-compat.apk"
-              mv "$COMPAT_FILE" "$COMPAT_RENAMED"
+              # Copied out of compat/build: the Sentry step below re-runs Gradle, which repackages
+              # :compat (a manager pre-build dependency) and wipes anything renamed in its output dir.
+              mkdir -p dist
+              COMPAT_RENAMED="dist/shizuku-compat.apk"
+              cp "$COMPAT_FILE" "$COMPAT_RENAMED"
               echo "compatPath=${COMPAT_RENAMED}" >> $GITHUB_OUTPUT
             fi
 
