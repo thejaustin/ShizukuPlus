@@ -3,7 +3,7 @@ buildscript {
         resolutionStrategy {
             force "org.bouncycastle:bcprov-jdk18on:1.86"
             force "org.bouncycastle:bcpkix-jdk18on:1.86"
-            force "com.google.guava:guava:33.4.8-android"
+            force "com.google.guava:guava:33.7.1-android"
             force "org.apache.commons:commons-lang3:3.18.0"
             force "org.apache.httpcomponents:httpclient:4.5.14"
         }
@@ -22,7 +22,7 @@ allprojects {
         resolutionStrategy {
             force "org.bouncycastle:bcprov-jdk18on:1.86"
             force "org.bouncycastle:bcpkix-jdk18on:1.86"
-            force "com.google.guava:guava:33.4.8-android"
+            force "com.google.guava:guava:33.7.1-android"
             force "org.apache.commons:commons-lang3:3.18.0"
             force "org.apache.httpcomponents:httpclient:4.5.14"
         }
