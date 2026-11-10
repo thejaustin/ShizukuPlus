@@ -440,6 +440,8 @@ fi
 # that another installed app declares makes Android refuse our install/update with
 # INSTALL_FAILED_CONFLICTING_PROVIDER ("App not installed"). 8f1caec8 shipped Dhizuku's own
 # server authorities and blocked updates for everyone with Dhizuku installed (#670).
+# dhizuku-compat/ is deliberately NOT scanned: that optional add-on exists to claim
+# com.rosan.dhizuku.server.provider for Dhizuku-API <= 2.4 clients and ships as its own APK.
 step "Checking manifests don't claim other apps' provider authorities"
 FOREIGN_AUTH=$(grep -rnoE 'android:authorities="[^"]*"' --include=AndroidManifest.xml manager/src compat/src 2>/dev/null \
     | grep -E '[";]com\.rosan\.dhizuku\.(server|dhizuku_server)\.provider[";]' || true)

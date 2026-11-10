@@ -659,7 +659,7 @@
 
     <!-- Detailed Help Strings -->
     <string name="help_dhizuku_title">About Dhizuku Mode</string>
-    <string name="help_dhizuku_detail">Dhizuku allows Shizuku to share its Device Owner (DevicePolicyManager) privileges with third-party apps. This is essential for apps like Dhizuku Manager or certain kiosk-mode tools that need to manage system policies without being the sole Device Owner themselves.\n\nWhen an app asks for Dhizuku access, Shizuku+ shows an Allow/Deny prompt. Apps built with an older Dhizuku library only look for the official Dhizuku app and won\'t find Shizuku+ until they update (for example, Amarok 0.10.1).</string>
+    <string name="help_dhizuku_detail">Dhizuku allows Shizuku to share its Device Owner (DevicePolicyManager) privileges with third-party apps. This is essential for apps like Dhizuku Manager or certain kiosk-mode tools that need to manage system policies without being the sole Device Owner themselves.\n\nWhen an app asks for Dhizuku access, Shizuku+ shows an Allow/Deny prompt. Apps built with an older Dhizuku library (for example, Amarok 0.10.1) only look for the official Dhizuku app. For those, install the optional Shizuku+ Dhizuku Compat APK from the GitHub release. It can\'t be installed alongside the real Dhizuku app.</string>
 
     <string name="help_shell_interceptor_title">About Shell Accelerator</string>
     <string name="help_shell_interceptor_detail">The Shell Accelerator intercepts standard shell commands (am, pm, settings) and translates them directly into Shizuku server API calls. This avoids the high overhead of spawning a new /system/bin/sh process for every command, making automation in MacroDroid or Tasker significantly faster and more battery-efficient.</string>

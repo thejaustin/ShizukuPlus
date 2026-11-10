@@ -1,0 +1,35 @@
+plugins {
+    id 'com.android.application'
+}
+
+// Optional add-on for apps built with Dhizuku-API 2.4 or older (e.g. Amarok 0.10.1). Those
+// clients only ever call the official Dhizuku authority, so this tiny app claims it and forwards
+// to the Shizuku+ manager. It can't be installed next to the real Dhizuku app (same authority),
+// which is why it is a separate APK and never bundled into the manager.
+android {
+    namespace 'af.shizuku.plus.dhizuku'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "af.shizuku.plus.dhizuku"
+        minSdk 26
+        targetSdk 34
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName + "-dhizuku-compat"
+    }
+
+    signingConfigs {
+        sign {}
+    }
+    buildTypes {
+        debug {
+            signingConfig = signingConfigs.sign
+        }
+        release {
+            signingConfig = signingConfigs.sign
+            minifyEnabled false
+        }
+    }
+}
+
+apply from: rootProject.file("signing.gradle")

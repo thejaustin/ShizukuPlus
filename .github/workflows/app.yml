@@ -244,7 +244,7 @@ jobs:
             echo "artifactName=shizukuplus-debug.apk" >> $GITHUB_OUTPUT
             echo "filePath=${RENAMED}" >> $GITHUB_OUTPUT
           else
-            CMD="./gradlew :manager:assembleShizukuplusRelease :manager:assembleDropinRelease $ARGS"
+            CMD="./gradlew :manager:assembleShizukuplusRelease :manager:assembleDropinRelease :dhizuku-compat:assembleRelease $ARGS"
             # Without SENTRY_AUTH_TOKEN, manager/build.gradle turns off native-symbol and
             # source-context upload, so the Sentry plugin never registers those tasks, and
             # Gradle fails task selection on -x for a task that does not exist.
@@ -299,6 +299,15 @@ jobs:
               echo "compatPath=${COMPAT_RENAMED}" >> $GITHUB_OUTPUT
             fi
 
+            # Optional Dhizuku compat add-on (af.shizuku.plus.dhizuku) for Dhizuku-API <= 2.4 clients.
+            DHIZUKU_FILE=$(find dhizuku-compat/build/outputs/apk/release -name "*.apk" -type f 2>/dev/null | head -1)
+            if [ -n "$DHIZUKU_FILE" ]; then
+              sign_apk "$DHIZUKU_FILE"
+              DHIZUKU_RENAMED="$(dirname "$DHIZUKU_FILE")/shizuku-dhizuku-compat.apk"
+              mv "$DHIZUKU_FILE" "$DHIZUKU_RENAMED"
+              echo "dhizukuCompatPath=${DHIZUKU_RENAMED}" >> $GITHUB_OUTPUT
+            fi
+
             echo "artifactName=shizukuplus.apk" >> $GITHUB_OUTPUT
             echo "filePath=${PLUS_RENAMED}" >> $GITHUB_OUTPUT
             echo "dropinPath=${DROPIN_RENAMED}" >> $GITHUB_OUTPUT
@@ -329,6 +338,13 @@ jobs:
         with:
           name: shizuku-compat.apk
           path: ${{ steps.buildWithGradle.outputs.compatPath }}
+
+      - name: Upload Dhizuku Compat Artifact
+        if: ${{ steps.buildWithGradle.outputs.dhizukuCompatPath != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: shizuku-dhizuku-compat.apk
+          path: ${{ steps.buildWithGradle.outputs.dhizukuCompatPath }}
 
       - name: Upload Version File
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -503,6 +519,13 @@ jobs:
         with:
           name: shizuku-compat.apk
           path: files/compat
+
+      - name: Download Dhizuku Compat Artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        continue-on-error: true
+        with:
+          name: shizuku-dhizuku-compat.apk
+          path: files/dhizuku-compat
 
       - name: Generate Release Notes
         id: release_notes
@@ -715,6 +738,11 @@ jobs:
 
           COMPAT_APK=$(find files/compat -name "*.apk" -type f 2>/dev/null | head -1)
           [ -n "$COMPAT_APK" ] && attach "$COMPAT_APK" "Shizuku+-Compat-Hub-${VERSION}"
+
+          # Own package (af.shizuku.plus.dhizuku) and own folder, so the Plus/Drop-In picks above
+          # never match it.
+          DHIZUKU_COMPAT_APK=$(find files/dhizuku-compat -name "*.apk" -type f 2>/dev/null | head -1)
+          [ -n "$DHIZUKU_COMPAT_APK" ] && attach "$DHIZUKU_COMPAT_APK" "Shizuku+-Dhizuku-Compat-${VERSION}"
 
           # When promoting from prerelease to stable (IS_PRERELEASE=false via workflow_dispatch
           # without the prerelease flag), delete the existing prerelease first. The push to master
