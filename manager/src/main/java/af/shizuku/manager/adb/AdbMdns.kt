@@ -91,8 +91,9 @@ class AdbMdns(
             val next = resolveQueue.poll() ?: return
             isResolving = true
             val token = ++resolveToken
+            val resolveListener = ResolveListener(this, token)
             try {
-                nsdManager.resolveService(next, ResolveListener(this, token))
+                nsdManager.resolveService(next, resolveListener)
             } catch (e: Exception) {
                 Timber.tag(TAG).w(e, "resolveService failed to launch for ${next.serviceName}")
                 isResolving = false
@@ -106,6 +107,11 @@ class AdbMdns(
                 mdnsScope.launch {
                     delay(RESOLVE_TIMEOUT_MS)
                     Timber.tag(TAG).w("resolve of ${next.serviceName} timed out")
+                    // Android 14+ can cancel it; otherwise the stuck resolve keeps the next one
+                    // failing with FAILURE_ALREADY_ACTIVE.
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                        runCatching { nsdManager.stopServiceResolution(resolveListener) }
+                    }
                     onResolveFinished(token)
                 }
         }
@@ -376,7 +382,8 @@ class AdbMdns(
         }
 
         override fun onServiceResolved(nsdServiceInfo: NsdServiceInfo) {
-            if (!adbMdns.onResolveFinished(token)) return
+            // A late answer (its resolve already timed out) is still a valid port.
+            if (!adbMdns.onResolveFinished(token) && !adbMdns.running) return
             adbMdns.onServiceResolved(nsdServiceInfo)
         }
     }
