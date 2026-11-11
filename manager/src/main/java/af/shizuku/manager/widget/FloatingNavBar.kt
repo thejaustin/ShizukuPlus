@@ -1045,8 +1045,9 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
 
     /**
      * Points the bar's BlurView at the screen's BlurTarget. Returns false (plain translucent card)
-     * below API 31 - the RenderScript path is deprecated and too slow for a always-visible bar - or
-     * when the screen wasn't wrapped (setting turned on after the screen was created).
+     * below API 31 - BlurView's pre-RenderEffect paths (OpenGL on API 29-30, RenderScript below)
+     * snapshot on the UI thread and are too costly for an always-visible bar - or when the screen
+     * wasn't wrapped (setting turned on after the screen was created).
      */
     private fun setupBlur(
         activity: Activity,
