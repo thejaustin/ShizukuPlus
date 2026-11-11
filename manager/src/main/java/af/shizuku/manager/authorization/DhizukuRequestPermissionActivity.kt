@@ -22,7 +22,9 @@ import rikka.html.text.HtmlCompat
  * which start `<owner>.action.REQUEST_DHIZUKU_PERMISSION` when we're the device owner. Without
  * this activity the library reports "denied" straight away (#670).
  *
- * Users who never turned on Dhizuku Mode never see anything: the request is denied silently.
+ * Users who never turned on Dhizuku Mode never see anything: the request is denied silently. So
+ * is a request for an app that never connected to DhizukuProvider, because the uid in the
+ * request can't be checked here.
  * Allowing stores a normal Shizuku+ grant, so the app shows up (and can be revoked) in the usual
  * app list.
  */
@@ -39,7 +41,13 @@ class DhizukuRequestPermissionActivity : AppActivity() {
         listener = extras?.getBinder(PARAM_CLIENT_REQUEST_PERMISSION_BINDER)
         val packageName = if (uid >= 0) packageManager.getPackagesForUid(uid)?.firstOrNull() else null
 
-        if (!ShizukuSettings.isDhizukuModeEnabled() || packageName == null || listener == null) {
+        // The uid is only what the request claims; see DhizukuProvider.rememberClient.
+        if (!ShizukuSettings.isDhizukuModeEnabled() ||
+            packageName == null ||
+            listener == null ||
+            !af.shizuku.manager.DhizukuProvider
+                .hasConnected(uid)
+        ) {
             reply(false)
             finish()
             return

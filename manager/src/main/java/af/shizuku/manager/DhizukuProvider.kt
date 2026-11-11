@@ -292,6 +292,7 @@ class DhizukuProvider : ContentProvider() {
         arg: String?,
         extras: Bundle?,
     ): Bundle? {
+        rememberClient(extras)
         val bundle = Bundle()
         val adminComponent =
             android.content.ComponentName(
@@ -305,5 +306,40 @@ class DhizukuProvider : ContentProvider() {
         bundle.putParcelable("owner", adminComponent)
         bundle.putParcelable("dhizuku_component", adminComponent)
         return bundle
+    }
+
+    // Every client calls Dhizuku.init() (this provider) before requestPermission(), and only
+    // here does Android tell us who is really calling. The permission activity is exported and
+    // has nothing but the uid the request claims, so it only answers uids seen here: another app
+    // can't raise an "Allow X?" prompt for an app that never asked.
+    private fun rememberClient(extras: Bundle?) {
+        val uid = Binder.getCallingUid()
+        if (uid == android.os.Process.myUid()) return
+        val pm = context?.packageManager ?: return
+        val isCompatAddOn =
+            pm.getPackagesForUid(uid)?.contains(COMPAT_PACKAGE) == true &&
+                runCatching { pm.checkSignatures(context!!.packageName, COMPAT_PACKAGE) }
+                    .getOrDefault(android.content.pm.PackageManager.SIGNATURE_NO_MATCH) ==
+                android.content.pm.PackageManager.SIGNATURE_MATCH
+        if (isCompatAddOn) {
+            val forwarded = runCatching { extras?.getInt(EXTRA_FORWARDED_CLIENT_UID, -1) }.getOrNull() ?: -1
+            if (forwarded >= 0) connectedUids.add(forwarded)
+            return
+        }
+        connectedUids.add(uid)
+    }
+
+    companion object {
+        private const val COMPAT_PACKAGE = "af.shizuku.plus.dhizuku"
+
+        // Set by the Dhizuku Compat add-on (DhizukuProviderProxy); keep the two in sync.
+        private const val EXTRA_FORWARDED_CLIENT_UID = "af.shizuku.plus.dhizuku.client_uid"
+
+        private val connectedUids: MutableSet<Int> =
+            java.util.concurrent.ConcurrentHashMap
+                .newKeySet()
+
+        /** Whether [uid] has connected to this provider since the app process started. */
+        fun hasConnected(uid: Int): Boolean = uid in connectedUids
     }
 }

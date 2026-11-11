@@ -4,6 +4,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Bundle;
 
 /**
@@ -15,6 +16,9 @@ import android.os.Bundle;
  * uid) still decides what each app may do.
  */
 public class DhizukuProviderProxy extends ContentProvider {
+    // Read by the manager's DhizukuProvider; keep the two in sync.
+    private static final String EXTRA_CLIENT_UID = "af.shizuku.plus.dhizuku.client_uid";
+
 
     private static final String[] MANAGER_AUTHORITIES = {
         "af.shizuku.plus.api.dhizuku_server.provider",
@@ -28,10 +32,14 @@ public class DhizukuProviderProxy extends ContentProvider {
 
     @Override
     public Bundle call(String method, String arg, Bundle extras) {
+        // The manager sees this app as the caller, so pass on who really asked. It only believes
+        // this from us (same signing key), and uses it to tell which apps may ask for permission.
+        Bundle forwarded = extras != null ? new Bundle(extras) : new Bundle();
+        forwarded.putInt(EXTRA_CLIENT_UID, Binder.getCallingUid());
         for (String authority : MANAGER_AUTHORITIES) {
             try {
                 Bundle reply =
-                        getContext().getContentResolver().call(Uri.parse("content://" + authority), method, arg, extras);
+                        getContext().getContentResolver().call(Uri.parse("content://" + authority), method, arg, forwarded);
                 if (reply != null) return reply;
             } catch (Exception ignored) {
                 // Not installed (or not that flavor); try the next one.
