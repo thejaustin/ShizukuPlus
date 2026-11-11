@@ -57,6 +57,9 @@ object ActivityLogText {
             Regex("Connection: connecting via (.+) on port (\\d+)") to R.string.log_entry_connecting_via,
             Regex("Connection: restored after (\\d+)s") to R.string.log_entry_restored,
             Regex("Watchdog: restarting after crash #(\\d+)") to R.string.log_entry_watchdog_restarting,
+            Regex("Watchdog: the server came back after restart #(\\d+)") to R.string.log_entry_watchdog_recovered_n,
+            Regex("Watchdog: the server came back after a second try at restart #(\\d+)") to R.string.log_entry_watchdog_recovered_retry,
+            Regex("Watchdog: restart #(\\d+) never came back, trying once more") to R.string.log_entry_watchdog_retrying,
         )
 
     /** App-list action tokens logged after "Swipe: " / "Long-press: ", and the labels they show as. */

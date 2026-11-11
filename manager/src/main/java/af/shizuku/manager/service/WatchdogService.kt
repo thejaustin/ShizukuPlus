@@ -233,27 +233,7 @@ class WatchdogService : Service() {
                                     .maybePost(applicationContext)
                             }
                             ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: restarting after crash #$consecutiveCrashes")
-                            if (wasFirstRestart) {
-                                pendingRecoveryJob?.cancel()
-                                pendingRecoveryJob =
-                                    scope.launch {
-                                        val cameBack =
-                                            withTimeoutOrNull(RECOVERY_WAIT_MS) {
-                                                if (ShizukuStateMachine.get() == ShizukuStateMachine.State.RUNNING) {
-                                                    true
-                                                } else {
-                                                    ShizukuStateMachine.asFlow().first { it == ShizukuStateMachine.State.RUNNING }
-                                                    true
-                                                }
-                                            } ?: false
-                                        if (cameBack) {
-                                            // Auto-run snippets run from the RUNNING transition.
-                                            ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: the server came back after restart #1")
-                                        } else {
-                                            reportCrash(stopped = true)
-                                        }
-                                    }
-                            }
+                            verifyRestart(consecutiveCrashes)
                             // Short grace first: whoever killed the server (adb or a PC starting
                             // it again, automation, the starter) is often already starting a new
                             // one. Starting ours on top raced it: both starters killed the old
@@ -291,6 +271,7 @@ class WatchdogService : Service() {
                                         lastRestartMs = System.currentTimeMillis()
                                         consecutiveCrashes++
                                         ShizukuReceiverStarter.start(applicationContext)
+                                        verifyRestart(consecutiveCrashes)
                                     }
                                 }
                         }
@@ -369,6 +350,42 @@ class WatchdogService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun buildNotification(): Notification = buildNotification(this, currentLiveStatus)
+
+    // Every restart is checked, not only the first. A start can report success and leave no
+    // server behind; the state machine then stays CRASHED with no new transition, so nothing
+    // else would ever act on it. One retry covers a server that dies on arrival. A new crash
+    // cancels this job (the next round checks its own restart) and RUNNING ends it.
+    private fun verifyRestart(restartNo: Int) {
+        pendingRecoveryJob?.cancel()
+        pendingRecoveryJob =
+            scope.launch {
+                for (attempt in 0..1) {
+                    val cameBack =
+                        withTimeoutOrNull(RECOVERY_WAIT_MS) {
+                            if (ShizukuStateMachine.get() != ShizukuStateMachine.State.RUNNING) {
+                                ShizukuStateMachine.asFlow().first { it == ShizukuStateMachine.State.RUNNING }
+                            }
+                            true
+                        } ?: false
+                    if (cameBack) {
+                        // Auto-run snippets run from the RUNNING transition.
+                        val how = if (attempt == 0) "restart" else "a second try at restart"
+                        ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: the server came back after $how #$restartNo")
+                        return@launch
+                    }
+                    // The user stopped it meanwhile: that's not an outage to report.
+                    if (af.shizuku.manager.utils.UserStopFlag
+                            .isSet()
+                    ) {
+                        return@launch
+                    }
+                    if (attempt == 1 || !ShizukuSettings.isWatchdogAutoRestartEnabled()) break
+                    ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: restart #$restartNo never came back, trying once more")
+                    ShizukuReceiverStarter.start(applicationContext)
+                }
+                reportCrash(stopped = true)
+            }
+    }
 
     /**
      * The server crashed again ([stopped] false: the watchdog is restarting it) or did not come

@@ -1926,6 +1926,9 @@
     <string name="log_entry_watchdog_default_on">Watchdog: turned on with the first server start (the default for a new install)</string>
     <string name="log_entry_watchdog_restarting">Watchdog: restarting after crash #%1$s</string>
     <string name="log_entry_watchdog_recovered">Watchdog: the server came back after the first restart</string>
+    <string name="log_entry_watchdog_recovered_n">Watchdog: the server came back after restart #%1$s</string>
+    <string name="log_entry_watchdog_recovered_retry">Watchdog: the server came back on the second try at restart #%1$s</string>
+    <string name="log_entry_watchdog_retrying">Watchdog: restart #%1$s didn\'t come back, trying once more</string>
     <string name="log_entry_watchdog_undid_background">Watchdog: re-enabled background activity that a battery restriction had blocked</string>
     <string name="log_entry_watchdog_undid_standby">Watchdog: moved the app out of the battery standby bucket that held back background work</string>
     <string name="log_entry_watchdog_undid_samsung">Watchdog: re-enabled the app that Samsung put in Deep sleeping apps</string>
