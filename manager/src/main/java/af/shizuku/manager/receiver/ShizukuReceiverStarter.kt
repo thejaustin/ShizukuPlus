@@ -653,21 +653,25 @@ object ShizukuReceiverStarter {
         if (!Shell.getShell().isRoot) {
             Shell.getCachedShell()?.close()
             // Plan B: Try direct su binary execution if su lives outside standard PATH (e.g. KernelSU / APatch / custom_su_path)
-            val fallbackSu =
+            val suCandidates =
                 af.shizuku.manager.utils.EnvironmentUtils
-                    .findSuBinary()
-            if (fallbackSu != null) {
+                    .findSuBinaries()
+            if (suCandidates.isNotEmpty()) {
                 // Receivers call start() on the main thread and the direct su run can take up to
                 // 15 s (root prompt); keep it off the main thread, past the broadcast ANR limit.
                 ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
                 scope.launch(Dispatchers.IO) {
-                    if (af.shizuku.manager.utils.EnvironmentUtils
-                            .runWithSuBinary(fallbackSu, Starter.internalCommand)
+                    // Every candidate, not just the first: an OEM su that refuses apps can come
+                    // ahead of the root manager's (#669).
+                    if (suCandidates.any {
+                            af.shizuku.manager.utils.EnvironmentUtils
+                                .runWithSuBinary(it, Starter.internalCommand)
+                        }
                     ) {
                         ShizukuStateMachine.update()
                         return@launch
                     }
-                    Timber.tag(AppConstants.TAG).w("Direct su fallback ($fallbackSu) failed")
+                    Timber.tag(AppConstants.TAG).w("Direct su fallback failed for %s", suCandidates)
                     recoverFromFailedStart()
                     Sentry.addBreadcrumb(
                         Breadcrumb("Background Root start failed - direct su failed").apply {

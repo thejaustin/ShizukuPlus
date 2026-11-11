@@ -430,17 +430,23 @@ class ViewModel(
 
                 if (!Shell.getShell().isRoot) {
                     Shell.getCachedShell()?.close()
-                    val fallbackSu =
-                        af.shizuku.manager.utils.EnvironmentUtils
-                            .findSuBinary()
-                    if (fallbackSu != null) {
+                    // Each candidate in turn: an OEM su can exist and even run yet refuse apps
+                    // ("Permission denied" from a Moto /product/bin/su, #669), which used to end
+                    // the attempt before Magisk's su was ever asked.
+                    for (fallbackSu in af.shizuku.manager.utils.EnvironmentUtils
+                        .findSuBinaries()) {
                         log("Standard root shell unavailable; trying direct su binary ($fallbackSu)...\n")
-                        try {
-                            ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
-                            val proc =
+                        val proc =
+                            try {
+                                ShizukuStateMachine.set(ShizukuStateMachine.State.STARTING)
                                 ProcessBuilder(fallbackSu, "-c", Starter.internalCommand)
                                     .redirectErrorStream(true)
                                     .start()
+                            } catch (e: java.io.IOException) {
+                                log("Can't run $fallbackSu: ${e.message}\n")
+                                continue
+                            }
+                        try {
                             proc.inputStream.bufferedReader().useLines { lines ->
                                 lines.forEach { log(it) }
                             }

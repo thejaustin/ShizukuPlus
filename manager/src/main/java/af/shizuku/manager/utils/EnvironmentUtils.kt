@@ -130,23 +130,43 @@ object EnvironmentUtils {
      * libsu's default `Shell.getShell()` cannot find `su` in the standard environment PATH.
      */
     @JvmStatic
-    fun findSuBinary(): String? {
-        runCatching {
-            val custom = ShizukuSettings.getPreferences().getString("custom_su_path", null)?.trim()
-            if (!custom.isNullOrEmpty()) {
-                val customFile = java.io.File(custom)
-                if (customFile.exists()) return customFile.absolutePath
-            }
-        }
-        val paths = System.getenv("PATH")?.split(":")?.toMutableList() ?: mutableListOf()
-        paths.addAll(
+    fun findSuBinary(): String? = findSuBinaries().firstOrNull()
+
+    /**
+     * Every `su` worth trying, best first: the user's custom path, then root managers' own
+     * locations, then PATH. PATH can't go first: it lists /product/bin before /system/bin, and
+     * some OEM builds (Moto, #669) ship a /product/bin/su that apps can't run, which hid
+     * Magisk's su completely. Ones we can execute come before ones that merely exist.
+     */
+    fun findSuBinaries(): List<String> {
+        val custom =
+            runCatching {
+                ShizukuSettings
+                    .getPreferences()
+                    .getString("custom_su_path", null)
+                    ?.trim()
+                    ?.takeIf { it.isNotEmpty() && java.io.File(it).exists() }
+                    ?.let { java.io.File(it).absolutePath }
+            }.getOrNull()
+        return (listOfNotNull(custom) + findStandardSuBinaries()).distinct()
+    }
+
+    private fun findStandardSuBinaries(): List<String> {
+        val dirs = mutableListOf<String>()
+        dirs.addAll(
             listOf(
                 "/data/adb/ksu/bin",
                 "/data/adb/ap/bin",
                 "/data/adb/magisk",
+                "/debug_ramdisk",
                 "/sbin",
                 "/system/bin",
                 "/system/xbin",
+            ),
+        )
+        System.getenv("PATH")?.split(":")?.let { dirs.addAll(it) }
+        dirs.addAll(
+            listOf(
                 "/data/local/xbin",
                 "/data/local/bin",
                 "/system/sd/xbin",
@@ -154,11 +174,15 @@ object EnvironmentUtils {
                 "/data/local",
             ),
         )
-        for (path in paths) {
-            val file = java.io.File(path, "su")
-            if (file.exists()) return file.absolutePath
-        }
-        return null
+        val found =
+            dirs
+                .filter { it.isNotBlank() }
+                .map { java.io.File(it, "su") }
+                .filter { runCatching { it.exists() }.getOrDefault(false) }
+                .map { it.absolutePath }
+                .distinct()
+        val (runnable, rest) = found.partition { runCatching { java.io.File(it).canExecute() }.getOrDefault(false) }
+        return runnable + rest
     }
 
     private fun checkSuExists(): Boolean = findSuBinary() != null
