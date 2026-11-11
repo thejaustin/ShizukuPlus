@@ -56,6 +56,12 @@ if (propFile.canRead()) {
 
 // The API modules live in the api/ git submodule. Without it Gradle fails with "Configuring
 // project ':rish' without an existing directory"; say what to do instead.
+// GitHub's automatic dependency submission checks the repo out without submodules and can't be
+// told otherwise, so on CI fetch it here (it's public) instead of failing every run.
+if (!file("$root${File.separator}api").isDirectory() && root == "api" && System.getenv("GITHUB_ACTIONS") == "true") {
+    def fetch = ["git", "submodule", "update", "--init", "--recursive"].execute(null, settingsDir)
+    fetch.waitForProcessOutput(System.out, System.err)
+}
 if (!file("$root${File.separator}api").isDirectory()) {
     throw new GradleException("The api submodule is missing. Run: git submodule update --init --recursive")
 }
