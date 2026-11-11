@@ -43,31 +43,23 @@ class MainActivity : HomeActivity() {
 
             Timber.d("Checking onboarding status: lastSeen=$lastSeenOnboardingVersion, current=$currentCode")
             Sentry.addBreadcrumb(Breadcrumb("Checking onboarding status: lastSeen=$lastSeenOnboardingVersion, current=$currentCode"))
-            if (!ShizukuSettings.isOnboardingSeen()) {
-                val intent = Intent(this, af.shizuku.manager.onboarding.OnboardingActivity::class.java)
-                val isExistingUser =
+            // Onboarding is for new installs only. People updating get What's New below instead:
+            // sending them through onboarding's "new features" pages on every update finished this
+            // activity before the changelog could show, and marked that version's changelog seen.
+            // The feature tour stays reachable from What's New and About.
+            val isExistingUser =
+                ShizukuSettings.isOnboardingSeen() ||
                     ShizukuSettings.isReturningUser() ||
-                        ShizukuSettings.getLastSeenChangelogVersion() != -1 ||
-                        ShizukuSettings.getLastLaunchMode() != ShizukuSettings.LaunchMethod.UNKNOWN ||
-                        ShizukuStateMachine.isRunning()
-                if (isExistingUser) {
-                    intent.putExtra(af.shizuku.manager.onboarding.OnboardingActivity.EXTRA_NEW_FEATURES_ONLY, true)
-                    intent.putExtra(af.shizuku.manager.onboarding.OnboardingActivity.EXTRA_SINCE_VERSION_CODE, lastSeenOnboardingVersion)
-                }
-                startActivity(intent)
-                finish()
-                return
-            } else if (lastSeenOnboardingVersion < currentCode) {
-                // Existing user updated to a newer version: show new features added since last update
-                val intent =
-                    Intent(this, af.shizuku.manager.onboarding.OnboardingActivity::class.java).apply {
-                        putExtra(af.shizuku.manager.onboarding.OnboardingActivity.EXTRA_NEW_FEATURES_ONLY, true)
-                        putExtra(af.shizuku.manager.onboarding.OnboardingActivity.EXTRA_SINCE_VERSION_CODE, lastSeenOnboardingVersion)
-                    }
-                startActivity(intent)
+                    ShizukuSettings.getLastSeenChangelogVersion() != -1 ||
+                    ShizukuSettings.getLastLaunchMode() != ShizukuSettings.LaunchMethod.UNKNOWN ||
+                    ShizukuStateMachine.isRunning()
+            if (!isExistingUser) {
+                startActivity(Intent(this, af.shizuku.manager.onboarding.OnboardingActivity::class.java))
                 finish()
                 return
             }
+            if (!ShizukuSettings.isOnboardingSeen()) ShizukuSettings.setOnboardingSeen()
+            if (lastSeenOnboardingVersion < currentCode) ShizukuSettings.setLastSeenOnboardingVersion(currentCode)
 
             // Show what's new after an update. Separate from the Sentry-quota-reset version
             // tracking in ShizukuApplication.onCreate() — that one bumps its own flag before any

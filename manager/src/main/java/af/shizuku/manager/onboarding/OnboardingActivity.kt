@@ -409,9 +409,8 @@ class OnboardingActivity : AppActivity() {
                 af.shizuku.manager.BuildConfig.VERSION_CODE
             }
         ShizukuSettings.setLastSeenOnboardingVersion(currentCode)
-        if (isNewFeaturesOnly) {
-            ShizukuSettings.setLastSeenChangelogVersion(currentCode)
-        }
+        // A new install has nothing to catch up on: What's New starts with the next update.
+        ShizukuSettings.setLastSeenChangelogVersion(currentCode)
         if (isTaskRoot || !isNewFeaturesOnly) {
             startActivity(Intent(this, MainActivity::class.java))
         }
