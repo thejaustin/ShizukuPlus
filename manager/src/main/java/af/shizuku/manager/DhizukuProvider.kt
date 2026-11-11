@@ -311,7 +311,9 @@ class DhizukuProvider : ContentProvider() {
     // Every client calls Dhizuku.init() (this provider) before requestPermission(), and only
     // here does Android tell us who is really calling. The permission activity is exported and
     // has nothing but the uid the request claims, so it only answers uids seen here: another app
-    // can't raise an "Allow X?" prompt for an app that never asked.
+    // can't raise an "Allow X?" prompt for an app that never asked. In memory is enough: clients
+    // (Amarok, MDPC) call init() right before asking, and init() calls here again whenever this
+    // process has died since.
     private fun rememberClient(extras: Bundle?) {
         val uid = Binder.getCallingUid()
         if (uid == android.os.Process.myUid()) return
@@ -323,7 +325,10 @@ class DhizukuProvider : ContentProvider() {
                 android.content.pm.PackageManager.SIGNATURE_MATCH
         if (isCompatAddOn) {
             val forwarded = runCatching { extras?.getInt(EXTRA_FORWARDED_CLIENT_UID, -1) }.getOrNull() ?: -1
-            if (forwarded >= 0) connectedUids.add(forwarded)
+            // The add-on from r3270/r3272 doesn't forward the uid. Its users would otherwise be
+            // denied without a word, so while one is in use the check is skipped (the old
+            // behavior) until they update it.
+            if (forwarded >= 0) connectedUids.add(forwarded) else oldCompatAddOnSeen = true
             return
         }
         connectedUids.add(uid)
@@ -339,7 +344,9 @@ class DhizukuProvider : ContentProvider() {
             java.util.concurrent.ConcurrentHashMap
                 .newKeySet()
 
+        @Volatile private var oldCompatAddOnSeen = false
+
         /** Whether [uid] has connected to this provider since the app process started. */
-        fun hasConnected(uid: Int): Boolean = uid in connectedUids
+        fun hasConnected(uid: Int): Boolean = oldCompatAddOnSeen || uid in connectedUids
     }
 }

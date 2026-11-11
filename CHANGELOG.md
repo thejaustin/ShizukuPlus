@@ -22,6 +22,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Fluid Home card dragging** — Dynamic overlap-area and center-containment target resolution, card-wide drag touches in edit mode, and smooth edge auto-scrolling.
 
 ### 🔒 Security & Privacy
+- **Dhizuku prompts can't be faked** — Only apps that actually connected to Shizuku+ can bring up the Dhizuku Allow/Deny prompt, so another app can't show one in their name. If you use the Dhizuku Compat add-on, update it together with Shizuku+.
 - **Protected Plus APIs** — Sensitive device control and private app data APIs are restricted to user-confirmed apps in Developer options.
 - **Persistent debugging warning** — Alerts for Wireless ADB remaining active on untrusted networks always display regardless of notification levels.
 - **Client key authentication** — Local ADB connections require explicit key verification with matching fingerprint prompts.
