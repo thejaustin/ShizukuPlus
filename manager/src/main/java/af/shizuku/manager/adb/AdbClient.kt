@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import javax.net.ssl.SSLSocket
 
 private const val TAG = "AdbClient"
+private const val MAX_PAYLOAD = 1024 * 1024
 
 class AdbClient(
     private val host: String,
@@ -314,6 +315,11 @@ class AdbClient(
         val dataLength = buffer.int
         val checksum = buffer.int
         val magic = buffer.int
+        // Check the header before trusting its length: a corrupt or hostile one could ask for a
+        // 2 GB buffer. 1 MiB is adb's own MAX_PAYLOAD; we advertise far less (A_MAXDATA).
+        if (magic != (command xor -1) || dataLength > MAX_PAYLOAD) {
+            throw IllegalArgumentException("invalid adb header (command=$command, length=$dataLength)")
+        }
         val data: ByteArray?
         if (dataLength >= 0) {
             data = ByteArray(dataLength)
