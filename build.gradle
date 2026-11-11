@@ -1,4 +1,15 @@
 buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // AGP 9 built-in Kotlin ships KGP 2.2.10, whose compiler cannot read Kotlin 2.4 metadata
+        // (kotlinx-serialization 1.12 / coil 3.6 are built against kotlin-stdlib 2.4.10).
+        // Putting a newer KGP on the root classpath is the supported way to upgrade the compiler.
+        // Keep in sync with the compose/serialization plugin versions in settings.gradle.
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.21"
+    }
     configurations.all {
         resolutionStrategy {
             force "org.bouncycastle:bcprov-jdk18on:1.86"
@@ -13,7 +24,9 @@ buildscript {
 plugins {
     id "idea"
     id "com.android.library" apply false
-    id "com.google.devtools.ksp" version "2.3.6" apply false
+    id "com.google.devtools.ksp" apply false
+    id "org.jetbrains.kotlin.plugin.compose" apply false
+    id "org.jetbrains.kotlin.plugin.serialization" apply false
     id "io.gitlab.arturbosch.detekt" version "1.23.6" apply false
 }
 

@@ -1,6 +1,6 @@
 plugins {
     id "com.android.library"
-    id "org.jetbrains.kotlin.plugin.compose" version "2.2.20"
+    id "org.jetbrains.kotlin.plugin.compose"
 }
 
 android {
@@ -14,10 +14,6 @@ android {
     buildFeatures {
         viewBinding = true
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "2.2.20"
     }
 }
 
