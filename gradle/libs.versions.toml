@@ -82,7 +82,7 @@ compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 # Pinned past the BOM for the M3 Expressive APIs (MotionScheme.expressive, etc.).
-compose-material3 = { group = "androidx.compose.material3", name = "material3", version = "1.5.0-alpha22" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3", version = "1.5.0-beta02" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version = "1.13.0" }
 
 mavericks = { group = "com.airbnb.android", name = "mavericks", version.ref = "mavericks" }
