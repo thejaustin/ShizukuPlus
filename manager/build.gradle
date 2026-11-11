@@ -4,12 +4,12 @@ import com.android.build.gradle.internal.tasks.CompileArtProfileTask
 
 plugins {
     id "com.android.application"
-    id "org.jetbrains.kotlin.plugin.compose" version "2.2.20"
+    id "org.jetbrains.kotlin.plugin.compose"
     id "dev.rikka.tools.refine"
     id "dev.rikka.tools.autoresconfig"
     id "dev.rikka.tools.materialthemebuilder"
     id "io.sentry.android.gradle"
-    id "org.jetbrains.kotlin.plugin.serialization" version "2.2.20"
+    id "org.jetbrains.kotlin.plugin.serialization"
     id "com.diffplug.spotless"
 }
 
@@ -38,9 +38,6 @@ android {
         prefab = true
         aidl = true
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "2.2.20"
     }
     signingConfigs {
         sign {}
