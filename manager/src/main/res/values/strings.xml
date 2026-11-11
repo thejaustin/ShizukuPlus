@@ -1498,6 +1498,10 @@
     <string name="dhizuku_setup_message">Dhizuku Mode requires Shizuku+ to be set as Device Owner. Run this command once via ADB while USB debugging is enabled:\n\n%1$s\n\nAfter running the command, restart Shizuku.</string>
     <string name="dhizuku_setup_copy">Copy Command</string>
     <string name="dhizuku_setup_copied">Command copied to clipboard</string>
+    <string name="dhizuku_setup_activate_now">Activate now</string>
+    <string name="dhizuku_activate_success">Shizuku+ is now the Device Owner</string>
+    <string name="dhizuku_activate_failed_title">Couldn\'t activate</string>
+    <string name="dhizuku_activate_failed_message">Android said:\n\n%1$s\n\nThis usually means accounts are signed in on the phone. Android only allows a Device Owner while there are none: remove them in Settings → Accounts, activate, then add them back.</string>
     <string name="dhizuku_status_active">Device Owner: Active</string>
     <string name="dhizuku_status_not_set">Device Owner not set — tap for setup instructions</string>
 

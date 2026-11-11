@@ -459,19 +459,73 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun showDhizukuSetupDialog(ctx: Context) {
-        val command =
-            "adb shell dpm set-device-owner " +
-                "${ctx.packageName}/af.shizuku.manager.admin.DhizukuAdminReceiver"
-        MaterialAlertDialogBuilder(ctx)
-            .setTitle(R.string.dhizuku_setup_title)
-            .setMessage(getString(R.string.dhizuku_setup_message, command))
-            .setPositiveButton(R.string.dhizuku_setup_copy) { _, _ ->
-                val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                clipboard.setPrimaryClip(ClipData.newPlainText("dpm command", command))
-                notifyUser(R.string.dhizuku_setup_copied)
-            }.setNegativeButton(android.R.string.cancel, null)
-            .show()
+        val component = "${ctx.packageName}/af.shizuku.manager.admin.DhizukuAdminReceiver"
+        val command = "adb shell dpm set-device-owner $component"
+        val builder =
+            MaterialAlertDialogBuilder(ctx)
+                .setTitle(R.string.dhizuku_setup_title)
+                .setMessage(getString(R.string.dhizuku_setup_message, command))
+                .setPositiveButton(R.string.dhizuku_setup_copy) { _, _ ->
+                    val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    clipboard.setPrimaryClip(ClipData.newPlainText("dpm command", command))
+                    notifyUser(R.string.dhizuku_setup_copied)
+                }.setNegativeButton(android.R.string.cancel, null)
+        // The running server is already the ADB shell (or root), so it can run the same command
+        // on the phone; no PC needed (#674).
+        if (serverCanSetDeviceOwner()) {
+            builder.setNeutralButton(R.string.dhizuku_setup_activate_now) { _, _ -> activateDeviceOwner(ctx, component) }
+        }
+        builder.show()
     }
+
+    private fun serverCanSetDeviceOwner(): Boolean =
+        runCatching { Shizuku.pingBinder() && Shizuku.getUid().let { it == 0 || it == 2000 } }.getOrDefault(false)
+
+    private fun activateDeviceOwner(
+        ctx: Context,
+        component: String,
+    ) {
+        val appContext = ctx.applicationContext
+        lifecycleScope.launch(Dispatchers.IO) {
+            val output = runDpm(component)
+            val dpm = appContext.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+            val isOwner = runCatching { dpm.isDeviceOwnerApp(appContext.packageName) }.getOrDefault(false)
+            withContext(Dispatchers.Main) {
+                if (!isAdded) return@withContext
+                if (isOwner) {
+                    notifyUser(R.string.dhizuku_activate_success, long = true)
+                    findPreference<TwoStatePreference>(KEY_DHIZUKU_MODE)?.let { updateDhizukuDeviceOwnerStatus(it) }
+                } else {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.dhizuku_activate_failed_title)
+                        .setMessage(getString(R.string.dhizuku_activate_failed_message, output.ifBlank { "-" }))
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+                }
+            }
+        }
+    }
+
+    // dpm's own message (stdout and stderr) is the useful part when it refuses, e.g. because
+    // accounts are signed in.
+    @Suppress("DEPRECATION")
+    private fun runDpm(component: String): String =
+        try {
+            val proc = Shizuku.newProcess(arrayOf("sh", "-c", "dpm set-device-owner $component 2>&1"), null, null)
+            val out = StringBuilder()
+            val reader =
+                Thread {
+                    runCatching { out.append(proc.inputStream.bufferedReader().use { it.readText() }) }
+                }.apply {
+                    isDaemon = true
+                    start()
+                }
+            if (!proc.waitForTimeout(30, java.util.concurrent.TimeUnit.SECONDS)) proc.destroy()
+            reader.join(2_000)
+            out.toString().trim()
+        } catch (e: Exception) {
+            e.message ?: e.javaClass.simpleName
+        }
 
     private fun isBootloaderUnlocked(): Boolean {
         fun readProp(key: String): String? =
