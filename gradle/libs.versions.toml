@@ -1,17 +1,17 @@
 [versions]
-mockk = "1.13.13"
-agp = "9.4.0"
-coreKtx = "1.15.0"
-appcompat = "1.7.0"
+mockk = "1.14.11"
+agp = "9.4.1"
+coreKtx = "1.19.1"
+appcompat = "1.8.0"
 material = "1.14.0"
-coroutines = "1.10.2"
-lifecycle = "2.9.4"
-fragment = "1.8.7"
+coroutines = "1.11.0"
+lifecycle = "2.11.0"
+fragment = "1.9.1"
 recyclerview = "1.4.0"
 preference = "1.2.1"
-browser = "1.8.0"
-work = "2.10.4"
-transition = "1.5.1"
+browser = "1.10.0"
+work = "2.12.0"
+transition = "1.7.2"
 dynamicanimation = "1.1.0"
 interpolator = "1.0.0"
 rikkax-appcompat = "1.6.1"
@@ -23,39 +23,39 @@ rikkax-layoutinflater = "1.3.0"
 rikkax-preference = "1.0.3"
 rikkax-recyclerview = "1.3.2"
 rikkax-lifecycle = "1.0.1"
-sentry = "8.40.0"
+sentry = "8.62.0"
 libsu = "6.0.0"
 blurview = "version-3.2.0"
 graphics-shapes = "1.1.0"
-hiddenapibypass = "6.1"
+hiddenapibypass = "6.2"
 bouncycastle = "1.86"
 appiconloader = "1.5.0"
 boringssl = "20250114"
 libcxx = "27.0.12077973"
 hidden-api = "4.4.0"
 refine = "4.4.0"
-room = "2.6.1"
+room = "2.8.5"
 timber = "5.0.1"
 coil = "3.4.0"
-koin = "4.0.2"
-serialization = "1.8.0"
-lottie = "6.6.2"
+koin = "4.2.2"
+serialization = "1.11.0"
+lottie = "6.7.1"
 markwon = "4.6.2"
-mavericks = "3.0.9"
+mavericks = "3.1.1"
 kotestJunit5 = "5.9.1"
-robolectric = "4.14.1"
+robolectric = "4.17"
 junitVintage = "5.10.2"
-coroutines-test = "1.10.2"
+coroutines-test = "1.11.0"
 leakcanary = "2.14"
 biometric = "1.2.0-alpha05"
-play-integrity = "1.4.0"
-androidx-test-core = "1.6.1"
-compose-bom = "2026.08.00"
+play-integrity = "1.6.0"
+androidx-test-core = "1.7.0"
+compose-bom = "2026.09.00"
 
 [libraries]
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-annotation = { group = "androidx.annotation", name = "annotation", version = "1.9.1" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version = "1.11.0" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -69,8 +69,8 @@ androidx-preference-ktx = { group = "androidx.preference", name = "preference-kt
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
 androidx-work-test = { group = "androidx.work", name = "work-testing", version.ref = "work" }
-androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version = "1.10.0" }
-androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version = "1.0.1" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version = "1.13.0" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version = "1.2.0" }
 androidx-transition = { group = "androidx.transition", name = "transition-ktx", version.ref = "transition" }
 androidx-dynamicanimation = { group = "androidx.dynamicanimation", name = "dynamicanimation", version.ref = "dynamicanimation" }
 androidx-interpolator = { group = "androidx.interpolator", name = "interpolator", version.ref = "interpolator" }
@@ -83,7 +83,7 @@ compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 # Pinned past the BOM for the M3 Expressive APIs (MotionScheme.expressive, etc.).
 compose-material3 = { group = "androidx.compose.material3", name = "material3", version = "1.5.0-alpha22" }
-androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version = "1.10.0" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version = "1.13.0" }
 
 mavericks = { group = "com.airbnb.android", name = "mavericks", version.ref = "mavericks" }
 mavericks-testing = { group = "com.airbnb.android", name = "mavericks-testing", version.ref = "mavericks" }
