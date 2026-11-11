@@ -367,7 +367,9 @@ class WatchdogService : Service() {
                             }
                             true
                         } ?: false
-                    if (cameBack) {
+                    // The state can miss a server that did come back; ask it before deciding, or
+                    // the retry below would start a second server next to it.
+                    if (cameBack || ShizukuStateMachine.update() == ShizukuStateMachine.State.RUNNING) {
                         // Auto-run snippets run from the RUNNING transition.
                         val how = if (attempt == 0) "restart" else "a second try at restart"
                         ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: the server came back after $how #$restartNo")
@@ -381,6 +383,7 @@ class WatchdogService : Service() {
                     }
                     if (attempt == 1 || !ShizukuSettings.isWatchdogAutoRestartEnabled()) break
                     ActivityLogManager.log("Shizuku", applicationContext.packageName, "Watchdog: restart #$restartNo never came back, trying once more")
+                    lastRestartMs = System.currentTimeMillis()
                     ShizukuReceiverStarter.start(applicationContext)
                 }
                 reportCrash(stopped = true)
