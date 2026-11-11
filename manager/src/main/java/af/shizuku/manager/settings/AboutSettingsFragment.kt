@@ -186,6 +186,20 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                 if (newValue == false) {
                     findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_AUTO_INSTALL_ENABLED)?.isChecked = false
                 }
+                // After the change is stored, so the schedule sees the new value.
+                view?.post {
+                    af.shizuku.manager.worker.UpdateCheckWorker
+                        .schedule(requireContext().applicationContext)
+                }
+                true
+            }
+
+        findPreference<Preference>(ShizukuSettings.Keys.KEY_UPDATE_CHECK_INTERVAL)
+            ?.setOnPreferenceChangeListener { _, _ ->
+                view?.post {
+                    af.shizuku.manager.worker.UpdateCheckWorker
+                        .schedule(requireContext().applicationContext)
+                }
                 true
             }
 

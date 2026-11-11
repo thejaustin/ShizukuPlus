@@ -231,6 +231,8 @@ public class ShizukuSettings {
         public static final String KEY_LAST_UPDATE_CHECK = "last_update_check_time";
         public static final String KEY_LAST_CHECK_FAILED = "last_check_failed";
         public static final String KEY_UPDATE_CHANNEL = "update_channel"; // "stable" or "dev"
+        public static final String KEY_UPDATE_CHECK_INTERVAL = "update_check_interval";
+        public static final String KEY_LAST_NOTIFIED_UPDATE_CODE = "last_notified_update_code";
         public static final String KEY_LAST_SEEN_VERSION = "last_seen_version";
         public static final String KEY_LAST_SEEN_CHANGELOG_VERSION = "last_seen_changelog_version";
         public static final String KEY_LAST_SEEN_ONBOARDING_VERSION = "last_seen_onboarding_version";
@@ -2141,6 +2143,24 @@ public class ShizukuSettings {
 
     public static void setAutoInstallEnabled(boolean enabled) {
         getPreferences().edit().putBoolean(Keys.KEY_AUTO_INSTALL_ENABLED, enabled).apply();
+    }
+
+    /** Background update check interval in hours (Settings → About); 0 = only when the app opens. */
+    public static int getUpdateCheckIntervalHours() {
+        try {
+            return Integer.parseInt(getPreferences().getString(Keys.KEY_UPDATE_CHECK_INTERVAL, "0"));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    /** Release (r-number) the background check last notified about, so each version notifies once. */
+    public static int getLastNotifiedUpdateCode() {
+        return getPreferences().getInt(Keys.KEY_LAST_NOTIFIED_UPDATE_CODE, 0);
+    }
+
+    public static void setLastNotifiedUpdateCode(int code) {
+        getPreferences().edit().putInt(Keys.KEY_LAST_NOTIFIED_UPDATE_CODE, code).apply();
     }
 
     public static long getLastUpdateCheckTime() {

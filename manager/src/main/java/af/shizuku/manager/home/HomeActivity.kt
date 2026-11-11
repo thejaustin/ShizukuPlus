@@ -911,6 +911,11 @@ open class HomeActivity :
 
     private fun handleUpdateIntent(intent: Intent?) {
         val action = intent?.action ?: return
+        if (action == ACTION_SHOW_UPDATE) {
+            // From the background check's notification: check now, past the once-a-day gate.
+            checkForUpdates(force = true)
+            return
+        }
         val filePath = intent.getStringExtra(UpdateManager.EXTRA_UPDATE_FILE_PATH) ?: return
         val file = java.io.File(filePath)
         if (!file.exists()) return
@@ -1044,8 +1049,8 @@ open class HomeActivity :
     /**
      * Check for updates on app startup and show popup dialog
      */
-    private fun checkForUpdates() {
-        if (!ShizukuSettings.isAutoUpdateEnabled()) {
+    private fun checkForUpdates(force: Boolean = false) {
+        if (!force && !ShizukuSettings.isAutoUpdateEnabled()) {
             return
         }
 
@@ -1054,7 +1059,7 @@ open class HomeActivity :
         val now = System.currentTimeMillis()
         val oneDayInMillis = 24 * 60 * 60 * 1000L
 
-        if (now - lastCheckTime < oneDayInMillis) {
+        if (!force && now - lastCheckTime < oneDayInMillis) {
             return
         }
 
@@ -1166,6 +1171,7 @@ open class HomeActivity :
 
     companion object {
         const val EXTRA_SHOW_PAIRING_DIALOG = "show_pairing_dialog"
+        const val ACTION_SHOW_UPDATE = "af.shizuku.manager.action.SHOW_UPDATE"
         const val EXTRA_START_SERVICE_VIA_WADB = "start_service_via_wadb"
     }
 }

@@ -793,6 +793,10 @@ class ShizukuApplication :
             } catch (e: Exception) {
                 Timber.e(e, "Failed to schedule RemoteDbSyncWorker")
             }
+            runCatching {
+                af.shizuku.manager.worker.UpdateCheckWorker
+                    .schedule(this)
+            }.onFailure { Timber.e(it, "Failed to schedule UpdateCheckWorker") }
         } else {
             Timber.w("Direct Boot mode: skipping RemoteDbSyncWorker scheduling")
         }

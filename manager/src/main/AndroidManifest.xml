@@ -744,6 +744,10 @@
         </activity>
 
         <receiver
+            android:name=".worker.UpdateCheckWorker$LaterReceiver"
+            android:exported="false" />
+
+        <receiver
             android:name="af.shizuku.manager.automation.locale.LocaleConditionQueryReceiver"
             android:exported="true">
             <intent-filter>

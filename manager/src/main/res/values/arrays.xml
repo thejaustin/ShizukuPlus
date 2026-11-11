@@ -234,6 +234,18 @@
         <item>@string/settings_helper_notifications_stopped</item>
         <item>@string/settings_helper_notifications_all</item>
     </string-array>
+    <string-array name="update_check_interval_entries">
+        <item>@string/settings_update_check_interval_open</item>
+        <item>@string/settings_update_check_interval_6h</item>
+        <item>@string/settings_update_check_interval_12h</item>
+        <item>@string/settings_update_check_interval_daily</item>
+    </string-array>
+    <string-array name="update_check_interval_values" translatable="false">
+        <item>0</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+    </string-array>
     <string-array name="helper_notifications_values" translatable="false">
         <item>off</item>
         <item>stopped</item>

@@ -58,6 +58,16 @@
             android:icon="@drawable/ic_autorenew"
             android:defaultValue="true" />
 
+        <rikka.preference.SimpleMenuPreference
+            android:key="update_check_interval"
+            android:dependency="auto_update_enabled"
+            android:title="@string/settings_update_check_interval_title"
+            android:entries="@array/update_check_interval_entries"
+            android:entryValues="@array/update_check_interval_values"
+            android:defaultValue="0"
+            android:summary="%s"
+            android:icon="@drawable/ic_notifications_24" />
+
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="auto_install_enabled"
             android:dependency="auto_update_enabled"

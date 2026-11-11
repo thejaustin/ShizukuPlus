@@ -1498,6 +1498,15 @@
     <string name="dhizuku_setup_message">Dhizuku Mode requires Shizuku+ to be set as Device Owner. Run this command once via ADB while USB debugging is enabled:\n\n%1$s\n\nAfter running the command, restart Shizuku.</string>
     <string name="dhizuku_setup_copy">Copy Command</string>
     <string name="dhizuku_setup_copied">Command copied to clipboard</string>
+    <string name="settings_update_check_interval_title">Check for updates in the background</string>
+    <string name="settings_update_check_interval_open">Only when I open the app</string>
+    <string name="settings_update_check_interval_6h">Every 6 hours</string>
+    <string name="settings_update_check_interval_12h">Every 12 hours</string>
+    <string name="settings_update_check_interval_daily">Once a day</string>
+    <string name="update_available_channel">Update available</string>
+    <string name="update_available_notification_title">Shizuku+ %1$s is available</string>
+    <string name="update_available_notification_title_pre">Shizuku+ %1$s (pre-release) is available</string>
+    <string name="update_available_notification_text">Tap to see what\'s new and update.</string>
     <string name="dhizuku_setup_activate_now">Activate now</string>
     <string name="dhizuku_activate_success">Shizuku+ is now the Device Owner</string>
     <string name="dhizuku_activate_failed_title">Couldn\'t activate</string>
