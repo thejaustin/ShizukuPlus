@@ -46,6 +46,10 @@ class AdbMdns(
     private val resolveQueue = java.util.ArrayDeque<NsdServiceInfo>()
     private var isResolving = false
 
+    // Bumped per resolve; a timeout or late callback for an older one is ignored.
+    private var resolveToken = 0
+    private var resolveTimeoutJob: Job? = null
+
     fun start() {
         if (running) return
         running = true
@@ -86,20 +90,35 @@ class AdbMdns(
             if (!running || isResolving || resolveQueue.isEmpty()) return
             val next = resolveQueue.poll() ?: return
             isResolving = true
+            val token = ++resolveToken
             try {
-                nsdManager.resolveService(next, ResolveListener(this))
+                nsdManager.resolveService(next, ResolveListener(this, token))
             } catch (e: Exception) {
                 Timber.tag(TAG).w(e, "resolveService failed to launch for ${next.serviceName}")
                 isResolving = false
                 resolveNext()
+                return
             }
+            // Some devices never call back for a resolve. Without this the queue stayed "busy"
+            // and nothing else on the network was ever resolved until discovery restarted.
+            resolveTimeoutJob?.cancel()
+            resolveTimeoutJob =
+                mdnsScope.launch {
+                    delay(RESOLVE_TIMEOUT_MS)
+                    Timber.tag(TAG).w("resolve of ${next.serviceName} timed out")
+                    onResolveFinished(token)
+                }
         }
     }
 
-    internal fun onResolveFinished() {
+    // False for a stale resolve (already timed out), whose result is then dropped.
+    internal fun onResolveFinished(token: Int): Boolean {
         synchronized(resolveQueue) {
+            if (token != resolveToken || !isResolving) return false
+            resolveTimeoutJob?.cancel()
             isResolving = false
             resolveNext()
+            return true
         }
     }
 
@@ -343,20 +362,21 @@ class AdbMdns(
 
     internal class ResolveListener(
         private val adbMdns: AdbMdns,
+        private val token: Int,
     ) : NsdManager.ResolveListener {
         override fun onResolveFailed(
             nsdServiceInfo: NsdServiceInfo,
             i: Int,
         ) {
             Timber.tag(TAG).w("onResolveFailed: ${nsdServiceInfo.serviceName}, code $i")
-            adbMdns.onResolveFinished()
+            if (!adbMdns.onResolveFinished(token)) return
             if (i == NsdManager.FAILURE_ALREADY_ACTIVE) {
                 adbMdns.requeueResolve(nsdServiceInfo)
             }
         }
 
         override fun onServiceResolved(nsdServiceInfo: NsdServiceInfo) {
-            adbMdns.onResolveFinished()
+            if (!adbMdns.onResolveFinished(token)) return
             adbMdns.onServiceResolved(nsdServiceInfo)
         }
     }
@@ -365,5 +385,6 @@ class AdbMdns(
         const val TLS_CONNECT = "_adb-tls-connect._tcp"
         const val TLS_PAIRING = "_adb-tls-pairing._tcp"
         const val TAG = "AdbMdns"
+        private const val RESOLVE_TIMEOUT_MS = 10_000L
     }
 }
