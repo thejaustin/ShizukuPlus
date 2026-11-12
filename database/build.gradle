@@ -50,7 +50,9 @@ dependencies {
     implementation libs.kotlinx.serialization.json
     implementation libs.play.integrity
 
-    testImplementation libs.kotestJunit5
+    testImplementation libs.kotest.runner.junit6
+    // Keeps every JUnit Platform artifact (launcher from Kotest, engine from vintage) on one version.
+    testImplementation platform(libs.junit.bom)
     testImplementation libs.robolectric
     // Runs the JUnit 4 tests (ActivityLogDaoTest) under useJUnitPlatform(); without it they're skipped.
     testRuntimeOnly libs.junit.vintage.engine

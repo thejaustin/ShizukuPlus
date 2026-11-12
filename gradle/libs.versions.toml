@@ -42,9 +42,9 @@ serialization = "1.12.0"
 lottie = "6.7.1"
 markwon = "4.6.2"
 mavericks = "3.1.1"
-kotestJunit5 = "5.9.1"
+kotest = "6.2.6"
 robolectric = "4.17"
-junitVintage = "5.10.2"
+junit = "6.1.3"
 coroutines-test = "1.11.0"
 leakcanary = "2.14"
 biometric = "1.4.0-alpha07"
@@ -87,9 +87,10 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 
 mavericks = { group = "com.airbnb.android", name = "mavericks", version.ref = "mavericks" }
 mavericks-testing = { group = "com.airbnb.android", name = "mavericks-testing", version.ref = "mavericks" }
-kotestJunit5 = { group = "io.kotest", name = "kotest-runner-junit5", version.ref = "kotestJunit5" }
+kotest-runner-junit6 = { group = "io.kotest", name = "kotest-runner-junit6", version.ref = "kotest" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
-junit-vintage-engine = { group = "org.junit.vintage", name = "junit-vintage-engine", version.ref = "junitVintage" }
+junit-bom = { group = "org.junit", name = "junit-bom", version.ref = "junit" }
+junit-vintage-engine = { group = "org.junit.vintage", name = "junit-vintage-engine" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-test" }
 
 
