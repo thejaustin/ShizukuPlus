@@ -31,6 +31,9 @@ dependencies {
     // Keeps every JUnit Platform artifact (launcher from Kotest, engine from vintage) on one version.
     testImplementation platform(libs.junit.bom)
     testImplementation "org.jetbrains.kotlin:kotlin-test:2.4.21"
+    // Pinned below the catalog's mockk on purpose: with 1.14.11 the 67 Kotest suites here are
+    // silently skipped (only the 4 JUnit 4 tests run and the build still passes). Re-check the
+    // test count in test-results before moving this.
     testImplementation "io.mockk:mockk:1.13.13"
     // The existing tests use JUnit 4 annotations (as :manager does); without it they do not compile.
     testImplementation "junit:junit:4.13.2"
