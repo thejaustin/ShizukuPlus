@@ -26,6 +26,8 @@
     <string name="settings_oneui_theme_summary">Samsung-style large titles, rounder corners and bolder type. Your colors stay as set above.</string>
     <string name="settings_one_handed_mode">One-handed mode</string>
     <string name="settings_one_handed_mode_summary">Shift interactive content toward the bottom of the screen for comfortable thumb reach</string>
+    <string name="settings_apps_controls_bottom">Search and filters at the bottom</string>
+    <string name="settings_apps_controls_bottom_summary">On the Apps screen, keep search, filters and sort in a bar above the navigation bar, and show selection actions there too</string>
 
     <!-- UI Settings - Typography & Layout -->
     <string name="settings_bold_typography">Bold typography</string>

@@ -168,6 +168,7 @@ public class ShizukuSettings {
         public static final String KEY_BLUR_UI = "blur_ui_enabled";
         public static final String KEY_ONEUI_THEME = "oneui_theme_enabled";
         public static final String KEY_ONE_HANDED_MODE = "one_handed_mode";
+        public static final String KEY_APPS_CONTROLS_BOTTOM = "apps_controls_bottom";
         public static final String KEY_BOLD_TYPOGRAPHY = "bold_typography";
         public static final String KEY_EXPANDED_HEADERS = "expanded_headers_enabled";
         public static final String KEY_CORNER_ROUNDING_OVERRIDE = "corner_rounding_override";
@@ -2430,6 +2431,11 @@ public class ShizukuSettings {
     public static void setFloatingNavLabelMode(String mode) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putString(Keys.KEY_FLOATING_NAV_LABEL_MODE, mode).apply();
+    }
+
+    /** Apps screen: search, filters and sort in a dock above the navigation bar instead of on top. */
+    public static boolean isAppsControlsAtBottom() {
+        return getPreferences().getBoolean(Keys.KEY_APPS_CONTROLS_BOTTOM, false);
     }
 
     public static boolean isFloatingNavAutohideEnabled() {

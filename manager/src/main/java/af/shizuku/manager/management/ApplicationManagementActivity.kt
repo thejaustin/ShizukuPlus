@@ -64,6 +64,10 @@ open class ApplicationManagementActivity :
     private val adapter = AppsAdapter()
     private lateinit var recyclerView: RecyclerView
     private val regroupRunnable = Runnable { viewModel.regroup() }
+
+    /** Set when search and filters live in the bottom dock (Personalization). */
+    private var bottomDock: AppsBottomDock? = null
+    private var dockSettingAtCreate = false
     private var firstLoad = true
     private var backCallback: androidx.activity.OnBackPressedCallback? = null
     private var swipeRightAction = "none"
@@ -152,6 +156,7 @@ open class ApplicationManagementActivity :
         adapter.setSelectionListener { inSelectionMode, selectedCount ->
             backCallback?.isEnabled = inSelectionMode
             invalidateOptionsMenu()
+            bottomDock?.showSelection(inSelectionMode, selectedCount, viewModel.filterState == FilterState.HIDDEN)
             if (inSelectionMode) {
                 val titleText = getString(R.string.app_management_selected_count, selectedCount)
                 supportActionBar?.title = titleText
@@ -287,6 +292,15 @@ open class ApplicationManagementActivity :
         recyclerView.adapter = adapter
         recyclerView.clipToPadding = false
 
+        dockSettingAtCreate = ShizukuSettings.isAppsControlsAtBottom()
+        if (dockSettingAtCreate) {
+            val coordinator = rootView.findViewById<androidx.coordinatorlayout.widget.CoordinatorLayout>(R.id.coordinator_root)
+            val controls = rootView.findViewById<View>(R.id.app_controls)
+            if (coordinator != null && controls != null) {
+                bottomDock = AppsBottomDock(this, coordinator, controls, recyclerView) { performSelectionAction(it) }
+            }
+        }
+
         androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(recyclerView) { v, insets ->
             val bars =
                 insets.getInsets(
@@ -303,7 +317,9 @@ open class ApplicationManagementActivity :
                 } else {
                     (24 * resources.displayMetrics.density).toInt()
                 }
-            v.setPadding(bars.left, 0, bars.right, bars.bottom + extraBottomPadding)
+            bottomDock?.place(bars.bottom)
+            val dockPadding = bottomDock?.let { it.reach + (8 * resources.displayMetrics.density).toInt() } ?: 0
+            v.setPadding(bars.left, 0, bars.right, maxOf(bars.bottom + extraBottomPadding, dockPadding))
             insets
         }
 
@@ -572,27 +588,34 @@ open class ApplicationManagementActivity :
         }
     }
 
+    /** A selection action, from the toolbar menu or the bottom dock (ids match the menu). */
+    private fun performSelectionAction(id: Int) {
+        when (id) {
+            10 -> { // Select all (through the adapter so the toolbar count updates)
+                viewModel.packages.value
+                    ?.data
+                    ?.map { it.packageName }
+                    ?.let { adapter.selectAll(it) }
+            }
+            11 -> bulkSetAuthorized(grant = true)
+            12 -> bulkSetAuthorized(grant = false)
+            13 -> { // Hide all
+                adapter.selectedPackages.toList().forEach { viewModel.hidePackage(it) }
+                adapter.isSelectionMode = false
+                viewModel.load()
+            }
+            14 -> { // Unhide all
+                adapter.selectedPackages.toList().forEach { viewModel.unhidePackage(it) }
+                adapter.isSelectionMode = false
+                viewModel.load()
+            }
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (adapter.isSelectionMode) {
             when (item.itemId) {
-                10 -> { // Select all (through the adapter so the toolbar count updates)
-                    viewModel.packages.value
-                        ?.data
-                        ?.map { it.packageName }
-                        ?.let { adapter.selectAll(it) }
-                }
-                11 -> bulkSetAuthorized(grant = true)
-                12 -> bulkSetAuthorized(grant = false)
-                13 -> { // Hide all
-                    adapter.selectedPackages.toList().forEach { viewModel.hidePackage(it) }
-                    adapter.isSelectionMode = false
-                    viewModel.load()
-                }
-                14 -> { // Unhide all
-                    adapter.selectedPackages.toList().forEach { viewModel.unhidePackage(it) }
-                    adapter.isSelectionMode = false
-                    viewModel.load()
-                }
+                10, 11, 12, 13, 14 -> performSelectionAction(item.itemId)
                 android.R.id.home -> {
                     adapter.isSelectionMode = false
                     backCallback?.isEnabled = false
@@ -1169,6 +1192,11 @@ open class ApplicationManagementActivity :
 
     override fun onResume() {
         super.onResume()
+        // The dock setting changed in Personalization while this screen was in the back stack.
+        if (ShizukuSettings.isAppsControlsAtBottom() != dockSettingAtCreate) {
+            recreate()
+            return
+        }
         // Skip the very first resume (right after onCreate) — onCreate already called
         // viewModel.load() when Shizuku was running, so a second load here is redundant.
         // Subsequent resumes (returning from Settings, app-info, etc.) still refresh so a

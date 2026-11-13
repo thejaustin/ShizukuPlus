@@ -211,6 +211,13 @@
             android:icon="@drawable/ic_smartphone_24"
             app:badgeType="experimental" />
 
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="apps_controls_bottom"
+            android:title="@string/settings_apps_controls_bottom"
+            android:summary="@string/settings_apps_controls_bottom_summary"
+            android:defaultValue="false"
+            android:icon="@drawable/ic_search_24" />
+
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="floating_nav_enabled"
             android:title="@string/settings_floating_nav"
