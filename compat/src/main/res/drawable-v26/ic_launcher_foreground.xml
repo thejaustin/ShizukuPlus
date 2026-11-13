@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Upstream Shizuku's cat-and-hexagon art (copied from the manager) with The Compat Hub's badge,
+         a chain link: this app links stock-Shizuku apps to Shizuku+. It sits where the Shizuku+ icon has its "+": centred on
+         the hexagon's top-right vertex (64.06,36.2) in 108-unit space, inside the safe zone, in the
+         same 70% white. -->
+    <item android:drawable="@mipmap/ic_launcher_foreground_base" />
+    <item>
+        <vector
+            android:width="108dp"
+            android:height="108dp"
+            android:viewportWidth="108"
+            android:viewportHeight="108">
+            <group
+                android:pivotX="64.06"
+                android:pivotY="36.2"
+                android:rotation="-45">
+                <path
+                    android:fillColor="#00000000"
+                    android:strokeColor="#B3FFFFFF"
+                    android:strokeWidth="2.600"
+                    android:pathData="M59.36,33.3H62.16A2.9,2.9 0,0 1 62.16,39.1H59.36A2.9,2.9 0,0 1 59.36,33.3ZM65.96,33.3H68.76A2.9,2.9 0,0 1 68.76,39.1H65.96A2.9,2.9 0,0 1 65.96,33.3Z" />
+            </group>
+        </vector>
+    </item>
+</layer-list>

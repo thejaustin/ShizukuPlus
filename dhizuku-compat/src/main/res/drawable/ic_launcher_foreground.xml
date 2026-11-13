@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Upstream Shizuku's cat-and-hexagon art (copied from the manager) with Dhizuku Compat's badge,
+         a shield: this app hands device-owner (Dhizuku) access to Shizuku+. It sits where the Shizuku+ icon has its "+": centred on
+         the hexagon's top-right vertex (64.06,36.2) in 108-unit space, inside the safe zone, in the
+         same 70% white. -->
+    <item android:drawable="@mipmap/ic_launcher_foreground_base" />
+    <item>
+        <vector
+            android:width="108dp"
+            android:height="108dp"
+            android:viewportWidth="108"
+            android:viewportHeight="108">
+            <path
+                android:fillColor="#B3FFFFFF"
+                android:pathData="M64.06,28.8L70.26,31.4V35.8C70.26,40 67.46,42.8 64.06,43.8C60.66,42.8 57.86,40 57.86,35.8V31.4Z" />
+        </vector>
+    </item>
+</layer-list>

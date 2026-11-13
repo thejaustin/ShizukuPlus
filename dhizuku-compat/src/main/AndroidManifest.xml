@@ -10,7 +10,8 @@
     <application
         android:label="@string/app_name"
         android:hasCode="true"
-        android:icon="@android:drawable/ic_secure">
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher">
 
         <!-- The ONE place in this repo allowed to claim a Dhizuku authority (see CLAUDE.md and
              pre-push guard check 27, which skips this module on purpose). Dhizuku-API <= 2.4
