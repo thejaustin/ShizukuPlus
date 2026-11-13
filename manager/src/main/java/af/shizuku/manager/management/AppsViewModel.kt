@@ -20,6 +20,12 @@ enum class SortOrder { NAME_ASC, LAST_INSTALLED, LAST_UPDATED, GRANTED_FIRST }
 
 enum class FilterState { ALL, GRANTED, DENIED, HIDDEN }
 
+/** An All-apps list whose first [allowedCount] apps are allowed; the adapter shows them as two groups. */
+class GroupedApps(
+    apps: List<PackageInfo>,
+    val allowedCount: Int,
+) : ArrayList<PackageInfo>(apps)
+
 class AppsViewModel(
     application: Application,
 ) : AndroidViewModel(application) {
@@ -199,6 +205,11 @@ class AppsViewModel(
         }
     }
 
+    /** Re-sorts the All list after a grant change so the app moves to its new group. */
+    fun regroup() {
+        if (filterState == FilterState.ALL) applyFiltersAndSort()
+    }
+
     private fun applyFiltersAndSort() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -247,7 +258,16 @@ class AppsViewModel(
                         // Granted apps first, alphabetical within each group.
                         SortOrder.GRANTED_FIRST -> compareByDescending<PackageInfo> { granted(it) }.then(byName)
                     }
-                val list = filtered.sortedWith(if (sortReversed) comparator.reversed() else comparator)
+                val order = if (sortReversed) comparator.reversed() else comparator
+                // All apps: allowed ones first, each group in the chosen order. The split travels
+                // with the list (GroupedApps) because two passes can overlap.
+                val list =
+                    if (filterState == FilterState.ALL) {
+                        val (allowed, others) = filtered.partition { granted(it) }
+                        GroupedApps(allowed.sortedWith(order) + others.sortedWith(order), allowed.size)
+                    } else {
+                        filtered.sortedWith(order)
+                    }
                 _packages.postValue(Resource.success(list))
             } catch (e: Throwable) {
                 _packages.postValue(Resource.error(e, null))

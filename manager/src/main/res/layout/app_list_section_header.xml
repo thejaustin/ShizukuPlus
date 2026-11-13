@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Group label above the Allowed / Not allowed cards in the All apps list. Not a card itself, so
+     AppListItemDecoration ends one card here and starts the next. -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_list_section_header"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:accessibilityHeading="true"
+    android:paddingStart="28dp"
+    android:paddingEnd="28dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="8dp"
+    android:textAppearance="?attr/textAppearanceLabelLarge"
+    android:textColor="?attr/colorPrimary"
+    tools:targetApi="p"
+    tools:text="Allowed · 3" />

@@ -277,12 +277,22 @@
     <string name="app_management_hidden">App hidden</string>
     <string name="app_management_selected">%d selected</string>
     <string name="app_management_undo">Undo</string>
+    <plurals name="app_management_bulk_allowed">
+        <item quantity="one">Allowed %d app</item>
+        <item quantity="other">Allowed %d apps</item>
+    </plurals>
+    <plurals name="app_management_bulk_denied">
+        <item quantity="one">Denied %d app</item>
+        <item quantity="other">Denied %d apps</item>
+    </plurals>
 
     <!-- Application management - search / filter / sort -->
     <string name="app_management_hint_search">Search apps…</string>
     <string name="app_management_filter_all">All</string>
     <string name="app_management_filter_granted">Granted</string>
     <string name="app_management_filter_denied">Denied</string>
+    <string name="app_management_section_allowed">Allowed · %1$d</string>
+    <string name="app_management_section_not_allowed">Not allowed · %1$d</string>
     <string name="app_management_filter_hidden">Hidden</string>
     <string name="app_management_action_sort">Sort</string>
     <string name="app_management_action_hidden_apps">Hidden apps</string>

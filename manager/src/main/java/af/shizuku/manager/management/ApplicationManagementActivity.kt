@@ -63,6 +63,7 @@ open class ApplicationManagementActivity :
     private val viewModel: AppsViewModel by viewModels()
     private val adapter = AppsAdapter()
     private lateinit var recyclerView: RecyclerView
+    private val regroupRunnable = Runnable { viewModel.regroup() }
     private var firstLoad = true
     private var backCallback: androidx.activity.OnBackPressedCallback? = null
     private var swipeRightAction = "none"
@@ -326,6 +327,10 @@ open class ApplicationManagementActivity :
                     payload: Any?,
                 ) {
                     viewModel.load(true)
+                    // A grant changed: move the app to its new group a moment later, not under the
+                    // finger that just flipped it. Repeated changes push the move back.
+                    recyclerView.removeCallbacks(regroupRunnable)
+                    recyclerView.postDelayed(regroupRunnable, REGROUP_DELAY_MS)
                 }
 
                 override fun onChanged() {
@@ -516,9 +521,14 @@ open class ApplicationManagementActivity :
         adapter.isSelectionMode = false
         lifecycleScope.launch(Dispatchers.IO) {
             var failed = 0
+            // Apps this call actually changed, so Undo puts back only those.
+            val changed = mutableListOf<Pair<String, Int>>()
             for ((pkg, uid) in targets) {
                 runCatching {
+                    val was = AuthorizationManager.granted(pkg, uid)
+                    if (was == grant) return@runCatching
                     if (grant) AuthorizationManager.grant(pkg, uid) else AuthorizationManager.revoke(pkg, uid)
+                    changed += pkg to uid
                 }.onFailure { failed++ }
             }
             withContext(Dispatchers.Main) {
@@ -527,6 +537,37 @@ open class ApplicationManagementActivity :
                     Toast.makeText(this@ApplicationManagementActivity, getString(R.string.toast_operation_failed), Toast.LENGTH_SHORT).show()
                 }
                 viewModel.load()
+                if (changed.isEmpty()) return@withContext
+                val msg =
+                    resources.getQuantityString(
+                        if (grant) R.plurals.app_management_bulk_allowed else R.plurals.app_management_bulk_denied,
+                        changed.size,
+                        changed.size,
+                    )
+                af.shizuku.manager.app.SnackbarHelper.show(
+                    context = this@ApplicationManagementActivity,
+                    view = rootView,
+                    msg = msg,
+                    duration = Snackbar.LENGTH_LONG,
+                    actionText = getString(R.string.app_management_undo),
+                    action = { undoBulkSetAuthorized(changed, grant) },
+                )
+            }
+        }
+    }
+
+    private fun undoBulkSetAuthorized(
+        changed: List<Pair<String, Int>>,
+        granted: Boolean,
+    ) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            for ((pkg, uid) in changed) {
+                runCatching {
+                    if (granted) AuthorizationManager.revoke(pkg, uid) else AuthorizationManager.grant(pkg, uid)
+                }
+            }
+            withContext(Dispatchers.Main) {
+                if (!isFinishing && !isDestroyed) viewModel.load()
             }
         }
     }
@@ -1121,6 +1162,7 @@ open class ApplicationManagementActivity :
     // ----- Lifecycle -----
 
     override fun onDestroy() {
+        if (::recyclerView.isInitialized) recyclerView.removeCallbacks(regroupRunnable)
         ShizukuStateMachine.removeListener(stateListener)
         super.onDestroy()
     }
@@ -1159,8 +1201,10 @@ class AppListItemDecoration(
     private val dividerInset = 80f * density
 
     override fun shouldDecorate(view: View): Boolean {
-        // The toggle-all header is a standalone MaterialCardView with its own floating margins and background
-        return view !is com.google.android.material.card.MaterialCardView
+        // The toggle-all header is a standalone MaterialCardView with its own floating margins and
+        // background, and the Allowed / Not allowed labels sit between the cards.
+        return view !is com.google.android.material.card.MaterialCardView &&
+            view.id != af.shizuku.manager.R.id.app_list_section_header
     }
 
     override fun shouldDrawDivider(
@@ -1181,6 +1225,9 @@ class AppListItemDecoration(
     // Mirror the card's right edge (16dp from child.right).
     override fun getDividerEndInset(view: View): Float = 16f * density
 }
+
+/** Delay before an app whose grant changed moves to its new group. */
+private const val REGROUP_DELAY_MS = 1200L
 
 /** How far the swipe badge grows once the swipe will trigger. */
 private const val BADGE_POP = 1.15f
