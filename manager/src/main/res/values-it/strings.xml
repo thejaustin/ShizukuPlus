@@ -47,12 +47,6 @@
         Vai su \"Opzioni sviluppatore\"\n- Abilita \"Debug USB\" e \"Debug wireless\"\n- Tocca il
         lato sinistro di \"Debug wireless\"\n- Tocca \"Associa dispositivo con codice di
         associazione\"\n- Inserisci il codice di associazione nella notifica</string>
-    <string name="dialog_adb_pairing_accessibility_permission">Su Android 14,
-        l\'installazione/aggiornamento di Shizuku con Package Installer revoca l\'autorizzazione ^1,
-        necessaria per abilitare il servizio di accessibilità per l\'associazione.\n\nPer
-        concederla, esegui il seguente comando ADB:\n\n^2\n\nDopo aver eseguito il comando, puoi
-        continuare con il processo di associazione.\n\nNota: puoi aggirare questo problema
-        installando/aggiornando Shizuku con ADB.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Abilita il servizio di accessibilità per
         avviare il processo di associazione. Questo permetterà a Shizuku di rilevare il codice di
         associazione.\n\nIl servizio di accessibilità verrà disattivato quando il codice verrà

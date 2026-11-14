@@ -38,9 +38,6 @@
     <string name="dialog_usb_debugging_not_enabled">USB 除錯功能未啟用。\n請在「開發者選項」中啟用它。</string>
     <string name="dialog_adb_pairing_message">請開始配對，請執行以下步驟：\n- 導覽至「開發者選項」\n- 啟用「USB 除錯」與「無線除錯」\n-
         點選「無線除錯」的左側\n- 點擊「配對裝置與配對碼的裝置」\n- 在通知中輸入配對代碼</string>
-    <string name="dialog_adb_pairing_accessibility_permission">在 Android 14，使用套件安裝器安裝或更新 Shizuku
-        會取消用於開啟無障礙服務配對的 ^1 權限。\n\n透過運行下面的 ADB 指令重新授權：\n\n^2\n\n運行指令之後，你可以繼續配對程序。\n\n備註：你可以透過 ADB 安裝
-        Shizuku 繞過此限制。</string>
     <string name="dialog_adb_pairing_accessibility_enable">
         請啟用無障礙服務以開始配對流程。這讓雫能偵測到配對代碼。\n\n無障礙服務會在找到代碼後或1分鐘後關閉以節省能源。</string>
     <string name="dialog_adb_pairing_accessibility_navigate">請依照以下步驟開始配對：\n- 進入「開發者選項」\n-
@@ -393,7 +390,6 @@
     <string name="settings_hide_launcher_icon">隱藏桌面圖示</string>
     <string name="settings_hide_launcher_icon_summary">從桌面移除應用程式，可透過 ADB 或其他應用程式開啟。</string>
     <string name="settings_stealth_mode_pkg_query">套件查詢過濾</string>
-    <string name="settings_stealth_mode_pkg_query_summary">對其他應用程式的套件查詢隱藏 Shizuku</string>
     <string name="settings_ai_bridge_title">AI 橋接與 NPU</string>
     <string name="settings_wireless_adb_title">無線 ADB</string>
     <string name="settings_tcp_port_label">連接埠</string>

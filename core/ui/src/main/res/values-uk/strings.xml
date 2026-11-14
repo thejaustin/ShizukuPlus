@@ -568,7 +568,6 @@
     <string name="settings_shadow_binder">Тіньовий Binder</string>
     <string name="settings_shadow_binder_summary">Перехоплювати й підміняти виклики системних служб, щоб приховати інформацію про пристрій або стан додатків</string>
     <string name="settings_shadow_binder_hidden_packages">Приховані пакети</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">Список назв пакетів через кому, які потрібно приховати від інших додатків</string>
     <plurals name="settings_shadow_binder_hidden_packages_count">
         <item quantity="one"><![CDATA[Вибрано %d додаток]]></item>
         <item quantity="few"><![CDATA[Вибрано %d додатки]]></item>

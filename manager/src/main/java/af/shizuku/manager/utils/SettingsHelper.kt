@@ -93,7 +93,7 @@ object SettingsHelper {
         com.google.android.material.dialog
             .MaterialAlertDialogBuilder(context)
             .setTitle(R.string.wadb_permission_error_notification_title)
-            .setMessage(context.getString(R.string.dialog_adb_pairing_accessibility_permission, "WRITE_SECURE_SETTINGS", command))
+            .setMessage(context.getString(R.string.wss_permission_manual_command, command))
             .setPositiveButton(R.string.home_adb_dialog_view_command_copy_button) { _, _ ->
                 val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                 cm.setPrimaryClip(android.content.ClipData.newPlainText("adb command", command))

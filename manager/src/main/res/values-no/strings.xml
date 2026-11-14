@@ -45,11 +45,6 @@
         til \"Utvikleralternativer\"\n- Aktiver \"USB-feilsøking\" og \"Trådløs feilsøking\"\n-
         Trykk på venstre side av \"Trådløs feilsøking\"\n- Trykk på \"Par enhet med paringskode\"\n-
         Skriv inn paringskoden i varselet</string>
-    <string name="dialog_adb_pairing_accessibility_permission">På Android 14 vil
-        installasjon/oppdatering av Shizuku med pakkeinstallasjonsprogrammet oppheve ^1-tillatelsen,
-        som er nødvendig for å aktivere tilgjengelighetstjenesten for paring.\n\nFor å gi den, kjør
-        følgende ADB-kommando:\n\n^2\n\nEtter at du har kjørt kommandoen, kan du fortsette med
-        paringsprosessen.\n\nMerk: Du kan omgå dette ved å installere/oppdatere Shizuku med ADB.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Vennligst aktiver
         tilgjengelighetstjenesten for å starte paringsprosessen. Dette lar Shizuku oppdage
         paringskoden.\n\nTilgjengelighetstjenesten slås av når koden blir funnet, eller etter 1

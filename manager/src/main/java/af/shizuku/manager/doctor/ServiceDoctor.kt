@@ -125,6 +125,10 @@ object ServiceDoctor {
                             true
                         }.getOrDefault(false)
                     },
+                    // Only when the user taps it. In background healing this turned USB and wireless
+                    // debugging back on right after the user switched them off for a banking or
+                    // ticket app that refuses to run with them on (#656, #677).
+                    autoHeal = false,
                     tip = if (!adbOk && !EnvironmentUtils.isRooted()) "• " + context.getString(R.string.doctor_tip_adb) else null,
                 ),
             )
@@ -296,9 +300,12 @@ object ServiceDoctor {
                         // SU Bridge is an optional root style setting: DO NOT disable it in Service Doctor fixes
                         if (isSpoofing) ShizukuSettings.setSpoofDeviceEnabled(false)
                         ShizukuSettings.syncAllPlusFeaturesToServer()
-                        RootCompatHelper.refreshGoogleWalletAttestation(ctx)
+                        // Resetting Wallet's own data (refreshGoogleWalletAttestation) is left to the
+                        // single fix in Service Doctor, which asks first: "Fix all" mustn't do it unasked.
                         true
                     },
+                    // Turns off root-style settings the user chose; never behind their back.
+                    autoHeal = false,
                     tip = if (!walletSecurityOk) "• " + context.getString(R.string.doctor_tip_wallet_integrity) else null,
                 ),
             )

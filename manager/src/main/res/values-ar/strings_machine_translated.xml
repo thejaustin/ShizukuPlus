@@ -389,12 +389,10 @@
     <string name="doctor_tip_local_network"><b>الوصول إلى الشبكة المحلية (%1$s)</b>: يتطلب Android 16/17 هذا الإذن لاكتشاف خدمة التصحيح اللاسلكي والاتصال بها. بدونه يفشل Shizuku+ بصمت في البدء في وضع ADB. اضغط إصلاح لمنحه.</string>
     <string name="doctor_button_fix">إصلاح</string>
     <string name="doctor_check_wallet_integrity">Google Wallet وPlay Integrity</string>
-    <string name="doctor_wallet_ok">اجتياز Integrity (لا بقايا root)</string>
     <string name="doctor_wallet_risk_tmp_su">خطر أمني (تم اكتشاف ملف su تنفيذي)</string>
     <string name="doctor_wallet_risk_magisk">خطر أمني (محاكاة Magisk نشطة)</string>
     <string name="doctor_wallet_risk_busybox">خطر أمني (محاكاة BusyBox نشطة)</string>
     <string name="doctor_wallet_risk_spoof">خطر في التصديق (انتحال الجهاز نشط)</string>
-    <string name="doctor_tip_wallet_integrity">Google Wallet وتطبيقات البنوك: تسبب آثار root المكتشفة أو محاكاة Magisk/BusyBox النشطة أخطاء «الجهاز لا يستوفي معايير الأمان». شغّل الإصلاح بنقرة واحدة لإزالة ملفات su التنفيذية واستعادة التوافق.</string>
     <string name="doctor_fix_wallet_success">تم. يعمل بصلاحية root — حُذفت ملفات حكم Play Integrity مباشرة من GMS. افتح Google Wallet؛ يجب أن يعمل فورًا.</string>
     <string name="doctor_fix_wallet_success_adb_mode">تم. يعمل Shizuku في وضع صدفة ADB، لذا لا يمكن حذف ملف حكم Play Integrity من القرص (فقط root يستطيع الوصول إلى مجلد بيانات GMS).\n\nما تم بدلًا من ذلك:\n• إنهاء عملية DroidGuard (يمسح الحكم في الذاكرة)\n• إيقاف GMS\n• محاولة تجاوز TTL الخاص بـ Play Integrity (تدفع GMS لإعادة التصديق فورًا)\n• طلب تهيئة تصديق جديد (يطلق إعادة تقييم DroidGuard بجهاز نظيف)\n• مسح بيانات Wallet (يفرض طلب سلامة جديدًا بقيمة nonce جديدة)\n• إعادة تأكيد توجيه مدفوعات NFC\n\nجرّب فتح Wallet الآن — يجب أن يتعافى فورًا. إذا ظل محظورًا، اضغط «مسح بيانات خدمات Play» أدناه لضمان التعافي الفوري (ستحتاج إلى تسجيل الدخول إلى Google مجددًا بعد ذلك).</string>
     <string name="doctor_fix_wallet_success_no_shizuku">تم. لم يكن Shizuku قيد التشغيل، لذا أمكن إيقاف Wallet نفسه فقط — لا يزال حكم Play Integrity المخزن مؤقتًا في GMS سليمًا.\n\nيجب أن يتعافى Wallet من تلقاء نفسه خلال نحو ساعة مع انتهاء صلاحية الحكم طبيعيًا. للتعافي الفوري، اضغط «مسح بيانات خدمات Play» أدناه (ستحتاج إلى تسجيل الدخول إلى Google مجددًا بعد ذلك).\n\nلتجنب ذلك مستقبلًا، تأكد من تشغيل Shizuku قبل تعطيل ميزات root — فهو يتيح تنظيفًا أكثر شمولًا.</string>
@@ -682,10 +680,8 @@
     <string name="settings_shadow_binder">Shadow Binder</string>
     <string name="settings_shadow_binder_summary">اعتراض استدعاءات خدمات النظام ومحاكاتها لإخفاء معلومات الجهاز أو حالة التطبيق</string>
     <string name="settings_shadow_binder_hidden_packages">الحزم المخفية</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">قائمة مفصولة بفواصل لأسماء الحزم المراد إخفاؤها عن التطبيقات الأخرى. إذا كان Shizuku الأصلي وShizuku+ مثبّتين معًا، أضف كليهما (moe.shizuku.privileged.api وaf.shizuku.manager) لمنع التعارض.</string>
     <string name="settings_automation_trusted_networks">الشبكات الموثوقة</string>
     <string name="settings_automation_auto_hide_packages">إخفاء تلقائي أثناء العمل في المقدمة</string>
-    <string name="settings_automation_auto_hide_packages_summary">التطبيقات التي تُضاف تلقائيًا إلى قائمة الإخفاء في Shadow Binder فقط أثناء فتحها، إضافة إلى قائمة الحزم المخفية أعلاه. اتركها فارغة لإدارة الحزم المخفية يدويًا.</string>
     <string name="settings_companion_mode">إظهار بطاقة المرافق</string>
     <string name="settings_companion_mode_summary">إظهار بطاقة لفتح Shizuku الأصلي بسرعة. ملاحظة: يمكن تشغيل خدمة Shizuku واحدة فقط في كل مرة — استخدمها للتبديل بينهما.</string>
     <string name="settings_companion_fallback">بديل عند التعطل</string>
@@ -861,7 +857,6 @@
     <string name="device_control_shutdown_confirm">هل أنت متأكد من رغبتك في إيقاف تشغيل الجهاز؟</string>
     <string name="nav_back">رجوع</string>
     <string name="help_stealth_mode_title">وضع التخفي</string>
-    <string name="help_stealth_mode_detail">يعترض استعلامات PackageManager على مستوى Binder ويُرجع «غير مثبّت» لحزم ShizukuPlus وShizuku. التطبيقات التي تستخدم PM لاكتشاف أدوات root (تطبيقات البنوك وفحوص DRM) لن تجدهما. ملاحظة: هذا يخفيهما عن استعلامات PackageManager فقط — يظل وضع المطور وتصحيح USB مرئيين للتطبيقات التي تفحص إعدادات Android مباشرة.</string>
     <string name="corner_style_sharp">حاد / مسطح</string>
     <string name="home_permission_manager_title">مدير الأذونات</string>
     <string name="home_permission_manager_summary">منح أذونات مستوى الصدفة لأي تطبيق دون root</string>
@@ -1118,7 +1113,6 @@
     <string name="settings_hide_launcher_icon">إخفاء رمز المشغل</string>
     <string name="settings_hide_launcher_icon_summary">إزالة التطبيق من المشغل. افتحه عبر ADB أو تطبيق آخر.</string>
     <string name="settings_stealth_mode_pkg_query">عامل تصفية استعلام الحزم</string>
-    <string name="settings_stealth_mode_pkg_query_summary">إخفاء Shizuku من استعلامات الحزم من قبل تطبيقات أخرى</string>
     <string name="settings_ai_bridge_title">جسر AI و NPU</string>
     <string name="tcp_guard_title">التصحيح عبر TCP مفتوح على شبكة غير موثوقة</string>
     <string name="tcp_guard_text">منفذ ADB TCP %1$d يستمع و %2$s. أغلقه ما لم تحتجه الآن.</string>

@@ -77,6 +77,10 @@ object ActivityLogText {
             "unfreeze" to R.string.backup_action_unfreeze,
         )
 
+    /** Label for an app-list swipe/long-press action token ("open_app", ...), or null if unknown. */
+    @androidx.annotation.StringRes
+    fun actionLabelRes(action: String): Int? = actionLabels[action]
+
     /** English action logged when a permission is toggled by tapping a row in the Apps list. */
     const val TOGGLE_GRANT = "Toggle permission: Grant permission"
     const val TOGGLE_REVOKE = "Toggle permission: Revoke permission"

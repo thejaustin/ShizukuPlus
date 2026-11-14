@@ -644,7 +644,6 @@
     <string name="settings_shadow_binder">Kölgə Binder</string>
     <string name="settings_shadow_binder_summary">Cihaz məlumatlarını və ya tətbiq vəziyyətini gizlətmək üçün sistem xidməti çağırışlarını tutun və simulyasiya edin</string>
     <string name="settings_shadow_binder_hidden_packages">Gizli Paketlər</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">Başqa tətbiqlərdən gizlədiləcək paket adlarının vergüllə ayrılmış siyahısı</string>
     <plurals name="settings_shadow_binder_hidden_packages_count">
         <item quantity="one">%d tətbiq seçildi</item>
         <item quantity="other">%d tətbiq seçildi</item>

@@ -627,7 +627,6 @@
     <string name="settings_shadow_binder">影子 Binder</string>
     <string name="settings_shadow_binder_summary">拦截并模拟系统服务调用，以隐藏设备信息或应用状态</string>
     <string name="settings_shadow_binder_hidden_packages">隐藏的软件包</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">以英文逗号分隔的包名列表，用于对其他应用隐藏</string>
     <plurals name="settings_shadow_binder_hidden_packages_count">
         <item quantity="one">已选择 %d 个应用</item>
         <item quantity="other">已选择 %d 个应用</item>

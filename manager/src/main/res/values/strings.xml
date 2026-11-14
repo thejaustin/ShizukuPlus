@@ -156,6 +156,7 @@
     <string name="dialog_wireless_adb_not_enabled">Wireless debugging is not enabled.\nNote, before Android 11, to enable wireless debugging, computer connection is a must.</string>
     <string name="dialog_usb_debugging_not_enabled">USB debugging is not enabled.\nPlease enable it in \"Developer Options\".</string>
     <string name="dialog_adb_pairing_message">Please start pairing by performing the following steps:\n- Navigate to \"Developer Options\"\n- Enable \"USB debugging\" and \"Wireless debugging\"\n- Tap the left side of \"Wireless debugging\"\n- Tap \"Pair device with pairing code\"\n- Input the pairing code in the notification</string>
+    <string name="wss_permission_manual_command">Shizuku+ couldn\'t grant itself the WRITE_SECURE_SETTINGS permission. Run this ADB command once from a computer:\n\n%1$s</string>
     <string name="dialog_adb_pairing_accessibility_permission">On Android 13+, sideloaded apps have restricted settings locked by default for security, which blocks enabling the pairing accessibility service.\n\nTo allow it easily on your device:\n1. Tap \"Open app info settings\" below\n2. Tap the ⋮ (three dots) menu in the top right corner\n3. Tap \"Allow restricted settings\" and confirm your biometric/PIN\n4. Return here and tap Continue\n\nAlternatively, you can run this ADB command:\n\n%2$s</string>
 
     <!-- Service Doctor -->
@@ -547,6 +548,11 @@
     <string name="settings_enable_activity_log">Enable activity log</string>
     <string name="settings_enable_activity_log_summary">Record and display Shizuku API calls and events on the home screen.</string>
     <string name="settings_show_activity_log_home">Show activity log</string>
+    <string name="settings_activity_log_mode_summary">Records Shizuku API calls and events. “On + Home” also shows the latest ones as a card on Home.</string>
+    <string name="settings_open_activity_log">Open activity log</string>
+    <string name="activity_log_mode_off">Off</string>
+    <string name="activity_log_mode_on">On</string>
+    <string name="activity_log_mode_on_home">On + Home</string>
     <string name="settings_show_status_card_outline">Status card outline</string>
     <string name="settings_show_status_card_outline_summary">Show a colored outline on the service status card</string>
     <string name="settings_update_app_database">Update app database</string>
@@ -911,12 +917,12 @@
     <string name="doctor_tip_local_network"><b>Local Network Access (%1$s)</b>: Android 16/17 requires this permission to discover and connect to the wireless-debugging service. Without it Shizuku+ silently fails to start in ADB mode. Tap Fix to grant it.</string>
     <string name="doctor_button_fix">Fix</string>
     <string name="doctor_check_wallet_integrity">Google Wallet &amp; Play Integrity</string>
-    <string name="doctor_wallet_ok">Passes Integrity (No Root Residue)</string>
+    <string name="doctor_wallet_ok">No root residue found</string>
     <string name="doctor_wallet_risk_tmp_su">Security Risk (su binary detected)</string>
     <string name="doctor_wallet_risk_magisk">Security Risk (Magisk Mocking active)</string>
     <string name="doctor_wallet_risk_busybox">Security Risk (BusyBox Mocking active)</string>
     <string name="doctor_wallet_risk_spoof">Attestation Risk (Device Spoofing active)</string>
-    <string name="doctor_tip_wallet_integrity">Google Wallet &amp; Banking Apps: Detected root artifacts or active Magisk/BusyBox mocking cause "Device doesn\'t meet security standards" errors. Run the one-tap fix to purge su binaries and restore compliance.</string>
+    <string name="doctor_tip_wallet_integrity">Google Wallet &amp; banking apps: leftover su files, Magisk/BusyBox mocking or device spoofing can cause "Device doesn\'t meet security standards" errors. The fix removes the su files and turns those settings off, then resets Google Wallet\'s app data so it checks the device again. You may need to sign in to Wallet again afterwards.</string>
     <!--
       Three recovery outcomes — shown after the 1-tap wallet fix runs.
       ROOT:        Shizuku uid=0 — verdict files deleted, immediate recovery expected.
@@ -1373,6 +1379,11 @@
     <string name="settings_auto_update_summary">Automatically check for new versions on app startup</string>
     <string name="settings_auto_install_title">Auto-install updates</string>
     <string name="settings_auto_install_summary">Automatically download and prompt to install updates (requires permission)</string>
+    <string name="settings_update_mode_title">Automatic updates</string>
+    <string name="settings_update_mode_summary">Check: look for new versions when the app opens. Install: also download them and ask to install (needs the install-apps permission).</string>
+    <string name="update_mode_off">Off</string>
+    <string name="update_mode_check">Check</string>
+    <string name="update_mode_install">Install</string>
     <string name="settings_update_channel_title">Update channel</string>
     <string name="update_channel_stable">Stable</string>
     <string name="update_channel_dev">Dev / Pre-release</string>
@@ -1522,6 +1533,8 @@
     <string name="update_available_notification_text">Tap to see what\'s new and update.</string>
     <string name="dhizuku_setup_activate_now">Activate now</string>
     <string name="settings_install_dhizuku_compat">Install Dhizuku Compat</string>
+    <string name="addon_menu_compat_hub">Install Compat Hub</string>
+    <string name="addon_menu_dhizuku_compat">Install Dhizuku Compat</string>
     <string name="settings_install_dhizuku_compat_summary">Lets apps built on the older Dhizuku library, like Amarok 0.10.1, find Shizuku+</string>
     <string name="dhizuku_compat_installing">Installing Dhizuku Compat…</string>
     <string name="dhizuku_compat_installed">Dhizuku Compat installed</string>
@@ -1551,12 +1564,12 @@
     <string name="settings_shadow_binder">App Cloaking &amp; Stealth Shield</string>
     <string name="settings_shadow_binder_summary">Hide Shizuku+ and selected sensitive apps from being detected by root-checkers, banking apps, and game scanners</string>
     <string name="settings_shadow_binder_hidden_packages">Hidden Packages</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">Comma-separated list of package names to hide from other apps. If you have both OG Shizuku and Shizuku+ installed, add both (moe.shizuku.privileged.api, af.shizuku.manager) to prevent conflicts.</string>
+    <string name="settings_shadow_binder_hidden_packages_summary">Packages to hide from apps that use Shizuku+. It doesn\'t hide them from apps that ask Android directly, such as banking apps. If you have both stock Shizuku and Shizuku+ installed, add both (moe.shizuku.privileged.api, af.shizuku.plus.api) to prevent conflicts.</string>
 
     <!-- Automation Engine (Issue #435) -->
     <string name="settings_automation_trusted_networks">Trusted Networks</string>
     <string name="settings_automation_auto_hide_packages">Auto-Hide While Foregrounded</string>
-    <string name="settings_automation_auto_hide_packages_summary">Apps that are automatically added to Shadow Binder\'s hidden list only while they\'re open, on top of the Hidden Packages list above. Leave empty to manage hidden packages manually instead.</string>
+    <string name="settings_automation_auto_hide_packages_summary">While one of these apps is open, it\'s hidden from apps that use Shizuku+, on top of the Hidden Packages list above. It doesn\'t hide Shizuku+ from that app. Leave empty to manage hidden packages manually.</string>
 
     <plurals name="settings_shadow_binder_hidden_packages_count">
         <item quantity="one">%d app selected</item>
@@ -1763,7 +1776,7 @@
     <string name="settings_hide_launcher_icon">Hide Launcher Icon</string>
     <string name="settings_hide_launcher_icon_summary">Remove the app from the launcher. Open via ADB or another app.</string>
     <string name="settings_stealth_mode_pkg_query">Package Query Filter</string>
-    <string name="settings_stealth_mode_pkg_query_summary">Hide Shizuku from package queries by other apps</string>
+    <string name="settings_stealth_mode_pkg_query_summary">Hide Shizuku from package queries made through Shizuku+</string>
 
     <!-- AI Bridge -->
     <string name="settings_ai_bridge_title">AI Bridge &amp; NPU</string>
@@ -1813,7 +1826,7 @@
 
     <!-- Stealth Mode -->
     <string name="help_stealth_mode_title">Stealth Mode</string>
-    <string name="help_stealth_mode_detail">Intercepts PackageManager queries at the Binder level and returns "not installed" for ShizukuPlus and Shizuku packages. Apps that use PM to detect root tools (banking apps, DRM checks) will not find them. Note: this only hides them from PackageManager queries — developer mode and USB debugging are still visible to apps that check Android settings directly.</string>
+    <string name="help_stealth_mode_detail">Intercepts PackageManager queries that apps make <b>through Shizuku+</b> and answers "not installed" for Shizuku+ and Shizuku packages. Apps that ask Android directly, which includes banking apps and DRM checks, aren\'t affected: hiding Shizuku from those needs root hooks (LSPosed/Xposed). Developer options and USB debugging are visible to any app that checks Android settings.</string>
 
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
     <string name="corner_style_sharp">Sharp / Flat</string>

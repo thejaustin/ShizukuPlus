@@ -48,12 +48,6 @@
         „USB-hibakeresés” és a „Vezeték nélküli hibakeresés” lehetőséget\n- Koppintson a „Vezeték
         nélküli hibakeresés” bal oldalára\n- Koppintson az „Eszköz párosítása párosító kóddal”
         lehetőségre\n- Írja be az értesítésben megjelenő párosítási kódot</string>
-    <string name="dialog_adb_pairing_accessibility_permission">Android 14 rendszeren a Shizuku
-        csomagtelepítővel történő telepítése/frissítése visszavonja a ^1 engedélyt, amely a
-        párosítás akadálymentesítési szolgáltatásának engedélyezéséhez szükséges.\n\nA megadásához
-        futtassa a következő ADB parancsot:\n\n^2\n\nA parancs futtatása után folytathatja a
-        párosítási folyamatot.\n\nMegjegyzés: ezt megkerülheti a Shizuku ADB-vel történő
-        telepítésével/frissítésével.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Kérjük, engedélyezze az
         akadálymentesítési szolgáltatást a párosítási folyamat megkezdéséhez. Ez lehetővé teszi a
         Shizuku számára a párosítási kód észlelését.\n\nAz akadálymentesítési szolgáltatás

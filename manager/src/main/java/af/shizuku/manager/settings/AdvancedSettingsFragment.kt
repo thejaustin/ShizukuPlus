@@ -202,9 +202,29 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        findPreference<TwoStatePreference>(KEY_ENABLE_ACTIVITY_LOG)?.setOnPreferenceChangeListener { _, _ ->
-            ShizukuSettings.syncAllPlusFeaturesToServer()
-            true
+        // Off / On / On + Home stands in for the two switches it replaced; the old keys stay the
+        // source of truth so backups, onboarding and Home keep reading them.
+        val logOpen = findPreference<Preference>("activity_log")
+        findPreference<SegmentedControlPreference>("activity_log_mode")?.apply {
+            val prefs = ShizukuSettings.getPreferences()
+            value =
+                when {
+                    !ShizukuSettings.isActivityLogEnabled() -> "off"
+                    prefs.getBoolean(ShizukuSettings.Keys.KEY_SHOW_ACTIVITY_LOG_HOME, true) -> "on_home"
+                    else -> "on"
+                }
+            logOpen?.isEnabled = value != "off"
+            setOnPreferenceChangeListener { _, newValue ->
+                val mode = newValue as String
+                prefs
+                    .edit()
+                    .putBoolean(KEY_ENABLE_ACTIVITY_LOG, mode != "off")
+                    .putBoolean(ShizukuSettings.Keys.KEY_SHOW_ACTIVITY_LOG_HOME, mode == "on_home")
+                    .apply()
+                logOpen?.isEnabled = mode != "off"
+                ShizukuSettings.syncAllPlusFeaturesToServer()
+                true
+            }
         }
 
         findPreference<Preference>("scripting")?.setOnPreferenceClickListener {

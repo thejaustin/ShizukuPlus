@@ -44,50 +44,11 @@ class ExperimentalSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        // Floating navigation bar: its options only matter while it's on - hide, don't grey out.
-        val navToggle = findPreference<TwoStatePreference>(af.shizuku.manager.widget.FloatingNavBar.KEY_ENABLED)
-        val navChildren =
-            listOf(
-                af.shizuku.manager.widget.FloatingNavBar.KEY_STYLE,
-                af.shizuku.manager.widget.FloatingNavBar.KEY_TABS,
-                ShizukuSettings.Keys.KEY_FLOATING_NAV_LABEL_MODE,
-                ShizukuSettings.Keys.KEY_FLOATING_NAV_AUTOHIDE,
-            ).mapNotNull { findPreference<androidx.preference.Preference>(it) }
-
-        fun syncNavChildren(on: Boolean) = navChildren.forEach { it.setAvailable(on) }
-        syncNavChildren(navToggle?.isChecked == true)
-        navToggle?.setOnPreferenceChangeListener { _, v ->
-            syncNavChildren((v as? Boolean) == true)
-            true
-        }
-        findPreference<androidx.preference.Preference>(af.shizuku.manager.widget.FloatingNavBar.KEY_TABS)?.apply {
-            updateNavTabsSummary()
-            setOnPreferenceClickListener {
-                NavCustomizerSheet.show(parentFragmentManager)
-                true
-            }
-        }
-
         // Device control home card: a Plus feature, so the server needs the new value. The change
         // listener runs before the switch persists it - sync on the next frame, once it has.
         findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_DEVICE_CONTROL_HOME_ENABLED)?.setOnPreferenceChangeListener { _, _ ->
             view?.post { ShizukuSettings.syncAllPlusFeaturesToServer() }
             true
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        updateNavTabsSummary()
-    }
-
-    private fun updateNavTabsSummary() {
-        findPreference<androidx.preference.Preference>(af.shizuku.manager.widget.FloatingNavBar.KEY_TABS)?.let { pref ->
-            val context = context ?: return
-            val names =
-                af.shizuku.manager.widget.FloatingNavBar
-                    .getActiveTabOrderNames(context)
-            pref.summary = getString(R.string.settings_floating_nav_tabs_summary, names.joinToString(" • "))
         }
     }
 }

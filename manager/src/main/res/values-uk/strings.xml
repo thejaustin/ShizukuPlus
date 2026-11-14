@@ -109,7 +109,6 @@
     <string name="dialog_wireless_adb_not_enabled">Бездротове налагодження не ввімкнено.\nЗверніть увагу, до Android 11 для увімкнення бездротового налагодження потрібне підключення до комп\'ютера.</string>
     <string name="dialog_usb_debugging_not_enabled">Налагодження USB не ввімкнено.\nБудь ласка, увімкніть його в розділі \"Параметри розробника\".</string>
     <string name="dialog_adb_pairing_message">Будь ласка, розпочніть створення пари, виконавши такі кроки:\n- Перейдіть до розділу \"Параметри розробника\"\n- Увімкніть \"Налагодження USB\" та \"Бездротове налагодження\"\n- Натисніть ліву частину розділу \"Бездротове налагодження\"\n- Натисніть \"Створити пару з пристроєм за допомогою коду\"\n- Введіть код створення пари зі сповіщення</string>
-    <string name="dialog_adb_pairing_accessibility_permission">На Android 14 встановлення/оновлення Shizuku за допомогою інсталятора пакетів скасовує дозвіл %1$s, який потрібен для ввімкнення служби доступності для створення пари.\n\nЩоб надати його, виконайте таку команду ADB:\n\n%2$s\n\nПісля виконання команди ви можете продовжити процес створення пари.\n\nПримітка: ви можете обійти це, встановивши/оновивши Shizuku за допомогою ADB.</string>
 
     <!-- Service Doctor -->
     <string name="doctor_check_samsung_autoblocker">Samsung Auto Blocker</string>
@@ -846,7 +845,6 @@
     <string name="settings_shadow_binder">Shadow Binder</string>
     <string name="settings_shadow_binder_summary">Перехоплення та підміна викликів системних служб для приховування інформації про пристрій або стану додатків</string>
     <string name="settings_shadow_binder_hidden_packages">Приховані пакети</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">Розділений комами список назв пакетів, які слід приховати від інших додатків. Якщо у вас встановлено як оригінальний Shizuku, так і Shizuku+, додайте обидва (moe.shizuku.privileged.api, af.shizuku.manager), щоб уникнути конфліктів.</string>
 
     <plurals name="settings_shadow_binder_hidden_packages_count">
         <item quantity="one">Вибрано %d додаток</item>
@@ -1050,12 +1048,10 @@
     <string name="doctor_check_local_network">Доступ до локальної мережі</string>
     <string name="doctor_tip_local_network">Доступ до локальної мережі (%1$s): Android 16/17 потребує цей дозвіл для виявлення та підключення до служби бездротового налагодження. Без нього Shizuku+ непомітно не запускається в режимі ADB. Натисніть «Виправити», щоб надати його.</string>
     <string name="doctor_check_wallet_integrity">Google Гаманець та Play Integrity</string>
-    <string name="doctor_wallet_ok">Перевірку пройдено (Немає слідів root)</string>
     <string name="doctor_wallet_risk_tmp_su">Ризик безпеки (виявлено бінарний файл su)</string>
     <string name="doctor_wallet_risk_magisk">Ризик безпеки (активна імітація Magisk)</string>
     <string name="doctor_wallet_risk_busybox">Ризик безпеки (активна імітація BusyBox)</string>
     <string name="doctor_wallet_risk_spoof">Ризик атестації (активна підміна пристрою)</string>
-    <string name="doctor_tip_wallet_integrity">Google Гаманець і банківські додатки: виявлені артефакти root або активна імітація Magisk/BusyBox спричиняють помилки «Пристрій не відповідає стандартам безпеки». Виконайте виправлення в один дотик, щоб видалити бінарні файли su та відновити відповідність.</string>
     <string name="doctor_fix_wallet_success">Готово. Працює з root — файли вердикту Play Integrity видалено безпосередньо з GMS. Відкрийте Google Гаманець; він має запрацювати одразу.</string>
     <string name="doctor_fix_wallet_success_adb_mode">Готово. Shizuku працює в режимі ADB-оболонки, тому файл вердикту Play Integrity на диску видалити не можна (лише root може торкатися теки даних GMS).\n\nЩо було зроблено натомість:\n• завершено процес DroidGuard (очищає вердикт у пам\'яті)\n• зупинено GMS\n• виконано спробу перевизначення TTL Play Integrity (спонукає GMS негайно переатестуватися)\n• запитано нову розминку атестації (запускає повторну оцінку DroidGuard з чистим пристроєм)\n• очищено дані Гаманця (примушує новий запит цілісності з новим nonce)\n• повторно підтверджено маршрутизацію NFC-платежів\n\nСпробуйте відкрити Гаманець зараз — він має відновитися одразу. Якщо все ще заблоковано, натисніть «Очистити дані Play Services» нижче для гарантованого негайного відновлення (потрібно буде знову увійти в Google).</string>
     <string name="doctor_fix_wallet_success_no_shizuku">Готово. Shizuku не працював, тому вдалося зупинити лише сам Гаманець — кешований вердикт Play Integrity в GMS усе ще збережено.\n\nГаманець має відновитися самостійно приблизно за 1 годину, коли вердикт природно втратить чинність. Для негайного відновлення натисніть «Очистити дані Play Services» нижче (потрібно буде знову увійти в Google).\n\nЩоб уникнути цього наступного разу, переконайтеся, що Shizuku запущено перед вимкненням root-функцій — це вмикає більш ретельне очищення.</string>
@@ -1085,7 +1081,6 @@
     <string name="empty_state_description_service_starting">Очікування завершення запуску Shizuku+. Зазвичай це триває недовго.</string>
     <string name="settings_automation_trusted_networks">Довірені мережі</string>
     <string name="settings_automation_auto_hide_packages">Автоприховування на передньому плані</string>
-    <string name="settings_automation_auto_hide_packages_summary">Додатки, які автоматично додаються до прихованого списку Тіньового Binder лише поки вони відкриті, на додаток до списку прихованих пакетів вище. Залиште порожнім, щоб керувати прихованими пакетами вручну.</string>
     <string name="su_path_preset_default">За замовчуванням (Автовизначення)</string>
     <string name="su_path_preset_custom">Власний шлях…</string>
     <string name="tile_open_app_required">Відкрийте Shizuku, щоб запустити або створити пару бездротового налагодження</string>
@@ -1167,7 +1162,6 @@
 
     <!-- Help dialogs -->
     <string name="help_stealth_mode_title">Режим невидимості</string>
-    <string name="help_stealth_mode_detail">Перехоплює запити PackageManager на рівні Binder та повертає «не встановлено» для пакетів ShizukuPlus та Shizuku. Застосунки, що використовують PM для виявлення root-інструментів (банківські застосунки, перевірки DRM), не знайдуть їх. Примітка: це лише приховує їх від запитів PackageManager — режим розробника та USB-налагодження все одно видимі для застосунків, що перевіряють параметри Android безпосередньо.</string>
     <string name="help_root_build_prop_title">Про перенаправлення build.prop</string>
     <string name="help_root_build_prop_detail">Цей модуль автоматично копіює оригінальний build.prop до шляху, доступного для запису, та перенаправляє всі записи до нього, дозволяючи налаштовувати системні значення без root.</string>
     <string name="help_root_iptables_title">Про імітацію брандмауера</string>

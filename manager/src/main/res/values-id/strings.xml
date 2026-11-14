@@ -48,12 +48,6 @@
         langkah-langkah berikut:\n- Arahkan ke \"Opsi Pengembang\"\n- Aktifkan \"Debugging USB\" dan
         \"Debugging Nirkabel\"\n- Ketuk sisi kiri \"Debugging Nirkabel\"\n- Ketuk \"Pasangkan
         perangkat dengan kode pemasangan\"\n- Masukkan kode pemasangan di notifikasi</string>
-    <string name="dialog_adb_pairing_accessibility_permission">Pada Android 14,
-        menginstal/memperbarui Shizuku dengan Package Installer akan mencabut izin ^1, yang
-        diperlukan untuk mengaktifkan layanan aksesibilitas untuk pemasangan.\n\nUntuk
-        memberikannya, jalankan perintah ADB berikut:\n\n^2\n\nSetelah menjalankan perintah, Anda
-        dapat melanjutkan proses pemasangan.\n\nCatatan: Anda dapat melewati ini dengan
-        menginstal/memperbarui Shizuku dengan ADB.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Harap aktifkan layanan aksesibilitas
         untuk memulai proses pemasangan. Ini memungkinkan Shizuku mendeteksi kode
         pemasangan.\n\nLayanan aksesibilitas akan dinonaktifkan ketika kode ditemukan atau setelah 1

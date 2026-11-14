@@ -218,6 +218,14 @@
             android:icon="@drawable/ic_smartphone_24"
             app:badgeType="experimental" />
 
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_floating_nav"
+        android:title="@string/settings_experimental_category_nav"
+        android:icon="@drawable/ic_nav_apps_24"
+        android:defaultValue="false">
+
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="floating_nav_enabled"
             android:title="@string/settings_floating_nav"
@@ -319,12 +327,6 @@
         android:title="@string/settings_personalization_category_home_screen"
         android:icon="@drawable/ic_nav_home_24"
         android:defaultValue="true">
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="show_activity_log_home"
-            android:title="@string/settings_show_activity_log_home"
-            android:icon="@drawable/ic_article_24"
-            android:defaultValue="true" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="lock_home_layout"

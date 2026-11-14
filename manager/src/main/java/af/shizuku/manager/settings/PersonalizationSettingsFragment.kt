@@ -412,11 +412,6 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        // The Home activity log card needs logging on (Advanced > Diagnostics > Enable activity log):
-        // a cross-screen dependency, so grey it out here instead of android:dependency.
-        findPreference<Preference>(ShizukuSettings.Keys.KEY_SHOW_ACTIVITY_LOG_HOME)?.isEnabled =
-            ShizukuSettings.isActivityLogEnabled()
-
         findPreference<TwoStatePreference>(KEY_COMPANION_MODE)?.apply {
             isChecked = ShizukuSettings.isCompanionModeEnabled()
             setOnPreferenceChangeListener { _, newValue ->

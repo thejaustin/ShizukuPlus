@@ -400,11 +400,16 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                     }
                     true
                 }
+                popup.setOnDismissListener { if (pendingPopup === it) pendingPopup = null }
+                pendingPopup = popup
                 popup.show()
                 true
             }
         }
     }
+
+    /** The long-press menu that's open, so sliding sideways can swap it for a tab drag. */
+    private var pendingPopup: androidx.appcompat.widget.PopupMenu? = null
 
     private fun attachSelectListener(
         activity: Activity,
@@ -908,94 +913,150 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         bindDraggableTabs(activity, nav, inEditMode)
     }
 
+    /**
+     * Reordering tabs by dragging them along the bar. In Home edit mode a tab drags as soon as it
+     * moves (a tap opens the customizer); anywhere else, long-press a tab and slide sideways - the
+     * quick-actions menu closes and the tab follows the finger.
+     */
     private fun bindDraggableTabs(
         activity: Activity,
         nav: BottomNavigationView,
         inEditMode: Boolean,
     ) {
-        val activeTabs = getActiveTabs()
-        val density = activity.resources.displayMetrics.density
-
-        activeTabs.forEach { tab ->
+        val slop =
+            android.view.ViewConfiguration
+                .get(activity)
+                .scaledTouchSlop
+        getActiveTabs().forEach { tab ->
             val itemView = nav.findViewById<View>(tab.id) ?: return@forEach
-            if (!inEditMode) {
-                itemView.setOnTouchListener(null)
-                return@forEach
+            var downX = 0f
+            var drag: TabDrag? = null
+
+            fun startDrag(
+                v: View,
+                event: android.view.MotionEvent,
+            ) {
+                pendingPopup?.dismiss()
+                pendingPopup = null
+                v.parent?.requestDisallowInterceptTouchEvent(true)
+                // The item saw the down; cancel it so it doesn't stay pressed or fire a click.
+                android.view.MotionEvent.obtain(event).also {
+                    it.action = android.view.MotionEvent.ACTION_CANCEL
+                    v.onTouchEvent(it)
+                    it.recycle()
+                }
+                drag = TabDrag(activity, v).also { it.start(downX) }
             }
 
-            var downX = 0f
-            var downY = 0f
-            var isDragging = false
-            var accumulatedDx = 0f
-
             itemView.setOnTouchListener { v, event ->
-                if (!af.shizuku.manager.home.HomeEditMode.isActive) return@setOnTouchListener false
+                val editing = inEditMode && af.shizuku.manager.home.HomeEditMode.isActive
                 when (event.actionMasked) {
                     android.view.MotionEvent.ACTION_DOWN -> {
                         downX = event.rawX
-                        downY = event.rawY
-                        accumulatedDx = 0f
-                        isDragging = false
-                        v.parent?.requestDisallowInterceptTouchEvent(true)
-                        true
+                        drag = null
+                        // Edit mode owns the gesture outright; otherwise let tap and long-press work.
+                        if (editing) v.parent?.requestDisallowInterceptTouchEvent(true)
+                        editing
                     }
                     android.view.MotionEvent.ACTION_MOVE -> {
-                        val dx = event.rawX - downX
-                        val dy = event.rawY - downY
-                        if (!isDragging && (kotlin.math.abs(dx) > 8 * density || kotlin.math.abs(dy) > 8 * density)) {
-                            isDragging = true
-                            HapticUtils.gestureStart(v)
-                        }
-                        if (isDragging) {
-                            accumulatedDx += (event.rawX - downX)
-                            downX = event.rawX
-                            val itemWidth = v.width.toFloat().coerceAtLeast(44f * density)
-                            val threshold = itemWidth * 0.45f
-                            val currentTabs = getActiveTabs().toMutableList()
-                            val currentIndex = currentTabs.indexOfFirst { it.id == tab.id }
-                            if (currentIndex >= 0) {
-                                if (accumulatedDx > threshold && currentIndex < currentTabs.size - 1) {
-                                    val item = currentTabs.removeAt(currentIndex)
-                                    currentTabs.add(currentIndex + 1, item)
-                                    accumulatedDx -= threshold
-                                    HapticUtils.segmentTick(v)
-                                    setActiveTabOrder(currentTabs.map { it.key })
-                                    sync(activity)
-                                } else if (accumulatedDx < -threshold && currentIndex > 0) {
-                                    val item = currentTabs.removeAt(currentIndex)
-                                    currentTabs.add(currentIndex - 1, item)
-                                    accumulatedDx += threshold
-                                    HapticUtils.segmentTick(v)
-                                    setActiveTabOrder(currentTabs.map { it.key })
-                                    sync(activity)
+                        val armed = editing || pendingPopup != null
+                        if (drag == null && armed && kotlin.math.abs(event.rawX - downX) > slop) startDrag(v, event)
+                        drag?.move(event.rawX)
+                        drag != null || editing
+                    }
+                    android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
+                        val d = drag
+                        drag = null
+                        v.parent?.requestDisallowInterceptTouchEvent(false)
+                        when {
+                            d != null -> {
+                                d.end(commit = event.actionMasked == android.view.MotionEvent.ACTION_UP)
+                                true
+                            }
+                            editing -> {
+                                if (event.actionMasked == android.view.MotionEvent.ACTION_UP) {
+                                    HapticUtils.tap(v)
+                                    if (activity is FragmentActivity) NavCustomizerSheet.show(activity.supportFragmentManager)
                                 }
+                                true
                             }
+                            else -> false
                         }
-                        true
                     }
-                    android.view.MotionEvent.ACTION_UP -> {
-                        v.parent?.requestDisallowInterceptTouchEvent(false)
-                        if (isDragging) {
-                            HapticUtils.gestureEnd(v)
-                        } else {
-                            // Tapped in edit mode: open nav customizer sheet
-                            HapticUtils.tap(v)
-                            if (activity is FragmentActivity) {
-                                NavCustomizerSheet.show(activity.supportFragmentManager)
-                            }
-                        }
-                        isDragging = false
-                        true
-                    }
-                    android.view.MotionEvent.ACTION_CANCEL -> {
-                        v.parent?.requestDisallowInterceptTouchEvent(false)
-                        if (isDragging) HapticUtils.gestureEnd(v)
-                        isDragging = false
-                        true
-                    }
-                    else -> false
+                    else -> editing
                 }
             }
+        }
+    }
+
+    /**
+     * One tab being dragged: it lifts and follows the finger, its neighbours slide over to make
+     * room, and the order is saved on release. Saving mid-gesture would rebuild the menu views
+     * under the finger and cancel the drag after the first swap.
+     */
+    private class TabDrag(
+        private val activity: Activity,
+        private val dragged: View,
+    ) {
+        private val items = (dragged.parent as ViewGroup).let { p -> (0 until p.childCount).map { p.getChildAt(it) } }
+        private val from = items.indexOf(dragged)
+        private var target = from
+        private var startX = 0f
+
+        fun start(rawX: Float) {
+            startX = rawX
+            HapticUtils.gestureStart(dragged)
+            dragged.translationZ = 8 * activity.resources.displayMetrics.density
+            dragged
+                .animate()
+                .scaleX(1.12f)
+                .scaleY(1.12f)
+                .setDuration(ShizukuSettings.scaledAnimationDuration(150L))
+                .start()
+        }
+
+        fun move(rawX: Float) {
+            if (from < 0) return
+            val minDx = (items.first().left - dragged.left).toFloat()
+            val maxDx = (items.last().left - dragged.left).toFloat()
+            dragged.translationX = (rawX - startX).coerceIn(minDx, maxDx)
+            val center = dragged.left + dragged.width / 2f + dragged.translationX
+            val slot = items.indexOfFirst { center >= it.left && center < it.right }.takeIf { it >= 0 } ?: return
+            if (slot == target) return
+            target = slot
+            HapticUtils.segmentTick(dragged)
+            val duration = ShizukuSettings.scaledAnimationDuration(180L)
+            items.forEachIndexed { i, item ->
+                if (item === dragged) return@forEachIndexed
+                val shift =
+                    when {
+                        i in (from + 1)..target -> -dragged.width
+                        i in target until from -> dragged.width
+                        else -> 0
+                    }
+                item
+                    .animate()
+                    .translationX(shift.toFloat())
+                    .setDuration(duration)
+                    .start()
+            }
+        }
+
+        fun end(commit: Boolean) {
+            HapticUtils.gestureEnd(dragged)
+            items.forEach {
+                it.animate().cancel()
+                it.translationX = 0f
+            }
+            dragged.translationZ = 0f
+            dragged.scaleX = 1f
+            dragged.scaleY = 1f
+            if (!commit || from < 0 || target == from) return
+            val keys = getActiveTabs().map { it.key }.toMutableList()
+            if (from !in keys.indices || target !in keys.indices) return
+            keys.add(target, keys.removeAt(from))
+            // The prefs listener rebuilds the bar in the new order.
+            setActiveTabOrder(keys)
         }
     }
 

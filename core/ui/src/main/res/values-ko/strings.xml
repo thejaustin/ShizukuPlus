@@ -610,7 +610,6 @@
     <string name="settings_shadow_binder">섀도우 바인더</string>
     <string name="settings_shadow_binder_summary">시스템 서비스 호출을 가로채고 모의하여 기기 정보나 앱 상태를 숨김</string>
     <string name="settings_shadow_binder_hidden_packages">숨긴 패키지</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">다른 앱에서 숨길 패키지 이름의 쉼표로 구분된 목록</string>
     <plurals name="settings_shadow_binder_hidden_packages_count">
         <item quantity="one">%d개의 앱 선택됨</item>
         <item quantity="other">%d개의 앱 선택됨</item>

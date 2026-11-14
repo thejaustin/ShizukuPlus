@@ -386,12 +386,10 @@
     <string name="doctor_tip_local_network"><b>Yerel Ağ Erişimi (%1$s)</b>: Android 16/17, kablosuz hata ayıklama hizmetini bulmak ve bağlanmak için bu izni gerektirir. İzin olmadan Shizuku+ ADB modunda sessizce başlatılamaz. Vermek için Düzelt\'e dokunun.</string>
     <string name="doctor_button_fix">Düzelt</string>
     <string name="doctor_check_wallet_integrity">Google Cüzdan &amp; Play Integrity</string>
-    <string name="doctor_wallet_ok">Bütünlük Denetimini Geçiyor (Root Kalıntısı Yok)</string>
     <string name="doctor_wallet_risk_tmp_su">Güvenlik Riski (su ikili dosyası algılandı)</string>
     <string name="doctor_wallet_risk_magisk">Güvenlik Riski (Magisk Taklidi etkin)</string>
     <string name="doctor_wallet_risk_busybox">Güvenlik Riski (BusyBox Taklidi etkin)</string>
     <string name="doctor_wallet_risk_spoof">Doğrulama Riski (Cihaz Taklidi etkin)</string>
-    <string name="doctor_tip_wallet_integrity">Google Cüzdan &amp; Bankacılık Uygulamaları: Algılanan root kalıntıları veya etkin Magisk/BusyBox taklidi, "Cihaz güvenlik standartlarını karşılamıyor" hatalarına neden olur. su ikili dosyalarını temizlemek ve uyumluluğu geri kazanmak için tek dokunuşluk düzeltmeyi çalıştırın.</string>
     <string name="doctor_fix_wallet_success">Tamamlandı. Root olarak çalışıyor: Play Integrity karar dosyaları doğrudan GMS\'den silindi. Google Cüzdan\'ı açın; hemen çalışması gerekir.</string>
     <string name="doctor_fix_wallet_success_adb_mode">Tamamlandı. Shizuku ADB kabuk modunda çalışıyor, bu nedenle diskteki Play Integrity karar dosyası silinemez (GMS\'nin veri dizinine yalnızca root dokunabilir).\n\nBunun yerine yapılanlar:\n• DroidGuard süreci sonlandırıldı (bellekteki kararı temizler)\n• GMS durduruldu\n• Play Integrity TTL geçersiz kılması denendi (GMS\'yi hemen yeniden doğrulamaya yönlendirir)\n• Yeni doğrulama ısınması istendi (DroidGuard\'ın temiz cihazla yeniden değerlendirmesini tetikler)\n• Cüzdan verileri temizlendi (yeni bir nonce ile yeni bir bütünlük isteğini zorlar)\n• NFC ödeme yönlendirmesi yeniden doğrulandı\n\nŞimdi Cüzdan\'ı açmayı deneyin; hemen düzelmesi gerekir. Hâlâ engelliyse, kesin ve anında kurtarma için aşağıdaki \"Play Hizmetleri Verilerini Temizle\"ye dokunun (sonrasında Google hesabınızda yeniden oturum açmanız gerekir).</string>
     <string name="doctor_fix_wallet_success_no_shizuku">Tamamlandı. Shizuku çalışmıyordu, bu yüzden yalnızca Cüzdan durdurulabildi; GMS\'nin önbelleğe alınmış Play Integrity kararı hâlâ duruyor.\n\nKarar doğal olarak sona erdiğinde Cüzdan yaklaşık 1 saat içinde kendiliğinden düzelmelidir. Anında kurtarma için aşağıdaki \"Play Hizmetleri Verilerini Temizle\"ye dokunun (sonrasında Google hesabınızda yeniden oturum açmanız gerekir).\n\nBunu bir dahaki sefere önlemek için root özelliklerini devre dışı bırakmadan önce Shizuku\'nun çalıştığından emin olun; daha kapsamlı bir temizlik sağlar.</string>
@@ -679,10 +677,8 @@
     <string name="settings_shadow_binder">Shadow Binder</string>
     <string name="settings_shadow_binder_summary">Cihaz bilgilerini veya uygulama durumunu gizlemek için sistem hizmeti çağrılarını yakala ve taklit et</string>
     <string name="settings_shadow_binder_hidden_packages">Gizli Paketler</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">Diğer uygulamalardan gizlenecek paket adlarının virgülle ayrılmış listesi. Hem orijinal Shizuku hem de Shizuku+ yüklüyse çakışmaları önlemek için ikisini de ekleyin (moe.shizuku.privileged.api, af.shizuku.manager).</string>
     <string name="settings_automation_trusted_networks">Güvenilir Ağlar</string>
     <string name="settings_automation_auto_hide_packages">Ön Plandayken Otomatik Gizle</string>
-    <string name="settings_automation_auto_hide_packages_summary">Yukarıdaki Gizli Paketler listesine ek olarak, yalnızca açık oldukları sürece Shadow Binder\'ın gizli listesine otomatik eklenen uygulamalar. Gizli paketleri elle yönetmek için boş bırakın.</string>
     <string name="settings_companion_mode">Yardımcı Kartı Göster</string>
     <string name="settings_companion_mode_summary">Standart Shizuku\'yu hızlıca açmak için bir kart göster. Not: aynı anda yalnızca bir Shizuku hizmeti çalışabilir; ikisi arasında geçiş yapmak için bunu kullanın.</string>
     <string name="settings_companion_fallback">Çökme Yedeği</string>
@@ -858,7 +854,6 @@
     <string name="device_control_shutdown_confirm">Cihazı kapatmak istediğinizden emin misiniz?</string>
     <string name="nav_back">Geri</string>
     <string name="help_stealth_mode_title">Gizli Mod</string>
-    <string name="help_stealth_mode_detail">PackageManager sorgularını Binder düzeyinde yakalar ve ShizukuPlus ile Shizuku paketleri için "yüklü değil" döndürür. Root araçlarını algılamak için PM kullanan uygulamalar (bankacılık uygulamaları, DRM denetimleri) bunları bulamaz. Not: bu yalnızca PackageManager sorgularından gizler; geliştirici modu ve USB hata ayıklama, Android ayarlarını doğrudan denetleyen uygulamalar tarafından hâlâ görülebilir.</string>
     <string name="corner_style_sharp">Keskin / Düz</string>
     <string name="home_permission_manager_title">İzin Yöneticisi</string>
     <string name="home_permission_manager_summary">Herhangi bir uygulamaya root olmadan kabuk düzeyinde izinler verin</string>
@@ -1118,7 +1113,6 @@
     <string name="settings_hide_launcher_icon">Başlatıcı Simgesini Gizle</string>
     <string name="settings_hide_launcher_icon_summary">Uygulamayı başlatıcıdan kaldırın. ADB veya başka bir uygulama üzerinden açın.</string>
     <string name="settings_stealth_mode_pkg_query">Paket Sorgu Filtresi</string>
-    <string name="settings_stealth_mode_pkg_query_summary">Shizuku\'yu diğer uygulamaların paket sorgularından gizleyin</string>
     <string name="settings_ai_bridge_title">AI Bridge ve NPU</string>
     <string name="tcp_guard_title">Güvenilmeyen bir ağda TCP hata ayıklaması açık</string>
     <string name="tcp_guard_text">ADB TCP bağlantı noktası %1$d dinliyor ve %2$s. Şu anda ihtiyacınız yoksa kapatın.</string>

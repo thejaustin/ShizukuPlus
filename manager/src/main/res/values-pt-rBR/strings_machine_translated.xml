@@ -297,7 +297,6 @@
     <string name="settings_hide_launcher_icon">Ocultar Ícone do Launcher</string>
     <string name="settings_hide_launcher_icon_summary">Remover o app do launcher. Abrir via ADB ou outro app.</string>
     <string name="settings_stealth_mode_pkg_query">Filtro de Consulta de Pacote</string>
-    <string name="settings_stealth_mode_pkg_query_summary">Ocultar Shizuku de consultas de pacote por outros apps</string>
     <string name="settings_ai_bridge_title">AI Bridge &amp; NPU</string>
     <string name="tcp_guard_title">Depuração TCP está aberta em uma rede não confiável</string>
     <string name="tcp_guard_text">A porta TCP ADB %1$d está escutando e %2$s. Feche-a a menos que você precise agora.</string>

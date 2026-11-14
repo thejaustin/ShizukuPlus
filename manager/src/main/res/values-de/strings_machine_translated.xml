@@ -389,12 +389,10 @@
     <string name="doctor_tip_local_network"><b>Zugriff auf das lokale Netzwerk (%1$s)</b>: Android 16/17 benötigt diese Berechtigung, um den Dienst für das Drahtlose Debugging zu finden und sich damit zu verbinden. Ohne sie startet Shizuku+ im ADB-Modus stillschweigend nicht. Tippe auf „Beheben“, um sie zu erteilen.</string>
     <string name="doctor_button_fix">Beheben</string>
     <string name="doctor_check_wallet_integrity">Google Wallet &amp; Play Integrity</string>
-    <string name="doctor_wallet_ok">Integrität bestanden (keine Root-Rückstände)</string>
     <string name="doctor_wallet_risk_tmp_su">Sicherheitsrisiko (su-Binärdatei erkannt)</string>
     <string name="doctor_wallet_risk_magisk">Sicherheitsrisiko (Magisk-Simulation aktiv)</string>
     <string name="doctor_wallet_risk_busybox">Sicherheitsrisiko (BusyBox-Simulation aktiv)</string>
     <string name="doctor_wallet_risk_spoof">Attestierungsrisiko (Geräte-Spoofing aktiv)</string>
-    <string name="doctor_tip_wallet_integrity">Google Wallet &amp; Banking-Apps: Erkannte Root-Artefakte oder eine aktive Magisk-/BusyBox-Simulation verursachen die Fehlermeldung „Gerät erfüllt die Sicherheitsstandards nicht“. Führe die Ein-Tipp-Korrektur aus, um su-Binärdateien zu entfernen und die Konformität wiederherzustellen.</string>
     <string name="doctor_fix_wallet_success">Fertig. Läuft als Root — die Play-Integrity-Urteilsdateien wurden direkt aus GMS gelöscht. Öffne Google Wallet; es sollte sofort funktionieren.</string>
     <string name="doctor_fix_wallet_success_adb_mode">Fertig. Shizuku läuft im ADB-Shell-Modus, daher kann die Play-Integrity-Urteilsdatei auf dem Datenträger nicht gelöscht werden (nur Root darf auf das Datenverzeichnis von GMS zugreifen).\n\nStattdessen wurde Folgendes getan:\n• DroidGuard-Prozess beendet (löscht das Urteil im Arbeitsspeicher)\n• GMS angehalten\n• Play-Integrity-TTL-Überschreibung versucht (veranlasst GMS zur sofortigen erneuten Attestierung)\n• Neue Attestierungs-Aufwärmung angefordert (löst eine erneute DroidGuard-Prüfung mit sauberem Gerät aus)\n• Wallet-Daten gelöscht (erzwingt eine neue Integritätsanfrage mit frischer Nonce)\n• NFC-Zahlungsrouting erneut bestätigt\n\nVersuche jetzt, Wallet zu öffnen — es sollte sich sofort erholen. Falls es weiterhin blockiert ist, tippe unten auf „Play-Dienste-Daten löschen“ für garantierte sofortige Wiederherstellung (danach musst du dich erneut bei Google anmelden).</string>
     <string name="doctor_fix_wallet_success_no_shizuku">Fertig. Shizuku lief nicht, daher konnte nur Wallet selbst angehalten werden — das zwischengespeicherte Play-Integrity-Urteil von GMS ist weiterhin vorhanden.\n\nWallet sollte sich innerhalb von ca. 1 Stunde von selbst erholen, sobald das Urteil natürlich abläuft. Für sofortige Wiederherstellung tippe unten auf „Play-Dienste-Daten löschen“ (danach musst du dich erneut bei Google anmelden).\n\nUm das nächstes Mal zu vermeiden, stelle sicher, dass Shizuku läuft, bevor du Root-Funktionen deaktivierst — das ermöglicht eine gründlichere Bereinigung.</string>
@@ -682,10 +680,8 @@
     <string name="settings_shadow_binder">Shadow Binder</string>
     <string name="settings_shadow_binder_summary">Systemdienstaufrufe abfangen und simulieren, um Geräteinformationen oder App-Zustand zu verbergen</string>
     <string name="settings_shadow_binder_hidden_packages">Versteckte Pakete</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">Kommagetrennte Liste von Paketnamen, die vor anderen Apps verborgen werden sollen. Wenn sowohl das Original-Shizuku als auch Shizuku+ installiert sind, füge beide hinzu (moe.shizuku.privileged.api, af.shizuku.manager), um Konflikte zu vermeiden.</string>
     <string name="settings_automation_trusted_networks">Vertrauenswürdige Netzwerke</string>
     <string name="settings_automation_auto_hide_packages">Im Vordergrund automatisch verbergen</string>
-    <string name="settings_automation_auto_hide_packages_summary">Apps, die nur solange sie geöffnet sind automatisch zur Liste versteckter Pakete von Shadow Binder hinzugefügt werden, zusätzlich zur obigen Liste „Versteckte Pakete“. Leer lassen, um versteckte Pakete stattdessen manuell zu verwalten.</string>
     <string name="settings_companion_mode">Companion-Karte anzeigen</string>
     <string name="settings_companion_mode_summary">Eine Karte anzeigen, um das Original-Shizuku schnell zu öffnen. Hinweis: Es kann immer nur ein Shizuku-Dienst laufen — nutze dies, um zwischen dir zu wechseln.</string>
     <string name="settings_companion_fallback">Absturz-Fallback</string>
@@ -861,7 +857,6 @@
     <string name="device_control_shutdown_confirm">Möchtest du das Gerät wirklich herunterfahren?</string>
     <string name="nav_back">Zurück</string>
     <string name="help_stealth_mode_title">Tarnmodus</string>
-    <string name="help_stealth_mode_detail">Fängt PackageManager-Abfragen auf Binder-Ebene ab und gibt für die Pakete ShizukuPlus und Shizuku „nicht installiert“ zurück. Apps, die den PM zur Erkennung von Root-Tools nutzen (Banking-Apps, DRM-Prüfungen), finden sie nicht. Hinweis: Das verbirgt sie nur vor PackageManager-Abfragen — Entwicklermodus und USB-Debugging bleiben für Apps sichtbar, die die Android-Einstellungen direkt prüfen.</string>
     <string name="corner_style_sharp">Eckig / Flach</string>
     <string name="home_permission_manager_title">Berechtigungsmanager</string>
     <string name="home_permission_manager_summary">Shell-Berechtigungen für beliebige Apps ohne Root erteilen</string>
@@ -1020,7 +1015,6 @@
     <string name="settings_hide_launcher_icon">Startsymbol ausblenden</string>
     <string name="settings_hide_launcher_icon_summary">Entferne die App aus dem Launcher. Öffne sie über ADB oder eine andere App.</string>
     <string name="settings_stealth_mode_pkg_query">Paket-Abfrage-Filter</string>
-    <string name="settings_stealth_mode_pkg_query_summary">Verberge Shizuku vor Paket-Abfragen durch andere Apps</string>
     <string name="settings_ai_bridge_title">AI-Brücke und NPU</string>
     <string name="tcp_guard_title">TCP-Debugging ist in einem nicht vertrauenswürdigen Netzwerk offen</string>
     <string name="tcp_guard_text">ADB TCP-Port %1$d ist offen und %2$s. Schließe es, Wenn du es jetzt nicht benötigen.</string>

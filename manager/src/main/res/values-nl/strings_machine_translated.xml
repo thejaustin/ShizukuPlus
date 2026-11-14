@@ -389,12 +389,10 @@
     <string name="doctor_tip_local_network"><b>Toegang tot lokaal netwerk (%1$s)</b>: Android 16/17 vereist deze toestemming om de service voor draadloze foutopsporing te ontdekken en er verbinding mee te maken. Zonder deze toestemming kan Shizuku+ in ADB-modus niet starten en meldt dat niet. Tik op Oplossen om deze te verlenen.</string>
     <string name="doctor_button_fix">Oplossen</string>
     <string name="doctor_check_wallet_integrity">Google Wallet &amp; Play Integrity</string>
-    <string name="doctor_wallet_ok">Slaagt voor Integrity (geen root-resten)</string>
     <string name="doctor_wallet_risk_tmp_su">Beveiligingsrisico (su-binary gedetecteerd)</string>
     <string name="doctor_wallet_risk_magisk">Beveiligingsrisico (Magisk-simulatie actief)</string>
     <string name="doctor_wallet_risk_busybox">Beveiligingsrisico (BusyBox-simulatie actief)</string>
     <string name="doctor_wallet_risk_spoof">Attestatierisico (apparaatvervalsing actief)</string>
-    <string name="doctor_tip_wallet_integrity">Google Wallet &amp; bankapps: Gedetecteerde root-artefacten of actieve Magisk/BusyBox-simulatie veroorzaken de fout "Apparaat voldoet niet aan de beveiligingsnormen". Voer de oplossing met één tik uit om su-binaries te verwijderen en de naleving te herstellen.</string>
     <string name="doctor_fix_wallet_success">Klaar. Draait als root — de Play Integrity-oordeelbestanden zijn rechtstreeks uit GMS verwijderd. Open Google Wallet; het zou direct moeten werken.</string>
     <string name="doctor_fix_wallet_success_adb_mode">Klaar. Shizuku draait in ADB-shellmodus, dus het Play Integrity-oordeelbestand op schijf kan niet worden verwijderd (alleen root kan de gegevensmap van GMS aanraken).\n\nWat er in plaats daarvan is gedaan:\n• DroidGuard-proces beëindigd (wist het oordeel in het geheugen)\n• GMS gestopt\n• Play Integrity TTL-override geprobeerd (zet GMS aan tot onmiddellijke nieuwe attestatie)\n• Nieuwe attestatie-warmup aangevraagd (activeert nieuwe DroidGuard-evaluatie met een schoon apparaat)\n• Wallet-gegevens gewist (forceert een nieuw integriteitsverzoek met een nieuwe nonce)\n• NFC-betalingsroutering opnieuw bevestigd\n\nProbeer Wallet nu te openen — het zou direct moeten herstellen. Als het nog steeds geblokkeerd is, tik hieronder op \"Play Services-gegevens wissen\" voor gegarandeerd direct herstel (je moet daarna opnieuw inloggen bij Google).</string>
     <string name="doctor_fix_wallet_success_no_shizuku">Klaar. Shizuku draaide niet, dus alleen Wallet zelf kon worden gestopt — het gecachete Play Integrity-oordeel van GMS is nog intact.\n\nWallet zou binnen ongeveer 1 uur vanzelf moeten herstellen zodra het oordeel verloopt. Tik voor direct herstel hieronder op \"Play Services-gegevens wissen\" (je moet daarna opnieuw inloggen bij Google).\n\nOm dit de volgende keer te voorkomen: zorg dat Shizuku draait voordat je root-functies uitschakelt — dan kan er grondiger worden opgeschoond.</string>
@@ -914,10 +912,8 @@
     <string name="settings_shadow_binder">App-verberging &amp; Stealth Shield</string>
     <string name="settings_shadow_binder_summary">Verberg Shizuku+ en geselecteerde gevoelige apps voor detectie door root-checkers, bank-apps en game-scanners</string>
     <string name="settings_shadow_binder_hidden_packages">Verborgen pakketten</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">Kommagescheiden lijst van pakketnamen om voor andere apps te verbergen. Als je zowel originele Shizuku als Shizuku+ hebt geïnstalleerd, voeg dan beide toe (moe.shizuku.privileged.api, af.shizuku.manager) om conflicten te voorkomen.</string>
     <string name="settings_automation_trusted_networks">Vertrouwde netwerken</string>
     <string name="settings_automation_auto_hide_packages">Automatisch verbergen op voorgrond</string>
-    <string name="settings_automation_auto_hide_packages_summary">Apps die automatisch worden toegevoegd aan de verborgen lijst van Shadow Binder zolang ze geopend zijn, bovenop de bovenstaande lijst van verborgen pakketten. Laat leeg om verborgen pakketten handmatig te beheren.</string>
     <string name="settings_companion_mode">Companion-kaart weergeven</string>
     <string name="settings_companion_mode_summary">Toon een kaart om standaard Shizuku snel te openen. Opmerking: er kan slechts één Shizuku-service tegelijk draaien — gebruik dit om tussen beide te schakelen.</string>
     <string name="settings_companion_fallback">Terugval bij crash</string>
@@ -1062,7 +1058,6 @@
     <string name="settings_hide_launcher_icon">Startschermicoon verbergen</string>
     <string name="settings_hide_launcher_icon_summary">Verwijder de app uit het startscherm. Open via ADB of een andere app.</string>
     <string name="settings_stealth_mode_pkg_query">Pakketquery-filter</string>
-    <string name="settings_stealth_mode_pkg_query_summary">Verberg Shizuku voor pakketquery\'s door andere apps</string>
     <string name="settings_ai_bridge_title">AI Bridge &amp; NPU</string>
     <string name="settings_package_identity_category">Pakketidentiteit</string>
     <string name="package_identity_info_title">Over randomisatie van pakketnamen</string>
@@ -1104,7 +1099,6 @@
     <string name="device_control_shutdown_confirm">Weet je zeker dat je het apparaat wilt uitschakelen?</string>
     <string name="nav_back">Terug</string>
     <string name="help_stealth_mode_title">Onzichtbare modus</string>
-    <string name="help_stealth_mode_detail">Onderschept PackageManager-query\'s op het Binder-niveau en retourneert \"niet geïnstalleerd\" voor ShizukuPlus- en Shizuku-pakketten. Apps die PM gebruiken om root-tools te detecteren (bank-apps, DRM-controles) zullen ze niet vinden. Opmerking: dit verbergt ze alleen voor PackageManager-query\'s — ontwikkelaarsmodus en USB-foutopsporing blijven zichtbaar voor apps die Android-instellingen rechtstreeks controleren.</string>
     <string name="corner_style_sharp">Scherp / Vlak</string>
     <string name="home_permission_manager_title">Machtigingenbeheer</string>
     <string name="home_permission_manager_summary">Shell-machtigingen toekennen aan elke app zonder root</string>

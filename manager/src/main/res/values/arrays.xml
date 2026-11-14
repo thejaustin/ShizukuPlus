@@ -100,6 +100,30 @@
         <item>system</item>
     </string-array>
 
+    <string-array name="activity_log_mode_entries">
+        <item>@string/activity_log_mode_off</item>
+        <item>@string/activity_log_mode_on</item>
+        <item>@string/activity_log_mode_on_home</item>
+    </string-array>
+
+    <string-array name="activity_log_mode_values" translatable="false">
+        <item>off</item>
+        <item>on</item>
+        <item>on_home</item>
+    </string-array>
+
+    <string-array name="update_mode_entries">
+        <item>@string/update_mode_off</item>
+        <item>@string/update_mode_check</item>
+        <item>@string/update_mode_install</item>
+    </string-array>
+
+    <string-array name="update_mode_values" translatable="false">
+        <item>off</item>
+        <item>check</item>
+        <item>install</item>
+    </string-array>
+
     <string-array name="update_channel_entries">
         <item>@string/update_channel_stable</item>
         <item>@string/update_channel_dev</item>

@@ -224,6 +224,10 @@ object AdbStarter {
         port: Int,
     ): Boolean {
         if (port !in 1..65535 || AdbAuthWait.isWaiting()) return true
+        // USB debugging already off: adbd isn't listening, so there's no port to close. Turning it
+        // back on here (the old first step) undid the user switching it off for an app that
+        // refuses to run with it on; the port came from persist.adb.tcp.port, which survives (#656).
+        if (Settings.Global.getInt(context.contentResolver, Settings.Global.ADB_ENABLED, 0) == 0) return true
         val result =
             runCatching {
                 val cr = context.contentResolver

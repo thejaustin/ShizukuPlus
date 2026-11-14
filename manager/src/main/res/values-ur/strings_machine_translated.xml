@@ -88,12 +88,10 @@
     <string name="doctor_check_local_network">لوکل نیٹ ورک تک رسائی</string>
     <string name="doctor_tip_local_network"><b>لوکل نیٹ ورک تک رسائی (%1$s)</b>: Android 16/17 کو وائرلیس ڈیبگنگ سروس ڈھونڈنے اور جڑنے کے لیے یہ اجازت درکار ہے۔ اس کے بغیر Shizuku+ ADB موڈ میں خاموشی سے شروع ہونے میں ناکام رہتا ہے۔ اجازت دینے کے لیے Fix پر ٹیپ کریں۔</string>
     <string name="doctor_check_wallet_integrity">Google Wallet اور Play Integrity</string>
-    <string name="doctor_wallet_ok">انٹیگریٹی پاس (روٹ کے کوئی آثار نہیں)</string>
     <string name="doctor_wallet_risk_tmp_su">سیکیورٹی خطرہ (su بائنری ملی)</string>
     <string name="doctor_wallet_risk_magisk">سیکیورٹی خطرہ (Magisk Mocking فعال)</string>
     <string name="doctor_wallet_risk_busybox">سیکیورٹی خطرہ (BusyBox Mocking فعال)</string>
     <string name="doctor_wallet_risk_spoof">اٹیسٹیشن خطرہ (ڈیوائس اسپوفنگ فعال)</string>
-    <string name="doctor_tip_wallet_integrity">Google Wallet اور بینکنگ ایپس: روٹ کے آثار یا فعال Magisk/BusyBox mocking کی وجہ سے "Device doesn\'t meet security standards" کی خرابیاں آتی ہیں۔ su بائنریز ہٹانے اور تعمیل بحال کرنے کے لیے ون ٹیپ فکس چلائیں۔</string>
     <string name="doctor_fix_wallet_success">مکمل۔ root کے طور پر چل رہا ہے — Play Integrity کی verdict فائلیں براہ راست GMS سے حذف کر دی گئیں۔ Google Wallet کھولیں؛ یہ فوراً کام کرنا چاہیے۔</string>
     <string name="doctor_fix_wallet_success_adb_mode">مکمل۔ Shizuku ADB شیل موڈ میں چل رہا ہے، اس لیے ڈسک پر Play Integrity verdict فائل حذف نہیں کی جا سکتی (GMS کی ڈیٹا ڈائریکٹری صرف root چھو سکتا ہے)۔\n\nاس کے بجائے یہ کیا گیا:\n• DroidGuard پروسیس بند کیا گیا (ان میموری verdict صاف ہو گیا)\n• GMS روکا گیا\n• Play Integrity TTL اوور رائیڈ کی کوشش کی گئی (GMS کو فوراً دوبارہ تصدیق پر آمادہ کرتا ہے)\n• تازہ اٹیسٹیشن وارم اپ کی درخواست کی گئی (صاف آلے کے ساتھ DroidGuard کی دوبارہ جانچ شروع کرتا ہے)\n• Wallet کا ڈیٹا صاف کیا گیا (نئے nonce کے ساتھ نئی انٹیگریٹی درخواست پر مجبور کرتا ہے)\n• NFC پیمنٹ روٹنگ کی دوبارہ تصدیق کی گئی\n\nاب Wallet کھول کر دیکھیں — یہ فوراً بحال ہونا چاہیے۔ اگر پھر بھی بلاک ہو تو یقینی اور فوری بحالی کے لیے نیچے \"Clear Play Services Data\" پر ٹیپ کریں (بعد میں آپ کو دوبارہ Google میں سائن اِن کرنا ہوگا)۔</string>
     <string name="doctor_fix_wallet_success_no_shizuku">مکمل۔ Shizuku نہیں چل رہا تھا، اس لیے صرف Wallet کو روکا جا سکا — GMS کی کیش شدہ Play Integrity verdict اب بھی برقرار ہے۔\n\nverdict کی میعاد قدرتی طور پر ختم ہونے پر Wallet تقریباً 1 گھنٹے میں خود بحال ہو جانا چاہیے۔ فوری بحالی کے لیے نیچے \"Clear Play Services Data\" پر ٹیپ کریں (بعد میں آپ کو دوبارہ Google میں سائن اِن کرنا ہوگا)۔\n\nاگلی بار اس سے بچنے کے لیے root فیچرز بند کرنے سے پہلے یقینی بنائیں کہ Shizuku چل رہا ہو — اس سے زیادہ مکمل صفائی ممکن ہوتی ہے۔</string>
@@ -215,7 +213,6 @@
     <string name="changelog_summary_up_to_date">آپ تازہ ترین ورژن پر ہیں</string>
     <string name="settings_automation_trusted_networks">قابل اعتماد نیٹ ورکس</string>
     <string name="settings_automation_auto_hide_packages">سامنے ہونے پر خودکار چھپائیں</string>
-    <string name="settings_automation_auto_hide_packages_summary">وہ ایپس جو اوپر دی گئی چھپے ہوئے پیکیجز کی فہرست کے علاوہ صرف کھلے ہونے کے دوران Shadow Binder کی چھپی فہرست میں خودکار طور پر شامل ہوتی ہیں۔ چھپے ہوئے پیکیجز دستی طور پر منظم کرنے کے لیے خالی چھوڑ دیں۔</string>
     <string name="su_path_preset_default">ڈیفالٹ (خودکار شناخت)</string>
     <string name="su_path_preset_custom">حسب ضرورت پاتھ…</string>
     <string name="settings_sync_peer_title">%1$s کے ساتھ سنک کریں</string>
@@ -285,7 +282,6 @@
     <string name="device_control_shutdown_confirm">کیا آپ واقعی آلہ بند کرنا چاہتے ہیں؟</string>
     <string name="nav_back">واپس</string>
     <string name="help_stealth_mode_title">اسٹیلتھ موڈ</string>
-    <string name="help_stealth_mode_detail">Binder کی سطح پر PackageManager کوئریز کو روکتا ہے اور ShizukuPlus اور Shizuku پیکیجز کے لیے "انسٹال نہیں" لوٹاتا ہے۔ جو ایپس root ٹولز کی شناخت کے لیے PM استعمال کرتی ہیں (بینکنگ ایپس، DRM چیکس) وہ انہیں نہیں ڈھونڈ سکیں گی۔ نوٹ: یہ انہیں صرف PackageManager کوئریز سے چھپاتا ہے — ڈیولپر موڈ اور USB ڈیبگنگ ان ایپس کو اب بھی نظر آتے ہیں جو Android سیٹنگز براہ راست چیک کرتی ہیں۔</string>
     <string name="corner_style_sharp">تیز / سیدھے</string>
     <string name="home_permission_manager_title">پرمیشن مینیجر</string>
     <string name="home_permission_manager_summary">بغیر root کسی بھی ایپ کو شیل سطح کی اجازتیں دیں</string>
@@ -564,7 +560,6 @@
     <string name="settings_hide_launcher_icon">لانچر آئیکن چھپائیں</string>
     <string name="settings_hide_launcher_icon_summary">ایپ کو لانچر سے ہٹا دیں۔ ADB یا کسی دوسری ایپ کے ذریعے کھولیں۔</string>
     <string name="settings_stealth_mode_pkg_query">پیکیج کوئیری فلٹر</string>
-    <string name="settings_stealth_mode_pkg_query_summary">دیگر ایپس کی پیکیج کی تلاش سے Shizuku کو چھپائیں</string>
     <string name="settings_ai_bridge_title">AI Bridge &amp; NPU</string>
     <string name="tcp_guard_title">غیر محفوظ نیٹ ورک پر TCP ڈیبگنگ کھلی ہے</string>
     <string name="tcp_guard_text">ADB TCP پورٹ %1$d سن رہا ہے اور %2$s۔ جب تک آپ کو فوری ضرورت نہ ہو اسے بند کر دیں۔</string>

@@ -53,7 +53,7 @@ files:
         my: my
         ne: ne
         nl: nl
-        no: no
+        "no": "no"
         pa-IN: pa
         pl: pl
         pt-PT: pt
@@ -128,7 +128,7 @@ files:
         my: my
         ne: ne
         nl: nl
-        no: no
+        "no": "no"
         pa-IN: pa
         pl: pl
         pt-PT: pt

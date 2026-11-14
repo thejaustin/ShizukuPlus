@@ -47,11 +47,6 @@
         sau:\n- Điều hướng đến \"Tùy chọn nhà phát triển\"\n- Bật \"Gỡ lỗi USB\" và \"Gỡ lỗi không
         dây\"\n- Chạm vào bên trái của \"Gỡ lỗi không dây\"\n- Chạm vào \"Ghép nối thiết bị bằng mã
         ghép nối\"\n- Nhập mã ghép nối vào thông báo</string>
-    <string name="dialog_adb_pairing_accessibility_permission">Trên Android 14, việc cài đặt/cập
-        nhật Shizuku bằng Trình cài đặt gói sẽ thu hồi quyền ^1, quyền này cần thiết để kích hoạt
-        dịch vụ trợ năng cho việc ghép nối.\n\nĐể cấp lại quyền này, hãy chạy lệnh ADB
-        sau:\n\n^2\n\nSau khi chạy lệnh, bạn có thể tiếp tục quá trình ghép nối.\n\nLưu ý: bạn có
-        thể bỏ qua bước này bằng cách cài đặt/cập nhật Shizuku bằng ADB.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Vui lòng bật dịch vụ trợ năng để bắt đầu
         quá trình ghép nối. Thao tác này cho phép Shizuku phát hiện mã ghép nối.\n\nDịch vụ trợ năng
         sẽ bị tắt khi tìm thấy mã hoặc sau 1 phút để tiết kiệm pin.</string>

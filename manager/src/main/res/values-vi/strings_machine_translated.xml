@@ -389,12 +389,10 @@
     <string name="doctor_tip_local_network"><b>Truy cập mạng cục bộ (%1$s)</b>: Android 16/17 yêu cầu quyền này để tìm và kết nối với dịch vụ gỡ lỗi không dây. Nếu thiếu, Shizuku+ sẽ âm thầm không khởi động được ở chế độ ADB. Nhấn Sửa để cấp quyền.</string>
     <string name="doctor_button_fix">Sửa</string>
     <string name="doctor_check_wallet_integrity">Google Wallet &amp; Play Integrity</string>
-    <string name="doctor_wallet_ok">Đạt Integrity (không còn dấu vết root)</string>
     <string name="doctor_wallet_risk_tmp_su">Rủi ro bảo mật (phát hiện tệp nhị phân su)</string>
     <string name="doctor_wallet_risk_magisk">Rủi ro bảo mật (đang giả lập Magisk)</string>
     <string name="doctor_wallet_risk_busybox">Rủi ro bảo mật (đang giả lập BusyBox)</string>
     <string name="doctor_wallet_risk_spoof">Rủi ro chứng thực (đang giả mạo thiết bị)</string>
-    <string name="doctor_tip_wallet_integrity">Google Wallet &amp; ứng dụng ngân hàng: Dấu vết root hoặc giả lập Magisk/BusyBox đang hoạt động gây ra lỗi "Thiết bị không đáp ứng tiêu chuẩn bảo mật". Hãy chạy bản sửa một chạm để xóa các tệp nhị phân su và khôi phục tuân thủ.</string>
     <string name="doctor_fix_wallet_success">Xong. Đang chạy với quyền root — các tệp kết luận Play Integrity đã được xóa trực tiếp khỏi GMS. Hãy mở Google Wallet; nó sẽ hoạt động ngay.</string>
     <string name="doctor_fix_wallet_success_adb_mode">Xong. Shizuku đang chạy ở chế độ shell ADB nên không thể xóa tệp kết luận Play Integrity trên bộ nhớ (chỉ root mới có thể truy cập thư mục dữ liệu của GMS).\n\nThay vào đó đã thực hiện:\n• Tắt tiến trình DroidGuard (xóa kết luận trong bộ nhớ)\n• Dừng GMS\n• Thử ghi đè TTL của Play Integrity (yêu cầu GMS chứng thực lại ngay)\n• Yêu cầu khởi động chứng thực mới (kích hoạt DroidGuard đánh giá lại với thiết bị sạch)\n• Xóa dữ liệu Wallet (buộc tạo yêu cầu integrity mới với nonce mới)\n• Xác nhận lại định tuyến thanh toán NFC\n\nHãy thử mở Wallet ngay — nó sẽ khôi phục ngay. Nếu vẫn bị chặn, nhấn \"Xóa dữ liệu Play Services\" bên dưới để đảm bảo khôi phục ngay (sau đó bạn cần đăng nhập lại Google).</string>
     <string name="doctor_fix_wallet_success_no_shizuku">Xong. Shizuku không chạy nên chỉ dừng được chính Wallet — kết luận Play Integrity được GMS lưu đệm vẫn còn nguyên.\n\nWallet sẽ tự khôi phục trong khoảng 1 giờ khi kết luận hết hạn tự nhiên. Để khôi phục ngay, nhấn \"Xóa dữ liệu Play Services\" bên dưới (sau đó bạn cần đăng nhập lại Google).\n\nĐể tránh lặp lại lần sau, hãy đảm bảo Shizuku đang chạy trước khi tắt các tính năng root — nhờ đó việc dọn dẹp sẽ triệt để hơn.</string>
@@ -914,10 +912,8 @@
     <string name="settings_shadow_binder">Ẩn ứng dụng &amp; Lá chắn tàng hình</string>
     <string name="settings_shadow_binder_summary">Ẩn Shizuku+ và các ứng dụng nhạy cảm đã chọn để không bị phát hiện bởi các trình kiểm tra root, ứng dụng ngân hàng và trình quét trò chơi</string>
     <string name="settings_shadow_binder_hidden_packages">Gói ứng dụng bị ẩn</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">Danh sách tên gói cách nhau bằng dấu phẩy cần ẩn khỏi các ứng dụng khác. Nếu bạn cài đặt cả Shizuku gốc và Shizuku+, hãy thêm cả hai (moe.shizuku.privileged.api, af.shizuku.manager) để tránh xung đột.</string>
     <string name="settings_automation_trusted_networks">Mạng đáng tin cậy</string>
     <string name="settings_automation_auto_hide_packages">Tự động ẩn khi mở ứng dụng</string>
-    <string name="settings_automation_auto_hide_packages_summary">Các ứng dụng được tự động thêm vào danh sách ẩn của Shadow Binder chỉ khi chúng đang mở, bên cạnh danh sách Gói ẩn ở trên. Để trống để quản lý các gói ẩn theo cách thủ công.</string>
     <string name="settings_companion_mode">Hiển thị thẻ đồng hành</string>
     <string name="settings_companion_mode_summary">Hiển thị thẻ để mở nhanh Shizuku gốc. Lưu ý: chỉ một dịch vụ Shizuku có thể chạy tại một thời điểm — dùng tính năng này để chuyển đổi giữa chúng.</string>
     <string name="settings_companion_fallback">Dự phòng khi gặp sự cố</string>
@@ -1062,7 +1058,6 @@
     <string name="settings_hide_launcher_icon">Ẩn biểu tượng trình khởi chạy</string>
     <string name="settings_hide_launcher_icon_summary">Xóa ứng dụng khỏi trình khởi chạy. Mở qua ADB hoặc ứng dụng khác.</string>
     <string name="settings_stealth_mode_pkg_query">Bộ lọc truy vấn gói ứng dụng</string>
-    <string name="settings_stealth_mode_pkg_query_summary">Ẩn Shizuku khỏi các truy vấn gói ứng dụng của các ứng dụng khác</string>
     <string name="settings_ai_bridge_title">Cầu nối AI &amp; NPU</string>
     <string name="settings_package_identity_category">Nhận dạng gói ứng dụng</string>
     <string name="package_identity_info_title">Giới thiệu về Xáo trộn tên gói</string>
@@ -1104,7 +1099,6 @@
     <string name="device_control_shutdown_confirm">Bạn có chắc chắn muốn tắt nguồn thiết bị không?</string>
     <string name="nav_back">Quay lại</string>
     <string name="help_stealth_mode_title">Chế độ tàng hình</string>
-    <string name="help_stealth_mode_detail">Chặn các truy vấn PackageManager ở cấp độ Binder và trả về "chưa cài đặt" cho các gói ShizukuPlus và Shizuku. Các ứng dụng sử dụng PM để phát hiện công cụ root (ứng dụng ngân hàng, kiểm tra DRM) sẽ không tìm thấy chúng. Lưu ý: tính năng này chỉ ẩn chúng khỏi các truy vấn PackageManager — chế độ nhà phát triển và gỡ lỗi USB vẫn hiển thị với các ứng dụng kiểm tra trực tiếp cài đặt Android.</string>
     <string name="corner_style_sharp">Sắc nét / Vuông vức</string>
     <string name="home_permission_manager_title">Trình quản lý quyền</string>
     <string name="home_permission_manager_summary">Cấp quyền cấp shell cho bất kỳ ứng dụng nào mà không cần root</string>

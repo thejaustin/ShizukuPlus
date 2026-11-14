@@ -93,7 +93,7 @@
     <string name="home_wireless_adb_description_pre_11"><![CDATA[在 Android 11 之前，需要连接到计算机才能启用无线调试。]]></string>
     <string name="home_wireless_adb_view_guide_button">分步骤指南</string>
     <string name="home_wireless_adb_button_reconnect">重新连接</string>
-    <string name="home_wireless_adb_description_active"><![CDATA[Shizuku+ 已通过无线调试激活。设备重启后请重新开启无线调试以重新连接。请<b><a href="%1$s">阅读帮助</a></b>。]]></string>
+    <string name="home_wireless_adb_description_active"><![CDATA[Shizuku+ 正在通过无线调试运行。如果连接中断，请点按“重新连接”。]]></string>
     <string name="home_layout_sim_adb">ADB</string>
 
     <!-- Adb -->
@@ -117,7 +117,6 @@
     <string name="dialog_wireless_adb_not_enabled">无线调试未启用。\n请注意，在 Android 11 之前，要启用无线调试必须连接电脑。</string>
     <string name="dialog_usb_debugging_not_enabled">USB调试未启用。\n请在“开发者选项”中启用它。</string>
     <string name="dialog_adb_pairing_message">请按照以下步骤开始配对：\n- 打开“开发者选项”\n- 启用“USB调试”和“无线调试”\n- 点击“无线调试”左侧\n- 点击“使用配对码配对设备”\n- 在通知栏中输入配对码</string>
-    <string name="dialog_adb_pairing_accessibility_permission">在 Android 14 上，使用软件包安装程序安装或更新 Shizuku 会撤销 %1$s 权限，而启用配对辅助功能服务需要该权限。\n\n要授予该权限，请运行以下 ADB 命令：\n\n%2$s\n\n运行完该命令后，即可继续配对流程。\n\n注意：通过 ADB 安装或更新 Shizuku 可以绕过此问题。</string>
 
     <!-- Service Doctor -->
     <string name="snackbar_samsung_auto_blocker">三星自动拦截器可能会在 One UI 7/8 上阻止 ADB。请检查安全设置。</string>
@@ -614,12 +613,10 @@
     <string name="doctor_tip_local_network"><b>本地网络访问（%1$s）</b>：Android 16/17 需要此权限才能发现并连接无线调试服务。缺少它时，Shizuku+ 会在 ADB 模式下静默启动失败。点按修复以授予权限。</string>
     <string name="doctor_button_fix">修复</string>
     <string name="doctor_check_wallet_integrity">Google 钱包与 Play Integrity</string>
-    <string name="doctor_wallet_ok">通过完整性验证（无 root 残留）</string>
     <string name="doctor_wallet_risk_tmp_su">安全风险（检测到 su 二进制文件）</string>
     <string name="doctor_wallet_risk_magisk">安全风险（Magisk 模拟已启用）</string>
     <string name="doctor_wallet_risk_busybox">安全风险（BusyBox 模拟已启用）</string>
     <string name="doctor_wallet_risk_spoof">验证风险（设备伪造已启用）</string>
-    <string name="doctor_tip_wallet_integrity">Google 钱包与银行应用：检测到 root 残留或启用了 Magisk/BusyBox 模拟，会导致「设备不符合安全标准」错误。请运行一键修复以清除 su 二进制文件并恢复合规状态。</string>
     <!--
       Three recovery outcomes — shown after the 1-tap wallet fix runs.
       ROOT:        Shizuku uid=0 — verdict files deleted, immediate recovery expected.
@@ -995,12 +992,10 @@
     <string name="settings_shadow_binder">影子 Binder</string>
     <string name="settings_shadow_binder_summary">拦截并模拟系统服务调用，以隐藏设备信息或应用状态</string>
     <string name="settings_shadow_binder_hidden_packages">隐藏的软件包</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">以英文逗号分隔的包名列表，用于对其他应用隐藏。如果你同时安装了原版 Shizuku 和 Shizuku+，请把两者都填入（moe.shizuku.privileged.api, af.shizuku.manager）以避免冲突。</string>
 
     <!-- Automation Engine (Issue #435) -->
     <string name="settings_automation_trusted_networks">受信任网络</string>
     <string name="settings_automation_auto_hide_packages">前台运行时自动隐藏</string>
-    <string name="settings_automation_auto_hide_packages_summary">这些应用仅在打开时会被自动加入影子 Binder 的隐藏列表（在上方「隐藏的软件包」之外）。留空则改为手动管理隐藏的软件包。</string>
 
     <plurals name="settings_shadow_binder_hidden_packages_count">
         <item quantity="one">已选择 %d 个应用</item>
@@ -1226,7 +1221,6 @@
 
     <!-- Stealth Mode -->
     <string name="help_stealth_mode_title">隐身模式</string>
-    <string name="help_stealth_mode_detail">在 Binder 层拦截 PackageManager 查询，对 ShizukuPlus 与 Shizuku 包返回「未安装」。使用 PM 检测 root 工具的应用（银行类应用、DRM 检查）将无法找到它们。注意：这只会让它们在 PackageManager 查询中不可见——直接读取 Android 设置的应用仍能发现开发者模式与 USB 调试。</string>
     <string name="corner_style_sharp">直角 / 扁平</string>
 
     <!-- Permission Manager card &amp; screen -->
@@ -1441,7 +1435,6 @@
     <string name="settings_hide_launcher_icon">隐藏桌面图标</string>
     <string name="settings_hide_launcher_icon_summary">从桌面移除应用，可通过 ADB 或其他应用打开。</string>
     <string name="settings_stealth_mode_pkg_query">包查询过滤</string>
-    <string name="settings_stealth_mode_pkg_query_summary">对其他应用的包查询隐藏 Shizuku</string>
     <string name="settings_ai_bridge_title">AI 桥接与 NPU</string>
     <string name="settings_wireless_adb_title">无线 ADB</string>
     <string name="settings_tcp_port_label">端口</string>

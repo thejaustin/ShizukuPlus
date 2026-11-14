@@ -90,7 +90,6 @@
     <string name="dialog_wireless_adb_not_enabled">A depuração sem fio não está ativada.\nObservação: antes do Android 11, é necessário conectar a um computador para ativar a depuração sem fio.</string>
     <string name="dialog_usb_debugging_not_enabled">A depuração USB não está ativada.\nPor favor, ative-a em "Opções do desenvolvedor".</string>
     <string name="dialog_adb_pairing_message">Por favor, inicie o pareamento seguindo estas etapas:\n- Acesse "Opções do desenvolvedor"\n- Ative "Depuração USB" e "Depuração sem fio"\n- Toque no lado esquerdo de "Depuração sem fio"\n- Toque em "Parear dispositivo com código de pareamento"\n- Digite o código de pareamento exibido na notificação</string>
-    <string name="dialog_adb_pairing_accessibility_permission">No Android 14, instalar/atualizar o Shizuku com o Instalador de Pacotes revoga a permissão %1$s, necessária para ativar o serviço de acessibilidade usado no pareamento.\n\nPara concedê-la, execute o seguinte comando ADB:\n\n%2$s\n\nApós executar o comando, você pode continuar com o processo de pareamento.\n\nObservação: você pode contornar isso instalando/atualizando o Shizuku com o ADB.</string>
 
     <!--Diagnóstico do serviço-->
     <string name="doctor_check_samsung_autoblocker">Bloqueador Automático Samsung</string>
@@ -813,7 +812,6 @@ Impressão digital da chave RSA:
     <string name="settings_shadow_binder">Binder Sombra</string>
     <string name="settings_shadow_binder_summary">Interceptar e simular chamadas de serviços do sistema para ocultar informações do dispositivo ou estado do aplicativo</string>
     <string name="settings_shadow_binder_hidden_packages">Pacotes Ocultos</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">Lista separada por vírgulas de nomes de pacotes a serem ocultados de outros aplicativos. Se você tiver tanto o Shizuku original quanto o Shizuku+ instalados, adicione ambos (moe.shizuku.privileged.api, af.shizuku.manager) para evitar conflitos.</string>
 
     <plurals name="settings_shadow_binder_hidden_packages_count">
         <item quantity="one">%d aplicativo selecionado</item>
@@ -1078,14 +1076,8 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="doctor_status_tcl_autostart_unknown">Adicionar à lista de permissão de inicialização automática</string>
     <string name="doctor_status_xiaomi_adb_unknown">Ativar nas opções de desenvolvedor</string>
     <string name="doctor_status_xiaomi_autostart_unknown">Conceder inicialização automática para manter o serviço ativo</string>
-    <string name="doctor_tip_background_restricted"></string>
-    <string name="doctor_tip_local_network"></string>
     <string name="doctor_tip_oneui8_max_restrictions">One UI 8+: \'Restrições máximas\' no Auto Blocker desativa o ADB. Desative-o para usar o Shizuku.</string>
-    <string name="doctor_tip_oppo_battery"></string>
     <string name="doctor_tip_su_bridge_a16">O Android 16+ restringe gravações em /data/local/tmp pelo shell ADB. Abra o Hub de Compatibilidade Root e toque em \"Exportar\" para definir um caminho do SU Bridge que funcione no seu dispositivo.</string>
-    <string name="doctor_tip_wallet_integrity">Google Wallet e apps bancários: artefatos root detectados ou mocking ativo de Magisk/BusyBox causam erros de \"O dispositivo não atende aos padrões de segurança\". Execute a correção em um toque para remover binários su e restaurar a conformidade.</string>
-    <string name="doctor_tip_xiaomi_battery"></string>
-    <string name="doctor_wallet_ok">Passa no Integrity (Sem resíduos root)</string>
     <string name="doctor_wallet_risk_busybox">Risco de segurança (Mocking de BusyBox ativo)</string>
     <string name="doctor_wallet_risk_magisk">Risco de segurança (Mocking de Magisk ativo)</string>
     <string name="doctor_wallet_risk_spoof">Risco de atestado (Spoofing de dispositivo ativo)</string>
@@ -1097,7 +1089,6 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
 
     <!-- Help dialogs -->
     <string name="help_stealth_mode_title">Modo stealth</string>
-    <string name="help_stealth_mode_detail">Intercepta consultas do PackageManager no nível do Binder e retorna "não instalado" para pacotes ShizukuPlus e Shizuku. Apps que usam o PM para detectar ferramentas root (apps bancários, verificações de DRM) não os encontrarão. Nota: isso apenas os oculta de consultas do PackageManager — o modo desenvolvedor e a depuração USB ainda são visíveis para apps que verificam as configurações do Android diretamente.</string>
     <string name="help_root_build_prop_title">Sobre o redirecionamento do build.prop</string>
     <string name="help_root_build_prop_detail">Este módulo copia automaticamente o build.prop original para um caminho gravável e redireciona todas as gravações para ele, permitindo que os usuários modifiquem com segurança os valores do sistema sem root.</string>
     <string name="help_root_iptables_title">Sobre a simulação de firewall</string>
@@ -1241,7 +1232,6 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="settings_auto_reconnect_mdns">Reconexão automática inteligente</string>
     <string name="settings_auto_reconnect_mdns_summary">Reiniciar automaticamente o servidor ao abrir o app se uma porta ADB sem fio já estiver ativa</string>
     <string name="settings_automation_auto_hide_packages">Ocultar automaticamente quando em primeiro plano</string>
-    <string name="settings_automation_auto_hide_packages_summary">Apps adicionados automaticamente à lista oculta do Shadow Binder somente enquanto estiverem abertos, além da lista de pacotes ocultos acima. Deixe em branco para gerenciar pacotes ocultos manualmente.</string>
     <string name="settings_automation_trusted_networks">Redes confiáveis</string>
 
     <!-- Settings: APK verification -->

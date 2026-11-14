@@ -14,7 +14,6 @@ import android.os.Build
 import android.provider.Settings
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.TextUtils
 import android.text.style.TypefaceSpan
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -161,19 +160,18 @@ fun Context.tryEnableAccessibilityAutomatically(): Boolean {
 private fun Context.showPermissionDialog() {
     val permissionName = "ACCESS_RESTRICTED_SETTINGS"
     val permissionCommand = "adb shell cmd appops set $packageName $permissionName allow"
-    val styledPermissionCommand =
-        SpannableString(permissionCommand).apply {
-            setSpan(TypefaceSpan("monospace"), 0, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        }
 
     MaterialAlertDialogBuilder(this)
         .setTitle(android.R.string.dialog_alert_title)
         .setMessage(
-            TextUtils.expandTemplate(
-                getString(R.string.dialog_adb_pairing_accessibility_permission),
-                permissionName,
-                styledPermissionCommand,
-            ),
+            // The string uses %2$s for the command. expandTemplate only fills ^1/^2, so it showed a
+            // literal "%2$s"; format it, then set the command in monospace.
+            getString(R.string.dialog_adb_pairing_accessibility_permission, permissionName, permissionCommand).let { text ->
+                SpannableString(text).apply {
+                    val at = text.indexOf(permissionCommand)
+                    if (at >= 0) setSpan(TypefaceSpan("monospace"), at, at + permissionCommand.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                }
+            },
         ).setPositiveButton(R.string.accessibility_action_app_info) { _, _ ->
             try {
                 val cm = getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager

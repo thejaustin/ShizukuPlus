@@ -78,10 +78,69 @@ class ShizukuCompanionViewHolder(
             }
         }
 
+    private fun showAddonMenu(anchor: View) {
+        val ctx = anchor.context
+        af.shizuku.manager.utils.HapticUtils
+            .tap(anchor)
+        val hubAvailable =
+            data?.first != true &&
+                ctx.packageName != StockShizukuCompat.PACKAGE &&
+                !StockShizukuCompat.isPackageOccupiedByDifferentSigner(ctx)
+        val dpm = ctx.getSystemService(android.app.admin.DevicePolicyManager::class.java)
+        val isOwner = runCatching { dpm?.isDeviceOwnerApp(ctx.packageName) == true }.getOrDefault(false)
+        val dhizukuAvailable =
+            isOwner &&
+                af.shizuku.manager.utils.BundledApkInstaller
+                    .isBundled(ctx, DHIZUKU_COMPAT_ASSET) &&
+                !af.shizuku.manager.utils.BundledApkInstaller
+                    .isInstalled(ctx, "com.rosan.dhizuku") &&
+                !af.shizuku.manager.utils.BundledApkInstaller
+                    .isInstalled(ctx, DHIZUKU_COMPAT_PACKAGE)
+        androidx.appcompat.widget.PopupMenu(ctx, anchor).apply {
+            menu.add(0, 1, 0, R.string.addon_menu_compat_hub).isEnabled = hubAvailable
+            menu.add(0, 2, 1, R.string.addon_menu_dhizuku_compat).isEnabled = dhizukuAvailable
+            setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    1 -> binding.button1.performClick()
+                    2 -> installDhizukuCompat(ctx)
+                }
+                true
+            }
+            show()
+        }
+    }
+
+    private fun installDhizukuCompat(ctx: Context) {
+        showProgress(ctx.getString(R.string.dhizuku_compat_installing), 50)
+        scope.launch {
+            val error =
+                af.shizuku.manager.utils.BundledApkInstaller
+                    .install(ctx.applicationContext, DHIZUKU_COMPAT_ASSET)
+            withContext(Dispatchers.Main) {
+                hideProgress()
+                if (error == null) {
+                    Toast.makeText(ctx, R.string.dhizuku_compat_installed, Toast.LENGTH_SHORT).show()
+                } else {
+                    MaterialAlertDialogBuilder(ctx)
+                        .setTitle(R.string.dhizuku_compat_install_failed)
+                        .setMessage(error)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+                }
+            }
+        }
+    }
+
     private val originalIcon = binding.icon.drawable
 
     init {
         HomeEditMode.bindCardGestures(containerBinding, this)
+
+        // Hold for the add-on menu: each add-on that can be installed right now (#670).
+        binding.button1.setOnLongClickListener { v ->
+            showAddonMenu(v)
+            true
+        }
 
         binding.button1.setOnClickListener { v ->
             af.shizuku.manager.utils.HapticUtils
@@ -445,3 +504,6 @@ class ShizukuCompanionViewHolder(
         IconStyleHelper.applyToCardIcon(binding.icon, originalIcon, "home_shizuku_companion")
     }
 }
+
+private const val DHIZUKU_COMPAT_ASSET = "dhizuku_compat.apk"
+private const val DHIZUKU_COMPAT_PACKAGE = "af.shizuku.plus.dhizuku"

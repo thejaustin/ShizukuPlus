@@ -49,12 +49,6 @@
         „Drahtloses Debugging“.\n– Tippen Sie links neben „Drahtloses Debugging“.\n– Tippen Sie auf
         „Gerät mit Kopplungscode koppeln“.\n– Geben Sie den Kopplungscode aus der Benachrichtigung
         ein.</string>
-    <string name="dialog_adb_pairing_accessibility_permission">Auf Android 14, Shizuku mit dem
-        Package Installer zu installieren/aktualisieren, widerruft die ^1-Berechtigung, die benötigt
-        wird, um den Accessibility Service für Paare zu aktivieren.\n\nUm es zu gewähren, führen Sie
-        folgenden ADB-Befehl aus:\n\n^2\n\nNach dem Ausführen des Befehls, Sie können mit dem
-        Paarungsprozess fortfahren.\n\nHinweis: Sie können dies umgehen, indem Sie Shizuku mit ADB
-        installieren/aktualisieren.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Bitte aktivieren Sie den
         Barrierefreiheitsdienst, um den Paarungsprozess zu starten. Dadurch kann Shizuku den
         Paarungscode erkennen.\n\nDer Barrierefreiheitsdienst wird abgeschaltet, sobald der Code

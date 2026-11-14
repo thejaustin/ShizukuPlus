@@ -16,7 +16,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
-import androidx.preference.TwoStatePreference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -181,37 +180,39 @@ class AboutSettingsFragment : BaseSettingsFragment() {
             }
         }
 
-        findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_AUTO_UPDATE_ENABLED)
-            ?.setOnPreferenceChangeListener { _, newValue ->
-                if (newValue == false) {
-                    findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_AUTO_INSTALL_ENABLED)?.isChecked = false
+        // Off / Check / Install stands in for the auto-check and auto-install switches; those keys
+        // stay the source of truth for the update checker and the background worker.
+        val intervalPref = findPreference<Preference>(ShizukuSettings.Keys.KEY_UPDATE_CHECK_INTERVAL)
+        findPreference<SegmentedControlPreference>("update_mode")?.apply {
+            value =
+                when {
+                    !ShizukuSettings.isAutoUpdateEnabled() -> "off"
+                    ShizukuSettings.isAutoInstallEnabled() -> "install"
+                    else -> "check"
                 }
-                // After the change is stored, so the schedule sees the new value.
-                view?.post {
-                    af.shizuku.manager.worker.UpdateCheckWorker
-                        .schedule(requireContext().applicationContext)
-                }
-                true
-            }
-
-        findPreference<Preference>(ShizukuSettings.Keys.KEY_UPDATE_CHECK_INTERVAL)
-            ?.setOnPreferenceChangeListener { _, _ ->
-                view?.post {
-                    af.shizuku.manager.worker.UpdateCheckWorker
-                        .schedule(requireContext().applicationContext)
-                }
-                true
-            }
-
-        findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_AUTO_INSTALL_ENABLED)
-            ?.setOnPreferenceChangeListener { _, newValue ->
-                if (newValue == true && !updateManager.canRequestPackageInstalls()) {
+            intervalPref?.isEnabled = value != "off"
+            setOnPreferenceChangeListener { _, newValue ->
+                val mode = newValue as String
+                if (mode == "install" && !updateManager.canRequestPackageInstalls()) {
                     showPermissionRequiredDialog()
-                    false
-                } else {
-                    true
+                    return@setOnPreferenceChangeListener false
                 }
+                ShizukuSettings.setAutoUpdateEnabled(mode != "off")
+                ShizukuSettings.setAutoInstallEnabled(mode == "install")
+                intervalPref?.isEnabled = mode != "off"
+                af.shizuku.manager.worker.UpdateCheckWorker
+                    .schedule(requireContext().applicationContext)
+                true
             }
+        }
+
+        intervalPref?.setOnPreferenceChangeListener { _, _ ->
+            view?.post {
+                af.shizuku.manager.worker.UpdateCheckWorker
+                    .schedule(requireContext().applicationContext)
+            }
+            true
+        }
 
         findPreference<Preference>("update_app_database")?.let { pref ->
             updateDatabaseSummary(pref)

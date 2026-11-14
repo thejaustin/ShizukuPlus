@@ -676,9 +676,38 @@ class AppViewHolder(
         }
     }
 
+    private val swipeActionIds = mutableListOf<Int>()
+
+    // Swipe gestures are invisible to TalkBack, so offer the same actions in its actions menu
+    // (#41). Rebinding clears the previous row's actions first.
+    private fun bindSwipeAccessibilityActions(context: android.content.Context) {
+        swipeActionIds.forEach {
+            androidx.core.view.ViewCompat
+                .removeAccessibilityAction(itemView, it)
+        }
+        swipeActionIds.clear()
+        if (!ShizukuSettings.isSwipeGesturesEnabled()) return
+        val host = context as? ApplicationManagementActivity ?: return
+        val item = data ?: return
+        listOf(ShizukuSettings.getSwipeRightAction(), ShizukuSettings.getSwipeLeftAction())
+            .filter { it != "none" }
+            .distinct()
+            .forEach { action ->
+                val label =
+                    af.shizuku.manager.activitylog.ActivityLogText
+                        .actionLabelRes(action) ?: return@forEach
+                swipeActionIds +=
+                    androidx.core.view.ViewCompat.addAccessibilityAction(itemView, context.getString(label)) { view, _ ->
+                        host.handleSwipeAction(item, action, view)
+                        true
+                    }
+            }
+    }
+
     override fun onBind() {
         val appInfo = ai ?: return
         val context = itemView.context
+        bindSwipeAccessibilityActions(context)
         val capturedPackage = packageName
         val capturedData = data
 

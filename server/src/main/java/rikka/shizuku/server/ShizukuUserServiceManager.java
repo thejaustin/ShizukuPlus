@@ -40,6 +40,13 @@ public class ShizukuUserServiceManager extends UserServiceManager {
             UserServiceRecord record, String key, String token, String packageName,
             String classname, String processNameSuffix, int callingUid, boolean use32Bits, boolean debug) {
 
+        // A client that doesn't name its process passes no suffix (null). The Kotlin starter below
+        // can't take null, and with R8's null checks stripped it crashed in CharSequence.length()
+        // instead of starting the service (seen from Duo Fold Live). Upstream ended up with the
+        // literal "pkg:null"; a short "p" suffix keeps the process name sensible.
+        if (processNameSuffix == null || processNameSuffix.isEmpty()) processNameSuffix = "p";
+        if (token == null) token = "";
+
         String appProcess = "/system/bin/app_process";
         if (use32Bits && new File("/system/bin/app_process32").exists()) {
             appProcess = "/system/bin/app_process32";

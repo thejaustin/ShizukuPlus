@@ -59,18 +59,21 @@
             android:icon="@drawable/ic_warning_24"
             android:defaultValue="true" />
 
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="enable_activity_log"
-            android:title="@string/settings_enable_activity_log"
-            android:summary="@string/settings_enable_activity_log_summary"
+        <!-- One control for both activity log switches (enable_activity_log + show_activity_log_home);
+             not persisted itself, the fragment maps it onto those keys. -->
+        <af.shizuku.manager.settings.SegmentedControlPreference
+            android:key="activity_log_mode"
+            android:title="@string/settings_activity_log"
+            android:summary="@string/settings_activity_log_mode_summary"
             android:icon="@drawable/ic_history_24"
-            android:defaultValue="true" />
+            android:persistent="false"
+            android:entries="@array/activity_log_mode_entries"
+            android:entryValues="@array/activity_log_mode_values" />
 
         <Preference
             android:key="activity_log"
-            android:title="@string/settings_activity_log"
-            android:icon="@drawable/ic_history_24"
-            android:dependency="enable_activity_log" />
+            android:title="@string/settings_open_activity_log"
+            android:icon="@drawable/ic_article_24" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 

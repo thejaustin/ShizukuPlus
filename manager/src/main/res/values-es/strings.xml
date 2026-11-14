@@ -51,11 +51,6 @@
         inalámbrica\"\n- Toque el lado izquierdo de \"Depuración inalámbrica\"\n- Toque \"Emparejar
         dispositivo con código de emparejamiento\"\n- Ingrese el código de emparejamiento en la
         notificación</string>
-    <string name="dialog_adb_pairing_accessibility_permission">En Android 14, instalar o actualizar
-        Shizuku con el instalador de paquetes revoca el permiso ^1, que es necesario para habilitar
-        el servicio de accesibilidad para el emparejamiento.\n\nPara otorgarlo, ejecute el siguiente
-        comando ADB:\n\n^2\n\nDespués de ejecutar el comando, puede continuar con el proceso de
-        emparejamiento.\n\nNota: puede omitir esto instalando o actualizando Shizuku con ADB.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Habilita el servicio de accesibilidad
         para iniciar el proceso de emparejamiento. Esto permite que Shizuku detecte el código de
         emparejamiento.\n\nEl servicio de accesibilidad se desactivará cuando se encuentre el código

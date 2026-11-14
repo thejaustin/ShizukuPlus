@@ -48,12 +48,6 @@
         »Brezžično odpravljanje napak«\n- Dotaknite se leve strani »Brezžično odpravljanje napak«\n-
         Dotaknite se »Seznani napravo s kodo za združevanje«\n- V obvestilo vnesite kodo za
         združevanje</string>
-    <string name="dialog_adb_pairing_accessibility_permission">V sistemu Android 14
-        namestitev/posodabljanje programa Shizuku z namestitvenim programom paketov prekliče
-        dovoljenje ^1, ki je potrebno za omogočanje storitve dostopnosti za seznanjanje.\n\nČe ga
-        želite odobriti, zaženite naslednji ukaz ADB:\n\n^2\n\nPo zagonu ukaza lahko nadaljujete s
-        postopkom seznanjanja.\n\nOpomba: temu se lahko izognete tako, da namestite/posodobite
-        program Shizuku z ADB.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Za začetek postopka seznanjanja omogočite
         storitev dostopnosti. To bo Shizuku omogočilo zaznavanje kode za seznanjanje.\n\nStoritev
         dostopnosti se bo izklopila, ko bo koda najdena, ali po 1 minuti, da se prihrani energija.</string>

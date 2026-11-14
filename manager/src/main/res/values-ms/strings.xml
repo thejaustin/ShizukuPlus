@@ -47,12 +47,6 @@
         USB\" dan \"Penyahpepijatan tanpa wayar\"\n- Ketik sebelah kiri \"Penyahpepijatan tanpa
         wayar\"\n- Ketik \"Pasangkan peranti dengan kod berpasangan\"\n- Masukkan kod gandingan
         dalam pemberitahuan</string>
-    <string name="dialog_adb_pairing_accessibility_permission">Pada Android 14, memasang/mengemas
-        kini Shizuku dengan Package Installer akan membatalkan kebenaran ^1, yang diperlukan untuk
-        mendayakan perkhidmatan kebolehcapaian bagi pemasangan.\n\nUntuk memberikannya, jalankan
-        arahan ADB berikut:\n\n^2\n\nSelepas menjalankan arahan, anda boleh meneruskan proses
-        pemasangan.\n\nNota: anda boleh memintas ini dengan memasang/mengemas kini Shizuku dengan
-        ADB.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Sila dayakan perkhidmatan kebolehaksesan
         untuk memulakan proses berpasangan. Ini membolehkan Shizuku mengesan kod
         berpasangan.\n\nPerkhidmatan kebolehaksesan akan dimatikan apabila kod ditemui atau selepas

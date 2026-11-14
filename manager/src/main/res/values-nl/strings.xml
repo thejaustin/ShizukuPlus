@@ -46,12 +46,6 @@
         voeren:\n- Navigeer naar \"Ontwikkelaarsopties\"\n- Schakel \"USB-foutopsporing\" en
         \"Draadloze foutopsporing\" in\n- Klik op de linkerkant van \"Draadloze foutopsporing\"\n-
         Tik op \"Apparaat koppelen met koppelingscode\"\n- Voer de koppelingscode in de melding in</string>
-    <string name="dialog_adb_pairing_accessibility_permission">Op Android 14 wordt de ^1-machtiging
-        ingetrokken wanneer Shizuku wordt geïnstalleerd/bijgewerkt met de pakketinstallateur. Deze
-        toestemming is nodig om de toegankelijkheidsservice voor het koppelen in te schakelen.\n\nOm
-        deze machtiging te verlenen, voer je de volgende ADB-opdracht uit:\n\n^2\n\nNa het uitvoeren
-        van de opdracht kun je doorgaan met het koppelingsproces.\n\nOpmerking: Je kan dit omzeilen
-        door Shizuku te installeren/bijwerken met ADB.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Schakel alsjeblieft de
         toegankelijkheidsservice in om het koppelingsproces te starten. Hierdoor kan Shizuku de
         koppelingscode detecteren.\n\nDe toegankelijkheidsservice wordt uitgeschakeld zodra de code

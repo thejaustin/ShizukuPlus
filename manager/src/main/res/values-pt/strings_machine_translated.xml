@@ -389,12 +389,10 @@
     <string name="doctor_tip_local_network"><b>Acesso à rede local (%1$s)</b>: o Android 16/17 requer esta permissão para descobrir e ligar ao serviço de depuração sem fios. Sem ela, o Shizuku+ falha silenciosamente ao iniciar em modo ADB. Toque em Corrigir para a conceder.</string>
     <string name="doctor_button_fix">Corrigir</string>
     <string name="doctor_check_wallet_integrity">Google Wallet &amp; Play Integrity</string>
-    <string name="doctor_wallet_ok">Passa a verificação de integridade (sem resíduos de root)</string>
     <string name="doctor_wallet_risk_tmp_su">Risco de segurança (binário su detetado)</string>
     <string name="doctor_wallet_risk_magisk">Risco de segurança (simulação de Magisk ativa)</string>
     <string name="doctor_wallet_risk_busybox">Risco de segurança (simulação de BusyBox ativa)</string>
     <string name="doctor_wallet_risk_spoof">Risco de atestação (falsificação de dispositivo ativa)</string>
-    <string name="doctor_tip_wallet_integrity">Google Wallet &amp; aplicações bancárias: artefactos de root detetados ou simulação ativa de Magisk/BusyBox causam erros "O dispositivo não cumpre as normas de segurança". Execute a correção com um toque para eliminar os binários su e repor a conformidade.</string>
     <string name="doctor_fix_wallet_success">Concluído. Em execução como root — os ficheiros de veredicto do Play Integrity foram eliminados diretamente do GMS. Abra a Google Wallet; deverá funcionar de imediato.</string>
     <string name="doctor_fix_wallet_success_adb_mode">Concluído. O Shizuku está a ser executado em modo shell ADB, pelo que o ficheiro de veredicto do Play Integrity no disco não pode ser eliminado (apenas o root pode aceder ao diretório de dados do GMS).\n\nO que foi feito em alternativa:\n• Processo DroidGuard terminado (limpa o veredicto em memória)\n• GMS parado\n• Tentativa de substituição do TTL do Play Integrity (leva o GMS a voltar a atestar de imediato)\n• Pedido de aquecimento de nova atestação (aciona a reavaliação do DroidGuard com o dispositivo limpo)\n• Dados da Wallet limpos (força um novo pedido de integridade com um nonce novo)\n• Encaminhamento de pagamentos NFC reconfirmado\n\nTente abrir a Wallet agora — deverá recuperar de imediato. Se continuar bloqueada, toque em \"Limpar dados dos Serviços Play\" abaixo para uma recuperação imediata garantida (terá de iniciar sessão novamente na Google depois).</string>
     <string name="doctor_fix_wallet_success_no_shizuku">Concluído. O Shizuku não estava em execução, pelo que apenas a própria Wallet pôde ser parada — o veredicto do Play Integrity em cache no GMS continua intacto.\n\nA Wallet deverá recuperar por si em cerca de 1 hora, quando o veredicto expirar naturalmente. Para uma recuperação imediata, toque em \"Limpar dados dos Serviços Play\" abaixo (terá de iniciar sessão novamente na Google depois).\n\nPara evitar isto da próxima vez, certifique-se de que o Shizuku está em execução antes de desativar as funcionalidades root — permite uma limpeza mais completa.</string>
@@ -682,10 +680,8 @@
     <string name="settings_shadow_binder">Shadow Binder</string>
     <string name="settings_shadow_binder_summary">Interceta e simula chamadas a serviços do sistema para ocultar informações do dispositivo ou o estado das aplicações</string>
     <string name="settings_shadow_binder_hidden_packages">Pacotes ocultos</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">Lista de nomes de pacotes separados por vírgulas a ocultar de outras aplicações. Se tiver o Shizuku original e o Shizuku+ instalados, adicione ambos (moe.shizuku.privileged.api, af.shizuku.manager) para evitar conflitos.</string>
     <string name="settings_automation_trusted_networks">Redes de confiança</string>
     <string name="settings_automation_auto_hide_packages">Ocultar automaticamente em primeiro plano</string>
-    <string name="settings_automation_auto_hide_packages_summary">Aplicações que são adicionadas automaticamente à lista de ocultos do Shadow Binder apenas enquanto estão abertas, além da lista de Pacotes ocultos acima. Deixe vazio para gerir os pacotes ocultos manualmente.</string>
     <string name="settings_companion_mode">Mostrar cartão companheiro</string>
     <string name="settings_companion_mode_summary">Mostra um cartão para abrir rapidamente o Shizuku original. Nota: só pode estar em execução um serviço Shizuku de cada vez — utilize isto para alternar entre eles.</string>
     <string name="settings_companion_fallback">Alternativa em caso de falha</string>
@@ -861,7 +857,6 @@
     <string name="device_control_shutdown_confirm">Tem a certeza de que pretende desligar o dispositivo?</string>
     <string name="nav_back">Voltar</string>
     <string name="help_stealth_mode_title">Modo furtivo</string>
-    <string name="help_stealth_mode_detail">Interceta as consultas ao PackageManager ao nível do Binder e devolve "não instalado" para os pacotes ShizukuPlus e Shizuku. As aplicações que usam o PM para detetar ferramentas de root (aplicações bancárias, verificações DRM) não os encontrarão. Nota: isto apenas os oculta das consultas ao PackageManager — o modo de programador e a depuração USB continuam visíveis para aplicações que verificam diretamente as definições do Android.</string>
     <string name="corner_style_sharp">Angular / plano</string>
     <string name="home_permission_manager_title">Gestor de permissões</string>
     <string name="home_permission_manager_summary">Conceda permissões ao nível da shell a qualquer aplicação sem root</string>
@@ -1118,7 +1113,6 @@
     <string name="settings_hide_launcher_icon">Ocultar Ícone do Iniciador</string>
     <string name="settings_hide_launcher_icon_summary">Remover a aplicação do iniciador. Abrir via ADB ou outra aplicação.</string>
     <string name="settings_stealth_mode_pkg_query">Filtro de Consulta de Pacote</string>
-    <string name="settings_stealth_mode_pkg_query_summary">Ocultar Shizuku de consultas de pacote por outras aplicações</string>
     <string name="settings_ai_bridge_title">AI Bridge &amp; NPU</string>
     <string name="tcp_guard_title">A depuração TCP está aberta numa rede não fidedigna</string>
     <string name="tcp_guard_text">A porta TCP ADB %1$d está à escuta e %2$s. Feche-a a menos que a precise neste momento.</string>

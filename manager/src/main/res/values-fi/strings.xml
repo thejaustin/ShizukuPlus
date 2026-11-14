@@ -46,11 +46,6 @@
         Siirry kohtaan \"Kehittäjäasetukset\"\n- Ota käyttöön \"USB-virheenkorjaus\" ja \"Langaton
         virheenkorjaus\"\n- Napauta \"Langaton virheenkorjaus\" -kohdan vasenta puolta\n- Napauta
         \"Yhdistä laite pariliitoskoodilla\"\n- Syötä pariliitoskoodi ilmoitukseen</string>
-    <string name="dialog_adb_pairing_accessibility_permission">Android 14:ssä Shizukun
-        asentaminen/päivittäminen pakettiasentajalla peruuttaa ^1-käyttöoikeuden, jota tarvitaan
-        pariliitoksen esteettömyyspalvelun käyttöönottoon.\n\nMyöntääksesi käyttöoikeuden, suorita
-        seuraava ADB-komento:\n\n^2\n\nKomennon suorittamisen jälkeen voit jatkaa pariliitoksen
-        muodostamista.\n\nHuomautus: voit ohittaa tämän asentamalla/päivittämällä Shizukun ADB:llä.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Ole hyvä ja ota saavutettavuuspalvelu
         käyttöön aloittaaksesi paritusprosessin. Tämä mahdollistaa Shizukun tunnistaa
         parituskoodin.\n\nEsteettömyyspalvelu kytketään pois päältä, kun koodi löytyy, tai minuutin

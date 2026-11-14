@@ -84,10 +84,6 @@
 <string name="dialog_adb_pairing_message">다음 단계를 수행하여 페어링을 시작하세요.\n- \"개발자 옵션\"으로 이동합니다.\n-
         \"USB 디버깅\" 및 \"무선 디버깅\"을 활성화합니다.\n- \"무선 디버깅\"의 왼쪽을 탭합니다.\n- \"페어링 코드로 장치 페어링\"을 탭합니다.\n-
         알림에 페어링 코드를 입력합니다.</string>
-<string name="dialog_adb_pairing_accessibility_permission">Android 14에서 패키지 설치 관리자를 사용하여
-        Shizuku를 설치/업데이트하면 페어링을 위한 접근성 서비스를 활성화하는 데 필요한 ^1 권한이 취소됩니다.\n\n이 권한을 부여하려면 다음 ADB 명령을
-        실행하세요.\n\n^2\n\n명령을 실행한 후 페어링 프로세스를 계속 진행할 수 있습니다.\n\n참고: ADB를 사용하여 Shizuku를 설치/업데이트하면 이 문제를
-        해결할 수 있습니다.</string>
     <!-- Service Doctor -->
     <string name="snackbar_samsung_auto_blocker">Samsung Auto Blocker가 One UI 7/8에서 ADB를 차단할 수 있습니다. 보안 설정을 확인하세요.</string>
     <string name="snackbar_action_check">확인</string>
@@ -570,12 +566,10 @@
     <string name="doctor_tip_local_network"><b>로컬 네트워크 액세스(%1$s)</b>: Android 16/17에서는 무선 디버깅 서비스를 검색하고 연결하기 위해 이 권한이 필요합니다. 이 권한이 없으면 Shizuku+가 ADB 모드에서 조용히 시작하지 못합니다. 수정을 눌러 권한을 부여하세요.</string>
     <string name="doctor_button_fix">수정</string>
     <string name="doctor_check_wallet_integrity">Google Wallet &amp; Play Integrity</string>
-    <string name="doctor_wallet_ok">무결성 통과 (루트 잔여물 없음)</string>
     <string name="doctor_wallet_risk_tmp_su">보안 위험 (su 바이너리 감지됨)</string>
     <string name="doctor_wallet_risk_magisk">보안 위험 (Magisk 모킹 활성화됨)</string>
     <string name="doctor_wallet_risk_busybox">보안 위험 (BusyBox 모킹 활성화됨)</string>
     <string name="doctor_wallet_risk_spoof">인증 위험 (기기 스푸핑 활성화됨)</string>
-    <string name="doctor_tip_wallet_integrity">Google Wallet &amp; 뱅킹 앱: 감지된 루트 아티팩트 또는 활성화된 Magisk/BusyBox 모킹으로 인해 "Device doesn\'t meet security standards" 오류가 발생합니다. 원터치 수정을 실행하여 su 바이너리를 제거하고 규정 준수를 복원하세요.</string>
     <!--
       Three recovery outcomes — shown after the 1-tap wallet fix runs.
       ROOT:        Shizuku uid=0 — verdict files deleted, immediate recovery expected.
@@ -925,11 +919,9 @@
     <string name="settings_shadow_binder">섀도우 Binder</string>
     <string name="settings_shadow_binder_summary">시스템 서비스 호출을 가로채고 모의하여 기기 정보나 앱 상태를 숨깁니다</string>
     <string name="settings_shadow_binder_hidden_packages">숨긴 패키지</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">다른 앱에 숨길 패키지 이름의 쉼표로 구분된 목록입니다. OG Shizuku와 Shizuku+가 모두 설치되어 있는 경우, 충돌을 방지하기 위해 두 패키지(moe.shizuku.privileged.api, af.shizuku.manager)를 모두 추가하세요.</string>
     <!-- Automation Engine (Issue #435) -->
     <string name="settings_automation_trusted_networks">신뢰할 수 있는 네트워크</string>
     <string name="settings_automation_auto_hide_packages">포그라운드 시 자동 숨기기</string>
-    <string name="settings_automation_auto_hide_packages_summary">열려 있는 동안에만 섀도우 Binder의 숨긴 목록에 자동으로 추가되는 앱으로, 위의 숨긴 패키지 목록에 추가로 적용됩니다. 대신 수동으로 관리하려면 비워 두세요.</string>
     <plurals name="settings_shadow_binder_hidden_packages_count">
         <item quantity="one">%d개의 앱 선택됨</item>
         <item quantity="other">%d개의 앱 선택됨</item>
@@ -1127,7 +1119,6 @@
     <string name="nav_back">뒤로</string>
     <!-- Stealth Mode -->
     <string name="help_stealth_mode_title">스텔스 모드</string>
-    <string name="help_stealth_mode_detail">Binder 수준에서 PackageManager 쿼리를 가로채 ShizukuPlus 및 Shizuku 패키지에 대해 "설치되지 않음"을 반환합니다. PM을 사용해 루트 도구를 감지하는 앱(뱅킹 앱, DRM 검사)은 이를 찾지 못합니다. 참고: 이는 PackageManager 쿼리에서만 숨기는 것으로, 개발자 모드와 USB 디버깅은 Android 설정을 직접 확인하는 앱에 여전히 표시됩니다.</string>
     <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
     <string name="corner_style_sharp">샤프 / 플랫</string>
     <!-- Feature Hub experimental category label -->

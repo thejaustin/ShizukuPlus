@@ -49,12 +49,6 @@
         fios\"\n- Toque no lado esquerdo de \"Depuração sem fios\"\n- Toque em \"Emparelhar
         dispositivo com código de emparelhamento\"\n- Introduza o código de emparelhamento na
         notificação</string>
-    <string name="dialog_adb_pairing_accessibility_permission">No Android 14, a
-        instalação/atualização do Shizuku com o Instalador de Pacotes revoga a permissão ^1,
-        necessária para ativar o serviço de acessibilidade para o emparelhamento.\n\nPara a
-        conceder, execute o seguinte comando ADB:\n\n^2\n\nApós executar o comando, pode continuar
-        com o processo de emparelhamento.\n\nNota: pode contornar isto instalando/atualizando o
-        Shizuku com o ADB.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Por favor, ative o serviço de
         acessibilidade para iniciar o processo de emparelhamento. Isto permite que o Shizuku detete
         o código de emparelhamento.\n\nO serviço de acessibilidade será desativado quando o código

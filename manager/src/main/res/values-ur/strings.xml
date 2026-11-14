@@ -93,7 +93,6 @@
     <string name="dialog_wireless_adb_not_enabled">وائرلیس ڈیبگنگ فعال نہیں ہے۔\nنوٹ: Android 11 سے پہلے وائرلیس ڈیبگنگ فعال کرنے کے لیے کمپیوٹر سے کنکشن ضروری ہے۔</string>
     <string name="dialog_usb_debugging_not_enabled">USB ڈیبگنگ فعال نہیں ہے۔\nبراہِ کرم اسے \"Developer Options\" میں فعال کریں۔</string>
     <string name="dialog_adb_pairing_message">براہِ کرم درج ذیل مراحل کے ذریعے جوڑا بنانا شروع کریں:\n- \"Developer Options\" کھولیں\n- \"USB debugging\" اور \"Wireless debugging\" فعال کریں\n- \"Wireless debugging\" کے بائیں حصے پر ٹیپ کریں\n- \"Pair device with pairing code\" پر ٹیپ کریں\n- اطلاع میں جوڑا بنانے کا کوڈ درج کریں</string>
-    <string name="dialog_adb_pairing_accessibility_permission">Android 14 پر Package Installer کے ذریعے Shizuku انسٹال یا اپ ڈیٹ کرنے سے %1$s کی اجازت واپس لے لی جاتی ہے، جو جوڑا بنانے کے لیے accessibility service فعال کرنے کے لیے ضروری ہے۔\n\nاسے دینے کے لیے درج ذیل ADB کمانڈ چلائیں:\n\n%2$s\n\nکمانڈ چلانے کے بعد آپ pairing کا عمل جاری رکھ سکتے ہیں۔\n\nنوٹ: Shizuku کو ADB کے ذریعے انسٹال یا اپ ڈیٹ کر کے آپ اس پابندی سے بچ سکتے ہیں۔</string>
 
     <!-- Service Doctor -->
     <string name="doctor_check_samsung_autoblocker">Samsung Auto Blocker</string>
@@ -784,7 +783,6 @@
     <string name="settings_shadow_binder">Shadow Binder</string>
     <string name="settings_shadow_binder_summary">Device information یا app state چھپانے کے لیے system service calls کو intercept اور mock کریں</string>
     <string name="settings_shadow_binder_hidden_packages">Hidden Packages</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">دوسری ایپس سے چھپانے کے لیے package names کی comma-separated فہرست۔ اگر OG Shizuku اور Shizuku+ دونوں انسٹال ہیں تو conflicts روکنے کے لیے دونوں (moe.shizuku.privileged.api, af.shizuku.manager) شامل کریں۔</string>
     <plurals name="settings_shadow_binder_hidden_packages_count">
         <item quantity="one">%d ایپ منتخب</item>
         <item quantity="other">%d ایپس منتخب</item>

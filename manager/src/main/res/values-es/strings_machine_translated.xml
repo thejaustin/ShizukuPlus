@@ -389,12 +389,10 @@
     <string name="doctor_tip_local_network"><b>Acceso a la red local (%1$s)</b>: Android 16/17 requiere este permiso para descubrir y conectarse al servicio de depuración inalámbrica. Sin él, Shizuku+ falla silenciosamente al iniciarse en modo ADB. Toca Corregir para concederlo.</string>
     <string name="doctor_button_fix">Corregir</string>
     <string name="doctor_check_wallet_integrity">Google Wallet &amp; Play Integrity</string>
-    <string name="doctor_wallet_ok">Supera Integrity (sin residuos de root)</string>
     <string name="doctor_wallet_risk_tmp_su">Riesgo de seguridad (binario su detectado)</string>
     <string name="doctor_wallet_risk_magisk">Riesgo de seguridad (Magisk Mocking activo)</string>
     <string name="doctor_wallet_risk_busybox">Riesgo de seguridad (BusyBox Mocking activo)</string>
     <string name="doctor_wallet_risk_spoof">Riesgo de atestación (suplantación de dispositivo activa)</string>
-    <string name="doctor_tip_wallet_integrity">Google Wallet &amp; apps bancarias: los artefactos de root detectados o el mocking activo de Magisk/BusyBox provocan errores de "El dispositivo no cumple los estándares de seguridad". Ejecuta la corrección con un toque para eliminar los binarios su y restablecer el cumplimiento.</string>
     <string name="doctor_fix_wallet_success">Listo. Se ejecuta como root: los archivos de veredicto de Play Integrity se eliminaron directamente de GMS. Abre Google Wallet; debería funcionar de inmediato.</string>
     <string name="doctor_fix_wallet_success_adb_mode">Listo. Shizuku se ejecuta en modo shell ADB, por lo que el archivo de veredicto de Play Integrity en disco no se puede eliminar (solo root puede acceder al directorio de datos de GMS).\n\nLo que se hizo en su lugar:\n• Proceso DroidGuard finalizado (borra el veredicto en memoria)\n• GMS detenido\n• Se intentó anular el TTL de Play Integrity (pide a GMS que vuelva a atestar de inmediato)\n• Se solicitó un nuevo calentamiento de atestación (activa una reevaluación de DroidGuard con el dispositivo limpio)\n• Datos de Wallet borrados (fuerza una nueva solicitud de integridad con un nonce nuevo)\n• Enrutamiento de pagos NFC reconfirmado\n\nIntenta abrir Wallet ahora: debería recuperarse de inmediato. Si sigue bloqueado, toca \"Borrar datos de Play Services\" abajo para una recuperación inmediata garantizada (tendrás que volver a iniciar sesión en Google después).</string>
     <string name="doctor_fix_wallet_success_no_shizuku">Listo. Shizuku no se estaba ejecutando, así que solo se pudo detener Wallet: el veredicto de Play Integrity en caché de GMS sigue intacto.\n\nWallet debería recuperarse por sí solo en aproximadamente 1 hora, cuando el veredicto caduque. Para una recuperación inmediata, toca \"Borrar datos de Play Services\" abajo (tendrás que volver a iniciar sesión en Google después).\n\nPara evitarlo la próxima vez, asegúrate de que Shizuku se esté ejecutando antes de desactivar las funciones de root: permite una limpieza más completa.</string>
@@ -682,10 +680,8 @@
     <string name="settings_shadow_binder">Shadow Binder</string>
     <string name="settings_shadow_binder_summary">Intercepta y simula llamadas a servicios del sistema para ocultar información del dispositivo o el estado de las apps</string>
     <string name="settings_shadow_binder_hidden_packages">Paquetes ocultos</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">Lista de nombres de paquete separados por comas que se ocultarán de otras apps. Si tienes instalados tanto Shizuku original como Shizuku+, añade ambos (moe.shizuku.privileged.api, af.shizuku.manager) para evitar conflictos.</string>
     <string name="settings_automation_trusted_networks">Redes de confianza</string>
     <string name="settings_automation_auto_hide_packages">Ocultar automáticamente en primer plano</string>
-    <string name="settings_automation_auto_hide_packages_summary">Apps que se añaden automáticamente a la lista de ocultos de Shadow Binder solo mientras están abiertas, además de la lista de paquetes ocultos de arriba. Déjalo vacío para gestionar los paquetes ocultos manualmente.</string>
     <string name="settings_companion_mode">Mostrar tarjeta complementaria</string>
     <string name="settings_companion_mode_summary">Muestra una tarjeta para abrir rápidamente Shizuku original. Nota: solo puede ejecutarse un servicio de Shizuku a la vez; úsala para alternar entre ellos.</string>
     <string name="settings_companion_fallback">Alternativa tras fallos</string>
@@ -861,7 +857,6 @@
     <string name="device_control_shutdown_confirm">¿Seguro que quieres apagar el dispositivo?</string>
     <string name="nav_back">Atrás</string>
     <string name="help_stealth_mode_title">Modo sigiloso</string>
-    <string name="help_stealth_mode_detail">Intercepta las consultas de PackageManager a nivel de Binder y devuelve "no instalado" para los paquetes de ShizukuPlus y Shizuku. Las apps que usan PM para detectar herramientas de root (apps bancarias, comprobaciones DRM) no los encontrarán. Nota: esto solo los oculta de las consultas de PackageManager; el modo desarrollador y la depuración USB siguen siendo visibles para las apps que comprueban directamente los ajustes de Android.</string>
     <string name="corner_style_sharp">Rectas / planas</string>
     <string name="home_permission_manager_title">Gestor de permisos</string>
     <string name="home_permission_manager_summary">Concede permisos a nivel de shell a cualquier app sin root</string>
@@ -1018,7 +1013,6 @@
     <string name="settings_hide_launcher_icon">Ocultar icono del iniciador</string>
     <string name="settings_hide_launcher_icon_summary">Elimina la app del iniciador. Abre vía ADB u otra app.</string>
     <string name="settings_stealth_mode_pkg_query">Filtro de consulta de paquetes</string>
-    <string name="settings_stealth_mode_pkg_query_summary">Oculta Shizuku de consultas de paquetes de otras apps</string>
     <string name="tip_start_on_boot_desc">Inicia el servicio Shizuku automáticamente cuando el dispositivo se reinicia</string>
     <string name="tip_battery_doctor_desc">Protege Shizuku del ahorrador de batería del SO y restricciones de suspensión del OEM</string>
     <string name="stability_tips_dialog_title">Mantener Shizuku activo</string>

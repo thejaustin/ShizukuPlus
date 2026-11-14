@@ -389,12 +389,10 @@
     <string name="doctor_tip_local_network"><b>Akses Jaringan Lokal (%1$s)</b>: Android 16/17 memerlukan izin ini untuk menemukan dan terhubung ke layanan debugging nirkabel. Tanpanya, Shizuku+ gagal dimulai secara diam-diam dalam mode ADB. Ketuk Perbaiki untuk memberikannya.</string>
     <string name="doctor_button_fix">Perbaiki</string>
     <string name="doctor_check_wallet_integrity">Google Wallet &amp; Play Integrity</string>
-    <string name="doctor_wallet_ok">Lolos Integrity (Tanpa Sisa Root)</string>
     <string name="doctor_wallet_risk_tmp_su">Risiko Keamanan (biner su terdeteksi)</string>
     <string name="doctor_wallet_risk_magisk">Risiko Keamanan (Tiruan Magisk aktif)</string>
     <string name="doctor_wallet_risk_busybox">Risiko Keamanan (Tiruan BusyBox aktif)</string>
     <string name="doctor_wallet_risk_spoof">Risiko Atestasi (Pemalsuan Perangkat aktif)</string>
-    <string name="doctor_tip_wallet_integrity">Google Wallet &amp; Aplikasi Perbankan: Artefak root yang terdeteksi atau tiruan Magisk/BusyBox yang aktif menyebabkan error "Perangkat tidak memenuhi standar keamanan". Jalankan perbaikan satu ketukan untuk menghapus biner su dan memulihkan kepatuhan.</string>
     <string name="doctor_fix_wallet_success">Selesai. Berjalan sebagai root — file verdict Play Integrity dihapus langsung dari GMS. Buka Google Wallet; seharusnya langsung berfungsi.</string>
     <string name="doctor_fix_wallet_success_adb_mode">Selesai. Shizuku berjalan dalam mode shell ADB, sehingga file verdict Play Integrity di disk tidak dapat dihapus (hanya root yang dapat mengakses direktori data GMS).\n\nYang dilakukan sebagai gantinya:\n• Proses DroidGuard dihentikan (menghapus verdict di memori)\n• GMS dihentikan\n• Override TTL Play Integrity dicoba (mendorong GMS untuk atestasi ulang segera)\n• Pemanasan atestasi baru diminta (memicu evaluasi ulang DroidGuard dengan perangkat bersih)\n• Data Wallet dihapus (memaksa permintaan integritas baru dengan nonce baru)\n• Perutean pembayaran NFC dikonfirmasi ulang\n\nCoba buka Wallet sekarang — seharusnya langsung pulih. Jika masih diblokir, ketuk \"Hapus Data Layanan Play\" di bawah untuk pemulihan segera yang dijamin (Anda perlu masuk kembali ke Google setelahnya).</string>
     <string name="doctor_fix_wallet_success_no_shizuku">Selesai. Shizuku tidak berjalan, jadi hanya Wallet itu sendiri yang dapat dihentikan — verdict Play Integrity yang tersimpan di cache GMS masih utuh.\n\nWallet seharusnya pulih sendiri dalam ~1 jam saat verdict kedaluwarsa secara alami. Untuk pemulihan segera, ketuk \"Hapus Data Layanan Play\" di bawah (Anda perlu masuk kembali ke Google setelahnya).\n\nUntuk menghindari ini lain kali, pastikan Shizuku berjalan sebelum menonaktifkan fitur root — ini memungkinkan pembersihan yang lebih menyeluruh.</string>
@@ -682,10 +680,8 @@
     <string name="settings_shadow_binder">Shadow Binder</string>
     <string name="settings_shadow_binder_summary">Cegat dan tiru panggilan layanan sistem untuk menyembunyikan informasi perangkat atau status aplikasi</string>
     <string name="settings_shadow_binder_hidden_packages">Paket Tersembunyi</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">Daftar nama paket yang dipisahkan koma untuk disembunyikan dari aplikasi lain. Jika Anda memasang OG Shizuku dan Shizuku+, tambahkan keduanya (moe.shizuku.privileged.api, af.shizuku.manager) untuk mencegah konflik.</string>
     <string name="settings_automation_trusted_networks">Jaringan Tepercaya</string>
     <string name="settings_automation_auto_hide_packages">Sembunyikan Otomatis Saat di Latar Depan</string>
-    <string name="settings_automation_auto_hide_packages_summary">Aplikasi yang otomatis ditambahkan ke daftar tersembunyi Shadow Binder hanya saat sedang dibuka, selain daftar Paket Tersembunyi di atas. Biarkan kosong untuk mengelola paket tersembunyi secara manual.</string>
     <string name="settings_companion_mode">Tampilkan Kartu Pendamping</string>
     <string name="settings_companion_mode_summary">Tampilkan kartu untuk membuka Shizuku standar dengan cepat. Catatan: hanya satu layanan Shizuku yang dapat berjalan pada satu waktu — gunakan ini untuk beralih di antaranya.</string>
     <string name="settings_companion_fallback">Cadangan Saat Crash</string>
@@ -1062,7 +1058,6 @@
     <string name="settings_hide_launcher_icon">Sembunyikan Ikon Peluncur</string>
     <string name="settings_hide_launcher_icon_summary">Hapus aplikasi dari peluncur. Buka melalui ADB atau aplikasi lain.</string>
     <string name="settings_stealth_mode_pkg_query">Filter Kueri Paket</string>
-    <string name="settings_stealth_mode_pkg_query_summary">Sembunyikan Shizuku dari kueri paket oleh aplikasi lain</string>
     <string name="settings_ai_bridge_title">AI Bridge &amp; NPU</string>
     <string name="settings_package_identity_category">Identitas Paket</string>
     <string name="package_identity_info_title">Tentang Pengacakan Nama Paket</string>
@@ -1104,7 +1099,6 @@
     <string name="device_control_shutdown_confirm">Apakah Anda yakin ingin mematikan perangkat?</string>
     <string name="nav_back">Kembali</string>
     <string name="help_stealth_mode_title">Mode Siluman</string>
-    <string name="help_stealth_mode_detail">Mencegat kueri PackageManager pada tingkat Binder dan mengembalikan "tidak terinstal" untuk paket ShizukuPlus dan Shizuku. Aplikasi yang menggunakan PM untuk mendeteksi alat root (aplikasi perbankan, pemeriksaan DRM) tidak akan menemukannya. Catatan: ini hanya menyembunyikannya dari kueri PackageManager — mode pengembang dan proses debug USB masih terlihat oleh aplikasi yang memeriksa setelan Android secara langsung.</string>
     <string name="corner_style_sharp">Tajam / Rata</string>
     <string name="home_permission_manager_title">Pengelola Izin</string>
     <string name="home_permission_manager_summary">Berikan izin tingkat shell ke aplikasi apa pun tanpa root</string>

@@ -389,12 +389,10 @@
     <string name="doctor_tip_local_network"><b>การเข้าถึงเครือข่ายภายใน (%1$s)</b>: Android 16/17 ต้องใช้สิทธิ์นี้เพื่อค้นหาและเชื่อมต่อกับบริการการแก้ไขข้อบกพร่องแบบไร้สาย หากไม่มี Shizuku+ จะเริ่มในโหมด ADB ไม่สำเร็จโดยไม่แจ้งเตือน แตะแก้ไขเพื่อให้สิทธิ์</string>
     <string name="doctor_button_fix">แก้ไข</string>
     <string name="doctor_check_wallet_integrity">Google Wallet และ Play Integrity</string>
-    <string name="doctor_wallet_ok">ผ่าน Integrity (ไม่มีร่องรอย root)</string>
     <string name="doctor_wallet_risk_tmp_su">ความเสี่ยงด้านความปลอดภัย (ตรวจพบไบนารี su)</string>
     <string name="doctor_wallet_risk_magisk">ความเสี่ยงด้านความปลอดภัย (การจำลอง Magisk ทำงานอยู่)</string>
     <string name="doctor_wallet_risk_busybox">ความเสี่ยงด้านความปลอดภัย (การจำลอง BusyBox ทำงานอยู่)</string>
     <string name="doctor_wallet_risk_spoof">ความเสี่ยงด้านการรับรอง (การปลอมอุปกรณ์ทำงานอยู่)</string>
-    <string name="doctor_tip_wallet_integrity">Google Wallet และแอปธนาคาร: การตรวจพบร่องรอย root หรือการจำลอง Magisk/BusyBox ที่ทำงานอยู่ทำให้เกิดข้อผิดพลาด "อุปกรณ์ไม่ตรงตามมาตรฐานความปลอดภัย" รันการแก้ไขแบบแตะครั้งเดียวเพื่อล้างไบนารี su และคืนความสอดคล้อง</string>
     <string name="doctor_fix_wallet_success">เสร็จสิ้น ทำงานในฐานะ root — ลบไฟล์ผลการตัดสิน Play Integrity ออกจาก GMS โดยตรงแล้ว เปิด Google Wallet ได้ทันที</string>
     <string name="doctor_fix_wallet_success_adb_mode">เสร็จสิ้น Shizuku ทำงานในโหมดเชลล์ ADB จึงไม่สามารถลบไฟล์ผลการตัดสิน Play Integrity บนดิสก์ได้ (มีเพียง root ที่เข้าถึงไดเรกทอรีข้อมูลของ GMS ได้)\n\nสิ่งที่ทำแทน:\n• ปิดโพรเซส DroidGuard (ล้างผลการตัดสินในหน่วยความจำ)\n• หยุด GMS\n• ลองแทนที่ TTL ของ Play Integrity (กระตุ้นให้ GMS รับรองใหม่ทันที)\n• ร้องขอการอุ่นเครื่องการรับรองใหม่ (กระตุ้นให้ DroidGuard ประเมินอุปกรณ์ที่สะอาดอีกครั้ง)\n• ล้างข้อมูล Wallet (บังคับให้ส่งคำขอ integrity ใหม่ด้วย nonce ใหม่)\n• ยืนยันการกำหนดเส้นทางการชำระเงิน NFC อีกครั้ง\n\nลองเปิด Wallet ตอนนี้ ควรกลับมาใช้ได้ทันที หากยังถูกบล็อก ให้แตะ \"ล้างข้อมูล Play Services\" ด้านล่างเพื่อกู้คืนทันทีอย่างแน่นอน (คุณจะต้องลงชื่อเข้าใช้ Google ใหม่ภายหลัง)</string>
     <string name="doctor_fix_wallet_success_no_shizuku">เสร็จสิ้น Shizuku ไม่ได้ทำงานอยู่ จึงหยุดได้เฉพาะ Wallet เอง — ผลการตัดสิน Play Integrity ที่แคชไว้ใน GMS ยังคงอยู่\n\nWallet ควรกลับมาใช้ได้เองภายใน ~1 ชั่วโมงเมื่อผลการตัดสินหมดอายุตามธรรมชาติ หากต้องการกู้คืนทันที ให้แตะ \"ล้างข้อมูล Play Services\" ด้านล่าง (คุณจะต้องลงชื่อเข้าใช้ Google ใหม่ภายหลัง)\n\nเพื่อหลีกเลี่ยงปัญหานี้ครั้งหน้า โปรดตรวจสอบว่า Shizuku ทำงานอยู่ก่อนปิดฟีเจอร์ root เพราะจะล้างได้ละเอียดกว่า</string>
@@ -914,10 +912,8 @@
     <string name="settings_shadow_binder">การพรางตัวแอป &amp; เกราะล่องหน</string>
     <string name="settings_shadow_binder_summary">ซ่อน Shizuku+ และแอปที่มีความละเอียดอ่อนที่เลือกไว้จากการตรวจจับของตัวตรวจจับรูท แอปธนาคาร และตัวสแกนเกม</string>
     <string name="settings_shadow_binder_hidden_packages">แพ็กเกจที่ซ่อนอยู่</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">รายชื่อชื่อแพ็กเกจที่คั่นด้วยเครื่องหมายจุลภาคเพื่อซ่อนจากแอปอื่น หากคุณติดตั้งทั้ง Shizuku ดั้งเดิมและ Shizuku+ ให้เพิ่มทั้งคู่ (moe.shizuku.privileged.api, af.shizuku.manager) เพื่อป้องกันข้อขัดแย้ง</string>
     <string name="settings_automation_trusted_networks">เครือข่ายที่เชื่อถือได้</string>
     <string name="settings_automation_auto_hide_packages">ซ่อนอัตโนมัติขณะเปิดใช้งานเบื้องหน้า</string>
-    <string name="settings_automation_auto_hide_packages_summary">แอปที่จะถูกเพิ่มเข้าไปในรายการที่ซ่อนของ Shadow Binder โดยอัตโนมัติเฉพาะขณะที่เปิดใช้งานอยู่ นอกเหนือจากรายการแพ็กเกจที่ซ่อนอยู่ด้านบน ปล่อยว่างไว้เพื่อจัดการแพ็กเกจที่ซ่อนด้วยตนเองแทน</string>
     <string name="settings_companion_mode">แสดงการ์ดแอปคู่หู (Companion)</string>
     <string name="settings_companion_mode_summary">แสดงการ์ดเพื่อเปิด Shizuku ดั้งเดิมอย่างรวดเร็ว หมายเหตุ: บริการ Shizuku สามารถทำงานได้เพียงบริการเดียวในแต่ละครั้ง — ใช้การ์ดนี้เพื่อสลับระหว่างสองแอป</string>
     <string name="settings_companion_fallback">ตัวเลือกสำรองเมื่อแอปขัดข้อง</string>
@@ -1062,7 +1058,6 @@
     <string name="settings_hide_launcher_icon">ซ่อนไอคอนตัวเปิดใช้</string>
     <string name="settings_hide_launcher_icon_summary">ลบแอปออกจากหน้าจอตัวเปิดใช้ เปิดผ่าน ADB หรือแอปอื่น</string>
     <string name="settings_stealth_mode_pkg_query">ตัวกรองการสืบค้นแพ็กเกจ</string>
-    <string name="settings_stealth_mode_pkg_query_summary">ซ่อน Shizuku จากการสืบค้นแพ็กเกจโดยแอปอื่น</string>
     <string name="settings_ai_bridge_title">AI Bridge &amp; NPU</string>
     <string name="settings_package_identity_category">เอกลักษณ์ของแพ็กเกจ</string>
     <string name="package_identity_info_title">เกี่ยวกับการสุ่มชื่อแพ็กเกจ</string>
@@ -1104,7 +1099,6 @@
     <string name="device_control_shutdown_confirm">คุณแน่ใจหรือไม่ว่าต้องการปิดเครื่องอุปกรณ์?</string>
     <string name="nav_back">ย้อนกลับ</string>
     <string name="help_stealth_mode_title">โหมดพรางตัว</string>
-    <string name="help_stealth_mode_detail">ดักจับคำขอ PackageManager ในระดับ Binder และส่งคืนสถานะ \"ไม่ได้ติดตั้ง\" สำหรับแพ็กเกจ ShizukuPlus และ Shizuku แอปที่ใช้ PM เพื่อตรวจจับเครื่องมือรูท (แอปธนาคาร, การตรวจสอบ DRM) จะหาไม่พบ หมายเหตุ: วิธีนี้จะซ่อนจากการสืบค้นของ PackageManager เท่านั้น — โหมดนักพัฒนาและการแก้ไขข้อบกพร่อง USB ยังคงมองเห็นได้โดยแอปที่ตรวจสอบการตั้งค่า Android โดยตรง</string>
     <string name="corner_style_sharp">เหลี่ยมคม / แบน</string>
     <string name="home_permission_manager_title">ตัวจัดการสิทธิ์</string>
     <string name="home_permission_manager_summary">ให้สิทธิ์ระดับเชลล์แก่แอปใดๆ โดยไม่ต้องรูท</string>

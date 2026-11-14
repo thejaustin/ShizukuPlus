@@ -46,12 +46,6 @@
         uit te voer:\n- Navigeer na \"Ontwikkelaaropsies\"\n- Aktiveer \"USB-ontfouting\" en
         \"Draadlose ontfouting\"\n- Tik die linkerkant van \"Draadlose ontfouting\"\n- Tik \"Koppel
         toestel met paringskode\"\n- Voer die paringskode in die kennisgewing in</string>
-    <string name="dialog_adb_pairing_accessibility_permission">Op Android 14 herroep die
-        installering/opdatering van Shizuku met die Pakketinstalleerder die ^1-toestemming, wat
-        vereis word om die toeganklikheidsdiens vir paring te aktiveer.\n\nOm dit toe te staan, voer
-        die volgende ADB-opdrag uit:\n\n^2\n\nNadat u die opdrag uitgevoer het, kan u voortgaan met
-        die paringsproses.\n\nLet wel: u kan dit omseil deur Shizuku met ADB te installeer/op te
-        dateer.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Aktiveer asseblief die
         toeganklikheidsdiens om die paringsproses te begin. Dit laat Shizuku toe om die paringskode
         op te spoor.\n\nDie toeganklikheidsdiens sal afgeskakel word wanneer die kode gevind word of

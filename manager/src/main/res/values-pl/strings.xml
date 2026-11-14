@@ -46,12 +46,6 @@
         Przejdź do „Opcji programisty”\n- Włącz „Debugowanie USB” i „Debugowanie bezprzewodowe”\n-
         Dotknij lewej strony „Debugowania bezprzewodowego”\n- Dotknij „Sparuj urządzenie za pomocą
         kodu parowania”\n- Wprowadź kod parowania w powiadomieniu</string>
-    <string name="dialog_adb_pairing_accessibility_permission">W systemie Android 14
-        instalacja/aktualizacja programu Shizuku za pomocą instalatora pakietów powoduje cofnięcie
-        uprawnienia ^1, które jest wymagane do włączenia usługi ułatwień dostępu w celu
-        parowania.\n\nAby je przyznać, uruchom następujące polecenie ADB:\n\n^2\n\nPo uruchomieniu
-        polecenia możesz kontynuować proces parowania.\n\nUwaga: możesz ominąć ten problem,
-        instalując/aktualizując program Shizuku za pomocą programu ADB.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Włącz usługę ułatwień dostępu, aby
         rozpocząć proces parowania. Pozwoli to Shizuku wykryć kod parowania.\n\nUsługa zostanie
         wyłączona po znalezieniu kodu lub po minucie, aby oszczędzać energię.</string>

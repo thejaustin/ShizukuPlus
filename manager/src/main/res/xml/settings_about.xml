@@ -51,30 +51,24 @@
             android:entryValues="@array/update_channel_values"
             android:defaultValue="stable" />
 
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="auto_update_enabled"
-            android:title="@string/settings_auto_update_title"
-            android:summary="@string/settings_auto_update_summary"
+        <!-- Stands in for auto_update_enabled + auto_install_enabled; not persisted itself. -->
+        <af.shizuku.manager.settings.SegmentedControlPreference
+            android:key="update_mode"
+            android:title="@string/settings_update_mode_title"
+            android:summary="@string/settings_update_mode_summary"
             android:icon="@drawable/ic_autorenew"
-            android:defaultValue="true" />
+            android:persistent="false"
+            android:entries="@array/update_mode_entries"
+            android:entryValues="@array/update_mode_values" />
 
         <rikka.preference.SimpleMenuPreference
             android:key="update_check_interval"
-            android:dependency="auto_update_enabled"
             android:title="@string/settings_update_check_interval_title"
             android:entries="@array/update_check_interval_entries"
             android:entryValues="@array/update_check_interval_values"
             android:defaultValue="0"
             android:summary="%s"
             android:icon="@drawable/ic_notifications_24" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="auto_install_enabled"
-            android:dependency="auto_update_enabled"
-            android:title="@string/settings_auto_install_title"
-            android:summary="@string/settings_auto_install_summary"
-            android:icon="@drawable/ic_install_24"
-            android:defaultValue="false" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 

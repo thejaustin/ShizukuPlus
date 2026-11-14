@@ -297,7 +297,6 @@
     <string name="settings_hide_launcher_icon">Приховати іконку запуску</string>
     <string name="settings_hide_launcher_icon_summary">Видаліть додаток із запуску. Відкрийте через ADB або інший додаток.</string>
     <string name="settings_stealth_mode_pkg_query">Фільтр запитів пакетів</string>
-    <string name="settings_stealth_mode_pkg_query_summary">Приховати Shizuku від запитів пакетів іншими додатками</string>
     <string name="settings_ai_bridge_title">AI Bridge та NPU</string>
     <string name="tcp_guard_title">TCP налагодження відкрито на ненадійній мережі</string>
     <string name="tcp_guard_text">Порт ADB TCP %1$d прослуховується та %2$s. Закрийте його, якщо вам він не потрібен прямо зараз.</string>

@@ -41,10 +41,6 @@
     <string name="dialog_adb_pairing_message">以下の手順でペアリングを開始してください。\n- 「開発者向けオプション」に移動します。\n-
         「USBデバッグ」と「ワイヤレスデバッグ」を有効にします。\n- 「ワイヤレスデバッグ」の左側をタップします。\n- 「ペアリングコードでデバイスをペアリング」をタップします。\n-
         通知にペアリングコードを入力します。</string>
-    <string name="dialog_adb_pairing_accessibility_permission">Android 14 では、パッケージ インストーラーを使用して
-        Shizuku をインストール/更新すると、ペアリング用のアクセシビリティ サービスを有効にするために必要な ^1 権限が取り消されます。\n\nこれを許可するには、次の ADB
-        コマンドを実行します。\n\n^2\n\nコマンドを実行したら、ペアリング プロセスを続行できます。\n\n注: ADB を使用して Shizuku
-        をインストール/更新すると、これを回避できます。</string>
     <string name="dialog_adb_pairing_accessibility_enable">ペアリングプロセスを開始するには、アクセシビリティサービスを有効にしてください。これにより、Shizuku
         はペアリングコードを検出できます。\n\nコードが見つかった場合、または1分後に節電のためアクセシビリティサービスはオフになります。</string>
     <string name="dialog_adb_pairing_accessibility_navigate">以下の手順に従ってペアリングを開始してください。\n-

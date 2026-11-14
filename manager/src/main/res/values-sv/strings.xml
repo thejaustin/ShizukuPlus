@@ -45,12 +45,6 @@
         Navigera till \"Utvecklaralternativ\"\n- Aktivera \"USB-felsökning\" och \"Trådlös
         felsökning\"\n- Tryck på vänster sida av \"Trådlös felsökning\"\n- Tryck på \"Para enhet med
         parkopplingskod\"\n- Ange parkopplingskoden i aviseringen</string>
-    <string name="dialog_adb_pairing_accessibility_permission">På Android 14 återkallas
-        ^1-behörigheten om du installerar/uppdaterar Shizuku med paketinstallationsprogrammet,
-        vilken krävs för att aktivera tillgänglighetstjänsten för parkoppling.\n\nKör följande
-        ADB-kommando för att bevilja den:\n\n^2\n\nEfter att du kört kommandot kan du fortsätta med
-        parkopplingsprocessen.\n\nObs: du kan kringgå detta genom att installera/uppdatera Shizuku
-        med ADB.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Aktivera tillgänglighetstjänsten för att
         starta parkopplingsprocessen. Detta gör att Shizuku kan upptäcka
         parkopplingskoden.\n\nTillgänglighetstjänsten stängs av när koden hittas eller efter 1 minut

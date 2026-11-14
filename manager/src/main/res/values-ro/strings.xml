@@ -46,12 +46,6 @@
         pași:\n- Navigați la „Opțiuni pentru dezvoltatori”\n- Activați „Depanare USB” și „Depanare
         wireless”\n- Atingeți partea stângă a opțiunii „Depanare wireless”\n- Atingeți „Asocieți
         dispozitivul cu cod de asociere”\n- Introduceți codul de asociere în notificare</string>
-    <string name="dialog_adb_pairing_accessibility_permission">Pe Android 14,
-        instalarea/actualizarea Shizuku cu ajutorul programului de instalare a pachetelor revocă
-        permisiunea ^1, necesară pentru activarea serviciului de accesibilitate pentru
-        asociere.\n\nPentru a o acorda, execută următoarea comandă ADB:\n\n^2\n\nDupă executarea
-        comenzii, poți continua procesul de asociere.\n\nNotă: poți ocoli acest lucru
-        instalând/actualizând Shizuku cu ADB.</string>
     <string name="dialog_adb_pairing_accessibility_enable">Vă rugăm să activați serviciul de
         accesibilitate pentru a începe procesul de asociere. Acest lucru permite dispozitivului
         Shizuku să detecteze codul de asociere.\n\nServiciul de accesibilitate va fi dezactivat când

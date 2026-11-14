@@ -389,12 +389,10 @@
     <string name="doctor_tip_local_network"><b>Доступ к локальной сети (%1$s)</b>: Android 16/17 требует это разрешение для обнаружения службы беспроводной отладки и подключения к ней. Без него Shizuku+ молча не запускается в режиме ADB. Нажмите «Исправить», чтобы выдать его.</string>
     <string name="doctor_button_fix">Исправить</string>
     <string name="doctor_check_wallet_integrity">Google Wallet и Play Integrity</string>
-    <string name="doctor_wallet_ok">Проверка Integrity пройдена (следов root нет)</string>
     <string name="doctor_wallet_risk_tmp_su">Риск безопасности (обнаружен бинарный файл su)</string>
     <string name="doctor_wallet_risk_magisk">Риск безопасности (активна подмена Magisk)</string>
     <string name="doctor_wallet_risk_busybox">Риск безопасности (активна подмена BusyBox)</string>
     <string name="doctor_wallet_risk_spoof">Риск аттестации (активна подмена устройства)</string>
-    <string name="doctor_tip_wallet_integrity">Google Wallet и банковские приложения: обнаруженные следы root или активная подмена Magisk/BusyBox вызывают ошибки «Устройство не соответствует требованиям безопасности». Запустите исправление одним нажатием, чтобы удалить бинарные файлы su и восстановить соответствие.</string>
     <string name="doctor_fix_wallet_success">Готово. Работа от root — файлы вердикта Play Integrity удалены напрямую из GMS. Откройте Google Wallet, он должен сразу заработать.</string>
     <string name="doctor_fix_wallet_success_adb_mode">Готово. Shizuku работает в режиме ADB shell, поэтому файл вердикта Play Integrity на диске удалить нельзя (каталог данных GMS доступен только root).\n\nВместо этого выполнено:\n• Завершён процесс DroidGuard (сброшен вердикт в памяти)\n• Остановлен GMS\n• Предпринята попытка переопределить TTL Play Integrity (побуждает GMS немедленно пройти аттестацию заново)\n• Запрошен прогрев новой аттестации (запускает повторную оценку DroidGuard на чистом устройстве)\n• Очищены данные Wallet (принуждает к новому запросу integrity с новым nonce)\n• Повторно подтверждена маршрутизация NFC-платежей\n\nОткройте Wallet — он должен сразу восстановиться. Если доступ всё ещё заблокирован, нажмите «Очистить данные Play Services» ниже для гарантированного немедленного восстановления (потом потребуется снова войти в Google).</string>
     <string name="doctor_fix_wallet_success_no_shizuku">Готово. Shizuku не был запущен, поэтому удалось остановить только сам Wallet — кэшированный вердикт Play Integrity в GMS остался нетронутым.\n\nWallet должен восстановиться сам примерно через 1 час, когда вердикт истечёт. Для немедленного восстановления нажмите «Очистить данные Play Services» ниже (потом потребуется снова войти в Google).\n\nЧтобы избежать этого в будущем, убедитесь, что Shizuku запущен перед отключением root-функций — так очистка проходит полнее.</string>
@@ -682,10 +680,8 @@
     <string name="settings_shadow_binder">Shadow Binder</string>
     <string name="settings_shadow_binder_summary">Перехватывать и имитировать вызовы системных служб, чтобы скрыть информацию об устройстве или состоянии приложения</string>
     <string name="settings_shadow_binder_hidden_packages">Скрытые пакеты</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">Список имён пакетов через запятую, которые нужно скрыть от других приложений. Если установлены и оригинальный Shizuku, и Shizuku+, добавьте оба (moe.shizuku.privileged.api, af.shizuku.manager), чтобы избежать конфликтов.</string>
     <string name="settings_automation_trusted_networks">Доверенные сети</string>
     <string name="settings_automation_auto_hide_packages">Автоскрытие на переднем плане</string>
-    <string name="settings_automation_auto_hide_packages_summary">Приложения, которые автоматически добавляются в список скрытых Shadow Binder только пока они открыты, помимо списка скрытых пакетов выше. Оставьте пустым, чтобы управлять скрытыми пакетами вручную.</string>
     <string name="settings_companion_mode">Показывать карточку компаньона</string>
     <string name="settings_companion_mode_summary">Показывать карточку для быстрого открытия обычного Shizuku. Примечание: одновременно может работать только одна служба Shizuku — используйте её для переключения между ними.</string>
     <string name="settings_companion_fallback">Запасной вариант при сбое</string>
@@ -861,7 +857,6 @@
     <string name="device_control_shutdown_confirm">Вы уверены, что хотите выключить устройство?</string>
     <string name="nav_back">Назад</string>
     <string name="help_stealth_mode_title">Скрытый режим</string>
-    <string name="help_stealth_mode_detail">Перехватывает запросы PackageManager на уровне Binder и возвращает «не установлен» для пакетов ShizukuPlus и Shizuku. Приложения, использующие PM для обнаружения root-инструментов (банковские приложения, проверки DRM), не найдут их. Примечание: это скрывает их только от запросов PackageManager — режим разработчика и отладка по USB по-прежнему видны приложениям, которые напрямую проверяют настройки Android.</string>
     <string name="corner_style_sharp">Острые / плоские</string>
     <string name="home_permission_manager_title">Менеджер разрешений</string>
     <string name="home_permission_manager_summary">Выдача разрешений уровня shell любому приложению без root</string>
@@ -1117,7 +1112,6 @@
     <string name="settings_hide_launcher_icon">Скрыть значок запуска</string>
     <string name="settings_hide_launcher_icon_summary">Удалите приложение из запуска. Откройте через ADB или другое приложение.</string>
     <string name="settings_stealth_mode_pkg_query">Фильтр запросов пакетов</string>
-    <string name="settings_stealth_mode_pkg_query_summary">Скройте Shizuku от запросов пакетов другими приложениями</string>
     <string name="settings_ai_bridge_title">AI Bridge и NPU</string>
     <string name="tcp_guard_title">TCP отладка открыта на недоверенной сети</string>
     <string name="tcp_guard_text">Порт ADB TCP %1$d прослушивается и %2$s. Закройте его, если вам он не требуется сейчас же.</string>

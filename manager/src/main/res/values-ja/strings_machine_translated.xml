@@ -389,12 +389,10 @@
     <string name="doctor_tip_local_network"><b>ローカルネットワークアクセス (%1$s)</b>: Android 16/17では、ワイヤレスデバッグサービスの検出と接続にこの権限が必要です。権限がないと、ADBモードでShizuku+ が通知なく起動に失敗します。修正をタップして許可してください。</string>
     <string name="doctor_button_fix">修正</string>
     <string name="doctor_check_wallet_integrity">Google ウォレット &amp; Play Integrity</string>
-    <string name="doctor_wallet_ok">整合性チェックに合格 (rootの痕跡なし)</string>
     <string name="doctor_wallet_risk_tmp_su">セキュリティリスク (suバイナリを検出)</string>
     <string name="doctor_wallet_risk_magisk">セキュリティリスク (Magisk偽装が有効)</string>
     <string name="doctor_wallet_risk_busybox">セキュリティリスク (BusyBox偽装が有効)</string>
     <string name="doctor_wallet_risk_spoof">構成証明リスク (デバイス偽装が有効)</string>
-    <string name="doctor_tip_wallet_integrity">Google ウォレットと銀行アプリ: rootの痕跡が検出された場合や、Magisk/BusyBoxの偽装が有効な場合、「デバイスがセキュリティ基準を満たしていません」というエラーが発生します。ワンタップ修正を実行してsuバイナリを削除し、準拠状態を回復してください。</string>
     <string name="doctor_fix_wallet_success">完了しました。rootで実行中のため、Play Integrityの判定ファイルをGMSから直接削除しました。Google ウォレットを開いてください。すぐに動作するはずです。</string>
     <string name="doctor_fix_wallet_success_adb_mode">完了しました。ShizukuはADBシェルモードで実行中のため、ディスク上のPlay Integrity判定ファイルは削除できません (GMSのデータディレクトリを操作できるのはrootのみです)。\n\n代わりに次の処理を行いました:\n• DroidGuardプロセスを終了 (メモリ上の判定をクリア)\n• GMSを停止\n• Play IntegrityのTTLオーバーライドを試行 (GMSに即時の再構成証明を促します)\n• 新しい構成証明のウォームアップを要求 (クリーンなデバイスでDroidGuardの再評価を実行)\n• ウォレットのデータを消去 (新しいnonceで新規の整合性リクエストを強制)\n• NFC決済のルーティングを再確認\n\nウォレットを開いてみてください。すぐに回復するはずです。それでもブロックされる場合は、下の\"Google Play 開発者サービスのデータを消去\"をタップすると、確実に即時回復します (その後、Googleに再ログインする必要があります)。</string>
     <string name="doctor_fix_wallet_success_no_shizuku">完了しました。Shizukuが実行されていなかったため、ウォレット自体のみ停止できました。GMSにキャッシュされたPlay Integrityの判定はそのまま残っています。\n\nウォレットは、判定が自然に失効する約1時間後に自動で回復します。すぐに回復させるには、下の\"Google Play 開発者サービスのデータを消去\"をタップしてください (その後、Googleに再ログインする必要があります)。\n\n次回に備えて、root機能を無効にする前にShizukuを実行しておいてください。より徹底したクリーンアップが可能になります。</string>
@@ -681,10 +679,8 @@
     <string name="settings_shadow_binder">Shadow Binder</string>
     <string name="settings_shadow_binder_summary">システムサービスの呼び出しを横取りして偽装し、デバイス情報やアプリの状態を隠します</string>
     <string name="settings_shadow_binder_hidden_packages">非表示のパッケージ</string>
-    <string name="settings_shadow_binder_hidden_packages_summary">他のアプリから隠すパッケージ名のカンマ区切りリストです。元のShizukuとShizuku+ の両方をインストールしている場合は、競合を防ぐため両方 (moe.shizuku.privileged.api、af.shizuku.manager) を追加してください。</string>
     <string name="settings_automation_trusted_networks">信頼するネットワーク</string>
     <string name="settings_automation_auto_hide_packages">前面表示中に自動で非表示</string>
-    <string name="settings_automation_auto_hide_packages_summary">上の非表示のパッケージリストに加えて、開いている間のみShadow Binderの非表示リストに自動で追加されるアプリです。空のままにすると、非表示のパッケージを手動で管理します。</string>
     <string name="settings_companion_mode">コンパニオンカードを表示</string>
     <string name="settings_companion_mode_summary">標準Shizukuをすばやく開くカードを表示します。注意: 同時に実行できるShizukuサービスは1つだけです。切り替えにはこのカードを使用してください。</string>
     <string name="settings_companion_fallback">クラッシュ時のフォールバック</string>
@@ -860,7 +856,6 @@
     <string name="device_control_shutdown_confirm">デバイスをシャットダウンしてもよろしいですか？</string>
     <string name="nav_back">戻る</string>
     <string name="help_stealth_mode_title">ステルスモード</string>
-    <string name="help_stealth_mode_detail">Binderレベルでパッケージマネージャーの照会を横取りし、ShizukuPlusとShizukuのパッケージに対して「インストールされていません」と返します。パッケージマネージャーでroot系ツールを検出するアプリ (銀行アプリ、DRMチェックなど) はそれらを見つけられません。注意: これはパッケージマネージャーの照会から隠すだけです。開発者モードとUSBデバッグは、Androidの設定を直接確認するアプリからは引き続き見えます。</string>
     <string name="corner_style_sharp">シャープ / フラット</string>
     <string name="home_permission_manager_title">権限マネージャー</string>
     <string name="home_permission_manager_summary">rootなしで任意のアプリにシェルレベルの権限を付与します</string>
@@ -1117,7 +1112,6 @@
     <string name="settings_hide_launcher_icon">ランチャーアイコンを隠す</string>
     <string name="settings_hide_launcher_icon_summary">ランチャーからアプリを削除します。ADB または他のアプリから開きます。</string>
     <string name="settings_stealth_mode_pkg_query">パッケージクエリフィルター</string>
-    <string name="settings_stealth_mode_pkg_query_summary">他のアプリによるパッケージ照会から Shizuku を隠す</string>
     <string name="settings_ai_bridge_title">AI Bridge &amp; NPU</string>
     <string name="tcp_guard_title">信頼できないネットワークで TCP デバッグが開いています</string>
     <string name="tcp_guard_text">ADB TCP ポート %1$d でリッスンしており、%2$s。今すぐ必要でない場合は閉じてください。</string>
