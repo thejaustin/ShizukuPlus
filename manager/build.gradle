@@ -191,19 +191,42 @@ afterEvaluate {
         rename { "compat.apk" }
     }
     
+    // The optional Dhizuku Compat add-on, bundled so it can be installed from Dhizuku Mode's settings.
+    tasks.register("copyDhizukuCompatApkRelease", Copy) {
+        dependsOn ":dhizuku-compat:assembleRelease"
+        from fileTree("${project(':dhizuku-compat').layout.buildDirectory.get().asFile}/outputs/apk/release") {
+            include "*.apk"
+        }
+        into "src/main/assets"
+        rename { "dhizuku_compat.apk" }
+    }
+
+    tasks.register("copyDhizukuCompatApkDebug", Copy) {
+        dependsOn ":dhizuku-compat:assembleDebug"
+        from fileTree("${project(':dhizuku-compat').layout.buildDirectory.get().asFile}/outputs/apk/debug") {
+            include "*.apk"
+        }
+        into "src/main/assets"
+        rename { "dhizuku_compat.apk" }
+    }
+
     // Wire compat and shell for both the generic pre-build hooks (single-flavor builds)
     // and the flavor-specific hooks produced when product flavors are configured.
     tasks.findByName("preReleaseBuild")?.dependsOn("copyCompatApkRelease")
+    tasks.findByName("preReleaseBuild")?.dependsOn("copyDhizukuCompatApkRelease")
     tasks.findByName("preReleaseBuild")?.dependsOn(":shell:assembleRelease")
 
     tasks.findByName("preDebugBuild")?.dependsOn("copyCompatApkDebug")
+    tasks.findByName("preDebugBuild")?.dependsOn("copyDhizukuCompatApkDebug")
     tasks.findByName("preDebugBuild")?.dependsOn(":shell:assembleDebug")
 
     android.productFlavors.each { flavor ->
         def name = flavor.name.capitalize()
         tasks.findByName("pre${name}ReleaseBuild")?.dependsOn("copyCompatApkRelease")
+        tasks.findByName("pre${name}ReleaseBuild")?.dependsOn("copyDhizukuCompatApkRelease")
         tasks.findByName("pre${name}ReleaseBuild")?.dependsOn(":shell:assembleRelease")
         tasks.findByName("pre${name}DebugBuild")?.dependsOn("copyCompatApkDebug")
+        tasks.findByName("pre${name}DebugBuild")?.dependsOn("copyDhizukuCompatApkDebug")
         tasks.findByName("pre${name}DebugBuild")?.dependsOn(":shell:assembleDebug")
     }
 }

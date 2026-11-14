@@ -44,6 +44,7 @@ _archive/logs/
 
 # Local build output — compat.apk is built by CI and should not be committed
 manager/src/main/assets/compat.apk
+manager/src/main/assets/dhizuku_compat.apk
 
 # Python bytecode
 __pycache__/

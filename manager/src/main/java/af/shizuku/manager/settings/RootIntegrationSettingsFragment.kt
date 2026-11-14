@@ -91,6 +91,11 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             }
         }
 
+        findPreference<Preference>("install_dhizuku_compat")?.setOnPreferenceClickListener { pref ->
+            installDhizukuCompat(pref)
+            true
+        }
+
         val clearDoPref = findPreference<Preference>("clear_device_owner")
         clearDoPref?.let { setChildAvailable(it, isDeviceOwnerActive(requireContext())) }
         clearDoPref?.setOnPreferenceClickListener {
@@ -421,9 +426,47 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
         val baseSummary = getString(R.string.settings_dhizuku_mode_summary)
         pref.setCustomSummary("$statusLine\n\n$baseSummary")
         findPreference<Preference>("clear_device_owner")?.let { setChildAvailable(it, active) }
+        findPreference<Preference>("install_dhizuku_compat")?.let { setChildAvailable(it, active && shouldOfferDhizukuCompat(ctx)) }
         findPreference<PreferenceGroup>("category_dhizuku_admin")?.apply {
             isEnabled = active
             setCustomSummary(if (!active) getString(R.string.dpm_requires_device_owner) else null)
+        }
+    }
+
+    // The add-on answers apps on the older Dhizuku library; it claims the real Dhizuku app's
+    // provider authority, so it can't install next to that app (#670).
+    private fun shouldOfferDhizukuCompat(ctx: Context): Boolean =
+        af.shizuku.manager.utils.BundledApkInstaller
+            .isBundled(ctx, DHIZUKU_COMPAT_ASSET) &&
+            !af.shizuku.manager.utils.BundledApkInstaller
+                .isInstalled(ctx, "com.rosan.dhizuku") &&
+            !af.shizuku.manager.utils.BundledApkInstaller
+                .isInstalled(ctx, DHIZUKU_COMPAT_PACKAGE)
+
+    private fun installDhizukuCompat(pref: Preference) {
+        val ctx = pref.context
+        pref.isEnabled = false
+        notifyUser(R.string.dhizuku_compat_installing)
+        lifecycleScope.launch {
+            val error =
+                af.shizuku.manager.utils.BundledApkInstaller
+                    .install(ctx.applicationContext, DHIZUKU_COMPAT_ASSET)
+            if (!isAdded) return@launch
+            pref.isEnabled = true
+            if (error == null) {
+                listView?.let {
+                    af.shizuku.manager.utils.HapticUtils
+                        .success(it)
+                }
+                notifyUser(R.string.dhizuku_compat_installed)
+                findPreference<TwoStatePreference>(KEY_DHIZUKU_MODE)?.let { updateDhizukuDeviceOwnerStatus(it) }
+            } else {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.dhizuku_compat_install_failed)
+                    .setMessage(error)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+            }
         }
     }
 
@@ -586,3 +629,7 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             ?: run { pref.isVisible = available }
     }
 }
+
+/** The Dhizuku Compat add-on, bundled by copyDhizukuCompatApk*. */
+private const val DHIZUKU_COMPAT_ASSET = "dhizuku_compat.apk"
+private const val DHIZUKU_COMPAT_PACKAGE = "af.shizuku.plus.dhizuku"

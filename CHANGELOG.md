@@ -5,7 +5,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ## [Unreleased]
 
 ### ✨ Features
-- **Dhizuku Compat add-on** — Optional small APK (on each GitHub release) that lets apps using an older Dhizuku library, like Amarok 0.10.1, connect to Shizuku+. Only needed if you use Dhizuku Mode without the real Dhizuku app, and can't be installed alongside it.
+- **Dhizuku Compat add-on** — Optional small APK that lets apps using an older Dhizuku library, like Amarok 0.10.1, connect to Shizuku+. Install it from Settings → Root Integration → Dhizuku Mode once Shizuku+ is Device Owner (it's also on each GitHub release). Only needed without the real Dhizuku app, which it can't be installed alongside.
 - **Activate Dhizuku Mode without a PC** — The Device Owner setup dialog has an "Activate now" button that uses the running Shizuku+ service, so no computer is needed, and on Android 12+ you no longer have to remove your accounts first. If Android still refuses, it shows you why ([#674](https://github.com/thejaustin/ShizukuPlus/issues/674)).
 - **Background update checks** — Settings → About → "Check for updates in the background" can check every 6 hours, 12 hours or once a day and notify you once per new version (saying if it's a pre-release), with Update, Release notes and Later buttons. Off by default ([#673](https://github.com/thejaustin/ShizukuPlus/issues/673)).
 - **Library updates** — AndroidX, Kotlin coroutines and serialization, Room, WorkManager, Sentry, Koin, Lottie and the Android build tools are updated to their latest stable releases, including a security fix in Guava.

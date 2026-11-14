@@ -210,6 +210,15 @@
             android:icon="@drawable/ic_delete_24"
             android:visible="false" />
 
+        <!-- Shown only while Shizuku+ is Device Owner, the real Dhizuku app isn't installed (the two
+             can't coexist) and the add-on isn't installed yet. -->
+        <Preference
+            android:key="install_dhizuku_compat"
+            android:title="@string/settings_install_dhizuku_compat"
+            android:summary="@string/settings_install_dhizuku_compat_summary"
+            android:icon="@drawable/ic_install_24"
+            android:visible="false" />
+
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="shadow_binder_enabled"
             android:title="@string/settings_shadow_binder"

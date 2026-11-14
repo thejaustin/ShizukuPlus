@@ -1520,6 +1520,11 @@
     <string name="update_available_notification_title_pre">Shizuku+ %1$s (pre-release) is available</string>
     <string name="update_available_notification_text">Tap to see what\'s new and update.</string>
     <string name="dhizuku_setup_activate_now">Activate now</string>
+    <string name="settings_install_dhizuku_compat">Install Dhizuku Compat</string>
+    <string name="settings_install_dhizuku_compat_summary">Lets apps built on the older Dhizuku library, like Amarok 0.10.1, find Shizuku+</string>
+    <string name="dhizuku_compat_installing">Installing Dhizuku Compat…</string>
+    <string name="dhizuku_compat_installed">Dhizuku Compat installed</string>
+    <string name="dhizuku_compat_install_failed">Couldn\'t install Dhizuku Compat</string>
     <string name="dhizuku_activate_success">Shizuku+ is now the Device Owner</string>
     <string name="dhizuku_activate_failed_title">Couldn\'t activate</string>
     <string name="dhizuku_activate_failed_message">Android said:\n\n%1$s\n\nIf it mentions accounts or other users, this device still needs them removed (Settings → Accounts) before activating; you can add them back afterwards. If another app is already Device Owner, remove it from that app first.</string>
