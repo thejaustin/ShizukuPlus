@@ -1757,7 +1757,7 @@
 
     <!-- Hide backup settings (#461) -->
     <string name="settings_hide_backup_settings">Hide Backup &amp; Restore</string>
-    <string name="settings_hide_backup_settings_summary">Remove the Backup &amp; Restore section from the About settings screen</string>
+    <string name="settings_hide_backup_settings_summary">Remove the Backup &amp; Restore section from Advanced settings</string>
 
     <!-- Launcher icon &amp; stealth -->
     <string name="settings_hide_launcher_icon">Hide Launcher Icon</string>

@@ -72,20 +72,6 @@
             android:icon="@drawable/ic_history_24"
             android:dependency="enable_activity_log" />
 
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="hide_launcher_icon"
-            android:title="@string/settings_hide_launcher_icon"
-            android:summary="@string/settings_hide_launcher_icon_summary"
-            android:icon="@drawable/ic_visibility_off_24"
-            android:defaultValue="false" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="hide_backup_settings"
-            android:title="@string/settings_hide_backup_settings"
-            android:summary="@string/settings_hide_backup_settings_summary"
-            android:icon="@drawable/ic_folder_24"
-            android:defaultValue="false" />
-
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory

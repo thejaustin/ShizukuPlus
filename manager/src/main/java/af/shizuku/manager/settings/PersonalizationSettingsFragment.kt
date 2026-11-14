@@ -16,6 +16,7 @@ import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import rikka.core.util.ResourceUtils
 import rikka.material.app.LocaleDelegate
 import java.util.Locale
@@ -344,6 +345,36 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         // Experimental (Developer options): hide the whole App icon & name section unless enabled.
         findPreference<Preference>("category_app_identity")?.isVisible =
             ShizukuSettings.isExperimentalAppIdentityEnabled()
+
+        // The manifest's namespace (af.shizuku.manager) differs from the per-flavor applicationId
+        // (context.packageName), so ".LauncherAlias" must resolve against the namespace, not the
+        // package name, or ComponentName construction throws "Component class ... does not exist"
+        // (SHIZUKUPLUS-7R).
+        findPreference<TwoStatePreference>("hide_launcher_icon")?.apply {
+            isChecked = ShizukuSettings.isHideLauncherIconEnabled()
+            setOnPreferenceChangeListener { pref, newValue ->
+                val enable = newValue as? Boolean ?: return@setOnPreferenceChangeListener false
+                if (enable) {
+                    MaterialAlertDialogBuilder(context)
+                        .setTitle(R.string.stealth_mode_enable_title)
+                        .setMessage(getString(R.string.stealth_mode_enable_message, context.packageName))
+                        .setPositiveButton(R.string.stealth_mode_enable_button) { _, _ ->
+                            ShizukuSettings.setHideLauncherIconEnabled(true)
+                            af.shizuku.manager.utils.AppAliasManager
+                                .applyAlias(context, "")
+                            (pref as? TwoStatePreference)?.isChecked = true
+                        }.setNegativeButton(android.R.string.cancel) { _, _ ->
+                            (pref as? TwoStatePreference)?.isChecked = false
+                        }.show()
+                    false
+                } else {
+                    ShizukuSettings.setHideLauncherIconEnabled(false)
+                    af.shizuku.manager.utils.AppAliasManager
+                        .applyAlias(context, ShizukuSettings.getAppIconAlias())
+                    true
+                }
+            }
+        }
 
         findPreference<EditTextPreference>("custom_app_name")?.apply {
             // Don't seed `text`: EditTextPreference.setText() persists, which would save this

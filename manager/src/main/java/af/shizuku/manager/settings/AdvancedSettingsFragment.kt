@@ -233,17 +233,6 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        // Feature 2 (#461): hide_backup_settings toggle — hides the Backup & Restore category
-        // from the About screen (AboutSettingsFragment). The toggle is effective on next
-        // entry into About (no recreate needed; the fragment re-reads the setting on resume).
-        findPreference<TwoStatePreference>("hide_backup_settings")?.apply {
-            isChecked = ShizukuSettings.isHideBackupSettingsEnabled()
-            setOnPreferenceChangeListener { _, newValue ->
-                if (newValue is Boolean) ShizukuSettings.setHideBackupSettingsEnabled(newValue)
-                true
-            }
-        }
-
         // Feature 1 (#469): Package identity info — shows current package name and explains
         // the roadmap for true package name randomization (requires custom build).
         // TODO(#469): Replace this info preference with an EditText + "Randomize" action
@@ -263,36 +252,6 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                         notifyUser(R.string.app_management_package_copied)
                     }.show()
                 true
-            }
-        }
-
-        // The manifest's namespace (af.shizuku.manager) differs from the per-flavor applicationId
-        // (context.packageName), so ".LauncherAlias" must resolve against the namespace, not the
-        // package name, or ComponentName construction throws "Component class ... does not exist"
-        // (SHIZUKUPLUS-7R).
-        findPreference<TwoStatePreference>("hide_launcher_icon")?.apply {
-            isChecked = ShizukuSettings.isHideLauncherIconEnabled()
-            setOnPreferenceChangeListener { pref, newValue ->
-                val enable = newValue as? Boolean ?: return@setOnPreferenceChangeListener false
-                if (enable) {
-                    MaterialAlertDialogBuilder(context)
-                        .setTitle(R.string.stealth_mode_enable_title)
-                        .setMessage(getString(R.string.stealth_mode_enable_message, context.packageName))
-                        .setPositiveButton(R.string.stealth_mode_enable_button) { _, _ ->
-                            ShizukuSettings.setHideLauncherIconEnabled(true)
-                            af.shizuku.manager.utils.AppAliasManager
-                                .applyAlias(context, "")
-                            (pref as? TwoStatePreference)?.isChecked = true
-                        }.setNegativeButton(android.R.string.cancel) { _, _ ->
-                            (pref as? TwoStatePreference)?.isChecked = false
-                        }.show()
-                    false
-                } else {
-                    ShizukuSettings.setHideLauncherIconEnabled(false)
-                    af.shizuku.manager.utils.AppAliasManager
-                        .applyAlias(context, ShizukuSettings.getAppIconAlias())
-                    true
-                }
             }
         }
 

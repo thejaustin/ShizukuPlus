@@ -24,6 +24,15 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
     ) {
         setPreferencesFromResource(R.xml.settings_developer_options, rootKey)
 
+        // Hides the Backup & Restore category in Advanced (#461), which re-reads it on resume.
+        findPreference<TwoStatePreference>("hide_backup_settings")?.apply {
+            isChecked = ShizukuSettings.isHideBackupSettingsEnabled()
+            setOnPreferenceChangeListener { _, newValue ->
+                if (newValue is Boolean) ShizukuSettings.setHideBackupSettingsEnabled(newValue)
+                true
+            }
+        }
+
         // Notification system master switch
         findPreference<TwoStatePreference>(KEY_NOTIFICATION_SYSTEM_ENABLED)?.apply {
             isChecked = ShizukuSettings.isNotificationSystemEnabled()
