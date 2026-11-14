@@ -66,8 +66,23 @@ ext {
     versionName = "Shizuku+ ${upstreamVersion}.r${gitCommitCount}"
 }
 
+// KSP 2.3.13 can silently drop generated code when two KSP executions overlap in one JVM
+// (google/ksp#3286: one run clears the shared CoreJarFileSystem cache under the other).
+// Serialize only the KSP tasks; compilation and tests stay parallel. Remove when moving to
+// KSP 2.3.14+, which contains the fix.
+abstract class KspSerialService implements org.gradle.api.services.BuildService<org.gradle.api.services.BuildServiceParameters.None> {}
+def kspSerialService = gradle.sharedServices.registerIfAbsent("kspSerial", KspSerialService) {
+    maxParallelUsages = 1
+}
+
 subprojects {
     apply plugin: "io.gitlab.arturbosch.detekt"
+
+    plugins.withId("com.google.devtools.ksp") {
+        tasks.matching { it.name ==~ /ksp.*Kotlin/ }.configureEach {
+            usesService(kspSerialService)
+        }
+    }
 
     detekt {
         config.setFrom(files("$rootDir/detekt.yml"))
