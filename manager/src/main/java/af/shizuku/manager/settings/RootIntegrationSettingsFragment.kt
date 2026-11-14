@@ -487,7 +487,7 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
     ) {
         val appContext = ctx.applicationContext
         lifecycleScope.launch(Dispatchers.IO) {
-            val output = runDpm(component)
+            val output = withSetupIncomplete { runServerShell("dpm set-device-owner $component").second }
             val dpm = appContext.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
             val isOwner = runCatching { dpm.isDeviceOwnerApp(appContext.packageName) }.getOrDefault(false)
             withContext(Dispatchers.Main) {
@@ -506,12 +506,47 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
         }
     }
 
-    // dpm's own message (stdout and stderr) is the useful part when it refuses, e.g. because
-    // accounts are signed in.
-    @Suppress("DEPRECATION")
-    private fun runDpm(component: String): String =
+    // Android refuses a Device Owner while accounts are signed in only once setup has completed. As
+    // the Dhizuku app does, mark this user's setup as not complete for the moment the owner is set,
+    // make the device-policy service re-read it (it caches the value from Android 12), and always
+    // put it back. Without this, activating meant removing every account first (#674).
+    private fun <T> withSetupIncomplete(block: () -> T): T {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) return block()
+        val user = android.os.Process.myUid() / 100000
+        val (_, current) = runServerShell("settings --user $user get secure user_setup_complete")
+        if (current.trim() != "1") return block()
+        if (runServerShell("settings --user $user put secure user_setup_complete 0").first != 0) return block()
+        forceUpdateUserSetupComplete(user)
         try {
-            val proc = Shizuku.newProcess(arrayOf("sh", "-c", "dpm set-device-owner $component 2>&1"), null, null)
+            return block()
+        } finally {
+            runServerShell("settings --user $user put secure user_setup_complete 1")
+            forceUpdateUserSetupComplete(user)
+        }
+    }
+
+    // Hidden IDevicePolicyManager.forceUpdateUserSetupComplete, called as the server (shell holds
+    // the permission it needs) through a Shizuku binder wrapper.
+    private fun forceUpdateUserSetupComplete(user: Int) {
+        runCatching {
+            val binder = rikka.shizuku.SystemServiceHelper.getSystemService(Context.DEVICE_POLICY_SERVICE) ?: return
+            val service =
+                Class
+                    .forName("android.app.admin.IDevicePolicyManager\$Stub")
+                    .getMethod("asInterface", android.os.IBinder::class.java)
+                    .invoke(null, rikka.shizuku.ShizukuBinderWrapper(binder))
+            val iface = Class.forName("android.app.admin.IDevicePolicyManager")
+            runCatching { iface.getMethod("forceUpdateUserSetupComplete", Int::class.javaPrimitiveType).invoke(service, user) }
+                .getOrElse { iface.getMethod("forceUpdateUserSetupComplete").invoke(service) }
+        }.onFailure { timber.log.Timber.w(it, "forceUpdateUserSetupComplete failed") }
+    }
+
+    // Runs [command] as the server and returns its exit code and combined output (dpm's own message
+    // is the useful part when it refuses).
+    @Suppress("DEPRECATION")
+    private fun runServerShell(command: String): Pair<Int, String> =
+        try {
+            val proc = Shizuku.newProcess(arrayOf("sh", "-c", "$command 2>&1"), null, null)
             val out = StringBuilder()
             val reader =
                 Thread {
@@ -520,11 +555,12 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                     isDaemon = true
                     start()
                 }
-            if (!proc.waitForTimeout(30, java.util.concurrent.TimeUnit.SECONDS)) proc.destroy()
+            val finished = proc.waitForTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            if (!finished) proc.destroy()
             reader.join(2_000)
-            out.toString().trim()
+            (if (finished) proc.exitValue() else -1) to out.toString().trim()
         } catch (e: Exception) {
-            e.message ?: e.javaClass.simpleName
+            -1 to (e.message ?: e.javaClass.simpleName)
         }
 
     private fun isBootloaderUnlocked(): Boolean {

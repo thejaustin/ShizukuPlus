@@ -1522,7 +1522,7 @@
     <string name="dhizuku_setup_activate_now">Activate now</string>
     <string name="dhizuku_activate_success">Shizuku+ is now the Device Owner</string>
     <string name="dhizuku_activate_failed_title">Couldn\'t activate</string>
-    <string name="dhizuku_activate_failed_message">Android said:\n\n%1$s\n\nThis usually means accounts are signed in on the phone. Android only allows a Device Owner while there are none: remove them in Settings → Accounts, activate, then add them back.</string>
+    <string name="dhizuku_activate_failed_message">Android said:\n\n%1$s\n\nIf it mentions accounts or other users, this device still needs them removed (Settings → Accounts) before activating; you can add them back afterwards. If another app is already Device Owner, remove it from that app first.</string>
     <string name="dhizuku_status_active">Device Owner: Active</string>
     <string name="dhizuku_status_not_set">Device Owner not set — tap for setup instructions</string>
 
