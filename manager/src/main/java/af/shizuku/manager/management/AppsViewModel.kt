@@ -48,6 +48,17 @@ class AppsViewModel(
     var sortReversed: Boolean = prefs.getBoolean(KEY_SORT_REVERSED, false)
         private set
 
+    /** The "Group" pill: All apps split into Allowed / Not allowed. Off by default. */
+    var groupByAccess: Boolean = prefs.getBoolean(KEY_GROUP_BY_ACCESS, false)
+        private set
+
+    fun setGroupByAccess(grouped: Boolean) {
+        if (grouped == groupByAccess) return
+        groupByAccess = grouped
+        prefs.edit().putBoolean(KEY_GROUP_BY_ACCESS, grouped).apply()
+        applyFiltersAndSort()
+    }
+
     var filterState: FilterState = FilterState.ALL
         private set
 
@@ -207,7 +218,7 @@ class AppsViewModel(
 
     /** Re-sorts the All list after a grant change so the app moves to its new group. */
     fun regroup() {
-        if (filterState == FilterState.ALL) applyFiltersAndSort()
+        if (filterState == FilterState.ALL && groupByAccess) applyFiltersAndSort()
     }
 
     private fun applyFiltersAndSort() {
@@ -259,10 +270,10 @@ class AppsViewModel(
                         SortOrder.GRANTED_FIRST -> compareByDescending<PackageInfo> { granted(it) }.then(byName)
                     }
                 val order = if (sortReversed) comparator.reversed() else comparator
-                // All apps: allowed ones first, each group in the chosen order. The split travels
-                // with the list (GroupedApps) because two passes can overlap.
+                // All apps with the Group pill on: allowed ones first, each group in the chosen
+                // order. The split travels with the list (GroupedApps) because passes can overlap.
                 val list =
-                    if (filterState == FilterState.ALL) {
+                    if (filterState == FilterState.ALL && groupByAccess) {
                         val (allowed, others) = filtered.partition { granted(it) }
                         GroupedApps(allowed.sortedWith(order) + others.sortedWith(order), allowed.size)
                     } else {
@@ -279,5 +290,6 @@ class AppsViewModel(
         private const val KEY_HIDDEN = "hidden_packages"
         private const val KEY_SORT = "app_list_sort_order"
         private const val KEY_SORT_REVERSED = "app_list_sort_reversed"
+        private const val KEY_GROUP_BY_ACCESS = "app_list_group_by_access"
     }
 }

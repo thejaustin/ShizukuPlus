@@ -252,6 +252,16 @@ open class ApplicationManagementActivity :
             }
         }
 
+        rootView.findViewById<com.google.android.material.chip.Chip>(R.id.chip_group_by_access)?.apply {
+            isChecked = viewModel.groupByAccess
+            with(af.shizuku.manager.utils.MotionUtils) { applySpringTouch() }
+            setOnCheckedChangeListener { chip, checked ->
+                af.shizuku.manager.utils.HapticUtils
+                    .segmentTick(chip)
+                viewModel.setGroupByAccess(checked)
+            }
+        }
+
         viewModel.packages.observe(this) {
             when (it.status) {
                 Status.SUCCESS -> {

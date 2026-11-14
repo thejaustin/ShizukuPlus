@@ -71,6 +71,14 @@
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="apps_controls_bottom"
+            android:title="@string/settings_apps_controls_bottom"
+            android:summary="@string/settings_apps_controls_bottom_summary"
+            android:icon="@drawable/ic_search_24"
+            android:defaultValue="false"
+            app:badgeType="experimental" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="vector_enabled"
             android:title="@string/settings_vector_experimental"
             android:summary="@string/settings_vector_summary"

@@ -57,6 +57,7 @@ class AppsBottomDock(
 
     init {
         (controls.parent as? ViewGroup)?.removeView(controls)
+        arrangeForDock()
         selectionCount =
             TextView(activity).apply {
                 setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_LabelLarge)
@@ -115,6 +116,22 @@ class AppsBottomDock(
         watchScrolling()
     }
 
+    // In the dock the category pills come first and the search field sits under them, closest to
+    // the thumb and to the keyboard it opens. Spacing is tightened to suit a floating card.
+    private fun arrangeForDock() {
+        val column = controls as? LinearLayout ?: return
+        val search = column.findViewById<View>(R.id.search_layout) ?: return
+        val pills = (0 until column.childCount).map { column.getChildAt(it) }.firstOrNull { it !== search } ?: return
+        column.removeView(pills)
+        column.addView(pills, 0)
+        pills.setPadding(pills.paddingLeft, dp(6), pills.paddingRight, dp(2))
+        (search.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
+            it.topMargin = dp(2)
+            it.bottomMargin = dp(6)
+            search.layoutParams = it
+        }
+    }
+
     private fun actionButton(
         label: Int,
         id: Int,
@@ -134,14 +151,30 @@ class AppsBottomDock(
     fun place(systemBottom: Int) {
         val content = activity.findViewById<ViewGroup>(android.R.id.content)
         val nav = content?.findViewById<View>(R.id.floating_nav_root)
-        val navReach =
-            if (nav != null && nav.visibility == View.VISIBLE && nav.height > 0) content.height - nav.top else 0
+        val navShown = nav != null && nav.visibility == View.VISIBLE && nav.height > 0
+        val navReach = if (navShown) content!!.height - nav!!.top else 0
         val newBase = maxOf(systemBottom, navReach) + dp(8)
-        if (newBase != baseBottom) {
-            baseBottom = newBase
-            (dock.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin = baseBottom
-            dock.requestLayout()
+        val lp = dock.layoutParams as CoordinatorLayout.LayoutParams
+        var changed = newBase != baseBottom
+        baseBottom = newBase
+        lp.bottomMargin = baseBottom
+        // With the floating pill shown, the dock takes its width, corners and surface so the two
+        // read as one stack instead of a full-width bar crowding the pill.
+        val navCard = nav as? MaterialCardView
+        if (navShown && navCard != null) {
+            if (lp.width != navCard.width) {
+                lp.width = navCard.width
+                lp.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                lp.marginStart = 0
+                lp.marginEnd = 0
+                changed = true
+            }
+            dock.radius = navCard.radius
+            dock.setCardBackgroundColor(navCard.cardBackgroundColor)
+            dock.strokeColor = navCard.strokeColor
+            dock.strokeWidth = navCard.strokeWidth
         }
+        if (changed) dock.requestLayout()
         // The pill may not be laid out yet on the first pass; measure again once it is.
         if (nav != null && nav.height == 0) nav.post { place(systemBottom) }
     }
