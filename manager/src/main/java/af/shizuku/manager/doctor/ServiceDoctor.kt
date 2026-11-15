@@ -5,7 +5,6 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.adb.AdbPairingAccessibilityService
 import af.shizuku.manager.adb.LocalNetworkPermission
 import af.shizuku.manager.database.ActivityLogManager
-import af.shizuku.manager.database.RootCompatHelper
 import af.shizuku.manager.home.tryEnableAccessibilityAutomatically
 import af.shizuku.manager.receiver.ShizukuReceiverStarter
 import af.shizuku.manager.utils.DeviceOptimizer
@@ -29,7 +28,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
 import timber.log.Timber
-import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
 object ServiceDoctor {
@@ -259,27 +257,15 @@ object ServiceDoctor {
                 ),
             )
 
-            // 5d. Google Wallet & Play Integrity
-            // SU bridge is an optional root-style setting: if enabled, its presence in tmp is intentional
-            // and must NOT be flagged as a defect or wiped by Service Doctor fixes.
-            val isSuBridgeEnabled = ShizukuSettings.isSuBridgeEnabled()
-            val hasTmpSu =
-                File("/data/local/tmp/su").exists() ||
-                    File("/data/local/su").exists() ||
-                    File("/data/local/bin/su").exists() ||
-                    File("/data/local/xbin/su").exists()
-            val hasOrphanSu = hasTmpSu && !isSuBridgeEnabled
-            val isMagiskMocking = ShizukuSettings.isRootMagiskMockingEnabled()
-            val isBusyboxMocking = ShizukuSettings.isRootBusyboxMockingEnabled()
-            val isSpoofing = ShizukuSettings.isSpoofDeviceEnabled()
-            val walletSecurityOk = !hasOrphanSu && !isMagiskMocking && !isBusyboxMocking && !isSpoofing
-
+            // 5d. Google Wallet, Messages (RCS) & Play Integrity: root traces Shizuku+ can cause.
+            val wallet = WalletRepair.scan()
             val walletStatus =
                 when {
-                    hasOrphanSu -> context.getString(R.string.doctor_wallet_risk_tmp_su)
-                    isMagiskMocking -> context.getString(R.string.doctor_wallet_risk_magisk)
-                    isBusyboxMocking -> context.getString(R.string.doctor_wallet_risk_busybox)
-                    isSpoofing -> context.getString(R.string.doctor_wallet_risk_spoof)
+                    wallet.suFiles && !wallet.suBridge -> context.getString(R.string.doctor_wallet_risk_tmp_su)
+                    wallet.mocking -> context.getString(R.string.doctor_wallet_risk_magisk)
+                    wallet.spoof -> context.getString(R.string.doctor_wallet_risk_spoof)
+                    wallet.rootCompat -> context.getString(R.string.doctor_wallet_risk_root_compat)
+                    wallet.suBridge -> context.getString(R.string.doctor_wallet_su_bridge_on)
                     else -> context.getString(R.string.doctor_wallet_ok)
                 }
             checks.add(
@@ -287,28 +273,23 @@ object ServiceDoctor {
                     id = "wallet_integrity",
                     title = context.getString(R.string.doctor_check_wallet_integrity),
                     status = walletStatus,
-                    ok = walletSecurityOk,
-                    canAutoFix = !walletSecurityOk && DeviceOptimizer.hasPrivilegedShell(),
+                    ok = !wallet.any,
+                    canAutoFix = wallet.hasFault && DeviceOptimizer.hasPrivilegedShell(),
                     autoFix = { ctx ->
-                        // Clean up orphan su files only when SU bridge is NOT intentionally enabled
-                        if (!ShizukuSettings.isSuBridgeEnabled()) {
-                            RootCompatHelper.cleanupBridgeFromTmp(ctx)
-                        }
-                        if (isMagiskMocking) ShizukuSettings.setRootMagiskMockingEnabled(false)
-                        if (isBusyboxMocking) ShizukuSettings.setRootBusyboxMockingEnabled(false)
-                        // SU Bridge is an optional root style setting: DO NOT disable it in Service Doctor fixes
-                        if (isSpoofing) ShizukuSettings.setSpoofDeviceEnabled(false)
-                        ShizukuSettings.syncAllPlusFeaturesToServer()
-                        // Resetting Wallet's own data (refreshGoogleWalletAttestation) is left to the
-                        // single fix in Service Doctor, which asks first: "Fix all" mustn't do it unasked.
+                        // Undoes the faults and refreshes; SU Bridge and Wallet's data are left to
+                        // the Service Doctor dialog, where the user picks them.
+                        WalletRepair.run(ctx, WalletRepair.defaultSteps(WalletRepair.scan()), remember = false)
                         true
                     },
                     // Turns off root-style settings the user chose; never behind their back.
                     autoHeal = false,
-                    tip = if (!walletSecurityOk) "• " + context.getString(R.string.doctor_tip_wallet_integrity) else null,
+                    // SU Bridge on its own is a choice: shown, not counted as a problem.
+                    optional = !wallet.hasFault && wallet.suBridge,
+                    actionLabelRes = if (wallet.any) null else R.string.doctor_button_run,
+                    tip = if (wallet.any) "• " + context.getString(R.string.doctor_tip_wallet_integrity) else null,
                 ),
             )
-            if (!walletSecurityOk) tips.add("• " + context.getString(R.string.doctor_tip_wallet_integrity))
+            if (wallet.hasFault) tips.add("• " + context.getString(R.string.doctor_tip_wallet_integrity))
 
             // 6. Xiaomi Restricted ADB + HyperOS background kill
             if (EnvironmentUtils.isXiaomi()) {

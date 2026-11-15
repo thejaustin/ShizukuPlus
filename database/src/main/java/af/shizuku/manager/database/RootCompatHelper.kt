@@ -242,7 +242,7 @@ object RootCompatHelper {
         if (isShizukuAvailable()) {
             try {
                 val result = ShizukuProcessUtils.runPrivilegedCapture(
-                    arrayOf("sh", "-c", "test -f /data/local/tmp/su || test -f /data/local/su && echo EXISTS"),
+                    arrayOf("sh", "-c", "for f in ${targets.joinToString(" ")}; do [ -e \"\$f\" ] && echo EXISTS && break; done"),
                     joinTimeoutMs = 500
                 )
                 return@withContext result.stdout.contains("EXISTS")
@@ -317,6 +317,32 @@ object RootCompatHelper {
     }
 
     /**
+     * Removes su residue (and, with [bridgeTools], the bridge's rish/plus files) for the Wallet &
+     * Messages repair. Unlike [cleanupBridgeFromTmp] it never runs `su`: calling su is itself what
+     * root-detecting apps look for. True when no su file is left, as far as Shizuku can see.
+     */
+    suspend fun removeSuResidue(bridgeTools: Boolean): Boolean = withContext(Dispatchers.IO) {
+        val su = listOf("/data/local/tmp/su", "/data/local/su", "/data/local/bin/su", "/data/local/xbin/su")
+        val targets = if (bridgeTools) {
+            su + listOf("/data/local/tmp/rish", "/data/local/tmp/plus", "/data/local/tmp/rish_shizuku.dex")
+        } else su
+        targets.forEach { runCatching { File(it).delete() } }
+        if (isShizukuAvailable()) {
+            try {
+                ShizukuProcessUtils.runPrivilegedCapture(arrayOf("sh", "-c", "rm -f ${targets.joinToString(" ")}"), joinTimeoutMs = 1500)
+                // A file shell can't unlink is at least emptied and made unreadable.
+                ShizukuProcessUtils.runPrivilegedCapture(
+                    arrayOf("sh", "-c", su.joinToString("; ") { "[ -e $it ] && { : > $it; chmod 000 $it; }" } + "; true"),
+                    joinTimeoutMs = 1000
+                )
+            } catch (e: Exception) {
+                Timber.w(e, "removeSuResidue: Shizuku rm failed")
+            }
+        }
+        !isBridgePresentInTmp()
+    }
+
+    /**
      * Describes what level of Play Integrity refresh was achieved.
      * Callers use this to show appropriate follow-up messaging and recovery options.
      */
@@ -363,7 +389,10 @@ object RootCompatHelper {
      *    available as guaranteed fallback.
      *  - No Shizuku: unprivileged Wallet force-stop only.
      */
-    suspend fun refreshGoogleWalletAttestation(context: Context? = null): WalletRefreshResult = withContext(Dispatchers.IO) {
+    suspend fun refreshGoogleWalletAttestation(
+        context: Context? = null,
+        clearWallet: Boolean = true,
+    ): WalletRefreshResult = withContext(Dispatchers.IO) {
         if (!isShizukuAvailable()) {
             try { Runtime.getRuntime().exec(arrayOf("am", "force-stop", "com.google.android.apps.walletnfcrel")).waitFor() } catch (_: Exception) {}
             return@withContext WalletRefreshResult.FORCE_STOPPED_ONLY
@@ -406,13 +435,13 @@ object RootCompatHelper {
             // and cannot replay a cached stale result. Re-assert NFC routing as safeguard.
             // Confirmed via ADB: pm clear on Wallet succeeds as shell uid 2000, and does NOT
             // wipe nfc_payment_default_component (safe to do without losing tap-to-pay routing).
-            try {
+            if (clearWallet) try {
                 ShizukuProcessUtils.runPrivilegedCapture(
                     arrayOf("pm", "clear", "com.google.android.apps.walletnfcrel"),
                     joinTimeoutMs = 3000
                 )
             } catch (_: Exception) {}
-            try {
+            if (clearWallet) try {
                 ShizukuProcessUtils.runPrivilegedCapture(
                     arrayOf("settings", "put", "secure", "nfc_payment_default_component",
                         "com.google.android.gms/com.google.android.gms.tapandpay.hce.service.TpHceService"),
@@ -429,10 +458,34 @@ object RootCompatHelper {
             } catch (_: Exception) {}
         }
 
+        if (!clearWallet) {
+            try {
+                ShizukuProcessUtils.runPrivilegedCapture(
+                    arrayOf("am", "force-stop", "com.google.android.apps.walletnfcrel"),
+                    joinTimeoutMs = 1000
+                )
+            } catch (_: Exception) {}
+        }
+
         when {
             cacheCleared -> WalletRefreshResult.CACHE_CLEARED_ROOT
             else -> WalletRefreshResult.WALLET_CLEARED_PROCESSES_KILLED
         }
+    }
+
+    /**
+     * Force-stops Google Messages and Carrier Services so RCS checks the device again on next
+     * start instead of reusing the verdict it got while root traces were present. Chats are kept.
+     * False when Shizuku isn't running.
+     */
+    suspend fun restartMessagingRcs(): Boolean = withContext(Dispatchers.IO) {
+        if (!isShizukuAvailable()) return@withContext false
+        for (pkg in listOf("com.google.android.apps.messaging", "com.google.android.ims")) {
+            try {
+                ShizukuProcessUtils.runPrivilegedCapture(arrayOf("am", "force-stop", pkg), joinTimeoutMs = 1500)
+            } catch (_: Exception) {}
+        }
+        true
     }
 
     /**
