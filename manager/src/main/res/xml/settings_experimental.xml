@@ -122,6 +122,26 @@
             app:infoDetail="@string/help_overlay_manager_plus_detail"
             app:badgeType="experimental" />
 
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="avf_manager_enabled"
+            android:title="@string/settings_avf_manager_title"
+            android:summary="@string/settings_avf_manager_summary"
+            android:icon="@drawable/ic_server_24"
+            android:defaultValue="false"
+            app:infoTitle="@string/help_avf_manager_title"
+            app:infoDetail="@string/help_avf_manager_detail"
+            app:badgeType="experimental" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="continuity_bridge_enabled"
+            android:title="@string/settings_continuity_bridge_title"
+            android:summary="@string/settings_continuity_bridge_summary"
+            android:icon="@drawable/ic_devices_24"
+            android:defaultValue="false"
+            app:infoTitle="@string/help_continuity_bridge_title"
+            app:infoDetail="@string/help_continuity_bridge_detail"
+            app:badgeType="experimental" />
+
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory

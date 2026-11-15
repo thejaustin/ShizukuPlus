@@ -1456,7 +1456,7 @@ public class ShizukuSettings {
 
     public static boolean isAvfManagerEnabled() {
         SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_AVF_MANAGER_ENABLED, true);
+        return p != null && p.getBoolean(Keys.KEY_AVF_MANAGER_ENABLED, false);
     }
 
     public static boolean isStorageProxyEnabled() {
@@ -1466,7 +1466,7 @@ public class ShizukuSettings {
 
     public static boolean isContinuityBridgeEnabled() {
         SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_CONTINUITY_BRIDGE_ENABLED, true);
+        return p != null && p.getBoolean(Keys.KEY_CONTINUITY_BRIDGE_ENABLED, false);
     }
 
     public static boolean isAICorePlusEnabled() {
@@ -1616,7 +1616,11 @@ public class ShizukuSettings {
 
     /** Plus APIs still in development, which default off. */
     public static final String[] IN_DEVELOPMENT_PLUS_KEYS = {
-            Keys.KEY_WINDOW_MANAGER_PLUS_ENABLED, Keys.KEY_OVERLAY_MANAGER_PLUS_ENABLED, Keys.KEY_AI_CORE_PLUS_ENABLED};
+            Keys.KEY_WINDOW_MANAGER_PLUS_ENABLED,
+            Keys.KEY_OVERLAY_MANAGER_PLUS_ENABLED,
+            Keys.KEY_AI_CORE_PLUS_ENABLED,
+            Keys.KEY_AVF_MANAGER_ENABLED,
+            Keys.KEY_CONTINUITY_BRIDGE_ENABLED};
 
     /**
      * Those APIs used to default on, and their switches saved that on first bind, so a stored true

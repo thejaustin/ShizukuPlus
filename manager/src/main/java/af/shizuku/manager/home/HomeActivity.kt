@@ -995,6 +995,8 @@ open class HomeActivity :
                 ShizukuSettings.Keys.KEY_WINDOW_MANAGER_PLUS_ENABLED to R.string.settings_window_manager_plus,
                 ShizukuSettings.Keys.KEY_OVERLAY_MANAGER_PLUS_ENABLED to R.string.settings_overlay_manager_plus,
                 ShizukuSettings.Keys.KEY_AI_CORE_PLUS_ENABLED to R.string.settings_ai_bridge_title,
+                ShizukuSettings.Keys.KEY_AVF_MANAGER_ENABLED to R.string.settings_avf_manager_title,
+                ShizukuSettings.Keys.KEY_CONTINUITY_BRIDGE_ENABLED to R.string.settings_continuity_bridge_title,
             )
         val pad = (24 * resources.displayMetrics.density).toInt()
         val boxes =
