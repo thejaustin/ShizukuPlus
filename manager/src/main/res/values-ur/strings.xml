@@ -215,7 +215,6 @@
     <string name="app_management_dialog_adb_is_limited_message"><![CDATA[یہ بہت ممکن ہے کہ آپ کے ڈیوائس کے مینوفیکچرر نے ADB کی اجازت محدود کی ہو۔<p>آپ کے سسٹم کے لیے حل <b><a href="%1$s">اس دستاویز</a></b> میں موجود ہو سکتا ہے۔]]></string>
     <string name="app_management_item_summary_requires_root">* Shizuku کا root کے ساتھ چلنا ضروری ہے</string>
     <string name="app_management_item_summary_partial_root">⚠ جزوی معاونت — کچھ functions کے لیے اب بھی Shizuku کا root کے ساتھ چلنا ضروری ہے</string>
-    <string name="app_management_item_summary_requires_plus">* Shizuku+ Enhanced API درکار ہے</string>
     <string name="app_management_toggle_all">سب کو ٹوگل کریں</string>
     <string name="app_management_bulk_grant">منتخب کو اجازت دیں</string>
     <string name="app_management_bulk_revoke">منتخب کی اجازت واپس لیں</string>
@@ -321,8 +320,6 @@
     <string name="dhizuku_device_owner_desc">مجاز ایپس کے ساتھ Device Owner privileges شیئر کرنے کے لیے Dhizuku Mode کے لیے ضروری ہے۔</string>
     <string name="dhizuku_device_owner_enabled">Dhizuku Device Owner فعال ہے</string>
     <string name="dhizuku_device_owner_disabled">Dhizuku Device Owner غیر فعال ہے</string>
-    <string name="settings_enhanced_api">Shizuku+ Enhanced API</string>
-    <string name="settings_enhanced_api_summary">power users کے لیے advanced system interfaces فعال کریں۔ تمام exclusive Shizuku+ فیچرز کے لیے ضروری ہے۔</string>
     <string name="settings_themed_icon">Themed app icon</string>
     <string name="settings_themed_icon_summary">جب launcher themed icons سپورٹ کرے تو Shizuku+ آئیکن کا Material You tinted ورژن استعمال کریں۔</string>
     <string name="settings_themed_icon_open_settings">آئیکن کی ترتیبات کھولیں</string>
@@ -381,7 +378,6 @@
     <string name="help_activity_manager_plus_detail">Deep Process Control server کو عام app-hibernation اور standby restrictions سے تجاوز کرنے دیتا ہے۔ یہ ایپس کو RESTRICTED standby bucket میں ڈال سکتا ہے یا true deepForceStop انجام دے سکتا ہے، جس سے تمام services اور background jobs ختم ہو جاتی ہیں۔ یہ aggressive battery-saving tools کے لیے ضروری ہے۔</string>
 
     <!-- Plus settings category titles -->
-    <string name="settings_plus_category_developer">Developer Options (Experimental)</string>
     <string name="settings_root_magisk_mocking">Magisk Environment Mocking</string>
     <string name="settings_root_magisk_mocking_summary">Root detect کرنے والی ایپس کو دھوکا دینے کے لیے Magisk binaries، properties اور internal folders کی نقل کرتا ہے۔</string>
     <string name="settings_root_auto_grant">Auto-Approval Bridge</string>
@@ -398,10 +394,8 @@
     <string name="help_root_file_interceptor_detail">جب ایپس standard shell سے /data/data میں فائلیں کاپی کرتی ہیں تو ownership اور SELinux contexts اکثر ضائع ہو جاتے ہیں۔ یہ module integrity برقرار رکھنے اور crashes روکنے کے لیے --preserve=all جیسے flags خودکار طور پر شامل کرتا ہے۔</string>
     <string name="help_root_busybox_title">BusyBox Simulation کے بارے میں</string>
     <string name="help_root_busybox_detail">BusyBox Unix utilities کا مجموعہ ہے جو rooted devices پر عام ہے۔ کچھ پرانی root ایپس اپنی logic چلانے سے پہلے اس کی موجودگی چیک کرتی ہیں۔ یہ module \'busybox\' کمانڈ کے لیے کامیابی کا مصنوعی جواب واپس کرتا ہے۔</string>
-    <string name="settings_vector_summary">بہتر graphics performance کے لیے hardware-accelerated vector rendering فعال کریں</string>
     <string name="settings_experimental_root_summary">Shizuku کے ذریعے root-based operations کے لیے compatibility layer فعال کریں</string>
     <string name="settings_spoof_device_summary">compatibility یا testing کے لیے ایپس کو مختلف device model رپورٹ کریں</string>
-    <string name="settings_vector_experimental">Vector Acceleration</string>
     <string name="settings_experimental_root_experimental">Experimental Root Compatibility</string>
     <string name="settings_spoof_device_experimental">Spoof Device Identity</string>
     <string name="settings_open_source_licenses">Open source licenses</string>
@@ -626,7 +620,6 @@
     <string name="settings_main_nav_startup_behavior_title">Startup &amp; Behavior</string>
     <string name="settings_main_nav_startup_behavior_summary">Boot options، watchdog، network اور activity status</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Advanced &amp; Diagnostics</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">Logs، ADB tools اور troubleshooting</string>
     <string name="settings_main_nav_about_summary">Version، licenses اور updates</string>
     <string name="settings_accent_violet_applied">Midnight Violet لاگو ہو گیا</string>
     <string name="settings_accent_green_applied">Forest Green لاگو ہو گیا</string>
@@ -671,7 +664,6 @@
 
     <!-- Developer Options -->
     <string name="settings_developer_options">Developer Options</string>
-    <string name="settings_developer_options_summary">Virtualization، device spoofing اور experimental فیچرز</string>
     <string name="settings_auto_update_title">Updates کے لیے خودکار چیک</string>
     <string name="settings_auto_update_summary">ایپ startup پر نئی versions خودکار طور پر چیک کریں</string>
     <string name="settings_auto_install_title">Updates خودکار انسٹال کریں</string>
@@ -813,7 +805,6 @@
     <!-- APK verification API key strings -->
     <string name="verify_virustotal_key_title">VirusTotal API Key</string>
     <string name="verify_virustotal_key_required">VirusTotal scanning استعمال کرنے کے لیے API key درکار ہے</string>
-    <string name="verify_pithus_key_title">Pithus API Key (Optional)</string>
     <string name="verify_api_key_hint">API key درج کرنے کے لیے ٹیپ کریں</string>
     <string name="verify_api_key_configured">API key محفوظ ہے · update کرنے کے لیے ٹیپ کریں</string>
     <string name="verify_get_api_key">API Key حاصل کریں</string>

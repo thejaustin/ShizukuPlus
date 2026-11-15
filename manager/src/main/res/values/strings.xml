@@ -36,10 +36,6 @@
     <!-- UI Settings - Corner Rounding -->
     <string name="settings_corner_rounding_override">Corner rounding</string>
 
-    <!-- UI Settings - System-following -->
-    <string name="settings_follow_system_animations">Follow system animations</string>
-    <string name="settings_follow_system_animations_summary">Respect your device\'s animation speed setting from Developer Options</string>
-
     <string-array name="icon_styles">
         <item>Filled</item>
         <item>Outlined</item>
@@ -93,16 +89,6 @@
         <item>2</item>
         <item>3</item>
     </string-array>
-
-    <string-array name="status_card_outline_styles">
-        <item>Material (theme color)</item>
-        <item>Green / Red (status color)</item>
-    </string-array>
-    <string-array name="status_card_outline_styles_value" translatable="false">
-        <item>material</item>
-        <item>status</item>
-    </string-array>
-
 
     <!-- Home - Status -->
     <string name="home_status_service_is_running">%1$s is running</string>
@@ -313,7 +299,7 @@
     <string name="app_management_dialog_adb_is_limited_message"><![CDATA[It\'s highly possible that your device manufacturer limits the permission of adb.<p>There may be a solution for your system in <b><a href=\"%1$s\">this document</a></b>.]]></string>
     <string name="app_management_item_summary_requires_root">* requires Shizuku runs with root</string>
     <string name="app_management_item_summary_partial_root">⚠ Partially supported — some functions still need Shizuku with root</string>
-    <string name="app_management_item_summary_requires_plus">* requires Shizuku+ Enhanced API</string>
+    <string name="app_management_item_summary_requires_plus">* requires Shizuku+ controls in Apps</string>
     <string name="app_management_toggle_all">Toggle all</string>
     <string name="app_management_bulk_grant">Grant selected</string>
     <string name="app_management_bulk_revoke">Revoke selected</string>
@@ -598,8 +584,6 @@
     <string name="dhizuku_request_allow">Allow</string>
     <string name="dhizuku_request_deny">Deny</string>
     <string name="dhizuku_request_not_running">Start Shizuku+ first, then try again in the app.</string>
-    <string name="settings_enhanced_api">Shizuku+ Enhanced API</string>
-    <string name="settings_enhanced_api_summary">Enable advanced system interfaces for power users. Required for all exclusive Shizuku+ features.</string>
     <string name="settings_themed_icon">Themed app icon</string>
     <string name="settings_themed_icon_summary">Use a Material You tinted version of the Shizuku+ icon when your launcher supports themed icons.</string>
     <string name="settings_themed_icon_open_settings">Open icon settings</string>
@@ -648,7 +632,6 @@
     <string name="settings_ai_automation_experimental">Experimental AI Automation</string>
     <string name="settings_ai_automation_experimental_summary">Enable gesture simulation, pixel capture, and text injection for AI-driven automation</string>
     <string name="settings_keystore_fallback">Software keystore fallback</string>
-    <string name="settings_keystore_fallback_summary">Cache the ADB RSA key encrypted with a software AES key when hardware KeyStore fails (e.g., Samsung Knox). Reduces pairing prompts but decreases security.</string>
     <string name="settings_samsung_uid_escalation">Samsung system UID escalation</string>
     <string name="settings_samsung_uid_escalation_summary">Attempt to escalate to UID 1000 (system) using an exploit specific to unpatched Samsung devices (by pascua28). No root required. Note: Samsung patched this on modern One UI (Android 12+).</string>
     <string name="settings_display_tuner_plus_title">Display tuner</string>
@@ -709,7 +692,6 @@
 
     <!-- Plus settings category titles -->
     <string name="settings_plus_category_core">Core</string>
-    <string name="settings_plus_category_developer">Experimental tools</string>
     <string name="settings_root_magisk_mocking">Magisk Environment Mocking</string>
     <string name="settings_root_magisk_mocking_summary">Fakes Magisk binaries, properties, and internal folders to fool root-detecting applications.</string>
     <string name="settings_root_auto_grant">Auto-Approval Bridge</string>
@@ -743,10 +725,8 @@
     <string name="help_root_busybox_title">About BusyBox Simulation</string>
     <string name="help_root_busybox_detail">BusyBox is a suite of Unix utilities common on rooted devices. Some older root apps check for its existence before running their logic. This module returns a simulated successful response for the \'busybox\' command.</string>
 
-    <string name="settings_vector_summary">Enable hardware-accelerated vector rendering for improved graphics performance</string>
     <string name="settings_experimental_root_summary">Enable compatibility layer for root-based operations via Shizuku</string>
     <string name="settings_spoof_device_summary">Report a different device model to apps for compatibility or testing purposes</string>
-    <string name="settings_vector_experimental">Vector acceleration</string>
     <string name="settings_experimental_root_experimental">Extended root compatibility</string>
     <string name="settings_spoof_device_experimental">Spoof device identity</string>
     <string name="settings_open_source_licenses">Open source licenses</string>
@@ -761,7 +741,6 @@
     <string name="settings_force_start_wadb">Bypass Wi-Fi check for WADB</string>
     <string name="settings_force_start_wadb_summary">Attempt to start Shizuku via ADB TCP even if Wi-Fi is disconnected. Useful for local loopback or mobile data ADB.</string>
     <string name="settings_usb_phone_switch_notify">USB connection &amp; switch notification</string>
-    <string name="settings_usb_phone_switch_notify_summary">Pin a notification with quick settings and tool shortcuts when connected to a phone or USB device</string>
     <string name="settings_fake_su">Root App Translator (SU Bridge)</string>
     <string name="settings_fake_su_summary">Allow standard root-only apps (like NeoBackup, AdAway, and Swift Backup) to work through Shizuku+ without permanently rooting your phone.</string>
     <string name="settings_root_integration_hub">Root compatibility hub</string>
@@ -950,6 +929,8 @@
     <string name="snackbar_battery_optimization_home">Battery optimization must be disabled for start on boot/watchdog to work properly.</string>
     <string name="snackbar_battery_optimization_settings">Please disable battery optimization to use this feature.</string>
     <string name="snackbar_action_fix">Fix</string>
+    <string name="permission_manager_toggle_server_error">Couldn\'t change this permission. Restart the Shizuku+ service and try again.</string>
+    <string name="snackbar_server_foreign">The running Shizuku service was started by another app or an older build, so Shizuku+ can\'t control it. Stop it from that app, or restart your phone, then start Shizuku+.</string>
     <string name="snackbar_server_version_skew">Shizuku+ was updated, but the running service is still on the old version. Restart it so connected apps keep working.</string>
     <string name="snackbar_action_restart">Restart</string>
 
@@ -1135,7 +1116,7 @@
     <string name="settings_main_nav_startup_behavior_title">Startup &amp; behavior</string>
     <string name="settings_main_nav_startup_behavior_summary">Boot options, watchdog, ADB, firewall and install checks</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Advanced &amp; diagnostics</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">Enhanced API, diagnostics &amp; backup</string>
+    <string name="settings_main_nav_advanced_diagnostics_summary">Plus APIs, diagnostics &amp; backup</string>
     <string name="settings_main_nav_about_summary">Version, release changelog, licenses, and developer options</string>
     <string name="settings_accent_violet_applied">Midnight Violet applied</string>
     <string name="settings_accent_green_applied">Forest Green applied</string>
@@ -1220,18 +1201,11 @@
     <string name="safety_check_unknown">%1$s: hasn\'t seen this exact app</string>
     <string name="safety_check_bad_key">%1$s: API key was rejected</string>
     <string name="safety_check_unavailable">%1$s: couldn\'t check right now</string>
-    <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid Index</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal check</string>
     <string name="settings_verify_apk_pithus_title">Pithus check</string>
     <string name="settings_verify_apk_local_badge">Source and signer, offline</string>
-    <string name="settings_verify_apk_fdroid_badge">F-Droid Metadata</string>
     <string name="settings_verify_apk_virustotal_badge">Hash lookup, 70+ scanners</string>
     <string name="settings_verify_apk_pithus_badge">Hash lookup, malware intel</string>
-    <string name="settings_verify_engines_posture">%1$d of %2$d Security Engines Active</string>
-    <string name="settings_verify_key_required_hint">Key required · Tap to set</string>
-    <string name="settings_verify_key_saved_hint">Key active · Hold to edit</string>
-    <string name="settings_plus_governors_posture">%1$d of %2$d Governors Active</string>
-    <string name="settings_plus_governors_help_hint">Hold any governor for architecture details</string>
 
     <!-- Custom accent color preference (settings_personalization.xml) -->
     <string name="settings_custom_accent_title">Custom Accent Color</string>
@@ -1316,7 +1290,6 @@
     <string name="settings_personalization_category_app_identity">App icon &amp; name</string>
     <string name="settings_personalization_category_motion_haptics">Motion &amp; haptics</string>
     <string name="settings_personalization_category_layout_nav">Text &amp; layout</string>
-    <string name="settings_plus_category_system_performance">System &amp; performance</string>
     <string name="settings_plus_category_security_access">Security &amp; access</string>
     <string name="settings_plus_category_backup_restore">Backup &amp; restore</string>
     <string name="settings_root_category_stock_compat">Stock Shizuku compatibility</string>
@@ -1368,7 +1341,7 @@
     
     <!-- Developer Options -->
     <string name="settings_developer_options">Developer Options</string>
-    <string name="settings_developer_options_summary">Virtualization, device spoofing, and experimental features</string>
+    <string name="settings_developer_options_summary">Debug tools and unrestricted access</string>
     <string name="settings_notification_system_title">Notification system</string>
     <string name="settings_notification_system_summary">Allow Shizuku+ to post status, diagnostic, and crash recovery notifications</string>
     <string name="settings_setting_disabling_optional_title">Make setting disabling optional</string>
@@ -1604,7 +1577,6 @@
     <!-- APK verification API key strings -->
     <string name="verify_virustotal_key_title">VirusTotal API Key</string>
     <string name="verify_virustotal_key_required">An API key is required to use VirusTotal scanning</string>
-    <string name="verify_pithus_key_title">Pithus API Key (Optional)</string>
     <string name="verify_api_key_hint">Tap to enter API key</string>
     <string name="verify_api_key_configured">API key saved · tap to update</string>
     <string name="verify_get_api_key">Get API Key</string>
@@ -2118,4 +2090,26 @@
     <string name="sort_order_package">Package</string>
     <string name="sort_order_selected">Selected</string>
     <string name="sort_order_frozen">Frozen</string>
+    <!-- Settings standardization: standard rows replacing the compound grids -->
+    <string name="settings_verify_virustotal_key_row">VirusTotal API key</string>
+    <string name="settings_verify_pithus_key_row">Pithus API key</string>
+    <string name="settings_verify_key_not_set">Not set · tap to add</string>
+    <string name="settings_verify_key_missing">Key required: this check is skipped until you add one</string>
+    <string name="settings_verify_key_cleared">API key removed</string>
+    <string name="verify_pithus_key_required">An API key is required to use Pithus scanning</string>
+    <string name="settings_animations_off">Off</string>
+    <string name="settings_animations_system">Follow system</string>
+    <string name="settings_animations_custom">Custom</string>
+    <string name="settings_status_outline_off">Off</string>
+    <string name="settings_status_outline_theme">Theme</string>
+    <string name="settings_status_outline_status">Status color</string>
+    <string name="settings_plus_category_plus_apis">Plus APIs</string>
+    <string name="settings_plus_app_controls">Shizuku+ controls in Apps</string>
+    <string name="settings_plus_app_controls_summary">Show freeze and window actions in the Apps list, and let you manage apps that use Shizuku+ APIs there. Turning this off doesn\'t limit apps that already have access.</string>
+    <string name="settings_experimental_category_in_development">Features in development</string>
+    <string name="settings_experimental_category_developer_previews">Developer previews</string>
+    <string name="settings_usb_phone_switch_notify_in_development">In development: saves your choice, but no notification is shown yet</string>
+    <string name="settings_keystore_fallback_in_development">In development: saves your choice, but nothing uses it yet. Planned: keep the ADB key in a software keystore when the hardware one fails</string>
+    <string name="settings_offer_crash_report_title">Offer crash report after a crash</string>
+    <string name="settings_offer_crash_report_summary">On builds without automatic crash reporting, ask on the next launch whether to send a report of the last crash</string>
 </resources>

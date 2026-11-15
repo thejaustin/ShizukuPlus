@@ -190,10 +190,6 @@ class BehaviorSettingsFragment :
 
         findPreference<TwoStatePreference>("on_device_adb_tcp")?.setOnPreferenceChangeListener { _, newValue ->
             if (newValue is Boolean) {
-                preferenceManager.sharedPreferences
-                    ?.edit()
-                    ?.putBoolean("on_device_adb_tcp", newValue)
-                    ?.apply()
                 lifecycleScope.launch(Dispatchers.IO) {
                     if (newValue) {
                         AdbProxyService.enableAdbTcp()
@@ -205,32 +201,19 @@ class BehaviorSettingsFragment :
             true
         }
 
-        findPreference<TwoStatePreference>("force_start_wadb")?.setOnPreferenceChangeListener { _, newValue ->
-            if (newValue is Boolean) {
-                preferenceManager.sharedPreferences
-                    ?.edit()
-                    ?.putBoolean("force_start_wadb", newValue)
-                    ?.apply()
-                ShizukuSettings.syncAllPlusFeaturesToServer()
-            }
+        // A Plus row: it syncs the firewall to the server itself.
+        findPreference<TwoStatePreference>("binder_firewall_enabled")?.setOnPreferenceChangeListener { _, newValue ->
+            syncTrustedNetworksAvailability((newValue as? Boolean) == true)
             true
-        }
-
-        listOf("network_governor_plus_enabled", "binder_firewall_enabled", "continuity_bridge_enabled").forEach { key ->
-            findPreference<TwoStatePreference>(key)?.setOnPreferenceChangeListener { _, newValue ->
-                // The listener runs before the switch persists its value; sync once it has, or the
-                // server gets the old state.
-                view?.post { ShizukuSettings.syncAllPlusFeaturesToServer() }
-                if (key == "binder_firewall_enabled") syncTrustedNetworksAvailability((newValue as? Boolean) == true)
-                true
-            }
         }
         syncTrustedNetworksAvailability(findPreference<TwoStatePreference>("binder_firewall_enabled")?.isChecked == true)
 
+        networkCategory.setChildAvailable(KEY_LEGACY_PAIRING, !EnvironmentUtils.isTelevision())
+
         syncModeVisibility()
 
-        // Verified installation + Package governor (moved here from App interactions): attached
-        // last so nothing later replaces their change listeners (the VirusTotal key veto).
+        // App safety check: attached last so nothing later replaces their change listeners (the
+        // API key veto).
         VerifiedInstallPrefs.attach(this)
     }
 
@@ -289,7 +272,7 @@ class BehaviorSettingsFragment :
     /**
      * Show/hide preferences that are only relevant to the current connection mode (#433).
      *
-     * ADB-only: the Wireless ADB card and auto_reconnect_mdns -- meaningless in root mode since root
+     * ADB-only: the Wireless ADB card and auto_reconnect_mdns (both under Wireless ADB) -- meaningless in root mode since root
      *   starts the server directly without a TCP/wireless ADB connection.
      *
      * When in root mode the "Network" and "Startup & Recovery" category headers gain an
@@ -321,10 +304,7 @@ class BehaviorSettingsFragment :
         syncWatchdogPreference()
         // Pick up changes made outside the card (e.g. TcpNetworkGuard, quick settings tile).
         wirelessAdbPreference.reload()
-        // Ensure the external JSON file reflects current state on every resume, not just on
-        // preference change. Without this a new install never writes the file so external
-        // automation reads stale or missing data.
-        context?.let { syncUsbPhoneSwitchConfig(it, ShizukuSettings.isUsbPhoneSwitchNotifyEnabled()) }
+        VerifiedInstallPrefs.refresh(this)
     }
 
     override fun onPause() {
@@ -338,11 +318,7 @@ class BehaviorSettingsFragment :
         key: String?,
     ) {
         if (key == KEY_WATCHDOG) syncWatchdogPreference()
-        if (key == KEY_USB_PHONE_SWITCH_NOTIFY) {
-            context?.let { ctx ->
-                syncUsbPhoneSwitchConfig(ctx, ShizukuSettings.isUsbPhoneSwitchNotifyEnabled())
-            }
-        }
+        if (key in VerifiedInstallPrefs.WATCHED_KEYS) VerifiedInstallPrefs.refresh(this)
         if (key == NetworkTrust.KEY_MODE || key == NetworkTrust.KEY_AUTO_CLOSE || key == NetworkTrust.KEY_TRUSTED_SSIDS) {
             context?.let {
                 TcpNetworkGuard.sync(it)
@@ -368,20 +344,6 @@ class BehaviorSettingsFragment :
             watchdogPreference.setSummary(R.string.settings_watchdog_not_running)
         } else {
             watchdogPreference.setSummary(R.string.settings_watchdog_summary)
-        }
-    }
-
-    private fun syncUsbPhoneSwitchConfig(
-        context: android.content.Context,
-        enabled: Boolean,
-    ) {
-        try {
-            val docsDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOCUMENTS)
-            if (docsDir != null && (docsDir.exists() || docsDir.mkdirs())) {
-                val file = java.io.File(docsDir, "shizuku_usb_switch.json")
-                file.writeText("{\"enabled\": $enabled}")
-            }
-        } catch (_: Throwable) {
         }
     }
 

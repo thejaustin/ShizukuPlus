@@ -85,36 +85,12 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
             true
         }
 
-        // Vector / AVF Manager
-        findPreference<TwoStatePreference>(KEY_VECTOR_ENABLED)?.apply {
-            isChecked = ShizukuSettings.isVectorEnabled()
-            setOnPreferenceChangeListener { _, v ->
-                val enabled = v as? Boolean ?: return@setOnPreferenceChangeListener false
-                ShizukuSettings.setVectorEnabled(enabled)
-                ShizukuSettings.syncAllPlusFeaturesToServer()
-                true
-            }
-        }
-
-        // Experimental Root Compatibility
-        findPreference<TwoStatePreference>(KEY_EXPERIMENTAL_ROOT_COMPAT)?.apply {
-            isChecked = ShizukuSettings.isExperimentalRootCompatEnabled()
-            setOnPreferenceChangeListener { _, v ->
-                val enabled = v as? Boolean ?: return@setOnPreferenceChangeListener false
-                ShizukuSettings.setExperimentalRootCompatEnabled(enabled)
-                ShizukuSettings.syncAllPlusFeaturesToServer()
-                true
-            }
-        }
-
-        // Unrestricted third-party access: confirm before turning on, sync after the switch persists.
+        // Unrestricted third-party access: confirm before turning on. Both are Plus rows, which
+        // sync themselves once the new value is saved.
         listOf(KEY_UNRESTRICTED_APP_DATA, KEY_UNRESTRICTED_PERSONAL_DATA).forEach { key ->
             findPreference<TwoStatePreference>(key)?.setOnPreferenceChangeListener { pref, v ->
                 val enabled = v as? Boolean ?: return@setOnPreferenceChangeListener false
-                if (!enabled) {
-                    view?.post { ShizukuSettings.syncAllPlusFeaturesToServer() }
-                    return@setOnPreferenceChangeListener true
-                }
+                if (!enabled) return@setOnPreferenceChangeListener true
                 val ctx = context ?: return@setOnPreferenceChangeListener false
                 showDialog(
                     MaterialAlertDialogBuilder(ctx)
@@ -122,49 +98,9 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
                         .setMessage(R.string.settings_unrestricted_confirm_message)
                         .setPositiveButton(R.string.settings_unrestricted_confirm_positive) { _, _ ->
                             (pref as? TwoStatePreference)?.isChecked = true
-                            ShizukuSettings.syncAllPlusFeaturesToServer()
                         }.setNegativeButton(android.R.string.cancel, null),
                 )
                 false
-            }
-        }
-
-        // Device Identity Spoofing
-        findPreference<TwoStatePreference>(KEY_SPOOF_DEVICE_ENABLED)?.apply {
-            isChecked = ShizukuSettings.isSpoofDeviceEnabled()
-            setOnPreferenceChangeListener { _, v ->
-                val enabled = v as? Boolean ?: return@setOnPreferenceChangeListener false
-                ShizukuSettings.setSpoofDeviceEnabled(enabled)
-                ShizukuSettings.syncAllPlusFeaturesToServer()
-                true
-            }
-        }
-
-        // Spoof Target
-        findPreference<rikka.preference.SimpleMenuPreference>(KEY_SPOOF_TARGET)?.setOnPreferenceChangeListener { _, v ->
-            val target = v as? String ?: return@setOnPreferenceChangeListener false
-            ShizukuSettings.setSpoofTarget(if (target == "auto") "auto" else target)
-            ShizukuSettings.syncAllPlusFeaturesToServer()
-            true
-        }
-
-        val expKeys =
-            listOf(
-                "window_manager_plus_enabled",
-                "overlay_manager_plus_enabled",
-                "ai_core_plus_enabled",
-                "ai_core_master_enabled",
-                "npu_acceleration_enabled",
-                "native_window_crawler_enabled",
-                "ai_core_experimental_enabled",
-                "display_tuner_plus_enabled",
-            )
-        expKeys.forEach { key ->
-            findPreference<TwoStatePreference>(key)?.setOnPreferenceChangeListener { _, _ ->
-                // The listener runs before the switch persists its value; sync once it has, or the
-                // server gets the old state.
-                view?.post { ShizukuSettings.syncAllPlusFeaturesToServer() }
-                true
             }
         }
 

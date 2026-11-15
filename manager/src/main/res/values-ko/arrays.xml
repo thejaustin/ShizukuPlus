@@ -83,8 +83,4 @@
         <item>표준</item>
         <item>익스프레시브</item>
     </string-array>
-    <string-array name="status_card_outline_styles">
-        <item>Material (테마 색상)</item>
-        <item>초록 / 빨강 (상태 색상)</item>
-    </string-array>
 </resources>

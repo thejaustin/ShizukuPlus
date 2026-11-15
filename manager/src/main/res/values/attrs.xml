@@ -26,11 +26,6 @@
         <attr name="android:entryValues" />
     </declare-styleable>
 
-    <declare-styleable name="FilterChipPreference">
-        <attr name="android:entries" />
-        <attr name="android:entryValues" />
-    </declare-styleable>
-
     <declare-styleable name="PlusFeaturePreference">
         <attr name="infoTitle" format="reference|string" />
         <attr name="infoDetail" format="reference|string" />

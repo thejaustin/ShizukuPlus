@@ -212,7 +212,6 @@
     <string name="app_management_dialog_adb_is_limited_message"><![CDATA[É bem possível que o fabricante do seu dispositivo limite a permissão do adb.<p>Pode haver uma solução para o seu sistema neste <b><a href=\"%1$s\">documento</a></b>.]]></string>
     <string name="app_management_item_summary_requires_root">* requer que o Shizuku seja executado com root</string>
     <string name="app_management_item_summary_partial_root">⚠ Suporte parcial — algumas funções ainda precisam do Shizuku com root</string>
-    <string name="app_management_item_summary_requires_plus">* requer a API Avançada do Shizuku+</string>
     <string name="app_management_toggle_all">Alternar todos</string>
     <string name="app_management_bulk_grant">Conceder aos selecionados</string>
     <string name="app_management_bulk_revoke">Revogar dos selecionados</string>
@@ -319,8 +318,6 @@
     <string name="dhizuku_device_owner_desc">Necessário para que o Modo Dhizuku compartilhe os privilégios de Proprietário do Dispositivo com aplicativos autorizados.</string>
     <string name="dhizuku_device_owner_enabled">Proprietário do Dispositivo Dhizuku Ativado</string>
     <string name="dhizuku_device_owner_disabled">Proprietário do Dispositivo Dhizuku Desativado</string>
-    <string name="settings_enhanced_api">API Avançada do Shizuku+</string>
-    <string name="settings_enhanced_api_summary">Ativar interfaces avançadas do sistema para usuários avançados. Necessário para todos os recursos exclusivos do Shizuku+.</string>
     <string name="settings_themed_icon">Ícone temático do aplicativo</string>
     <string name="settings_themed_icon_summary">Usar uma versão do ícone do Shizuku+ com tonalidade do Material You quando o launcher oferecer suporte a ícones temáticos.</string>
     <string name="settings_themed_icon_open_settings">Abrir configurações do ícone</string>
@@ -392,7 +389,6 @@ Execute este comando no PC (a depuração USB deve estar ativada):
     <string name="help_activity_manager_plus_detail">O Controle Profundo de Processos permite que o servidor ignore as restrições padrão de hibernação e espera de aplicativos. Ele pode forçar aplicativos ao grupo de espera RESTRICTED ou realizar um verdadeiro deepForceStop (encerrando todos os serviços e tarefas em segundo plano), o que é essencial para ferramentas agressivas de economia de bateria.</string>
 
     <!--Títulos das categorias de configurações Plus-->
-    <string name="settings_plus_category_developer">Opções do Desenvolvedor (Experimental)</string>
     <string name="settings_root_magisk_mocking">Simulação de Ambiente Magisk</string>
     <string name="settings_root_magisk_mocking_summary">Simula binários, propriedades e pastas internas do Magisk para enganar aplicativos que detectam root.</string>
     <string name="settings_root_auto_grant">Ponte de Aprovação Automática</string>
@@ -413,10 +409,8 @@ Execute este comando no PC (a depuração USB deve estar ativada):
     <string name="help_root_busybox_title">Sobre a Simulação do BusyBox</string>
     <string name="help_root_busybox_detail">O BusyBox é um conjunto de utilitários Unix comum em dispositivos com root. Alguns aplicativos root mais antigos verificam a existência dele antes de executar sua lógica. Este módulo retorna uma resposta simulada de sucesso para o comando "busybox".</string>
 
-    <string name="settings_vector_summary">Ativar renderização vetorial acelerada por hardware para melhor desempenho gráfico</string>
     <string name="settings_experimental_root_summary">Ativar camada de compatibilidade para operações baseadas em root via Shizuku</string>
     <string name="settings_spoof_device_summary">Informar um modelo de dispositivo diferente aos aplicativos para fins de compatibilidade ou testes</string>
-    <string name="settings_vector_experimental">Aceleração Vetorial</string>
     <string name="settings_experimental_root_experimental">Compatibilidade Root Experimental</string>
     <string name="settings_spoof_device_experimental">Falsificar Identidade do Dispositivo</string>
     <string name="settings_open_source_licenses">Licenças de código aberto</string>
@@ -648,7 +642,6 @@ Reinicie completamente o dispositivo para encerrar o servidor original e, em seg
     <string name="settings_main_nav_startup_behavior_title">Inicialização e comportamento</string>
     <string name="settings_main_nav_startup_behavior_summary">Opções de inicialização, watchdog, rede e status de atividade</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Avançado e diagnósticos</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">Logs, ferramentas ADB e solução de problemas</string>
     <string name="settings_main_nav_about_summary">Versão, licenças e atualizações</string>
     <string name="settings_accent_violet_applied">Violeta da Meia-Noite aplicada</string>
     <string name="settings_accent_green_applied">Verde Floresta aplicado</string>
@@ -697,7 +690,6 @@ Impressão digital da chave RSA:
     
     <!--Opções do desenvolvedor-->
     <string name="settings_developer_options">Opções do Desenvolvedor</string>
-    <string name="settings_developer_options_summary">Virtualização, falsificação de dispositivo e recursos experimentais</string>
     <string name="settings_auto_update_title">Verificar atualizações automaticamente</string>
     <string name="settings_auto_update_summary">Verificar automaticamente novas versões ao iniciar o aplicativo</string>
     <string name="settings_auto_install_title">Instalar atualizações automaticamente</string>
@@ -845,7 +837,6 @@ Impressão digital da chave RSA:
     <!--Strings de chave de API para verificação de APK-->
     <string name="verify_virustotal_key_title">Chave de API do VirusTotal</string>
     <string name="verify_virustotal_key_required">Uma chave de API é necessária para usar a varredura do VirusTotal</string>
-    <string name="verify_pithus_key_title">Chave de API do Pithus (Opcional)</string>
     <string name="verify_api_key_hint">Toque para inserir a chave de API</string>
     <string name="verify_api_key_configured">Chave de API salva · toque para atualizar</string>
     <string name="verify_get_api_key">Obter Chave de API</string>
@@ -1129,7 +1120,6 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="settings_plus_category_backup_restore">Backup e restauração</string>
     <string name="settings_plus_category_device_owner_tools">Ferramentas de proprietário do dispositivo</string>
     <string name="settings_plus_category_security_access">Segurança e acesso</string>
-    <string name="settings_plus_category_system_performance">Sistema e desempenho</string>
     <string name="settings_behavior_category_startup">Inicialização e recuperação</string>
     <string name="settings_backup_settings">Backup de configurações</string>
     <string name="settings_backup_settings_summary">Exporte suas configurações e melhorias com segurança usando criptografia biométrica.</string>
@@ -1140,7 +1130,6 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="settings_diagnostics_enabled">Diagnósticos de configurações</string>
     <string name="settings_diagnostics_enabled_summary">Verificar proativamente as configurações em busca de conflitos e anomalias</string>
     <string name="settings_keystore_fallback">Fallback de KeyStore por software</string>
-    <string name="settings_keystore_fallback_summary">Armazenar em cache a chave RSA do ADB criptografada com uma chave AES por software quando o KeyStore de hardware falhar (ex. Samsung Knox). Reduz solicitações de emparelhamento, mas diminui a segurança.</string>
 
     <!-- Settings: Personalization -->
     <string name="settings_personalization_category_color_theme">Cor e tema</string>
@@ -1150,14 +1139,8 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="settings_bold_typography">Tipografia em negrito</string>
     <string name="settings_expanded_headers">Cabeçalhos de seção expandidos</string>
     <string name="settings_corner_rounding_override">Arredondamento de cantos</string>
-    <string name="settings_follow_system_animations">Seguir animações do sistema</string>
-    <string name="settings_follow_system_animations_summary">Respeitar a velocidade de animação do dispositivo definida nas Opções do desenvolvedor</string>
     <string name="settings_show_status_card_outline">Contorno do card de status</string>
     <string name="settings_show_status_card_outline_summary">Mostrar um contorno colorido no card de status do serviço</string>
-    <string-array name="status_card_outline_styles">
-        <item>Material (cor do tema)</item>
-        <item>Verde / Vermelho (cor do status)</item>
-    </string-array>
 
     <!-- Settings: Governor modules -->
     <string name="settings_network_governor_plus_title">DNS Governor</string>
@@ -1235,7 +1218,6 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="settings_automation_trusted_networks">Redes confiáveis</string>
 
     <!-- Settings: APK verification -->
-    <string name="settings_verify_apk_fdroid_title">Índice F-Droid / IzzyOnDroid</string>
 
     <!-- Snackbar -->
     <string name="snackbar_action_check">Verificar</string>

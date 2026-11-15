@@ -28,8 +28,6 @@
     <string name="settings_bold_typography">Tipografía en negrita</string>
     <string name="settings_expanded_headers">Encabezados de sección expandidos</string>
     <string name="settings_corner_rounding_override">Redondeo de esquinas</string>
-    <string name="settings_follow_system_animations">Seguir animaciones del sistema</string>
-    <string name="settings_follow_system_animations_summary">Respeta el ajuste de velocidad de animación de tu dispositivo en Opciones de desarrollador</string>
     <string name="settings_icon_color_mode">Colores de icono bicolor</string>
     <string name="settings_icon_color_mode_summary">Cómo se colorea el fondo del icono bicolor</string>
     <string name="home_status_service_not_running_summary">%1$s está detenido</string>
@@ -111,7 +109,6 @@
     <string name="app_management_sort_last_installed">Última instalada</string>
     <string name="app_management_sort_last_updated">Última actualizada</string>
     <string name="app_management_item_summary_partial_root">⚠ Compatibilidad parcial: algunas funciones aún requieren Shizuku con root</string>
-    <string name="app_management_item_summary_requires_plus">* requiere la API mejorada de Shizuku+</string>
     <string name="app_management_bulk_grant">Conceder a las seleccionadas</string>
     <string name="app_management_bulk_revoke">Revocar a las seleccionadas</string>
     <string name="app_management_bulk_hide">Ocultar las seleccionadas</string>
@@ -184,8 +181,6 @@
     <string name="dhizuku_device_owner_desc">Necesario para que el modo Dhizuku comparta los privilegios de propietario del dispositivo con aplicaciones autorizadas.</string>
     <string name="dhizuku_device_owner_enabled">Propietario del dispositivo Dhizuku activado</string>
     <string name="dhizuku_device_owner_disabled">Propietario del dispositivo Dhizuku desactivado</string>
-    <string name="settings_enhanced_api">API mejorada de Shizuku+</string>
-    <string name="settings_enhanced_api_summary">Activa interfaces avanzadas del sistema para usuarios avanzados. Necesaria para todas las funciones exclusivas de Shizuku+.</string>
     <string name="settings_themed_icon">Icono de aplicación temático</string>
     <string name="settings_themed_icon_summary">Usa una versión del icono de Shizuku+ teñida con Material You cuando tu launcher admita iconos temáticos.</string>
     <string name="settings_themed_icon_open_settings">Abrir ajustes de iconos</string>
@@ -226,7 +221,6 @@
     <string name="settings_ai_automation_experimental">Automatización con IA experimental</string>
     <string name="settings_ai_automation_experimental_summary">Activa la simulación de gestos, la captura de píxeles y la inyección de texto para la automatización basada en IA</string>
     <string name="settings_keystore_fallback">KeyStore por software de respaldo</string>
-    <string name="settings_keystore_fallback_summary">Guarda en caché la clave RSA de ADB cifrada con una clave AES por software cuando falla el KeyStore de hardware (p. ej., Samsung Knox). Reduce las solicitudes de emparejamiento pero disminuye la seguridad.</string>
     <string name="settings_samsung_uid_escalation">Escalada de UID del sistema de Samsung</string>
     <string name="settings_samsung_uid_escalation_summary">Intenta escalar al UID 1000 (system) mediante un exploit específico de dispositivos Samsung sin parchear (de pascua28). Úsalo bajo tu propia responsabilidad.</string>
     <string name="settings_display_tuner_plus_title">Ajuste de pantalla</string>
@@ -271,7 +265,6 @@
     <string name="help_network_governor_plus_detail">El gobernador de red ofrece acceso privilegiado a INetworkPolicyManager y a los ajustes de DNS privado. Puede aplicar POLICY_REJECT_ALL a aplicaciones individuales, proporcionando un cortafuegos robusto a nivel de sistema que funciona incluso en conexiones Wi-Fi y 5G sin un túnel VPN activo.</string>
     <string name="help_activity_manager_plus_title">Acerca del control profundo de procesos</string>
     <string name="help_activity_manager_plus_detail">El control profundo de procesos permite al servidor eludir la hibernación de aplicaciones y las restricciones de espera estándar. Puede forzar aplicaciones al grupo de espera RESTRICTED o realizar un deepForceStop real (finalizando todos los servicios y tareas en segundo plano), algo esencial para herramientas agresivas de ahorro de batería.</string>
-    <string name="settings_plus_category_developer">Opciones de desarrollador (experimental)</string>
     <string name="settings_root_magisk_mocking">Simulación del entorno Magisk</string>
     <string name="settings_root_magisk_mocking_summary">Falsifica binarios, propiedades y carpetas internas de Magisk para engañar a las aplicaciones que detectan root.</string>
     <string name="settings_root_auto_grant">Puente de aprobación automática</string>
@@ -288,10 +281,8 @@
     <string name="help_root_file_interceptor_detail">Cuando las aplicaciones copian archivos a /data/data con un shell estándar, a menudo pierden la propiedad y los contextos de SELinux. Este módulo añade automáticamente indicadores como --preserve=all para mantener la integridad de los archivos y evitar cierres inesperados de las aplicaciones.</string>
     <string name="help_root_busybox_title">Acerca de la simulación de BusyBox</string>
     <string name="help_root_busybox_detail">BusyBox es un conjunto de utilidades Unix habitual en dispositivos con root. Algunas aplicaciones root antiguas comprueban su existencia antes de ejecutar su lógica. Este módulo devuelve una respuesta satisfactoria simulada para el comando \'busybox\'.</string>
-    <string name="settings_vector_summary">Activa el renderizado vectorial acelerado por hardware para mejorar el rendimiento gráfico</string>
     <string name="settings_experimental_root_summary">Activa la capa de compatibilidad para operaciones basadas en root mediante Shizuku</string>
     <string name="settings_spoof_device_summary">Informa a las aplicaciones de un modelo de dispositivo distinto por motivos de compatibilidad o pruebas</string>
-    <string name="settings_vector_experimental">Aceleración vectorial</string>
     <string name="settings_experimental_root_experimental">Compatibilidad con root experimental</string>
     <string name="settings_spoof_device_experimental">Suplantar identidad del dispositivo</string>
     <string name="settings_open_source_licenses">Licencias de código abierto</string>
@@ -476,7 +467,6 @@
     <string name="settings_main_nav_startup_behavior_title">Inicio &amp; comportamiento</string>
     <string name="settings_main_nav_startup_behavior_summary">Opciones de arranque, watchdog, red, actividad y actualizaciones</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Avanzado &amp; diagnóstico</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">Registros, herramientas ADB y solución de problemas</string>
     <string name="settings_main_nav_about_summary">Versión, copia de seguridad &amp; restauración, licencias y opciones de desarrollador</string>
     <string name="settings_accent_violet_applied">Violeta medianoche aplicado</string>
     <string name="settings_accent_green_applied">Verde bosque aplicado</string>
@@ -525,7 +515,6 @@
     <string name="activity_log_type_other">Evento</string>
     <string name="settings_diagnostics_enabled">Diagnóstico de ajustes</string>
     <string name="settings_diagnostics_enabled_summary">Analiza proactivamente las configuraciones en busca de conflictos y anomalías</string>
-    <string name="settings_verify_apk_fdroid_title">Índice de F-Droid / IzzyOnDroid</string>
     <string name="settings_custom_accent_title">Color de acento personalizado</string>
     <string name="settings_behavior_category_startup">Inicio &amp; recuperación</string>
     <string name="settings_advanced_category_diagnostics">Diagnóstico</string>
@@ -534,7 +523,6 @@
     <string name="settings_personalization_category_shape_style">Estilo de formas e iconos</string>
     <string name="settings_personalization_category_home_screen">Pantalla de inicio</string>
     <string name="settings_personalization_category_language">Idioma</string>
-    <string name="settings_plus_category_system_performance">Sistema &amp; rendimiento</string>
     <string name="settings_plus_category_security_access">Seguridad &amp; acceso</string>
     <string name="settings_plus_category_backup_restore">Copia de seguridad &amp; restauración</string>
     <string name="settings_root_category_stock_compat">Compatibilidad con Shizuku original</string>
@@ -567,7 +555,6 @@
     <string name="settings_developer_category_debug">Depuración &amp; diagnóstico</string>
     <string name="settings_plus_category_device_owner_tools">Herramientas de propietario del dispositivo</string>
     <string name="settings_developer_options">Opciones de desarrollador</string>
-    <string name="settings_developer_options_summary">Virtualización, suplantación de dispositivo y funciones experimentales</string>
     <string name="settings_auto_update_title">Buscar actualizaciones automáticamente</string>
     <string name="settings_auto_update_summary">Busca nuevas versiones automáticamente al iniciar la app</string>
     <string name="settings_auto_install_title">Instalar actualizaciones automáticamente</string>
@@ -696,7 +683,6 @@
     <string name="app_management_search_hint">Buscar apps</string>
     <string name="verify_virustotal_key_title">Clave de API de VirusTotal</string>
     <string name="verify_virustotal_key_required">Se requiere una clave de API para usar el análisis de VirusTotal</string>
-    <string name="verify_pithus_key_title">Clave de API de Pithus (opcional)</string>
     <string name="verify_api_key_hint">Toca para introducir la clave de API</string>
     <string name="verify_api_key_configured">Clave de API guardada · toca para actualizar</string>
     <string name="verify_get_api_key">Obtener clave de API</string>
@@ -956,7 +942,6 @@
     <string name="settings_allow_automation_plugin_title">Permitir apps de automatización</string>
     <string name="settings_allow_automation_plugin_summary">Permite que Tasker y otras apps compatibles con Locale inicien y detengan Shizuku+. Cualquier app instalada puede usar esto, así que actívalo solo si usas tales automatizaciones.</string>
     <string name="settings_usb_phone_switch_notify">Notificación de conexión USB y cambio</string>
-    <string name="settings_usb_phone_switch_notify_summary">Fija una notificación con configuración rápida y atajos de herramientas cuando se conecta a un teléfono o dispositivo USB</string>
     <string name="su_bridge_report_not_connected">Shizuku no está conectado. Inicia el servicio Shizuku desde la pantalla de inicio e intenta de nuevo.</string>
     <string name="su_bridge_report_deploy_failed">❌ No se pudo implementar el puente en /data/local/tmp.</string>
     <string name="su_bridge_report_deploy_reason">Motivo: %1$s</string>
@@ -1306,12 +1291,6 @@
     <string name="doctor_adaptive_self_heal_desc">Hacer comprobaciones de estado automáticamente y reparar en segundo plano las caídas del servicio o los problemas de permisos</string>
     <string name="stock_shizuku_restarting">Reiniciando…</string>
     <string name="home_all_cards_hidden_description">Todas las demás tarjetas están ocultas</string>
-    <string name="settings_verify_apk_fdroid_badge">Metadatos de F-Droid</string>
-    <string name="settings_verify_engines_posture">%1$d de %2$d motores de seguridad activos</string>
-    <string name="settings_verify_key_required_hint">Clave obligatoria · Toca para configurarla</string>
-    <string name="settings_verify_key_saved_hint">Clave activa · Mantén pulsado para editarla</string>
-    <string name="settings_plus_governors_posture">%1$d de %2$d gobernadores activos</string>
-    <string name="settings_plus_governors_help_hint">Mantén pulsado un gobernador para ver los detalles de su arquitectura</string>
     <string name="settings_floating_nav_style_capsule">Cápsula expresiva</string>
     <string name="settings_icon_morph_shape_star">Estrella</string>
     <string name="settings_icon_morph_shape_burst">Destello</string>

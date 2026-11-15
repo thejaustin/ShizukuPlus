@@ -9,8 +9,6 @@
     <string name="settings_bold_typography">گہری ٹائپوگرافی</string>
     <string name="settings_expanded_headers">پھیلے ہوئے سیکشن ہیڈر</string>
     <string name="settings_corner_rounding_override">کونوں کی گولائی</string>
-    <string name="settings_follow_system_animations">سسٹم اینیمیشنز کی پیروی کریں</string>
-    <string name="settings_follow_system_animations_summary">ڈیولپر آپشنز سے اپنے آلے کی اینیمیشن رفتار کی سیٹنگ کا احترام کریں</string>
     <string name="home_wireless_adb_button_reconnect">دوبارہ جوڑیں</string>
     <string name="dialog_adb_wifi_disconnected_warning"><![CDATA[<b>Wi-Fi منقطع ہے۔</b><br>Android موبائل ڈیٹا (5G/LTE) پر وائرلیس ڈیبگنگ نہیں ڈھونڈ سکتا۔]]></string>
     <string name="dialog_adb_hotspot_tip"><![CDATA[💡 <b>مشورہ:</b> Wi-Fi نیٹ ورک کے بغیر وائرلیس ڈیبگنگ استعمال کرنے کے لیے اپنے فون کا <b>موبائل ہاٹ اسپاٹ</b> آن کریں، یا لوکل پورٹ 5555 کے ذریعے جڑیں۔]]></string>
@@ -67,7 +65,6 @@
     <string name="settings_ai_automation_experimental">تجرباتی AI آٹومیشن</string>
     <string name="settings_ai_automation_experimental_summary">AI سے چلنے والی آٹومیشن کے لیے اشارے کی نقل، پکسل کیپچر اور ٹیکسٹ انجیکشن فعال کریں</string>
     <string name="settings_keystore_fallback">سافٹ ویئر KeyStore متبادل</string>
-    <string name="settings_keystore_fallback_summary">ہارڈ ویئر KeyStore ناکام ہونے پر (مثلاً Samsung Knox) ADB RSA کلید کو سافٹ ویئر AES کلید سے انکرپٹ کر کے کیش کریں۔ پیئرنگ کی درخواستیں کم ہوتی ہیں لیکن سیکیورٹی کم ہو جاتی ہے۔</string>
     <string name="settings_samsung_uid_escalation">Samsung سسٹم UID ایسکلیشن</string>
     <string name="settings_samsung_uid_escalation_summary">غیر پیچ شدہ Samsung آلات کے لیے مخصوص ایک ایکسپلوائٹ (از pascua28) کے ذریعے UID 1000 (system) تک رسائی کی کوشش کریں۔ اپنی ذمہ داری پر استعمال کریں۔</string>
     <string name="settings_display_tuner_plus_title">ڈسپلے ٹیونر</string>
@@ -138,7 +135,6 @@
     <string name="activity_log_type_other">واقعہ</string>
     <string name="settings_diagnostics_enabled">سیٹنگز کی تشخیص</string>
     <string name="settings_diagnostics_enabled_summary">تنازعات اور بے قاعدگیوں کے لیے ترتیبات کو پیشگی اسکین کریں</string>
-    <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid انڈیکس</string>
     <string name="settings_custom_accent_title">حسب ضرورت ایکسنٹ رنگ</string>
     <string name="settings_behavior_category_startup">آغاز اور بحالی</string>
     <string name="settings_advanced_category_diagnostics">تشخیص</string>
@@ -147,7 +143,6 @@
     <string name="settings_personalization_category_shape_style">شکل اور آئیکن اسٹائل</string>
     <string name="settings_personalization_category_home_screen">ہوم اسکرین</string>
     <string name="settings_personalization_category_language">زبان</string>
-    <string name="settings_plus_category_system_performance">سسٹم اور کارکردگی</string>
     <string name="settings_plus_category_security_access">سیکیورٹی اور رسائی</string>
     <string name="settings_plus_category_backup_restore">بیک اپ اور بحالی</string>
     <string name="settings_root_category_stock_compat">اسٹاک Shizuku مطابقت</string>
@@ -452,7 +447,6 @@
     <string name="settings_allow_automation_plugin_title">Automation ایپس کی اجازت دیں</string>
     <string name="settings_allow_automation_plugin_summary">Tasker اور دوسری Locale-compatible ایپس کو Shizuku+ شروع اور بند کرنے دیتا ہے۔ کوئی بھی نصب شدہ ایپ اس کو استعمال کر سکتی ہے، تو اسے صرف تب چالو کریں جب آپ ایسی Automation استعمال کریں۔</string>
     <string name="settings_usb_phone_switch_notify">USB کنکشن &amp; سوئچ اطلاع</string>
-    <string name="settings_usb_phone_switch_notify_summary">فون یا USB ڈیوائس سے جڑنے پر تیز ترین ترتیبات اور ٹول کے شارٹ کٹ کے ساتھ ایک اطلاع pin کریں</string>
     <string name="su_bridge_report_not_connected">Shizuku متصل نہیں ہے۔ ہوم اسکرین سے Shizuku سروس شروع کریں، پھر دوبارہ کوشش کریں۔</string>
     <string name="su_bridge_report_deploy_failed">❌ پل کو /data/local/tmp میں deploy نہیں کر سکے۔</string>
     <string name="su_bridge_report_deploy_reason">وجہ: %1$s</string>

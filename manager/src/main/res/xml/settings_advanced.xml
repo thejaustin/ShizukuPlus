@@ -13,8 +13,8 @@
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="custom_api_enabled"
-            android:title="@string/settings_enhanced_api"
-            android:summary="@string/settings_enhanced_api_summary"
+            android:title="@string/settings_plus_app_controls"
+            android:summary="@string/settings_plus_app_controls_summary"
             android:icon="@drawable/ic_code_24"
             android:defaultValue="true"
             app:badgeType="plus" />
@@ -23,12 +23,90 @@
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_system"
-        android:title="@string/settings_plus_category_system_performance"
+        android:title="@string/settings_plus_category_plus_apis"
         android:icon="@drawable/ic_settings_suggest_24"
         android:defaultValue="false">
 
-        <af.shizuku.manager.settings.PlusGovernorsPreference
-            android:key="plus_governors_module" />
+        <!-- Server-side Plus APIs offered to client apps. Each row syncs itself to the server. -->
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="activity_manager_plus_enabled"
+            android:title="@string/settings_activity_manager_plus_title"
+            android:summary="@string/settings_activity_manager_plus_summary"
+            android:icon="@drawable/ic_bolt_24"
+            android:defaultValue="true"
+            app:infoTitle="@string/help_activity_manager_plus_title"
+            app:infoDetail="@string/help_activity_manager_plus_detail"
+            app:badgeType="plus" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="status_bar_governor_plus_enabled"
+            android:title="@string/settings_status_bar_governor_plus_title"
+            android:summary="@string/settings_status_bar_governor_plus_summary"
+            android:icon="@drawable/ic_outline_expand_more_24"
+            android:defaultValue="true"
+            app:infoTitle="@string/help_status_bar_governor_plus_title"
+            app:infoDetail="@string/help_status_bar_governor_plus_detail"
+            app:badgeType="plus" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="shell_interceptor_enabled"
+            android:title="@string/settings_shell_interceptor"
+            android:summary="@string/settings_shell_interceptor_summary"
+            android:icon="@drawable/ic_terminal_24"
+            android:defaultValue="true"
+            app:infoTitle="@string/help_shell_interceptor_title"
+            app:infoDetail="@string/help_shell_interceptor_detail"
+            app:badgeType="plus" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="avf_manager_enabled"
+            android:title="@string/settings_avf_manager_title"
+            android:summary="@string/settings_avf_manager_summary"
+            android:icon="@drawable/ic_server_24"
+            android:defaultValue="true"
+            app:infoTitle="@string/help_avf_manager_title"
+            app:infoDetail="@string/help_avf_manager_detail"
+            app:badgeType="plus" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="storage_proxy_enabled"
+            android:title="@string/settings_storage_proxy"
+            android:summary="@string/settings_storage_proxy_summary"
+            android:icon="@drawable/ic_folder_24"
+            android:defaultValue="true"
+            app:infoTitle="@string/help_storage_proxy_title"
+            app:infoDetail="@string/help_storage_proxy_detail"
+            app:badgeType="plus" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="package_governor_plus_enabled"
+            android:title="@string/settings_package_governor_plus_title"
+            android:summary="@string/settings_package_governor_plus_summary"
+            android:icon="@drawable/ic_install_24"
+            android:defaultValue="true"
+            app:infoTitle="@string/help_package_governor_plus_title"
+            app:infoDetail="@string/help_package_governor_plus_detail"
+            app:badgeType="plus" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="network_governor_plus_enabled"
+            android:title="@string/settings_network_governor_plus_title"
+            android:summary="@string/settings_network_governor_plus_summary"
+            android:icon="@drawable/ic_lan_24"
+            android:defaultValue="true"
+            app:infoTitle="@string/help_network_governor_plus_title"
+            app:infoDetail="@string/help_network_governor_plus_detail"
+            app:badgeType="plus" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="continuity_bridge_enabled"
+            android:title="@string/settings_continuity_bridge_title"
+            android:summary="@string/settings_continuity_bridge_summary"
+            android:icon="@drawable/ic_devices_24"
+            android:defaultValue="true"
+            app:infoTitle="@string/help_continuity_bridge_title"
+            app:infoDetail="@string/help_continuity_bridge_detail"
+            app:badgeType="plus" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
@@ -94,12 +172,6 @@
             android:title="@string/settings_package_identity_category"
             android:summary="@string/settings_package_identity_roadmap"
             android:icon="@drawable/ic_shield_24" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="legacy_pairing"
-            android:summary="@string/settings_legacy_pairing_summary"
-            android:title="@string/settings_legacy_pairing"
-            android:icon="@drawable/ic_numeric_1_circle_outline_24" />
 
         <Preference
             android:key="reset_adb_keys"

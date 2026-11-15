@@ -1549,6 +1549,8 @@ public class ShizukuSettings {
         return p != null && p.getBoolean(Keys.KEY_NATIVE_WINDOW_CRAWLER_ENABLED, false);
     }
 
+    // On by default, matching its switch in settings_experimental.xml. Keep the two defaults in
+    // sync: the switch saves its default on first bind, so a mismatch flips the feature silently.
     public static boolean isWindowManagerPlusEnabled() {
         SharedPreferences p = getPreferences();
         return p == null || p.getBoolean(Keys.KEY_WINDOW_MANAGER_PLUS_ENABLED, true);
@@ -1787,11 +1789,6 @@ public class ShizukuSettings {
         return p != null && p.getBoolean(Keys.KEY_VECTOR_ENABLED, false);
     }
 
-    public static void setVectorEnabled(boolean enable) {
-        SharedPreferences p = getPreferences();
-        if (p != null) p.edit().putBoolean(Keys.KEY_VECTOR_ENABLED, enable).apply();
-    }
-
     public static boolean isDevOptionsUnlocked() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_DEV_OPTIONS_UNLOCKED, false);
@@ -1817,10 +1814,6 @@ public class ShizukuSettings {
         return p != null && p.getBoolean(Keys.KEY_EXPERIMENTAL_ROOT_COMPAT, false);
     }
 
-    public static void setExperimentalRootCompatEnabled(boolean enable) {
-        SharedPreferences p = getPreferences();
-        if (p != null) p.edit().putBoolean(Keys.KEY_EXPERIMENTAL_ROOT_COMPAT, enable).apply();
-    }
 
     // Off by default: third-party apps can't reach other apps' private data (Storage Bridge,
     // temp-debug, BackupRestorePlus) or personal data and device control until the user opts in.
@@ -2060,14 +2053,11 @@ public class ShizukuSettings {
                 service.updatePlusFeatureEnabled("root_busybox_mocking", isRootBusyboxMockingEnabled());
                 service.updatePlusFeatureEnabled("root_build_prop_redirect", isRootBuildPropRedirectEnabled());
                 service.updatePlusFeatureEnabled("root_iptables_mocking", isRootIptablesMockingEnabled());
-                service.updatePlusFeatureEnabled("vector", isVectorEnabled());
                 service.updatePlusFeatureEnabled("experimental_root", isExperimentalRootCompatEnabled());
                 service.updatePlusFeatureEnabled("unrestricted_app_data", isUnrestrictedAppDataEnabled());
                 service.updatePlusFeatureEnabled("unrestricted_personal_data", isUnrestrictedPersonalDataEnabled());
                 service.updatePlusFeatureEnabled("spoof_device", isSpoofDeviceEnabled());
                 service.setPlusSetting("spoof_target", getSpoofTarget());
-                service.updatePlusFeatureEnabled("on_device_adb_tcp", isOnDeviceAdbTcpEnabled());
-                service.updatePlusFeatureEnabled("force_start_wadb", isForceStartWadbEnabled());
                 service.updatePlusFeatureEnabled("enable_activity_log", isActivityLogEnabled());
                 service.updatePlusFeatureEnabled("binder_firewall", isBinderFirewallEffective());
                 service.updatePlusFeatureEnabled("binder_logging", isBinderLoggingEnabled());

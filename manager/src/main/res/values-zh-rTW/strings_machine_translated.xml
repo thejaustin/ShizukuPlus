@@ -28,8 +28,6 @@
     <string name="settings_bold_typography">粗體字型</string>
     <string name="settings_expanded_headers">展開式區段標題</string>
     <string name="settings_corner_rounding_override">圓角程度</string>
-    <string name="settings_follow_system_animations">跟隨系統動畫</string>
-    <string name="settings_follow_system_animations_summary">遵循裝置在開發人員選項中的動畫速度設定</string>
     <string name="settings_icon_color_mode">雙色調圖示色彩</string>
     <string name="settings_icon_color_mode_summary">雙色調圖示背景的著色方式</string>
     <string name="home_status_service_not_running_summary">%1$s 已停止</string>
@@ -111,7 +109,6 @@
     <string name="app_management_sort_last_installed">最近安裝</string>
     <string name="app_management_sort_last_updated">最近更新</string>
     <string name="app_management_item_summary_partial_root">⚠ 部分支援——部分功能仍需要具備 root 的 Shizuku</string>
-    <string name="app_management_item_summary_requires_plus">* 需要 Shizuku+ 增強 API</string>
     <string name="app_management_bulk_grant">授予所選項目</string>
     <string name="app_management_bulk_revoke">撤銷所選項目</string>
     <string name="app_management_bulk_hide">隱藏所選項目</string>
@@ -183,8 +180,6 @@
     <string name="dhizuku_device_owner_desc">Dhizuku 模式需要此項目，才能與已授權的應用程式共用裝置擁有者權限。</string>
     <string name="dhizuku_device_owner_enabled">Dhizuku 裝置擁有者已啟用</string>
     <string name="dhizuku_device_owner_disabled">Dhizuku 裝置擁有者已停用</string>
-    <string name="settings_enhanced_api">Shizuku+ 增強 API</string>
-    <string name="settings_enhanced_api_summary">為進階使用者啟用進階系統介面。所有 Shizuku+ 專屬功能都需要此項目。</string>
     <string name="settings_themed_icon">主題應用程式圖示</string>
     <string name="settings_themed_icon_summary">當啟動器支援主題圖示時，使用 Shizuku+ 圖示的 Material You 著色版本。</string>
     <string name="settings_themed_icon_open_settings">開啟圖示設定</string>
@@ -225,7 +220,6 @@
     <string name="settings_ai_automation_experimental">實驗性 AI 自動化</string>
     <string name="settings_ai_automation_experimental_summary">啟用手勢模擬、像素擷取與文字注入，以進行 AI 驅動的自動化</string>
     <string name="settings_keystore_fallback">軟體 KeyStore 備援</string>
-    <string name="settings_keystore_fallback_summary">當硬體 KeyStore 失敗時（例如 Samsung Knox），以軟體 AES 金鑰加密並快取 ADB RSA 金鑰。可減少配對提示，但會降低安全性。</string>
     <string name="settings_samsung_uid_escalation">Samsung 系統 UID 提權</string>
     <string name="settings_display_tuner_plus_title">顯示調校器</string>
     <string name="settings_device_control_home_title">裝置控制主畫面卡片</string>
@@ -269,7 +263,6 @@
     <string name="help_network_governor_plus_detail">網路管理器提供對 INetworkPolicyManager 與私人 DNS 設定的特權存取。它可針對個別應用程式強制執行 POLICY_REJECT_ALL，提供穩固的系統層級防火牆，即使在 Wi-Fi 與 5G 連線上、沒有啟用 VPN 通道時也能運作。</string>
     <string name="help_activity_manager_plus_title">關於深度程序控制</string>
     <string name="help_activity_manager_plus_detail">深度程序控制讓伺服器能繞過標準的應用程式休眠與待命限制。它可以強制應用程式進入 RESTRICTED 待命群組，或執行真正的 deepForceStop（終止所有服務與背景工作），這對積極省電的工具而言至關重要。</string>
-    <string name="settings_plus_category_developer">開發人員選項（實驗性）</string>
     <string name="settings_root_magisk_mocking">Magisk 環境模擬</string>
     <string name="settings_root_magisk_mocking_summary">偽造 Magisk 二進位檔、屬性與內部資料夾，以騙過會偵測 root 的應用程式。</string>
     <string name="settings_root_auto_grant">自動核准橋接</string>
@@ -286,10 +279,8 @@
     <string name="help_root_file_interceptor_detail">當應用程式使用標準 shell 將檔案複製到 /data/data 時，常會遺失擁有者與 SELinux 內容。此模組會自動加入 --preserve=all 等旗標，以維持檔案完整性並避免應用程式當機。</string>
     <string name="help_root_busybox_title">關於 BusyBox 模擬</string>
     <string name="help_root_busybox_detail">BusyBox 是 root 裝置上常見的 Unix 工具集。部分較舊的 root 應用程式會在執行邏輯前檢查它是否存在。此模組會為 busybox 指令回傳模擬的成功回應。</string>
-    <string name="settings_vector_summary">啟用硬體加速的向量繪製，以提升圖形效能</string>
     <string name="settings_experimental_root_summary">透過 Shizuku 啟用 root 型操作的相容層</string>
     <string name="settings_spoof_device_summary">向應用程式回報不同的裝置型號，以利相容性或測試</string>
-    <string name="settings_vector_experimental">向量加速</string>
     <string name="settings_experimental_root_experimental">實驗性 Root 相容性</string>
     <string name="settings_spoof_device_experimental">偽造裝置身分</string>
     <string name="settings_open_source_licenses">開放原始碼授權</string>
@@ -510,7 +501,6 @@
     <string name="activity_log_type_other">事件</string>
     <string name="settings_diagnostics_enabled">設定診斷</string>
     <string name="settings_diagnostics_enabled_summary">主動掃描設定中的衝突與異常</string>
-    <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid 索引</string>
     <string name="settings_custom_accent_title">自訂強調色</string>
     <string name="settings_behavior_category_startup">啟動與復原</string>
     <string name="settings_advanced_category_diagnostics">診斷</string>
@@ -519,7 +509,6 @@
     <string name="settings_personalization_category_shape_style">形狀與圖示樣式</string>
     <string name="settings_personalization_category_home_screen">主畫面</string>
     <string name="settings_personalization_category_language">語言</string>
-    <string name="settings_plus_category_system_performance">系統與效能</string>
     <string name="settings_plus_category_security_access">安全性與存取</string>
     <string name="settings_plus_category_backup_restore">備份與還原</string>
     <string name="settings_root_category_stock_compat">原版 Shizuku 相容性</string>
@@ -552,7 +541,6 @@
     <string name="settings_developer_category_debug">偵錯與診斷</string>
     <string name="settings_plus_category_device_owner_tools">裝置擁有者工具</string>
     <string name="settings_developer_options">開發人員選項</string>
-    <string name="settings_developer_options_summary">虛擬化、裝置偽造與實驗性功能</string>
     <string name="settings_auto_update_title">自動檢查更新</string>
     <string name="settings_auto_update_summary">應用程式啟動時自動檢查新版本</string>
     <string name="settings_auto_install_title">自動安裝更新</string>
@@ -676,7 +664,6 @@
     <string name="app_management_search_hint">搜尋應用程式</string>
     <string name="verify_virustotal_key_title">VirusTotal API 金鑰</string>
     <string name="verify_virustotal_key_required">使用 VirusTotal 掃描需要 API 金鑰</string>
-    <string name="verify_pithus_key_title">Pithus API 金鑰（選填）</string>
     <string name="verify_api_key_hint">點按以輸入 API 金鑰</string>
     <string name="verify_api_key_configured">已儲存 API 金鑰 · 點按以更新</string>
     <string name="verify_get_api_key">取得 API 金鑰</string>

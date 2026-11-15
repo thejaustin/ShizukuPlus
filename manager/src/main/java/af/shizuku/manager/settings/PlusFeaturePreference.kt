@@ -36,6 +36,19 @@ class PlusFeaturePreference(
         a.recycle()
     }
 
+    // Every Plus row pushes the flags to the server once its new value is saved, so screens don't
+    // keep their own key lists. The sync is queued and runs after the write; a no-op change (the
+    // first bind re-persisting a saved value) doesn't trigger it.
+    override fun persistBoolean(value: Boolean): Boolean {
+        val changed = shouldPersist() && getPersistedBoolean(!value) != value
+        val persisted = super.persistBoolean(value)
+        if (persisted && changed) {
+            af.shizuku.manager.ShizukuSettings
+                .syncAllPlusFeaturesToServer()
+        }
+        return persisted
+    }
+
     fun setIntegration(
         packageName: String,
         appName: String,

@@ -28,8 +28,6 @@
     <string name="settings_bold_typography">خطوط عريضة</string>
     <string name="settings_expanded_headers">رؤوس أقسام موسعة</string>
     <string name="settings_corner_rounding_override">استدارة الزوايا</string>
-    <string name="settings_follow_system_animations">اتباع حركات النظام</string>
-    <string name="settings_follow_system_animations_summary">احترام إعداد سرعة الحركة في جهازك من خيارات المطور</string>
     <string name="settings_icon_color_mode">ألوان الأيقونات ثنائية اللون</string>
     <string name="settings_icon_color_mode_summary">كيفية تلوين خلفية الأيقونة ثنائية اللون</string>
     <string name="home_status_service_not_running_summary">%1$s متوقف</string>
@@ -111,7 +109,6 @@
     <string name="app_management_sort_last_installed">آخر تثبيت</string>
     <string name="app_management_sort_last_updated">آخر تحديث</string>
     <string name="app_management_item_summary_partial_root">⚠ مدعوم جزئيًا — بعض الوظائف ما زالت تحتاج Shizuku مع root</string>
-    <string name="app_management_item_summary_requires_plus">* يتطلب واجهة Shizuku+ Enhanced API</string>
     <string name="app_management_bulk_grant">منح المحدد</string>
     <string name="app_management_bulk_revoke">سحب المحدد</string>
     <string name="app_management_bulk_hide">إخفاء المحدد</string>
@@ -184,8 +181,6 @@
     <string name="dhizuku_device_owner_desc">مطلوب لكي يشارك وضع Dhizuku صلاحيات مالك الجهاز مع التطبيقات المصرّح لها.</string>
     <string name="dhizuku_device_owner_enabled">تم تفعيل مالك الجهاز لـ Dhizuku</string>
     <string name="dhizuku_device_owner_disabled">تم تعطيل مالك الجهاز لـ Dhizuku</string>
-    <string name="settings_enhanced_api">Shizuku+ Enhanced API</string>
-    <string name="settings_enhanced_api_summary">تفعيل واجهات النظام المتقدمة للمستخدمين المتمرسين. مطلوب لجميع ميزات Shizuku+ الحصرية.</string>
     <string name="settings_themed_icon">أيقونة تطبيق متوافقة مع السمة</string>
     <string name="settings_themed_icon_summary">استخدام نسخة من أيقونة Shizuku+ بألوان Material You عندما يدعم مشغّلك الأيقونات المتوافقة مع السمة.</string>
     <string name="settings_themed_icon_open_settings">فتح إعدادات الأيقونة</string>
@@ -226,7 +221,6 @@
     <string name="settings_ai_automation_experimental">أتمتة الذكاء الاصطناعي التجريبية</string>
     <string name="settings_ai_automation_experimental_summary">تفعيل محاكاة الإيماءات والتقاط البكسلات وحقن النص للأتمتة المدفوعة بالذكاء الاصطناعي</string>
     <string name="settings_keystore_fallback">بديل KeyStore البرمجي</string>
-    <string name="settings_keystore_fallback_summary">تخزين مفتاح ADB RSA مؤقتًا مشفرًا بمفتاح AES برمجي عند فشل KeyStore العتادي (مثل Samsung Knox). يقلل مطالبات الاقتران لكنه يخفض الأمان.</string>
     <string name="settings_samsung_uid_escalation">رفع UID نظام Samsung</string>
     <string name="settings_samsung_uid_escalation_summary">محاولة الرفع إلى UID 1000 (system) باستخدام ثغرة خاصة بأجهزة Samsung غير المحدّثة (بواسطة pascua28). استخدمه على مسؤوليتك.</string>
     <string name="settings_display_tuner_plus_title">ضبط العرض</string>
@@ -271,7 +265,6 @@
     <string name="help_network_governor_plus_detail">يوفر مدير الشبكة وصولًا مميزًا إلى INetworkPolicyManager وإعدادات DNS الخاص. يمكنه فرض POLICY_REJECT_ALL على تطبيقات فردية، موفرًا جدار حماية قويًا على مستوى النظام يعمل حتى على اتصالات Wi-Fi و5G دون نفق VPN نشط.</string>
     <string name="help_activity_manager_plus_title">حول التحكم العميق بالعمليات</string>
     <string name="help_activity_manager_plus_detail">يتيح التحكم العميق بالعمليات للخادم تجاوز قيود السبات والاستعداد القياسية للتطبيقات. يمكنه إدخال التطبيقات في فئة الاستعداد RESTRICTED أو تنفيذ deepForceStop حقيقي (إنهاء جميع الخدمات والمهام الخلفية)، وهو ضروري لأدوات توفير البطارية الصارمة.</string>
-    <string name="settings_plus_category_developer">خيارات المطور (تجريبي)</string>
     <string name="settings_root_magisk_mocking">محاكاة بيئة Magisk</string>
     <string name="settings_root_magisk_mocking_summary">تزييف ملفات Magisk التنفيذية والخصائص والمجلدات الداخلية لخداع التطبيقات الكاشفة لـ root.</string>
     <string name="settings_root_auto_grant">جسر الموافقة التلقائية</string>
@@ -288,10 +281,8 @@
     <string name="help_root_file_interceptor_detail">عندما تنسخ التطبيقات ملفات إلى /data/data باستخدام صدفة قياسية، فإنها تفقد غالبًا الملكية وسياقات SELinux. تضيف هذه الوحدة تلقائيًا أعلامًا مثل --preserve=all للحفاظ على سلامة الملفات ومنع تعطل التطبيقات.</string>
     <string name="help_root_busybox_title">حول محاكاة BusyBox</string>
     <string name="help_root_busybox_detail">BusyBox مجموعة أدوات Unix شائعة على الأجهزة المفعّل عليها root. تتحقق بعض تطبيقات root القديمة من وجودها قبل تشغيل منطقها. تُرجع هذه الوحدة استجابة ناجحة محاكاة للأمر busybox.</string>
-    <string name="settings_vector_summary">تفعيل عرض المتجهات المسرّع عتاديًا لتحسين أداء الرسوميات</string>
     <string name="settings_experimental_root_summary">تفعيل طبقة التوافق لعمليات root عبر Shizuku</string>
     <string name="settings_spoof_device_summary">الإبلاغ عن طراز جهاز مختلف للتطبيقات لأغراض التوافق أو الاختبار</string>
-    <string name="settings_vector_experimental">تسريع المتجهات</string>
     <string name="settings_experimental_root_experimental">توافق root التجريبي</string>
     <string name="settings_spoof_device_experimental">انتحال هوية الجهاز</string>
     <string name="settings_open_source_licenses">تراخيص المصدر المفتوح</string>
@@ -476,7 +467,6 @@
     <string name="settings_main_nav_startup_behavior_title">بدء التشغيل والسلوك</string>
     <string name="settings_main_nav_startup_behavior_summary">خيارات الإقلاع والمراقب والشبكة والنشاط والتحديثات</string>
     <string name="settings_main_nav_advanced_diagnostics_title">متقدم وتشخيص</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">السجلات وأدوات ADB واستكشاف الأخطاء</string>
     <string name="settings_main_nav_about_summary">الإصدار والنسخ الاحتياطي والاستعادة والتراخيص وخيارات المطور</string>
     <string name="settings_accent_violet_applied">تم تطبيق البنفسجي الليلي</string>
     <string name="settings_accent_green_applied">تم تطبيق أخضر الغابة</string>
@@ -525,7 +515,6 @@
     <string name="activity_log_type_other">حدث</string>
     <string name="settings_diagnostics_enabled">تشخيص الإعدادات</string>
     <string name="settings_diagnostics_enabled_summary">فحص الإعدادات بشكل استباقي بحثًا عن التعارضات والحالات الشاذة</string>
-    <string name="settings_verify_apk_fdroid_title">فهرس F-Droid / IzzyOnDroid</string>
     <string name="settings_custom_accent_title">لون التمييز المخصص</string>
     <string name="settings_behavior_category_startup">بدء التشغيل والاسترداد</string>
     <string name="settings_advanced_category_diagnostics">التشخيص</string>
@@ -534,7 +523,6 @@
     <string name="settings_personalization_category_shape_style">نمط الأشكال والأيقونات</string>
     <string name="settings_personalization_category_home_screen">الشاشة الرئيسية</string>
     <string name="settings_personalization_category_language">اللغة</string>
-    <string name="settings_plus_category_system_performance">النظام والأداء</string>
     <string name="settings_plus_category_security_access">الأمان والوصول</string>
     <string name="settings_plus_category_backup_restore">النسخ الاحتياطي والاستعادة</string>
     <string name="settings_root_category_stock_compat">التوافق مع Shizuku الأصلي</string>
@@ -567,7 +555,6 @@
     <string name="settings_developer_category_debug">التصحيح والتشخيص</string>
     <string name="settings_plus_category_device_owner_tools">أدوات مالك الجهاز</string>
     <string name="settings_developer_options">خيارات المطور</string>
-    <string name="settings_developer_options_summary">المحاكاة الافتراضية وانتحال الجهاز والميزات التجريبية</string>
     <string name="settings_auto_update_title">التحقق التلقائي من التحديثات</string>
     <string name="settings_auto_update_summary">التحقق تلقائيًا من الإصدارات الجديدة عند بدء التطبيق</string>
     <string name="settings_auto_install_title">تثبيت التحديثات تلقائيًا</string>
@@ -696,7 +683,6 @@
     <string name="app_management_search_hint">البحث في التطبيقات</string>
     <string name="verify_virustotal_key_title">مفتاح VirusTotal API</string>
     <string name="verify_virustotal_key_required">مفتاح API مطلوب لاستخدام فحص VirusTotal</string>
-    <string name="verify_pithus_key_title">مفتاح Pithus API (اختياري)</string>
     <string name="verify_api_key_hint">اضغط لإدخال مفتاح API</string>
     <string name="verify_api_key_configured">تم حفظ مفتاح API · اضغط للتحديث</string>
     <string name="verify_get_api_key">الحصول على مفتاح API</string>
@@ -1006,7 +992,6 @@
     <string name="settings_allow_automation_plugin_title">السماح بتطبيقات الأتمتة</string>
     <string name="settings_allow_automation_plugin_summary">يتيح لـ Tasker والتطبيقات الأخرى المتوافقة مع Locale بدء وإيقاف Shizuku+. أي تطبيق مثبت يمكنه استخدام هذا، لذا فعّله فقط إذا كنت تستخدم مثل هذه الأتمتة.</string>
     <string name="settings_usb_phone_switch_notify">إخطار الاتصال والتبديل USB</string>
-    <string name="settings_usb_phone_switch_notify_summary">ثبّت إشعارًا يحتوي على إعدادات سريعة واختصارات أدوات عند الاتصال بهاتف أو جهاز USB</string>
     <string name="su_bridge_report_not_connected">Shizuku غير متصل. ابدأ خدمة Shizuku من الصفحة الرئيسية، ثم حاول مرة أخرى.</string>
     <string name="su_bridge_report_deploy_failed">❌ لم يتمكن من نشر الجسر إلى /data/local/tmp.</string>
     <string name="su_bridge_report_deploy_reason">السبب: %1$s</string>
@@ -1305,12 +1290,6 @@
     <string name="doctor_adaptive_self_heal_title">إصلاح ذاتي تكيّفي في الخلفية</string>
     <string name="doctor_adaptive_self_heal_desc">تشغيل فحوصات الحالة تلقائيًا وإصلاح انقطاعات الخدمة أو مشكلات الأذونات في الخلفية</string>
     <string name="stock_shizuku_restarting">جارٍ إعادة التشغيل…</string>
-    <string name="settings_verify_apk_fdroid_badge">بيانات F-Droid الوصفية</string>
-    <string name="settings_verify_engines_posture">%1$d من %2$d من محركات الأمان نشطة</string>
-    <string name="settings_verify_key_required_hint">المفتاح مطلوب · انقر للتعيين</string>
-    <string name="settings_verify_key_saved_hint">المفتاح نشط · اضغط مطولاً للتعديل</string>
-    <string name="settings_plus_governors_posture">%1$d من %2$d من المتحكمات نشطة</string>
-    <string name="settings_plus_governors_help_hint">اضغط مطولاً على أي متحكم لعرض تفاصيل البنية</string>
     <string name="settings_floating_nav_style_capsule">كبسولة تعبيرية</string>
     <string name="settings_icon_morph_shape_star">نجمة</string>
     <string name="settings_icon_morph_shape_burst">انفجار</string>

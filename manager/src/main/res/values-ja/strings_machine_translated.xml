@@ -28,8 +28,6 @@
     <string name="settings_bold_typography">太字タイポグラフィ</string>
     <string name="settings_expanded_headers">拡大セクションヘッダー</string>
     <string name="settings_corner_rounding_override">角の丸み</string>
-    <string name="settings_follow_system_animations">システムのアニメーションに従う</string>
-    <string name="settings_follow_system_animations_summary">開発者向けオプションのアニメーション速度設定を反映します</string>
     <string name="settings_icon_color_mode">2トーンのアイコン色</string>
     <string name="settings_icon_color_mode_summary">2トーンアイコンの背景色の付け方</string>
     <string name="home_status_service_not_running_summary">%1$s は停止しています</string>
@@ -111,7 +109,6 @@
     <string name="app_management_sort_last_installed">インストール日が新しい順</string>
     <string name="app_management_sort_last_updated">更新日が新しい順</string>
     <string name="app_management_item_summary_partial_root">⚠ 一部のみ対応 — 一部の機能にはrootでのShizukuが必要です</string>
-    <string name="app_management_item_summary_requires_plus">* Shizuku+ 拡張APIが必要です</string>
     <string name="app_management_bulk_grant">選択したものを許可</string>
     <string name="app_management_bulk_revoke">選択したものを取り消す</string>
     <string name="app_management_bulk_hide">選択したものを非表示</string>
@@ -184,8 +181,6 @@
     <string name="dhizuku_device_owner_desc">許可されたアプリとデバイス所有者権限を共有するために、Dhizukuモードで必要です。</string>
     <string name="dhizuku_device_owner_enabled">Dhizukuデバイス所有者は有効です</string>
     <string name="dhizuku_device_owner_disabled">Dhizukuデバイス所有者は無効です</string>
-    <string name="settings_enhanced_api">Shizuku+ 拡張API</string>
-    <string name="settings_enhanced_api_summary">上級ユーザー向けの高度なシステムインターフェースを有効にします。Shizuku+ 限定機能のすべてに必要です。</string>
     <string name="settings_themed_icon">テーマ別アプリアイコン</string>
     <string name="settings_themed_icon_summary">ランチャーがテーマ別アイコンに対応している場合、Shizuku+ アイコンのMaterial You配色版を使用します。</string>
     <string name="settings_themed_icon_open_settings">アイコン設定を開く</string>
@@ -226,7 +221,6 @@
     <string name="settings_ai_automation_experimental">実験的AI自動化</string>
     <string name="settings_ai_automation_experimental_summary">AI駆動の自動化のために、ジェスチャーのシミュレーション、ピクセルキャプチャ、テキスト入力を有効にします</string>
     <string name="settings_keystore_fallback">ソフトウェアKeyStoreフォールバック</string>
-    <string name="settings_keystore_fallback_summary">ハードウェアKeyStoreが失敗した場合 (例: Samsung Knox)、ソフトウェアAESキーで暗号化したADBのRSAキーをキャッシュします。ペアリングの確認は減りますが、セキュリティは低下します。</string>
     <string name="settings_samsung_uid_escalation">Samsung システムUID昇格</string>
     <string name="settings_samsung_uid_escalation_summary">未修正のSamsungデバイス固有の脆弱性 (pascua28氏による) を利用して、UID 1000 (system) への昇格を試みます。自己責任でご使用ください。</string>
     <string name="settings_display_tuner_plus_title">ディスプレイチューナー</string>
@@ -271,7 +265,6 @@
     <string name="help_network_governor_plus_detail">ネットワークガバナーは、INetworkPolicyManagerとプライベートDNS設定への特権アクセスを提供します。個々のアプリにPOLICY_REJECT_ALLを適用でき、VPNトンネルなしでもWi-Fiや5G接続で動作する、堅牢なシステムレベルのファイアウォールを実現します。</string>
     <string name="help_activity_manager_plus_title">ディーププロセス制御について</string>
     <string name="help_activity_manager_plus_detail">ディーププロセス制御により、サーバーは標準のアプリ休止およびスタンバイ制限を回避できます。アプリをRESTRICTEDスタンバイバケットに強制したり、すべてのサービスとバックグラウンドジョブを終了する真のdeepForceStopを実行したりできます。積極的な省電力ツールには不可欠です。</string>
-    <string name="settings_plus_category_developer">開発者向けオプション (実験的)</string>
     <string name="settings_root_magisk_mocking">Magisk環境の偽装</string>
     <string name="settings_root_magisk_mocking_summary">Magiskのバイナリ、プロパティ、内部フォルダを偽装し、root検出を行うアプリを欺きます。</string>
     <string name="settings_root_auto_grant">自動承認ブリッジ</string>
@@ -288,10 +281,8 @@
     <string name="help_root_file_interceptor_detail">アプリが標準シェルで /data/data にファイルをコピーすると、所有権とSELinuxコンテキストが失われることがよくあります。このモジュールは --preserve=all などのフラグを自動的に追加して、ファイルの整合性を保ち、アプリのクラッシュを防ぎます。</string>
     <string name="help_root_busybox_title">BusyBoxシミュレーションについて</string>
     <string name="help_root_busybox_detail">BusyBoxは、root化されたデバイスでよく使われるUnixユーティリティ群です。古いrootアプリの中には、処理を実行する前にその存在を確認するものがあります。このモジュールは\'busybox\'コマンドに対して、成功を示す模擬応答を返します。</string>
-    <string name="settings_vector_summary">ハードウェアアクセラレーションによるベクターレンダリングを有効にして、グラフィックスのパフォーマンスを向上させます</string>
     <string name="settings_experimental_root_summary">Shizuku経由のrootベースの操作のための互換レイヤーを有効にします</string>
     <string name="settings_spoof_device_summary">互換性やテストのために、アプリに別のデバイスモデルを報告します</string>
-    <string name="settings_vector_experimental">ベクターアクセラレーション</string>
     <string name="settings_experimental_root_experimental">実験的root互換性</string>
     <string name="settings_spoof_device_experimental">デバイス識別情報の偽装</string>
     <string name="settings_open_source_licenses">オープンソースライセンス</string>
@@ -475,7 +466,6 @@
     <string name="settings_main_nav_startup_behavior_title">起動 &amp; 動作</string>
     <string name="settings_main_nav_startup_behavior_summary">起動オプション、ウォッチドッグ、ネットワーク、アクティビティ、更新</string>
     <string name="settings_main_nav_advanced_diagnostics_title">詳細設定 &amp; 診断</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">ログ、ADBツール、トラブルシューティング</string>
     <string name="settings_main_nav_about_summary">バージョン、バックアップ &amp; 復元、ライセンス、開発者向けオプション</string>
     <string name="settings_accent_violet_applied">ミッドナイトバイオレットを適用しました</string>
     <string name="settings_accent_green_applied">フォレストグリーンを適用しました</string>
@@ -524,7 +514,6 @@
     <string name="activity_log_type_other">イベント</string>
     <string name="settings_diagnostics_enabled">設定の診断</string>
     <string name="settings_diagnostics_enabled_summary">設定の競合や異常を事前にスキャンします</string>
-    <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid インデックス</string>
     <string name="settings_custom_accent_title">カスタムアクセントカラー</string>
     <string name="settings_behavior_category_startup">起動 &amp; 復旧</string>
     <string name="settings_advanced_category_diagnostics">診断</string>
@@ -533,7 +522,6 @@
     <string name="settings_personalization_category_shape_style">形状 &amp; アイコンスタイル</string>
     <string name="settings_personalization_category_home_screen">ホーム画面</string>
     <string name="settings_personalization_category_language">言語</string>
-    <string name="settings_plus_category_system_performance">システム &amp; パフォーマンス</string>
     <string name="settings_plus_category_security_access">セキュリティ &amp; アクセス</string>
     <string name="settings_plus_category_backup_restore">バックアップ &amp; 復元</string>
     <string name="settings_root_category_stock_compat">標準Shizukuとの互換性</string>
@@ -566,7 +554,6 @@
     <string name="settings_developer_category_debug">デバッグ &amp; 診断</string>
     <string name="settings_plus_category_device_owner_tools">デバイス所有者ツール</string>
     <string name="settings_developer_options">開発者向けオプション</string>
-    <string name="settings_developer_options_summary">仮想化、デバイス偽装、実験的機能</string>
     <string name="settings_auto_update_title">更新を自動確認</string>
     <string name="settings_auto_update_summary">アプリの起動時に新しいバージョンを自動的に確認します</string>
     <string name="settings_auto_install_title">更新を自動インストール</string>
@@ -695,7 +682,6 @@
     <string name="app_management_search_hint">アプリを検索</string>
     <string name="verify_virustotal_key_title">VirusTotal APIキー</string>
     <string name="verify_virustotal_key_required">VirusTotalスキャンを使用するにはAPIキーが必要です</string>
-    <string name="verify_pithus_key_title">Pithus APIキー (任意)</string>
     <string name="verify_api_key_hint">タップしてAPIキーを入力</string>
     <string name="verify_api_key_configured">APIキーを保存しました · タップして更新</string>
     <string name="verify_get_api_key">APIキーを取得</string>
@@ -1005,7 +991,6 @@
     <string name="settings_allow_automation_plugin_title">自動化アプリを許可</string>
     <string name="settings_allow_automation_plugin_summary">Tasker やその他の Locale 互換アプリによる Shizuku+ の開始・停止を許可します。インストールされている任意のアプリがこれを使用できるため、そのような自動化を使用する場合にのみ有効にしてください。</string>
     <string name="settings_usb_phone_switch_notify">USB 接続 &amp; 切り替え通知</string>
-    <string name="settings_usb_phone_switch_notify_summary">スマートフォンまたは USB デバイスへの接続時に、クイック設定とツールのショートカットを含む通知を固定表示</string>
     <string name="su_bridge_report_not_connected">Shizuku が接続されていません。ホーム画面から Shizuku サービスを開始して、もう一度お試しください。</string>
     <string name="su_bridge_report_deploy_failed">❌ /data/local/tmp へのブリッジの配置に失敗しました。</string>
     <string name="su_bridge_report_deploy_reason">理由: %1$s</string>

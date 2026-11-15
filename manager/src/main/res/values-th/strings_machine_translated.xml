@@ -28,8 +28,6 @@
     <string name="settings_bold_typography">ตัวอักษรหนา</string>
     <string name="settings_expanded_headers">ส่วนหัวหมวดแบบขยาย</string>
     <string name="settings_corner_rounding_override">ความโค้งมนของมุม</string>
-    <string name="settings_follow_system_animations">ตามแอนิเมชันของระบบ</string>
-    <string name="settings_follow_system_animations_summary">ใช้ความเร็วแอนิเมชันที่ตั้งไว้ในตัวเลือกสำหรับนักพัฒนาของอุปกรณ์</string>
     <string name="settings_icon_color_mode">สีไอคอนสองโทน</string>
     <string name="settings_icon_color_mode_summary">วิธีกำหนดสีพื้นหลังของไอคอนสองโทน</string>
     <string name="home_status_service_not_running_summary">%1$s หยุดทำงานอยู่</string>
@@ -111,7 +109,6 @@
     <string name="app_management_sort_last_installed">ติดตั้งล่าสุด</string>
     <string name="app_management_sort_last_updated">อัปเดตล่าสุด</string>
     <string name="app_management_item_summary_partial_root">⚠ รองรับบางส่วน — บางฟังก์ชันยังต้องใช้ Shizuku ร่วมกับ root</string>
-    <string name="app_management_item_summary_requires_plus">* ต้องใช้ Shizuku+ Enhanced API</string>
     <string name="app_management_bulk_grant">ให้สิทธิ์ที่เลือก</string>
     <string name="app_management_bulk_revoke">เพิกถอนสิทธิ์ที่เลือก</string>
     <string name="app_management_bulk_hide">ซ่อนที่เลือก</string>
@@ -184,8 +181,6 @@
     <string name="dhizuku_device_owner_desc">จำเป็นสำหรับโหมด Dhizuku เพื่อแชร์สิทธิ์เจ้าของอุปกรณ์กับแอปที่ได้รับอนุญาต</string>
     <string name="dhizuku_device_owner_enabled">เปิดใช้เจ้าของอุปกรณ์ Dhizuku แล้ว</string>
     <string name="dhizuku_device_owner_disabled">ปิดใช้เจ้าของอุปกรณ์ Dhizuku แล้ว</string>
-    <string name="settings_enhanced_api">Shizuku+ Enhanced API</string>
-    <string name="settings_enhanced_api_summary">เปิดใช้อินเทอร์เฟซระบบขั้นสูงสำหรับผู้ใช้ระดับสูง จำเป็นสำหรับฟีเจอร์เฉพาะของ Shizuku+ ทั้งหมด</string>
     <string name="settings_themed_icon">ไอคอนแอปแบบธีม</string>
     <string name="settings_themed_icon_summary">ใช้ไอคอน Shizuku+ เวอร์ชันที่ปรับโทนสีตาม Material You เมื่อตัวเปิดใช้รองรับไอคอนแบบธีม</string>
     <string name="settings_themed_icon_open_settings">เปิดการตั้งค่าไอคอน</string>
@@ -226,7 +221,6 @@
     <string name="settings_ai_automation_experimental">ระบบอัตโนมัติ AI (ทดลอง)</string>
     <string name="settings_ai_automation_experimental_summary">เปิดใช้การจำลองท่าทาง การจับพิกเซล และการแทรกข้อความสำหรับระบบอัตโนมัติที่ขับเคลื่อนด้วย AI</string>
     <string name="settings_keystore_fallback">KeyStore สำรองแบบซอฟต์แวร์</string>
-    <string name="settings_keystore_fallback_summary">แคชคีย์ RSA ของ ADB ที่เข้ารหัสด้วยคีย์ AES แบบซอฟต์แวร์เมื่อ KeyStore ฮาร์ดแวร์ล้มเหลว (เช่น Samsung Knox) ลดการแจ้งเตือนการจับคู่ แต่ความปลอดภัยลดลง</string>
     <string name="settings_samsung_uid_escalation">การยกระดับ UID ระบบของ Samsung</string>
     <string name="settings_samsung_uid_escalation_summary">พยายามยกระดับเป็น UID 1000 (ระบบ) โดยใช้ช่องโหว่เฉพาะอุปกรณ์ Samsung ที่ยังไม่ได้แพตช์ (โดย pascua28) ใช้ด้วยความเสี่ยงของคุณเอง</string>
     <string name="settings_display_tuner_plus_title">ตัวปรับแต่งการแสดงผล</string>
@@ -271,7 +265,6 @@
     <string name="help_network_governor_plus_detail">Network Governor ให้การเข้าถึง INetworkPolicyManager และการตั้งค่า DNS ส่วนตัวด้วยสิทธิ์พิเศษ สามารถบังคับใช้ POLICY_REJECT_ALL กับแต่ละแอป เป็นไฟร์วอลล์ระดับระบบที่แข็งแกร่งซึ่งใช้ได้แม้บน Wi-Fi และ 5G โดยไม่ต้องมีอุโมงค์ VPN ที่ทำงานอยู่</string>
     <string name="help_activity_manager_plus_title">เกี่ยวกับการควบคุมโพรเซสเชิงลึก</string>
     <string name="help_activity_manager_plus_detail">การควบคุมโพรเซสเชิงลึกช่วยให้เซิร์ฟเวอร์ข้ามข้อจำกัดการจำศีลและการสแตนด์บายของแอปมาตรฐาน สามารถบังคับแอปเข้า standby bucket แบบ RESTRICTED หรือทำ deepForceStop จริง (ฆ่าบริการและงานเบื้องหลังทั้งหมด) ซึ่งจำเป็นสำหรับเครื่องมือประหยัดแบตเตอรี่ขั้นเข้มข้น</string>
-    <string name="settings_plus_category_developer">ตัวเลือกสำหรับนักพัฒนา (ทดลอง)</string>
     <string name="settings_root_magisk_mocking">การจำลองสภาพแวดล้อม Magisk</string>
     <string name="settings_root_magisk_mocking_summary">ปลอมไบนารี พร็อพเพอร์ตี และโฟลเดอร์ภายในของ Magisk เพื่อหลอกแอปที่ตรวจจับ root</string>
     <string name="settings_root_auto_grant">สะพานอนุมัติอัตโนมัติ</string>
@@ -288,10 +281,8 @@
     <string name="help_root_file_interceptor_detail">เมื่อแอปคัดลอกไฟล์ไปยัง /data/data โดยใช้เชลล์มาตรฐาน มักสูญเสียความเป็นเจ้าของและบริบท SELinux โมดูลนี้เพิ่มแฟลกอย่าง --preserve=all โดยอัตโนมัติเพื่อรักษาความสมบูรณ์ของไฟล์และป้องกันแอปขัดข้อง</string>
     <string name="help_root_busybox_title">เกี่ยวกับการจำลอง BusyBox</string>
     <string name="help_root_busybox_detail">BusyBox คือชุดยูทิลิตี Unix ที่พบบ่อยในอุปกรณ์ที่รูท แอป root รุ่นเก่าบางตัวตรวจสอบว่ามีอยู่หรือไม่ก่อนรันตรรกะของตน โมดูลนี้ส่งคืนการตอบกลับสำเร็จจำลองสำหรับคำสั่ง \'busybox\'</string>
-    <string name="settings_vector_summary">เปิดใช้การเรนเดอร์เวกเตอร์แบบเร่งด้วยฮาร์ดแวร์เพื่อปรับปรุงประสิทธิภาพกราฟิก</string>
     <string name="settings_experimental_root_summary">เปิดใช้เลเยอร์ความเข้ากันได้สำหรับการทำงานที่ใช้ root ผ่าน Shizuku</string>
     <string name="settings_spoof_device_summary">รายงานรุ่นอุปกรณ์อื่นให้แอปเพื่อความเข้ากันได้หรือการทดสอบ</string>
-    <string name="settings_vector_experimental">การเร่งความเร็วเวกเตอร์</string>
     <string name="settings_experimental_root_experimental">ความเข้ากันได้ของ Root (ทดลอง)</string>
     <string name="settings_spoof_device_experimental">ปลอมข้อมูลระบุอุปกรณ์</string>
     <string name="settings_open_source_licenses">ใบอนุญาตโอเพนซอร์ส</string>
@@ -476,7 +467,6 @@
     <string name="settings_main_nav_startup_behavior_title">การเริ่มต้นและพฤติกรรม</string>
     <string name="settings_main_nav_startup_behavior_summary">ตัวเลือกการบูต watchdog เครือข่าย กิจกรรม และการอัปเดต</string>
     <string name="settings_main_nav_advanced_diagnostics_title">ขั้นสูงและการวินิจฉัย</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">บันทึก เครื่องมือ ADB และการแก้ไขปัญหา</string>
     <string name="settings_main_nav_about_summary">เวอร์ชัน สำรองและกู้คืน ใบอนุญาต และตัวเลือกสำหรับนักพัฒนา</string>
     <string name="settings_accent_violet_applied">ใช้ Midnight Violet แล้ว</string>
     <string name="settings_accent_green_applied">ใช้ Forest Green แล้ว</string>
@@ -620,7 +610,6 @@
     <string name="settings_allow_automation_plugin_title">อนุญาตแอปการทำงานอัตโนมัติ</string>
     <string name="settings_allow_automation_plugin_summary">อนุญาตให้ Tasker และแอปอื่นๆ ที่เข้ากันได้กับ Locale เริ่มและหยุด Shizuku+ ได้ แอปใดๆ ที่ติดตั้งอยู่สามารถใช้สิ่งนี้ได้ ดังนั้นให้เปิดใช้เฉพาะเมื่อคุณใช้งานระบบอัตโนมัติดังกล่าว</string>
     <string name="settings_usb_phone_switch_notify">การแจ้งเตือนการเชื่อมต่อ &amp; การสลับ USB</string>
-    <string name="settings_usb_phone_switch_notify_summary">ปักหมุดการแจ้งเตือนพร้อมการตั้งค่าด่วนและทางลัดเครื่องมือเมื่อเชื่อมต่อกับโทรศัพท์หรืออุปกรณ์ USB</string>
     <string name="su_bridge_report_not_connected">ไม่ได้เชื่อมต่อ Shizuku โปรดเริ่มบริการ Shizuku จากหน้าแรก แล้วลองอีกครั้ง</string>
     <string name="su_bridge_report_deploy_failed">❌ ไม่สามารถติดตั้ง Bridge ไปยัง /data/local/tmp ได้</string>
     <string name="su_bridge_report_deploy_reason">เหตุผล: %1$s</string>
@@ -722,7 +711,6 @@
     <string name="activity_log_type_other">เหตุการณ์</string>
     <string name="settings_diagnostics_enabled">การวินิจฉัยการตั้งค่า</string>
     <string name="settings_diagnostics_enabled_summary">สแกนการกำหนดค่าเพื่อค้นหาข้อขัดแย้งและความผิดปกติในเชิงรุก</string>
-    <string name="settings_verify_apk_fdroid_title">ดัชนี F-Droid / IzzyOnDroid</string>
     <string name="settings_custom_accent_title">สีกำหนดเองสำหรับเน้น</string>
     <string name="settings_behavior_category_startup">การเริ่มทำงาน &amp; การกู้คืน</string>
     <string name="settings_advanced_category_diagnostics">การวินิจฉัย</string>
@@ -766,7 +754,6 @@
     <string name="settings_personalization_category_app_identity">ไอคอน &amp; ชื่อแอป</string>
     <string name="settings_personalization_category_motion_haptics">การเคลื่อนไหว &amp; การสั่น</string>
     <string name="settings_personalization_category_layout_nav">ข้อความ &amp; เลย์เอาต์</string>
-    <string name="settings_plus_category_system_performance">ระบบ &amp; ประสิทธิภาพ</string>
     <string name="settings_plus_category_security_access">ความปลอดภัย &amp; การเข้าถึง</string>
     <string name="settings_plus_category_backup_restore">สำรองข้อมูล &amp; กู้คืน</string>
     <string name="settings_root_category_stock_compat">ความเข้ากันได้กับ Shizuku ดั้งเดิม</string>
@@ -799,7 +786,6 @@
     <string name="settings_developer_category_debug">ดีบัก &amp; การวินิจฉัย</string>
     <string name="settings_plus_category_device_owner_tools">เครื่องมือเจ้าของอุปกรณ์ (Device Owner)</string>
     <string name="settings_developer_options">ตัวเลือกสำหรับนักพัฒนา</string>
-    <string name="settings_developer_options_summary">การจำลองเสมือน การปลอมแปลงอุปกรณ์ และคุณสมบัติการทดลอง</string>
     <string name="settings_auto_update_title">ตรวจหาการอัปเดตอัตโนมัติ</string>
     <string name="settings_auto_update_summary">ตรวจหาเวอร์ชันใหม่อัตโนมัติเมื่อเปิดแอป</string>
     <string name="settings_auto_install_title">ติดตั้งการอัปเดตอัตโนมัติ</string>
@@ -928,7 +914,6 @@
     <string name="app_management_search_hint">ค้นหาแอป</string>
     <string name="verify_virustotal_key_title">คีย์ API ของ VirusTotal</string>
     <string name="verify_virustotal_key_required">จำเป็นต้องมีคีย์ API เพื่อใช้การสแกน VirusTotal</string>
-    <string name="verify_pithus_key_title">คีย์ API ของ Pithus (ไม่บังคับ)</string>
     <string name="verify_api_key_hint">แตะเพื่อป้อนคีย์ API</string>
     <string name="verify_api_key_configured">บันทึกคีย์ API แล้ว · แตะเพื่ออัปเดต</string>
     <string name="verify_get_api_key">รับคีย์ API</string>

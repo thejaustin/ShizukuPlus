@@ -188,13 +188,13 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/settings_enhanced_api"
+                    android:text="@string/settings_plus_app_controls"
                     android:textAppearance="?textAppearanceTitleMedium" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/settings_enhanced_api_summary"
+                    android:text="@string/settings_plus_app_controls_summary"
                     android:textAppearance="?textAppearanceBodySmall"
                     android:textColor="?colorOnSurfaceVariant" />
 

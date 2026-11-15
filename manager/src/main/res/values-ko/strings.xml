@@ -29,8 +29,6 @@
     <!-- UI Settings - Corner Rounding -->
     <string name="settings_corner_rounding_override">모서리 둥글기</string>
     <!-- UI Settings - System-following -->
-    <string name="settings_follow_system_animations">시스템 애니메이션 따르기</string>
-    <string name="settings_follow_system_animations_summary">개발자 옵션에서 설정한 기기의 애니메이션 속도 설정을 따릅니다</string>
     <string name="settings_icon_color_mode">투톤 아이콘 색상</string>
     <string name="settings_icon_color_mode_summary">투톤 아이콘 배경에 색상을 입히는 방식</string>
     <!-- Home - Status -->
@@ -224,7 +222,6 @@
 <string name="app_management_dialog_adb_is_limited_message"><![CDATA[기기 제조사에서 ADB의 권한을 제한하고 있을 가능성이 높습니다.<p><b><a href="%1$s">이 문서</a></b>에 시스템에 대한 해결 방안이 있을 수 있습니다.]]></string>
 <string name="app_management_item_summary_requires_root">* 루트 권한으로 실행된 Shizuku 필요</string>
     <string name="app_management_item_summary_partial_root">⚠ 부분 지원 — 일부 기능은 루트 권한의 Shizuku가 여전히 필요합니다</string>
-    <string name="app_management_item_summary_requires_plus">* Shizuku+ Enhanced API 필요</string>
 <string name="app_management_toggle_all">모두 전환</string>
     <string name="app_management_bulk_grant">선택 항목에 권한 부여</string>
     <string name="app_management_bulk_revoke">선택 항목의 권한 취소</string>
@@ -341,8 +338,6 @@
     <string name="dhizuku_device_owner_desc">인증된 앱과 기기 소유자 권한을 공유하는 Dhizuku 모드에 필요합니다.</string>
     <string name="dhizuku_device_owner_enabled">Dhizuku 기기 소유자 활성화됨</string>
     <string name="dhizuku_device_owner_disabled">Dhizuku 기기 소유자 비활성화됨</string>
-    <string name="settings_enhanced_api">Shizuku+ Enhanced API</string>
-    <string name="settings_enhanced_api_summary">고급 사용자를 위한 고급 시스템 인터페이스를 활성화합니다. 모든 Shizuku+ 전용 기능에 필요합니다.</string>
     <string name="settings_themed_icon">테마 적용 앱 아이콘</string>
     <string name="settings_themed_icon_summary">런처에서 테마 아이콘을 지원하면 Shizuku+ 아이콘의 Material You 색상 버전을 사용합니다.</string>
     <string name="settings_themed_icon_open_settings">아이콘 설정 열기</string>
@@ -387,7 +382,6 @@
     <string name="settings_ai_automation_experimental">실험적 AI 자동화</string>
     <string name="settings_ai_automation_experimental_summary">AI 기반 자동화를 위한 제스처 시뮬레이션, 픽셀 캡처, 텍스트 삽입을 활성화합니다</string>
     <string name="settings_keystore_fallback">소프트웨어 KeyStore 대체</string>
-    <string name="settings_keystore_fallback_summary">하드웨어 KeyStore가 실패할 때(예: Samsung Knox) 소프트웨어 AES 키로 암호화된 ADB RSA 키를 캐시합니다. 페어링 프롬프트는 줄어들지만 보안이 낮아집니다.</string>
     <string name="settings_samsung_uid_escalation">Samsung 시스템 UID 에스컬레이션</string>
     <string name="settings_samsung_uid_escalation_summary">패치되지 않은 Samsung 기기 전용 익스플로잇(pascua28 제작)을 사용하여 UID 1000(시스템)으로 에스컬레이션을 시도합니다. 본인의 책임 하에 사용하세요.</string>
     <string name="settings_display_tuner_plus_title">디스플레이 튜너</string>
@@ -434,7 +428,6 @@
     <string name="help_activity_manager_plus_title">Deep Process Control 정보</string>
     <string name="help_activity_manager_plus_detail">Deep Process Control을 사용하면 서버가 표준 앱 최대 절전 및 대기 제한을 우회할 수 있습니다. 앱을 RESTRICTED 대기 버킷으로 강제 전환하거나 진정한 deepForceStop(모든 서비스 및 백그라운드 작업 종료)을 수행할 수 있어, 공격적인 배터리 절약 도구에 필수적입니다.</string>
     <!-- Plus settings category titles -->
-    <string name="settings_plus_category_developer">개발자 옵션 (실험적)</string>
     <string name="settings_root_magisk_mocking">Magisk 환경 모킹</string>
     <string name="settings_root_magisk_mocking_summary">루트를 감지하는 앱을 속이기 위해 Magisk 바이너리, 속성 및 내부 폴더를 위장합니다.</string>
     <string name="settings_root_auto_grant">자동 승인 브릿지</string>
@@ -451,10 +444,8 @@
     <string name="help_root_file_interceptor_detail">앱이 표준 셸을 사용하여 /data/data에 파일을 복사하면 소유권과 SELinux 컨텍스트가 손실되는 경우가 많습니다. 이 모듈은 --preserve=all과 같은 플래그를 자동으로 추가하여 파일 무결성을 유지하고 앱 충돌을 방지합니다.</string>
     <string name="help_root_busybox_title">BusyBox 시뮬레이션 정보</string>
     <string name="help_root_busybox_detail">BusyBox는 루트된 기기에서 흔히 볼 수 있는 Unix 유틸리티 모음입니다. 일부 오래된 루트 앱은 로직을 실행하기 전에 BusyBox의 존재를 확인합니다. 이 모듈은 \'busybox\' 명령에 대해 시뮬레이션된 성공 응답을 반환합니다.</string>
-    <string name="settings_vector_summary">그래픽 성능 향상을 위해 하드웨어 가속 벡터 렌더링을 활성화합니다</string>
     <string name="settings_experimental_root_summary">Shizuku를 통한 루트 기반 작업용 호환성 레이어를 활성화합니다</string>
     <string name="settings_spoof_device_summary">호환성 또는 테스트 목적으로 앱에 다른 기기 모델을 보고합니다</string>
-    <string name="settings_vector_experimental">벡터 가속</string>
     <string name="settings_experimental_root_experimental">실험적 루트 호환성</string>
     <string name="settings_spoof_device_experimental">기기 ID 스푸핑</string>
     <string name="settings_open_source_licenses">오픈소스 라이선스</string>
@@ -724,7 +715,6 @@
     <string name="settings_main_nav_startup_behavior_title">시작 및 동작</string>
     <string name="settings_main_nav_startup_behavior_summary">부팅 옵션, 워치독, 네트워크, 활동 및 업데이트</string>
     <string name="settings_main_nav_advanced_diagnostics_title">고급 및 진단</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">로그, ADB 도구 및 문제 해결</string>
     <string name="settings_main_nav_about_summary">버전, 라이선스 및 개발자 옵션</string>
     <string name="settings_accent_violet_applied">미드나잇 바이올렛이 적용되었습니다</string>
     <string name="settings_accent_green_applied">포레스트 그린이 적용되었습니다</string>
@@ -769,7 +759,6 @@
     <string name="settings_diagnostics_enabled">설정 진단</string>
     <string name="settings_diagnostics_enabled_summary">충돌과 이상을 찾기 위해 구성을 선제적으로 검사합니다</string>
     <!-- Verified install preferences (settings_app_management.xml) -->
-    <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid 인덱스</string>
     <!-- Custom accent color preference (settings_personalization.xml) -->
     <string name="settings_custom_accent_title">사용자 지정 강조 색상</string>
     <!-- AI Bridge feature preference (settings_shizuku_plus.xml) -->
@@ -782,7 +771,6 @@
     <string name="settings_personalization_category_shape_style">모양 및 아이콘 스타일</string>
     <string name="settings_personalization_category_home_screen">홈 화면</string>
     <string name="settings_personalization_category_language">언어</string>
-    <string name="settings_plus_category_system_performance">시스템 및 성능</string>
     <string name="settings_plus_category_security_access">보안 및 액세스</string>
     <string name="settings_plus_category_backup_restore">백업 및 복원</string>
     <string name="settings_root_category_stock_compat">순정 Shizuku 호환성</string>
@@ -820,7 +808,6 @@
     <string name="settings_plus_category_device_owner_tools">기기 소유자 도구</string>
     <!-- Developer Options -->
     <string name="settings_developer_options">개발자 옵션</string>
-    <string name="settings_developer_options_summary">가상화, 기기 스푸핑 및 실험적 기능</string>
     <string name="settings_auto_update_title">업데이트 자동 확인</string>
     <string name="settings_auto_update_summary">앱 시작 시 새 버전을 자동으로 확인합니다</string>
     <string name="settings_auto_install_title">업데이트 자동 설치</string>
@@ -946,7 +933,6 @@
     <!-- APK verification API key strings -->
     <string name="verify_virustotal_key_title">VirusTotal API 키</string>
     <string name="verify_virustotal_key_required">VirusTotal 검사를 사용하려면 API 키가 필요합니다</string>
-    <string name="verify_pithus_key_title">Pithus API 키 (선택 사항)</string>
     <string name="verify_api_key_hint">탭하여 API 키 입력</string>
     <string name="verify_api_key_configured">API 키가 저장됨 · 탭하여 업데이트</string>
     <string name="verify_get_api_key">API 키 받기</string>

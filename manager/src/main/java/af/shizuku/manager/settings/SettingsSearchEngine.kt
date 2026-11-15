@@ -15,6 +15,7 @@ object SettingsSearchEngine {
         val fragmentClass: String,
         val xmlResId: Int,
         val iconResId: Int = 0,
+        val categoryKey: String? = null,
     )
 
     private var indexedItems: List<SettingItem>? = null
@@ -45,6 +46,7 @@ object SettingsSearchEngine {
                 val parser = context.resources.getXml(xmlId)
                 var eventType = parser.eventType
                 var currentCategory: String? = null
+                var currentCategoryKey: String? = null
 
                 while (eventType != XmlPullParser.END_DOCUMENT) {
                     if (eventType == XmlPullParser.START_TAG) {
@@ -55,6 +57,7 @@ object SettingsSearchEngine {
                         ) {
                             val catTitleResId = parser.getAttributeResourceValue(namespace, "title", 0)
                             currentCategory = if (catTitleResId != 0) context.getString(catTitleResId) else parser.getAttributeValue(namespace, "title")
+                            currentCategoryKey = parser.getAttributeValue(namespace, "key")
                         } else if (tagName != "PreferenceScreen") {
                             val key = parser.getAttributeValue(namespace, "key")
 
@@ -67,7 +70,7 @@ object SettingsSearchEngine {
                             val iconResId = parser.getAttributeResourceValue(namespace, "icon", 0)
 
                             if (!title.isNullOrBlank()) {
-                                items.add(SettingItem(key, title, summary, currentCategory, fragmentClass, xmlId, iconResId))
+                                items.add(SettingItem(key, title, summary, currentCategory, fragmentClass, xmlId, iconResId, currentCategoryKey))
                             }
                         }
                     }
@@ -124,6 +127,8 @@ object SettingsSearchEngine {
 
         return items.filter { item ->
             if (!devUnlocked && item.fragmentClass == "af.shizuku.manager.settings.DeveloperOptionsFragment") return@filter false
+            // Experimental > Developer previews is hidden until Developer options are unlocked.
+            if (!devUnlocked && item.categoryKey == DEV_PREVIEWS_CATEGORY) return@filter false
             // Experimental app identity rows stay out of search while the dev toggle is off.
             if (!appIdentityOn && item.key in APP_IDENTITY_KEYS) return@filter false
             item.title.lowercase().contains(q) ||
@@ -132,5 +137,6 @@ object SettingsSearchEngine {
         }
     }
 
+    private const val DEV_PREVIEWS_CATEGORY = "category_experimental"
     private val APP_IDENTITY_KEYS = setOf("category_app_identity", "custom_icon_studio", "app_icon_alias", "custom_app_name")
 }

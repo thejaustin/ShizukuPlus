@@ -189,7 +189,6 @@
     <string name="settings_allow_automation_plugin_title">자동화 앱 허용</string>
     <string name="settings_allow_automation_plugin_summary">Tasker 및 기타 Locale 호환 앱이 Shizuku+를 시작하고 중지할 수 있도록 허용합니다. 설치된 모든 앱이 이를 사용할 수 있으므로 이러한 자동화를 사용하는 경우에만 켜세요.</string>
     <string name="settings_usb_phone_switch_notify">USB 연결 &amp; 전환 알림</string>
-    <string name="settings_usb_phone_switch_notify_summary">전화기 또는 USB 장치에 연결될 때 빠른 설정 및 도구 바로가기가 포함된 알림 고정</string>
     <string name="su_bridge_report_not_connected">Shizuku가 연결되지 않았습니다. 홈 화면에서 Shizuku 서비스를 시작한 다음 다시 시도하세요.</string>
     <string name="su_bridge_report_deploy_failed">❌ /data/local/tmp에 브리지를 배포할 수 없습니다.</string>
     <string name="su_bridge_report_deploy_reason">원인: %1$s</string>

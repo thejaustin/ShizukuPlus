@@ -598,7 +598,7 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                 val newPort = newValue as? Int ?: ShizukuSettings.getTcpPort()
                 (currentPort > 0) && (currentPort != newPort)
             }
-            KEY_DHIZUKU_MODE, KEY_CUSTOM_API_ENABLED -> true
+            KEY_DHIZUKU_MODE -> true
             else -> false
         }
     }

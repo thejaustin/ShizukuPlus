@@ -299,4 +299,24 @@
         <item>icon_switch</item>
         <item>shape_thumb</item>
     </string-array>
+    <string-array name="animations_modes">
+        <item>@string/settings_animations_off</item>
+        <item>@string/settings_animations_system</item>
+        <item>@string/settings_animations_custom</item>
+    </string-array>
+    <string-array name="animations_modes_value" translatable="false">
+        <item>off</item>
+        <item>system</item>
+        <item>custom</item>
+    </string-array>
+    <string-array name="status_outline_modes">
+        <item>@string/settings_status_outline_off</item>
+        <item>@string/settings_status_outline_theme</item>
+        <item>@string/settings_status_outline_status</item>
+    </string-array>
+    <string-array name="status_outline_modes_value" translatable="false">
+        <item>off</item>
+        <item>material</item>
+        <item>status</item>
+    </string-array>
 </resources>

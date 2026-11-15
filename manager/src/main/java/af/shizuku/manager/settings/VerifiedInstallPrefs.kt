@@ -12,109 +12,139 @@ import androidx.preference.TwoStatePreference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 /**
- * Verified installation (local signatures, F-Droid index, VirusTotal, Pithus) and Package governor.
- * Lives under Startup & behavior > Security; kept here so the rows' wiring moves with them.
+ * App safety check rows (Startup & behavior): the local check, the VirusTotal and Pithus lookups and
+ * their API key rows. The online checks do nothing without a key, so they ask for one before they
+ * turn on, and clearing a key turns its check off. RequestPermissionActivity reads the same keys.
  */
 object VerifiedInstallPrefs {
     const val VIRUSTOTAL_KEY_URL = "https://www.virustotal.com/gui/my-apikey"
     const val PITHUS_KEY_URL = "https://beta.pithus.org"
 
-    fun attach(fragment: BaseSettingsFragment) {
-        // Package governor is a Plus feature: sync once the switch has saved its new value.
-        fragment
-            .findPreference<TwoStatePreference>("package_governor_plus_enabled")
-            ?.setOnPreferenceChangeListener { _, _ ->
-                fragment.view?.post { ShizukuSettings.syncAllPlusFeaturesToServer() }
-                true
-            }
+    private const val VT_SWITCH = "verify_apk_virustotal"
+    private const val VT_MANAGE = "virustotal_api_key_manage"
+    private const val PITHUS_SWITCH = "verify_apk_pithus"
+    private const val PITHUS_MANAGE = "pithus_api_key_manage"
 
-        // Legacy individual rows wiring preserved if present
-        fragment.findPreference<TwoStatePreference>("verify_apk_virustotal")?.setOnPreferenceChangeListener { pref, newValue ->
+    /** Prefs whose change should refresh the key rows (see [refresh]). */
+    val WATCHED_KEYS =
+        setOf(VT_SWITCH, PITHUS_SWITCH, ShizukuSettings.Keys.KEY_VIRUSTOTAL_API_KEY, ShizukuSettings.Keys.KEY_PITHUS_API_KEY)
+
+    fun attach(fragment: BaseSettingsFragment) {
+        wire(fragment, VT_SWITCH, VT_MANAGE, ShizukuSettings::getVirusTotalApiKey, ::promptVirusTotalKey)
+        wire(fragment, PITHUS_SWITCH, PITHUS_MANAGE, ShizukuSettings::getPithusApiKey, ::promptPithusKey)
+        refresh(fragment)
+    }
+
+    private fun wire(
+        fragment: BaseSettingsFragment,
+        switchKey: String,
+        manageKey: String,
+        apiKey: () -> String,
+        prompt: (Context, (String) -> Unit, () -> Unit, (() -> Unit)?) -> Unit,
+    ) {
+        val switch = fragment.findPreference<TwoStatePreference>(switchKey)
+        switch?.setOnPreferenceChangeListener { _, newValue ->
             val enabling = newValue as? Boolean ?: return@setOnPreferenceChangeListener false
-            if (enabling && ShizukuSettings.getVirusTotalApiKey().isBlank()) {
-                promptVirusTotalKey(
-                    fragment.requireContext(),
-                    onSaved = { (pref as TwoStatePreference).isChecked = true },
-                    onCancel = { (pref as TwoStatePreference).isChecked = false },
-                )
+            if (enabling && apiKey().isBlank()) {
+                prompt(fragment.requireContext(), { switch.isChecked = true }, {}, null)
                 false
             } else {
                 true
             }
         }
-
-        updateApiKeyManageSummary(fragment, "virustotal_api_key_manage", ShizukuSettings.getVirusTotalApiKey())
-        fragment.findPreference<Preference>("virustotal_api_key_manage")?.setOnPreferenceClickListener {
-            promptVirusTotalKey(fragment.requireContext(), onSaved = { key ->
-                updateApiKeyManageSummary(fragment, "virustotal_api_key_manage", key)
-            })
-            true
-        }
-
-        updateApiKeyManageSummary(fragment, "pithus_api_key_manage", ShizukuSettings.getPithusApiKey())
-        fragment.findPreference<Preference>("pithus_api_key_manage")?.setOnPreferenceClickListener {
-            promptPithusKey(fragment.requireContext(), onSaved = { key ->
-                updateApiKeyManageSummary(fragment, "pithus_api_key_manage", key)
-            })
+        fragment.findPreference<Preference>(manageKey)?.setOnPreferenceClickListener {
+            prompt(fragment.requireContext(), {}, {}) { switch?.isChecked = false }
             true
         }
     }
 
+    /** Key rows: saved, missing while their check is on, or not set. */
+    fun refresh(fragment: BaseSettingsFragment) {
+        fun summary(
+            switchKey: String,
+            apiKey: String,
+        ) = fragment.getString(
+            when {
+                apiKey.isNotBlank() -> R.string.verify_api_key_configured
+                fragment.findPreference<TwoStatePreference>(switchKey)?.isChecked == true -> R.string.settings_verify_key_missing
+                else -> R.string.settings_verify_key_not_set
+            },
+        )
+        fragment.findPreference<Preference>(VT_MANAGE)?.setCustomSummary(summary(VT_SWITCH, ShizukuSettings.getVirusTotalApiKey()))
+        fragment.findPreference<Preference>(PITHUS_MANAGE)?.setCustomSummary(summary(PITHUS_SWITCH, ShizukuSettings.getPithusApiKey()))
+    }
+
+    /** With [onCleared], a blank entry removes a saved key; otherwise a key is required. */
     fun promptVirusTotalKey(
         context: Context,
         onSaved: (String) -> Unit,
         onCancel: () -> Unit = {},
-    ) {
-        showApiKeyDialog(
-            context = context,
-            title = context.getString(R.string.verify_virustotal_key_title),
-            hint = context.getString(R.string.verify_api_key_hint),
-            currentKey = ShizukuSettings.getVirusTotalApiKey(),
-            getKeyUrl = VIRUSTOTAL_KEY_URL,
-            onSave = { key ->
-                if (key.isBlank()) {
-                    Toast.makeText(context, R.string.verify_virustotal_key_required, Toast.LENGTH_SHORT).show()
-                    onCancel()
-                } else {
-                    ShizukuSettings.setVirusTotalApiKey(key)
-                    onSaved(key)
-                }
-            },
-            onCancel = onCancel,
-        )
-    }
+        onCleared: (() -> Unit)? = null,
+    ) = promptKey(
+        context,
+        context.getString(R.string.verify_virustotal_key_title),
+        ShizukuSettings.getVirusTotalApiKey(),
+        VIRUSTOTAL_KEY_URL,
+        R.string.verify_virustotal_key_required,
+        ShizukuSettings::setVirusTotalApiKey,
+        onSaved,
+        onCancel,
+        onCleared,
+    )
 
     fun promptPithusKey(
         context: Context,
         onSaved: (String) -> Unit,
         onCancel: () -> Unit = {},
+        onCleared: (() -> Unit)? = null,
+    ) = promptKey(
+        context,
+        context.getString(R.string.settings_verify_pithus_key_row),
+        ShizukuSettings.getPithusApiKey(),
+        PITHUS_KEY_URL,
+        R.string.verify_pithus_key_required,
+        ShizukuSettings::setPithusApiKey,
+        onSaved,
+        onCancel,
+        onCleared,
+    )
+
+    private fun promptKey(
+        context: Context,
+        title: String,
+        currentKey: String,
+        getKeyUrl: String,
+        requiredMessage: Int,
+        store: (String) -> Unit,
+        onSaved: (String) -> Unit,
+        onCancel: () -> Unit,
+        onCleared: (() -> Unit)?,
     ) {
         showApiKeyDialog(
             context = context,
-            title = context.getString(R.string.verify_pithus_key_title),
+            title = title,
             hint = context.getString(R.string.verify_api_key_hint),
-            currentKey = ShizukuSettings.getPithusApiKey(),
-            getKeyUrl = PITHUS_KEY_URL,
+            currentKey = currentKey,
+            getKeyUrl = getKeyUrl,
             onSave = { key ->
-                ShizukuSettings.setPithusApiKey(key)
-                onSaved(key)
+                when {
+                    key.isNotBlank() -> {
+                        store(key)
+                        onSaved(key)
+                    }
+                    onCleared != null && currentKey.isNotBlank() -> {
+                        store("")
+                        onCleared()
+                        Toast.makeText(context, R.string.settings_verify_key_cleared, Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        Toast.makeText(context, requiredMessage, Toast.LENGTH_SHORT).show()
+                        onCancel()
+                    }
+                }
             },
             onCancel = onCancel,
         )
-    }
-
-    private fun updateApiKeyManageSummary(
-        fragment: BaseSettingsFragment,
-        key: String,
-        apiKey: String,
-    ) {
-        val summary =
-            if (apiKey.isNotBlank()) {
-                fragment.getString(R.string.verify_api_key_configured)
-            } else {
-                fragment.getString(R.string.verify_api_key_hint)
-            }
-        fragment.findPreference<Preference>(key)?.setCustomSummary(summary)
     }
 
     fun showApiKeyDialog(

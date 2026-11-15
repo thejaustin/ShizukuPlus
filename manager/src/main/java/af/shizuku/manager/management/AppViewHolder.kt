@@ -606,14 +606,14 @@ class AppViewHolder(
                     key = featureKey,
                     title = context.getString(R.string.settings_shell_interceptor),
                     isEnabled = ShizukuSettings.isShellInterceptorEnabled(),
-                    highlightKey = "plus_governors_module",
+                    highlightKey = "shell_interceptor_enabled",
                 )
             "storage_proxy" ->
                 GlobalPlusFeatureInfo(
                     key = featureKey,
                     title = context.getString(R.string.settings_storage_proxy),
                     isEnabled = ShizukuSettings.isStorageProxyEnabled(),
-                    highlightKey = "plus_governors_module",
+                    highlightKey = "storage_proxy_enabled",
                 )
             "overlay_manager_plus" ->
                 GlobalPlusFeatureInfo(

@@ -27,8 +27,6 @@
     <string name="settings_bold_typography">Kalın Tipografi</string>
     <string name="settings_expanded_headers">Genişletilmiş Bölüm Başlıkları</string>
     <string name="settings_corner_rounding_override">Köşe Yuvarlama</string>
-    <string name="settings_follow_system_animations">Sistem Animasyonlarını İzle</string>
-    <string name="settings_follow_system_animations_summary">Geliştirici Seçenekleri\'ndeki cihaz animasyon hızı ayarına uy</string>
     <string name="settings_icon_color_mode">İki Tonlu Simge Renkleri</string>
     <string name="settings_icon_color_mode_summary">İki tonlu simge arka planının nasıl renklendirileceği</string>
     <string name="home_status_service_not_running_summary">%1$s durduruldu</string>
@@ -108,7 +106,6 @@
     <string name="app_management_sort_last_installed">Son yüklenen</string>
     <string name="app_management_sort_last_updated">Son güncellenen</string>
     <string name="app_management_item_summary_partial_root">⚠ Kısmen destekleniyor: bazı işlevler için hâlâ root\'lu Shizuku gerekir</string>
-    <string name="app_management_item_summary_requires_plus">* Shizuku+ Gelişmiş API gerektirir</string>
     <string name="app_management_bulk_grant">Seçilenlere izin ver</string>
     <string name="app_management_bulk_revoke">Seçilenlerin iznini kaldır</string>
     <string name="app_management_bulk_hide">Seçilenleri gizle</string>
@@ -181,8 +178,6 @@
     <string name="dhizuku_device_owner_desc">Dhizuku Modu\'nun Cihaz Sahibi ayrıcalıklarını yetkili uygulamalarla paylaşması için gereklidir.</string>
     <string name="dhizuku_device_owner_enabled">Dhizuku Cihaz Sahibi Etkin</string>
     <string name="dhizuku_device_owner_disabled">Dhizuku Cihaz Sahibi Devre Dışı</string>
-    <string name="settings_enhanced_api">Shizuku+ Gelişmiş API</string>
-    <string name="settings_enhanced_api_summary">İleri düzey kullanıcılar için gelişmiş sistem arayüzlerini etkinleştir. Tüm Shizuku+\'a özel özellikler için gereklidir.</string>
     <string name="settings_themed_icon">Temalı uygulama simgesi</string>
     <string name="settings_themed_icon_summary">Başlatıcınız temalı simgeleri destekliyorsa Shizuku+ simgesinin Material You renkli sürümünü kullan.</string>
     <string name="settings_themed_icon_open_settings">Simge ayarlarını aç</string>
@@ -223,7 +218,6 @@
     <string name="settings_ai_automation_experimental">Deneysel Yapay Zekâ Otomasyonu</string>
     <string name="settings_ai_automation_experimental_summary">Yapay zekâ destekli otomasyon için hareket simülasyonunu, piksel yakalamayı ve metin eklemeyi etkinleştir</string>
     <string name="settings_keystore_fallback">Yazılım KeyStore Yedeği</string>
-    <string name="settings_keystore_fallback_summary">Donanım KeyStore başarısız olduğunda (ör. Samsung Knox) ADB RSA anahtarını bir yazılım AES anahtarıyla şifreleyerek önbelleğe al. Eşleştirme istemlerini azaltır ancak güvenliği düşürür.</string>
     <string name="settings_samsung_uid_escalation">Samsung Sistem UID Yükseltmesi</string>
     <string name="settings_samsung_uid_escalation_summary">Yama uygulanmamış Samsung cihazlara özgü bir açık (pascua28 tarafından) kullanarak UID 1000\'e (system) yükselmeyi dene. Sorumluluk size aittir.</string>
     <string name="settings_display_tuner_plus_title">Ekran Ayarlayıcı</string>
@@ -268,7 +262,6 @@
     <string name="help_network_governor_plus_detail">Ağ Denetleyicisi, INetworkPolicyManager\'a ve Özel DNS ayarlarına ayrıcalıklı erişim sağlar. Tek tek uygulamalar için POLICY_REJECT_ALL uygulayabilir; böylece etkin bir VPN tüneli olmadan Wi-Fi ve 5G bağlantılarında bile çalışan sağlam, sistem düzeyinde bir güvenlik duvarı sunar.</string>
     <string name="help_activity_manager_plus_title">Derin Süreç Denetimi Hakkında</string>
     <string name="help_activity_manager_plus_detail">Derin Süreç Denetimi, sunucunun standart uygulama hazırda bekletme ve bekleme kısıtlamalarını atlamasına olanak tanır. Uygulamaları RESTRICTED bekleme grubuna zorlayabilir veya gerçek bir deepForceStop (tüm hizmetleri ve arka plan işlerini sonlandırma) gerçekleştirebilir; bu, agresif pil tasarrufu araçları için gereklidir.</string>
-    <string name="settings_plus_category_developer">Geliştirici Seçenekleri (Deneysel)</string>
     <string name="settings_root_magisk_mocking">Magisk Ortamı Taklidi</string>
     <string name="settings_root_magisk_mocking_summary">Root algılayan uygulamaları kandırmak için Magisk ikili dosyalarını, özelliklerini ve iç klasörlerini taklit eder.</string>
     <string name="settings_root_auto_grant">Otomatik Onay Köprüsü</string>
@@ -285,10 +278,8 @@
     <string name="help_root_file_interceptor_detail">Uygulamalar standart bir kabuk kullanarak /data/data dizinine dosya kopyaladığında genellikle sahiplik ve SELinux bağlamlarını kaybeder. Bu modül, dosya bütünlüğünü korumak ve uygulama çökmelerini önlemek için --preserve=all gibi bayrakları otomatik olarak ekler.</string>
     <string name="help_root_busybox_title">BusyBox Simülasyonu Hakkında</string>
     <string name="help_root_busybox_detail">BusyBox, root\'lu cihazlarda yaygın olan bir Unix yardımcı programları paketidir. Bazı eski root uygulamaları mantıklarını çalıştırmadan önce varlığını denetler. Bu modül \'busybox\' komutu için simüle edilmiş başarılı bir yanıt döndürür.</string>
-    <string name="settings_vector_summary">Daha iyi grafik performansı için donanım hızlandırmalı vektör işlemeyi etkinleştir</string>
     <string name="settings_experimental_root_summary">Shizuku üzerinden root tabanlı işlemler için uyumluluk katmanını etkinleştir</string>
     <string name="settings_spoof_device_summary">Uyumluluk veya test amacıyla uygulamalara farklı bir cihaz modeli bildir</string>
-    <string name="settings_vector_experimental">Vektör Hızlandırma</string>
     <string name="settings_experimental_root_experimental">Deneysel Root Uyumluluğu</string>
     <string name="settings_spoof_device_experimental">Cihaz Kimliğini Taklit Et</string>
     <string name="settings_open_source_licenses">Açık kaynak lisansları</string>
@@ -473,7 +464,6 @@
     <string name="settings_main_nav_startup_behavior_title">Başlangıç &amp; Davranış</string>
     <string name="settings_main_nav_startup_behavior_summary">Önyükleme seçenekleri, watchdog, ağ, etkinlik ve güncellemeler</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Gelişmiş &amp; Tanılama</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">Günlükler, ADB araçları ve sorun giderme</string>
     <string name="settings_main_nav_about_summary">Sürüm, yedekleme &amp; geri yükleme, lisanslar ve geliştirici seçenekleri</string>
     <string name="settings_accent_violet_applied">Gece Moru uygulandı</string>
     <string name="settings_accent_green_applied">Orman Yeşili uygulandı</string>
@@ -522,7 +512,6 @@
     <string name="activity_log_type_other">Olay</string>
     <string name="settings_diagnostics_enabled">Ayar Tanılaması</string>
     <string name="settings_diagnostics_enabled_summary">Yapılandırmaları çakışmalar ve anormallikler için proaktif olarak tara</string>
-    <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid Dizini</string>
     <string name="settings_custom_accent_title">Özel Vurgu Rengi</string>
     <string name="settings_behavior_category_startup">Başlangıç &amp; Kurtarma</string>
     <string name="settings_advanced_category_diagnostics">Tanılama</string>
@@ -531,7 +520,6 @@
     <string name="settings_personalization_category_shape_style">Şekil &amp; Simge Stili</string>
     <string name="settings_personalization_category_home_screen">Ana Ekran</string>
     <string name="settings_personalization_category_language">Dil</string>
-    <string name="settings_plus_category_system_performance">Sistem &amp; Performans</string>
     <string name="settings_plus_category_security_access">Güvenlik &amp; Erişim</string>
     <string name="settings_plus_category_backup_restore">Yedekleme &amp; Geri Yükleme</string>
     <string name="settings_root_category_stock_compat">Standart Shizuku Uyumluluğu</string>
@@ -564,7 +552,6 @@
     <string name="settings_developer_category_debug">Hata Ayıklama &amp; Tanılama</string>
     <string name="settings_plus_category_device_owner_tools">Cihaz Sahibi Araçları</string>
     <string name="settings_developer_options">Geliştirici Seçenekleri</string>
-    <string name="settings_developer_options_summary">Sanallaştırma, cihaz taklidi ve deneysel özellikler</string>
     <string name="settings_auto_update_title">Güncellemeleri otomatik denetle</string>
     <string name="settings_auto_update_summary">Uygulama başlangıcında yeni sürümleri otomatik olarak denetle</string>
     <string name="settings_auto_install_title">Güncellemeleri otomatik yükle</string>
@@ -693,7 +680,6 @@
     <string name="app_management_search_hint">Uygulama ara</string>
     <string name="verify_virustotal_key_title">VirusTotal API Anahtarı</string>
     <string name="verify_virustotal_key_required">VirusTotal taraması için API anahtarı gereklidir</string>
-    <string name="verify_pithus_key_title">Pithus API Anahtarı (İsteğe bağlı)</string>
     <string name="verify_api_key_hint">API anahtarını girmek için dokunun</string>
     <string name="verify_api_key_configured">API anahtarı kaydedildi · güncellemek için dokunun</string>
     <string name="verify_get_api_key">API Anahtarı Al</string>
@@ -1006,7 +992,6 @@
     <string name="settings_allow_automation_plugin_title">Otomasyon uygulamalarına izin ver</string>
     <string name="settings_allow_automation_plugin_summary">Tasker ve diğer Locale uyumlu uygulamaların Shizuku+\'yı başlatmasına ve durdurmasına izin verir. Yüklü herhangi bir uygulama bunu kullanabilir, bu nedenle yalnızca bu tür otomasyonları kullanıyorsanız açın.</string>
     <string name="settings_usb_phone_switch_notify">USB bağlantısı ve geçiş bildirimi</string>
-    <string name="settings_usb_phone_switch_notify_summary">Bir telefona veya USB cihaza bağlandığında hızlı ayarlar ve araç kısayolları içeren bir bildirim sabitleyin</string>
     <string name="su_bridge_report_not_connected">Shizuku bağlı değil. Shizuku hizmetini ana ekrandan başlatın ve tekrar deneyin.</string>
     <string name="su_bridge_report_deploy_failed">❌ Köprü /data/local/tmp konumuna dağıtılamadı.</string>
     <string name="su_bridge_report_deploy_reason">Neden: %1$s</string>

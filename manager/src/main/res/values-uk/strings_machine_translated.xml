@@ -189,7 +189,6 @@
     <string name="settings_allow_automation_plugin_title">Дозволити додатки автоматизації</string>
     <string name="settings_allow_automation_plugin_summary">Дозволяє Tasker та іншим додаткам, сумісним з Locale, запускати та зупиняти Shizuku+. Будь-який встановлений додаток може використовувати це, тому увімкніть його тільки якщо ви використовуєте такі автоматизації.</string>
     <string name="settings_usb_phone_switch_notify">Сповіщення про підключення USB та перемикання</string>
-    <string name="settings_usb_phone_switch_notify_summary">Закріпіть сповіщення з швидкими параметрами та ярликами інструментів при підключенні до телефону або пристрою USB</string>
     <string name="su_bridge_report_not_connected">Shizuku не підключена. Запустіть службу Shizuku з домашнього екрана, а потім повторіть спробу.</string>
     <string name="su_bridge_report_deploy_failed">❌ Не вдалося розгорнути міст на /data/local/tmp.</string>
     <string name="su_bridge_report_deploy_reason">Причина: %1$s</string>

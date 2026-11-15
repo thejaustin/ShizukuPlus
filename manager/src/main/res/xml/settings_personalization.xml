@@ -174,6 +174,17 @@
             android:icon="@drawable/ic_border_style_24"
             android:defaultValue="false" />
 
+        <!-- Off / Theme / Status color stands in for show_status_card_outline +
+             status_card_outline_style; not persisted itself, the fragment maps it onto those keys. -->
+        <af.shizuku.manager.settings.SegmentedControlPreference
+            android:key="status_outline_mode"
+            android:title="@string/settings_show_status_card_outline"
+            android:summary="@string/settings_show_status_card_outline_summary"
+            android:icon="@drawable/ic_border_style_24"
+            android:persistent="false"
+            android:entries="@array/status_outline_modes"
+            android:entryValues="@array/status_outline_modes_value" />
+
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
@@ -182,15 +193,27 @@
         android:icon="@drawable/ic_vibration_24"
         android:defaultValue="false">
 
-        <af.shizuku.manager.settings.MotionControlsPreference
-            android:key="motion_controls_card" />
+        <!-- Off / Follow system / Custom stands in for expressive_animations +
+             follow_system_animations, and animation_intensity only applies to Custom. None of the
+             three is persisted itself: the fragment maps them onto those keys (animation_intensity
+             may hold an Integer from older versions, which a String preference can't read). -->
+        <af.shizuku.manager.settings.SegmentedControlPreference
+            android:key="animations_mode"
+            android:title="@string/settings_expressive_animations"
+            android:summary="@string/settings_expressive_animations_summary"
+            android:icon="@drawable/ic_animation_24"
+            android:persistent="false"
+            android:entries="@array/animations_modes"
+            android:entryValues="@array/animations_modes_value" />
 
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="follow_system_animations"
-            android:title="@string/settings_follow_system_animations"
-            android:summary="@string/settings_follow_system_animations_summary"
-            android:defaultValue="false"
-            android:icon="@drawable/ic_settings_suggest_24" />
+        <af.shizuku.manager.settings.SegmentedControlPreference
+            android:key="animation_intensity"
+            android:title="@string/settings_animation_intensity"
+            android:icon="@drawable/ic_speed_24"
+            android:persistent="false"
+            android:entries="@array/animation_intensities"
+            android:entryValues="@array/animation_intensities_value" />
+
         <af.shizuku.manager.settings.SegmentedControlPreference
             android:key="haptics_mode"
             android:persistent="false"
@@ -207,8 +230,29 @@
         android:icon="@drawable/ic_smartphone_24"
         android:defaultValue="false">
 
-        <af.shizuku.manager.settings.DisplayOptionsGridPreference
-            android:key="display_options_grid" />
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="bold_typography"
+            android:title="@string/settings_bold_typography"
+            android:icon="@drawable/ic_format_bold_24"
+            android:defaultValue="false" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="expanded_headers_enabled"
+            android:title="@string/settings_expanded_headers"
+            android:icon="@drawable/ic_outline_expand_more_24"
+            android:defaultValue="false" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="blur_ui_enabled"
+            android:title="@string/settings_blur_ui"
+            android:icon="@drawable/ic_opacity_24"
+            android:defaultValue="false" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="edge_to_edge_enabled"
+            android:title="@string/settings_edge_to_edge"
+            android:icon="@drawable/ic_fullscreen_24"
+            android:defaultValue="true" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="one_handed_mode"
@@ -340,10 +384,6 @@
             android:title="@string/settings_rearrange_home_cards"
             android:summary="@string/settings_rearrange_home_cards_summary"
             android:icon="@drawable/ic_space_dashboard_24" />
-
-        <af.shizuku.manager.settings.StatusOutlineMasterPreference
-            android:key="status_card_outline_card" />
-
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="companion_mode"

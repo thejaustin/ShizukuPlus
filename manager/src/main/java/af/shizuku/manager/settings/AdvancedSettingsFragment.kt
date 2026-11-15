@@ -8,7 +8,6 @@ import af.shizuku.manager.backup.BackupRestoreManager
 import af.shizuku.manager.backup.CryptoUtils
 import af.shizuku.manager.ktx.startWithSceneTransition
 import af.shizuku.manager.security.BiometricLock
-import af.shizuku.manager.utils.EnvironmentUtils
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
@@ -232,9 +231,6 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        findPreference<CollapsiblePreferenceCategory>("category_adb_tools")
-            ?.setChildAvailable(KEY_LEGACY_PAIRING, !EnvironmentUtils.isTelevision())
-
         findPreference<Preference>("reset_adb_keys")?.setOnPreferenceClickListener {
             MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.settings_reset_adb_keys)
@@ -272,20 +268,6 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
                         notifyUser(R.string.app_management_package_copied)
                     }.show()
                 true
-            }
-        }
-
-        // Capabilities: Custom API and System Governors
-        findPreference<TwoStatePreference>(KEY_CUSTOM_API_ENABLED)?.apply {
-            isChecked = ShizukuSettings.isCustomApiEnabled()
-            setOnPreferenceChangeListener { _, newValue ->
-                val enabled = newValue as? Boolean ?: return@setOnPreferenceChangeListener false
-                maybePromptRestart(KEY_CUSTOM_API_ENABLED, enabled) {
-                    ShizukuSettings.setCustomApiEnabled(enabled)
-                    isChecked = enabled
-                    ShizukuSettings.syncAllPlusFeaturesToServer()
-                }
-                false
             }
         }
 

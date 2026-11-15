@@ -257,68 +257,26 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        val rootModules =
-            listOf(
-                "stealth_mode",
-                "root_build_prop_redirect_enabled",
-                "root_iptables_mocking_enabled",
-                "root_magisk_mocking_enabled",
-                "root_auto_grant_enabled",
-                "root_file_interceptor_enabled",
-                "root_busybox_mocking_enabled",
-                "overlay_fs_proxy_enabled",
-                "root_kernel_ghosting_enabled",
-                "root_partition_ghosting_enabled",
-                "root_power_ghosting_enabled",
-                "bootloader_flash_ota_enabled",
-                "bootloader_fastbootd_reboot_enabled",
-            )
-        rootModules.forEach { key ->
+        // Root modules are Plus rows, which sync themselves once saved. Two of them confirm first:
+        // flashing OTAs, and Magisk mocking (it can break wallet apps, like the SU bridge).
+        mapOf(
+            "bootloader_flash_ota_enabled" to (R.string.ota_flash_danger_title to R.string.ota_flash_danger_message),
+            "root_magisk_mocking_enabled" to (R.string.su_bridge_warning_wallet_title to R.string.su_bridge_warning_wallet_message),
+        ).forEach { (key, texts) ->
             val pref = findPreference<TwoStatePreference>(key)
             pref?.setOnPreferenceChangeListener { _, newValue ->
-                if (newValue is Boolean) {
-                    if (newValue && key == "bootloader_flash_ota_enabled") {
-                        val ctx = context ?: return@setOnPreferenceChangeListener false
-                        com.google.android.material.dialog
-                            .MaterialAlertDialogBuilder(ctx)
-                            .setTitle(R.string.ota_flash_danger_title)
-                            .setMessage(R.string.ota_flash_danger_message)
-                            .setPositiveButton(R.string.ota_flash_danger_confirm) { _, _ ->
-                                preferenceManager.sharedPreferences
-                                    ?.edit()
-                                    ?.putBoolean(key, true)
-                                    ?.apply()
-                                pref.isChecked = true
-                                ShizukuSettings.syncAllPlusFeaturesToServer()
-                            }.setNegativeButton(android.R.string.cancel, null)
-                            .show()
-                        return@setOnPreferenceChangeListener false
-                    } else if (newValue && key == "root_magisk_mocking_enabled") {
-                        val ctx = context ?: return@setOnPreferenceChangeListener false
-                        com.google.android.material.dialog
-                            .MaterialAlertDialogBuilder(ctx)
-                            .setTitle(R.string.su_bridge_warning_wallet_title)
-                            .setMessage(R.string.su_bridge_warning_wallet_message)
-                            .setPositiveButton(R.string.action_continue) { _, _ ->
-                                preferenceManager.sharedPreferences
-                                    ?.edit()
-                                    ?.putBoolean(key, true)
-                                    ?.apply()
-                                pref.isChecked = true
-                                ShizukuSettings.syncAllPlusFeaturesToServer()
-                            }.setNegativeButton(android.R.string.cancel, null)
-                            .show()
-                        return@setOnPreferenceChangeListener false
-                    } else {
-                        preferenceManager.sharedPreferences
-                            ?.edit()
-                            ?.putBoolean(key, newValue)
-                            ?.apply()
-                        ShizukuSettings.syncAllPlusFeaturesToServer()
-                        return@setOnPreferenceChangeListener true
-                    }
-                }
-                true
+                if (newValue != true) return@setOnPreferenceChangeListener true
+                val ctx = context ?: return@setOnPreferenceChangeListener false
+                com.google.android.material.dialog
+                    .MaterialAlertDialogBuilder(ctx)
+                    .setTitle(texts.first)
+                    .setMessage(texts.second)
+                    .setPositiveButton(
+                        if (key == "bootloader_flash_ota_enabled") R.string.ota_flash_danger_confirm else R.string.action_continue,
+                    ) { _, _ -> pref.isChecked = true }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+                false
             }
         }
 

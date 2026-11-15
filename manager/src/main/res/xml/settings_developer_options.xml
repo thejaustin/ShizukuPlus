@@ -63,137 +63,20 @@
             android:summary="@string/settings_reset_recommendations_summary"
             android:icon="@drawable/ic_settings_suggest_24" />
 
+        <!-- Key kept from the old "Vector acceleration" row: all it ever did was offer a crash report on
+             the next launch of a build without automatic crash reporting (MainActivity). -->
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="vector_enabled"
+            android:title="@string/settings_offer_crash_report_title"
+            android:summary="@string/settings_offer_crash_report_summary"
+            android:icon="@drawable/ic_bug_report_24"
+            android:defaultValue="false" />
+
         <Preference
             android:key="manual_report"
             android:title="@string/manual_report_title"
             android:summary="@string/manual_report_summary"
             android:icon="@drawable/ic_server_error_24" />
-
-    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
-
-    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
-        android:key="category_experimental"
-        android:title="@string/settings_plus_category_developer"
-        android:icon="@drawable/ic_science_24"
-        android:defaultValue="true">
-
-        <af.shizuku.manager.settings.PlusFeaturePreference
-            android:key="apps_controls_bottom"
-            android:title="@string/settings_apps_controls_bottom"
-            android:summary="@string/settings_apps_controls_bottom_summary"
-            android:icon="@drawable/ic_search_24"
-            android:defaultValue="false"
-            app:badgeType="experimental" />
-
-        <af.shizuku.manager.settings.PlusFeaturePreference
-            android:key="vector_enabled"
-            android:title="@string/settings_vector_experimental"
-            android:summary="@string/settings_vector_summary"
-            android:icon="@drawable/ic_code_24"
-            android:defaultValue="false"
-            app:badgeType="experimental" />
-
-        <af.shizuku.manager.settings.PlusFeaturePreference
-            android:key="experimental_root_compat"
-            android:title="@string/settings_experimental_root_experimental"
-            android:summary="@string/settings_experimental_root_summary"
-            android:icon="@drawable/ic_science_24"
-            android:defaultValue="false"
-            app:badgeType="experimental" />
-
-        <af.shizuku.manager.settings.PlusFeaturePreference
-            android:key="spoof_device_enabled"
-            android:title="@string/settings_spoof_device_experimental"
-            android:summary="@string/settings_spoof_device_summary"
-            android:icon="@drawable/ic_smartphone_24"
-            android:defaultValue="false"
-            app:badgeType="experimental" />
-
-        <rikka.preference.SimpleMenuPreference
-            android:key="spoof_target"
-            android:title="@string/settings_spoof_target"
-            android:entries="@array/spoof_targets"
-            android:entryValues="@array/spoof_targets_values"
-            android:defaultValue="pixel_8_pro"
-            android:dependency="spoof_device_enabled"
-            app:useSimpleSummaryProvider="true"
-            android:icon="@drawable/ic_smartphone_24" />
-
-        <af.shizuku.manager.settings.PlusFeaturePreference
-            android:key="window_manager_plus_enabled"
-            android:title="@string/settings_window_manager_plus"
-            android:summary="@string/settings_window_manager_plus_summary"
-            android:icon="@drawable/ic_window_24"
-            android:defaultValue="false"
-            app:infoTitle="@string/help_window_manager_plus_title"
-            app:infoDetail="@string/help_window_manager_plus_detail"
-            app:badgeType="experimental" />
-
-        <af.shizuku.manager.settings.PlusFeaturePreference
-            android:key="overlay_manager_plus_enabled"
-            android:title="@string/settings_overlay_manager_plus"
-            android:summary="@string/settings_overlay_manager_plus_summary"
-            android:icon="@drawable/ic_palette_24"
-            android:defaultValue="true"
-            app:infoTitle="@string/help_overlay_manager_plus_title"
-            app:infoDetail="@string/help_overlay_manager_plus_detail"
-            app:badgeType="experimental" />
-
-        <af.shizuku.manager.settings.PlusFeaturePreference
-            android:key="ai_core_plus_enabled"
-            android:title="@string/settings_ai_bridge_title"
-            android:summary="@string/settings_ai_core_plus_summary"
-            android:icon="@drawable/ic_integration_instructions_24"
-            android:defaultValue="true"
-            app:infoTitle="@string/help_ai_core_plus_title"
-            app:infoDetail="@string/help_ai_core_plus_detail"
-            app:badgeType="experimental" />
-
-        <af.shizuku.manager.settings.PlusFeaturePreference
-            android:key="ai_core_master_enabled"
-            android:title="@string/settings_ai_core_master"
-            android:summary="@string/settings_ai_core_master_summary"
-            android:icon="@drawable/ic_integration_instructions_24"
-            android:defaultValue="false"
-            android:dependency="ai_core_plus_enabled"
-            app:badgeType="experimental" />
-
-        <af.shizuku.manager.settings.PlusFeaturePreference
-            android:key="npu_acceleration_enabled"
-            android:title="@string/settings_npu_acceleration"
-            android:summary="@string/settings_npu_acceleration_summary"
-            android:icon="@drawable/ic_settings_suggest_24"
-            android:defaultValue="false"
-            android:dependency="ai_core_master_enabled"
-            app:badgeType="experimental" />
-
-        <af.shizuku.manager.settings.PlusFeaturePreference
-            android:key="native_window_crawler_enabled"
-            android:title="@string/settings_window_crawler"
-            android:summary="@string/settings_window_crawler_summary"
-            android:icon="@drawable/ic_code_24"
-            android:defaultValue="false"
-            android:dependency="ai_core_master_enabled"
-            app:badgeType="experimental" />
-
-        <af.shizuku.manager.settings.PlusFeaturePreference
-            android:key="ai_core_experimental_enabled"
-            android:title="@string/settings_ai_automation_experimental"
-            android:summary="@string/settings_ai_automation_experimental_summary"
-            android:icon="@drawable/ic_science_24"
-            android:defaultValue="false"
-            android:dependency="ai_core_plus_enabled"
-            app:badgeType="experimental" />
-
-        <af.shizuku.manager.settings.PlusFeaturePreference
-            android:key="display_tuner_plus_enabled"
-            android:title="@string/settings_display_tuner_plus_title"
-            android:summary="@string/settings_display_tuner_plus_summary"
-            android:icon="@drawable/ic_smartphone_24"
-            android:defaultValue="false"
-            app:infoTitle="@string/help_display_tuner_plus_title"
-            app:infoDetail="@string/help_display_tuner_plus_detail"
-            app:badgeType="experimental" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 

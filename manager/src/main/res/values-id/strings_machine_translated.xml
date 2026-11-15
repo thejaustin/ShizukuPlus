@@ -28,8 +28,6 @@
     <string name="settings_bold_typography">Tipografi Tebal</string>
     <string name="settings_expanded_headers">Header Bagian Diperluas</string>
     <string name="settings_corner_rounding_override">Kebulatan Sudut</string>
-    <string name="settings_follow_system_animations">Ikuti Animasi Sistem</string>
-    <string name="settings_follow_system_animations_summary">Patuhi pengaturan kecepatan animasi perangkat Anda dari Opsi Pengembang</string>
     <string name="settings_icon_color_mode">Warna Ikon Dua Nada</string>
     <string name="settings_icon_color_mode_summary">Cara pewarnaan latar belakang ikon Dua Nada</string>
     <string name="home_status_service_not_running_summary">%1$s berhenti</string>
@@ -111,7 +109,6 @@
     <string name="app_management_sort_last_installed">Terakhir dipasang</string>
     <string name="app_management_sort_last_updated">Terakhir diperbarui</string>
     <string name="app_management_item_summary_partial_root">⚠ Didukung sebagian — beberapa fungsi masih memerlukan Shizuku dengan root</string>
-    <string name="app_management_item_summary_requires_plus">* memerlukan API Lanjutan Shizuku+</string>
     <string name="app_management_bulk_grant">Berikan yang dipilih</string>
     <string name="app_management_bulk_revoke">Cabut yang dipilih</string>
     <string name="app_management_bulk_hide">Sembunyikan yang dipilih</string>
@@ -184,8 +181,6 @@
     <string name="dhizuku_device_owner_desc">Diperlukan agar Mode Dhizuku dapat membagikan hak istimewa Device Owner kepada aplikasi yang diizinkan.</string>
     <string name="dhizuku_device_owner_enabled">Dhizuku Device Owner Diaktifkan</string>
     <string name="dhizuku_device_owner_disabled">Dhizuku Device Owner Dinonaktifkan</string>
-    <string name="settings_enhanced_api">API Lanjutan Shizuku+</string>
-    <string name="settings_enhanced_api_summary">Aktifkan antarmuka sistem lanjutan untuk pengguna mahir. Diperlukan untuk semua fitur eksklusif Shizuku+.</string>
     <string name="settings_themed_icon">Ikon aplikasi bertema</string>
     <string name="settings_themed_icon_summary">Gunakan ikon Shizuku+ versi Material You yang diwarnai saat peluncur Anda mendukung ikon bertema.</string>
     <string name="settings_themed_icon_open_settings">Buka pengaturan ikon</string>
@@ -226,7 +221,6 @@
     <string name="settings_ai_automation_experimental">Otomatisasi AI Eksperimental</string>
     <string name="settings_ai_automation_experimental_summary">Aktifkan simulasi gestur, pengambilan piksel, dan injeksi teks untuk otomatisasi berbasis AI</string>
     <string name="settings_keystore_fallback">Cadangan KeyStore Perangkat Lunak</string>
-    <string name="settings_keystore_fallback_summary">Simpan kunci RSA ADB yang dienkripsi dengan kunci AES perangkat lunak saat KeyStore perangkat keras gagal (mis. Samsung Knox). Mengurangi permintaan pairing tetapi menurunkan keamanan.</string>
     <string name="settings_samsung_uid_escalation">Eskalasi UID Sistem Samsung</string>
     <string name="settings_samsung_uid_escalation_summary">Coba eskalasi ke UID 1000 (sistem) menggunakan exploit khusus untuk perangkat Samsung yang belum ditambal (oleh pascua28). Gunakan dengan risiko Anda sendiri.</string>
     <string name="settings_display_tuner_plus_title">Penyetel Layar</string>
@@ -271,7 +265,6 @@
     <string name="help_network_governor_plus_detail">Pengatur Jaringan menyediakan akses istimewa ke INetworkPolicyManager dan pengaturan DNS Pribadi. Ia dapat menerapkan POLICY_REJECT_ALL untuk aplikasi individual, menyediakan firewall tingkat sistem yang andal yang bekerja bahkan pada koneksi Wi-Fi dan 5G tanpa terowongan VPN aktif.</string>
     <string name="help_activity_manager_plus_title">Tentang Kontrol Proses Mendalam</string>
     <string name="help_activity_manager_plus_detail">Kontrol Proses Mendalam memungkinkan server melewati hibernasi aplikasi standar dan pembatasan siaga. Ia dapat memaksa aplikasi masuk ke bucket siaga RESTRICTED atau melakukan deepForceStop sejati (menghentikan semua layanan dan tugas latar belakang), yang penting untuk alat penghemat baterai agresif.</string>
-    <string name="settings_plus_category_developer">Opsi Pengembang (Eksperimental)</string>
     <string name="settings_root_magisk_mocking">Tiruan Lingkungan Magisk</string>
     <string name="settings_root_magisk_mocking_summary">Memalsukan biner, properti, dan folder internal Magisk untuk mengelabui aplikasi pendeteksi root.</string>
     <string name="settings_root_auto_grant">Jembatan Persetujuan Otomatis</string>
@@ -288,10 +281,8 @@
     <string name="help_root_file_interceptor_detail">Saat aplikasi menyalin file ke /data/data menggunakan shell standar, kepemilikan dan konteks SELinux sering hilang. Modul ini otomatis menambahkan flag seperti --preserve=all untuk menjaga integritas file dan mencegah aplikasi crash.</string>
     <string name="help_root_busybox_title">Tentang Simulasi BusyBox</string>
     <string name="help_root_busybox_detail">BusyBox adalah kumpulan utilitas Unix yang umum di perangkat yang di-root. Beberapa aplikasi root lama memeriksa keberadaannya sebelum menjalankan logikanya. Modul ini mengembalikan respons sukses simulasi untuk perintah \'busybox\'.</string>
-    <string name="settings_vector_summary">Aktifkan rendering vektor dengan akselerasi perangkat keras untuk performa grafis yang lebih baik</string>
     <string name="settings_experimental_root_summary">Aktifkan lapisan kompatibilitas untuk operasi berbasis root melalui Shizuku</string>
     <string name="settings_spoof_device_summary">Laporkan model perangkat yang berbeda ke aplikasi untuk keperluan kompatibilitas atau pengujian</string>
-    <string name="settings_vector_experimental">Akselerasi Vektor</string>
     <string name="settings_experimental_root_experimental">Kompatibilitas Root Eksperimental</string>
     <string name="settings_spoof_device_experimental">Palsukan Identitas Perangkat</string>
     <string name="settings_open_source_licenses">Lisensi sumber terbuka</string>
@@ -476,7 +467,6 @@
     <string name="settings_main_nav_startup_behavior_title">Startup &amp; Perilaku</string>
     <string name="settings_main_nav_startup_behavior_summary">Opsi boot, watchdog, jaringan, aktivitas, dan pembaruan</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Lanjutan &amp; Diagnostik</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">Log, alat ADB, dan pemecahan masalah</string>
     <string name="settings_main_nav_about_summary">Versi, cadangan &amp; pemulihan, lisensi, dan opsi pengembang</string>
     <string name="settings_accent_violet_applied">Midnight Violet diterapkan</string>
     <string name="settings_accent_green_applied">Forest Green diterapkan</string>
@@ -525,7 +515,6 @@
     <string name="activity_log_type_other">Peristiwa</string>
     <string name="settings_diagnostics_enabled">Diagnostik Pengaturan</string>
     <string name="settings_diagnostics_enabled_summary">Pindai konfigurasi secara proaktif untuk mencari konflik dan anomali</string>
-    <string name="settings_verify_apk_fdroid_title">Indeks F-Droid / IzzyOnDroid</string>
     <string name="settings_custom_accent_title">Warna Aksen Kustom</string>
     <string name="settings_behavior_category_startup">Startup &amp; Pemulihan</string>
     <string name="settings_advanced_category_diagnostics">Diagnostik</string>
@@ -534,7 +523,6 @@
     <string name="settings_personalization_category_shape_style">Gaya Bentuk &amp; Ikon</string>
     <string name="settings_personalization_category_home_screen">Layar Utama</string>
     <string name="settings_personalization_category_language">Bahasa</string>
-    <string name="settings_plus_category_system_performance">Sistem &amp; Performa</string>
     <string name="settings_plus_category_security_access">Keamanan &amp; Akses</string>
     <string name="settings_plus_category_backup_restore">Cadangan &amp; Pemulihan</string>
     <string name="settings_root_category_stock_compat">Kompatibilitas Shizuku Standar</string>
@@ -567,7 +555,6 @@
     <string name="settings_developer_category_debug">Debug &amp; Diagnostik</string>
     <string name="settings_plus_category_device_owner_tools">Alat Device Owner</string>
     <string name="settings_developer_options">Opsi Pengembang</string>
-    <string name="settings_developer_options_summary">Virtualisasi, pemalsuan perangkat, dan fitur eksperimental</string>
     <string name="settings_auto_update_title">Periksa pembaruan otomatis</string>
     <string name="settings_auto_update_summary">Periksa versi baru secara otomatis saat aplikasi dimulai</string>
     <string name="settings_auto_install_title">Instal pembaruan otomatis</string>
@@ -696,7 +683,6 @@
     <string name="app_management_search_hint">Cari aplikasi</string>
     <string name="verify_virustotal_key_title">Kunci API VirusTotal</string>
     <string name="verify_virustotal_key_required">Kunci API diperlukan untuk menggunakan pemindaian VirusTotal</string>
-    <string name="verify_pithus_key_title">Kunci API Pithus (Opsional)</string>
     <string name="verify_api_key_hint">Ketuk untuk memasukkan kunci API</string>
     <string name="verify_api_key_configured">Kunci API tersimpan · ketuk untuk memperbarui</string>
     <string name="verify_get_api_key">Dapatkan Kunci API</string>
@@ -847,7 +833,6 @@
     <string name="settings_allow_automation_plugin_title">Izinkan aplikasi otomatisasi</string>
     <string name="settings_allow_automation_plugin_summary">Memungkinkan Tasker dan aplikasi lain yang kompatibel dengan Locale untuk memulai dan menghentikan Shizuku+. Aplikasi terinstal apa pun dapat menggunakan ini, jadi aktifkan hanya jika Anda menggunakan otomatisasi tersebut.</string>
     <string name="settings_usb_phone_switch_notify">Pemberitahuan koneksi &amp; pengalihan USB</string>
-    <string name="settings_usb_phone_switch_notify_summary">Sematkan pemberitahuan dengan setelan cepat dan pintasan alat saat terhubung ke ponsel atau perangkat USB</string>
     <string name="su_bridge_report_not_connected">Shizuku tidak terhubung. Mulai layanan Shizuku dari layar utama, lalu coba lagi.</string>
     <string name="su_bridge_report_deploy_failed">❌ Tidak dapat memasang bridge ke /data/local/tmp.</string>
     <string name="su_bridge_report_deploy_reason">Alasan: %1$s</string>

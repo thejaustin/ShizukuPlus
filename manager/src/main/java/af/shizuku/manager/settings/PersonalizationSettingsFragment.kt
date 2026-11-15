@@ -62,11 +62,11 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
     private lateinit var languagePreference: ListPreference
     private lateinit var translationPreference: Preference
     private lateinit var expressiveShapesPreference: TwoStatePreference
-    private var expressiveAnimationsPreference: TwoStatePreference? = null
     private lateinit var iconStylePreference: SegmentedControlPreference
     private lateinit var iconColorModePreference: SegmentedControlPreference
     private lateinit var shapeStylePreference: Preference
-    private var animationIntensityPreference: SliderPreference? = null
+    private var animationIntensityPreference: SegmentedControlPreference? = null
+    private var animationsModePreference: SegmentedControlPreference? = null
     private var edgeToEdgePreference: TwoStatePreference? = null
     private var blurUiPreference: TwoStatePreference? = null
     private lateinit var oneUiThemePreference: TwoStatePreference
@@ -168,7 +168,6 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
         // 2. M3 Expressive Controls
         expressiveShapesPreference = requireNotNull(findPreference(KEY_EXPRESSIVE_SHAPES))
-        expressiveAnimationsPreference = findPreference(KEY_EXPRESSIVE_ANIMATIONS)
         iconStylePreference = requireNotNull(findPreference(KEY_ICON_STYLE))
         iconColorModePreference = requireNotNull(findPreference(KEY_ICON_COLOR_MODE))
         shapeStylePreference = requireNotNull(findPreference(KEY_SHAPE_STYLE))
@@ -178,9 +177,6 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         // color-mode row appears/disappears without requiring a fragment recreate.
         setChildAvailable(iconColorModePreference, iconStylePreference.value == "twotone")
         setChildAvailable(shapeStylePreference, expressiveShapesPreference.isChecked)
-        animationIntensityPreference?.let { animInt ->
-            setChildAvailable(animInt, expressiveAnimationsPreference?.isChecked ?: ShizukuSettings.isExpressiveAnimationsEnabled())
-        }
 
         // M3E morph shapes: only meaningful with expressive shapes on. The toggle morph works with
         // a picked shape or any rounded Shape style; Zen's leaf and Cut's octagon don't morph.
@@ -283,19 +279,66 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        findPreference<Preference>("expanded_headers_enabled")?.setOnPreferenceChangeListener { _, _ ->
-            view?.post { applyTheme(requiresRecreate = false) }
-            true
+        // Bold type and header size are read when the views are built: recreate once saved.
+        listOf(KEY_BOLD_TYPOGRAPHY, KEY_EXPANDED_HEADERS).forEach { key ->
+            findPreference<Preference>(key)?.setOnPreferenceChangeListener { _, _ ->
+                applyTheme(requiresRecreate = true)
+                true
+            }
         }
 
-        expressiveAnimationsPreference?.setOnPreferenceChangeListener { _, _ ->
-            // isChecked updates after this returns; re-sync once it has.
-            view?.post { syncIntensityAvailability() }
-            true
-        }
+        // Off / Follow system / Custom stands in for the "Expressive animations" and "Follow system
+        // animations" switches; writes the same two keys.
+        animationsModePreference =
+            findPreference<SegmentedControlPreference>("animations_mode")?.apply {
+                value =
+                    when {
+                        !ShizukuSettings.isExpressiveAnimationsEnabled() -> "off"
+                        ShizukuSettings.isFollowSystemAnimations() -> "system"
+                        else -> "custom"
+                    }
+                setOnPreferenceChangeListener { _, newValue ->
+                    val mode = newValue as? String ?: return@setOnPreferenceChangeListener false
+                    ShizukuSettings
+                        .getPreferences()
+                        .edit()
+                        .putBoolean(KEY_EXPRESSIVE_ANIMATIONS, mode != "off")
+                        .putBoolean(KEY_FOLLOW_SYSTEM_ANIMATIONS, mode == "system")
+                        .apply()
+                    syncIntensityAvailability(mode)
+                    applyTheme(requiresRecreate = false)
+                    true
+                }
+            }
 
-        animationIntensityPreference?.setOnPreferenceChangeListener { _, _ ->
-            true
+        // Stored as a String "0".."3" (older versions may have stored an Integer, which
+        // getAnimationIntensity() still reads), so the row isn't persisted itself.
+        animationIntensityPreference?.apply {
+            value = ShizukuSettings.getAnimationIntensity().coerceIn(0, 3).toString()
+            setOnPreferenceChangeListener { _, newValue ->
+                val intensity = newValue as? String ?: return@setOnPreferenceChangeListener false
+                ShizukuSettings
+                    .getPreferences()
+                    .edit()
+                    .putString(KEY_ANIMATION_INTENSITY, intensity)
+                    .apply()
+                applyTheme(requiresRecreate = false)
+                true
+            }
+        }
+        syncIntensityAvailability()
+
+        // Off / Theme / Status color stands in for the status card outline switch + its style.
+        findPreference<SegmentedControlPreference>("status_outline_mode")?.apply {
+            value = if (ShizukuSettings.isShowStatusCardOutlineEnabled()) ShizukuSettings.getStatusCardOutlineStyle() else "off"
+            setOnPreferenceChangeListener { _, newValue ->
+                val mode = newValue as? String ?: return@setOnPreferenceChangeListener false
+                val edit = ShizukuSettings.getPreferences().edit().putBoolean(KEY_SHOW_STATUS_CARD_OUTLINE, mode != "off")
+                if (mode != "off") edit.putString(KEY_STATUS_CARD_OUTLINE_STYLE, mode)
+                edit.apply()
+                applyTheme(requiresRecreate = false)
+                true
+            }
         }
 
         // Off / Follow system / Always on replaces "Haptic feedback" + its dependent
@@ -319,13 +362,6 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             }
         }
 
-        // Intensity is ignored while following the system animation speed - hide it then.
-        syncIntensityAvailability()
-        findPreference<TwoStatePreference>("follow_system_animations")?.setOnPreferenceChangeListener { _, _ ->
-            view?.post { syncIntensityAvailability() }
-            true
-        }
-
         // One UI and one-handed mode always use expanded headers, so the switch does nothing there.
         findPreference<Preference>("expanded_headers_enabled")?.let {
             setChildAvailable(it, !ShizukuSettings.isOneUiThemeEnabled() && !ShizukuSettings.isOneHandedModeEnabled())
@@ -342,7 +378,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        // Experimental (Developer options): hide the whole App icon & name section unless enabled.
+        // Experimental features: hide the whole App icon & name section unless enabled there.
         findPreference<Preference>("category_app_identity")?.isVisible =
             ShizukuSettings.isExperimentalAppIdentityEnabled()
 
@@ -531,13 +567,8 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
     }
 
     /** Intensity needs animations on and isn't used while following the system speed. */
-    private fun syncIntensityAvailability() {
-        val animationsOn = expressiveAnimationsPreference?.isChecked ?: ShizukuSettings.isExpressiveAnimationsEnabled()
-        val followSystem = findPreference<TwoStatePreference>("follow_system_animations")
-        animationIntensityPreference?.let {
-            setChildAvailable(it, animationsOn && followSystem?.isChecked != true)
-        }
-        followSystem?.let { setChildAvailable(it, animationsOn) }
+    private fun syncIntensityAvailability(mode: String? = animationsModePreference?.value) {
+        animationIntensityPreference?.let { setChildAvailable(it, mode == "custom") }
     }
 
     private fun currentDarkStyle(): String =

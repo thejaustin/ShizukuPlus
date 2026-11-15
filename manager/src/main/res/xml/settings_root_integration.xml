@@ -242,14 +242,6 @@
             android:dependency="shadow_binder_enabled" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
-            android:key="software_keystore_fallback_enabled"
-            android:title="@string/settings_keystore_fallback"
-            android:summary="@string/settings_keystore_fallback_summary"
-            android:icon="@drawable/ic_shield_24"
-            android:defaultValue="false"
-            app:severityBadge="risky" />
-
-        <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="samsung_system_uid_escalation_enabled"
             android:title="@string/settings_samsung_uid_escalation"
             android:summary="@string/settings_samsung_uid_escalation_summary"

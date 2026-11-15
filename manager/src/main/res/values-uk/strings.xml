@@ -36,8 +36,6 @@
     <string name="settings_corner_rounding_override">Округлення кутів</string>
 
     <!-- UI Settings - System-following -->
-    <string name="settings_follow_system_animations">Слідувати системним анімаціям</string>
-    <string name="settings_follow_system_animations_summary">Враховувати системне налаштування швидкості анімації з параметрів розробника</string>
 
     <string-array name="icon_styles">
         <item>Стандартний (Залитий)</item>
@@ -233,7 +231,6 @@
     <string name="app_management_dialog_adb_is_limited_message"><![CDATA[Цілком можливо, що виробник вашого пристрою обмежує дозволи ADB.<p>Можливо, є рішення для вашої системи у <b><a href=\"%1$s\">цьому документі</a></b>.]]></string>
     <string name="app_management_item_summary_requires_root">* вимагає запуску Shizuku з root-правами</string>
     <string name="app_management_item_summary_partial_root">⚠ Частково підтримується — деякі функції все ще потребують Shizuku з root</string>
-    <string name="app_management_item_summary_requires_plus">* вимагає Shizuku+ Enhanced API</string>
     <string name="app_management_toggle_all">Перемкнути все</string>
     <string name="app_management_bulk_grant">Надати вибраним</string>
     <string name="app_management_bulk_revoke">Відкликати у вибраних</string>
@@ -339,8 +336,6 @@
     <string name="dhizuku_device_owner_desc">Необхідно для Режиму Dhizuku, щоб ділитися привілеями Власника пристрою з авторизованими додатками.</string>
     <string name="dhizuku_device_owner_enabled">Власник пристрою Dhizuku увімкнено</string>
     <string name="dhizuku_device_owner_disabled">Власник пристрою Dhizuku вимкнено</string>
-    <string name="settings_enhanced_api">Shizuku+ Enhanced API</string>
-    <string name="settings_enhanced_api_summary">Увімкнути розширені системні інтерфейси для просунутих користувачів. Обов\'язково для всіх ексклюзивних функцій Shizuku+.</string>
     <string name="settings_themed_icon">Тематична іконка додатка</string>
     <string name="settings_themed_icon_summary">Використовувати тоновану версію Material You іконки Shizuku+, якщо ваш лаунчер підтримує тематичні іконки.</string>
     <string name="settings_themed_icon_open_settings">Відкрити налаштування іконки</string>
@@ -408,7 +403,6 @@
     <string name="help_activity_manager_plus_detail">Глибокий контроль процесів дозволяє серверу обходити стандартні обмеження гібернації додатків та режиму очікування. Він може примусово перевести додатки у кошик очікування RESTRICTED або виконати справжній deepForceStop (вбиваючи всі служби та фонові завдання), що важливо для агресивних інструментів економії батареї.</string>
 
     <!-- Plus settings category titles -->
-    <string name="settings_plus_category_developer">Параметри розробника (Експериментальні)</string>
     <string name="settings_root_magisk_mocking">Імітація середовища Magisk</string>
     <string name="settings_root_magisk_mocking_summary">Імітує бінарні файли, властивості та внутрішні папки Magisk, щоб обдурити додатки, які шукають root.</string>
     <string name="settings_root_auto_grant">Міст автосхвалення</string>
@@ -429,10 +423,8 @@
     <string name="help_root_busybox_title">Про симуляцію BusyBox</string>
     <string name="help_root_busybox_detail">BusyBox — це набір Unix-утиліт, поширений на рутованих пристроях. Деякі старі root-додатки перевіряють його наявність перед виконанням логіки. Цей модуль повертає симульовану успішну відповідь на команду \'busybox\'.</string>
 
-    <string name="settings_vector_summary">Увімкнути апаратно прискорений векторний рендеринг для кращої графічної продуктивності</string>
     <string name="settings_experimental_root_summary">Увімкнути шар сумісності для операцій, базованих на root, через Shizuku</string>
     <string name="settings_spoof_device_summary">Повідомляти додаткам іншу модель пристрою для сумісності або тестування</string>
-    <string name="settings_vector_experimental">Векторне прискорення</string>
     <string name="settings_experimental_root_experimental">Експериментальна сумісність Root</string>
     <string name="settings_spoof_device_experimental">Підміна ідентичності пристрою</string>
     <string name="settings_open_source_licenses">Ліцензії з відкритим кодом</string>
@@ -663,7 +655,6 @@
     <string name="settings_main_nav_startup_behavior_title">Запуск та поведінка</string>
     <string name="settings_main_nav_startup_behavior_summary">Запуск, мережа, активність та оновлення</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Розширені та діагностика</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">Журнали, інструменти ADB та усунення несправностей</string>
     <string name="settings_main_nav_about_summary">Версія, ліцензії та параметри розробника</string>
     <string name="settings_accent_violet_applied">Північно-фіолетовий застосовано</string>
     <string name="settings_accent_green_applied">Лісовий зелений застосовано</string>
@@ -712,7 +703,6 @@
     <string name="settings_personalization_category_shape_style">Форма та стиль іконок</string>
     <string name="settings_personalization_category_home_screen">Головний екран</string>
     <string name="settings_personalization_category_language">Мова</string>
-    <string name="settings_plus_category_system_performance">Система та продуктивність</string>
     <string name="settings_plus_category_security_access">Безпека та доступ</string>
     <string name="settings_plus_category_backup_restore">Резервна копія та відновлення</string>
     <string name="settings_root_category_stock_compat">Сумісність зі стоковим Shizuku</string>
@@ -729,7 +719,6 @@
     
     <!-- Developer Options -->
     <string name="settings_developer_options">Параметри розробника</string>
-    <string name="settings_developer_options_summary">Віртуалізація, підміна пристрою та експериментальні функції</string>
     <string name="settings_auto_update_title">Автоматична перевірка оновлень</string>
     <string name="settings_auto_update_summary">Автоматично перевіряти наявність нових версій під час запуску додатка</string>
     <string name="settings_auto_install_title">Автоматичне встановлення оновлень</string>
@@ -880,7 +869,6 @@
     <!-- APK verification API key strings -->
     <string name="verify_virustotal_key_title">API-ключ VirusTotal</string>
     <string name="verify_virustotal_key_required">API-ключ необхідний для використання сканування VirusTotal</string>
-    <string name="verify_pithus_key_title">API-ключ Pithus (Необов\'язково)</string>
     <string name="verify_api_key_hint">Натисніть, щоб ввести API-ключ</string>
     <string name="verify_api_key_configured">API-ключ збережено · натисніть, щоб оновити</string>
     <string name="verify_get_api_key">Отримати API-ключ</string>
@@ -1003,10 +991,6 @@
     <string name="help_display_tuner_plus_detail">Надає привілейовану конфігурацію дисплея за допомогою інструменту wm оболонки: перевизначення роздільної здатності (wm size) та щільності (wm density) на льоту, читання поточних і фізичних значень, а також скидання перевизначень до заводських налаштувань пристрою. Корисно для виправлення проблем із макетом додатків, примусового встановлення певного співвідношення сторін для запису екрана, налаштувань режиму робочого столу та масштабування доступності — історично функція лише для root, яка тепер доступна через процес оболонки ADB.</string>
 
     <!-- ==== Full Ukraine additions: missing keys sync ==== -->
-    <string-array name="status_card_outline_styles">
-        <item>Material (колір теми)</item>
-        <item>Зелений / Червоний (колір статусу)</item>
-    </string-array>
     <string name="dialog_adb_wifi_disconnected_warning"><![CDATA[<b>Wi-Fi відключено.</b><br>Android не може виявити бездротове налагодження через мобільні дані (5G/LTE).]]></string>
     <string name="dialog_adb_hotspot_tip"><![CDATA[💡 <b>Порада:</b> увімкніть <b>Мобільну точку доступу</b> телефону, щоб використовувати бездротове налагодження без мережі Wi-Fi, або підключіться через локальний порт 5555.]]></string>
     <string name="dialog_adb_samsung_hotspot_warning"><![CDATA[💡 <b>Примітка для Samsung:</b> One UI вимикає бездротове налагодження, поки активна Мобільна точка доступу. Підключіться до Wi-Fi-точки доступу іншого пристрою (офлайн — це нормально) або один раз виконайте <code>adb tcpip 5555</code> через USB.]]></string>
@@ -1193,7 +1177,6 @@
     <string name="settings_diagnostics_enabled">Діагностика налаштувань</string>
     <string name="settings_diagnostics_enabled_summary">Проактивно сканувати конфігурації на наявність конфліктів та аномалій</string>
     <string name="settings_keystore_fallback">Програмний резерв KeyStore</string>
-    <string name="settings_keystore_fallback_summary">Кешувати RSA-ключ ADB, зашифрований програмним AES-ключем, коли апаратний KeyStore недоступний (напр., Samsung Knox). Зменшує запити на з\'єднання, але знижує безпеку.</string>
 
     <!-- Settings: Governor modules -->
     <string name="settings_network_governor_plus_title">DNS Governor</string>
@@ -1247,7 +1230,6 @@
     <string name="settings_bootloader_flash_ota_summary">Прошити OTA-завантаження до неактивного слота без root або кастомного відновлення</string>
 
     <!-- Settings: APK verification -->
-    <string name="settings_verify_apk_fdroid_title">Індекс F-Droid / IzzyOnDroid</string>
 
     <!-- SU path validation -->
     <string name="su_path_invalid">Неприпустимий шлях. Має бути абсолютним шляхом (починається з /), що містить лише літери, цифри, слеші, підкреслення, крапки та дефіси.</string>

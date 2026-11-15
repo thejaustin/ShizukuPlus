@@ -28,8 +28,6 @@
     <string name="settings_bold_typography">Vette typografie</string>
     <string name="settings_expanded_headers">Uitgebreide sectiekoppen</string>
     <string name="settings_corner_rounding_override">Hoekafronding</string>
-    <string name="settings_follow_system_animations">Systeemanimaties volgen</string>
-    <string name="settings_follow_system_animations_summary">Houd rekening met de animatiesnelheid van je apparaat uit de ontwikkelaarsopties</string>
     <string name="settings_icon_color_mode">Tweekleurige pictogramkleuren</string>
     <string name="settings_icon_color_mode_summary">Hoe de achtergrond van het tweekleurige pictogram wordt gekleurd</string>
     <string name="home_status_service_not_running_summary">%1$s is gestopt</string>
@@ -111,7 +109,6 @@
     <string name="app_management_sort_last_installed">Laatst geïnstalleerd</string>
     <string name="app_management_sort_last_updated">Laatst bijgewerkt</string>
     <string name="app_management_item_summary_partial_root">⚠ Gedeeltelijk ondersteund — sommige functies vereisen nog Shizuku met root</string>
-    <string name="app_management_item_summary_requires_plus">* vereist Shizuku+ Enhanced API</string>
     <string name="app_management_bulk_grant">Geselecteerde toestaan</string>
     <string name="app_management_bulk_revoke">Geselecteerde intrekken</string>
     <string name="app_management_bulk_hide">Geselecteerde verbergen</string>
@@ -184,8 +181,6 @@
     <string name="dhizuku_device_owner_desc">Vereist voor de Dhizuku-modus om Device Owner-rechten te delen met geautoriseerde apps.</string>
     <string name="dhizuku_device_owner_enabled">Dhizuku Device Owner ingeschakeld</string>
     <string name="dhizuku_device_owner_disabled">Dhizuku Device Owner uitgeschakeld</string>
-    <string name="settings_enhanced_api">Shizuku+ Enhanced API</string>
-    <string name="settings_enhanced_api_summary">Schakel geavanceerde systeeminterfaces in voor gevorderde gebruikers. Vereist voor alle exclusieve Shizuku+-functies.</string>
     <string name="settings_themed_icon">Thematisch app-pictogram</string>
     <string name="settings_themed_icon_summary">Gebruik een Material You-getinte versie van het Shizuku+-pictogram wanneer je launcher thematische pictogrammen ondersteunt.</string>
     <string name="settings_themed_icon_open_settings">Pictograminstellingen openen</string>
@@ -226,7 +221,6 @@
     <string name="settings_ai_automation_experimental">Experimentele AI-automatisering</string>
     <string name="settings_ai_automation_experimental_summary">Schakel gebarensimulatie, pixelopname en tekstinvoer in voor door AI aangestuurde automatisering</string>
     <string name="settings_keystore_fallback">Software-KeyStore als terugvaloptie</string>
-    <string name="settings_keystore_fallback_summary">Cache de ADB RSA-sleutel versleuteld met een software-AES-sleutel wanneer de hardware-KeyStore faalt (bijv. Samsung Knox). Vermindert koppelingsverzoeken maar verlaagt de beveiliging.</string>
     <string name="settings_samsung_uid_escalation">Samsung-systeem-UID-escalatie</string>
     <string name="settings_samsung_uid_escalation_summary">Probeer te escaleren naar UID 1000 (system) met een exploit die specifiek is voor niet-gepatchte Samsung-apparaten (door pascua28). Gebruik op eigen risico.</string>
     <string name="settings_display_tuner_plus_title">Beeldschermtuner</string>
@@ -271,7 +265,6 @@
     <string name="help_network_governor_plus_detail">De Network Governor biedt bevoorrechte toegang tot INetworkPolicyManager en de instellingen voor privé-DNS. Hij kan POLICY_REJECT_ALL afdwingen voor individuele apps en zo een robuuste firewall op systeemniveau bieden die ook werkt op Wi-Fi- en 5G-verbindingen zonder actieve VPN-tunnel.</string>
     <string name="help_activity_manager_plus_title">Over Diepgaand procesbeheer</string>
     <string name="help_activity_manager_plus_detail">Diepgaand procesbeheer laat de server de standaardbeperkingen voor app-hibernatie en standby omzeilen. Het kan apps in de RESTRICTED standby-bucket plaatsen of een echte deepForceStop uitvoeren (alle services en achtergrondtaken beëindigen), wat essentieel is voor agressieve batterijbesparende tools.</string>
-    <string name="settings_plus_category_developer">Ontwikkelaarsopties (experimenteel)</string>
     <string name="settings_root_magisk_mocking">Magisk-omgevingssimulatie</string>
     <string name="settings_root_magisk_mocking_summary">Nabootsen van Magisk-binaries, eigenschappen en interne mappen om apps die root detecteren te misleiden.</string>
     <string name="settings_root_auto_grant">Automatische goedkeuringsbrug</string>
@@ -288,10 +281,8 @@
     <string name="help_root_file_interceptor_detail">Wanneer apps bestanden met een standaard shell naar /data/data kopiëren, verliezen ze vaak eigendom en SELinux-contexten. Deze module voegt automatisch vlaggen zoals --preserve=all toe om de bestandsintegriteit te behouden en app-crashes te voorkomen.</string>
     <string name="help_root_busybox_title">Over BusyBox-simulatie</string>
     <string name="help_root_busybox_detail">BusyBox is een verzameling Unix-hulpprogramma\'s die veel voorkomt op gerootte apparaten. Sommige oudere root-apps controleren of het bestaat voordat ze hun logica uitvoeren. Deze module geeft een gesimuleerd succesvol antwoord terug voor de opdracht \'busybox\'.</string>
-    <string name="settings_vector_summary">Schakel hardwareversnelde vectorweergave in voor betere grafische prestaties</string>
     <string name="settings_experimental_root_summary">Schakel de compatibiliteitslaag in voor root-gebaseerde bewerkingen via Shizuku</string>
     <string name="settings_spoof_device_summary">Meld een ander apparaatmodel aan apps voor compatibiliteit of testdoeleinden</string>
-    <string name="settings_vector_experimental">Vectorversnelling</string>
     <string name="settings_experimental_root_experimental">Experimentele root-compatibiliteit</string>
     <string name="settings_spoof_device_experimental">Apparaatidentiteit vervalsen</string>
     <string name="settings_open_source_licenses">Open-sourcelicenties</string>
@@ -476,7 +467,6 @@
     <string name="settings_main_nav_startup_behavior_title">Opstarten &amp; gedrag</string>
     <string name="settings_main_nav_startup_behavior_summary">Opstartopties, watchdog, netwerk, activiteit en updates</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Geavanceerd &amp; diagnostiek</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">Logboeken, ADB-tools en probleemoplossing</string>
     <string name="settings_main_nav_about_summary">Versie, back-up &amp; herstel, licenties en ontwikkelaarsopties</string>
     <string name="settings_accent_violet_applied">Middernachtviolet toegepast</string>
     <string name="settings_accent_green_applied">Bosgroen toegepast</string>
@@ -525,7 +515,6 @@
     <string name="activity_log_type_other">Gebeurtenis</string>
     <string name="settings_diagnostics_enabled">Instellingendiagnostiek</string>
     <string name="settings_diagnostics_enabled_summary">Scan configuraties proactief op conflicten en afwijkingen</string>
-    <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid-index</string>
     <string name="settings_custom_accent_title">Aangepaste accentkleur</string>
     <string name="settings_behavior_category_startup">Opstarten &amp; herstel</string>
     <string name="settings_advanced_category_diagnostics">Diagnostiek</string>
@@ -534,7 +523,6 @@
     <string name="settings_personalization_category_shape_style">Vorm- &amp; pictogramstijl</string>
     <string name="settings_personalization_category_home_screen">Startscherm</string>
     <string name="settings_personalization_category_language">Taal</string>
-    <string name="settings_plus_category_system_performance">Systeem &amp; prestaties</string>
     <string name="settings_plus_category_security_access">Beveiliging &amp; toegang</string>
     <string name="settings_plus_category_backup_restore">Back-up &amp; herstel</string>
     <string name="settings_root_category_stock_compat">Compatibiliteit met standaard Shizuku</string>
@@ -567,7 +555,6 @@
     <string name="settings_developer_category_debug">Foutopsporing &amp; diagnostiek</string>
     <string name="settings_plus_category_device_owner_tools">Device Owner-tools</string>
     <string name="settings_developer_options">Ontwikkelaarsopties</string>
-    <string name="settings_developer_options_summary">Virtualisatie, apparaatvervalsing en experimentele functies</string>
     <string name="settings_auto_update_title">Automatisch op updates controleren</string>
     <string name="settings_auto_update_summary">Controleer automatisch op nieuwe versies bij het starten van de app</string>
     <string name="settings_auto_install_title">Updates automatisch installeren</string>
@@ -760,7 +747,6 @@
     <string name="settings_allow_automation_plugin_title">Automatiserings-apps toestaan</string>
     <string name="settings_allow_automation_plugin_summary">Hiermee kunnen Tasker en andere Locale-compatibele apps Shizuku+ starten en stoppen. Elke geïnstalleerde app kan dit gebruiken, dus schakel dit alleen in als je dergelijke automatiseringen gebruikt.</string>
     <string name="settings_usb_phone_switch_notify">USB-verbindings- &amp; schakelmelding</string>
-    <string name="settings_usb_phone_switch_notify_summary">Zet een melding vast met snelle instellingen en snelkoppelingen wanneer verbonden met een telefoon of USB-apparaat</string>
     <string name="su_bridge_report_not_connected">Shizuku is niet verbonden. Start de Shizuku-service vanaf het startscherm en probeer het opnieuw.</string>
     <string name="su_bridge_report_deploy_failed">❌ Kon de bridge niet implementeren naar /data/local/tmp.</string>
     <string name="su_bridge_report_deploy_reason">Reden: %1$s</string>
@@ -928,7 +914,6 @@
     <string name="app_management_search_hint">Apps zoeken</string>
     <string name="verify_virustotal_key_title">VirusTotal API-sleutel</string>
     <string name="verify_virustotal_key_required">Een API-sleutel is vereist om VirusTotal-scans te gebruiken</string>
-    <string name="verify_pithus_key_title">Pithus API-sleutel (optioneel)</string>
     <string name="verify_api_key_hint">Tik om API-sleutel in te voeren</string>
     <string name="verify_api_key_configured">API-sleutel opgeslagen · tik om bij te werken</string>
     <string name="verify_get_api_key">API-sleutel ophalen</string>

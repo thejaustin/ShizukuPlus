@@ -189,7 +189,6 @@
     <string name="settings_allow_automation_plugin_title">Permitir aplicativos de automação</string>
     <string name="settings_allow_automation_plugin_summary">Permite que Tasker e outros aplicativos compatíveis com Locale iniciem e parem Shizuku+. Qualquer aplicativo instalado pode usar isso, portanto, ative-o apenas se usar essas automações.</string>
     <string name="settings_usb_phone_switch_notify">Notificação de conexão USB &amp; alternador</string>
-    <string name="settings_usb_phone_switch_notify_summary">Fixar notificação com configurações rápidas e atalhos de ferramentas quando conectado a um telefone ou dispositivo USB</string>
     <string name="su_bridge_report_not_connected">Shizuku não está conectado. Inicie o serviço Shizuku na tela inicial e tente novamente.</string>
     <string name="su_bridge_report_deploy_failed">❌ Não foi possível implantar a ponte em /data/local/tmp.</string>
     <string name="su_bridge_report_deploy_reason">Motivo: %1$s</string>

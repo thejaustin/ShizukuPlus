@@ -5,7 +5,10 @@ import af.shizuku.manager.ShizukuSettings
 import android.os.Bundle
 import androidx.preference.TwoStatePreference
 
-/** Experimental features anyone can try - the low-risk counterpart to Developer options. */
+/**
+ * Experimental features: the one home for features still in development. The "Developer previews"
+ * category only shows once Developer options are unlocked.
+ */
 class ExperimentalSettingsFragment : BaseSettingsFragment() {
     override fun getTitle(): CharSequence? = getString(R.string.settings_experimental_title)
 
@@ -44,10 +47,16 @@ class ExperimentalSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        // Device control home card: a Plus feature, so the server needs the new value. The change
-        // listener runs before the switch persists it - sync on the next frame, once it has.
-        findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_DEVICE_CONTROL_HOME_ENABLED)?.setOnPreferenceChangeListener { _, _ ->
-            view?.post { ShizukuSettings.syncAllPlusFeaturesToServer() }
+        // Developer previews: the riskier in-development features, kept behind the Developer
+        // options unlock (About > tap the version 7 times), as before they moved here.
+        findPreference<androidx.preference.Preference>("category_experimental")?.isVisible =
+            ShizukuSettings.isDevOptionsUnlocked()
+
+        // Validated by setSpoofTarget; not a Plus row, so sync it here.
+        findPreference<rikka.preference.SimpleMenuPreference>(ShizukuSettings.Keys.KEY_SPOOF_TARGET)?.setOnPreferenceChangeListener { _, v ->
+            val target = v as? String ?: return@setOnPreferenceChangeListener false
+            ShizukuSettings.setSpoofTarget(target)
+            ShizukuSettings.syncAllPlusFeaturesToServer()
             true
         }
     }

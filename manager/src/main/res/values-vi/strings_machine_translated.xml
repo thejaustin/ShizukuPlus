@@ -28,8 +28,6 @@
     <string name="settings_bold_typography">Chữ đậm</string>
     <string name="settings_expanded_headers">Tiêu đề mục mở rộng</string>
     <string name="settings_corner_rounding_override">Độ bo góc</string>
-    <string name="settings_follow_system_animations">Theo hoạt ảnh hệ thống</string>
-    <string name="settings_follow_system_animations_summary">Tuân theo cài đặt tốc độ hoạt ảnh của thiết bị trong Tùy chọn nhà phát triển</string>
     <string name="settings_icon_color_mode">Màu biểu tượng hai tông</string>
     <string name="settings_icon_color_mode_summary">Cách tô màu nền của biểu tượng hai tông</string>
     <string name="home_status_service_not_running_summary">%1$s đã dừng</string>
@@ -111,7 +109,6 @@
     <string name="app_management_sort_last_installed">Cài đặt gần nhất</string>
     <string name="app_management_sort_last_updated">Cập nhật gần nhất</string>
     <string name="app_management_item_summary_partial_root">⚠ Hỗ trợ một phần — một số chức năng vẫn cần Shizuku với root</string>
-    <string name="app_management_item_summary_requires_plus">* yêu cầu API nâng cao của Shizuku+</string>
     <string name="app_management_bulk_grant">Cấp quyền cho mục đã chọn</string>
     <string name="app_management_bulk_revoke">Thu hồi quyền của mục đã chọn</string>
     <string name="app_management_bulk_hide">Ẩn mục đã chọn</string>
@@ -184,8 +181,6 @@
     <string name="dhizuku_device_owner_desc">Cần thiết để Chế độ Dhizuku chia sẻ đặc quyền Chủ sở hữu thiết bị với các ứng dụng được ủy quyền.</string>
     <string name="dhizuku_device_owner_enabled">Đã bật Chủ sở hữu thiết bị Dhizuku</string>
     <string name="dhizuku_device_owner_disabled">Đã tắt Chủ sở hữu thiết bị Dhizuku</string>
-    <string name="settings_enhanced_api">API nâng cao của Shizuku+</string>
-    <string name="settings_enhanced_api_summary">Bật các giao diện hệ thống nâng cao cho người dùng chuyên sâu. Bắt buộc cho mọi tính năng độc quyền của Shizuku+.</string>
     <string name="settings_themed_icon">Biểu tượng ứng dụng theo chủ đề</string>
     <string name="settings_themed_icon_summary">Dùng phiên bản biểu tượng Shizuku+ phối màu Material You khi trình khởi chạy hỗ trợ biểu tượng theo chủ đề.</string>
     <string name="settings_themed_icon_open_settings">Mở cài đặt biểu tượng</string>
@@ -226,7 +221,6 @@
     <string name="settings_ai_automation_experimental">Tự động hóa AI thử nghiệm</string>
     <string name="settings_ai_automation_experimental_summary">Bật mô phỏng cử chỉ, chụp điểm ảnh và chèn văn bản cho tự động hóa do AI điều khiển</string>
     <string name="settings_keystore_fallback">KeyStore phần mềm dự phòng</string>
-    <string name="settings_keystore_fallback_summary">Lưu đệm khóa RSA của ADB được mã hóa bằng khóa AES phần mềm khi KeyStore phần cứng thất bại (ví dụ: Samsung Knox). Giảm số lần yêu cầu ghép nối nhưng làm giảm bảo mật.</string>
     <string name="settings_samsung_uid_escalation">Nâng quyền UID hệ thống Samsung</string>
     <string name="settings_samsung_uid_escalation_summary">Thử nâng quyền lên UID 1000 (system) bằng một lỗ hổng dành riêng cho các thiết bị Samsung chưa vá (của pascua28). Tự chịu rủi ro khi sử dụng.</string>
     <string name="settings_display_tuner_plus_title">Tinh chỉnh màn hình</string>
@@ -271,7 +265,6 @@
     <string name="help_network_governor_plus_detail">Network Governor cung cấp quyền truy cập đặc quyền vào INetworkPolicyManager và cài đặt DNS riêng tư. Nó có thể áp dụng POLICY_REJECT_ALL cho từng ứng dụng, tạo thành tường lửa cấp hệ thống mạnh mẽ hoạt động ngay cả trên kết nối Wi-Fi và 5G mà không cần đường hầm VPN.</string>
     <string name="help_activity_manager_plus_title">Giới thiệu Kiểm soát tiến trình sâu</string>
     <string name="help_activity_manager_plus_detail">Kiểm soát tiến trình sâu cho phép máy chủ bỏ qua các hạn chế ngủ đông và chờ tiêu chuẩn của ứng dụng. Nó có thể buộc ứng dụng vào nhóm chờ RESTRICTED hoặc thực hiện deepForceStop thực sự (tắt mọi dịch vụ và tác vụ nền), rất cần thiết cho các công cụ tiết kiệm pin mạnh tay.</string>
-    <string name="settings_plus_category_developer">Tùy chọn nhà phát triển (Thử nghiệm)</string>
     <string name="settings_root_magisk_mocking">Giả lập môi trường Magisk</string>
     <string name="settings_root_magisk_mocking_summary">Giả mạo tệp nhị phân, thuộc tính và thư mục nội bộ của Magisk để đánh lừa các ứng dụng phát hiện root.</string>
     <string name="settings_root_auto_grant">Cầu nối tự động chấp thuận</string>
@@ -288,10 +281,8 @@
     <string name="help_root_file_interceptor_detail">Khi ứng dụng sao chép tệp vào /data/data bằng shell tiêu chuẩn, chúng thường mất quyền sở hữu và ngữ cảnh SELinux. Mô-đun này tự động thêm các cờ như --preserve=all để giữ toàn vẹn tệp và ngăn ứng dụng bị sập.</string>
     <string name="help_root_busybox_title">Giới thiệu Mô phỏng BusyBox</string>
     <string name="help_root_busybox_detail">BusyBox là bộ tiện ích Unix phổ biến trên các thiết bị đã root. Một số ứng dụng root cũ kiểm tra sự tồn tại của nó trước khi chạy logic. Mô-đun này trả về phản hồi thành công giả lập cho lệnh \'busybox\'.</string>
-    <string name="settings_vector_summary">Bật kết xuất vector tăng tốc phần cứng để cải thiện hiệu năng đồ họa</string>
     <string name="settings_experimental_root_summary">Bật lớp tương thích cho các thao tác dựa trên root qua Shizuku</string>
     <string name="settings_spoof_device_summary">Báo cáo một mẫu thiết bị khác cho ứng dụng nhằm mục đích tương thích hoặc thử nghiệm</string>
-    <string name="settings_vector_experimental">Tăng tốc vector</string>
     <string name="settings_experimental_root_experimental">Tương thích root thử nghiệm</string>
     <string name="settings_spoof_device_experimental">Giả mạo danh tính thiết bị</string>
     <string name="settings_open_source_licenses">Giấy phép nguồn mở</string>
@@ -476,7 +467,6 @@
     <string name="settings_main_nav_startup_behavior_title">Khởi động &amp; Hành vi</string>
     <string name="settings_main_nav_startup_behavior_summary">Tùy chọn khởi động, watchdog, mạng, hoạt động và cập nhật</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Nâng cao &amp; Chẩn đoán</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">Nhật ký, công cụ ADB và khắc phục sự cố</string>
     <string name="settings_main_nav_about_summary">Phiên bản, sao lưu &amp; khôi phục, giấy phép và tùy chọn nhà phát triển</string>
     <string name="settings_accent_violet_applied">Đã áp dụng Tím nửa đêm</string>
     <string name="settings_accent_green_applied">Đã áp dụng Xanh rừng</string>
@@ -525,7 +515,6 @@
     <string name="activity_log_type_other">Sự kiện</string>
     <string name="settings_diagnostics_enabled">Chẩn đoán cài đặt</string>
     <string name="settings_diagnostics_enabled_summary">Chủ động quét cấu hình để tìm xung đột và bất thường</string>
-    <string name="settings_verify_apk_fdroid_title">Chỉ mục F-Droid / IzzyOnDroid</string>
     <string name="settings_custom_accent_title">Màu nhấn tùy chỉnh</string>
     <string name="settings_behavior_category_startup">Khởi động &amp; Phục hồi</string>
     <string name="settings_advanced_category_diagnostics">Chẩn đoán</string>
@@ -534,7 +523,6 @@
     <string name="settings_personalization_category_shape_style">Kiểu hình dạng &amp; biểu tượng</string>
     <string name="settings_personalization_category_home_screen">Màn hình chính</string>
     <string name="settings_personalization_category_language">Ngôn ngữ</string>
-    <string name="settings_plus_category_system_performance">Hệ thống &amp; Hiệu năng</string>
     <string name="settings_plus_category_security_access">Bảo mật &amp; Truy cập</string>
     <string name="settings_plus_category_backup_restore">Sao lưu &amp; Khôi phục</string>
     <string name="settings_root_category_stock_compat">Tương thích Shizuku gốc</string>
@@ -672,7 +660,6 @@
     <string name="settings_allow_automation_plugin_title">Cho phép ứng dụng tự động hóa</string>
     <string name="settings_allow_automation_plugin_summary">Cho phép Tasker và các ứng dụng tương thích với Locale khác khởi động và dừng Shizuku+. Bất kỳ ứng dụng nào đã cài đặt đều có thể sử dụng tính năng này, vì vậy chỉ bật nếu bạn sử dụng các tự động hóa đó.</string>
     <string name="settings_usb_phone_switch_notify">Thông báo chuyển đổi &amp; kết nối USB</string>
-    <string name="settings_usb_phone_switch_notify_summary">Ghim thông báo kèm cài đặt nhanh và lối tắt công cụ khi kết nối với điện thoại hoặc thiết bị USB</string>
     <string name="su_bridge_report_not_connected">Shizuku chưa được kết nối. Khởi động dịch vụ Shizuku từ màn hình chính, sau đó thử lại.</string>
     <string name="su_bridge_report_deploy_failed">❌ Không thể triển khai cầu nối tới /data/local/tmp.</string>
     <string name="su_bridge_report_deploy_reason">Lý do: %1$s</string>
@@ -799,7 +786,6 @@
     <string name="settings_developer_category_debug">Gỡ lỗi &amp; chẩn đoán</string>
     <string name="settings_plus_category_device_owner_tools">Công cụ chủ sở hữu thiết bị</string>
     <string name="settings_developer_options">Tùy chọn cho nhà phát triển</string>
-    <string name="settings_developer_options_summary">Ảo hóa, giả mạo thiết bị và các tính năng thử nghiệm</string>
     <string name="settings_auto_update_title">Tự động kiểm tra bản cập nhật</string>
     <string name="settings_auto_update_summary">Tự động kiểm tra các phiên bản mới khi khởi động ứng dụng</string>
     <string name="settings_auto_install_title">Tự động cài đặt bản cập nhật</string>
@@ -928,7 +914,6 @@
     <string name="app_management_search_hint">Tìm kiếm ứng dụng</string>
     <string name="verify_virustotal_key_title">Khóa API VirusTotal</string>
     <string name="verify_virustotal_key_required">Cần có khóa API để sử dụng tính năng quét VirusTotal</string>
-    <string name="verify_pithus_key_title">Khóa API Pithus (Tùy chọn)</string>
     <string name="verify_api_key_hint">Nhấn để nhập khóa API</string>
     <string name="verify_api_key_configured">Đã lưu khóa API · nhấn để cập nhật</string>
     <string name="verify_get_api_key">Lấy khóa API</string>

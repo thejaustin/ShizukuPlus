@@ -28,8 +28,6 @@
     <string name="settings_bold_typography">Жирная типографика</string>
     <string name="settings_expanded_headers">Увеличенные заголовки разделов</string>
     <string name="settings_corner_rounding_override">Скругление углов</string>
-    <string name="settings_follow_system_animations">Следовать системным анимациям</string>
-    <string name="settings_follow_system_animations_summary">Учитывать настройку скорости анимации устройства из параметров разработчика</string>
     <string name="settings_icon_color_mode">Двухцветные значки</string>
     <string name="settings_icon_color_mode_summary">Как окрашивается фон двухцветного значка</string>
     <string name="home_status_service_not_running_summary">%1$s остановлен</string>
@@ -111,7 +109,6 @@
     <string name="app_management_sort_last_installed">Недавно установленные</string>
     <string name="app_management_sort_last_updated">Недавно обновлённые</string>
     <string name="app_management_item_summary_partial_root">⚠ Поддерживается частично — для некоторых функций по-прежнему нужен Shizuku с root</string>
-    <string name="app_management_item_summary_requires_plus">* требуется расширенный API Shizuku+</string>
     <string name="app_management_bulk_grant">Разрешить выбранные</string>
     <string name="app_management_bulk_revoke">Отозвать у выбранных</string>
     <string name="app_management_bulk_hide">Скрыть выбранные</string>
@@ -184,8 +181,6 @@
     <string name="dhizuku_device_owner_desc">Необходимо, чтобы режим Dhizuku мог делиться привилегиями владельца устройства с авторизованными приложениями.</string>
     <string name="dhizuku_device_owner_enabled">Владелец устройства Dhizuku включён</string>
     <string name="dhizuku_device_owner_disabled">Владелец устройства Dhizuku отключён</string>
-    <string name="settings_enhanced_api">Расширенный API Shizuku+</string>
-    <string name="settings_enhanced_api_summary">Включает продвинутые системные интерфейсы для опытных пользователей. Необходим для всех эксклюзивных функций Shizuku+.</string>
     <string name="settings_themed_icon">Тематический значок приложения</string>
     <string name="settings_themed_icon_summary">Использовать версию значка Shizuku+ в цветах Material You, если лаунчер поддерживает тематические значки.</string>
     <string name="settings_themed_icon_open_settings">Открыть настройки значка</string>
@@ -226,7 +221,6 @@
     <string name="settings_ai_automation_experimental">Экспериментальная автоматизация ИИ</string>
     <string name="settings_ai_automation_experimental_summary">Включить имитацию жестов, захват пикселей и ввод текста для автоматизации на основе ИИ</string>
     <string name="settings_keystore_fallback">Программное резервное хранилище ключей</string>
-    <string name="settings_keystore_fallback_summary">Кэшировать RSA-ключ ADB, зашифрованный программным ключом AES, если аппаратное хранилище KeyStore не работает (например, Samsung Knox). Уменьшает число запросов сопряжения, но снижает безопасность.</string>
     <string name="settings_samsung_uid_escalation">Повышение до системного UID Samsung</string>
     <string name="settings_samsung_uid_escalation_summary">Попытка повысить права до UID 1000 (system) с помощью эксплойта для непропатченных устройств Samsung (автор pascua28). Используйте на свой страх и риск.</string>
     <string name="settings_display_tuner_plus_title">Тюнер экрана</string>
@@ -271,7 +265,6 @@
     <string name="help_network_governor_plus_detail">Управление сетью даёт привилегированный доступ к INetworkPolicyManager и настройкам частного DNS. Оно может применять POLICY_REJECT_ALL для отдельных приложений, обеспечивая надёжный системный брандмауэр, который работает даже в сетях Wi-Fi и 5G без активного VPN-туннеля.</string>
     <string name="help_activity_manager_plus_title">О глубоком управлении процессами</string>
     <string name="help_activity_manager_plus_detail">Глубокое управление процессами позволяет серверу обходить стандартную гибернацию приложений и ограничения режима ожидания. Оно может переводить приложения в группу ожидания RESTRICTED или выполнять настоящий deepForceStop (завершение всех служб и фоновых задач), что необходимо для агрессивных инструментов экономии заряда.</string>
-    <string name="settings_plus_category_developer">Параметры разработчика (экспериментально)</string>
     <string name="settings_root_magisk_mocking">Имитация среды Magisk</string>
     <string name="settings_root_magisk_mocking_summary">Подделывает бинарные файлы, свойства и внутренние папки Magisk, чтобы обмануть приложения, определяющие root.</string>
     <string name="settings_root_auto_grant">Мост автоодобрения</string>
@@ -288,10 +281,8 @@
     <string name="help_root_file_interceptor_detail">Когда приложения копируют файлы в /data/data через стандартную оболочку, они часто теряют владельца и контексты SELinux. Этот модуль автоматически добавляет флаги вроде --preserve=all, чтобы сохранить целостность файлов и предотвратить сбои приложений.</string>
     <string name="help_root_busybox_title">Об имитации BusyBox</string>
     <string name="help_root_busybox_detail">BusyBox — набор утилит Unix, распространённый на устройствах с root. Некоторые старые root-приложения проверяют его наличие перед выполнением своей логики. Этот модуль возвращает имитацию успешного ответа на команду «busybox».</string>
-    <string name="settings_vector_summary">Включить аппаратно ускоренную векторную отрисовку для повышения графической производительности</string>
     <string name="settings_experimental_root_summary">Включить слой совместимости для операций, основанных на root, через Shizuku</string>
     <string name="settings_spoof_device_summary">Сообщать приложениям другую модель устройства для совместимости или тестирования</string>
-    <string name="settings_vector_experimental">Векторное ускорение</string>
     <string name="settings_experimental_root_experimental">Экспериментальная совместимость с root</string>
     <string name="settings_spoof_device_experimental">Подмена идентификатора устройства</string>
     <string name="settings_open_source_licenses">Лицензии открытого ПО</string>
@@ -476,7 +467,6 @@
     <string name="settings_main_nav_startup_behavior_title">Запуск и поведение</string>
     <string name="settings_main_nav_startup_behavior_summary">Параметры загрузки, watchdog, сеть, активность и обновления</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Дополнительно и диагностика</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">Журналы, инструменты ADB и устранение неполадок</string>
     <string name="settings_main_nav_about_summary">Версия, резервное копирование и восстановление, лицензии и параметры разработчика</string>
     <string name="settings_accent_violet_applied">Применён «Полуночный фиолетовый»</string>
     <string name="settings_accent_green_applied">Применён «Лесной зелёный»</string>
@@ -525,7 +515,6 @@
     <string name="activity_log_type_other">Событие</string>
     <string name="settings_diagnostics_enabled">Диагностика настроек</string>
     <string name="settings_diagnostics_enabled_summary">Заранее проверять конфигурации на конфликты и аномалии</string>
-    <string name="settings_verify_apk_fdroid_title">Индекс F-Droid / IzzyOnDroid</string>
     <string name="settings_custom_accent_title">Свой акцентный цвет</string>
     <string name="settings_behavior_category_startup">Запуск и восстановление</string>
     <string name="settings_advanced_category_diagnostics">Диагностика</string>
@@ -534,7 +523,6 @@
     <string name="settings_personalization_category_shape_style">Форма и стиль значков</string>
     <string name="settings_personalization_category_home_screen">Главный экран</string>
     <string name="settings_personalization_category_language">Язык</string>
-    <string name="settings_plus_category_system_performance">Система и производительность</string>
     <string name="settings_plus_category_security_access">Безопасность и доступ</string>
     <string name="settings_plus_category_backup_restore">Резервное копирование и восстановление</string>
     <string name="settings_root_category_stock_compat">Совместимость с обычным Shizuku</string>
@@ -567,7 +555,6 @@
     <string name="settings_developer_category_debug">Отладка и диагностика</string>
     <string name="settings_plus_category_device_owner_tools">Инструменты владельца устройства</string>
     <string name="settings_developer_options">Параметры разработчика</string>
-    <string name="settings_developer_options_summary">Виртуализация, подмена устройства и экспериментальные функции</string>
     <string name="settings_auto_update_title">Автопроверка обновлений</string>
     <string name="settings_auto_update_summary">Автоматически проверять новые версии при запуске приложения</string>
     <string name="settings_auto_install_title">Автоустановка обновлений</string>
@@ -696,7 +683,6 @@
     <string name="app_management_search_hint">Поиск приложений</string>
     <string name="verify_virustotal_key_title">Ключ API VirusTotal</string>
     <string name="verify_virustotal_key_required">Для проверки через VirusTotal нужен ключ API</string>
-    <string name="verify_pithus_key_title">Ключ API Pithus (необязательно)</string>
     <string name="verify_api_key_hint">Нажмите, чтобы ввести ключ API</string>
     <string name="verify_api_key_configured">Ключ API сохранён · нажмите, чтобы изменить</string>
     <string name="verify_get_api_key">Получить ключ API</string>
@@ -1004,7 +990,6 @@
     <string name="settings_allow_automation_plugin_title">Разрешить приложения автоматизации</string>
     <string name="settings_allow_automation_plugin_summary">Позволяет Tasker и другим приложениям, совместимым с Locale, запускать и останавливать Shizuku+. Любое установленное приложение может это использовать, поэтому включайте только если вы используете такую автоматизацию.</string>
     <string name="settings_usb_phone_switch_notify">USB-соединение и уведомление переключения</string>
-    <string name="settings_usb_phone_switch_notify_summary">Закрепите уведомление с быстрыми параметрами и ярлыками инструментов при подключении к телефону или USB-устройству</string>
     <string name="su_bridge_report_not_connected">Shizuku не подключена. Запустите службу Shizuku с главного экрана, а затем повторите попытку.</string>
     <string name="su_bridge_report_deploy_failed">❌ Не удалось развернуть мост в /data/local/tmp.</string>
     <string name="su_bridge_report_deploy_reason">Причина: %1$s</string>

@@ -30,8 +30,6 @@
     <string name="settings_bold_typography">粗体排版</string>
     <string name="settings_expanded_headers">展开式分组标题</string>
     <string name="settings_corner_rounding_override">圆角半径</string>
-    <string name="settings_follow_system_animations">跟随系统动画</string>
-    <string name="settings_follow_system_animations_summary">遵循开发者选项中的动画速度设置</string>
 
     <string-array name="icon_styles">
         <item>标准（填充）</item>
@@ -62,10 +60,6 @@
         <item>表现力</item>
     </string-array>
 
-    <string-array name="status_card_outline_styles">
-        <item>Material（主题色）</item>
-        <item>绿 / 红（状态色）</item>
-    </string-array>
 
 
     <!-- Home - Status -->
@@ -252,7 +246,6 @@
     <string name="app_management_dialog_adb_is_limited_message"><![CDATA[这极有可能是你的设备制造商限制了 adb 的权限。<p><b><a href="%1$s">此文档</a></b>中可能有针对你的系统的解决方案。]]></string>
     <string name="app_management_item_summary_requires_root">* 需要以 root 执行的 Shizuku</string>
     <string name="app_management_item_summary_partial_root">⚠ 部分支持 — 部分功能仍需带 root 的 Shizuku</string>
-    <string name="app_management_item_summary_requires_plus">* 需要 Shizuku+ 增强 API</string>
     <string name="app_management_toggle_all">切换全部</string>
     <string name="app_management_bulk_grant">授予所选</string>
     <string name="app_management_bulk_revoke">撤销所选</string>
@@ -371,8 +364,6 @@
     <string name="dhizuku_device_owner_desc">Dhizuku 模式需要它才能与已授权的应用共享设备所有者权限。</string>
     <string name="dhizuku_device_owner_enabled">Dhizuku 设备所有者已启用</string>
     <string name="dhizuku_device_owner_disabled">Dhizuku 设备所有者已停用</string>
-    <string name="settings_enhanced_api">Shizuku+ 增强 API</string>
-    <string name="settings_enhanced_api_summary">为高级用户启用进阶系统接口。所有 Shizuku+ 专属功能都需要它。</string>
     <string name="settings_themed_icon">主题化应用图标</string>
     <string name="settings_themed_icon_summary">当启动器支持主题化图标时，使用 Material You 着色的 Shizuku+ 图标。</string>
     <string name="settings_themed_icon_open_settings">打开图标设置</string>
@@ -413,7 +404,6 @@
     <string name="settings_ai_automation_experimental">实验性 AI 自动化</string>
     <string name="settings_ai_automation_experimental_summary">为 AI 驱动的自动化启用手势模拟、像素捕获与文本注入</string>
     <string name="settings_keystore_fallback">软件密钥库回退</string>
-    <string name="settings_keystore_fallback_summary">硬件密钥库不可用（如 Samsung Knox）时，改用软件 AES 密钥加密缓存 ADB RSA 密钥。可减少配对提示，但会降低安全性。</string>
     <string name="settings_samsung_uid_escalation">三星系统 UID 提权</string>
     <string name="settings_samsung_uid_escalation_summary">尝试利用未修补三星设备特有的漏洞提权至 UID 1000（system）（作者：pascua28）。风险自负。</string>
     <string name="settings_display_tuner_plus_title">显示调节</string>
@@ -471,7 +461,6 @@
     <string name="help_activity_manager_plus_detail">深度进程控制允许服务器绕过标准的应用休眠与待机限制。它可以把应用强制放入 RESTRICTED 待机分组，或执行真正的 deepForceStop（终止所有服务与后台任务），这对激进的省电工具来说不可或缺。</string>
 
     <!-- Plus settings category titles -->
-    <string name="settings_plus_category_developer">开发者选项 (实验性)</string>
     <string name="settings_root_magisk_mocking">Magisk 环境模拟</string>
     <string name="settings_root_magisk_mocking_summary">伪造 Magisk 二进制文件、属性和内部文件夹，以蒙骗检测 root 的应用。</string>
     <string name="settings_root_auto_grant">自动批准桥接</string>
@@ -492,10 +481,8 @@
     <string name="help_root_busybox_title">关于 BusyBox 模拟</string>
     <string name="help_root_busybox_detail">BusyBox 是 root 设备上常见的 Unix 工具集。一些较旧的 root 应用在执行逻辑前会检查它是否存在。本模块会为「busybox」命令返回模拟的成功响应。</string>
 
-    <string name="settings_vector_summary">系统操作的实验性原生执行。</string>
     <string name="settings_experimental_root_summary">setprop、mount 和 SELinux 的功能解决方法。</string>
     <string name="settings_spoof_device_summary">为系统属性查询返回通用设备身份。</string>
-    <string name="settings_vector_experimental">矢量加速</string>
     <string name="settings_experimental_root_experimental">实验性 Root 兼容性</string>
     <string name="settings_spoof_device_experimental">伪造设备标识</string>
     <string name="settings_open_source_licenses">开源许可</string>
@@ -786,7 +773,6 @@
     <string name="settings_main_nav_startup_behavior_title">启动与行为</string>
     <string name="settings_main_nav_startup_behavior_summary">开机选项、看门狗、网络与活动状态</string>
     <string name="settings_main_nav_advanced_diagnostics_title">进阶与诊断</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">日志、ADB 工具与故障排除</string>
     <string name="settings_main_nav_about_summary">版本、许可与更新</string>
     <string name="settings_accent_violet_applied">已应用午夜紫</string>
     <string name="settings_accent_green_applied">已应用森林绿</string>
@@ -832,7 +818,6 @@
     <string name="empty_state_description_activity_log_empty">启用活动日志后，Shizuku API 调用与事件会显示在这里。</string>
     <string name="settings_diagnostics_enabled">设置诊断</string>
     <string name="settings_diagnostics_enabled_summary">主动扫描配置中的冲突与异常</string>
-    <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid 索引</string>
     <string name="settings_custom_accent_title">自定义强调色</string>
 
     <!-- Update Settings -->
@@ -843,7 +828,6 @@
     <string name="settings_personalization_category_shape_style">形状与图标样式</string>
     <string name="settings_personalization_category_home_screen">主屏幕</string>
     <string name="settings_personalization_category_language">语言</string>
-    <string name="settings_plus_category_system_performance">系统与性能</string>
     <string name="settings_plus_category_security_access">安全与访问</string>
     <string name="settings_plus_category_backup_restore">备份与恢复</string>
     <string name="settings_root_category_stock_compat">原版 Shizuku 兼容</string>
@@ -878,7 +862,6 @@
     
     <!-- Developer Options -->
     <string name="settings_developer_options">开发者选项</string>
-    <string name="settings_developer_options_summary">虚拟化、设备伪造与实验性功能</string>
     <string name="settings_auto_update_title">自动检查更新</string>
     <string name="settings_auto_update_summary">应用启动时自动检查新版本</string>
     <string name="settings_auto_install_title">自动安装更新</string>
@@ -1029,7 +1012,6 @@
     <!-- APK verification API key strings -->
     <string name="verify_virustotal_key_title">VirusTotal API 密钥</string>
     <string name="verify_virustotal_key_required">使用 VirusTotal 扫描需要 API 密钥</string>
-    <string name="verify_pithus_key_title">Pithus API 密钥（可选）</string>
     <string name="verify_api_key_hint">点按输入 API 密钥</string>
     <string name="verify_api_key_configured">API 密钥已保存 · 点按更新</string>
     <string name="verify_get_api_key">获取 API 密钥</string>
@@ -1293,7 +1275,6 @@
     <string name="settings_watchdog_not_running">已开启，当前未运行</string>
     <string name="settings_plus_category_core">核心</string>
     <string name="settings_usb_phone_switch_notify">USB 连接与切换通知</string>
-    <string name="settings_usb_phone_switch_notify_summary">连接手机或 USB 设备时，固定显示包含快捷设置与工具快捷方式的通知</string>
     <string name="su_bridge_terminal_profile_title">终端与环境设置</string>
     <string name="su_bridge_terminal_profile_desc">对于 Termux 和 shell 脚本，请将 SU 桥接加入 PATH 开头，或添加别名，让「su」无需 root 也能无缝运行。</string>
     <string name="su_bridge_copy_termux_setup">复制 Termux 配置命令</string>

@@ -36,8 +36,6 @@
     <string name="settings_corner_rounding_override">Künc Dairəviliyi</string>
 
     <!-- UI Settings - System-following -->
-    <string name="settings_follow_system_animations">Sistem Animasiyalarını İzlə</string>
-    <string name="settings_follow_system_animations_summary">Tərtibatçı Seçimlərindən cihazınızın animasiya sürəti tənzimləməsinə uyğun yanaşın</string>
 
     <string-array name="icon_styles">
         <item>Doldurulmuş</item>
@@ -93,14 +91,6 @@
         <item>3</item>
     </string-array>
 
-    <string-array name="status_card_outline_styles">
-        <item>Material (tema rəngi)</item>
-        <item>Yaşıl / Qırmızı (status rəngi)</item>
-    </string-array>
-    <string-array name="status_card_outline_styles_value" translatable="false">
-        <item>material</item>
-        <item>status</item>
-    </string-array>
 
 
     <!-- Home - Status -->
@@ -299,7 +289,6 @@
     <string name="app_management_dialog_adb_is_limited_message"><![CDATA[Cihaz istehsalçınızın adb icazəsini məhdudlaşdırması çox mümkündür.<p>Sisteminiz üçün həll yolu <b><a href=\"%1$s\">bu sənəddə</a></b> ola bilər.]]></string>
     <string name="app_management_item_summary_requires_root">* Shizuku-nun root ilə işləməsini tələb edir</string>
     <string name="app_management_item_summary_partial_root">⚠ Qismən dəstəklənir — bəzi funksiyalar hələ də root ilə Shizuku tələb edir</string>
-    <string name="app_management_item_summary_requires_plus">* Shizuku+ Təkmilləşdirilmiş API tələb edir</string>
     <string name="app_management_toggle_all">Hamısını dəyiş</string>
     <string name="app_management_bulk_grant">Seçilənlərə icazə ver</string>
     <string name="app_management_bulk_revoke">Seçilənlərin icazəsini ləğv et</string>
@@ -562,8 +551,6 @@
     <string name="dhizuku_device_owner_desc">Dhizuku Rejiminin səlahiyyətli tətbiqlərlə Cihaz Sahibi imtiyazlarını paylaşması üçün tələb olunur.</string>
     <string name="dhizuku_device_owner_enabled">Dhizuku Cihaz Sahibliyi Aktivdir</string>
     <string name="dhizuku_device_owner_disabled">Dhizuku Cihaz Sahibliyi Söndürülüb</string>
-    <string name="settings_enhanced_api">Shizuku+ Təkmilləşdirilmiş API</string>
-    <string name="settings_enhanced_api_summary">Güclü istifadəçilər üçün qabaqcıl sistem interfeyslərini aktivləşdirin. Bütün Shizuku+ eksklüziv xüsusiyyətləri üçün tələb olunur.</string>
     <string name="settings_themed_icon">Temalı tətbiq ikonu</string>
     <string name="settings_themed_icon_summary">Başlatıcınız temalı ikonları dəstəklədikdə Shizuku+ ikonunun Material You rəngli versiyasından istifadə edin.</string>
     <string name="settings_themed_icon_open_settings">İkon tənzimləmələrini aç</string>
@@ -612,7 +599,6 @@
     <string name="settings_ai_automation_experimental">Eksperimental AI Avtomatlaşdırma</string>
     <string name="settings_ai_automation_experimental_summary">AI tərəfindən idarə olunan avtomatlaşdırma üçün jest simulyasiyası, piksel çəkilişi və mətn daxiletməsini aktivləşdirin</string>
     <string name="settings_keystore_fallback">Proqram təminatı KeyStore Ehtiyat Nüsxəsi</string>
-    <string name="settings_keystore_fallback_summary">Aparat KeyStore xəta verdikdə proqram təminatı AES açarı ilə şifrələnmiş ADB RSA açarını keşləyin (məsələn, Samsung Knox). Cütləşmə sorğularını azaldır, lakin təhlükəsizliyi aşağı salır.</string>
     <string name="settings_samsung_uid_escalation">Samsung Sistem UID Eskalasiyası</string>
     <string name="settings_samsung_uid_escalation_summary">Yamaqlanmamış Samsung cihazlarına xüsusi zəiflikdən (pascua28 tərəfindən) istifadə edərək UID 1000 (sistem) səviyyəsinə yüksəlməyə cəhd edin. Root tələb olunmur. Qeyd: Samsung bunu müasir One UI (Android 12+) versiyalarında yamaqlayıb.</string>
     <string name="settings_display_tuner_plus_title">Ekran Tənzimləyicisi</string>
@@ -673,7 +659,6 @@
 
     <!-- Plus settings category titles -->
     <string name="settings_plus_category_core">Nüvə</string>
-    <string name="settings_plus_category_developer">Eksperimental alətlər</string>
     <string name="settings_root_magisk_mocking">Magisk Mühitinin Saxtalaşdırılması</string>
     <string name="settings_root_magisk_mocking_summary">Root-u aşkar edən tətbiqləri aldatmaq üçün Magisk binar fayllarını, xüsusiyyətlərini və daxili qovluqlarını saxtalaşdırır.</string>
     <string name="settings_root_auto_grant">Avtomatik Təsdiq Körpüsü</string>
@@ -707,10 +692,8 @@
     <string name="help_root_busybox_title">BusyBox Simulyasiyası Haqqında</string>
     <string name="help_root_busybox_detail">BusyBox root edilmiş cihazlarda ümumi olan Unix utilitlər dəstidir. Bəzi köhnə root tətbiqləri işləməzdən əvvəl onun mövcudluğunu yoxlayır. Bu modul \'busybox\' əmri üçün simulyasiya edilmiş uğurlu cavab qaytarır.</string>
 
-    <string name="settings_vector_summary">Təkmilləşdirilmiş qrafik performansı üçün aparat sürətləndirməli vektor renderinqini aktivləşdirin</string>
     <string name="settings_experimental_root_summary">Shizuku vasitəsilə root əsaslı əməliyyatlar üçün uyğunluq qatını aktivləşdirin</string>
     <string name="settings_spoof_device_summary">Uyğunluq və ya sınaq məqsədləri üçün tətbiqlərə fərqli cihaz modeli bildirin</string>
-    <string name="settings_vector_experimental">Vektor Sürətləndirməsi</string>
     <string name="settings_experimental_root_experimental">Eksperimental Root Uyğunluğu</string>
     <string name="settings_spoof_device_experimental">Cihaz Kimliyini Saxtalaşdır</string>
     <string name="settings_open_source_licenses">Açıq mənbə lisenziyaları</string>
@@ -725,7 +708,6 @@
     <string name="settings_force_start_wadb">WADB üçün Wi-Fi yoxlamasından yan keç</string>
     <string name="settings_force_start_wadb_summary">Wi-Fi bağlantısı kəsilsə belə Shizuku-nu ADB TCP vasitəsilə işə salmağa cəhd edin. Yerli döngə və ya mobil internet ADB üçün faydalıdır.</string>
     <string name="settings_usb_phone_switch_notify">USB bağlantısı və keçid bildirişi</string>
-    <string name="settings_usb_phone_switch_notify_summary">Telefon və ya USB cihazına qoşulduqda sürətli tənzimləmələr və alət qısayolları olan bildirişi sabitlə</string>
     <string name="settings_fake_su">Root Tətbiq Tərcüməçisi (SU Körpüsü)</string>
     <string name="settings_fake_su_summary">Standard yalnız-root tətbiqlərinin (NeoBackup, AdAway və Swift Backup kimi) telefonunuzu həmişəlik root etmədən Shizuku+ vasitəsilə işləməsinə icazə verin.</string>
     <string name="settings_root_integration_hub">Root Uyğunluq Mərkəzi</string>
@@ -1084,7 +1066,6 @@
     <string name="settings_main_nav_startup_behavior_title">Başlanğıc və Davranış</string>
     <string name="settings_main_nav_startup_behavior_summary">Açılış seçimləri, nəzarətçi, ADB, firewall və quraşdırma yoxlamaları</string>
     <string name="settings_main_nav_advanced_diagnostics_title">Qabaqcıl və Diaqnostika</string>
-    <string name="settings_main_nav_advanced_diagnostics_summary">Təkmilləşdirilmiş API, diaqnostika və ehtiyat nüsxə</string>
     <string name="settings_main_nav_about_summary">Versiya, buraxılış dəyişiklik qeydi, lisenziyalar və tərtibatçı tənzimləmələri</string>
     <string name="settings_accent_violet_applied">Gecə Bənövşəyi tətbiq edildi</string>
     <string name="settings_accent_green_applied">Meşə Yaşılı tətbiq edildi</string>
@@ -1169,18 +1150,11 @@
     <string name="safety_check_unknown">%1$s: bu dəqiq tətbiqi görməyib</string>
     <string name="safety_check_bad_key">%1$s: API açarı rədd edildi</string>
     <string name="safety_check_unavailable">%1$s: hazırda yoxlamaq mümkün olmadı</string>
-    <string name="settings_verify_apk_fdroid_title">F-Droid / IzzyOnDroid İndeksi</string>
     <string name="settings_verify_apk_virustotal_title">VirusTotal yoxlaması</string>
     <string name="settings_verify_apk_pithus_title">Pithus yoxlaması</string>
     <string name="settings_verify_apk_local_badge">Mənbə və imzalayan, oflayn</string>
-    <string name="settings_verify_apk_fdroid_badge">F-Droid Meta-məlumatı</string>
     <string name="settings_verify_apk_virustotal_badge">Heş axtarışı, 70+ skaner</string>
     <string name="settings_verify_apk_pithus_badge">Heş axtarışı, zərərli proqram intellekti</string>
-    <string name="settings_verify_engines_posture">%1$d / %2$d Təhlükəsizlik Mühərriki Aktivdir</string>
-    <string name="settings_verify_key_required_hint">Açar tələb olunur · Təyin etmək üçün toxunun</string>
-    <string name="settings_verify_key_saved_hint">Açar aktivdir · Redaktə etmək üçün basıb saxlayın</string>
-    <string name="settings_plus_governors_posture">%1$d / %2$d İdarəedici Aktivdir</string>
-    <string name="settings_plus_governors_help_hint">Arxitektura təfərrüatları üçün istənilən idarəediciyə basıb saxlayın</string>
 
     <!-- Custom accent color preference (settings_personalization.xml) -->
     <string name="settings_custom_accent_title">Xüsusi Vurğu Rəngi</string>
@@ -1247,7 +1221,6 @@
     <string name="settings_personalization_category_app_identity">Tətbiq ikonu &amp; adı</string>
     <string name="settings_personalization_category_motion_haptics">Hərəkət &amp; əks-əlaqə</string>
     <string name="settings_personalization_category_layout_nav">Mətn &amp; tərtibat</string>
-    <string name="settings_plus_category_system_performance">Sistem və Performans</string>
     <string name="settings_plus_category_security_access">Təhlükəsizlik və Giriş</string>
     <string name="settings_plus_category_backup_restore">Ehtiyat Nüsxə və Bərpa</string>
     <string name="settings_root_category_stock_compat">Orijinal Shizuku Uyğunluğu</string>
@@ -1299,7 +1272,6 @@
     
     <!-- Developer Options -->
     <string name="settings_developer_options">Tərtibatçı Seçimləri</string>
-    <string name="settings_developer_options_summary">Virtualizasiya, cihazın saxtalaşdırılması və eksperimental xüsusiyyətlər</string>
     <string name="settings_notification_system_title">Bildiriş sistemi</string>
     <string name="settings_notification_system_summary">Shizuku+-ın status, diaqnostika və qəza bərpası bildirişləri göndərməsinə icazə verin</string>
     <string name="settings_auto_update_title">Yeniləmələri avtomatik yoxla</string>
@@ -1500,7 +1472,6 @@
     <!-- APK verification API key strings -->
     <string name="verify_virustotal_key_title">VirusTotal API Açarı</string>
     <string name="verify_virustotal_key_required">VirusTotal skanlamasından istifadə etmək üçün API açarı tələb olunur</string>
-    <string name="verify_pithus_key_title">Pithus API Açarı (Könüllü)</string>
     <string name="verify_api_key_hint">API açarını daxil etmək üçün toxunun</string>
     <string name="verify_api_key_configured">API açarı yadda saxlanıldı · yeniləmək üçün toxunun</string>
     <string name="verify_get_api_key">API Açarını Əldə Et</string>
