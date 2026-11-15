@@ -64,6 +64,32 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
+        <!-- Expressive controls preview: run now, or open the menu for more choices. -->
+        <com.google.android.material.button.MaterialSplitButton
+            android:id="@+id/split_fix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:visibility="gone">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/split_fix_run"
+                style="@style/Widget.Material3.SplitButton.LeadingButton.Filled.Tonal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/doctor_button_run" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/split_fix_menu"
+                style="@style/Widget.Material3.SplitButton.IconButton.Filled.Tonal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:contentDescription="@string/doctor_split_more_options"
+                app:icon="@drawable/m3_split_button_chevron_avd" />
+
+        </com.google.android.material.button.MaterialSplitButton>
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

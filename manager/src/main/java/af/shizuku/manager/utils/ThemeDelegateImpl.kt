@@ -112,6 +112,10 @@ class ThemeDelegateImpl : ThemeDelegate {
             theme.applyStyle(if (dark) R.style.ThemeOverlay_HighContrast_Dark else R.style.ThemeOverlay_HighContrast, true)
         }
 
+        if (ShizukuSettings.isExpressiveControlsPreviewEnabled()) {
+            theme.applyStyle(R.style.ThemeOverlay_Expressive_Progress, true)
+        }
+
         if (!ShizukuSettings.isExpressiveAnimationsEnabled()) {
             theme.applyStyle(R.style.ThemeOverlay_Motion_Standard, true)
         }

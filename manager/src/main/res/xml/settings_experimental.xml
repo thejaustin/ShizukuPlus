@@ -50,6 +50,14 @@
             android:defaultValue="false"
             app:badgeType="experimental" />
 
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="expressive_controls_preview"
+            android:title="@string/settings_expressive_controls_preview_title"
+            android:summary="@string/settings_expressive_controls_preview_summary"
+            android:icon="@drawable/ic_animation_24"
+            android:defaultValue="false"
+            app:badgeType="experimental" />
+
         <!-- Switch rows only (GrayableIconSwitchPreference); Compose switches keep the standard look. -->
         <rikka.preference.SimpleMenuPreference
             android:key="switch_row_design"

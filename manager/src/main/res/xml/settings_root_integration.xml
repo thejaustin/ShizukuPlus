@@ -108,6 +108,14 @@
             app:infoTitle="@string/help_stealth_mode_title"
             app:infoDetail="@string/help_stealth_mode_detail" />
 
+        <!-- Expressive controls preview: the three mocking rows below as one button group. -->
+        <af.shizuku.manager.settings.ConnectedToggleGroupPreference
+            android:key="root_mocking_group"
+            android:title="@string/settings_root_mocking_group_title"
+            android:summary="@string/settings_root_mocking_group_summary"
+            android:icon="@drawable/ic_settings_suggest_24"
+            app:isPreferenceVisible="false" />
+
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="root_iptables_mocking_enabled"
             android:title="@string/settings_root_iptables_mocking"

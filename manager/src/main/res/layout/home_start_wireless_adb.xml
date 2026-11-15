@@ -39,6 +39,7 @@
         tools:text="@string/home_adb_description" />
 
     <LinearLayout
+        android:id="@+id/buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -62,5 +63,31 @@
         app:icon="@drawable/ic_server_start_24" />
         
     </LinearLayout>
+
+    <!-- Expressive controls preview: Start, with pairing and the guide in its menu. -->
+    <com.google.android.material.button.MaterialSplitButton
+        android:id="@+id/split_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/split_start_run"
+            style="@style/Widget.Material3.SplitButton.LeadingButton.Filled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/home_root_button_start"
+            app:icon="@drawable/ic_server_start_24" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/split_start_menu"
+            style="@style/Widget.Material3.SplitButton.IconButton.Filled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:contentDescription="@string/home_split_start_more"
+            app:icon="@drawable/m3_split_button_chevron_avd" />
+
+    </com.google.android.material.button.MaterialSplitButton>
 
 </LinearLayout>

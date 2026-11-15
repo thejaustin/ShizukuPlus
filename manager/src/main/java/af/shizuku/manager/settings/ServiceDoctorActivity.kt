@@ -387,6 +387,15 @@ class ServiceDoctorActivity : AppBarActivity() {
         }
     }
 
+    /** The split button's main half: the steps the checklist would start with, without asking. */
+    private fun quickWalletRepair() {
+        serviceScope.launch {
+            val options = WalletRepair.options(withContext(Dispatchers.IO) { WalletRepair.scan() })
+            val steps = options.filter { it.checked }.map { it.step }.toSet()
+            if (steps.isEmpty()) showWalletFixDialog() else runWalletRepair(steps)
+        }
+    }
+
     private fun runWalletRepair(steps: Set<WalletRepair.Step>) {
         serviceScope.launch {
             val result = WalletRepair.run(this@ServiceDoctorActivity, steps)
@@ -454,6 +463,7 @@ class ServiceDoctorActivity : AppBarActivity() {
                         topicId = item.id,
                         actionLabelRes = item.actionLabelRes ?: R.string.doctor_button_fix,
                         isOptional = item.optional,
+                        onQuickFix = if (item.id == "wallet_integrity") ({ quickWalletRepair() }) else null,
                     )
                 }
 
@@ -574,6 +584,8 @@ class ServiceDoctorActivity : AppBarActivity() {
         val topicId: String? = null,
         val actionLabelRes: Int = R.string.doctor_button_fix,
         val isOptional: Boolean = false,
+        /** With the expressive preview on, a split button runs this and keeps [onFix] in its menu. */
+        val onQuickFix: (() -> Unit)? = null,
     )
 
     private inner class CheckListAdapter : RecyclerView.Adapter<CheckViewHolder>() {
@@ -648,7 +660,31 @@ class ServiceDoctorActivity : AppBarActivity() {
                     .show(context, topic)
             }
 
-            if (check.onFix != null) {
+            val split = check.onFix != null && check.onQuickFix != null && ShizukuSettings.isExpressiveControlsPreviewEnabled()
+            holder.binding.splitFix.visibility = if (split) View.VISIBLE else View.GONE
+            if (split) {
+                holder.binding.btnFix.visibility = View.GONE
+                holder.binding.splitFixRun.setText(check.actionLabelRes)
+                holder.binding.splitFixRun.setOnClickListener { check.onQuickFix.invoke() }
+                holder.binding.splitFixMenu.isChecked = false
+                holder.binding.splitFixMenu.setOnClickListener { anchor ->
+                    val popup = androidx.appcompat.widget.PopupMenu(context, anchor)
+                    popup.menu.add(0, 1, 0, R.string.doctor_split_choose_steps)
+                    popup.menu.add(0, 2, 1, R.string.wallet_repair_learn_more)
+                    popup.setOnMenuItemClickListener { menuItem ->
+                        when (menuItem.itemId) {
+                            1 -> check.onFix.invoke()
+                            else ->
+                                af.shizuku.manager.knowledgebase.KnowledgebaseHelper
+                                    .show(context, topic)
+                        }
+                        true
+                    }
+                    // The chevron flips while the menu is open, like the M3 split button.
+                    popup.setOnDismissListener { holder.binding.splitFixMenu.isChecked = false }
+                    popup.show()
+                }
+            } else if (check.onFix != null) {
                 holder.binding.btnFix.visibility = View.VISIBLE
                 holder.binding.btnFix.setText(check.actionLabelRes)
                 holder.binding.btnFix.setOnClickListener { check.onFix.invoke() }

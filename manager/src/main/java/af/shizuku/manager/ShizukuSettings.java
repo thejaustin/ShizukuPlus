@@ -215,6 +215,7 @@ public class ShizukuSettings {
         public static final String KEY_EXPERIMENTAL_COLOR_SCHEMES = "experimental_color_schemes";
         /** Experimental: M3 shared-axis transitions between screens and settings pages (off = Explode / cuts). */
         public static final String KEY_EXPERIMENTAL_SCREEN_TRANSITIONS = "experimental_screen_transitions";
+        public static final String KEY_EXPRESSIVE_CONTROLS_PREVIEW = "expressive_controls_preview";
         public static final String KEY_FLOATING_NAV_LABEL_MODE = "floating_nav_label_mode";
         public static final String KEY_FLOATING_NAV_AUTOHIDE = "floating_nav_autohide";
         public static final String KEY_HIGH_CONTRAST = "high_contrast_mode";
@@ -2418,6 +2419,12 @@ public class ShizukuSettings {
     public static boolean isExperimentalScreenTransitionsEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_EXPERIMENTAL_SCREEN_TRANSITIONS, false);
+    }
+
+    /** Wavy progress, split buttons and multi-select groups: M3 Expressive pieces still in testing. */
+    public static boolean isExpressiveControlsPreviewEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_EXPRESSIVE_CONTROLS_PREVIEW, false);
     }
 
     public static boolean isExperimentalColorSchemesEnabled() {

@@ -369,6 +369,12 @@
         regular weight; preference titles (listItem) are a title role and take BodyLarge.Emphasized. Applied before ThemeOverlay.OneUI so One
         UI's values win when both are on.
     -->
+    <!-- Expressive controls preview: View progress indicators draw the M3 Expressive wave. -->
+    <style name="ThemeOverlay.Expressive.Progress" parent="">
+        <item name="linearProgressIndicatorStyle">@style/Widget.Material3Expressive.LinearProgressIndicator.Wavy</item>
+        <item name="circularProgressIndicatorStyle">@style/Widget.Material3Expressive.CircularProgressIndicator.Wavy</item>
+    </style>
+
     <style name="ThemeOverlay.Typography.Bold" parent="">
         <item name="textAppearanceDisplayLarge">@style/TextAppearance.Material3.DisplayLarge.Emphasized</item>
         <item name="textAppearanceDisplayMedium">@style/TextAppearance.Material3.DisplayMedium.Emphasized</item>

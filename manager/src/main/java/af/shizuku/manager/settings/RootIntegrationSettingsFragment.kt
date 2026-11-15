@@ -280,6 +280,8 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             }
         }
 
+        setUpMockingGroup()
+
         findPreference<Preference>("root_compatibility_hub")?.setOnPreferenceClickListener {
             startActivity(Intent(context, RootCompatibilityActivity::class.java))
             true
@@ -348,6 +350,46 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
     override fun onResume() {
         super.onResume()
         applyModeConstraints()
+    }
+
+    override fun onDestroy() {
+        mockingListener?.let { preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(it) }
+        super.onDestroy()
+    }
+
+    private var mockingListener: android.content.SharedPreferences.OnSharedPreferenceChangeListener? = null
+
+    /**
+     * Expressive controls preview: iptables, Magisk and BusyBox mocking as one multi-select group.
+     * Taps drive the real rows (hidden, not removed), so Magisk's Wallet warning, the server sync
+     * and backup rules all stay exactly as they are.
+     */
+    private fun setUpMockingGroup() {
+        val group = findPreference<ConnectedToggleGroupPreference>("root_mocking_group") ?: return
+        val rows =
+            listOf("root_iptables_mocking_enabled", "root_magisk_mocking_enabled", "root_busybox_mocking_enabled")
+                .map { findPreference<TwoStatePreference>(it) ?: return }
+        if (!ShizukuSettings.isExpressiveControlsPreviewEnabled()) return
+        group.labels =
+            listOf(
+                getString(R.string.settings_root_mocking_group_iptables),
+                getString(R.string.settings_root_mocking_group_magisk),
+                getString(R.string.settings_root_mocking_group_busybox),
+            )
+        group.isChecked = { rows[it].isChecked }
+        group.onToggle = { index, checked ->
+            val row = rows[index]
+            if (row.callChangeListener(checked)) row.isChecked = checked
+            group.refresh()
+        }
+        rows.forEach { it.isVisible = false }
+        group.isVisible = true
+        val keys = rows.map { it.key }.toSet()
+        mockingListener =
+            android.content.SharedPreferences
+                .OnSharedPreferenceChangeListener { _, key ->
+                    if (key in keys) group.refresh()
+                }.also { preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(it) }
     }
 
     /**

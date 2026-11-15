@@ -449,6 +449,8 @@
     <string name="settings_experimental_color_schemes_summary">Custom accents colour every part of the app, and High contrast and Android\'s contrast setting switch to matching high-contrast schemes</string>
     <string name="settings_experimental_category_color">Look &amp; motion</string>
     <string name="settings_experimental_screen_transitions_title">Material screen transitions</string>
+    <string name="settings_expressive_controls_preview_title">Expressive controls preview</string>
+    <string name="settings_expressive_controls_preview_summary">Wavy progress bars, split buttons and multi-select button groups from Material 3 Expressive. Reopen screens to see the change</string>
     <string name="settings_experimental_screen_transitions_summary">Screens and settings pages slide forward and back instead of exploding or cutting</string>
     <string name="custom_icon_studio_saved_success">Icon saved to Downloads/ShizukuPlus/Icons</string>
     <string name="custom_icon_studio_save_png_short">Save PNG</string>
@@ -899,6 +901,14 @@
     <string name="doctor_wallet_risk_root_compat">Extended root features are on</string>
     <string name="doctor_wallet_su_bridge_on">SU Bridge is on, so Wallet and Messages may see root</string>
     <string name="doctor_button_run">Run</string>
+    <string name="doctor_split_more_options">More repair options</string>
+    <string name="home_split_start_more">Pairing and setup guide</string>
+    <string name="settings_root_mocking_group_title">Pretend these are installed</string>
+    <string name="settings_root_mocking_group_summary">Answer apps that check for these root tools</string>
+    <string name="settings_root_mocking_group_iptables" translatable="false">iptables</string>
+    <string name="settings_root_mocking_group_magisk" translatable="false">Magisk</string>
+    <string name="settings_root_mocking_group_busybox" translatable="false">BusyBox</string>
+    <string name="doctor_split_choose_steps">Choose steps…</string>
     <string name="in_dev_review_title">Some Plus features are now off by default</string>
     <string name="in_dev_review_message">These Plus APIs are still in development, so they now start off. You had them on. Tick any you use to keep them on; you can change this later in Settings → Experimental. If you rely on one, please share what you use it for on GitHub. It helps decide what gets finished first.</string>
     <string name="in_dev_review_save">Save</string>

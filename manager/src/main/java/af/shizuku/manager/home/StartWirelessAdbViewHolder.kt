@@ -217,6 +217,20 @@ class StartWirelessAdbViewHolder(
             binding.button2.isVisible = false
             binding.button3.isVisible = false
         }
+
+        // The split button only forwards to the regular buttons, which keep all the logic.
+        binding.splitStartRun.setOnClickListener { binding.button1.performClick() }
+        binding.splitStartMenu.setOnClickListener { anchor ->
+            val popup = androidx.appcompat.widget.PopupMenu(context, anchor)
+            popup.menu.add(0, 1, 0, R.string.adb_pairing)
+            popup.menu.add(0, 2, 1, R.string.home_wireless_adb_view_guide_button)
+            popup.setOnMenuItemClickListener { item ->
+                if (item.itemId == 1) binding.button2.performClick() else binding.button3.performClick()
+                true
+            }
+            popup.setOnDismissListener { binding.splitStartMenu.isChecked = false }
+            popup.show()
+        }
     }
 
     override fun onBind() {
@@ -241,6 +255,11 @@ class StartWirelessAdbViewHolder(
                         .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
             }
         }
+        val split = EnvironmentUtils.isTlsSupported() && ShizukuSettings.isExpressiveControlsPreviewEnabled()
+        binding.buttons.isVisible = !split
+        binding.splitStart.isVisible = split
+        binding.splitStartRun.text = binding.button1.text
+        binding.splitStartMenu.isChecked = false
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
