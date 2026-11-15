@@ -46,6 +46,57 @@ class UpdateManager(
         const val ACTION_SIGNATURE_MISMATCH = "af.shizuku.manager.action.SIGNATURE_MISMATCH"
         const val EXTRA_UPDATE_FILE_PATH = "af.shizuku.manager.extra.UPDATE_FILE_PATH"
         const val EXTRA_UPDATE_VERSION_NAME = "af.shizuku.manager.extra.UPDATE_VERSION_NAME"
+
+        // The APK a signature-mismatch notification points at. The activities that receive these
+        // actions are exported, so the path in the intent is only trusted when it matches what this
+        // app downloaded, byte for byte (private prefs; not part of settings backup or sync).
+        private const val PENDING_PREFS = "update_pending"
+        private const val KEY_PENDING_PATH = "path"
+        private const val KEY_PENDING_SHA256 = "sha256"
+
+        fun sha256(file: File): String? =
+            try {
+                val md = java.security.MessageDigest.getInstance("SHA-256")
+                file.inputStream().use { input ->
+                    val buf = ByteArray(64 * 1024)
+                    while (true) {
+                        val n = input.read(buf)
+                        if (n < 0) break
+                        md.update(buf, 0, n)
+                    }
+                }
+                md.digest().joinToString("") { "%02x".format(it) }
+            } catch (e: Exception) {
+                Timber.tag(TAG).w(e, "Could not hash %s", file.name)
+                null
+            }
+
+        private fun rememberPendingUpdate(
+            context: Context,
+            file: File,
+        ) {
+            val hash = sha256(file) ?: return
+            // applicationContext on both sides, so writer and reader always open the same file.
+            context.applicationContext
+                .getSharedPreferences(PENDING_PREFS, Context.MODE_PRIVATE)
+                .edit()
+                .putString(KEY_PENDING_PATH, file.canonicalPath)
+                .putString(KEY_PENDING_SHA256, hash)
+                .apply()
+        }
+
+        /** The SHA-256 of [file] when it is the update this app downloaded and notified about, else null. Reads the file. */
+        fun pendingUpdateHash(
+            context: Context,
+            file: File,
+        ): String? {
+            val prefs = context.applicationContext.getSharedPreferences(PENDING_PREFS, Context.MODE_PRIVATE)
+            val path = prefs.getString(KEY_PENDING_PATH, null) ?: return null
+            val expected = prefs.getString(KEY_PENDING_SHA256, null) ?: return null
+            val canonical = runCatching { file.canonicalPath }.getOrNull() ?: return null
+            if (canonical != path) return null
+            return sha256(file)?.takeIf { it == expected }
+        }
     }
 
     sealed class UpdateState {
@@ -611,6 +662,8 @@ class UpdateManager(
                 rikka.shizuku.Shizuku.pingBinder() ||
                     runCatching { Shell.getShell().isRoot }.getOrDefault(false)
 
+            // Hashing a ~20 MB APK: off the main thread. Done well before anyone can tap the notification.
+            if (!signaturesMatch) scope.launch(Dispatchers.IO) { rememberPendingUpdate(context, file) }
             val installIntent =
                 if (!signaturesMatch && hasPrivilege) {
                     Intent(context, af.shizuku.manager.home.HomeActivity::class.java).apply {

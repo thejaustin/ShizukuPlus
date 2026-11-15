@@ -262,7 +262,8 @@ class ViewModel(
 
     private val handler =
         CoroutineExceptionHandler { _, throwable ->
-            if (throwable !is CancellationException) {
+            // No root on a root start is the user's device, not a bug; the screen already says so.
+            if (throwable !is CancellationException && throwable !is NotRootedException) {
                 io.sentry.Sentry.captureException(throwable)
             }
             // Reset STARTING → STOPPED before update() so a failed start doesn't

@@ -91,7 +91,7 @@ object WifiNetworks {
             } finally {
                 // Inside the scope: destroying the process closes the pipe, which ends the read
                 // the scope would otherwise wait on after a timeout or cancellation.
-                process.destroy()
+                runCatching { process.destroy() }
             }
         }
     }

@@ -133,7 +133,14 @@ object NetworkTrust {
 
     private fun activeCapabilities(context: Context): NetworkCapabilities? {
         val cm = context.getSystemService(ConnectivityManager::class.java) ?: return null
-        return cm.getNetworkCapabilities(cm.activeNetwork ?: return null)
+        // Some Android 11 ROMs throw "Package android does not belong to <uid>" here; an unknown
+        // network then counts as trusted rather than aborting the start (SHIZUKUPLUS-AD).
+        return try {
+            cm.getNetworkCapabilities(cm.activeNetwork ?: return null)
+        } catch (e: SecurityException) {
+            timber.log.Timber.w("getNetworkCapabilities refused: %s", e.message)
+            null
+        }
     }
 
     private fun wifiInfo(context: Context): WifiInfo? {

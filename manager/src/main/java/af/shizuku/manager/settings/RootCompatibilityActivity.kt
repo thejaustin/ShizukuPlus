@@ -360,7 +360,6 @@ class RootCompatibilityActivity : AppBarActivity() {
         }
 
         val pm = packageManager
-        val installed = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
         val knownPkgs =
             AppContextManager
                 .getRootLegacyPackages()
@@ -368,15 +367,29 @@ class RootCompatibilityActivity : AppBarActivity() {
                 .flatten()
                 .toSet()
 
+        // Every app's permissions in one getInstalledPackages(GET_PERMISSIONS) call overflows the
+        // binder buffer on devices with many apps (SHIZUKUPLUS-B3): list names, then ask per app.
+        val installed =
+            try {
+                pm.getInstalledPackages(0)
+            } catch (e: Exception) {
+                Timber.w(e, "Could not list installed packages")
+                emptyList()
+            }
         val detected =
             installed
+                .asSequence()
+                .map { it.packageName }
+                .filter { it != packageName && !knownPkgs.contains(it) }
                 .filter { pkg ->
-                    pkg.packageName != packageName &&
-                        !knownPkgs.contains(pkg.packageName) &&
-                        pkg.requestedPermissions?.any {
+                    try {
+                        pm.getPackageInfo(pkg, PackageManager.GET_PERMISSIONS).requestedPermissions?.any {
                             it.contains("ROOT", true) || it.contains("SUPERUSER", true)
                         } == true
-                }.map { it.packageName }
+                    } catch (_: Exception) {
+                        false
+                    }
+                }.toList()
 
         if (detected.isNotEmpty()) {
             items.add(ListItem.Header(getString(R.string.su_bridge_other_detected_apps)))
@@ -390,7 +403,14 @@ class RootCompatibilityActivity : AppBarActivity() {
         // getInstalledPackages(GET_PERMISSIONS) enumerates every app's permission set; on devices
         // with many apps that's a multi-hundred-ms main-thread stall (ANR risk). Build off-thread.
         lifecycleScope.launch {
-            val items = withContext(Dispatchers.IO) { buildItems() }
+            val items =
+                try {
+                    withContext(Dispatchers.IO) { buildItems() }
+                } catch (e: Exception) {
+                    if (e is kotlinx.coroutines.CancellationException) throw e
+                    Timber.w(e, "Root compatibility list failed")
+                    return@launch
+                }
             if (isFinishing || isDestroyed) return@launch
             adapter.updateItems(items)
         }

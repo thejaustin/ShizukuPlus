@@ -189,6 +189,12 @@ class RequestPermissionActivity : AppActivity() {
                 .setOnDismissListener { finish() }
                 .create()
         dialog.setCanceledOnTouchOutside(false)
+        // Ignore taps that pass through another app's overlay (tapjacking). Only where the system
+        // doesn't block those itself (Android 11 and older): on newer releases this would also
+        // swallow taps under a screen dimmer or blue-light filter. The buttons live in this view.
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
+            binding.root.filterTouchesWhenObscured = true
+        }
         try {
             dialog.show()
         } catch (_: WindowManager.BadTokenException) {

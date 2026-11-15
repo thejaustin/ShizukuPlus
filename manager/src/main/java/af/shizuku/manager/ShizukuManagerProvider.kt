@@ -71,6 +71,12 @@ class ShizukuManagerProvider : ShizukuProvider() {
                     return null
                 }
 
+                // The binder can die between update() and here (SHIZUKUPLUS-A1/B0).
+                if (!Shizuku.pingBinder()) {
+                    LOGGER.w("sendUserService: binder gone before attach")
+                    return null
+                }
+
                 try {
                     Shizuku.attachUserService(binder, bundleOf(USER_SERVICE_ARG_TOKEN to token))
                     val serviceBinder = Shizuku.getBinder() ?: return null
@@ -83,7 +89,17 @@ class ShizukuManagerProvider : ShizukuProvider() {
                 } catch (e: Throwable) {
                     // A user service whose token the server no longer knows (it restarted, or the
                     // app's service was already torn down) is routine (SHIZUKUPLUS-9B).
-                    if (e is IllegalArgumentException && e.message?.contains("unable to find token") == true) {
+                    // So are a server that doesn't treat this app as its manager (another app's or
+                    // an older Shizuku, SHIZUKUPLUS-8W) and a binder that died mid-call (A1, B0).
+                    val routine =
+                        (e is IllegalArgumentException && e.message?.contains("unable to find token") == true) ||
+                            (e is SecurityException && e.message?.contains("is not manager") == true) ||
+                            (e is IllegalStateException && e.message?.contains("binder haven't been received") == true) ||
+                            generateSequence(e) { it.cause }.take(8).any { it is android.os.DeadObjectException }
+                    if (e is SecurityException && e.message?.contains("is not manager") == true) {
+                        ShizukuStateMachine.serverRejectsManager = true
+                    }
+                    if (routine) {
                         LOGGER.w(e, "attachUserService $token")
                     } else {
                         LOGGER.e(e, "attachUserService $token")

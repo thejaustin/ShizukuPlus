@@ -77,6 +77,18 @@ class DhizukuProvider : ContentProvider() {
                 .granted(pkgName, callingUid)
         }
 
+        private fun isRelayTargetAllowed(target: android.os.IBinder): Boolean {
+            // A binder object living in this process (a local Binder) is one of ours.
+            if (target is Binder) return false
+            val descriptor =
+                try {
+                    target.interfaceDescriptor
+                } catch (_: Exception) {
+                    return false
+                } ?: return true
+            return OWN_DESCRIPTOR_PREFIXES.none { descriptor.startsWith(it) }
+        }
+
         private fun enforceAnyInterface(
             data: android.os.Parcel,
             vararg descriptors: String,
@@ -113,6 +125,13 @@ class DhizukuProvider : ContentProvider() {
                     return false
                 }
                 val targetBinder = data.readStrongBinder() ?: return false
+                // The target sees this app's uid, so it must never be Shizuku+'s own: the server
+                // would take the call as coming from its manager and skip per-app scopes and
+                // manager-only checks. Dhizuku clients relay system services.
+                if (!isRelayTargetAllowed(targetBinder)) {
+                    timber.log.Timber.w("Dhizuku relay to a Shizuku+ binder refused")
+                    return false
+                }
                 val targetCode = data.readInt()
                 val targetFlags = data.readInt()
                 val targetData = android.os.Parcel.obtain()
@@ -336,6 +355,10 @@ class DhizukuProvider : ContentProvider() {
 
     companion object {
         private const val COMPAT_PACKAGE = "af.shizuku.plus.dhizuku"
+
+        // Interface descriptors of the Shizuku+ server and its sub-binders (server, remote
+        // process, Plus services, rish).
+        private val OWN_DESCRIPTOR_PREFIXES = listOf("moe.shizuku.", "af.shizuku.", "rikka.shizuku.", "rikka.rish.")
 
         // Set by the Dhizuku Compat add-on (DhizukuProviderProxy); keep the two in sync.
         private const val EXTRA_FORWARDED_CLIENT_UID = "af.shizuku.plus.dhizuku.client_uid"

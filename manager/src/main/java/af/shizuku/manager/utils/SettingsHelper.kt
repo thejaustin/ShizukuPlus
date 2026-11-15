@@ -33,6 +33,47 @@ object SettingsHelper {
         return pm.isIgnoringBatteryOptimizations(context.packageName)
     }
 
+    /**
+     * Settings.Global write for the adb_* keys. Android 17 also wants MANAGE_DEBUGGING for these,
+     * which an app can't hold, so the direct write throws SecurityException even with
+     * WRITE_SECURE_SETTINGS. Falls back to `settings put global` through Shizuku (the shell user
+     * holds it) when the server is up.
+     *
+     * @return whether the value was written. On the main thread the shell fallback runs in the
+     * background and this returns false.
+     */
+    fun putGlobalSafely(
+        context: Context,
+        key: String,
+        value: Long,
+    ): Boolean {
+        try {
+            if (Settings.Global.putLong(context.contentResolver, key, value)) return true
+        } catch (e: SecurityException) {
+            timber.log.Timber.w("Direct write of %s refused: %s", key, e.message)
+        }
+        if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
+            Thread { putGlobalViaShell(key, value) }.start()
+            return false
+        }
+        return putGlobalViaShell(key, value)
+    }
+
+    private fun putGlobalViaShell(
+        key: String,
+        value: Long,
+    ): Boolean =
+        try {
+            if (!rikka.shizuku.Shizuku.pingBinder()) return false
+            val p = rikka.shizuku.Shizuku.newProcess(arrayOf("settings", "put", "global", key, value.toString()), null, null)
+            val ok = p.waitFor() == 0
+            runCatching { p.destroy() }
+            ok
+        } catch (e: Exception) {
+            timber.log.Timber.w(e, "Shell write of %s failed", key)
+            false
+        }
+
     fun hasWriteSecureSettings(context: Context): Boolean = context.checkSelfPermission(android.Manifest.permission.WRITE_SECURE_SETTINGS) == android.content.pm.PackageManager.PERMISSION_GRANTED
 
     fun autoGrantPrivileges(context: Context) {

@@ -275,7 +275,8 @@ class AdbStartWorker(
                                                     if (NetworkTrust.shouldBlockTcp(context)) {
                                                         close(SecurityException("Wireless debugging suppressed on unlock: network is not trusted"))
                                                     } else {
-                                                        runCatching { Settings.Global.putInt(cr, "adb_wifi_enabled", 1) }
+                                                        af.shizuku.manager.utils.SettingsHelper
+                                                            .putGlobalSafely(applicationContext, "adb_wifi_enabled", 1)
                                                     }
                                                 }
                                             }
@@ -307,7 +308,8 @@ class AdbStartWorker(
                                                     samsungResetCount++
                                                     launch {
                                                         delay(300L * samsungResetCount)
-                                                        runCatching { Settings.Global.putInt(cr, "adb_wifi_enabled", 1) }
+                                                        af.shizuku.manager.utils.SettingsHelper
+                                                            .putGlobalSafely(applicationContext, "adb_wifi_enabled", 1)
                                                     }
                                                 } else {
                                                     handleAuth()
@@ -317,7 +319,8 @@ class AdbStartWorker(
                                     }
                                 }
 
-                            runCatching { Settings.Global.putInt(cr, "adb_wifi_enabled", 1) }
+                            af.shizuku.manager.utils.SettingsHelper
+                                .putGlobalSafely(applicationContext, "adb_wifi_enabled", 1)
                             cr.registerContentObserver(Settings.Global.getUriFor("adb_wifi_enabled"), false, observer)
                             startDiscoveryWithTimeout()
 

@@ -104,11 +104,7 @@ object TcpNetworkGuard {
         if (port > 0) {
             AdbStarter.stopTcp(context, port)
         }
-        try {
-            android.provider.Settings.Global
-                .putInt(context.contentResolver, "adb_wifi_enabled", 0)
-        } catch (_: Exception) {
-        }
+        SettingsHelper.putGlobalSafely(context, "adb_wifi_enabled", 0)
         dismiss(context)
     }
 

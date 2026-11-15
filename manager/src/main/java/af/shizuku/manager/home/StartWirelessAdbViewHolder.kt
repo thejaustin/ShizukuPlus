@@ -118,18 +118,20 @@ class StartWirelessAdbViewHolder(
 
             context.sendBroadcast(Intent(context, NotifCancelReceiver::class.java))
 
-            val cr = context.contentResolver
-            if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
-                Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)
-                Settings.Global.putLong(cr, "adb_allowed_connection_time", 0L)
-            }
-
-            if (!EnvironmentUtils.isAdbEnabled()) {
-                WadbEnableUsbDebuggingDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
-                return@setOnClickListener
-            }
-
             scope.launch {
+                // Off the main thread so the shell fallback (Android 17) lands before the check below.
+                if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
+                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                        af.shizuku.manager.utils.SettingsHelper
+                            .putGlobalSafely(context, Settings.Global.ADB_ENABLED, 1)
+                        af.shizuku.manager.utils.SettingsHelper
+                            .putGlobalSafely(context, "adb_allowed_connection_time", 0L)
+                    }
+                }
+                if (!EnvironmentUtils.isAdbEnabled()) {
+                    WadbEnableUsbDebuggingDialogFragment().show(context.asActivity<FragmentActivity>().supportFragmentManager)
+                    return@launch
+                }
                 val sysPropPort = EnvironmentUtils.getAdbTcpPort()
                 val discoveredPort = withState(homeModel) { it.discoveredAdbPort }
                 val tcpMode = ShizukuSettings.getTcpMode()

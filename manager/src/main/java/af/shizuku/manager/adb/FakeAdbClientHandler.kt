@@ -41,7 +41,7 @@ class FakeAdbClientHandler(
         // Wait for CNXN
         var msg = readMessage()
         if (msg.command != AdbProtocol.A_CNXN) {
-            Timber.tag(TAG).e("Expected CNXN, got ${msg.command}")
+            Timber.tag(TAG).w("Expected CNXN, got ${msg.command}")
             return
         }
 
@@ -244,6 +244,24 @@ class FakeAdbClientHandler(
         val data_crc32 = buf.int
         val magic = buf.int
 
+        // Something other than an adb client (another app probing localhost ports with HTTP, for
+        // one) sent this. Checked before data_length, which would be garbage too.
+        if (magic != command.inv() ||
+            command !in
+            intArrayOf(
+                AdbProtocol.A_SYNC,
+                AdbProtocol.A_CNXN,
+                AdbProtocol.A_AUTH,
+                AdbProtocol.A_OPEN,
+                AdbProtocol.A_OKAY,
+                AdbProtocol.A_CLSE,
+                AdbProtocol.A_WRTE,
+                AdbProtocol.A_STLS,
+            )
+        ) {
+            throw NonAdbPeerException()
+        }
+
         var data: ByteArray? = null
         if (data_length > 0) {
             // data_length comes straight off the wire before CRC/magic are verified, so a
@@ -265,6 +283,9 @@ class FakeAdbClientHandler(
         }
     }
 }
+
+/** The peer on the proxy port doesn't speak adb. Expected; not worth an error report. */
+internal class NonAdbPeerException : java.io.IOException("Peer is not an adb client")
 
 // adb signs the token as if it were a SHA-1 digest: PKCS#1 v1.5 over DigestInfo(SHA-1) || token
 // (the same block AdbKey.sign builds by hand).

@@ -28,9 +28,12 @@ object BackgroundNudge {
         if (DeviceOptimizer.isNagSnoozed()) return
         if (DeviceOptimizer.backgroundState(context) == DeviceOptimizer.BackgroundState.PROTECTED) return
         val nm = context.getSystemService(NotificationManager::class.java) ?: return
-        nm.createNotificationChannel(
-            NotificationChannel(CHANNEL_ID, context.getString(R.string.background_nudge_channel), NotificationManager.IMPORTANCE_DEFAULT),
-        )
+        // Channels are API 26+; Android 7 has none and posts without one.
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            nm.createNotificationChannel(
+                NotificationChannel(CHANNEL_ID, context.getString(R.string.background_nudge_channel), NotificationManager.IMPORTANCE_DEFAULT),
+            )
+        }
         val open =
             PendingIntent.getActivity(
                 context,

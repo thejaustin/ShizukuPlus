@@ -87,7 +87,8 @@ class AdbDialogFragment : DialogFragment() {
         adbMdns.start()
         val context = dialog.context
         if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
-            Settings.Global.putInt(context.contentResolver, "adb_wifi_enabled", 1)
+            af.shizuku.manager.utils.SettingsHelper
+                .putGlobalSafely(context, "adb_wifi_enabled", 1)
         }
 
         val isSamsung = EnvironmentUtils.isSamsung()

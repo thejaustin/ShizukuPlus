@@ -99,6 +99,7 @@ object ShizukuStateMachine {
                     },
                 )
                 binderReceivedThisProcess.set(true)
+                serverRejectsManager = false
                 set(State.RUNNING)
                 // Push the user's Plus feature flags as soon as the binder arrives - in the
                 // background too (watchdog, boot), not only when Home is open - so the server never
@@ -293,11 +294,7 @@ object ShizukuStateMachine {
                             // This runs asynchronously so it doesn't block the state transition.
                             CoroutineScope(Dispatchers.IO).launch {
                                 try {
-                                    Settings.Global.putInt(
-                                        context.contentResolver,
-                                        "adb_wifi_enabled",
-                                        0,
-                                    )
+                                    SettingsHelper.putGlobalSafely(context, "adb_wifi_enabled", 0)
                                     Timber.tag("ShizukuStateMachine").i("auto-closed TCP port (disabled wireless debugging)")
                                 } catch (e: Exception) {
                                     Timber.tag("ShizukuStateMachine").w(e, "Failed to auto-close TCP port")
@@ -345,7 +342,7 @@ object ShizukuStateMachine {
                         val permissionGranted = context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED
                         val shouldDisableUsbDebugging = permissionGranted && ShizukuSettings.getAutoDisableUsbDebugging()
                         if (shouldDisableUsbDebugging) {
-                            Settings.Global.putInt(context.contentResolver, Settings.Global.ADB_ENABLED, 0)
+                            SettingsHelper.putGlobalSafely(context, Settings.Global.ADB_ENABLED, 0)
                         }
                     } catch (_: UninitializedPropertyAccessException) {
                         Timber.tag("ShizukuStateMachine").w("Skipping USB debugging disable: appContext not initialized yet")
@@ -494,14 +491,33 @@ object ShizukuStateMachine {
     fun isRunning(): Boolean = get() == State.RUNNING
 
     /**
+     * Set when the running server refused a manager-only call with "is not manager": it belongs to
+     * another Shizuku app or an older build, so every privileged call fails while the UI says
+     * connected. Cleared when a new binder arrives. Raising it calls [onServerRejectsManager] on the
+     * main thread, since it flips after RUNNING was already announced.
+     */
+    @Volatile
+    var serverRejectsManager = false
+        set(value) {
+            val raised = value && !field
+            field = value
+            if (raised) android.os.Handler(android.os.Looper.getMainLooper()).post { onServerRejectsManager?.invoke() }
+        }
+
+    @Volatile
+    var onServerRejectsManager: (() -> Unit)? = null
+
+    /**
      * True when the running privileged server was started by an app build older than the one now
      * installed — i.e. the app was updated but the server (a separate long-lived process) is still
      * running the old code. The binder wire protocol can differ across versions, so this can
      * silently break connections for third-party apps until the service is restarted. Returns false
      * when the starting build is unknown (0, e.g. server predates this tracking) or already current.
+     * Also true when the server rejects this app as its manager ([serverRejectsManager]).
      */
     fun isServerVersionSkewed(): Boolean {
         if (!isRunning()) return false
+        if (serverRejectsManager) return true
         val startedBuild = ShizukuSettings.getServerStartedBuild()
         return startedBuild in 1 until BuildConfig.VERSION_CODE
     }

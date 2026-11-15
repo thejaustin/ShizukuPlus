@@ -99,11 +99,14 @@ object ShellBinderRequestHandler {
                 // readStrongBinder() then readString() with no enforceInterface() call, so a
                 // leading writeInterfaceToken() here gets misread as the binder slot and an
                 // omitted sourceDir NPEs the client at onBinderReceived's sourceDir.substring().
-                data.setDataPosition(0)
-                data.writeStrongBinder(shizukuBinder)
-                data.writeString(context.applicationInfo.sourceDir)
                 // ONEWAY — binder driver never writes into reply; null avoids unnecessary pool hit.
+                // The writes are inside the try too: writeStrongBinder threw SecurityException on
+                // an Android 17 build (SHIZUKUPLUS-B8).
                 try {
+                    data.setDataPosition(0)
+                    data.setDataSize(0)
+                    data.writeStrongBinder(shizukuBinder)
+                    data.writeString(context.applicationInfo.sourceDir)
                     callbackBinder.transact(IBinder.FIRST_CALL_TRANSACTION, data, null, IBinder.FLAG_ONEWAY)
                     return true
                 } catch (e: Exception) {

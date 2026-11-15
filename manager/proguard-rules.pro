@@ -60,6 +60,9 @@
     public static void main(java.lang.String[]);
 }
 
+# Readable in crash reports: R8 renamed it to a bare "a" (SHIZUKUPLUS-AP).
+-keepnames class af.shizuku.manager.starter.NotRootedException
+
 # Keep all rish and shizuku API classes used by Shell and PlusShell
 -keep class rikka.rish.** { *; }
 -keep class rikka.shizuku.** { *; }
@@ -109,9 +112,6 @@
     public <init>(android.content.Context, android.util.AttributeSet);
 }
 -keep class af.shizuku.manager.settings.SegmentedControlPreference {
-    public <init>(android.content.Context, android.util.AttributeSet);
-}
--keep class af.shizuku.manager.settings.FilterChipPreference {
     public <init>(android.content.Context, android.util.AttributeSet);
 }
 

@@ -46,7 +46,13 @@ class ServiceDoctorActivity : AppBarActivity() {
     private lateinit var binding: ActivityServiceDoctorBinding
     private lateinit var checkListAdapter: CheckListAdapter
     private lateinit var tipsTextView: TextView
-    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    // A fix that throws (a dead or foreign server mid-call) logs and leaves the screen up.
+    private val serviceScope =
+        CoroutineScope(
+            SupervisorJob() + Dispatchers.Main +
+                kotlinx.coroutines.CoroutineExceptionHandler { _, t -> timber.log.Timber.w(t, "Service Doctor fix failed") },
+        )
 
     private val batteryOptimizationListener =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -221,14 +227,14 @@ class ServiceDoctorActivity : AppBarActivity() {
             "wireless_adb" -> {
                 {
                     if (SettingsHelper.hasWriteSecureSettings(this)) {
-                        runCatching {
-                            android.provider.Settings.Global
-                                .putInt(contentResolver, android.provider.Settings.Global.ADB_ENABLED, 1)
-                            android.provider.Settings.Global
-                                .putInt(contentResolver, "adb_wifi_enabled", 1)
+                        serviceScope.launch {
+                            withContext(Dispatchers.IO) {
+                                SettingsHelper.putGlobalSafely(this@ServiceDoctorActivity, android.provider.Settings.Global.ADB_ENABLED, 1)
+                                SettingsHelper.putGlobalSafely(this@ServiceDoctorActivity, "adb_wifi_enabled", 1)
+                            }
+                            Toast.makeText(this@ServiceDoctorActivity, R.string.doctor_fix_applied, Toast.LENGTH_SHORT).show()
+                            runDiagnostics()
                         }
-                        Toast.makeText(this, R.string.doctor_fix_applied, Toast.LENGTH_SHORT).show()
-                        runDiagnostics()
                     } else {
                         SettingsPage.Developer.WirelessDebugging.launch(this)
                     }

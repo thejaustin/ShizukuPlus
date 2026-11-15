@@ -107,7 +107,16 @@ class ShizukuApplication :
                 try {
                     command.run()
                 } catch (t: Throwable) {
-                    Timber.e(t, "WorkManager task threw on internal executor")
+                    // Before the first unlock WorkManager's database isn't there yet: expected.
+                    val lockedStorage =
+                        generateSequence(t) { it.cause }.take(8).any {
+                            it.message?.contains("direct boot") == true || it.javaClass.simpleName == "SQLiteCantOpenDatabaseException"
+                        }
+                    if (lockedStorage) {
+                        Timber.w(t, "WorkManager task failed before unlock")
+                    } else {
+                        Timber.e(t, "WorkManager task threw on internal executor")
+                    }
                 }
             }
         }
@@ -240,6 +249,10 @@ class ShizukuApplication :
                     if (throwable is SecurityException && throwable.message?.contains("is not an attached client") == true) {
                         return@setBeforeSend null
                     }
+                    // Same refusal from older servers, as IllegalStateException; caught ones only.
+                    if (!event.isCrashed && throwable is IllegalStateException && throwable.message?.contains("Not an attached client") == true) {
+                        return@setBeforeSend null
+                    }
 
                     // 4. Drop FileNotFoundException for last_crash.txt — this file simply
                     // doesn't exist on fresh installs or after a cache clear, and reading
@@ -309,6 +322,17 @@ class ShizukuApplication :
                     ) {
                         return@setBeforeSend null
                     }
+                    // The same, or WorkManager touched before the first unlock, wrapped in another
+                    // exception (SHIZUKUPLUS-AE/AG/AR). Caught ones only, so a crash still reports.
+                    val causes = generateSequence(throwable) { it.cause }.take(8).toList()
+                    if (!event.isCrashed &&
+                        causes.any {
+                            (it.javaClass.simpleName == "SQLiteCantOpenDatabaseException" && it.message?.contains("doesn't exist") == true) ||
+                                it.message?.contains("direct boot") == true
+                        }
+                    ) {
+                        return@setBeforeSend null
+                    }
 
                     // 10. Drop Hardware Keystore failures (KeyPermanentlyInvalidatedException / KeyStoreException)
                     if (throwable is java.security.KeyStoreException ||
@@ -321,6 +345,10 @@ class ShizukuApplication :
 
                     // 11. Drop DeadObjectException from binder IPC when process terminates
                     if (throwable is android.os.DeadObjectException || simpleName == "DeadObjectException") {
+                        return@setBeforeSend null
+                    }
+                    // Wrapped in RuntimeException (ShizukuRemoteProcess.destroy and friends); caught ones only.
+                    if (!event.isCrashed && causes.any { it is android.os.DeadObjectException }) {
                         return@setBeforeSend null
                     }
 
@@ -452,12 +480,18 @@ class ShizukuApplication :
     private fun initializeStatics() {
         Timber.d("Initializing static components")
 
-        Shell.setDefaultBuilder(
-            Shell.Builder
-                .create()
-                .setFlags(Shell.FLAG_REDIRECT_STDERR)
-                .setTimeout(20),
-        )
+        // Own try: if something created the main shell first, setDefaultBuilder throws, and that
+        // must not skip the hidden-API exemptions and libadb below.
+        try {
+            Shell.setDefaultBuilder(
+                Shell.Builder
+                    .create()
+                    .setFlags(Shell.FLAG_REDIRECT_STDERR)
+                    .setTimeout(20),
+            )
+        } catch (e: IllegalStateException) {
+            Timber.w(e, "Default shell builder not set")
+        }
 
         if (Build.VERSION.SDK_INT >= 28) {
             HiddenApiBypass.setHiddenApiExemptions("")
@@ -778,6 +812,9 @@ class ShizukuApplication :
                     val sentryMessage = io.sentry.protocol.Message()
                     sentryMessage.formatted = "[$tag] $message"
                     event.message = sentryMessage
+                    // Group by the server message, not by this listener's obfuscated frames, which
+                    // change every release and split one server bug into several issues.
+                    event.fingerprints = listOf("server", tag, message.replace(Regex("\\d+"), "#"))
 
                     io.sentry.Sentry.captureEvent(event)
                 }
@@ -824,16 +861,8 @@ class ShizukuApplication :
         af.shizuku.manager.utils.EnvironmentUtils
             .prewarmAsync()
 
-        // Network-aware TCP protection (#518): registers a callback only when enabled.
-        af.shizuku.manager.utils.TcpNetworkGuard
-            .sync(this)
-
         // Optional floating navigation bar (#498); attaches itself to top-level screens when enabled.
         af.shizuku.manager.widget.FloatingNavBar
-            .install(this)
-
-        // Retry the startup connection when Wi-Fi returns (opt-in via start on boot).
-        af.shizuku.manager.utils.ReconnectTrigger
             .install(this)
 
         // 1. Run security check
@@ -928,6 +957,16 @@ class ShizukuApplication :
             Timber.e(e, "Failed to update state machine")
             Sentry.captureException(e)
         }
+
+        // Retry the startup connection when Wi-Fi returns (opt-in via start on boot). Registered
+        // only now: its callback fires straight away, and a start from it needs the shell builder,
+        // Starter and the first state update in place.
+        af.shizuku.manager.utils.ReconnectTrigger
+            .install(this)
+        // Network-aware TCP protection (#518): registers a callback only when enabled. Same reason:
+        // its callback can close the port, which moves the state machine.
+        af.shizuku.manager.utils.TcpNetworkGuard
+            .sync(this)
 
         Timber.d("Shizuku+ ${BuildConfig.VERSION_NAME} initialization complete")
         Sentry.addBreadcrumb(Breadcrumb("App initialization complete"))

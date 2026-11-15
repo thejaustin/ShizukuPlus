@@ -306,7 +306,20 @@ class ShizukuCompanionViewHolder(
                     if (!success && installOutput != "NEWPROCESS_NULL") {
                         // No privileged access or no output means Shizuku+ wasn't usable at that
                         // moment, not a bug (SHIZUKUPLUS-93/77/9N); only a real pm error is one.
-                        val expected = installOutput.isBlank() || installOutput.contains("no privileged access")
+                        // So are refusals the user or device policy made (install via USB off,
+                        // a cancelled prompt, no space, wrong ABI).
+                        val expected =
+                            installOutput.isBlank() ||
+                                installOutput.contains("no privileged access") ||
+                                listOf(
+                                    "INSTALL_FAILED_USER_RESTRICTED",
+                                    "INSTALL_FAILED_ABORTED",
+                                    "INSTALL_FAILED_VERIFICATION_FAILURE",
+                                    "INSTALL_FAILED_BLOCKED",
+                                    "INSTALL_FAILED_POLICY_ERROR",
+                                    "INSTALL_FAILED_INSUFFICIENT_STORAGE",
+                                    "INSTALL_FAILED_NO_MATCHING_ABIS",
+                                ).any { installOutput.contains(it) }
                         if (expected) {
                             Timber.tag("ShizukuCompanion").w("compat hub install failed: %s", installOutput.take(1000))
                         } else {

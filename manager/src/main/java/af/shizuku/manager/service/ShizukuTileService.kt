@@ -59,15 +59,18 @@ class ShizukuTileService : TileService() {
             }
         tile.label = getString(R.string.app_name)
         // subtitle shows in Samsung OneUI 8.5 wide tile text area and standard Android tile secondary text
-        tile.subtitle =
-            when (state) {
-                ShizukuStateMachine.State.RUNNING ->
-                    "${modeLabel()} · ${getString(R.string.tile_subtitle_active)}"
-                ShizukuStateMachine.State.STARTING -> getString(R.string.tile_subtitle_starting)
-                ShizukuStateMachine.State.STOPPING -> getString(R.string.tile_subtitle_stopping)
-                ShizukuStateMachine.State.CRASHED -> getString(R.string.tile_subtitle_crashed)
-                ShizukuStateMachine.State.STOPPED -> getString(R.string.tile_subtitle_tap_to_start)
-            }
+        // (API 29+; older releases have no setSubtitle, SHIZUKUPLUS-AQ).
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            tile.subtitle =
+                when (state) {
+                    ShizukuStateMachine.State.RUNNING ->
+                        "${modeLabel()} · ${getString(R.string.tile_subtitle_active)}"
+                    ShizukuStateMachine.State.STARTING -> getString(R.string.tile_subtitle_starting)
+                    ShizukuStateMachine.State.STOPPING -> getString(R.string.tile_subtitle_stopping)
+                    ShizukuStateMachine.State.CRASHED -> getString(R.string.tile_subtitle_crashed)
+                    ShizukuStateMachine.State.STOPPED -> getString(R.string.tile_subtitle_tap_to_start)
+                }
+        }
         tile.updateTile()
     }
 

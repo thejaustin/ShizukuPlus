@@ -13,6 +13,8 @@ class DhizukuAdminReceiver : DeviceAdminReceiver() {
     ) {
         super.onEnabled(context, intent)
         Toast.makeText(context, R.string.dhizuku_device_owner_enabled, Toast.LENGTH_SHORT).show()
+        // setBackupServiceEnabled is API 26+, and a missing method is an Error the catch below misses.
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.O) return
         try {
             val dpm = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as android.app.admin.DevicePolicyManager
             val componentName = android.content.ComponentName(context, DhizukuAdminReceiver::class.java)

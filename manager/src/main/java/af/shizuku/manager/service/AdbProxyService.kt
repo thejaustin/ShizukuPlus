@@ -214,6 +214,9 @@ class AdbProxyService : Service() {
                 handler.loop()
             } catch (_: SocketException) {
                 // Client disconnected — normal
+            } catch (e: java.io.IOException) {
+                // A peer that isn't an adb client, or one that hung up mid-message.
+                Timber.tag(TAG).w("Client dropped: %s", e.message)
             } catch (e: Exception) {
                 Timber.tag(TAG).e(e, "Client error")
             }

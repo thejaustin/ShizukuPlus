@@ -106,6 +106,8 @@ class BinderRequestReceiver : BroadcastReceiver() {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     ShellBinderRequestHandler.deliverBinder(context, callbackBinder)
+                } catch (t: Throwable) {
+                    timber.log.Timber.w(t, "rish binder delivery failed")
                 } finally {
                     pending.finish()
                 }

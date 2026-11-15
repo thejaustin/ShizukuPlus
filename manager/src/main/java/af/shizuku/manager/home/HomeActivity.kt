@@ -150,6 +150,8 @@ open class HomeActivity :
 
     private var wasServerRunningOnStart: Boolean? = null
 
+    private val rejectsManagerCallback: () -> Unit = { if (!isFinishing && !isDestroyed) maybeShowVersionSkewSnackbar() }
+
     private val stateListener: (ShizukuStateMachine.State) -> Unit = { state ->
         val wasRunning = isServerRunning
         isServerRunning = ShizukuStateMachine.isRunning()
@@ -238,6 +240,19 @@ open class HomeActivity :
         if (versionSkewSnackbarShown) return
         if (!ShizukuStateMachine.isServerVersionSkewed()) return
         versionSkewSnackbarShown = true
+        if (ShizukuStateMachine.serverRejectsManager) {
+            // A server that doesn't accept this app as its manager refuses exit() too, so there's
+            // nothing to offer here beyond telling the user where it came from.
+            SnackbarHelper.show(
+                this,
+                findViewById(android.R.id.content) ?: window.decorView,
+                msg = getString(R.string.snackbar_server_foreign),
+                duration = Snackbar.LENGTH_INDEFINITE,
+                actionText = getString(android.R.string.ok),
+                action = {},
+            )
+            return
+        }
         SnackbarHelper.show(
             this,
             findViewById(android.R.id.content) ?: window.decorView,
@@ -806,7 +821,8 @@ open class HomeActivity :
                 private var backThresholdReached = false
 
                 override fun handleOnBackProgressed(backEvent: androidx.activity.BackEventCompat) {
-                    val progress = backEvent.progress
+                    // NaN on some OEM builds (SHIZUKUPLUS-B1).
+                    val progress = backEvent.progress.takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: return
 
                     if (progress > 0.1f && !backThresholdReached) {
                         backThresholdReached = true
@@ -887,6 +903,7 @@ open class HomeActivity :
         }
 
         ShizukuStateMachine.addListener(stateListener)
+        ShizukuStateMachine.onServerRejectsManager = rejectsManagerCallback
         ShizukuSettings.getPreferences()?.registerOnSharedPreferenceChangeListener(appearanceChangeListener)
 
         // The status card shows the current problem; rebind it when that changes.
@@ -916,16 +933,27 @@ open class HomeActivity :
             checkForUpdates(force = true)
             return
         }
+        if (action != UpdateManager.ACTION_MIGRATE_UPDATE && action != UpdateManager.ACTION_SIGNATURE_MISMATCH) return
         val filePath = intent.getStringExtra(UpdateManager.EXTRA_UPDATE_FILE_PATH) ?: return
         val file = java.io.File(filePath)
         if (!file.exists()) return
 
-        when (action) {
-            UpdateManager.ACTION_MIGRATE_UPDATE -> {
-                UpdateDialogHelper.showSignatureMismatchMigrateDialog(this, file)
+        // This activity is exported: act only on the APK this app downloaded and notified about,
+        // never on a path another app put in the intent.
+        lifecycleScope.launch {
+            val hash = withContext(Dispatchers.IO) { UpdateManager.pendingUpdateHash(this@HomeActivity, file) }
+            if (hash == null) {
+                Timber.w("Ignoring update intent for an APK this app didn't download")
+                return@launch
             }
-            UpdateManager.ACTION_SIGNATURE_MISMATCH -> {
-                UpdateDialogHelper.showSignatureMismatchManualDialog(this)
+            if (isFinishing || isDestroyed) return@launch
+            when (action) {
+                UpdateManager.ACTION_MIGRATE_UPDATE -> {
+                    UpdateDialogHelper.showSignatureMismatchMigrateDialog(this@HomeActivity, file, hash)
+                }
+                UpdateManager.ACTION_SIGNATURE_MISMATCH -> {
+                    UpdateDialogHelper.showSignatureMismatchManualDialog(this@HomeActivity)
+                }
             }
         }
     }
@@ -1040,6 +1068,7 @@ open class HomeActivity :
         HomeEditMode.removeCardCallback = null
         HomeEditMode.moveCardCallback = null
         ShizukuStateMachine.removeListener(stateListener)
+        if (ShizukuStateMachine.onServerRejectsManager === rejectsManagerCallback) ShizukuStateMachine.onServerRejectsManager = null
         ShizukuSettings.getPreferences()?.unregisterOnSharedPreferenceChangeListener(appearanceChangeListener)
         activeUpdateManager?.cancel()
         activeUpdateManager = null

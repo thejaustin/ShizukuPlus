@@ -128,7 +128,8 @@ open class ApplicationManagementActivity :
                 // Predictive back preview: the list eases back like Home's edit mode does.
                 override fun handleOnBackProgressed(backEvent: androidx.activity.BackEventCompat) {
                     if (!ShizukuSettings.isExpressiveAnimationsEnabled()) return
-                    val p = backEvent.progress
+                    // NaN on some OEM builds.
+                    val p = backEvent.progress.takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: return
                     val scale = 1f - 0.08f * p * p
                     recyclerView.scaleX = scale
                     recyclerView.scaleY = scale

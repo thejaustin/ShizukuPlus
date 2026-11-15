@@ -21,6 +21,14 @@ object ReconnectTrigger {
     private const val TAG = "ReconnectTrigger"
     private const val DEBOUNCE_MS = 15_000L
 
+    // The callback reports the current network as soon as it is registered, during cold start,
+    // before a server that is already running has delivered its binder. Re-check once after this.
+    private const val COLD_START_GRACE_MS = 5_000L
+
+    @Volatile private var installedAt = 0L
+
+    @Volatile private var graceRecheckPosted = false
+
     @Volatile private var lastAttemptAt = 0L
 
     @Volatile private var registered = false
@@ -61,10 +69,21 @@ object ReconnectTrigger {
                 },
             )
             registered = true
+            installedAt = android.os.SystemClock.elapsedRealtime()
         }.onFailure { Timber.tag(TAG).w(it, "Could not register reconnect trigger") }
     }
 
     private fun maybeReconnect(context: Context) {
+        val sinceInstall = android.os.SystemClock.elapsedRealtime() - installedAt
+        if (sinceInstall < COLD_START_GRACE_MS) {
+            if (!graceRecheckPosted) {
+                graceRecheckPosted = true
+                android.os
+                    .Handler(android.os.Looper.getMainLooper())
+                    .postDelayed({ runCatching { maybeReconnect(context) } }, COLD_START_GRACE_MS - sinceInstall)
+            }
+            return
+        }
         val now = System.currentTimeMillis()
         if (now - lastAttemptAt < DEBOUNCE_MS) return
         val um = context.getSystemService(UserManager::class.java)
@@ -73,6 +92,7 @@ object ReconnectTrigger {
                 ShizukuSettings.getStartOnBoot(context) &&
                     !UserStopFlag.isSet() &&
                     !ShizukuStateMachine.isRunning() &&
+                    !rikka.shizuku.Shizuku.pingBinder() &&
                     ShizukuStateMachine.get() != ShizukuStateMachine.State.STARTING &&
                     (um == null || um.isUserUnlocked) &&
                     (

@@ -60,7 +60,16 @@ class WatchdogWorker(
         private const val HEAL_WORK_NAME = "shizuku_watchdog_heal_once"
         private const val HEAL_NOTIFICATION_ID = 1003
 
+        /** WorkManager's database lives in credential storage, which is locked until the first unlock. */
+        private fun unlocked(context: Context): Boolean =
+            runCatching { context.getSystemService(android.os.UserManager::class.java)?.isUserUnlocked != false }
+                .getOrDefault(true)
+
         fun schedule(context: Context) {
+            if (!unlocked(context)) {
+                Timber.tag("WatchdogWorker").i("Locked after boot; periodic watchdog is scheduled after unlock")
+                return
+            }
             val constraints =
                 Constraints
                     .Builder()
@@ -86,6 +95,14 @@ class WatchdogWorker(
          * running doWork(), so WatchdogService.start() is allowed even while the device is locked.
          */
         fun scheduleOneTimeHeal(context: Context) {
+            if (!unlocked(context)) {
+                // Queued work would be lost before unlock; try the service directly instead
+                // (BOOT_COMPLETED runs this again once the user unlocks).
+                Timber.tag("WatchdogWorker").i("Locked after boot; starting the watchdog directly")
+                runCatching { WatchdogService.start(context) }
+                    .onFailure { Timber.tag("WatchdogWorker").w(it, "Watchdog start before unlock refused") }
+                return
+            }
             val request =
                 OneTimeWorkRequestBuilder<WatchdogWorker>()
                     .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)

@@ -66,7 +66,12 @@ fun Context.tryEnableAccessibilityAutomatically(): Boolean {
     }
 
     // 1. Attempt automatic elevation via Shizuku if alive and granted
-    if (rikka.shizuku.Shizuku.pingBinder() && rikka.shizuku.Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+    // An older or another app's server throws "Not an attached client" here (SHIZUKUPLUS-AX).
+    val shizukuGranted =
+        runCatching {
+            rikka.shizuku.Shizuku.pingBinder() && rikka.shizuku.Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
+        }.getOrDefault(false)
+    if (shizukuGranted) {
         try {
             val serviceName = "$packageName/${AdbPairingAccessibilityService::class.java.canonicalName}"
             val p1 =

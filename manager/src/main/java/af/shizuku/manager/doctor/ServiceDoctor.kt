@@ -119,11 +119,10 @@ object ServiceDoctor {
                     ok = adbOk,
                     canAutoFix = !adbOk && hasSecure,
                     autoFix = { ctx ->
-                        runCatching {
-                            Settings.Global.putInt(ctx.contentResolver, Settings.Global.ADB_ENABLED, 1)
-                            Settings.Global.putInt(ctx.contentResolver, "adb_wifi_enabled", 1)
-                            true
-                        }.getOrDefault(false)
+                        af.shizuku.manager.utils.SettingsHelper
+                            .putGlobalSafely(ctx, Settings.Global.ADB_ENABLED, 1) and
+                            af.shizuku.manager.utils.SettingsHelper
+                                .putGlobalSafely(ctx, "adb_wifi_enabled", 1)
                     },
                     // Only when the user taps it. In background healing this turned USB and wireless
                     // debugging back on right after the user switched them off for a banking or

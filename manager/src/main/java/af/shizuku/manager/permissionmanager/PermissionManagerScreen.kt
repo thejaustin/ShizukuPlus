@@ -121,7 +121,8 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
     var backProgress by remember { mutableStateOf(0f) }
     PredictiveBackHandler(enabled = selectedApp != null) { events ->
         try {
-            events.collect { backProgress = it.progress }
+            // Some OEM builds report NaN progress (SHIZUKUPLUS-B1).
+            events.collect { e -> backProgress = e.progress.takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: 0f }
             selectedApp = null
             appPerms = emptyList()
         } finally {
@@ -216,11 +217,23 @@ fun PermissionManagerScreen(onBackClick: () -> Unit) {
                         val app = selectedApp
                         if (app != null) {
                             scope.launch(Dispatchers.IO) {
+                                // An older or another app's server answers with a different
+                                // interface and throws SecurityException (SHIZUKUPLUS-B7).
                                 val ok =
-                                    if (grant) {
-                                        ShizukuPlusAPI.PackageGovernor.grantPermission(app.packageName, perm.name)
-                                    } else {
-                                        ShizukuPlusAPI.PackageGovernor.revokePermission(app.packageName, perm.name)
+                                    runCatching {
+                                        if (grant) {
+                                            ShizukuPlusAPI.PackageGovernor.grantPermission(app.packageName, perm.name)
+                                        } else {
+                                            ShizukuPlusAPI.PackageGovernor.revokePermission(app.packageName, perm.name)
+                                        }
+                                    }.getOrElse {
+                                        Timber.w(it, "PermissionManager: server refused the toggle")
+                                        withContext(Dispatchers.Main) {
+                                            android.widget.Toast
+                                                .makeText(context, R.string.permission_manager_toggle_server_error, android.widget.Toast.LENGTH_LONG)
+                                                .show()
+                                        }
+                                        false
                                     }
                                 if (ok) {
                                     withContext(Dispatchers.Main) {
@@ -671,7 +684,13 @@ private fun loadPermissions(
             val protection =
                 try {
                     val pi = pm.getPermissionInfo(name, 0)
-                    pi.protection
+                    // getProtection() is API 28+ (SHIZUKUPLUS-BB).
+                    if (android.os.Build.VERSION.SDK_INT >= 28) {
+                        pi.protection
+                    } else {
+                        @Suppress("DEPRECATION")
+                        (pi.protectionLevel and PermissionInfo.PROTECTION_MASK_BASE)
+                    }
                 } catch (_: Exception) {
                     // Unknown permission — include if it's in our privileged set, otherwise skip
                     if (isPriv) PermissionInfo.PROTECTION_SIGNATURE else continue

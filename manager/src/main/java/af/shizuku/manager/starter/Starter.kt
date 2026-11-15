@@ -15,7 +15,13 @@ import java.io.File
 object Starter {
     private var context: Context? = null
 
-    private fun getContext(): Context = context ?: throw IllegalStateException("Context not initialized")
+    private fun getContext(): Context =
+        context
+            ?: runCatching {
+                af.shizuku.manager.ShizukuApplication.appContext
+                    .let { it.applicationContext ?: it }
+            }.getOrNull()
+            ?: throw IllegalStateException("Context not initialized")
 
     fun initialize(context: Context) {
         this.context = context.applicationContext
@@ -67,7 +73,18 @@ object Starter {
                 }
                 true
             }
-        if (connected == null) throw java.util.concurrent.TimeoutException("The service did not connect within 20 s")
+        if (connected == null) {
+            // Still a real failure (SHIZUKUPLUS-B5/AM); record what this process could see so the
+            // report says whether the binder never arrived or arrived dead.
+            val held = runCatching { rikka.shizuku.Shizuku.getBinder() != null }.getOrDefault(false)
+            val alive = runCatching { rikka.shizuku.Shizuku.pingBinder() }.getOrDefault(false)
+            io.sentry.Sentry.addBreadcrumb(
+                io.sentry.Breadcrumb("waitForBinder timeout: binderHeld=$held alive=$alive state=${ShizukuStateMachine.get()}").apply {
+                    category = "shizuku.start"
+                },
+            )
+            throw java.util.concurrent.TimeoutException("The service did not connect within 20 s")
+        }
 
         val elapsed = (System.currentTimeMillis() - t0) / 1000.0
         log?.invoke("Connected in ${String.format("%.1f", elapsed)}s")

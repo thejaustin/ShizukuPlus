@@ -144,16 +144,22 @@ object UpdateDialogHelper {
         }
     }
 
+    /**
+     * @param expectedSha256 when set (the file path came from an intent), the file must still hash
+     * to this right before it is installed.
+     */
     fun showSignatureMismatchMigrateDialog(
         activity: FragmentActivity,
         file: File,
+        expectedSha256: String? = null,
     ) {
         MaterialAlertDialogBuilder(activity)
             .setTitle(R.string.update_signature_mismatch_title)
             .setMessage(R.string.update_signature_mismatch_migrate_message)
             .setPositiveButton(R.string.update_migrate_now) { _, _ ->
                 activity.lifecycleScope.launch(Dispatchers.IO) {
-                    val success = UpdateInstaller.forceUpdateWithShizuku(activity, file)
+                    val unchanged = expectedSha256 == null || UpdateManager.sha256(file) == expectedSha256
+                    val success = unchanged && UpdateInstaller.forceUpdateWithShizuku(activity, file)
                     if (!success) {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(activity, R.string.update_migrate_failed, Toast.LENGTH_LONG).show()

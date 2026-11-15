@@ -23,7 +23,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import rikka.core.util.ClipboardUtils
 import rikka.html.text.HtmlCompat
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
@@ -110,7 +109,15 @@ class AutomationViewHolder(
                     layout.setEndIconOnClickListener { v ->
                         val context = v.context
                         if (
-                            ClipboardUtils.put(context, input.text) &&
+                            // Marked sensitive: the fields carry the automation token.
+                            runCatching {
+                                context
+                                    .getSystemService(android.content.ClipboardManager::class.java)
+                                    .setPrimaryClip(
+                                        af.shizuku.manager.utils
+                                            .sensitivePlainText("Shizuku+", input.text ?: ""),
+                                    )
+                            }.isSuccess &&
                             Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2
                         ) {
                             Toast

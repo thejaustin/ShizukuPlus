@@ -17,6 +17,9 @@ object TelemetryScrubber {
 
     fun scrub(text: String?): String? {
         if (text.isNullOrEmpty()) return text
+        // Cheap pre-check (this runs for every breadcrumb, on the main thread during start): every
+        // pattern below needs one of these characters, or the word ssid.
+        if (text.none { it.isDigit() || it == '@' || it == ':' || it == '-' } && !text.contains("ssid", ignoreCase = true)) return text
         return text
             .replace(email, "<email>")
             .replace(mac, "<mac>")

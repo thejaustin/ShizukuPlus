@@ -166,15 +166,18 @@ class MainActivity : HomeActivity() {
                 }
 
             if (isFinishing || isDestroyed) return@launch
+            // The fetch can finish after onStop, when show() throws (SHIZUKUPLUS-9G). Leave the
+            // version unseen so the changelog shows next time instead.
+            if (supportFragmentManager.isStateSaved) return@launch
 
             if (releases.isNotEmpty()) {
-                ShizukuSettings.setLastSeenChangelogVersion(currentCode)
                 try {
                     ChangelogDialogFragment
                         .newInstance(releases, tagName, showStylePicker = forceStylePicker)
                         .show(supportFragmentManager, ChangelogDialogFragment.TAG)
+                    ShizukuSettings.setLastSeenChangelogVersion(currentCode)
                 } catch (e: Exception) {
-                    Timber.e(e, "Failed to show changelog dialog")
+                    Timber.w(e, "Failed to show changelog dialog")
                 }
             } else if (forceStylePicker) {
                 try {
@@ -182,7 +185,7 @@ class MainActivity : HomeActivity() {
                         .newInstance(emptyList(), tagName, showStylePicker = true)
                         .show(supportFragmentManager, ChangelogDialogFragment.TAG)
                 } catch (e: Exception) {
-                    Timber.e(e, "Failed to show changelog dialog")
+                    Timber.w(e, "Failed to show changelog dialog")
                 }
             }
         }

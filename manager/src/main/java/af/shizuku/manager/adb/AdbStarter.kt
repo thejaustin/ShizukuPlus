@@ -213,7 +213,8 @@ object AdbStarter {
         } finally {
             AdbAuthWait.starts.end()
             if (!stoodDown && ShizukuSettings.getAutoDisableUsbDebugging() && context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
-                Settings.Global.putInt(context.contentResolver, "adb_wifi_enabled", 0)
+                af.shizuku.manager.utils.SettingsHelper
+                    .putGlobalSafely(context, "adb_wifi_enabled", 0)
             }
         }
     }
@@ -230,10 +231,11 @@ object AdbStarter {
         if (Settings.Global.getInt(context.contentResolver, Settings.Global.ADB_ENABLED, 0) == 0) return true
         val result =
             runCatching {
-                val cr = context.contentResolver
                 if (context.checkSelfPermission(WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED) {
-                    Settings.Global.putInt(cr, Settings.Global.ADB_ENABLED, 1)
-                    Settings.Global.putLong(cr, "adb_allowed_connection_time", 0L)
+                    af.shizuku.manager.utils.SettingsHelper
+                        .putGlobalSafely(context, Settings.Global.ADB_ENABLED, 1)
+                    af.shizuku.manager.utils.SettingsHelper
+                        .putGlobalSafely(context, "adb_allowed_connection_time", 0L)
                 }
 
                 if (!EnvironmentUtils.isAdbEnabled()) throw IllegalStateException("ADB is not enabled")

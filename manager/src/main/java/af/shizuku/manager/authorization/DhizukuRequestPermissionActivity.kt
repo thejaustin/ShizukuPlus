@@ -111,6 +111,12 @@ class DhizukuRequestPermissionActivity : AppActivity() {
         dialog.setCanceledOnTouchOutside(false)
         try {
             dialog.show()
+            // Ignore taps that pass through another app's overlay (tapjacking). Only where the
+            // system doesn't block those itself (Android 11 and older): on newer releases this
+            // would also swallow taps under a screen dimmer or blue-light filter.
+            if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
+                dialog.window?.decorView?.filterTouchesWhenObscured = true
+            }
         } catch (_: WindowManager.BadTokenException) {
             reply(false)
             finish()
