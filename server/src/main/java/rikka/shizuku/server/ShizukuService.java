@@ -137,18 +137,87 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         }
     }
 
+    // Signers of the manager APK this server was started from (its java.class.path), pinned on
+    // first lookup. The manager is otherwise chosen by package name, so any app installed under
+    // the other flavor's id (or a same-name replacement signed with another key) would become the
+    // manager. Null when the pin couldn't be worked out; then the old name-only lookup applies.
+    private static volatile java.util.Set<Signature> pinnedManagerSigners;
+    private static volatile boolean managerPinResolved;
+
+    private static synchronized void pinManagerFromClassPath() {
+        if (managerPinResolved) return;
+        String classPath = System.getProperty("java.class.path");
+        if (classPath == null || classPath.isEmpty()) {
+            managerPinResolved = true;
+            return;
+        }
+        boolean lookedUp = false;
+        for (String id : new String[]{ServerConstants.PLUS_APPLICATION_ID, ServerConstants.DROPIN_APPLICATION_ID}) {
+            ApplicationInfo ai;
+            try {
+                ai = Android17Compat.getApplicationInfo(id, 0, 0);
+            } catch (Throwable e) {
+                continue;
+            }
+            if (ai == null) continue;
+            lookedUp = true;
+            if (!classPath.equals(ai.sourceDir)) continue;
+            Signature[] signers;
+            try {
+                signers = currentSigners(id);
+            } catch (Throwable e) {
+                signers = null;
+            }
+            if (signers == null || signers.length == 0) break;
+            pinnedManagerSigners = new java.util.HashSet<>(java.util.Arrays.asList(signers));
+            // The flavor that actually started this server is the manager, whatever else is installed.
+            MANAGER_APPLICATION_ID = id;
+            LOGGER.i("Manager pinned to %s (started from its APK)", id);
+            break;
+        }
+        // A lookup that found no package at all may have raced the package manager; try again later.
+        if (lookedUp) managerPinResolved = true;
+        if (lookedUp && pinnedManagerSigners == null) {
+            LOGGER.w("Manager signers not pinned: %s is not an installed manager APK", classPath);
+        }
+    }
+
+    /** False only when [packageName]'s signers are known and share nothing with the pinned ones. */
+    private static boolean matchesPinnedSigners(String packageName) {
+        java.util.Set<Signature> pin = pinnedManagerSigners;
+        if (pin == null) return true;
+        Signature[] actual;
+        try {
+            actual = currentSigners(packageName);
+        } catch (Throwable e) {
+            return true;
+        }
+        if (actual == null || actual.length == 0) return true;
+        // Overlap, not equality: a key rotation adds to the signing history.
+        return !java.util.Collections.disjoint(pin, java.util.Arrays.asList(actual));
+    }
+
     public static ApplicationInfo getManagerApplicationInfo() {
-        ApplicationInfo ai = Android17Compat.getApplicationInfo(MANAGER_APPLICATION_ID, 0, 0);
-        if (ai != null) return ai;
+        pinManagerFromClassPath();
+        String manager = MANAGER_APPLICATION_ID;
+        ApplicationInfo ai = Android17Compat.getApplicationInfo(manager, 0, 0);
+        if (ai != null) {
+            if (matchesPinnedSigners(manager)) return ai;
+            LOGGER.w("%s is not signed like the APK this server started from; not trusting it", manager);
+        }
 
         // MANAGER_APPLICATION_ID defaults to the Plus flavor's id. On a Drop-In-only install that
         // lookup finds nothing, so fall back to the Drop-In id and, if found, correct the constant
         // so every other usage in this class (binder sending, permission grants, isManager checks,
         // the request-permission broadcast, ...) resolves to whichever flavor is actually running.
-        ApplicationInfo dropinAi = Android17Compat.getApplicationInfo(ServerConstants.DROPIN_APPLICATION_ID, 0, 0);
-        if (dropinAi != null) {
-            MANAGER_APPLICATION_ID = ServerConstants.DROPIN_APPLICATION_ID;
-            return dropinAi;
+        // With pinned signers either flavor may take over, as long as it is signed the same.
+        String other = ServerConstants.DROPIN_APPLICATION_ID.equals(manager)
+                ? ServerConstants.PLUS_APPLICATION_ID : ServerConstants.DROPIN_APPLICATION_ID;
+        if (pinnedManagerSigners == null && !ServerConstants.DROPIN_APPLICATION_ID.equals(other)) return null;
+        ApplicationInfo otherAi = Android17Compat.getApplicationInfo(other, 0, 0);
+        if (otherAi != null && matchesPinnedSigners(other)) {
+            MANAGER_APPLICATION_ID = other;
+            return otherAi;
         }
         return null;
     }
@@ -551,7 +620,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private static boolean isSignedLikeManager(String packageName) {
         String manager = MANAGER_APPLICATION_ID;
         if (manager == null || packageName == null) return false;
-        if (manager.equals(packageName)) return true;
+        if (manager.equals(packageName)) return matchesPinnedSigners(packageName);
         try {
             Signature[] expected = currentSigners(manager);
             Signature[] actual = currentSigners(packageName);
@@ -1822,7 +1891,8 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                         android.os.SystemProperties.set(spProp, spValue);
                         return newProcessInternal(new String[]{"true"}, env, dir);
                     } catch (Exception e) {
-                        LOGGER.e("SUBridge: setprop failed", e);
+                        // SELinux refuses most properties to the shell user: expected, not an error.
+                        LOGGER.w("SUBridge: setprop %s refused: %s", spProp, e.getMessage());
                         return newProcessInternal(new String[]{"false"}, env, dir);
                     }
                 } else if (baseCmd.equals("mount") && cmd.length > 1 && String.join(" ", cmd).contains("remount")) {
@@ -3597,8 +3667,16 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public String getPlusSetting(String key) {
         enforceCallingPermission("getPlusSetting");
+        // The user's private choices about other apps stay with the manager.
+        if (key != null && MANAGER_ONLY_PLUS_SETTINGS.contains(key)
+                && !checkCallerManagerPermission("getPlusSetting", Binder.getCallingUid(), Binder.getCallingPid())) {
+            return null;
+        }
         return plusSettingsMap.get(key);
     }
+
+    private static final java.util.Set<String> MANAGER_ONLY_PLUS_SETTINGS = new java.util.HashSet<>(java.util.Arrays.asList(
+            "shadow_hidden_packages", "per_app_disabled_scopes", "custom_su_path"));
 
     @Override
     public boolean isPlusFeatureEnabled(String key) {
