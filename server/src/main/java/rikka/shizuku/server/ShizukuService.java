@@ -718,6 +718,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             return cached[0] == 1;
         boolean trusted = false;
         for (String pkg : PERMISSION_DEFINERS) {
+            // Our own permission must come from a package signed like the manager this server
+            // started from. Stock Shizuku's permission keeps the name-only check: stock Shizuku
+            // shares the Drop-In's package name and is signed differently.
+            if (ServerConstants.PERMISSION.equals(name) && !matchesPinnedSigners(pkg)) continue;
             try {
                 PackageInfo pi = Android17Compat.getPackageInfo(pkg, PackageManager.GET_PERMISSIONS, 0);
                 if (pi == null || pi.permissions == null) continue;
@@ -1087,7 +1091,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         // root_magisk_mocking default to OFF there, so they must not be ON here either: a server
         // started by the watchdog or at boot would otherwise run them even for a user who turned
         // them off. Only features that default on in the manager default on here.
-        if (key.equals("shell_interceptor") || key.equals("ai_core_plus")) {
+        if (key.equals("shell_interceptor")) {
             return true;
         }
         return featureEnabledMap.getOrDefault(key, false);
@@ -1437,7 +1441,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public void setPlusSetting(String key, String value) {
         enforceManagerPermission("setPlusSetting");
-        LOGGER.i("Plus Setting Update: " + key + " -> " + value);
+        LOGGER.i("Plus Setting Update: " + key + " -> " + (MANAGER_ONLY_PLUS_SETTINGS.contains(key) ? "(private)" : value));
         plusSettingsMap.put(key, value);
     }
 
@@ -3659,9 +3663,29 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     @Override
     public List<String> getRecentLogs() {
         enforceCallingPermission("getRecentLogs");
+        List<String> all;
         synchronized (serverLogs) {
-            return new ArrayList<>(serverLogs);
+            all = new ArrayList<>(serverLogs);
         }
+        int uid = Binder.getCallingUid();
+        if (checkCallerManagerPermission("getRecentLogs", uid, Binder.getCallingPid())) return all;
+        // Everyone else (the `plus log` command runs as the terminal app) gets what the user chose in
+        // Developer options: nothing, its own entries (default), or every app's; commands hidden
+        // unless the user turned them on.
+        String mode = plusSettingsMap.get("plus_log_access");
+        if ("off".equals(mode)) return new ArrayList<>();
+        List<String> own = "all".equals(mode) ? null : PackageManagerApis.getPackagesForUidNoThrow(uid);
+        boolean showCommands = "true".equals(plusSettingsMap.get("plus_log_show_commands"));
+        List<String> out = new ArrayList<>();
+        for (String entry : all) {
+            // dispatchLog's format: "[HH:mm:ss] package: action"
+            int start = entry.indexOf("] ");
+            int end = start < 0 ? -1 : entry.indexOf(": ", start + 2);
+            if (end < 0) continue;
+            if (own != null && !own.contains(entry.substring(start + 2, end))) continue;
+            out.add(showCommands || !entry.startsWith("su ", end + 2) ? entry : entry.substring(0, end + 2) + "su (command hidden)");
+        }
+        return out;
     }
 
     @Override

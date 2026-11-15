@@ -337,6 +337,27 @@ int main(int argc, char *argv[]) {
         fflush(stdout);
     }
 
+    // Run as `<app dir>/lib/<abi>/libshizuku.so` (the "start from computer" command passes no
+    // --apk=): the manager is the APK this starter shipped in. Asking `pm path` by name first would
+    // load whatever app holds the other flavor's package name as the server.
+    if (apk_path.empty()) {
+        char exe[PATH_MAX]{0};
+        ssize_t n = readlink("/proc/self/exe", exe, sizeof(exe) - 1);
+        if (n > 0) {
+            std::string dir(exe, n);
+            for (int i = 0; i < 3 && !dir.empty(); i++) {
+                auto slash = dir.rfind('/');
+                dir = slash == std::string::npos ? "" : dir.substr(0, slash);
+            }
+            std::string candidate = dir + "/base.apk";
+            if (!dir.empty() && access(candidate.c_str(), R_OK) == 0) {
+                apk_path = candidate;
+                printf("info: use apk the starter shipped in\n");
+                fflush(stdout);
+            }
+        }
+    }
+
     if (apk_path.empty()) {
         for (const char *pkg : {PACKAGE_NAME, PACKAGE_NAME_DROPIN}) {
             std::string cmd = std::string("pm path ") + pkg;

@@ -80,6 +80,32 @@
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
+    <!-- What the `plus log` command shows to apps other than Shizuku+; enforced by the service. -->
+    <af.shizuku.manager.settings.CollapsiblePreferenceCategory
+        android:key="category_command_line"
+        android:title="@string/settings_developer_category_command_line"
+        android:icon="@drawable/ic_terminal_24"
+        android:defaultValue="true">
+
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
+            android:key="plus_log_access"
+            android:title="@string/settings_plus_log_access_title"
+            android:summary="@string/settings_plus_log_access_summary"
+            android:icon="@drawable/ic_article_24"
+            android:entries="@array/plus_log_access_entries"
+            android:entryValues="@array/plus_log_access_values"
+            android:defaultValue="own" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="plus_log_show_commands"
+            android:title="@string/settings_plus_log_show_commands_title"
+            android:summary="@string/settings_plus_log_show_commands_summary"
+            android:icon="@drawable/ic_terminal_24"
+            android:defaultValue="false"
+            app:severityBadge="dangerous" />
+
+    </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
+
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
         android:key="category_unrestricted_access"
         android:title="@string/settings_developer_category_unrestricted"

@@ -100,6 +100,11 @@ public class PlusShell {
     private static void handleLog(IBinder binder) throws RemoteException {
         IShizukuService service = IShizukuService.Stub.asInterface(binder);
         List<String> logs = service.getRecentLogs();
+        String access = service.getPlusSetting("plus_log_access");
+        if ("off".equals(access)) {
+            LOGGER.i("plus log is turned off. Change it in Shizuku+ > Settings > Developer options > Command line.");
+            return;
+        }
         if (logs == null || logs.isEmpty()) {
             LOGGER.i("No recent privileged activities recorded in server buffer.");
         } else {
@@ -107,6 +112,9 @@ public class PlusShell {
             for (String log : logs) {
                 LOGGER.i(log);
             }
+        }
+        if (!"all".equals(access)) {
+            LOGGER.i("(Showing this app's activity only. Other apps' activity can be shown from Shizuku+ > Developer options > Command line.)");
         }
     }
 

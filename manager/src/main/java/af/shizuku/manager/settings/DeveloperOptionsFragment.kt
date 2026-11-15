@@ -24,6 +24,8 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
     ) {
         setPreferencesFromResource(R.xml.settings_developer_options, rootKey)
 
+        setUpPlusLogAccess()
+
         // Hides the Backup & Restore category in Advanced (#461), which re-reads it on resume.
         findPreference<TwoStatePreference>("hide_backup_settings")?.apply {
             isChecked = ShizukuSettings.isHideBackupSettingsEnabled()
@@ -182,5 +184,45 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
                     onPicked(history.filterIndexed { i, _ -> checked[i] })
                 }.setNegativeButton(android.R.string.cancel, null),
         )
+    }
+
+    /** Widening what `plus log` shows asks first; narrowing never does. The service enforces both. */
+    private fun setUpPlusLogAccess() {
+        val showCommands = findPreference<TwoStatePreference>(KEY_PLUS_LOG_SHOW_COMMANDS)
+        val access = findPreference<ConnectedButtonGroupPreference>(KEY_PLUS_LOG_ACCESS) ?: return
+        showCommands?.isEnabled = access.value != "off"
+        access.setOnPreferenceChangeListener { _, newValue ->
+            fun apply(mode: String) {
+                access.value = mode
+                showCommands?.isEnabled = mode != "off"
+                ShizukuSettings.syncAllPlusFeaturesToServer()
+            }
+            if (newValue == "all") {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.plus_log_all_warning_title)
+                    .setMessage(R.string.plus_log_all_warning_message)
+                    .setPositiveButton(R.string.action_continue) { _, _ -> apply("all") }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
+                return@setOnPreferenceChangeListener false
+            }
+            apply(newValue as String)
+            false
+        }
+        showCommands?.setOnPreferenceChangeListener { pref, newValue ->
+            if (newValue != true) {
+                ShizukuSettings.syncAllPlusFeaturesToServer()
+                return@setOnPreferenceChangeListener true
+            }
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.settings_plus_log_show_commands_title)
+                .setMessage(R.string.plus_log_commands_warning_message)
+                .setPositiveButton(R.string.action_continue) { _, _ ->
+                    (pref as TwoStatePreference).isChecked = true
+                    ShizukuSettings.syncAllPlusFeaturesToServer()
+                }.setNegativeButton(android.R.string.cancel, null)
+                .show()
+            false
+        }
     }
 }

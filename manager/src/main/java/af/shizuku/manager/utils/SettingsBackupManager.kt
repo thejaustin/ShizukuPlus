@@ -21,6 +21,8 @@ object SettingsBackupManager {
             // world-readable reinstall copy, it hands out an authorized ADB shell. After a restore
             // the app makes a new key and asks for authorization once.
             "adbkey",
+            // Whether to ask about the in-development Plus APIs belongs to this install's update.
+            "in_dev_features_review",
             // Remote DB cache
             ShizukuSettings.Keys.KEY_LAST_DB_UPDATE,
             ShizukuSettings.Keys.KEY_REMOTE_DB_JSON,
@@ -132,6 +134,9 @@ object SettingsBackupManager {
             ShizukuSettings.Keys.KEY_ROOT_POWER_GHOSTING_ENABLED to R.string.settings_root_power_ghosting,
             // Lets a background job switch an accessibility service on.
             ShizukuSettings.Keys.KEY_DOCTOR_HEAL_PAIRING_HELPER to R.string.doctor_heal_pairing_helper_title,
+            // Show other apps' activity, or their commands, to the `plus log` command.
+            ShizukuSettings.Keys.KEY_PLUS_LOG_ACCESS to R.string.settings_plus_log_access_title,
+            ShizukuSettings.Keys.KEY_PLUS_LOG_SHOW_COMMANDS to R.string.settings_plus_log_show_commands_title,
         )
 
     /** Privileged values the last import held back instead of switching on. */
@@ -382,7 +387,13 @@ object SettingsBackupManager {
                     when (val v = obj.get(key)) {
                         false -> editor.putBoolean(key, false)
                         true -> if (!prefs.getBoolean(key, false)) held[key] = true
-                        is String -> if (v.isNotEmpty() && v != prefs.getString(key, "")) held[key] = v
+                        // Narrowing `plus log` access is safe to apply like switching a key off.
+                        is String ->
+                            if (key == ShizukuSettings.Keys.KEY_PLUS_LOG_ACCESS && v != "all") {
+                                editor.putString(key, v)
+                            } else if (v.isNotEmpty() && v != prefs.getString(key, "")) {
+                                held[key] = v
+                            }
                     }
                     continue
                 }
