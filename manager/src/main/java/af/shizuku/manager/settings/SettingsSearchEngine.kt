@@ -124,6 +124,7 @@ object SettingsSearchEngine {
         val q = query.trim().lowercase()
         val devUnlocked = ShizukuSettings.isDevOptionsUnlocked()
         val appIdentityOn = ShizukuSettings.isExperimentalAppIdentityEnabled()
+        val expressivePreview = ShizukuSettings.isExpressiveControlsPreviewEnabled()
 
         return items.filter { item ->
             if (!devUnlocked && item.fragmentClass == "af.shizuku.manager.settings.DeveloperOptionsFragment") return@filter false
@@ -131,6 +132,8 @@ object SettingsSearchEngine {
             if (!devUnlocked && item.categoryKey == DEV_PREVIEWS_CATEGORY) return@filter false
             // Experimental app identity rows stay out of search while the dev toggle is off.
             if (!appIdentityOn && item.key in APP_IDENTITY_KEYS) return@filter false
+            // The mocking button group only exists with the expressive controls preview on.
+            if (!expressivePreview && item.key == "root_mocking_group") return@filter false
             item.title.lowercase().contains(q) ||
                 (item.summary != null && item.summary.lowercase().contains(q)) ||
                 (item.category != null && item.category.lowercase().contains(q))

@@ -127,7 +127,7 @@ public class PlusShell {
         IShizukuService service = IShizukuService.Stub.asInterface(binder);
         IVirtualMachineManager vmManager = service.getVirtualMachineManager();
         if (vmManager == null) {
-            LOGGER.e("Error: VM Manager feature is disabled in Shizuku+ settings.");
+            LOGGER.e("Error: VM Manager is off. It is still in development; turn it on in Shizuku+ Settings → Experimental → Features in development.");
             return;
         }
 

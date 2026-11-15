@@ -391,7 +391,8 @@ class ServiceDoctorActivity : AppBarActivity() {
     private fun quickWalletRepair() {
         serviceScope.launch {
             val options = WalletRepair.options(withContext(Dispatchers.IO) { WalletRepair.scan() })
-            val steps = options.filter { it.checked }.map { it.step }.toSet()
+            // Clearing Wallet signs the user out, so it only ever runs from the checklist.
+            val steps = options.filter { it.checked && it.step != WalletRepair.Step.CLEAR_WALLET }.map { it.step }.toSet()
             if (steps.isEmpty()) showWalletFixDialog() else runWalletRepair(steps)
         }
     }

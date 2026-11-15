@@ -366,10 +366,17 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
      */
     private fun setUpMockingGroup() {
         val group = findPreference<ConnectedToggleGroupPreference>("root_mocking_group") ?: return
+        // The category sets every child's visibility when it expands, so hide through it.
+        val category = findPreference<CollapsiblePreferenceCategory>("category_ghost_bridge")
         val rows =
             listOf("root_iptables_mocking_enabled", "root_magisk_mocking_enabled", "root_busybox_mocking_enabled")
-                .map { findPreference<TwoStatePreference>(it) ?: return }
-        if (!ShizukuSettings.isExpressiveControlsPreviewEnabled()) return
+                .mapNotNull { findPreference<TwoStatePreference>(it) }
+        val preview = ShizukuSettings.isExpressiveControlsPreviewEnabled() && rows.size == 3 && category != null
+        category?.setChildAvailable(group.key, preview)
+        if (!preview) {
+            group.isVisible = false
+            return
+        }
         group.labels =
             listOf(
                 getString(R.string.settings_root_mocking_group_iptables),
@@ -382,8 +389,7 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             if (row.callChangeListener(checked)) row.isChecked = checked
             group.refresh()
         }
-        rows.forEach { it.isVisible = false }
-        group.isVisible = true
+        rows.forEach { category?.setChildAvailable(it.key, false) }
         val keys = rows.map { it.key }.toSet()
         mockingListener =
             android.content.SharedPreferences

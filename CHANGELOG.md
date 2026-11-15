@@ -30,7 +30,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Fluid Home card dragging** — Dynamic overlap-area and center-containment target resolution, card-wide drag touches in edit mode, and smooth edge auto-scrolling.
 
 ### 🔒 Security & Privacy
-- **In-development Plus APIs start off** — Window tuner, System theming bridge, AI Core+, Virtual machine manager and Continuity bridge are still being built, so they're now off by default and live under Settings → Experimental → Features in development. If you had one on, Shizuku+ asks once after updating whether to keep it, with a link to tell us on GitHub what you use it for.
+- **In-development Plus APIs start off** — Window tuner, System theming bridge, AI Core+, VM Manager and Continuity bridge are still being built, so they're now off by default and live under Settings → Experimental. If you had one on, Shizuku+ asks once after updating whether to keep it, with a link to tell us on GitHub what you use it for.
 - **Starter loads its own app** — The "start from computer" command now uses the APK it shipped in, instead of looking the manager up by package name, so an app installed under the other flavor's name can't be started as the service.
 - **Shizuku+ permission tied to its signer** — Apps' Shizuku+ permission only counts when it's defined by an app signed like the running manager. Stock Shizuku's permission is still accepted.
 - **Private settings stay out of logs** — The service no longer writes your hidden-apps list, per-app scopes or custom su path to the system log.
