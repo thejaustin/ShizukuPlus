@@ -43,7 +43,7 @@
             android:summary="@string/settings_update_app_database_summary"
             android:icon="@drawable/ic_autorenew" />
 
-        <af.shizuku.manager.settings.SegmentedControlPreference
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
             android:key="update_channel"
             android:title="@string/settings_update_channel_title"
             android:icon="@drawable/ic_science_24"
@@ -52,7 +52,7 @@
             android:defaultValue="stable" />
 
         <!-- Stands in for auto_update_enabled + auto_install_enabled; not persisted itself. -->
-        <af.shizuku.manager.settings.SegmentedControlPreference
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
             android:key="update_mode"
             android:title="@string/settings_update_mode_title"
             android:summary="@string/settings_update_mode_summary"

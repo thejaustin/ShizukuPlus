@@ -153,6 +153,17 @@ object UpdateDialogHelper {
         file: File,
         expectedSha256: String? = null,
     ) {
+        // Android won't uninstall a Device Owner, which the migration needs: say so up front
+        // instead of failing after the user agreed (the script would just put the old app back).
+        val dpm = activity.getSystemService(android.app.admin.DevicePolicyManager::class.java)
+        if (dpm?.isDeviceOwnerApp(activity.packageName) == true) {
+            MaterialAlertDialogBuilder(activity)
+                .setTitle(R.string.update_signature_mismatch_title)
+                .setMessage(R.string.update_migrate_device_owner)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+            return
+        }
         MaterialAlertDialogBuilder(activity)
             .setTitle(R.string.update_signature_mismatch_title)
             .setMessage(R.string.update_signature_mismatch_migrate_message)

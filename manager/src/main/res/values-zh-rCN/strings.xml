@@ -599,11 +599,7 @@
     <string name="doctor_check_local_network">本地网络访问</string>
     <string name="doctor_tip_local_network"><b>本地网络访问（%1$s）</b>：Android 16/17 需要此权限才能发现并连接无线调试服务。缺少它时，Shizuku+ 会在 ADB 模式下静默启动失败。点按修复以授予权限。</string>
     <string name="doctor_button_fix">修复</string>
-    <string name="doctor_check_wallet_integrity">Google 钱包与 Play Integrity</string>
     <string name="doctor_wallet_risk_tmp_su">安全风险（检测到 su 二进制文件）</string>
-    <string name="doctor_wallet_risk_magisk">安全风险（Magisk 模拟已启用）</string>
-    <string name="doctor_wallet_risk_busybox">安全风险（BusyBox 模拟已启用）</string>
-    <string name="doctor_wallet_risk_spoof">验证风险（设备伪造已启用）</string>
     <!--
       Three recovery outcomes — shown after the 1-tap wallet fix runs.
       ROOT:        Shizuku uid=0 — verdict files deleted, immediate recovery expected.

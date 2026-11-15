@@ -319,4 +319,24 @@
         <item>material</item>
         <item>status</item>
     </string-array>
+    <string-array name="app_details_mode_entries">
+        <item>@string/app_details_mode_off</item>
+        <item>@string/app_details_mode_on</item>
+        <item>@string/app_details_mode_hints</item>
+    </string-array>
+    <string-array name="app_details_mode_values" translatable="false">
+        <item>off</item>
+        <item>on</item>
+        <item>hints</item>
+    </string-array>
+    <string-array name="plus_log_access_entries">
+        <item>@string/plus_log_access_off</item>
+        <item>@string/plus_log_access_own</item>
+        <item>@string/plus_log_access_all</item>
+    </string-array>
+    <string-array name="plus_log_access_values" translatable="false">
+        <item>off</item>
+        <item>own</item>
+        <item>all</item>
+    </string-array>
 </resources>

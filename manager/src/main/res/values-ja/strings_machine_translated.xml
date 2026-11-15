@@ -379,11 +379,7 @@
     <string name="doctor_check_local_network">ローカルネットワークアクセス</string>
     <string name="doctor_tip_local_network"><b>ローカルネットワークアクセス (%1$s)</b>: Android 16/17では、ワイヤレスデバッグサービスの検出と接続にこの権限が必要です。権限がないと、ADBモードでShizuku+ が通知なく起動に失敗します。修正をタップして許可してください。</string>
     <string name="doctor_button_fix">修正</string>
-    <string name="doctor_check_wallet_integrity">Google ウォレット &amp; Play Integrity</string>
     <string name="doctor_wallet_risk_tmp_su">セキュリティリスク (suバイナリを検出)</string>
-    <string name="doctor_wallet_risk_magisk">セキュリティリスク (Magisk偽装が有効)</string>
-    <string name="doctor_wallet_risk_busybox">セキュリティリスク (BusyBox偽装が有効)</string>
-    <string name="doctor_wallet_risk_spoof">構成証明リスク (デバイス偽装が有効)</string>
     <string name="doctor_fix_wallet_success">完了しました。rootで実行中のため、Play Integrityの判定ファイルをGMSから直接削除しました。Google ウォレットを開いてください。すぐに動作するはずです。</string>
     <string name="doctor_fix_wallet_success_adb_mode">完了しました。ShizukuはADBシェルモードで実行中のため、ディスク上のPlay Integrity判定ファイルは削除できません (GMSのデータディレクトリを操作できるのはrootのみです)。\n\n代わりに次の処理を行いました:\n• DroidGuardプロセスを終了 (メモリ上の判定をクリア)\n• GMSを停止\n• Play IntegrityのTTLオーバーライドを試行 (GMSに即時の再構成証明を促します)\n• 新しい構成証明のウォームアップを要求 (クリーンなデバイスでDroidGuardの再評価を実行)\n• ウォレットのデータを消去 (新しいnonceで新規の整合性リクエストを強制)\n• NFC決済のルーティングを再確認\n\nウォレットを開いてみてください。すぐに回復するはずです。それでもブロックされる場合は、下の\"Google Play 開発者サービスのデータを消去\"をタップすると、確実に即時回復します (その後、Googleに再ログインする必要があります)。</string>
     <string name="doctor_fix_wallet_success_no_shizuku">完了しました。Shizukuが実行されていなかったため、ウォレット自体のみ停止できました。GMSにキャッシュされたPlay Integrityの判定はそのまま残っています。\n\nウォレットは、判定が自然に失効する約1時間後に自動で回復します。すぐに回復させるには、下の\"Google Play 開発者サービスのデータを消去\"をタップしてください (その後、Googleに再ログインする必要があります)。\n\n次回に備えて、root機能を無効にする前にShizukuを実行しておいてください。より徹底したクリーンアップが可能になります。</string>

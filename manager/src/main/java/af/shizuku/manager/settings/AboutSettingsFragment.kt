@@ -165,7 +165,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        findPreference<SegmentedControlPreference>(KEY_UPDATE_CHANNEL)?.let { channelPref ->
+        findPreference<ConnectedButtonGroupPreference>(KEY_UPDATE_CHANNEL)?.let { channelPref ->
             channelPref.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue != "dev") return@setOnPreferenceChangeListener true
                 // Dev builds can be unstable: only switch once the user confirms.
@@ -183,7 +183,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
         // Off / Check / Install stands in for the auto-check and auto-install switches; those keys
         // stay the source of truth for the update checker and the background worker.
         val intervalPref = findPreference<Preference>(ShizukuSettings.Keys.KEY_UPDATE_CHECK_INTERVAL)
-        findPreference<SegmentedControlPreference>("update_mode")?.apply {
+        findPreference<ConnectedButtonGroupPreference>("update_mode")?.apply {
             value =
                 when {
                     !ShizukuSettings.isAutoUpdateEnabled() -> "off"

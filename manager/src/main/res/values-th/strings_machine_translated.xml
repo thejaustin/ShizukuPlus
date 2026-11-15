@@ -379,11 +379,7 @@
     <string name="doctor_check_local_network">การเข้าถึงเครือข่ายภายใน</string>
     <string name="doctor_tip_local_network"><b>การเข้าถึงเครือข่ายภายใน (%1$s)</b>: Android 16/17 ต้องใช้สิทธิ์นี้เพื่อค้นหาและเชื่อมต่อกับบริการการแก้ไขข้อบกพร่องแบบไร้สาย หากไม่มี Shizuku+ จะเริ่มในโหมด ADB ไม่สำเร็จโดยไม่แจ้งเตือน แตะแก้ไขเพื่อให้สิทธิ์</string>
     <string name="doctor_button_fix">แก้ไข</string>
-    <string name="doctor_check_wallet_integrity">Google Wallet และ Play Integrity</string>
     <string name="doctor_wallet_risk_tmp_su">ความเสี่ยงด้านความปลอดภัย (ตรวจพบไบนารี su)</string>
-    <string name="doctor_wallet_risk_magisk">ความเสี่ยงด้านความปลอดภัย (การจำลอง Magisk ทำงานอยู่)</string>
-    <string name="doctor_wallet_risk_busybox">ความเสี่ยงด้านความปลอดภัย (การจำลอง BusyBox ทำงานอยู่)</string>
-    <string name="doctor_wallet_risk_spoof">ความเสี่ยงด้านการรับรอง (การปลอมอุปกรณ์ทำงานอยู่)</string>
     <string name="doctor_fix_wallet_success">เสร็จสิ้น ทำงานในฐานะ root — ลบไฟล์ผลการตัดสิน Play Integrity ออกจาก GMS โดยตรงแล้ว เปิด Google Wallet ได้ทันที</string>
     <string name="doctor_fix_wallet_success_adb_mode">เสร็จสิ้น Shizuku ทำงานในโหมดเชลล์ ADB จึงไม่สามารถลบไฟล์ผลการตัดสิน Play Integrity บนดิสก์ได้ (มีเพียง root ที่เข้าถึงไดเรกทอรีข้อมูลของ GMS ได้)\n\nสิ่งที่ทำแทน:\n• ปิดโพรเซส DroidGuard (ล้างผลการตัดสินในหน่วยความจำ)\n• หยุด GMS\n• ลองแทนที่ TTL ของ Play Integrity (กระตุ้นให้ GMS รับรองใหม่ทันที)\n• ร้องขอการอุ่นเครื่องการรับรองใหม่ (กระตุ้นให้ DroidGuard ประเมินอุปกรณ์ที่สะอาดอีกครั้ง)\n• ล้างข้อมูล Wallet (บังคับให้ส่งคำขอ integrity ใหม่ด้วย nonce ใหม่)\n• ยืนยันการกำหนดเส้นทางการชำระเงิน NFC อีกครั้ง\n\nลองเปิด Wallet ตอนนี้ ควรกลับมาใช้ได้ทันที หากยังถูกบล็อก ให้แตะ \"ล้างข้อมูล Play Services\" ด้านล่างเพื่อกู้คืนทันทีอย่างแน่นอน (คุณจะต้องลงชื่อเข้าใช้ Google ใหม่ภายหลัง)</string>
     <string name="doctor_fix_wallet_success_no_shizuku">เสร็จสิ้น Shizuku ไม่ได้ทำงานอยู่ จึงหยุดได้เฉพาะ Wallet เอง — ผลการตัดสิน Play Integrity ที่แคชไว้ใน GMS ยังคงอยู่\n\nWallet ควรกลับมาใช้ได้เองภายใน ~1 ชั่วโมงเมื่อผลการตัดสินหมดอายุตามธรรมชาติ หากต้องการกู้คืนทันที ให้แตะ \"ล้างข้อมูล Play Services\" ด้านล่าง (คุณจะต้องลงชื่อเข้าใช้ Google ใหม่ภายหลัง)\n\nเพื่อหลีกเลี่ยงปัญหานี้ครั้งหน้า โปรดตรวจสอบว่า Shizuku ทำงานอยู่ก่อนปิดฟีเจอร์ root เพราะจะล้างได้ละเอียดกว่า</string>

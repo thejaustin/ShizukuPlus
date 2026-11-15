@@ -556,11 +556,7 @@
     <string name="doctor_check_local_network">로컬 네트워크 액세스</string>
     <string name="doctor_tip_local_network"><b>로컬 네트워크 액세스(%1$s)</b>: Android 16/17에서는 무선 디버깅 서비스를 검색하고 연결하기 위해 이 권한이 필요합니다. 이 권한이 없으면 Shizuku+가 ADB 모드에서 조용히 시작하지 못합니다. 수정을 눌러 권한을 부여하세요.</string>
     <string name="doctor_button_fix">수정</string>
-    <string name="doctor_check_wallet_integrity">Google Wallet &amp; Play Integrity</string>
     <string name="doctor_wallet_risk_tmp_su">보안 위험 (su 바이너리 감지됨)</string>
-    <string name="doctor_wallet_risk_magisk">보안 위험 (Magisk 모킹 활성화됨)</string>
-    <string name="doctor_wallet_risk_busybox">보안 위험 (BusyBox 모킹 활성화됨)</string>
-    <string name="doctor_wallet_risk_spoof">인증 위험 (기기 스푸핑 활성화됨)</string>
     <!--
       Three recovery outcomes — shown after the 1-tap wallet fix runs.
       ROOT:        Shizuku uid=0 — verdict files deleted, immediate recovery expected.

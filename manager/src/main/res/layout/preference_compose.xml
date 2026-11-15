@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Host row for Compose-rendered preferences (SegmentedControlPreference and other Compose rows). -->
+<!-- Host row for Compose-rendered preferences (ConnectedButtonGroupPreference and other Compose rows). -->
 <androidx.compose.ui.platform.ComposeView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/preference_compose_view"
     android:layout_width="match_parent"

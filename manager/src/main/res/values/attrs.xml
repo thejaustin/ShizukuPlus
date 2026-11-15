@@ -16,7 +16,7 @@
     </declare-styleable>
 
     <!-- Compose-backed list preferences: same entries/entryValues contract as ListPreference. -->
-    <declare-styleable name="SegmentedControlPreference">
+    <declare-styleable name="ConnectedButtonGroupPreference">
         <attr name="android:entries" />
         <attr name="android:entryValues" />
     </declare-styleable>

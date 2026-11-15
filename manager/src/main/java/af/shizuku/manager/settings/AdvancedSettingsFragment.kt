@@ -204,7 +204,7 @@ class AdvancedSettingsFragment : BaseSettingsFragment() {
         // Off / On / On + Home stands in for the two switches it replaced; the old keys stay the
         // source of truth so backups, onboarding and Home keep reading them.
         val logOpen = findPreference<Preference>("activity_log")
-        findPreference<SegmentedControlPreference>("activity_log_mode")?.apply {
+        findPreference<ConnectedButtonGroupPreference>("activity_log_mode")?.apply {
             val prefs = ShizukuSettings.getPreferences()
             value =
                 when {

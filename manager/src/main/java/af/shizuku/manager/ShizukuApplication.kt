@@ -719,6 +719,7 @@ class ShizukuApplication :
         ShizukuSettings.migrateCornerSettingsIfNeeded()
         // Before the first Plus feature sync sends the firewall state to the server.
         ShizukuSettings.migrateFirewallAutomationIfNeeded()
+        ShizukuSettings.migrateInDevelopmentFeaturesOffIfNeeded()
         af.shizuku.manager.utils.ShizukuIssues
             .deleteRetiredChannels(this)
 

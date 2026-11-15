@@ -369,11 +369,7 @@
     <string name="doctor_check_local_network">區域網路存取</string>
     <string name="doctor_tip_local_network"><b>區域網路存取 (%1$s)</b>：Android 16/17 需要此權限才能探索並連線至無線偵錯服務。沒有它的話，Shizuku+ 會在 ADB 模式下無聲地啟動失敗。點按「修復」即可授予。</string>
     <string name="doctor_button_fix">修復</string>
-    <string name="doctor_check_wallet_integrity">Google 錢包與 Play Integrity</string>
     <string name="doctor_wallet_risk_tmp_su">安全風險（偵測到 su 二進位檔）</string>
-    <string name="doctor_wallet_risk_magisk">安全風險（Magisk 模擬已啟用）</string>
-    <string name="doctor_wallet_risk_busybox">安全風險（BusyBox 模擬已啟用）</string>
-    <string name="doctor_wallet_risk_spoof">證明風險（裝置偽造已啟用）</string>
     <string name="doctor_fix_wallet_success">完成。目前以 root 執行——Play Integrity 判定檔案已直接從 GMS 刪除。請開啟 Google 錢包，應可立即使用。</string>
     <string name="doctor_fix_wallet_success_adb_mode">完成。Shizuku 正以 ADB shell 模式執行，因此無法刪除磁碟上的 Play Integrity 判定檔案（只有 root 才能存取 GMS 的資料目錄）。\n\n改為執行以下動作：\n• 已終止 DroidGuard 程序（清除記憶體中的判定）\n• 已停止 GMS\n• 已嘗試覆寫 Play Integrity TTL（促使 GMS 立即重新證明）\n• 已要求重新暖機證明（觸發 DroidGuard 以乾淨裝置重新評估）\n• 已清除錢包資料（強制以全新 nonce 發出新的完整性要求）\n• 已重新確認 NFC 付款路由\n\n請現在嘗試開啟錢包，應可立即恢復。若仍遭封鎖，請點按下方的「清除 Play 服務資料」以確保立即恢復（之後需要重新登入 Google）。</string>
     <string name="doctor_fix_wallet_success_no_shizuku">完成。Shizuku 未在執行，因此只能停止錢包本身——GMS 快取的 Play Integrity 判定仍然有效。\n\n判定自然過期後，錢包應會在約 1 小時內自行恢復。若要立即恢復，請點按下方的「清除 Play 服務資料」（之後需要重新登入 Google）。\n\n為避免下次再發生，請在停用 root 功能前確認 Shizuku 正在執行——這樣可進行更徹底的清理。</string>

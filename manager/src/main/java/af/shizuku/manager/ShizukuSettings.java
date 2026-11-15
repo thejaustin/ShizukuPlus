@@ -90,6 +90,8 @@ public class ShizukuSettings {
         public static final String KEY_UNRESTRICTED_PERSONAL_DATA = "unrestricted_personal_data_enabled";
         public static final String KEY_SPOOF_DEVICE_ENABLED = "spoof_device_enabled";
         public static final String KEY_SPOOF_TARGET = "spoof_target";
+        public static final String KEY_PLUS_LOG_ACCESS = "plus_log_access";
+        public static final String KEY_PLUS_LOG_SHOW_COMMANDS = "plus_log_show_commands";
         public static final String KEY_VECTOR_ENABLED = "vector_enabled";
         public static final String KEY_HIDE_DISABLED_PLUS_FEATURES = "hide_disabled_plus_features";
 
@@ -1469,7 +1471,7 @@ public class ShizukuSettings {
 
     public static boolean isAICorePlusEnabled() {
         SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_AI_CORE_PLUS_ENABLED, true);
+        return p != null && p.getBoolean(Keys.KEY_AI_CORE_PLUS_ENABLED, false);
     }
 
     /**
@@ -1553,12 +1555,12 @@ public class ShizukuSettings {
     // sync: the switch saves its default on first bind, so a mismatch flips the feature silently.
     public static boolean isWindowManagerPlusEnabled() {
         SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_WINDOW_MANAGER_PLUS_ENABLED, true);
+        return p != null && p.getBoolean(Keys.KEY_WINDOW_MANAGER_PLUS_ENABLED, false);
     }
 
     public static boolean isOverlayManagerPlusEnabled() {
         SharedPreferences p = getPreferences();
-        return p == null || p.getBoolean(Keys.KEY_OVERLAY_MANAGER_PLUS_ENABLED, true);
+        return p != null && p.getBoolean(Keys.KEY_OVERLAY_MANAGER_PLUS_ENABLED, false);
     }
 
     public static boolean isNetworkGovernorPlusEnabled() {
@@ -1611,6 +1613,49 @@ public class ShizukuSettings {
     }
 
     private static final String KEY_FIREWALL_AUTOMATION_MIGRATED = "firewall_automation_migrated";
+
+    /** Plus APIs still in development, which default off. */
+    public static final String[] IN_DEVELOPMENT_PLUS_KEYS = {
+            Keys.KEY_WINDOW_MANAGER_PLUS_ENABLED, Keys.KEY_OVERLAY_MANAGER_PLUS_ENABLED, Keys.KEY_AI_CORE_PLUS_ENABLED};
+
+    /**
+     * Those APIs used to default on, and their switches saved that on first bind, so a stored true
+     * usually isn't a choice. Turn them off once and remember which were on, so Home can ask the
+     * user whether to keep any ({@link #getInDevelopmentFeaturesToReview}).
+     */
+    public static void migrateInDevelopmentFeaturesOffIfNeeded() {
+        SharedPreferences p = getPreferences();
+        if (p == null || p.getBoolean(KEY_IN_DEV_FEATURES_OFF_MIGRATED, false)) return;
+        SharedPreferences.Editor e = p.edit().putBoolean(KEY_IN_DEV_FEATURES_OFF_MIGRATED, true);
+        java.util.Set<String> wasOn = new java.util.HashSet<>();
+        for (String key : IN_DEVELOPMENT_PLUS_KEYS) {
+            // The old default was on, so nothing stored means it was on too.
+            if (p.getBoolean(key, true)) wasOn.add(key);
+            e.remove(key);
+        }
+        // A fresh install has nothing stored and nothing to review.
+        if (isOnboardingSeen() && !wasOn.isEmpty()) e.putStringSet(KEY_IN_DEV_FEATURES_REVIEW, wasOn);
+        e.apply();
+    }
+
+    public static java.util.Set<String> getInDevelopmentFeaturesToReview() {
+        SharedPreferences p = getPreferences();
+        java.util.Set<String> s = p == null ? null : p.getStringSet(KEY_IN_DEV_FEATURES_REVIEW, null);
+        return s == null ? java.util.Collections.emptySet() : new java.util.HashSet<>(s);
+    }
+
+    /** Applies the user's answer: the kept features go back on, and the question is never asked again. */
+    public static void finishInDevelopmentFeaturesReview(java.util.Set<String> keep) {
+        SharedPreferences p = getPreferences();
+        if (p == null) return;
+        SharedPreferences.Editor e = p.edit().remove(KEY_IN_DEV_FEATURES_REVIEW);
+        for (String key : keep) e.putBoolean(key, true);
+        e.apply();
+        syncAllPlusFeaturesToServer();
+    }
+
+    private static final String KEY_IN_DEV_FEATURES_OFF_MIGRATED = "in_dev_features_off_migrated";
+    private static final String KEY_IN_DEV_FEATURES_REVIEW = "in_dev_features_review";
 
     // What automation knows, kept apart from the user's switch so no rule ever rewrites it. In
     // memory only: AutomationService evaluates the network and foreground app again when it starts.
@@ -2058,6 +2103,8 @@ public class ShizukuSettings {
                 service.updatePlusFeatureEnabled("unrestricted_personal_data", isUnrestrictedPersonalDataEnabled());
                 service.updatePlusFeatureEnabled("spoof_device", isSpoofDeviceEnabled());
                 service.setPlusSetting("spoof_target", getSpoofTarget());
+                service.setPlusSetting("plus_log_access", getPlusLogAccess());
+                service.setPlusSetting("plus_log_show_commands", String.valueOf(isPlusLogShowCommandsEnabled()));
                 service.updatePlusFeatureEnabled("enable_activity_log", isActivityLogEnabled());
                 service.updatePlusFeatureEnabled("binder_firewall", isBinderFirewallEffective());
                 service.updatePlusFeatureEnabled("binder_logging", isBinderLoggingEnabled());
@@ -2562,6 +2609,18 @@ public class ShizukuSettings {
     public static void setAdbLoopbackProbeEnabled(boolean enabled) {
         SharedPreferences p = getPreferences();
         if (p != null) p.edit().putBoolean(Keys.KEY_ADB_LOOPBACK_PROBE_ENABLED, enabled).apply();
+    }
+
+    /** "off", "own" (the calling app's entries only) or "all"; the service defaults to "own". */
+    public static String getPlusLogAccess() {
+        SharedPreferences p = getPreferences();
+        String v = p == null ? null : p.getString(Keys.KEY_PLUS_LOG_ACCESS, "own");
+        return "off".equals(v) || "all".equals(v) ? v : "own";
+    }
+
+    public static boolean isPlusLogShowCommandsEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_PLUS_LOG_SHOW_COMMANDS, false);
     }
 
     public static boolean isShowAppDescriptionsEnabled() {

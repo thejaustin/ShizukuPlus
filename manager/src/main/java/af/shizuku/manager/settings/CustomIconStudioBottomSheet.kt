@@ -62,9 +62,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SuggestionChip
@@ -975,26 +972,18 @@ private fun LabeledSlider(
     Slider(value = value.coerceIn(range), onValueChange = onChange, valueRange = range)
 }
 
+/** The shared M3E connected button group (it already ticks the haptic on change). */
 @Composable
 private fun Segmented(
     options: List<Int>,
     selected: Int,
     onSelect: (Int) -> Unit,
-) {
-    val view = LocalView.current
-    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-        options.forEachIndexed { i, res ->
-            SegmentedButton(
-                selected = selected == i,
-                onClick = {
-                    HapticUtils.segmentTick(view)
-                    onSelect(i)
-                },
-                shape = SegmentedButtonDefaults.itemShape(index = i, count = options.size),
-            ) { Text(stringResource(res), maxLines = 2) }
-        }
-    }
-}
+) = ConnectedButtonGroup(
+    labels = options.map { stringResource(it) },
+    selectedIndex = selected,
+    enabled = true,
+    onSelect = onSelect,
+)
 
 @Composable
 private fun ShapeSwatch(

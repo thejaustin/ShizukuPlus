@@ -107,7 +107,7 @@
             android:title="@string/settings_window_manager_plus"
             android:summary="@string/settings_window_manager_plus_summary"
             android:icon="@drawable/ic_window_24"
-            android:defaultValue="true"
+            android:defaultValue="false"
             app:infoTitle="@string/help_window_manager_plus_title"
             app:infoDetail="@string/help_window_manager_plus_detail"
             app:badgeType="experimental" />
@@ -117,7 +117,7 @@
             android:title="@string/settings_overlay_manager_plus"
             android:summary="@string/settings_overlay_manager_plus_summary"
             android:icon="@drawable/ic_palette_24"
-            android:defaultValue="true"
+            android:defaultValue="false"
             app:infoTitle="@string/help_overlay_manager_plus_title"
             app:infoDetail="@string/help_overlay_manager_plus_detail"
             app:badgeType="experimental" />
@@ -161,7 +161,7 @@
             android:title="@string/settings_ai_bridge_title"
             android:summary="@string/settings_ai_core_plus_summary"
             android:icon="@drawable/ic_integration_instructions_24"
-            android:defaultValue="true"
+            android:defaultValue="false"
             app:infoTitle="@string/help_ai_core_plus_title"
             app:infoDetail="@string/help_ai_core_plus_detail"
             app:badgeType="experimental" />

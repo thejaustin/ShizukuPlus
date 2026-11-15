@@ -55,18 +55,18 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
     override fun getTitle(): CharSequence? = getString(R.string.settings_category_appearance)
 
-    private lateinit var nightModePreference: IntegerSegmentedControlPreference
-    private lateinit var darkStylePreference: SegmentedControlPreference
+    private lateinit var nightModePreference: IntegerConnectedButtonGroupPreference
+    private lateinit var darkStylePreference: ConnectedButtonGroupPreference
     private lateinit var useSystemColorPreference: TwoStatePreference
     private lateinit var customAccentPreference: Preference
     private lateinit var languagePreference: ListPreference
     private lateinit var translationPreference: Preference
     private lateinit var expressiveShapesPreference: TwoStatePreference
-    private lateinit var iconStylePreference: SegmentedControlPreference
-    private lateinit var iconColorModePreference: SegmentedControlPreference
+    private lateinit var iconStylePreference: ConnectedButtonGroupPreference
+    private lateinit var iconColorModePreference: ConnectedButtonGroupPreference
     private lateinit var shapeStylePreference: Preference
-    private var animationIntensityPreference: SegmentedControlPreference? = null
-    private var animationsModePreference: SegmentedControlPreference? = null
+    private var animationIntensityPreference: ConnectedButtonGroupPreference? = null
+    private var animationsModePreference: ConnectedButtonGroupPreference? = null
     private var edgeToEdgePreference: TwoStatePreference? = null
     private var blurUiPreference: TwoStatePreference? = null
     private lateinit var oneUiThemePreference: TwoStatePreference
@@ -77,6 +77,21 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
     ) {
         setPreferencesFromResource(R.xml.settings_personalization, rootKey)
         val context = requireContext()
+
+        // One control over the two Apps list switches (hints only show with descriptions).
+        findPreference<ConnectedButtonGroupPreference>("app_details_mode")?.apply {
+            value =
+                when {
+                    !ShizukuSettings.isShowAppDescriptionsEnabled() -> "off"
+                    ShizukuSettings.isShowPlusFeatureHintsEnabled() -> "hints"
+                    else -> "on"
+                }
+            setOnPreferenceChangeListener { _, newValue ->
+                ShizukuSettings.setShowAppDescriptionsEnabled(newValue != "off")
+                ShizukuSettings.setShowPlusFeatureHintsEnabled(newValue == "hints")
+                true
+            }
+        }
 
         // 1. Theme and Color Controls
         nightModePreference = requireNotNull(findPreference(KEY_NIGHT_MODE))
@@ -290,7 +305,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         // Off / Follow system / Custom stands in for the "Expressive animations" and "Follow system
         // animations" switches; writes the same two keys.
         animationsModePreference =
-            findPreference<SegmentedControlPreference>("animations_mode")?.apply {
+            findPreference<ConnectedButtonGroupPreference>("animations_mode")?.apply {
                 value =
                     when {
                         !ShizukuSettings.isExpressiveAnimationsEnabled() -> "off"
@@ -329,7 +344,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         syncIntensityAvailability()
 
         // Off / Theme / Status color stands in for the status card outline switch + its style.
-        findPreference<SegmentedControlPreference>("status_outline_mode")?.apply {
+        findPreference<ConnectedButtonGroupPreference>("status_outline_mode")?.apply {
             value = if (ShizukuSettings.isShowStatusCardOutlineEnabled()) ShizukuSettings.getStatusCardOutlineStyle() else "off"
             setOnPreferenceChangeListener { _, newValue ->
                 val mode = newValue as? String ?: return@setOnPreferenceChangeListener false
@@ -343,7 +358,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
         // Off / Follow system / Always on replaces "Haptic feedback" + its dependent
         // "Follow system haptics" switch; writes the same two keys.
-        findPreference<SegmentedControlPreference>("haptics_mode")?.apply {
+        findPreference<ConnectedButtonGroupPreference>("haptics_mode")?.apply {
             val prefs = ShizukuSettings.getPreferences()
             value =
                 when {

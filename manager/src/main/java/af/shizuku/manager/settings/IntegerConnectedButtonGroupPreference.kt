@@ -19,7 +19,7 @@ import androidx.preference.PreferenceViewHolder
  * Persists an [Int] value directly.
  */
 @SuppressLint("RestrictedApi")
-class IntegerSegmentedControlPreference
+class IntegerConnectedButtonGroupPreference
     @JvmOverloads
     constructor(
         context: Context,
@@ -88,7 +88,7 @@ class IntegerSegmentedControlPreference
                     ?: (holder.findViewById(R.id.preference_compose_view) as? ComposeView)
             if (cv == null) {
                 timber.log.Timber.w(
-                    "IntegerSegmentedControlPreference: ComposeView not found in holder",
+                    "IntegerConnectedButtonGroupPreference: ComposeView not found in holder",
                 )
                 return
             }
@@ -107,12 +107,12 @@ class IntegerSegmentedControlPreference
                     icon = prefIcon,
                 ) {
                     val activeIndex = values.indexOf(selected.intValue).coerceAtLeast(0)
-                    SegmentedChoiceRow(
+                    ConnectedButtonGroup(
                         labels = labels,
                         selectedIndex = activeIndex,
                         enabled = enabled,
                         onSelect = { index ->
-                            val newValue = values.getOrNull(index) ?: return@SegmentedChoiceRow
+                            val newValue = values.getOrNull(index) ?: return@ConnectedButtonGroup
                             if (newValue != selected.intValue && callChangeListener(newValue)) {
                                 value = newValue
                             }

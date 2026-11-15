@@ -8,13 +8,13 @@
         android:icon="@drawable/ic_palette_24"
         android:defaultValue="true">
 
-        <af.shizuku.manager.settings.IntegerSegmentedControlPreference
+        <af.shizuku.manager.settings.IntegerConnectedButtonGroupPreference
             android:entries="@array/night_mode"
             android:entryValues="@array/night_mode_value"
             android:key="night_mode"
             android:title="@string/dark_theme"
             android:icon="@drawable/ic_bedtime_24" />
-        <af.shizuku.manager.settings.SegmentedControlPreference
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
             android:key="dark_style"
             android:persistent="false"
             android:title="@string/settings_dark_style_title"
@@ -90,7 +90,7 @@
         android:icon="@drawable/ic_window_24"
         android:defaultValue="true">
 
-        <af.shizuku.manager.settings.SegmentedControlPreference
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
             android:key="icon_style"
             android:title="@string/settings_icon_style"
             android:defaultValue="twotone"
@@ -98,7 +98,7 @@
             android:entryValues="@array/icon_styles_value"
             android:icon="@drawable/ic_category_24" />
 
-        <af.shizuku.manager.settings.SegmentedControlPreference
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
             android:key="icon_color_mode"
             android:title="@string/settings_icon_color_mode"
             android:summary="@string/settings_icon_color_mode_summary"
@@ -176,7 +176,7 @@
 
         <!-- Off / Theme / Status color stands in for show_status_card_outline +
              status_card_outline_style; not persisted itself, the fragment maps it onto those keys. -->
-        <af.shizuku.manager.settings.SegmentedControlPreference
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
             android:key="status_outline_mode"
             android:title="@string/settings_show_status_card_outline"
             android:summary="@string/settings_show_status_card_outline_summary"
@@ -197,7 +197,7 @@
              follow_system_animations, and animation_intensity only applies to Custom. None of the
              three is persisted itself: the fragment maps them onto those keys (animation_intensity
              may hold an Integer from older versions, which a String preference can't read). -->
-        <af.shizuku.manager.settings.SegmentedControlPreference
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
             android:key="animations_mode"
             android:title="@string/settings_expressive_animations"
             android:summary="@string/settings_expressive_animations_summary"
@@ -206,7 +206,7 @@
             android:entries="@array/animations_modes"
             android:entryValues="@array/animations_modes_value" />
 
-        <af.shizuku.manager.settings.SegmentedControlPreference
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
             android:key="animation_intensity"
             android:title="@string/settings_animation_intensity"
             android:icon="@drawable/ic_speed_24"
@@ -214,7 +214,7 @@
             android:entries="@array/animation_intensities"
             android:entryValues="@array/animation_intensities_value" />
 
-        <af.shizuku.manager.settings.SegmentedControlPreference
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
             android:key="haptics_mode"
             android:persistent="false"
             android:title="@string/settings_haptics_mode_title"
@@ -280,7 +280,7 @@
             app:infoDetail="@string/settings_floating_nav_info"
             app:badgeType="experimental" />
 
-        <af.shizuku.manager.settings.SegmentedControlPreference
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
             android:key="floating_nav_style"
             android:title="@string/settings_floating_nav_style_title"
             android:icon="@drawable/ic_space_dashboard_24"
@@ -295,7 +295,7 @@
             android:icon="@drawable/ic_label_24"
             android:dependency="floating_nav_enabled" />
 
-        <af.shizuku.manager.settings.SegmentedControlPreference
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
             android:key="floating_nav_label_mode"
             android:title="@string/settings_floating_nav_label_mode"
             android:summary="@string/settings_floating_nav_label_mode_summary"
@@ -349,20 +349,15 @@
             android:title="@string/swipe_actions_long_press_title"
             android:icon="@drawable/ic_touch_app_24" />
 
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="show_app_descriptions"
+        <!-- Proxy over show_app_descriptions + show_plus_feature_hints; set in the fragment. -->
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
+            android:key="app_details_mode"
+            android:persistent="false"
             android:title="@string/settings_show_app_descriptions"
-            android:summary="@string/settings_show_app_descriptions_summary"
+            android:summary="@string/settings_app_details_mode_summary"
             android:icon="@drawable/ic_info_24"
-            android:defaultValue="true" />
-
-        <af.shizuku.manager.settings.GrayableIconSwitchPreference
-            android:key="show_plus_feature_hints"
-            android:title="@string/settings_show_plus_feature_hints"
-            android:summary="@string/settings_show_plus_feature_hints_summary"
-            android:icon="@drawable/ic_bolt_24"
-            android:defaultValue="true"
-            android:dependency="show_app_descriptions" />
+            android:entries="@array/app_details_mode_entries"
+            android:entryValues="@array/app_details_mode_values" />
 
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
@@ -392,7 +387,7 @@
             android:icon="@drawable/ic_baseline_link_24"
             android:defaultValue="false" />
 
-        <af.shizuku.manager.settings.SegmentedControlPreference
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
             android:key="changelog_style"
             android:title="@string/settings_changelog_style"
             android:defaultValue="timeline"

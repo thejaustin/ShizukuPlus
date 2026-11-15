@@ -916,6 +916,7 @@ open class HomeActivity :
         }
 
         maybeAskCrashReporting(savedInstanceState)
+        maybeReviewInDevelopmentFeatures(savedInstanceState)
 
         // Handle cold-start launch from the ADB pairing success notification.
         // onNewIntent() is only called when the activity already exists; when the app
@@ -977,6 +978,63 @@ open class HomeActivity :
             }.setPositiveButton(R.string.crash_reporting_prompt_yes) { _, _ ->
                 ShizukuSettings.setCrashReportingEnabled(true)
                 (application as? af.shizuku.manager.ShizukuApplication)?.initializeSentryEarly()
+            }.setCancelable(false)
+            .show()
+    }
+
+    /**
+     * Once after the update that turned the in-development Plus APIs off by default: lets anyone
+     * who had them on keep them, and points them at GitHub to tell us what they use them for.
+     */
+    private fun maybeReviewInDevelopmentFeatures(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) return
+        val wasOn = ShizukuSettings.IN_DEVELOPMENT_PLUS_KEYS.filter { it in ShizukuSettings.getInDevelopmentFeaturesToReview() }
+        if (wasOn.isEmpty()) return
+        val titles =
+            mapOf(
+                ShizukuSettings.Keys.KEY_WINDOW_MANAGER_PLUS_ENABLED to R.string.settings_window_manager_plus,
+                ShizukuSettings.Keys.KEY_OVERLAY_MANAGER_PLUS_ENABLED to R.string.settings_overlay_manager_plus,
+                ShizukuSettings.Keys.KEY_AI_CORE_PLUS_ENABLED to R.string.settings_ai_bridge_title,
+            )
+        val pad = (24 * resources.displayMetrics.density).toInt()
+        val boxes =
+            wasOn.map { key ->
+                com.google.android.material.checkbox
+                    .MaterialCheckBox(this)
+                    .apply { setText(titles.getValue(key)) }
+            }
+        val content =
+            android.widget.LinearLayout(this).apply {
+                orientation = android.widget.LinearLayout.VERTICAL
+                setPadding(pad, pad / 2, pad, 0)
+                addView(
+                    android.widget.TextView(this@HomeActivity).apply {
+                        setText(R.string.in_dev_review_message)
+                        setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium)
+                        setPadding(0, 0, 0, pad / 2)
+                    },
+                )
+                boxes.forEach(::addView)
+            }
+
+        fun kept() = wasOn.filterIndexed { i, _ -> boxes[i].isChecked }.toSet()
+        com.google.android.material.dialog
+            .MaterialAlertDialogBuilder(this)
+            .setIcon(R.drawable.ic_science_24)
+            .setTitle(R.string.in_dev_review_title)
+            .setView(android.widget.ScrollView(this).apply { addView(content) })
+            .setPositiveButton(R.string.in_dev_review_save) { _, _ -> ShizukuSettings.finishInDevelopmentFeaturesReview(kept()) }
+            .setNeutralButton(R.string.in_dev_review_share) { _, _ ->
+                ShizukuSettings.finishInDevelopmentFeaturesReview(kept())
+                val title = android.net.Uri.encode(getString(R.string.in_dev_review_issue_title))
+                runCatching {
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            android.net.Uri.parse("https://github.com/thejaustin/ShizukuPlus/issues/new?template=feature_request.yml&title=$title"),
+                        ),
+                    )
+                }
             }.setCancelable(false)
             .show()
     }

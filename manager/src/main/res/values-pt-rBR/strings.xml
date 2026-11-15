@@ -1051,7 +1051,6 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="doctor_check_samsung_max_restrictions">Restrições máximas (One UI 8+)</string>
     <string name="doctor_check_su_bridge_a16">SU Bridge (ADB Android 16+)</string>
     <string name="doctor_check_tcl_autostart">Inicialização automática TCL</string>
-    <string name="doctor_check_wallet_integrity">Google Wallet e Play Integrity</string>
     <string name="doctor_check_xiaomi_adb">Depuração USB Xiaomi/HyperOS (Configurações de segurança)</string>
     <string name="doctor_check_xiaomi_autostart">Inicialização automática Xiaomi/HyperOS</string>
     <string name="doctor_fix_wallet_failed">Não foi possível remover os binários root automaticamente. Copie o comando ADB abaixo para removê-los manualmente via terminal.</string>
@@ -1069,9 +1068,6 @@ PERIGO: Flashear uma carga incompatível RESULTARÁ em brick permanente ou bootl
     <string name="doctor_status_xiaomi_autostart_unknown">Conceder inicialização automática para manter o serviço ativo</string>
     <string name="doctor_tip_oneui8_max_restrictions">One UI 8+: \'Restrições máximas\' no Auto Blocker desativa o ADB. Desative-o para usar o Shizuku.</string>
     <string name="doctor_tip_su_bridge_a16">O Android 16+ restringe gravações em /data/local/tmp pelo shell ADB. Abra o Hub de Compatibilidade Root e toque em \"Exportar\" para definir um caminho do SU Bridge que funcione no seu dispositivo.</string>
-    <string name="doctor_wallet_risk_busybox">Risco de segurança (Mocking de BusyBox ativo)</string>
-    <string name="doctor_wallet_risk_magisk">Risco de segurança (Mocking de Magisk ativo)</string>
-    <string name="doctor_wallet_risk_spoof">Risco de atestado (Spoofing de dispositivo ativo)</string>
     <string name="doctor_wallet_risk_tmp_su">Risco de segurança (binário su detectado)</string>
 
     <!-- Empty state -->

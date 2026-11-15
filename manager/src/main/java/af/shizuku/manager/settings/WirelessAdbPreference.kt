@@ -311,7 +311,7 @@ class WirelessAdbPreference
                             Spacer(Modifier.padding(top = 12.dp))
                             SectionLabel(stringResource(R.string.settings_tcp_protection_label))
                             val modes = listOf(NetworkTrust.MODE_OFF, NetworkTrust.MODE_OPEN, NetworkTrust.MODE_TRUSTED)
-                            SegmentedChoiceRow(
+                            ConnectedButtonGroup(
                                 labels =
                                     listOf(
                                         stringResource(R.string.settings_tcp_protection_off),

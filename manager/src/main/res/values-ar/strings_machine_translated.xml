@@ -379,11 +379,7 @@
     <string name="doctor_check_local_network">الوصول إلى الشبكة المحلية</string>
     <string name="doctor_tip_local_network"><b>الوصول إلى الشبكة المحلية (%1$s)</b>: يتطلب Android 16/17 هذا الإذن لاكتشاف خدمة التصحيح اللاسلكي والاتصال بها. بدونه يفشل Shizuku+ بصمت في البدء في وضع ADB. اضغط إصلاح لمنحه.</string>
     <string name="doctor_button_fix">إصلاح</string>
-    <string name="doctor_check_wallet_integrity">Google Wallet وPlay Integrity</string>
     <string name="doctor_wallet_risk_tmp_su">خطر أمني (تم اكتشاف ملف su تنفيذي)</string>
-    <string name="doctor_wallet_risk_magisk">خطر أمني (محاكاة Magisk نشطة)</string>
-    <string name="doctor_wallet_risk_busybox">خطر أمني (محاكاة BusyBox نشطة)</string>
-    <string name="doctor_wallet_risk_spoof">خطر في التصديق (انتحال الجهاز نشط)</string>
     <string name="doctor_fix_wallet_success">تم. يعمل بصلاحية root — حُذفت ملفات حكم Play Integrity مباشرة من GMS. افتح Google Wallet؛ يجب أن يعمل فورًا.</string>
     <string name="doctor_fix_wallet_success_adb_mode">تم. يعمل Shizuku في وضع صدفة ADB، لذا لا يمكن حذف ملف حكم Play Integrity من القرص (فقط root يستطيع الوصول إلى مجلد بيانات GMS).\n\nما تم بدلًا من ذلك:\n• إنهاء عملية DroidGuard (يمسح الحكم في الذاكرة)\n• إيقاف GMS\n• محاولة تجاوز TTL الخاص بـ Play Integrity (تدفع GMS لإعادة التصديق فورًا)\n• طلب تهيئة تصديق جديد (يطلق إعادة تقييم DroidGuard بجهاز نظيف)\n• مسح بيانات Wallet (يفرض طلب سلامة جديدًا بقيمة nonce جديدة)\n• إعادة تأكيد توجيه مدفوعات NFC\n\nجرّب فتح Wallet الآن — يجب أن يتعافى فورًا. إذا ظل محظورًا، اضغط «مسح بيانات خدمات Play» أدناه لضمان التعافي الفوري (ستحتاج إلى تسجيل الدخول إلى Google مجددًا بعد ذلك).</string>
     <string name="doctor_fix_wallet_success_no_shizuku">تم. لم يكن Shizuku قيد التشغيل، لذا أمكن إيقاف Wallet نفسه فقط — لا يزال حكم Play Integrity المخزن مؤقتًا في GMS سليمًا.\n\nيجب أن يتعافى Wallet من تلقاء نفسه خلال نحو ساعة مع انتهاء صلاحية الحكم طبيعيًا. للتعافي الفوري، اضغط «مسح بيانات خدمات Play» أدناه (ستحتاج إلى تسجيل الدخول إلى Google مجددًا بعد ذلك).\n\nلتجنب ذلك مستقبلًا، تأكد من تشغيل Shizuku قبل تعطيل ميزات root — فهو يتيح تنظيفًا أكثر شمولًا.</string>

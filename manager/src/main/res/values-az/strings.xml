@@ -849,11 +849,7 @@
     <string name="doctor_check_local_network">Yerli Şəbəkə Girişi</string>
     <string name="doctor_tip_local_network"><b>Yerli Şəbəkə Girişi (%1$s)</b>: Android 16/17 simsiz sazlama xidmətini tapmaq və ona qoşulmaq üçün bu icazəni tələb edir. Bu olmadan Shizuku+ ADB rejimində səssizcə işə düşə bilmir. Grant etmək üçün Düzəlt düyməsinə toxunun.</string>
     <string name="doctor_button_fix">Düzəlt</string>
-    <string name="doctor_check_wallet_integrity">Google Wallet və Play İnteqrasiyası</string>
     <string name="doctor_wallet_risk_tmp_su">Təhlükəsizlik Riski (su binar faylı aşkarlandı)</string>
-    <string name="doctor_wallet_risk_magisk">Təhlükəsizlik Riski (Magisk Saxtalaşdırması aktivdir)</string>
-    <string name="doctor_wallet_risk_busybox">Təhlükəsizlik Riski (BusyBox Saxtalaşdırması aktivdir)</string>
-    <string name="doctor_wallet_risk_spoof">Attestasiya Riski (Cihazın Saxtalaşdırılması aktivdir)</string>
     <!--
       Three recovery outcomes — shown after the 1-tap wallet fix runs.
       ROOT:        Shizuku uid=0 — verdict files deleted, immediate recovery expected.

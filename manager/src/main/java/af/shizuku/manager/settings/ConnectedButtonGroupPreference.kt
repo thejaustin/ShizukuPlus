@@ -20,12 +20,13 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 
 /**
- * Single-choice preference rendered as an M3 segmented button row. Stores its value as a String,
+ * Single-choice preference rendered as an M3 Expressive connected button group (the replacement
+ * for the segmented button). Stores its value as a String,
  * exactly like ListPreference, so it is a drop-in replacement for short (2-4 option) lists.
  *
  * XML:
  * ```
- * <af.shizuku.manager.settings.SegmentedControlPreference
+ * <af.shizuku.manager.settings.ConnectedButtonGroupPreference
  *     android:key="..."
  *     android:title="..."
  *     android:entries="@array/..."
@@ -34,7 +35,7 @@ import androidx.preference.PreferenceViewHolder
  * ```
  * Listen for changes with setOnPreferenceChangeListener; return false to veto.
  */
-class SegmentedControlPreference
+class ConnectedButtonGroupPreference
     @JvmOverloads
     constructor(
         context: Context,
@@ -59,9 +60,9 @@ class SegmentedControlPreference
         init {
             layoutResource = R.layout.preference_compose
             isSelectable = false
-            context.obtainStyledAttributes(attrs, R.styleable.SegmentedControlPreference).apply {
-                getTextArray(R.styleable.SegmentedControlPreference_android_entries)?.let { entries = it }
-                getTextArray(R.styleable.SegmentedControlPreference_android_entryValues)?.let { entryValues = it }
+            context.obtainStyledAttributes(attrs, R.styleable.ConnectedButtonGroupPreference).apply {
+                getTextArray(R.styleable.ConnectedButtonGroupPreference_android_entries)?.let { entries = it }
+                getTextArray(R.styleable.ConnectedButtonGroupPreference_android_entryValues)?.let { entryValues = it }
                 recycle()
             }
         }
@@ -81,7 +82,7 @@ class SegmentedControlPreference
                 (holder.itemView as? ComposeView)
                     ?: (holder.findViewById(R.id.preference_compose_view) as? ComposeView)
             if (cv == null) {
-                timber.log.Timber.w("SegmentedControlPreference: ComposeView not found in holder (itemView is %s)", holder.itemView.javaClass.name)
+                timber.log.Timber.w("ConnectedButtonGroupPreference: ComposeView not found in holder (itemView is %s)", holder.itemView.javaClass.name)
                 return
             }
             val labels = entries.map { it.toString() }
@@ -95,12 +96,12 @@ class SegmentedControlPreference
                     enabled = enabled,
                     icon = prefIcon,
                 ) {
-                    SegmentedChoiceRow(
+                    ConnectedButtonGroup(
                         labels = labels,
                         selectedIndex = values.indexOf(selected.value),
                         enabled = enabled,
                         onSelect = { index ->
-                            val newValue = values.getOrNull(index) ?: return@SegmentedChoiceRow
+                            val newValue = values.getOrNull(index) ?: return@ConnectedButtonGroup
                             if (newValue != selected.value && callChangeListener(newValue)) {
                                 value = newValue
                             }
@@ -112,13 +113,13 @@ class SegmentedControlPreference
     }
 
 /**
- * Reusable single-choice row (shared by SegmentedControlPreference and compound cards), drawn as an
+ * Reusable single-choice row (shared by ConnectedButtonGroupPreference and compound cards), drawn as an
  * M3 Expressive connected button group: the selected button morphs to a full pill and pressed
  * buttons squish on the theme's expressive spring, with a segment-tick haptic on every change.
  */
 @OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun SegmentedChoiceRow(
+fun ConnectedButtonGroup(
     labels: List<String>,
     selectedIndex: Int,
     enabled: Boolean,
@@ -194,12 +195,14 @@ private fun connectedMorphShapes(
     val outer =
         androidx.compose.foundation.shape
             .CornerSize(50)
+    // md.comp.button-group.connected.small: inner corner = corner.small (8dp), pressed inner
+    // corner = corner.extra-small (4dp), selected = 50%.
     val inner =
         androidx.compose.foundation.shape
-            .CornerSize(6.dp)
+            .CornerSize(8.dp)
     val innerPressed =
         androidx.compose.foundation.shape
-            .CornerSize(3.dp)
+            .CornerSize(4.dp)
     val first = index == 0
     val last = index == count - 1
 
