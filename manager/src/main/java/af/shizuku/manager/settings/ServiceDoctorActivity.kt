@@ -397,8 +397,14 @@ class ServiceDoctorActivity : AppBarActivity() {
     }
 
     private fun runWalletRepair(steps: Set<WalletRepair.Step>) {
+        setBusy(true)
         serviceScope.launch {
-            val result = WalletRepair.run(this@ServiceDoctorActivity, steps)
+            val result =
+                try {
+                    WalletRepair.run(this@ServiceDoctorActivity, steps)
+                } finally {
+                    setBusy(false)
+                }
             val lines =
                 buildList {
                     when (result.suFilesRemoved) {
@@ -449,9 +455,36 @@ class ServiceDoctorActivity : AppBarActivity() {
         }
     }
 
+    /** Shows the expressive loading indicator, when that preview is on, while [busy]. */
+    private fun setBusy(busy: Boolean) {
+        val frame = binding.scanLoading
+        if (!ShizukuSettings.isExpressiveControlsPreviewEnabled()) {
+            frame.visibility = View.GONE
+            return
+        }
+        if (busy && frame.childCount == 0) {
+            frame.addView(
+                com.google.android.material.loadingindicator
+                    .LoadingIndicator(this),
+                android.widget.FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    android.view.Gravity.CENTER,
+                ),
+            )
+        }
+        frame.visibility = if (busy) View.VISIBLE else View.GONE
+    }
+
     private fun runDiagnostics() {
+        setBusy(true)
         serviceScope.launch {
-            val diag = withContext(Dispatchers.IO) { ServiceDoctor.runFullDiagnostics(this@ServiceDoctorActivity) }
+            val diag =
+                try {
+                    withContext(Dispatchers.IO) { ServiceDoctor.runFullDiagnostics(this@ServiceDoctorActivity) }
+                } finally {
+                    setBusy(false)
+                }
             lastDiagnostics = diag
             val checks =
                 diag.checks.map { item ->

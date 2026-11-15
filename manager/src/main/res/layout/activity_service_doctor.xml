@@ -308,6 +308,14 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Expressive controls preview: the M3 loading indicator while checks or a repair run. -->
+        <FrameLayout
+            android:id="@+id/scan_loading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="16dp"
+            android:visibility="gone" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/check_list"
             android:layout_width="match_parent"

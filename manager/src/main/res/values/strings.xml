@@ -450,7 +450,7 @@
     <string name="settings_experimental_category_color">Look &amp; motion</string>
     <string name="settings_experimental_screen_transitions_title">Material screen transitions</string>
     <string name="settings_expressive_controls_preview_title">Expressive controls preview</string>
-    <string name="settings_expressive_controls_preview_summary">Wavy progress bars, split buttons and multi-select button groups from Material 3 Expressive. Reopen screens to see the change</string>
+    <string name="settings_expressive_controls_preview_summary">Wavy progress bars, the shape-morphing loading indicator, split buttons and multi-select button groups from Material 3 Expressive. Reopen screens to see the change</string>
     <string name="settings_experimental_screen_transitions_summary">Screens and settings pages slide forward and back instead of exploding or cutting</string>
     <string name="custom_icon_studio_saved_success">Icon saved to Downloads/ShizukuPlus/Icons</string>
     <string name="custom_icon_studio_save_png_short">Save PNG</string>
