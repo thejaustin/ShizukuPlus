@@ -122,11 +122,22 @@ class TimelineRailView
             morphSpring.animateToFinalPosition(target)
         }
 
+        private var wantPulse = false
+
+        /**
+         * Rows are bound before RecyclerView attaches them, so this only records the wish; the
+         * halo turns while the view is attached.
+         */
         fun setPulsing(enabled: Boolean) {
+            wantPulse = enabled
+            if (isAttachedToWindow) startOrStopPulse() else invalidate()
+        }
+
+        private fun startOrStopPulse() {
             pulse?.cancel()
             pulse = null
             haloPhase = 0f
-            if (enabled && isAttachedToWindow) {
+            if (wantPulse) {
                 val scale = ShizukuSettings.getAnimationDurationScale().coerceAtLeast(0.1f)
                 pulse =
                     ValueAnimator.ofFloat(0f, 1f).apply {
@@ -143,8 +154,14 @@ class TimelineRailView
             invalidate()
         }
 
+        override fun onAttachedToWindow() {
+            super.onAttachedToWindow()
+            if (wantPulse) startOrStopPulse()
+        }
+
         override fun onDetachedFromWindow() {
             pulse?.cancel()
+            pulse = null
             morphSpring.cancel()
             super.onDetachedFromWindow()
         }
@@ -157,7 +174,7 @@ class TimelineRailView
             if (highlightAbove && !isFirst) canvas.drawLine(cx, 0f, cx, nodeCenterY, highlightPaint)
             if (highlightBelow && !isLast) canvas.drawLine(cx, nodeCenterY, cx, height.toFloat(), highlightPaint)
 
-            if (pulse != null) {
+            if (wantPulse) {
                 // Two breaths per turn, so the halo never looks like it's just rotating.
                 val breath = kotlin.math.sin(haloPhase * 4f * Math.PI).toFloat()
                 drawShape(canvas, haloPath, cx, (22f + 3f * breath) * density, 1f, haloPhase * 360f, haloPaint)

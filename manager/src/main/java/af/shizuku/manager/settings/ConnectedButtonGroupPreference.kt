@@ -175,7 +175,7 @@ fun ConnectedButtonGroup(
                                 containerColor = scheme.controlContainer,
                                 contentColor = scheme.onControlContainer,
                                 checkedContainerColor = accentColor,
-                                checkedContentColor = contentColorOn(accentColor),
+                                checkedContentColor = contentColorOn(accent.current),
                             )
                         } else {
                             androidx.compose.material3.ToggleButtonDefaults.colors(
