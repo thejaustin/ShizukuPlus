@@ -24,7 +24,7 @@
     <!-- Settings card decoration tokens (replaces hardcoded * density values) -->
     <dimen name="settings_row_gap">2dp</dimen>
     <dimen name="settings_inner_radius">4dp</dimen>
-    <dimen name="settings_pressed_radius">20dp</dimen>
+    <dimen name="settings_pressed_radius">16dp</dimen>
     <dimen name="settings_section_top_offset">14dp</dimen>
     <dimen name="settings_icon_inset">56dp</dimen>
 
