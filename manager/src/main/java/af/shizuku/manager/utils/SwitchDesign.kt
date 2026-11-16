@@ -57,8 +57,8 @@ object SwitchDesign {
 
     /**
      * A thumb drawn in the icon shapes: the off shape while off, morphing into the on shape as it
-     * slides (MaterialSwitch tints it and passes the checked state), and smaller while off like the
-     * M3 thumb. The check / close icon still sits on top.
+     * slides (MaterialSwitch tints it and passes the checked state), and full size while off like
+     * the M3 thumb with an icon. The check / close icon still sits on top.
      */
     private fun shapeThumb(
         switch: MaterialSwitch,
@@ -74,7 +74,9 @@ object SwitchDesign {
         ).apply {
             mode = MorphMode.of(ShizukuSettings.getIconMorphMode())
             intrinsicSizePx = (24 * density).toInt()
-            shrinkWhenOff = true
+            // The check / X icon always sits on it, and MaterialSwitch keeps a thumb with an icon
+            // at the full 24dp when off too (state_with_icon); the off shape carries the state.
+            shrinkWhenOff = false
             followsCheckedState = true
             growWhenPressed = true
         }

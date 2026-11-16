@@ -151,7 +151,8 @@ open class GrayableIconSwitchPreference
                 }
                 if (morph != null && ShizukuSettings.getSwitchRowDesign() == DESIGN_ICON_SWITCH) {
                     val on = glyphColor(icon, key)
-                    animateFill(morph, if (isChecked) 1f else 0f) { tintGlyph(icon, on, it) }
+                    val off = MaterialColors.getColor(icon, MaterialR.attr.colorOnSurfaceVariant)
+                    animateFill(morph, if (isChecked) 1f else 0f) { tintGlyph(icon, on, it, off) }
                 } else {
                     // Icon scale springs (may bounce); its dimming fades without overshoot.
                     val scale = if (isChecked) 1.0f else 0.90f
@@ -214,9 +215,9 @@ private fun tintGlyph(
     icon: ImageView,
     on: Int,
     fill: Float,
+    off: Int = MaterialColors.getColor(icon, MaterialR.attr.colorOnSurfaceVariant),
 ) {
     val glyph = (icon.drawable as? android.graphics.drawable.LayerDrawable)?.takeIf { it.numberOfLayers > 1 }?.getDrawable(1) ?: return
-    val off = MaterialColors.getColor(icon, MaterialR.attr.colorOnSurfaceVariant)
     glyph.setTint(
         androidx.core.graphics.ColorUtils
             .blendARGB(off, on, fill.coerceIn(0f, 1f)),

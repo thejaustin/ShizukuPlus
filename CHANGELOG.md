@@ -94,7 +94,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ### 🎨 Look & Feel
 - **Classic and Expressive icon shapes** — Cookie, clover, sunny, gem, flower, and burst shapes restored alongside Material Expressive options.
 - **Shape-morphing switches** — Standardized on Material 3 Expressive switches with thumb checkmarks and smooth icon morphing animations.
-- **Livelier switch designs** — The shape thumb grows under your finger like the standard switch handle, and with "Icon is the switch" an off icon now uses the quieter outline colours of an off switch, warming to its full colour as it fills.
+- **Livelier switch designs** — The shape thumb grows under your finger like the standard switch handle and no longer shrinks under its X while off, and with "Icon is the switch" an off icon now uses the quieter outline colours of an off switch, warming to its full colour as it fills.
 - **Consistent card borders** — Outlined card styling cleanly extends across settings, app lists, Service Doctor, and System Hub.
 - **AMOLED true black** — Pure black background rendering on Home and in dialogs with AMOLED mode active.
 - **Fluid motion and transitions** — Refined spring physics for card dragging, sheet opening, and tab navigation.
