@@ -467,6 +467,12 @@ class MorphShapeDrawable(
 
     override fun isStateful(): Boolean = tint?.isStateful == true || followsCheckedState
 
+    /** Skips a running morph, e.g. when a reused list row shows another item. */
+    override fun jumpToCurrentState() {
+        morphSpring?.cancel()
+        lastChecked?.let { progress = if (it) 1f else 0f }
+    }
+
     override fun onStateChange(state: IntArray): Boolean {
         val changed = applyTint(state)
         if (followsCheckedState) {
