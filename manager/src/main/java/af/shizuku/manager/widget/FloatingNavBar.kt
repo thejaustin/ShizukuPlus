@@ -633,6 +633,39 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         }
     }
 
+    /** The bar's own height for a style, without the system navigation bar under a docked one. */
+    private fun barHeightDp(
+        context: Context,
+        style: String,
+        labelMode: String,
+        flexible: Boolean,
+    ): Int {
+        val unlabeled = labelMode == "unlabeled"
+        return when (style) {
+            STYLE_COMPACT -> if (unlabeled) 58 else 72
+            STYLE_CAPSULE -> if (unlabeled) 60 else 70
+            // M3 Expressive flexible navigation bar: 64dp, growing with the label's 16sp line at
+            // larger text sizes so labels stay whole (the spec asks for that up to 200%).
+            else ->
+                when {
+                    unlabeled -> 64
+                    flexible -> 64 + (16 * (context.resources.configuration.fontScale - 1f)).coerceAtLeast(0f).toInt()
+                    else -> 80
+                }
+        }
+    }
+
+    /**
+     * Bottom padding a scrolling screen needs, on top of the system bar inset, so its last row can
+     * scroll clear of the bar: the bar, the gap under a floating one, and some room to breathe.
+     */
+    fun contentClearancePx(context: Context): Int {
+        val style = getStyle()
+        val bar = barHeightDp(context, style, ShizukuSettings.getFloatingNavLabelMode(), ShizukuSettings.isExpressiveControlsPreviewEnabled())
+        val gap = if (style == STYLE_DOCKED) 0 else BOTTOM_MARGIN_DP
+        return ((bar + gap + 24) * context.resources.displayMetrics.density).toInt()
+    }
+
     /** Whether the bar spans the screen width (a message then keeps its own width). */
     fun isDocked(): Boolean = getStyle() == STYLE_DOCKED
 
@@ -763,19 +796,40 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                     else -> com.google.android.material.navigation.NavigationBarView.LABEL_VISIBILITY_SELECTED
                 }
 
-            val navLp = nav.layoutParams
-            val desiredHeight =
-                when (barStyle) {
-                    STYLE_COMPACT -> if (labelMode == "unlabeled") (58 * density).toInt() else (72 * density).toInt()
-                    STYLE_CAPSULE -> if (labelMode == "unlabeled") (60 * density).toInt() else (70 * density).toInt()
-                    else -> if (labelMode == "unlabeled") (64 * density).toInt() else (80 * density).toInt()
+            // M3 Expressive flexible navigation bar (preview): 64dp with labels, a 56x32 pill, and
+            // icon beside label once the bar itself is medium-window wide. Screens are reopened
+            // after the toggle, so the bar only needs this applied, never undone.
+            val flexible = ShizukuSettings.isExpressiveControlsPreviewEnabled()
+            if (flexible) {
+                val horizontal = (root.layoutParams?.width ?: 0) >= (600 * density).toInt()
+                nav.itemIconGravity =
+                    if (horizontal) {
+                        com.google.android.material.navigation.NavigationBarView.ITEM_ICON_GRAVITY_START
+                    } else {
+                        com.google.android.material.navigation.NavigationBarView.ITEM_ICON_GRAVITY_TOP
+                    }
+                if (!horizontal) {
+                    nav.itemActiveIndicatorWidth = (56 * density).toInt()
+                    nav.itemActiveIndicatorHeight = (32 * density).toInt()
                 }
+                nav.activeIndicatorLabelPadding = (4 * density).toInt()
+                nav.setItemTextAppearanceActive(com.google.android.material.R.style.TextAppearance_Material3_LabelMedium)
+                nav.setItemTextAppearanceInactive(com.google.android.material.R.style.TextAppearance_Material3_LabelMedium)
+                nav.setHorizontalItemTextAppearanceActive(com.google.android.material.R.style.TextAppearance_Material3_LabelLarge)
+                nav.setHorizontalItemTextAppearanceInactive(com.google.android.material.R.style.TextAppearance_Material3_LabelLarge)
+            }
+
+            val navLp = nav.layoutParams
+            val desiredHeight = (barHeightDp(activity, barStyle, labelMode, flexible) * density).toInt()
             if (navLp != null && navLp.height != desiredHeight) {
                 navLp.height = desiredHeight
                 nav.layoutParams = navLp
             }
 
-            if (barStyle == STYLE_COMPACT) {
+            if (flexible && (barStyle == STYLE_DOCKED || barStyle == STYLE_FLOATING)) {
+                nav.itemPaddingTop = (6 * density).toInt()
+                nav.itemPaddingBottom = (6 * density).toInt()
+            } else if (barStyle == STYLE_COMPACT) {
                 nav.itemPaddingTop = (2 * density).toInt()
                 nav.itemPaddingBottom = (2 * density).toInt()
             } else {

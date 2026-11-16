@@ -324,7 +324,8 @@ open class ApplicationManagementActivity :
                 if (af.shizuku.manager.widget.FloatingNavBar
                         .isTopLevel(this)
                 ) {
-                    (160 * resources.displayMetrics.density).toInt()
+                    af.shizuku.manager.widget.FloatingNavBar
+                        .contentClearancePx(this)
                 } else {
                     (24 * resources.displayMetrics.density).toInt()
                 }

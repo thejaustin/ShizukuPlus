@@ -592,7 +592,8 @@ open class HomeActivity :
                 if (af.shizuku.manager.ShizukuSettings
                         .isFloatingNavBarEnabled()
                 ) {
-                    (160 * resources.displayMetrics.density).toInt()
+                    af.shizuku.manager.widget.FloatingNavBar
+                        .contentClearancePx(this)
                 } else {
                     (16 * resources.displayMetrics.density).toInt()
                 }

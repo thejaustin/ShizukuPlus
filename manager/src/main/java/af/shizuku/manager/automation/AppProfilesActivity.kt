@@ -97,7 +97,9 @@ class AppProfilesActivity : AppCompatActivity() {
 
         binding.recycler.layoutManager = LinearLayoutManager(this)
         binding.recycler.clipToPadding = false
-        val navClearance = (160 * resources.displayMetrics.density + 0.5f).toInt()
+        val navClearance =
+            af.shizuku.manager.widget.FloatingNavBar
+                .contentClearancePx(this)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val systemBars =
                 insets.getInsets(

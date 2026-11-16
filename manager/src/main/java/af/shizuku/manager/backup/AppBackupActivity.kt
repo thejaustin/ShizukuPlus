@@ -73,7 +73,9 @@ class AppBackupActivity : AppBarActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter
         binding.recyclerView.clipToPadding = false
-        val navClearance = (160 * resources.displayMetrics.density + 0.5f).toInt()
+        val navClearance =
+            af.shizuku.manager.widget.FloatingNavBar
+                .contentClearancePx(this)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val systemBars =
                 insets.getInsets(
