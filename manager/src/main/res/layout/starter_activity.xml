@@ -24,8 +24,11 @@
             android:id="@+id/header"
             layout="@layout/header_card" />
 
+        <!-- Out of content capture: it reads this live-updating selectable log mid-change and
+             crashes inside the framework (PackedIntVector out of bounds) on some devices. -->
         <TextView
             android:id="@android:id/text1"
+            android:importantForContentCapture="no"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="@dimen/margin_horizontal"

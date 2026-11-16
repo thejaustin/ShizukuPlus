@@ -442,7 +442,11 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
 
     private fun updateDhizukuAllowedApps(active: Boolean) {
         val pref = findPreference<Preference>("dhizuku_allowed_apps") ?: return
-        viewLifecycleOwnerLiveData.value?.lifecycleScope?.launch {
+        // Runs from onCreatePreferences too, before there's a view, so this uses the fragment's
+        // own scope: the view's one would silently skip it, leaving a blank row that did nothing
+        // (#683). Hidden until the grants are read, so expanding the category can't show it early.
+        setChildAvailable(pref, false)
+        lifecycleScope.launch {
             val grants =
                 withContext(Dispatchers.IO) {
                     af.shizuku.manager.authorization.DhizukuGrants
@@ -457,6 +461,8 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                 } else {
                     resources.getQuantityString(R.plurals.settings_dhizuku_allowed_apps_count, grants.size, grants.size)
                 }
+            // Nothing to open with no apps yet; the summary says so.
+            pref.isSelectable = grants.isNotEmpty()
             pref.setOnPreferenceClickListener {
                 if (grants.isNotEmpty()) showDhizukuAllowedApps(ctx, grants)
                 true

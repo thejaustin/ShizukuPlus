@@ -79,12 +79,22 @@
 
         </LinearLayout>
 
+    </LinearLayout>
+
+    <!-- Actions get their own line under the name, so large font and display sizes can't squeeze
+         the name into a one-letter column (#684). -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:gravity="end|center_vertical"
+        android:orientation="horizontal">
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_freeze"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:minWidth="0dp"
             android:text="@string/backup_action_freeze"
             app:icon="@drawable/ic_ac_unit_24"

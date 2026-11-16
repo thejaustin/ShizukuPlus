@@ -117,7 +117,7 @@ class SettingsFragment : BaseSettingsFragment() {
         banner.title = getString(R.string.settings_status_banner_running_title, appName)
         // Shizuku.getUid() is a binder call - keep it off the main thread (DeadObjectException /
         // jank when the server is busy or dying).
-        viewLifecycleOwnerLiveData.value?.lifecycleScope?.launch {
+        lifecycleScope.launch {
             val uid =
                 withContext(Dispatchers.IO) {
                     runCatching { Shizuku.getUid() }.getOrDefault(-1)

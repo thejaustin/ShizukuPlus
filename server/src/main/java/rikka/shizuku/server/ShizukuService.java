@@ -3216,7 +3216,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             // Kill Shizuku app and try again could work
             for (int userId : failedUserIds) {
                 try {
-                    LOGGER.e("kill %s in user %d and try again", MANAGER_APPLICATION_ID, userId);
+                    LOGGER.w("kill %s in user %d and try again", MANAGER_APPLICATION_ID, userId);
                     ActivityManagerApis.forceStopPackageNoThrow(MANAGER_APPLICATION_ID, userId);
                 } catch (Throwable tr) {
                     LOGGER.e(tr, "failed to kill package");
@@ -3253,7 +3253,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             // For unknown reason, sometimes this could happens
             // Kill Shizuku app and try again could work
             try {
-                LOGGER.e("kill %s in user %d and try again", MANAGER_APPLICATION_ID, userId);
+                LOGGER.w("kill %s in user %d and try again", MANAGER_APPLICATION_ID, userId);
                 ActivityManagerApis.forceStopPackageNoThrow(MANAGER_APPLICATION_ID, userId);
 
                 Runnable retryAction = () -> {
@@ -3291,7 +3291,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             DeviceIdleControllerApis.addPowerSaveTempWhitelistApp(packageName, 30 * 1000, userId,
                     316/* PowerExemptionManager#REASON_SHELL */, "shell");
         } catch (Throwable tr) {
-            LOGGER.e(tr, "Failed to add %d:%s to power save temp whitelist", userId, packageName);
+            LOGGER.w(tr, "Failed to add %d:%s to power save temp whitelist", userId, packageName);
         }
 
         String name = packageName + ".shizuku";
@@ -3318,7 +3318,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 return false;
             }
             if (!provider.asBinder().pingBinder()) {
-                LOGGER.e("provider is dead %s %d", name, userId);
+                LOGGER.w("provider is dead %s %d", name, userId);
                 return false;
             }
 
@@ -3348,11 +3348,11 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 LOGGER.i("send binder to user app %s in user %d", packageName, userId);
                 return true;
             } else {
-                LOGGER.e("failed to send binder to user app %s in user %d", packageName, userId);
+                LOGGER.w("failed to send binder to user app %s in user %d", packageName, userId);
                 return false;
             }
         } catch (Throwable tr) {
-            LOGGER.e(tr, "failed to send binder to user app %s in user %d", packageName, userId);
+            LOGGER.w(tr, "failed to send binder to user app %s in user %d", packageName, userId);
             return false;
         } finally {
             if (provider != null) {
@@ -3376,12 +3376,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     // target's ContentProvider binder looks like from the caller's side (a synchronous ping to a
     // Cached-Apps-Frozen process gets BR_FROZEN_REPLY, not a normal reply) - force-stopping lets
     // AMS restart the app fully unfrozen instead of racing the freezer a second time in place.
+    // Each step that has a retry after it logs a warning; only the final failed retry is an error
+    // (errors reach crash reports, and the steps alone fired hundreds of times a day).
     static boolean sendBinderToUserAppWithRetry(Binder binder, String packageName, int userId) {
         boolean success = sendBinderToUserApp(binder, packageName, userId);
         if (!success) {
             boolean killed = false;
             try {
-                LOGGER.e("kill %s in user %d and try again", packageName, userId);
+                LOGGER.w("kill %s in user %d and try again", packageName, userId);
                 ActivityManagerApis.forceStopPackageNoThrow(packageName, userId);
                 killed = true;
             } catch (Throwable tr) {
@@ -3409,10 +3411,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                                     if (retry2Success) {
                                         LOGGER.i("retry #2 succeeded for %s in user %d", packageName, userId);
                                     } else {
-                                        LOGGER.w("retry #2 failed for %s in user %d", packageName, userId);
+                                        LOGGER.e("retry #2 failed for %s in user %d", packageName, userId);
                                     }
                                 } catch (Throwable tr2) {
-                                    LOGGER.w(tr2, "retry #2 failed for %s in user %d", packageName, userId);
+                                    LOGGER.e(tr2, "retry #2 failed for %s in user %d", packageName, userId);
                                 }
                             }, 4000);
                         }
