@@ -4,7 +4,7 @@ import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.update.UpdateChecker
 import af.shizuku.manager.utils.HapticUtils
-import android.animation.ObjectAnimator
+import af.shizuku.manager.utils.useTextAppearance
 import android.animation.ValueAnimator
 import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
@@ -54,12 +54,18 @@ class ChangelogTimelineAdapter(
     private val expandedTags = mutableSetOf<String>()
     private val fullSections = mutableSetOf<String>() // "tag|kind" sections opened past the preview
 
+    // Newest first; the installed release's place in it, for the update path on the rail.
+    private var releaseOrder: List<String> = emptyList()
+    private var installedPos = -1
+
     fun submit(
         newRows: List<TimelineRow>,
         autoExpand: String?,
     ) {
         if (autoExpand != null && expandedTags.isEmpty()) expandedTags.add(autoExpand)
         rows = newRows
+        releaseOrder = newRows.filterIsInstance<TimelineRow.Release>().map { it.release.tag }
+        installedPos = newRows.filterIsInstance<TimelineRow.Release>().indexOfFirst { it.release.isInstalled }
         notifyDataSetChanged()
     }
 
@@ -165,6 +171,10 @@ class ChangelogTimelineAdapter(
         private val summary = v.findViewById<TextView>(R.id.summary)
         private val sections = v.findViewById<LinearLayout>(R.id.sections)
 
+        init {
+            with(af.shizuku.manager.utils.MotionUtils) { header.applySpringTouch(scale = 0.98f) }
+        }
+
         fun stop() = rail.setPulsing(false)
 
         fun bind(row: TimelineRow.Release) {
@@ -177,15 +187,22 @@ class ChangelogTimelineAdapter(
             rail.isFirst = row.isFirst
             rail.isLast = row.isLast
             rail.filled = active
-            rail.setColors(outlineVariant, node, ColorUtils.setAlphaComponent(node, 0x33))
+            rail.setColors(outlineVariant, node, ColorUtils.setAlphaComponent(node, 0x33), primary)
             rail.setPulsing(r.isLatest && ShizukuSettings.isExpressiveAnimationsEnabled())
+            // Behind on updates: light the rail from the installed release up to the latest.
+            val pos = releaseOrder.indexOf(r.tag)
+            val behind = installedPos > 0 && pos >= 0
+            rail.highlightAbove = behind && pos in 1..installedPos
+            rail.highlightBelow = behind && pos < installedPos
 
             version.text = r.tag
             bindBadges(r)
             summary.text = summaryLine(r)
 
             val expanded = r.tag in expandedTags
+            with(af.shizuku.manager.utils.MotionUtils) { chevron.cancelAllSprings() }
             chevron.rotation = if (expanded) 180f else 0f
+            rail.setOpen(expanded, animate = false)
             renderSections(r, expanded)
 
             header.setOnClickListener {
@@ -198,14 +215,17 @@ class ChangelogTimelineAdapter(
                             AutoTransition().setDuration(ShizukuSettings.scaledAnimationDuration(200)),
                         )
                     }
-                    ObjectAnimator
-                        .ofFloat(chevron, View.ROTATION, if (open) 180f else 0f)
-                        .setDuration(
-                            ShizukuSettings.scaledAnimationDuration(200),
-                        ).start()
+                    with(af.shizuku.manager.utils.MotionUtils) {
+                        chevron.springTo(
+                            androidx.dynamicanimation.animation.SpringAnimation.ROTATION,
+                            if (open) 180f else 0f,
+                            com.google.android.material.R.attr.motionSpringFastSpatial,
+                        )
+                    }
                 } else {
                     chevron.rotation = if (open) 180f else 0f
                 }
+                rail.setOpen(open, animate = true)
                 renderSections(r, open)
             }
         }
@@ -232,7 +252,7 @@ class ChangelogTimelineAdapter(
                 val tv =
                     TextView(itemView.context).apply {
                         setText(label)
-                        textSize = 11f
+                        useTextAppearance(com.google.android.material.R.attr.textAppearanceLabelSmall)
                         setPadding((8 * d).toInt(), (2 * d).toInt(), (8 * d).toInt(), (2 * d).toInt())
                         background = pill(this, color(this, bgAttr), color(this, fgAttr))
                         layoutParams =
