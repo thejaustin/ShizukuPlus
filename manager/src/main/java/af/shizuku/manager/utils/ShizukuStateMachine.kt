@@ -35,6 +35,13 @@ object ShizukuStateMachine {
     // exists to handle.
     private var state = AtomicReference<State>(loadPersistedSettledState())
     private val listeners = CopyOnWriteArrayList<(State) -> Unit>()
+
+    /** Used on the main thread only; declared before init, which can already transition. */
+    private val delivery =
+        StateDelivery(listeners, { state.get() }) { e, s ->
+            Timber.tag("ShizukuStateMachine").e(e, "State listener failed on %s", s)
+        }
+
     private val startingTimestamp =
         java.util.concurrent.atomic
             .AtomicLong(0L)
@@ -137,11 +144,9 @@ object ShizukuStateMachine {
         val newState = computed ?: error("getAndUpdate lambda must always execute synchronously")
         if (oldState != newState) {
             if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
-                listeners.forEach { it(newState) }
+                deliver(newState)
             } else {
-                android.os.Handler(android.os.Looper.getMainLooper()).post {
-                    listeners.forEach { it(newState) }
-                }
+                android.os.Handler(android.os.Looper.getMainLooper()).post { deliver(newState) }
             }
             Timber.tag("ShizukuStateMachine").d(newState.toString())
             logConnectionTransition(oldState, newState)
@@ -536,6 +541,8 @@ object ShizukuStateMachine {
             Timber.tag("ShizukuStateMachine").w(e, "Failed to apply the new-install Watchdog default")
         }
     }
+
+    private fun deliver(newState: State) = delivery.deliver(newState)
 
     fun isDead(): Boolean = (get() == State.STOPPED || get() == State.CRASHED)
 
