@@ -332,6 +332,10 @@ enum class MorphMode(
  * moving as [mode] says. With [cornerPx] set, [shapeKey] is a rounded rectangle with that
  * corner radius, recomputed for the drawable's size.
  */
+
+/** M3 switch handle: 28dp pressed over 24dp selected. */
+private const val PRESSED_SCALE = 28f / 24f
+
 class MorphShapeDrawable(
     private var color: Int,
     shapeKey: String,
@@ -365,6 +369,20 @@ class MorphShapeDrawable(
 
     /** Size reported to layouts that size by drawable (a switch thumb); -1 = none. */
     var intrinsicSizePx: Int = -1
+
+    /** Grows to the M3 pressed handle size (28 of 24dp, from either state) while pressed. */
+    var growWhenPressed: Boolean = false
+
+    /** 0 = released, 1 = pressed; driven by [pressSpring]. */
+    internal var pressFraction: Float = 0f
+        set(value) {
+            if (field != value) {
+                field = value
+                invalidateSelf()
+            }
+        }
+    private var lastPressed = false
+    private var pressSpring: androidx.dynamicanimation.animation.SpringAnimation? = null
 
     /** Springs between off and on itself when its checked state changes (a switch thumb). */
     var followsCheckedState: Boolean = false
@@ -418,7 +436,8 @@ class MorphShapeDrawable(
         canvas.translate(b.left.toFloat(), b.top.toFloat())
         var scale = if (progress > 1f) progress else 1f // overshoot reads as a quick "pop"
         if (mode == MorphMode.POP && moving) scale *= 1f + 0.14f * kotlin.math.sin(Math.PI * p).toFloat()
-        if (shrinkWhenOff) scale *= 0.67f + 0.33f * p.coerceAtLeast(0f)
+        val resting = if (shrinkWhenOff) 0.67f + 0.33f * p.coerceAtLeast(0f) else 1f
+        scale *= resting + (PRESSED_SCALE - resting) * pressFraction
         if (scale != 1f) canvas.scale(scale, scale, w / 2f, h / 2f)
         if (mode == MorphMode.SPIN && moving) canvas.rotate(ExpressiveShapes.spinDegrees(offKey, shapeKey) * p, w / 2f, h / 2f)
         if (fillFraction > 0f) {
@@ -465,16 +484,63 @@ class MorphShapeDrawable(
         applyTint(state)
     }
 
-    override fun isStateful(): Boolean = tint?.isStateful == true || followsCheckedState
+    override fun isStateful(): Boolean = tint?.isStateful == true || followsCheckedState || growWhenPressed
 
     /** Skips a running morph, e.g. when a reused list row shows another item. */
     override fun jumpToCurrentState() {
         morphSpring?.cancel()
         lastChecked?.let { progress = if (it) 1f else 0f }
+        pressSpring?.cancel()
+        pressFraction = if (lastPressed) 1f else 0f
+    }
+
+    private fun springPress(pressed: Boolean) {
+        val target = if (pressed) 1f else 0f
+        val durationScale =
+            af.shizuku.manager.ShizukuSettings
+                .getAnimationDurationScale()
+        if (durationScale <= 0f) {
+            pressSpring?.cancel()
+            pressFraction = target
+            return
+        }
+        val anim =
+            pressSpring ?: androidx.dynamicanimation.animation
+                .SpringAnimation(
+                    this,
+                    object : androidx.dynamicanimation.animation.FloatPropertyCompat<MorphShapeDrawable>("press") {
+                        override fun getValue(d: MorphShapeDrawable) = d.pressFraction
+
+                        override fun setValue(
+                            d: MorphShapeDrawable,
+                            value: Float,
+                        ) {
+                            d.pressFraction = value
+                        }
+                    },
+                ).apply {
+                    // M3 Expressive fast spatial spring.
+                    spring =
+                        androidx.dynamicanimation.animation.SpringForce().apply {
+                            dampingRatio = 0.6f
+                            stiffness = 800f
+                        }
+                    minimumVisibleChange = androidx.dynamicanimation.animation.DynamicAnimation.MIN_VISIBLE_CHANGE_SCALE
+                }.also { pressSpring = it }
+        // Slower animation settings stretch the spring, as MotionUtils.springTo does.
+        anim.spring.stiffness = 800f / (durationScale * durationScale)
+        anim.animateToFinalPosition(target)
     }
 
     override fun onStateChange(state: IntArray): Boolean {
         val changed = applyTint(state)
+        if (growWhenPressed) {
+            val pressed = state.contains(android.R.attr.state_pressed)
+            if (pressed != lastPressed) {
+                lastPressed = pressed
+                springPress(pressed)
+            }
+        }
         if (followsCheckedState) {
             val checked = state.contains(android.R.attr.state_checked)
             val previous = lastChecked
@@ -514,6 +580,7 @@ class MorphShapeDrawable(
                     it.shrinkWhenOff = shrinkWhenOff
                     it.intrinsicSizePx = intrinsicSizePx
                     it.followsCheckedState = followsCheckedState
+                    it.growWhenPressed = growWhenPressed
                     it.alpha = baseAlpha
                     it.setTintList(tint)
                 }

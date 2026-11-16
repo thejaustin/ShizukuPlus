@@ -55,14 +55,18 @@ open class GrayableIconSwitchPreference
                 morph?.progress = if (showShape) 1f else 0f
                 if (iconSwitch) {
                     // The hollow-or-filled container carries the state, so no dimming.
+                    // The switch track's colours: a 2dp outline while off, the container when on.
                     morph!!.strokeColor = MaterialColors.getColor(icon, MaterialR.attr.colorOutline)
-                    morph.strokeWidthPx = 1.5f * icon.resources.displayMetrics.density
+                    morph.strokeWidthPx = 2f * icon.resources.displayMetrics.density
                     morph.fillFraction = if (isChecked) 1f else 0f
+                    tintGlyph(icon, glyphColor(icon, key), morph.fillFraction)
                     icon.alpha = 1f
                     icon.scaleX = 1f
                     icon.scaleY = 1f
                 } else {
                     morph?.fillFraction = 1f
+                    // Undo the off tint "Icon is the switch" leaves on a recycled or restyled row.
+                    if (morph != null && icon.getTag(R.id.tag_icon_glyph_tinted) == true) tintGlyph(icon, glyphColor(icon, key), 1f)
                     icon.alpha = if (isChecked) 1.0f else OFF_ICON_ALPHA
                     icon.scaleX = if (isChecked) 1.0f else 0.90f
                     icon.scaleY = if (isChecked) 1.0f else 0.90f
@@ -146,7 +150,8 @@ open class GrayableIconSwitchPreference
                     morph.springTo(if (isChecked) 1f else 0f)
                 }
                 if (morph != null && ShizukuSettings.getSwitchRowDesign() == DESIGN_ICON_SWITCH) {
-                    animateFill(morph, if (isChecked) 1f else 0f)
+                    val on = glyphColor(icon, key)
+                    animateFill(morph, if (isChecked) 1f else 0f) { tintGlyph(icon, on, it) }
                 } else {
                     // Icon scale springs (may bounce); its dimming fades without overshoot.
                     val scale = if (isChecked) 1.0f else 0.90f
@@ -181,19 +186,55 @@ private fun updateStateLabel(
 private fun animateFill(
     morph: MorphShapeDrawable,
     target: Float,
+    onFill: (Float) -> Unit = {},
 ) {
     val duration = ShizukuSettings.scaledAnimationDuration(200)
     if (duration <= 0L) {
         morph.fillFraction = target
+        onFill(target)
         return
     }
     ValueAnimator.ofFloat(morph.fillFraction, target).apply {
         this.duration = duration
         interpolator = af.shizuku.manager.utils.MotionUtils.EMPHASIZED_DECELERATE
-        addUpdateListener { morph.fillFraction = it.animatedValue as Float }
+        addUpdateListener {
+            val f = it.animatedValue as Float
+            morph.fillFraction = f
+            onFill(f)
+        }
         start()
     }
 }
 
+/**
+ * The glyph of an "icon is the switch" row: on-surface-variant on the hollow off container (its
+ * on-container colour would sit on the page there), its own colour once the container fills.
+ */
+private fun tintGlyph(
+    icon: ImageView,
+    on: Int,
+    fill: Float,
+) {
+    val glyph = (icon.drawable as? android.graphics.drawable.LayerDrawable)?.takeIf { it.numberOfLayers > 1 }?.getDrawable(1) ?: return
+    val off = MaterialColors.getColor(icon, MaterialR.attr.colorOnSurfaceVariant)
+    glyph.setTint(
+        androidx.core.graphics.ColorUtils
+            .blendARGB(off, on, fill.coerceIn(0f, 1f)),
+    )
+    icon.setTag(R.id.tag_icon_glyph_tinted, fill < 1f)
+}
+
 /** The morphing background layer of a two-tone icon, if the icon uses one. */
 private fun morphShapeOf(iv: ImageView): MorphShapeDrawable? = ((iv.drawable as? android.graphics.drawable.LayerDrawable)?.getDrawable(0)) as? MorphShapeDrawable
+
+/** The glyph colour of a two-tone row icon on its filled container. */
+private fun glyphColor(
+    icon: ImageView,
+    key: String?,
+) = af.shizuku.manager.utils.IconStyleHelper
+    .twoToneColors(
+        icon.context,
+        af.shizuku.manager.utils.IconStyleHelper
+            .currentColorMode(),
+        key,
+    ).second

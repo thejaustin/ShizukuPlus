@@ -11,6 +11,7 @@
     <item name="tag_switch_row_owner" type="id" />
     <item name="tag_switch_default_thumb" type="id" />
     <item name="tag_switch_shape_thumb_key" type="id" />
+    <item name="tag_icon_glyph_tinted" type="id" />
     <item name="nav_doctor" type="id" />
     <item name="nav_terminal" type="id" />
 </resources>

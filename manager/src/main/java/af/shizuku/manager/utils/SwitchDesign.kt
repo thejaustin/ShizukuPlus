@@ -76,6 +76,7 @@ object SwitchDesign {
             intrinsicSizePx = (24 * density).toInt()
             shrinkWhenOff = true
             followsCheckedState = true
+            growWhenPressed = true
         }
     }
 }

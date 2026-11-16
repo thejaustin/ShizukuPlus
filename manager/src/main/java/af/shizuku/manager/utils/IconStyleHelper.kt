@@ -181,7 +181,8 @@ object IconStyleHelper {
     private var cachedPrimary: Int = 0
     private val perIconColorCache = arrayOfNulls<Pair<Int, Int>>(HUE_SLOTS)
 
-    private fun twoToneColors(
+    /** (container, glyph) colours of a two-tone icon. */
+    fun twoToneColors(
         context: Context,
         colorMode: ColorMode,
         seedKey: String?,
