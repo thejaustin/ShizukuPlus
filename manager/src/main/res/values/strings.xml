@@ -585,7 +585,6 @@
     <string name="dhizuku_request_message">The app asked through Dhizuku. It will be able to change device policies, like hiding apps or blocking settings, and it also gets regular Shizuku+ access, the same as approving a Shizuku request. You can revoke both later from the app list.</string>
     <string name="dhizuku_request_allow">Allow</string>
     <string name="dhizuku_request_deny">Deny</string>
-    <string name="dhizuku_request_not_running">Start Shizuku+ first, then try again in the app.</string>
     <string name="settings_themed_icon">Themed app icon</string>
     <string name="settings_themed_icon_summary">Use a Material You tinted version of the Shizuku+ icon when your launcher supports themed icons.</string>
     <string name="settings_themed_icon_open_settings">Open icon settings</string>
@@ -1558,6 +1557,13 @@
     <string name="dhizuku_activate_failed_title">Couldn\'t activate</string>
     <string name="dhizuku_activate_failed_message">Android said:\n\n%1$s\n\nIf it mentions accounts or other users, this device still needs them removed (Settings → Accounts) before activating; you can add them back afterwards. If another app is already Device Owner, remove it from that app first.</string>
     <string name="dhizuku_status_active">Device Owner: Active</string>
+    <string name="settings_dhizuku_allowed_apps">Apps allowed to use Dhizuku</string>
+    <string name="settings_dhizuku_allowed_apps_none">No apps yet. Apps ask the first time they connect</string>
+    <string name="settings_dhizuku_allowed_apps_save">Save</string>
+    <plurals name="settings_dhizuku_allowed_apps_count">
+        <item quantity="one">%d app. Tap to review or remove</item>
+        <item quantity="other">%d apps. Tap to review or remove</item>
+    </plurals>
     <string name="dhizuku_status_not_set">Device Owner not set — tap for setup instructions</string>
 
     <!-- Clear Device Owner (Issue #237) -->

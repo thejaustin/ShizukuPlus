@@ -1,6 +1,5 @@
 package af.shizuku.manager
 
-import af.shizuku.manager.utils.ShizukuStateMachine
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.Context
@@ -17,15 +16,15 @@ class DhizukuProvider : ContentProvider() {
         override fun getVersion(): Int = 1
 
         override fun getBinder(): IBinder? {
+            // Dhizuku runs on Device Owner, so it doesn't need the Shizuku service (#680).
             if (!ShizukuSettings.isDhizukuModeEnabled()) return null
-            if (!ShizukuStateMachine.isRunning()) return null
 
             val callingUid = Binder.getCallingUid()
             val myUid = android.os.Process.myUid()
             if (callingUid != myUid) {
                 val pkgName = context?.packageManager?.getPackagesForUid(callingUid)?.firstOrNull() ?: ""
-                if (!af.shizuku.manager.authorization.AuthorizationManager
-                        .granted(pkgName, callingUid)
+                if (!af.shizuku.manager.authorization.DhizukuGrants
+                        .isGranted(pkgName, callingUid)
                 ) {
                     return null
                 }
@@ -43,8 +42,8 @@ class DhizukuProvider : ContentProvider() {
             val callingUid = Binder.getCallingUid()
             if (callingUid == android.os.Process.myUid()) return true
             val pkgName = context?.packageManager?.getPackagesForUid(callingUid)?.firstOrNull() ?: ""
-            return af.shizuku.manager.authorization.AuthorizationManager
-                .granted(pkgName, callingUid)
+            return af.shizuku.manager.authorization.DhizukuGrants
+                .isGranted(pkgName, callingUid)
         }
 
         override fun transact(
@@ -73,8 +72,8 @@ class DhizukuProvider : ContentProvider() {
             val callingUid = Binder.getCallingUid()
             if (callingUid == android.os.Process.myUid()) return true
             val pkgName = context?.packageManager?.getPackagesForUid(callingUid)?.firstOrNull() ?: ""
-            return af.shizuku.manager.authorization.AuthorizationManager
-                .granted(pkgName, callingUid)
+            return af.shizuku.manager.authorization.DhizukuGrants
+                .isGranted(pkgName, callingUid)
         }
 
         private fun isRelayTargetAllowed(target: android.os.IBinder): Boolean {
@@ -172,7 +171,7 @@ class DhizukuProvider : ContentProvider() {
                             reply?.writeString("5.0")
                         } else {
                             val binder =
-                                if (isCallerAuthorized() && ShizukuStateMachine.isRunning()) {
+                                if (isCallerAuthorized()) {
                                     try {
                                         ServiceManager.getService(Context.DEVICE_POLICY_SERVICE)
                                     } catch (_: Exception) {

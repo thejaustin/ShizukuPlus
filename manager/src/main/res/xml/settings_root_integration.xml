@@ -227,6 +227,14 @@
             android:icon="@drawable/ic_install_24"
             android:visible="false" />
 
+        <!-- Every app allowed to use Shizuku+ as its Dhizuku server, including ones allowed while
+             the Shizuku service was off (those aren't in the app list). -->
+        <Preference
+            android:key="dhizuku_allowed_apps"
+            android:title="@string/settings_dhizuku_allowed_apps"
+            android:icon="@drawable/ic_admin_panel_settings_24"
+            android:visible="false" />
+
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="shadow_binder_enabled"
             android:title="@string/settings_shadow_binder"

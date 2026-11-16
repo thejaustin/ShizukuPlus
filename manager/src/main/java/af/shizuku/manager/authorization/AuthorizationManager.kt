@@ -148,6 +148,10 @@ object AuthorizationManager {
         packageName: String,
         uid: Int,
     ) {
+        // Dhizuku access goes first and always: the delegated scopes are what let a Dhizuku app
+        // act (Hail freezes with them), so a failed Shizuku change must not leave them behind.
+        DhizukuGrants.revoke(packageName, uid)
+        clearDhizukuScopes(packageName)
         try {
             if (Shizuku.isPreV11()) {
                 ShizukuSystemApis.revokeRuntimePermission(packageName, Manifest.permission.API_V23, uid / 100000)
@@ -161,7 +165,6 @@ object AuthorizationManager {
         } catch (t: Throwable) {
             timber.log.Timber.w(t, "%s failed for %s (incompatible server?)", "revoke", packageName)
         }
-        clearDhizukuScopes(packageName)
     }
 
     // Scopes a Dhizuku client set through us outlive the Shizuku grant unless we drop them here,

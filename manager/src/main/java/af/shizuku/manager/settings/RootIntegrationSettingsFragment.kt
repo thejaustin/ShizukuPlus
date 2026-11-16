@@ -433,10 +433,69 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
         pref.setCustomSummary("$statusLine\n\n$baseSummary")
         findPreference<Preference>("clear_device_owner")?.let { setChildAvailable(it, active) }
         findPreference<Preference>("install_dhizuku_compat")?.let { setChildAvailable(it, active && shouldOfferDhizukuCompat(ctx)) }
+        updateDhizukuAllowedApps(active)
         findPreference<PreferenceGroup>("category_dhizuku_admin")?.apply {
             isEnabled = active
             setCustomSummary(if (!active) getString(R.string.dpm_requires_device_owner) else null)
         }
+    }
+
+    private fun updateDhizukuAllowedApps(active: Boolean) {
+        val pref = findPreference<Preference>("dhizuku_allowed_apps") ?: return
+        viewLifecycleOwnerLiveData.value?.lifecycleScope?.launch {
+            val grants =
+                withContext(Dispatchers.IO) {
+                    af.shizuku.manager.authorization.DhizukuGrants
+                        .all()
+                }
+            val ctx = context ?: return@launch
+            // Shown while there's something to see or revoke, even if Device Owner is gone.
+            setChildAvailable(pref, active || grants.isNotEmpty())
+            pref.summary =
+                if (grants.isEmpty()) {
+                    getString(R.string.settings_dhizuku_allowed_apps_none)
+                } else {
+                    resources.getQuantityString(R.plurals.settings_dhizuku_allowed_apps_count, grants.size, grants.size)
+                }
+            pref.setOnPreferenceClickListener {
+                if (grants.isNotEmpty()) showDhizukuAllowedApps(ctx, grants)
+                true
+            }
+        }
+    }
+
+    private fun showDhizukuAllowedApps(
+        ctx: Context,
+        grants: List<Pair<String, Int>>,
+    ) {
+        val pm = ctx.packageManager
+        val labels =
+            grants
+                .map { (pkg, _) ->
+                    runCatching { pm.getApplicationInfo(pkg, 0).loadLabel(pm).toString() }.getOrDefault(pkg)
+                }.toTypedArray()
+        val keep = BooleanArray(grants.size) { true }
+        com.google.android.material.dialog
+            .MaterialAlertDialogBuilder(ctx)
+            .setTitle(R.string.settings_dhizuku_allowed_apps)
+            .setMultiChoiceItems(labels, keep) { _, which, checked -> keep[which] = checked }
+            .setPositiveButton(R.string.settings_dhizuku_allowed_apps_save) { _, _ ->
+                val removed = grants.filterIndexed { i, _ -> !keep[i] }
+                if (removed.isEmpty()) return@setPositiveButton
+                viewLifecycleOwnerLiveData.value?.lifecycleScope?.launch {
+                    withContext(Dispatchers.IO) {
+                        removed.forEach { (pkg, uid) ->
+                            // Dhizuku access is dropped even when Shizuku can't change its own grant.
+                            runCatching {
+                                af.shizuku.manager.authorization.AuthorizationManager
+                                    .revoke(pkg, uid)
+                            }
+                        }
+                    }
+                    updateDhizukuAllowedApps(isDeviceOwnerActive(ctx))
+                }
+            }.setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     // The add-on answers apps on the older Dhizuku library; it claims the real Dhizuku app's

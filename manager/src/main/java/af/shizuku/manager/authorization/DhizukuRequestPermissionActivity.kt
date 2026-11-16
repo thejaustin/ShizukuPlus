@@ -3,13 +3,11 @@ package af.shizuku.manager.authorization
 import af.shizuku.core.ui.AppActivity
 import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
-import af.shizuku.manager.utils.ShizukuStateMachine
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.IBinder
 import android.os.Parcel
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
@@ -25,8 +23,9 @@ import rikka.html.text.HtmlCompat
  * Users who never turned on Dhizuku Mode never see anything: the request is denied silently. So
  * is a request for an app that never connected to DhizukuProvider, because the uid in the
  * request can't be checked here.
- * Allowing stores a normal Shizuku+ grant, so the app shows up (and can be revoked) in the usual
- * app list.
+ * Allowing stores a Dhizuku grant that works without the Shizuku service (DhizukuGrants), plus a
+ * normal Shizuku+ grant while the service runs, so the app shows up (and can be revoked) in the
+ * usual app list.
  */
 class DhizukuRequestPermissionActivity : AppActivity() {
     private var listener: IBinder? = null
@@ -52,15 +51,8 @@ class DhizukuRequestPermissionActivity : AppActivity() {
             finish()
             return
         }
-        if (!ShizukuStateMachine.isRunning()) {
-            Toast.makeText(this, R.string.dhizuku_request_not_running, Toast.LENGTH_LONG).show()
-            reply(false)
-            finish()
-            return
-        }
-
         lifecycleScope.launch {
-            val alreadyGranted = withContext(Dispatchers.IO) { AuthorizationManager.granted(packageName, uid) }
+            val alreadyGranted = withContext(Dispatchers.IO) { DhizukuGrants.isGranted(packageName, uid) }
             if (alreadyGranted) {
                 reply(true)
                 finish()
@@ -89,12 +81,16 @@ class DhizukuRequestPermissionActivity : AppActivity() {
                     lifecycleScope.launch {
                         val ok =
                             withContext(Dispatchers.IO) {
+                                // Dhizuku needs only the local grant. With Shizuku running it's
+                                // stored there too, so the app shows (and can be revoked) in the
+                                // app list.
+                                DhizukuGrants.grant(packageName, uid)
                                 try {
-                                    AuthorizationManager.grant(packageName, uid)
-                                    true
-                                } catch (_: SecurityException) {
-                                    false
+                                    if (rikka.shizuku.Shizuku.pingBinder()) AuthorizationManager.grant(packageName, uid)
+                                } catch (t: Throwable) {
+                                    timber.log.Timber.w(t, "Dhizuku: Shizuku grant skipped for %s", packageName)
                                 }
+                                true
                             }
                         af.shizuku.manager.database.ActivityLogManager
                             .log(label.toString(), packageName, if (ok) "Dhizuku: Granted by user" else "Dhizuku: Grant failed")
