@@ -27,8 +27,14 @@ object SwitchDesign {
             if (switch.getTag(R.id.tag_switch_default_thumb) == null) {
                 switch.setTag(R.id.tag_switch_default_thumb, switch.thumbDrawable ?: NoDrawable)
             }
-            switch.thumbDrawable = shapeThumb(switch, onKey, offKey)
+            // Rebound list rows call this on every bind: keep the thumb while nothing it's drawn from changed.
+            val key = thumbKey(switch, onKey, offKey)
+            if (switch.getTag(R.id.tag_switch_shape_thumb_key) != key || switch.thumbDrawable !is MorphShapeDrawable) {
+                switch.thumbDrawable = shapeThumb(switch, onKey, offKey)
+                switch.setTag(R.id.tag_switch_shape_thumb_key, key)
+            }
         } else {
+            switch.setTag(R.id.tag_switch_shape_thumb_key, null)
             val defaultThumb = switch.getTag(R.id.tag_switch_default_thumb)
             if (defaultThumb != null && defaultThumb !== NoDrawable) {
                 switch.thumbDrawable = defaultThumb as? Drawable
@@ -37,6 +43,17 @@ object SwitchDesign {
         // Standard M3E switch: check / close icon in the thumb.
         switch.setThumbIconResource(R.drawable.m3_switch_thumb_icon)
     }
+
+    private fun thumbKey(
+        switch: MaterialSwitch,
+        onKey: String?,
+        offKey: String?,
+    ) = listOf(
+        onKey ?: ShizukuSettings.getIconMorphShape(),
+        offKey ?: ShizukuSettings.getIconMorphOffShape(),
+        ShizukuSettings.getIconMorphMode(),
+        MaterialColors.getColor(switch, com.google.android.material.R.attr.colorOnPrimary),
+    ).joinToString("|")
 
     /**
      * A thumb drawn in the icon shapes: the off shape while off, morphing into the on shape as it

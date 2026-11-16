@@ -870,6 +870,8 @@ class AppViewHolder(
         val scale = if (granted) 1f else 0.9f
         val alpha = if (granted) 1f else 0.6f
         if (!animate) {
+            // A spring still running from the row's previous app would overwrite these.
+            with(af.shizuku.manager.utils.MotionUtils) { icon.cancelAllSprings() }
             icon.scaleX = scale
             icon.scaleY = scale
             icon.alpha = alpha
@@ -886,5 +888,6 @@ class AppViewHolder(
         loadIconJob?.cancel()
         grantedLoadJob?.cancel()
         nameLoadJob?.cancel()
+        with(af.shizuku.manager.utils.MotionUtils) { icon.cancelAllSprings() }
     }
 }
