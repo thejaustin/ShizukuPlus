@@ -11,9 +11,13 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.TwoStatePreference
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DeveloperOptionsFragment : BaseSettingsFragment() {
     override fun getTitle(): CharSequence? = getString(R.string.settings_developer_options)
@@ -124,9 +128,11 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
                             pickCrashes(ctx) { crashes -> sendToGitHub(ctx, crashes, hasLastCrash) }
                         }.setNeutralButton(R.string.manual_report_copied_dialog_share) { _, _ ->
                             pickCrashes(ctx) { crashes ->
-                                CrashReporter.shareAsFile(ctx, crashes)
-                                if (hasLastCrash) {
-                                    CrashHandler.clearLastCrash(ctx)
+                                viewLifecycleOwner.lifecycleScope.launch {
+                                    CrashReporter.shareAsFile(ctx, crashes)
+                                    if (hasLastCrash) {
+                                        CrashHandler.clearLastCrash(ctx)
+                                    }
                                 }
                             }
                         }.setNegativeButton(android.R.string.cancel, null),
@@ -140,8 +146,9 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
         ctx: Context,
         crashes: List<LoggedCrash>?,
         hasLastCrash: Boolean,
-    ) {
-        val report = CrashReporter.generateReport(ctx, crashes)
+    ) = viewLifecycleOwner.lifecycleScope.launch {
+        // Reading logcat and scrubbing the whole report is slow: not on the main thread.
+        val report = withContext(Dispatchers.IO) { CrashReporter.generateReport(ctx, crashes) }
         val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         clipboard.setPrimaryClip(
             af.shizuku.manager.utils.sensitivePlainText(
@@ -152,7 +159,7 @@ class DeveloperOptionsFragment : BaseSettingsFragment() {
 
         Toast.makeText(ctx, R.string.manual_report_toast_copied, Toast.LENGTH_LONG).show()
 
-        val url = CrashReporter.getGitHubReportUrl(ctx, crashes)
+        val url = CrashReporter.getGitHubReportUrl(report)
         CustomTabsHelper.launchUrlOrCopy(ctx, url)
 
         if (hasLastCrash) {

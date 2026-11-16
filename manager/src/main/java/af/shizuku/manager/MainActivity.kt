@@ -200,10 +200,12 @@ class MainActivity : HomeActivity() {
                 .setTitle(R.string.manual_report_title)
                 .setMessage(R.string.crash_detected_dialog_message)
                 .setPositiveButton(R.string.manual_report_button_github) { _, _ ->
-                    af.shizuku.manager.utils.CrashReporter
-                        .shareAsFile(this)
-                    af.shizuku.manager.utils.CrashHandler
-                        .clearLastCrash(this)
+                    lifecycleScope.launch {
+                        af.shizuku.manager.utils.CrashReporter
+                            .shareAsFile(this@MainActivity)
+                        af.shizuku.manager.utils.CrashHandler
+                            .clearLastCrash(this@MainActivity)
+                    }
                 }.setNegativeButton(R.string.crash_detected_dialog_ignore) { _, _ ->
                     af.shizuku.manager.utils.CrashHandler
                         .clearLastCrash(this)

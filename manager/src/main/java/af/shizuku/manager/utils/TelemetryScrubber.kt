@@ -15,8 +15,18 @@ object TelemetryScrubber {
     private val ssid = Regex("""(?i)(ssid[=:\s]+)("[^"]*"|\S+)""")
     private val email = Regex("""[\w.+-]+@[\w-]+\.[\w.]+""")
 
-    fun scrub(text: String?): String? {
-        if (text.isNullOrEmpty()) return text
+    /**
+     * Breadcrumbs and event messages are scrubbed on the main thread, and the patterns ran long
+     * enough on big shell output to cause an ANR (SHIZUKUPLUS-AW), so longer text is cut first.
+     */
+    const val MAX_LENGTH = 2000
+
+    fun scrub(
+        input: String?,
+        maxLength: Int = MAX_LENGTH,
+    ): String? {
+        if (input.isNullOrEmpty()) return input
+        val text = if (input.length > maxLength) input.take(maxLength) + "…" else input
         // Cheap pre-check (this runs for every breadcrumb, on the main thread during start): every
         // pattern below needs one of these characters, or the word ssid.
         if (text.none { it.isDigit() || it == '@' || it == ':' || it == '-' } && !text.contains("ssid", ignoreCase = true)) return text

@@ -128,17 +128,14 @@ object CrashReporter {
                 .map { it.packageName }
                 .filter { it.isNotBlank() && it != context.packageName && it != "android" }
                 .distinct()
-        return TelemetryScrubber.scrub(anonymizePackages(sb.toString(), otherApps)).orEmpty()
+        // A report the user asked for keeps its full length.
+        return TelemetryScrubber.scrub(anonymizePackages(sb.toString(), otherApps), maxLength = Int.MAX_VALUE).orEmpty()
     }
 
     /**
      * Generate a pre-filled GitHub issue URL
      */
-    fun getGitHubReportUrl(
-        context: Context,
-        crashes: List<LoggedCrash>? = null,
-    ): String {
-        val report = generateReport(context, crashes)
+    fun getGitHubReportUrl(report: String): String {
         val title = "Manual Crash Report: ${Build.MANUFACTURER} ${Build.MODEL} (Android ${Build.VERSION.RELEASE})"
         return "https://github.com/thejaustin/ShizukuPlus/issues/new" +
             "?title=" + Uri.encode(title) +
@@ -148,28 +145,26 @@ object CrashReporter {
     /**
      * Share the report as a .txt file
      */
-    fun shareAsFile(
+    suspend fun shareAsFile(
         context: Context,
         crashes: List<LoggedCrash>? = null,
     ) {
-        val report = generateReport(context, crashes)
-        val dir = context.cacheDir ?: context.filesDir ?: return
-        val file = File(dir, "shizuku_plus_crash_report.txt")
-        val parent = file.parentFile
-        if (parent != null && !parent.exists()) {
-            parent.mkdirs()
-        }
-        if (parent == null || parent.exists()) {
-            try {
-                file.writeText(report)
-            } catch (_: Exception) {
-                // cacheDir may be unwritable (full disk, storage mount race); don't crash
-                // the app while it's trying to report a crash.
-                return
-            }
-        } else {
-            return
-        }
+        // Reading logcat and scrubbing the whole report is slow: not on the main thread.
+        val file =
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                val report = generateReport(context, crashes)
+                val dir = context.cacheDir ?: context.filesDir ?: return@withContext null
+                val file = File(dir, "shizuku_plus_crash_report.txt")
+                try {
+                    file.parentFile?.mkdirs()
+                    file.writeText(report)
+                    file
+                } catch (_: Exception) {
+                    // cacheDir may be unwritable (full disk, storage mount race); don't crash
+                    // the app while it's trying to report a crash.
+                    null
+                }
+            } ?: return
 
         val uri =
             androidx.core.content.FileProvider.getUriForFile(
