@@ -353,9 +353,15 @@ for restype in defined:
     for f in glob.glob(f'manager/src/main/res/{restype}*/*') + glob.glob(f'core/*/src/main/res/{restype}*/*'):
         defined[restype].add(os.path.splitext(os.path.basename(f))[0])
 
+# Material / AppCompat ship these (e.g. the split button's m3_split_button_chevron_avd); aapt2
+# still checks they exist when Gradle links resources.
+LIBRARY_PREFIXES = ('m3_', 'mtrl_', 'abc_')
+
 missing = []
 for f in glob.glob('manager/src/main/res/**/*.xml', recursive=True) + glob.glob('core/*/src/main/res/**/*.xml', recursive=True):
     for restype, name in re.findall(r'@(drawable|mipmap)/([A-Za-z0-9_]+)', open(f, encoding='utf-8').read()):
+        if restype == 'drawable' and name.startswith(LIBRARY_PREFIXES):
+            continue
         if name not in defined[restype]:
             missing.append(f'  {f}: @{restype}/{name}')
 for line in sorted(set(missing)):
