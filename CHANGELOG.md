@@ -95,6 +95,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Classic and Expressive icon shapes** — Cookie, clover, sunny, gem, flower, and burst shapes restored alongside Material Expressive options.
 - **Shape-morphing switches** — Standardized on Material 3 Expressive switches with thumb checkmarks and smooth icon morphing animations.
 - **Livelier switch designs** — The shape thumb grows under your finger like the standard switch handle and no longer shrinks under its X while off, and with "Icon is the switch" an off icon now uses the quieter outline colours of an off switch, warming to its full colour as it fills.
+- **Status outline setting shows its colours** — In Personalization, the Theme and Status color options for the status card outline are outlined in the colour they'd give the card, the picked one fills with it, and picking one briefly shows its running and stopped colours (green and red for Status color) before settling on the current state.
 - **Consistent text in help sheets** — Help and "Learn more" sheets and the diagnostics warning card use the same type styles as the rest of the app, so their titles and body text match other screens (and your theme's font) instead of slightly-off sizes and forced bold.
 - **Consistent card borders** — Outlined card styling cleanly extends across settings, app lists, Service Doctor, and System Hub.
 - **AMOLED true black** — Pure black background rendering on Home and in dialogs with AMOLED mode active.

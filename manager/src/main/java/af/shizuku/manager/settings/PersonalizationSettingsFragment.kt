@@ -345,6 +345,25 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
 
         // Off / Theme / Status color stands in for the status card outline switch + its style.
         findPreference<ConnectedButtonGroupPreference>("status_outline_mode")?.apply {
+            // Each option wears the outline it would give the status card now; picking one runs
+            // through its running and stopped colours, then settles on the current state.
+            optionColors = { mode ->
+                if (mode == "off") {
+                    null
+                } else {
+                    val ctx = requireContext()
+
+                    fun c(running: Boolean) =
+                        androidx.compose.ui.graphics.Color(
+                            af.shizuku.manager.home.StatusOutlineColors
+                                .color(ctx, running, mode),
+                        )
+                    val running =
+                        af.shizuku.manager.utils.ShizukuStateMachine
+                            .isRunning()
+                    OptionColors(current = c(running), showcase = listOf(c(true), c(false)))
+                }
+            }
             value = if (ShizukuSettings.isShowStatusCardOutlineEnabled()) ShizukuSettings.getStatusCardOutlineStyle() else "off"
             setOnPreferenceChangeListener { _, newValue ->
                 val mode = newValue as? String ?: return@setOnPreferenceChangeListener false

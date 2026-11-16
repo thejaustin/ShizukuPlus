@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
@@ -47,6 +48,13 @@ class ConnectedButtonGroupPreference
         var entryValues: Array<CharSequence> = emptyArray()
 
         private val selected = mutableStateOf<String?>(null)
+
+        /**
+         * Optional colour feedback per option value: the colour the option would give its target
+         * now (an outline on the button, and its fill once picked), plus colours to run through
+         * when it gets picked, so a choice shows what it does. Null = plain button.
+         */
+        var optionColors: ((String) -> OptionColors?)? = null
 
         var value: String?
             get() = selected.value
@@ -98,10 +106,12 @@ class ConnectedButtonGroupPreference
                     enabled = enabled,
                     icon = prefIcon,
                 ) {
+                    val colorsFor = optionColors
                     ConnectedButtonGroup(
                         labels = labels,
                         selectedIndex = values.indexOf(selected.value),
                         enabled = enabled,
+                        optionColors = colorsFor?.let { f -> values.map { f(it) } },
                         onSelect = { index ->
                             val newValue = values.getOrNull(index) ?: return@ConnectedButtonGroup
                             if (newValue != selected.value && callChangeListener(newValue)) {
@@ -127,6 +137,7 @@ fun ConnectedButtonGroup(
     enabled: Boolean,
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    optionColors: List<OptionColors?>? = null,
 ) {
     val view = androidx.compose.ui.platform.LocalView.current
     // Settings rows recycle their ComposeView between preferences. Keyed on the options, the
@@ -142,6 +153,10 @@ fun ConnectedButtonGroup(
                 ),
         ) {
             labels.forEachIndexed { index, label ->
+                val accent = optionColors?.getOrNull(index)
+                val checked = index == selectedIndex
+                val accentColor = accent?.let { animatedAccent(it, checked) }
+                val scheme = androidx.compose.material3.MaterialTheme.colorScheme
                 androidx.compose.material3.ToggleButton(
                     checked = index == selectedIndex,
                     onCheckedChange = {
@@ -155,10 +170,24 @@ fun ConnectedButtonGroup(
                     // The default unchecked container is near the card color and vanishes on dark /
                     // AMOLED cards; a tonal container keeps every option visibly tappable.
                     colors =
-                        androidx.compose.material3.ToggleButtonDefaults.colors(
-                            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.controlContainer,
-                            contentColor = androidx.compose.material3.MaterialTheme.colorScheme.onControlContainer,
-                        ),
+                        if (accentColor != null) {
+                            androidx.compose.material3.ToggleButtonDefaults.colors(
+                                containerColor = scheme.controlContainer,
+                                contentColor = scheme.onControlContainer,
+                                checkedContainerColor = accentColor,
+                                checkedContentColor = contentColorOn(accentColor),
+                            )
+                        } else {
+                            androidx.compose.material3.ToggleButtonDefaults.colors(
+                                containerColor = scheme.controlContainer,
+                                contentColor = scheme.onControlContainer,
+                            )
+                        },
+                    // Unpicked, the option still shows its colour as an outline.
+                    border =
+                        accentColor?.takeIf { !checked }?.let {
+                            androidx.compose.foundation.BorderStroke(2.dp, it)
+                        },
                     shapes = connectedMorphShapes(index, labels.size),
                     // Tighter than the M3E default so 3-way rows like "Always light / Always dark /
                     // Follow system" fit; long labels wrap to two centred lines instead of "Follo…".
@@ -182,6 +211,64 @@ fun ConnectedButtonGroup(
         }
     }
 }
+
+/** Colour feedback for one option of a [ConnectedButtonGroup]; see [ConnectedButtonGroupPreference.optionColors]. */
+data class OptionColors(
+    val current: androidx.compose.ui.graphics.Color,
+    val showcase: List<androidx.compose.ui.graphics.Color> = emptyList(),
+)
+
+/**
+ * The option's colour, springing in when it changes. When the option gets picked it first runs
+ * through [OptionColors.showcase] (e.g. the running green, then the stopped red), then settles.
+ */
+@Composable
+private fun animatedAccent(
+    colors: OptionColors,
+    checked: Boolean,
+): androidx.compose.ui.graphics.Color {
+    val anim = androidx.compose.runtime.remember { androidx.compose.animation.Animatable(colors.current) }
+    val wasChecked = androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(checked) }
+    val scale =
+        af.shizuku.manager.ShizukuSettings
+            .getAnimationDurationScale()
+    androidx.compose.runtime.LaunchedEffect(colors, checked) {
+        val justPicked = checked && !wasChecked.value
+        wasChecked.value = checked
+        if (scale <= 0f) {
+            anim.snapTo(colors.current)
+            return@LaunchedEffect
+        }
+        val hold = (360 * scale).toLong()
+        if (justPicked) {
+            for (c in colors.showcase) {
+                anim.animateTo(
+                    c,
+                    androidx.compose.animation.core
+                        .tween((220 * scale).toInt()),
+                )
+                kotlinx.coroutines.delay(hold)
+            }
+        }
+        anim.animateTo(
+            colors.current,
+            androidx.compose.animation.core
+                .tween((220 * scale).toInt()),
+        )
+    }
+    return anim.value
+}
+
+/** Black or white text, whichever reads better on [background]. */
+private fun contentColorOn(background: androidx.compose.ui.graphics.Color) =
+    if (androidx.core.graphics.ColorUtils.calculateLuminance(
+            background.toArgb(),
+        ) > 0.4
+    ) {
+        androidx.compose.ui.graphics.Color.Black
+    } else {
+        androidx.compose.ui.graphics.Color.White
+    }
 
 /**
  * Multi-select connected button group: each button turns its own option on or off, for a few

@@ -193,34 +193,13 @@ class ServerStatusViewHolder(
         ) {
             val strokeDp = 2f
             cardView.strokeWidth = (strokeDp * context.resources.displayMetrics.density + 0.5f).toInt()
-            val useStatusColors =
-                af.shizuku.manager.ShizukuSettings
-                    .getStatusCardOutlineStyle() == "status"
             cardView.strokeColor =
-                when {
-                    ok ->
-                        if (useStatusColors) {
-                            com.google.android.material.color.MaterialColors
-                                .harmonizeWithPrimary(context, ContextCompat.getColor(context, R.color.status_ok))
-                        } else {
-                            com.google.android.material.color.MaterialColors.getColor(
-                                context,
-                                R.attr.colorPrimary,
-                                ContextCompat.getColor(context, R.color.status_ok),
-                            )
-                        }
-                    else ->
-                        if (useStatusColors) {
-                            com.google.android.material.color.MaterialColors
-                                .harmonizeWithPrimary(context, ContextCompat.getColor(context, R.color.status_error))
-                        } else {
-                            com.google.android.material.color.MaterialColors.getColor(
-                                context,
-                                R.attr.colorError,
-                                ContextCompat.getColor(context, R.color.status_error),
-                            )
-                        }
-                }
+                StatusOutlineColors.color(
+                    context,
+                    ok,
+                    af.shizuku.manager.ShizukuSettings
+                        .getStatusCardOutlineStyle(),
+                )
         } else {
             cardView.strokeWidth = 0
         }
