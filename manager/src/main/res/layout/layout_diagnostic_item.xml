@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text=""
-            android:textSize="13sp"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?colorOnErrorContainer" />
             
         <com.google.android.material.button.MaterialButton
@@ -36,7 +36,7 @@
             android:paddingHorizontal="8dp"
             android:paddingVertical="4dp"
             android:text="@string/diagnostics_dismiss"
-            android:textColor="?colorOnErrorContainer"
-            android:textSize="12sp" />
+            android:textAppearance="?attr/textAppearanceLabelLarge"
+            android:textColor="?colorOnErrorContainer" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

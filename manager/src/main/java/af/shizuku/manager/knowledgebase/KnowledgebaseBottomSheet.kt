@@ -3,9 +3,9 @@ package af.shizuku.manager.knowledgebase
 import af.shizuku.manager.R
 import af.shizuku.manager.utils.CustomTabsHelper
 import af.shizuku.manager.utils.HapticUtils
+import af.shizuku.manager.utils.useTextAppearance
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Typeface
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
@@ -107,8 +107,7 @@ class KnowledgebaseBottomSheet : BottomSheetDialogFragment() {
         val titleView =
             TextView(context).apply {
                 text = topic.title
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 19f)
-                setTypeface(null, Typeface.BOLD)
+                useTextAppearance(com.google.android.material.R.attr.textAppearanceTitleLarge)
                 setTextColor(resolveThemeColor(context, com.google.android.material.R.attr.colorOnSurface, 0xFF000000.toInt()))
             }
         headerTextLayout.addView(titleView)
@@ -116,7 +115,7 @@ class KnowledgebaseBottomSheet : BottomSheetDialogFragment() {
         val subtitleView =
             TextView(context).apply {
                 text = topic.subtitle
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+                useTextAppearance(com.google.android.material.R.attr.textAppearanceBodyMedium)
                 setTextColor(resolveThemeColor(context, com.google.android.material.R.attr.colorOnSurfaceVariant, 0xFF666666.toInt()))
                 layoutParams =
                     LinearLayout
@@ -163,7 +162,7 @@ class KnowledgebaseBottomSheet : BottomSheetDialogFragment() {
         val contentTextView =
             TextView(context).apply {
                 setPadding(dp(16), dp(16), dp(16), dp(16))
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+                useTextAppearance(com.google.android.material.R.attr.textAppearanceBodyMedium)
                 setTextColor(resolveThemeColor(context, com.google.android.material.R.attr.colorOnSurfaceVariant, 0xFF333333.toInt()))
                 setLineSpacing(dp(3).toFloat(), 1.2f)
             }

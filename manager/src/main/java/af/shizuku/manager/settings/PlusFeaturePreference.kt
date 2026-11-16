@@ -1,6 +1,7 @@
 package af.shizuku.manager.settings
 
 import af.shizuku.manager.R
+import af.shizuku.manager.utils.useTextAppearance
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -335,8 +336,7 @@ class PlusFeaturePreference(
                 TextView(context).apply {
                     val customTitle = if (infoTitle != 0) context.getString(infoTitle) else title?.toString()
                     text = customTitle ?: context.getString(R.string.settings_plus_learn_more)
-                    setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 20f)
-                    setTypeface(null, android.graphics.Typeface.BOLD)
+                    useTextAppearance(com.google.android.material.R.attr.textAppearanceTitleLarge)
                     setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurface, 0xFF000000.toInt()))
                     setPadding(0, 0, 0, (12 * context.resources.displayMetrics.density).toInt())
                 }
@@ -363,7 +363,7 @@ class PlusFeaturePreference(
             val detailTextView =
                 TextView(context).apply {
                     text = detailText
-                    setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 14f)
+                    useTextAppearance(com.google.android.material.R.attr.textAppearanceBodyMedium)
                     setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurfaceVariant, 0xFF333333.toInt()))
                     setLineSpacing(0f, 1.25f)
                     setPadding(
@@ -410,8 +410,7 @@ class PlusFeaturePreference(
             val switchText =
                 TextView(context).apply {
                     text = enableFeatureLabel
-                    setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 15f)
-                    setTypeface(null, android.graphics.Typeface.BOLD)
+                    useTextAppearance(com.google.android.material.R.attr.textAppearanceTitleMedium)
                     setTextColor(resolveColor(com.google.android.material.R.attr.colorOnPrimaryContainer, 0xFF004D40.toInt()))
                     val params = android.widget.LinearLayout.LayoutParams(0, android.view.ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
                     layoutParams = params
