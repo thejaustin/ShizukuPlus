@@ -825,6 +825,9 @@ class ShizukuApplication :
                     // Group by the server message, not by this listener's obfuscated frames, which
                     // change every release and split one server bug into several issues.
                     event.fingerprints = listOf("server", tag, message.replace(Regex("\\d+"), "#"))
+                    jsonObject.optString("stacktrace").takeIf { it.isNotBlank() }?.let {
+                        event.setExtra("server_stacktrace", redactServerStackTrace(it))
+                    }
 
                     io.sentry.Sentry.captureEvent(event)
                 }
@@ -1060,3 +1063,19 @@ internal fun redactServerEventMessage(message: String): String {
     val redactedHead = redact(head).take(120)
     return if (details.isEmpty()) redactedHead else "$redactedHead: $details"
 }
+
+/**
+ * A server stack trace for a crash report: frames stay (they name server and framework code
+ * only), each exception keeps its class and its message goes through [redactServerEventMessage].
+ */
+internal fun redactServerStackTrace(trace: String): String =
+    trace
+        .lineSequence()
+        .take(60)
+        .map { line ->
+            val t = line.trim()
+            if (t.startsWith("at ") || t.startsWith("...")) return@map line
+            val m = Regex("""^(Caused by: |Suppressed: )?([\w.$]+)(?:: (.*))?$""").find(t) ?: return@map "<line>"
+            val (prefix, type, msg) = m.destructured
+            if (msg.isEmpty()) "$prefix$type" else "$prefix$type: ${redactServerEventMessage(msg)}"
+        }.joinToString("\n")

@@ -22,4 +22,18 @@ class ServerEventRedactionTest {
         assertEquals("Binder died", redactServerEventMessage("Binder died"))
         assertEquals("Failed to bind: <redacted>", redactServerEventMessage("Failed to bind: uid=10123"))
     }
+
+    @Test
+    fun stackTracesKeepFramesAndDropDetails() {
+        val out =
+            redactServerStackTrace(
+                "java.lang.SecurityException: denied for com.bank.app\n" +
+                    "\tat rikka.shizuku.server.ShizukuService.foo(ShizukuService.java:12)\n" +
+                    "Caused by: java.io.IOException: open failed /data/data/com.bank.app/x",
+            )
+        assertFalse(out.contains("com.bank.app"), out)
+        assertFalse(out.contains("/data/data"), out)
+        assertEquals(true, out.contains("ShizukuService.foo(ShizukuService.java:12)"), out)
+        assertEquals(true, out.contains("Caused by: java.io.IOException"), out)
+    }
 }
