@@ -58,7 +58,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
         val context = requireContext()
 
         val navDevOptions = findPreference<Preference>("nav_developer_options")
-        navDevOptions?.isVisible = ShizukuSettings.isDevOptionsUnlocked()
+        navDevOptions?.setAvailable(ShizukuSettings.isDevOptionsUnlocked())
 
         findPreference<Preference>("version")?.apply {
             setCustomSummary(BuildConfig.VERSION_NAME)
@@ -72,7 +72,7 @@ class AboutSettingsFragment : BaseSettingsFragment() {
                 if (versionClickCount >= 7) {
                     ShizukuSettings.setDevOptionsUnlocked(true)
                     SettingsSearchEngine.reset()
-                    navDevOptions?.isVisible = true
+                    navDevOptions?.setAvailable(true)
                     notifyUser(R.string.settings_developer_options_revealed)
                     versionClickCount = 0
                 } else if (versionClickCount > 2) {

@@ -37,7 +37,8 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?textAppearanceTitleSmall"
                 android:textColor="?colorOnSurface"
-                android:maxLines="2" />
+                android:maxLines="2"
+                android:ellipsize="end" />
 
             <TextView
                 android:id="@+id/package_name"
@@ -46,7 +47,8 @@
                 android:layout_marginTop="1dp"
                 android:textAppearance="?textAppearanceBodySmall"
                 android:textColor="?colorOnSurfaceVariant"
-                android:maxLines="2" />
+                android:maxLines="2"
+                android:ellipsize="end" />
 
             <LinearLayout
                 android:layout_width="wrap_content"

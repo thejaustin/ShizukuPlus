@@ -67,7 +67,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textAppearance="?attr/textAppearanceTitleSmall"
-                android:maxLines="2" />
+                android:maxLines="2"
+                android:ellipsize="end" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/stack_chip"
