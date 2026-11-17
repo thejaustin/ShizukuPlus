@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Preference
+    <af.shizuku.manager.settings.StatusBannerPreference
         android:key="status_at_a_glance"
         android:title="@string/settings_status_banner_title"
         android:icon="@drawable/ic_server_ok_24" />

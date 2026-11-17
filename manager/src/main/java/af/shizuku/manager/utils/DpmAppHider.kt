@@ -1,5 +1,6 @@
 package af.shizuku.manager.utils
 
+import af.shizuku.common.util.BootCriticalPackages
 import af.shizuku.manager.admin.DhizukuAdminReceiver
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
@@ -43,12 +44,25 @@ object DpmAppHider {
         context: Context,
         packageName: String,
         frozen: Boolean,
-    ): Boolean =
-        try {
+    ): Boolean {
+        if (frozen && isBootCritical(context, packageName)) {
+            Timber.w("DPM freeze refused for %s: boot-critical system package", packageName)
+            return false
+        }
+        return try {
             // Returns the packages that could NOT be changed.
             dpm(context)?.setPackagesSuspended(admin(context), arrayOf(packageName), frozen)?.isEmpty() == true
         } catch (e: Exception) {
             Timber.w(e, "DPM setPackagesSuspended(%s, %b) failed", packageName, frozen)
             false
         }
+    }
+
+    private fun isBootCritical(
+        context: Context,
+        packageName: String,
+    ): Boolean {
+        val info = runCatching { context.packageManager.getApplicationInfo(packageName, 0) }.getOrNull()
+        return BootCriticalPackages.isBootCritical(packageName, info)
+    }
 }

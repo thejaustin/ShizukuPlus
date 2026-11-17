@@ -1524,6 +1524,19 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         }
     }
 
+    /**
+     * Plain `pm disable` of a system package fails for the shell user; the rewrite below to
+     * `disable-user` would make it succeed, so a boot-critical package (#686) is left failing
+     * as it would without Shizuku+. Explicit disable-user commands are untouched.
+     */
+    private boolean refusesBootCriticalDisable(String[] cmd) {
+        String pkg = cmd[cmd.length - 1];
+        ApplicationInfo info = Android17Compat.getApplicationInfo(pkg, 0, 0);
+        if (!af.shizuku.common.util.BootCriticalPackages.isBootCritical(pkg, info)) return false;
+        LOGGER.w("pm disable %s not rewritten to disable-user: boot-critical system package", pkg);
+        return true;
+    }
+
     /** Single-quotes [s] for a sh -c string: 'it'\''s' → it's. */
     private static String shellQuote(String s) {
         return "'" + s.replace("'", "'\\''") + "'";
@@ -2178,6 +2191,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     }
                 } else if (isFeatureEnabled("experimental_root")) {
                     if (baseCmd.equals("pm") && cmd.length > 2 && cmd[1].equals("disable")) {
+                        if (refusesBootCriticalDisable(cmd)) return newProcessInternal(new String[]{"false"}, env, dir);
                         // Map global disable to user disable for shell compatibility
                         cmd[1] = "disable-user";
                         String[] newCmd = new String[cmd.length + 2];
@@ -2412,6 +2426,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 LOGGER.i("Plus Optimization: pm install");
                 // For now, let it fall through to sh -c pm install which is already functional
             } else if (baseCmd.equals("pm") && cmd.length > 2 && cmd[1].equals("disable")) {
+                if (refusesBootCriticalDisable(cmd)) return newProcessInternal(new String[]{"false"}, env, dir);
                 // pm disable → pm disable-user --user 0 (shell UID 2000 can disable for a user but not globally)
                 cmd[1] = "disable-user";
                 String[] newCmd = new String[cmd.length + 2];
