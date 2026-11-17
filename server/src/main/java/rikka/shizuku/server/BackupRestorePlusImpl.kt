@@ -637,6 +637,7 @@ class BackupRestorePlusImpl(private val allowed: java.util.function.BooleanSuppl
 
     override fun freezeApp(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
+        if (BootCriticalPackages.refuseFreeze(TAG, packageName, 0)) return false
         // COMPONENT_ENABLED_STATE_DISABLED_USER = 3
         if (setApplicationEnabledSetting(packageName, 3)) return true
         return ShellExecutor.execCode("pm", "disable-user", "--user", "0", packageName) == 0
