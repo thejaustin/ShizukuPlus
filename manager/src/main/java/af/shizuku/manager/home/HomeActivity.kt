@@ -612,11 +612,31 @@ open class HomeActivity :
             adapter.updateData()
         }
 
-        val cardSpacing = resources.getDimension(R.dimen.card_spacing)
+        val cardSpacing =
+            if (HomeCompact.enabled) {
+                HomeCompact.CARD_SPACING_DP * resources.displayMetrics.density
+            } else {
+                resources.getDimension(R.dimen.card_spacing)
+            }
         val marginHorizontal = resources.getDimension(R.dimen.margin_horizontal)
         val marginVertical = resources.getDimension(R.dimen.margin_vertical)
 
         recyclerView.addItemDecoration(HomeCardSpacingDecoration(cardSpacing, marginHorizontal, marginVertical))
+        if (compactCards) {
+            // Each card is styled once, the first time it's attached (it keeps the style when
+            // recycled).
+            recyclerView.addOnChildAttachStateChangeListener(
+                object : RecyclerView.OnChildAttachStateChangeListener {
+                    override fun onChildViewAttachedToWindow(view: View) {
+                        if (view.getTag(R.id.tag_home_compact) == true) return
+                        view.setTag(R.id.tag_home_compact, true)
+                        HomeCompact.apply(view)
+                    }
+
+                    override fun onChildViewDetachedFromWindow(view: View) {}
+                },
+            )
+        }
 
         // Drag-to-reorder support
 
@@ -1084,8 +1104,15 @@ open class HomeActivity :
         StartWirelessAdbViewHolder.start(this, lifecycleScope, discoveredPort)
     }
 
+    /** Compact Home cards as this screen was built; cards are styled once, when created. */
+    private val compactCards = HomeCompact.enabled
+
     override fun onResume() {
         super.onResume()
+        if (HomeCompact.enabled != compactCards) {
+            recreate()
+            return
+        }
         // Sync one-handed mode, server running state, and OneUI theme compose state in case it changed while in settings.
         isOneHanded = ShizukuSettings.isOneHandedModeEnabled()
         isOneUi = ShizukuSettings.isOneUiThemeEnabled()
