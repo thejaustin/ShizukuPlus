@@ -142,13 +142,32 @@ mv -f "$ALIGNED_APK" "$PATCHED_APK"
 
 # ── 4. Sign ──────────────────────────────────────────────────────────────────
 SIGNED_APK="${TMPDIR_LOCAL}/sp-signed-$$.apk"
-echo "▸ Signing …"
-apksigner sign \
-    --ks "$DEBUG_KEYSTORE" \
-    --ks-pass pass:android \
-    --key-pass pass:android \
-    --out "$SIGNED_APK" \
-    "$PATCHED_APK"
+# With the release key set up locally (signing.properties, gitignored; keep the keystore in
+# private storage like ~/.keys, never /sdcard), sign with it: the build then installs over the
+# published app, which a Device Owner app can't be uninstalled to make way for. Otherwise the
+# debug key, which needs the installed app removed first.
+if [[ -r signing.properties ]]; then
+    KS_FILE="$(sed -n 's/^KEYSTORE_FILE=//p' signing.properties)"
+    export SP_KS_PASS="$(sed -n 's/^KEYSTORE_PASSWORD=//p' signing.properties)"
+    export SP_KEY_PASS="$(sed -n 's/^KEYSTORE_ALIAS_PASSWORD=//p' signing.properties)"
+    echo "▸ Signing with the release key …"
+    apksigner sign \
+        --ks "$KS_FILE" \
+        --ks-key-alias "$(sed -n 's/^KEYSTORE_ALIAS=//p' signing.properties)" \
+        --ks-pass env:SP_KS_PASS \
+        --key-pass env:SP_KEY_PASS \
+        --out "$SIGNED_APK" \
+        "$PATCHED_APK"
+    unset SP_KS_PASS SP_KEY_PASS
+else
+    echo "▸ Signing with the debug key …"
+    apksigner sign \
+        --ks "$DEBUG_KEYSTORE" \
+        --ks-pass pass:android \
+        --key-pass pass:android \
+        --out "$SIGNED_APK" \
+        "$PATCHED_APK"
+fi
 
 # ── 5. Install via ADB ───────────────────────────────────────────────────────
 echo "▸ Installing on device (serial: $ADB_SERIAL) …"
