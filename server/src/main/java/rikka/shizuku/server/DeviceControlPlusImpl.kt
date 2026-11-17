@@ -33,6 +33,7 @@ class DeviceControlPlusImpl(private val allowed: java.util.function.BooleanSuppl
 
     private fun settingsPut(namespace: String, key: String, value: String): Boolean {
         if (namespace !in VALID_NAMESPACES) return false
+        if (BootCriticalSettings.refuse(TAG, namespace, key, value)) return false
         return ShellExecutor.execBool("settings", "put", namespace, key, value)
     }
 

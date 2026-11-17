@@ -117,7 +117,7 @@ class ActivityManagerPlusImpl : IActivityManagerPlus.Stub() {
 
     override fun freezeApp(packageName: String?): Boolean {
         if (packageName == null) return false
-        if (BootCriticalPackages.refuseFreeze(TAG, packageName, callingUserId())) return false
+        if (BootCriticalPackages.refuse(TAG, "freezeApp", packageName, callingUserId())) return false
         // DevicePolicyManager hiding (#632) is done by the manager when it is device/profile owner:
         // DPMS only accepts it from the admin's own app, never from this shell/root process.
         // Stage 1: COMPONENT_ENABLED_STATE_DISABLED_USER = 3 — user-level disable, reversible

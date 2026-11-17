@@ -145,6 +145,7 @@ class ApkPatcherImpl(private val unrestricted: java.util.function.BooleanSupplie
     // IPackageManager.deletePackageAsUser with DELETE_KEEP_DATA=1 flag.
     // Primary path for uninstalling during APK patching without wiping app data.
     private fun uninstallKeepData(packageName: String): Boolean {
+        if (BootCriticalPackages.refuse(TAG, "uninstallKeepData", packageName, 0)) return false
         try {
             val pm = packageManagerService() ?: error("no package service")
             val latch = CountDownLatch(1)

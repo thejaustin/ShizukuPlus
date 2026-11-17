@@ -89,6 +89,7 @@ class PackageGovernorPlusImpl : IPackageGovernorPlus.Stub() {
     override fun uninstallForUser(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
         val userId = callingUserId()
+        if (BootCriticalPackages.refuse(TAG, "uninstallForUser", packageName, userId)) return false
         // Primary: IPackageManager.deletePackageAsUser — shell UID has DELETE_PACKAGES
         try {
             val pm = packageManagerService() ?: error("no package service")
@@ -162,6 +163,7 @@ class PackageGovernorPlusImpl : IPackageGovernorPlus.Stub() {
     override fun suspendApp(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
         val userId = callingUserId()
+        if (BootCriticalPackages.refuse(TAG, "suspendApp", packageName, userId)) return false
         // Primary: IPackageManager.setPackagesSuspendedAsUser — shell UID has MANAGE_USERS
         try {
             val pm = packageManagerService() ?: error("no package service")

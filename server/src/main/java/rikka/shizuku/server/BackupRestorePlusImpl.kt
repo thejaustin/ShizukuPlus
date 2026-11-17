@@ -474,6 +474,10 @@ class BackupRestorePlusImpl(private val allowed: java.util.function.BooleanSuppl
             else -> return 0
         }
         if (settings == null || settings.isEmpty) return 0
+        // A backup can come from another device or a half-set-up one; never restore setup state.
+        for (key in settings.keySet().toList()) {
+            if (BootCriticalSettings.refuse(TAG, ns, key, settings.getString(key))) settings.remove(key)
+        }
         // Primary: ContentProvider PUT for each key
         var count = 0
         try {
@@ -637,7 +641,7 @@ class BackupRestorePlusImpl(private val allowed: java.util.function.BooleanSuppl
 
     override fun freezeApp(packageName: String?): Boolean {
         if (packageName.isNullOrBlank()) return false
-        if (BootCriticalPackages.refuseFreeze(TAG, packageName, 0)) return false
+        if (BootCriticalPackages.refuse(TAG, "freezeApp", packageName, 0)) return false
         // COMPONENT_ENABLED_STATE_DISABLED_USER = 3
         if (setApplicationEnabledSetting(packageName, 3)) return true
         return ShellExecutor.execCode("pm", "disable-user", "--user", "0", packageName) == 0
