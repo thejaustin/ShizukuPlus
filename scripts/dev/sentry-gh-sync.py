@@ -8,8 +8,8 @@ For every GitHub issue updated in the last --days days, finds the Sentry issues 
   - sentry.io issue links
 Then, for each pair:
   - adds a note on the Sentry issue linking the GitHub issue (once; skipped if already there)
-  - if the GitHub issue was closed as completed and the Sentry issue is still unresolved,
-    resolves it in the next release
+  - if a maintainer closed the GitHub issue as completed and the Sentry issue is still
+    unresolved, resolves it in the next release
   - if the Sentry issue is resolved but the GitHub issue is still open, only reports it: closing
     a public issue stays a person's call.
 
@@ -65,6 +65,19 @@ def github_issues(days):
     return json.loads(out)
 
 
+# Only these accounts' closes resolve Sentry issues: anyone can close their own issue, and an issue
+# naming any Sentry id would otherwise let them resolve it.
+MAINTAINERS = set(os.environ.get("SYNC_MAINTAINERS", "thejaustin").split(","))
+
+
+def closed_by_maintainer(number):
+    out = subprocess.run(
+        ["gh", "api", f"repos/{REPO}/issues/{number}", "--jq", ".closed_by.login // empty"],
+        capture_output=True, text=True,
+    ).stdout.strip()
+    return out in MAINTAINERS
+
+
 def sentry_refs(issue):
     text = "\n".join([issue.get("body") or ""] + [c.get("body") or "" for c in issue.get("comments", [])])
     refs = set()
@@ -104,7 +117,7 @@ def main():
                            {"text": f"GitHub #{issue['number']}: {issue['title']}\n{issue['url']}"})
 
             closed_fixed = issue["state"] == "CLOSED" and issue.get("stateReason") == "COMPLETED"
-            if closed_fixed and status == "unresolved":
+            if closed_fixed and status == "unresolved" and closed_by_maintainer(issue["number"]):
                 line += " | resolved in next release"
                 if not args.dry_run:
                     sentry("PUT", f"/issues/{gid}/",

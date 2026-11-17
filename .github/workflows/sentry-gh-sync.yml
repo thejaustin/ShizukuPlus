@@ -1,0 +1,46 @@
+name: Sentry ↔ GitHub sync
+
+# Links GitHub issues and the Sentry issues they name (Sentry's own linking is a paid feature):
+# adds a back-link note on the Sentry issue and resolves it when the GitHub issue is closed as
+# completed. See scripts/dev/sentry-gh-sync.py.
+on:
+  issues:
+    types: [opened, edited, closed, reopened]
+  issue_comment:
+    types: [created, edited]
+  schedule:
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Issues updated in the last N days"
+        default: "30"
+
+# Read-only token by default; a job that needs more asks for it itself.
+permissions:
+  contents: read
+  issues: read
+
+concurrency:
+  group: sentry-gh-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    # Comments on pull requests also fire issue_comment; only issues matter here.
+    if: ${{ github.event_name != 'issue_comment' || !github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          sparse-checkout: scripts/dev/sentry-gh-sync.py
+          sparse-checkout-cone-mode: false
+
+      - name: Sync
+        env:
+          SENTRY_API_TOKEN: ${{ secrets.SENTRY_API_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          # An issue event only needs that issue's recent window; the daily run sweeps a month.
+          DAYS: ${{ github.event.inputs.days || (github.event_name == 'schedule' && '30') || '2' }}
+        run: python3 scripts/dev/sentry-gh-sync.py --days "$DAYS"
