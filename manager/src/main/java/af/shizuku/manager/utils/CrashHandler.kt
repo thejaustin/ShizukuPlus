@@ -79,6 +79,30 @@ class CrashHandler(
             return null
         }
 
+        /**
+         * Adds the Sentry event id to the crash just saved (last_crash.txt and the newest history
+         * entry, if written in the last minute). The sync script maps it to the Sentry issue.
+         */
+        fun noteSentryEvent(
+            context: Context,
+            eventId: String,
+        ) {
+            val line = "Sentry event: $eventId\n"
+            val recent = System.currentTimeMillis() - 60_000
+            try {
+                getCrashFile(context, checkExistingOnly = true)
+                    ?.takeIf { it.lastModified() >= recent }
+                    ?.appendText(line)
+                getCrashHistory(context)
+                    .firstOrNull()
+                    ?.takeIf { it.timestamp >= recent }
+                    ?.file
+                    ?.appendText(line)
+            } catch (e: Exception) {
+                android.util.Log.w("CrashHandler", "Couldn't note Sentry event: ${e.message}")
+            }
+        }
+
         fun getLastCrashReport(context: Context): String? {
             val file = getCrashFile(context, checkExistingOnly = true) ?: return null
             if (!file.exists()) return null

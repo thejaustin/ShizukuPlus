@@ -49,6 +49,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Overlay protection** — Permission prompts ignore taps through other apps' overlays on Android 11 and older, and the automation token is hidden from clipboard previews.
 
 ### 🛠 Fixes & Improvements
+- **Crash reports name their error report** — Crash logs, and the crash reports you can file on GitHub, include the ID of the matching automatic error report (when error reporting is on), so a crash you report can be matched to it exactly.
 - **App Backup names readable at large sizes** — The Freeze, Restore and Backup buttons sit on their own line under each app, so big font or display sizes no longer squeeze app names into a column of single letters ([#684](https://github.com/thejaustin/ShizukuPlus/issues/684)).
 - **"Apps allowed to use Dhizuku" works** — The row shows how many apps are allowed and opens the list to revoke them; it used to appear blank and do nothing when tapped ([#683](https://github.com/thejaustin/ShizukuPlus/issues/683)).
 - **Fewer false error reports** — Recoverable hiccups while handing the service to apps (a frozen app, a retry that then works) no longer count as errors, and a rare crash while the start log updates on some devices is avoided.

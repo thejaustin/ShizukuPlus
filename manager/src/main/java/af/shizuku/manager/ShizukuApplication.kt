@@ -445,6 +445,15 @@ class ShizukuApplication :
                                 .scrub(ex.value)
                     }
 
+                    // Our handler saved the crash log just before Sentry's ran: stamp it with this
+                    // event's id, so a crash report filed on GitHub names its exact Sentry issue.
+                    if (event.isCrashed) {
+                        event.eventId?.let {
+                            af.shizuku.manager.utils.CrashHandler
+                                .noteSentryEvent(this, it.toString())
+                        }
+                    }
+
                     event
                 }
             }
