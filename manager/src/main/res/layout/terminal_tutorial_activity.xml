@@ -152,6 +152,25 @@
                     android:text="@string/terminal_tutorial_1_description"
                     android:textColor="?android:textColorSecondary" />
 
+                <!-- su is opt-in: rish alone covers shell use, and our su replaces a terminal's
+                     own and identifies as Magisk, which banking and Wallet apps can flag. -->
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/export_su"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/terminal_export_su" />
+
+                <TextView
+                    android:id="@+id/export_su_note"
+                    style="@style/TerminalTutorialText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:text="@string/terminal_export_su_note"
+                    android:textAppearance="?textAppearanceBodySmall"
+                    android:textColor="?android:textColorSecondary" />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@android:id/button1"
                     style="?attr/materialButtonTonalStyle"

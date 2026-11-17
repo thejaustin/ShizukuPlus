@@ -314,6 +314,9 @@
     <string name="terminal_tutorial_1">Export the files to a new folder.</string>
     <string name="terminal_tutorial_1_description">Two files will be exported: %1$s and %2$s. If the files already exist in the selected folder, they will be deleted.</string>
     <string name="terminal_export_files">Export files</string>
+    <string name="terminal_tutorial_export_summary_no_su">Export the files (%1$s, %2$s and %3$s) to a new folder.</string>
+    <string name="terminal_export_su">Also export su (SU Bridge)</string>
+    <string name="terminal_export_su_note">Only for scripts that need root through SU Bridge. Copied into a terminal app, it replaces that app\'s own su and reports itself as Magisk, which banking and Google Wallet apps can flag. Exporting again with this off removes it from the folder. To get Termux\'s own su back: pkg reinstall termux-tools</string>
     <string name="terminal_tutorial_2">Use your terminal app to copy the files to its private files directory.</string>
     <string name="terminal_tutorial_2_description">Tip: If your terminal app\'s home directory (~) is in the private files directory, placing the files there will allow you to run %1$s without writing the path.\n\nOtherwise, you can create an alias for %2$s in your terminal app\'s %3$s configuration file.</string>
     <string name="terminal_tutorial_3">Open a shell or run a Shizuku+ command:</string>

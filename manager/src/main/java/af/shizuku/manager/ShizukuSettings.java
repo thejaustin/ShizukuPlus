@@ -218,6 +218,8 @@ public class ShizukuSettings {
         public static final String KEY_EXPRESSIVE_CONTROLS_PREVIEW = "expressive_controls_preview";
         /** Experimental: dropping a Home card you moved by holding it leaves edit mode again. */
         public static final String KEY_HOME_QUICK_MOVE = "home_quick_move";
+        /** Whether the terminal export includes the SU Bridge su wrapper (off: rish only). */
+        public static final String KEY_TERMINAL_EXPORT_SU = "terminal_export_su";
         /** Experimental: smaller titles, tighter padding and buttons on Home cards. */
         public static final String KEY_HOME_COMPACT_CARDS = "home_compact_cards";
         public static final String KEY_FLOATING_NAV_LABEL_MODE = "floating_nav_label_mode";
@@ -2426,6 +2428,16 @@ public class ShizukuSettings {
     }
 
     /** Wavy progress, split buttons and multi-select groups: M3 Expressive pieces still in testing. */
+    public static boolean isTerminalExportSuEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_TERMINAL_EXPORT_SU, false);
+    }
+
+    public static void setTerminalExportSuEnabled(boolean enabled) {
+        SharedPreferences p = getPreferences();
+        if (p != null) p.edit().putBoolean(Keys.KEY_TERMINAL_EXPORT_SU, enabled).apply();
+    }
+
     public static boolean isHomeQuickMoveEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_HOME_QUICK_MOVE, false);

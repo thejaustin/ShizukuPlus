@@ -117,7 +117,9 @@ class ShellTutorialActivity : AppBarActivity() {
                 }.getOrDefault(false)
             }
 
-            val results = listOf(SH_NAME, DEX_NAME, PLUS_NAME, SU_NAME).map { writeToDocument(it) }
+            // A stale su from an earlier export was deleted above; it only comes back when chosen.
+            val names = listOfNotNull(SH_NAME, DEX_NAME, PLUS_NAME, SU_NAME.takeIf { ShizukuSettings.isTerminalExportSuEnabled() })
+            val results = names.map { writeToDocument(it) }
             val successCount = results.count { it }
             val totalCount = results.size
 
@@ -190,9 +192,20 @@ class ShellTutorialActivity : AppBarActivity() {
                     .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
 
             text1.text = getString(R.string.terminal_tutorial_1)
-            summary1.text =
-                getString(R.string.terminal_tutorial_export_summary, shName, dexName, plusName, suName)
-                    .toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
+            val showExportSummary = {
+                summary1.text =
+                    if (ShizukuSettings.isTerminalExportSuEnabled()) {
+                        getString(R.string.terminal_tutorial_export_summary, shName, dexName, plusName, suName)
+                    } else {
+                        getString(R.string.terminal_tutorial_export_summary_no_su, shName, dexName, plusName)
+                    }.toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
+            }
+            showExportSummary()
+            exportSu.isChecked = ShizukuSettings.isTerminalExportSuEnabled()
+            exportSu.setOnCheckedChangeListener { _, checked ->
+                ShizukuSettings.setTerminalExportSuEnabled(checked)
+                showExportSummary()
+            }
 
             text2.text = getString(R.string.terminal_tutorial_2, shName).toHtml()
             summary2.text =
