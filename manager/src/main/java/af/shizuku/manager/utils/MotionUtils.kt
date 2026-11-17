@@ -128,43 +128,30 @@ object MotionUtils {
      * Applies a spring-based scale down/up effect on touch.
      */
     fun View.applySpringTouch(scale: Float = 0.97f) {
-        // Single spring per axis; animateToFinalPosition() composes smoothly mid-animation
-        // (no ViewPropertyAnimator discontinuity when the finger lifts before the press-in completes).
-        val force = spring(context, MaterialR.attr.motionSpringFastSpatial)
-        val springX =
-            SpringAnimation(this, SpringAnimation.SCALE_X).apply {
-                spring = SpringForce(1.0f).setStiffness(force.stiffness).setDampingRatio(force.dampingRatio)
-            }
-        val springY =
-            SpringAnimation(this, SpringAnimation.SCALE_Y).apply {
-                spring = SpringForce(1.0f).setStiffness(force.stiffness).setDampingRatio(force.dampingRatio)
-            }
-
+        // Uses the view's shared springTo springs, not private ones: a Home card that's picked up
+        // is lifted with springTo on the same properties, and two springs writing SCALE_X every
+        // frame made the held card judder. A lifted view (tag_drag_lifted) is left to the drag.
+        val press: (Float) -> Unit = { target ->
+            springTo(SpringAnimation.SCALE_X, target, MaterialR.attr.motionSpringFastSpatial)
+            springTo(SpringAnimation.SCALE_Y, target, MaterialR.attr.motionSpringFastSpatial)
+        }
         setOnTouchListener { v, event ->
             // Unlike every other animation/haptic call site in the app, this touch feedback
             // used to fire unconditionally on every card tap, ignoring the user's Expressive
             // Animations toggle.
             if (!af.shizuku.manager.ShizukuSettings
-                    .isExpressiveAnimationsEnabled()
+                    .isExpressiveAnimationsEnabled() ||
+                v.getTag(R.id.tag_drag_lifted) == true
             ) {
                 return@setOnTouchListener false
             }
             when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN -> {
-                    springX.animateToFinalPosition(scale)
-                    springY.animateToFinalPosition(scale)
-                }
+                MotionEvent.ACTION_DOWN -> press(scale)
                 MotionEvent.ACTION_MOVE -> {
                     val isInside = event.x in 0f..v.width.toFloat() && event.y in 0f..v.height.toFloat()
-                    if (!isInside) {
-                        springX.animateToFinalPosition(1.0f)
-                        springY.animateToFinalPosition(1.0f)
-                    }
+                    if (!isInside) press(1.0f)
                 }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    springX.animateToFinalPosition(1.0f)
-                    springY.animateToFinalPosition(1.0f)
-                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> press(1.0f)
             }
             false
         }

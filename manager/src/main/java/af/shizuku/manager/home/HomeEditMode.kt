@@ -79,9 +79,26 @@ object HomeEditMode {
     var moveCardCallback: ((android.view.View, Int) -> Boolean)? = null
 
     /**
-     * The gestures every draggable Home card shares: hold the card or its handle to edit the
-     * layout, press the handle to drag, springy touch feedback. The system long-press haptic is
-     * off on both, since the drag that follows plays its own and they buzzed twice together.
+     * True when the current hold put Home into edit mode: with Quick card moves on, dropping a
+     * card that actually moved leaves edit mode again. The card's long-click and the drag's
+     * long-press fire in either order (and the drag can cancel the long-click), so a hold also
+     * counts when edit mode came on within the last second.
+     */
+    var enteredByHold: Boolean = false
+        private set
+    private var enteredAt = 0L
+
+    /** Call as a held card is picked up, before [enter]. */
+    fun beginHold() {
+        enteredByHold = !isActive || android.os.SystemClock.uptimeMillis() - enteredAt < 1000
+    }
+
+    /**
+     * The gestures every draggable Home card shares: hold a card to pick it up (and enter edit
+     * mode), press the handle to drag straight away, springy touch feedback. In edit mode only
+     * the handle starts a drag on touch: the card body still needs a hold, so a scroll that
+     * starts on a card scrolls instead of grabbing it. The system long-press haptic is off on
+     * both, since the drag that follows plays its own and they buzzed twice together.
      */
     fun bindCardGestures(
         container: HomeItemContainerBinding,
@@ -93,15 +110,10 @@ object HomeEditMode {
                 true
             }
         container.root.apply {
+            // Its touch listener is the press feedback; the hold-to-drag comes from ItemTouchHelper.
             applySpringTouch()
             isHapticFeedbackEnabled = false
             setOnLongClickListener(enterEditMode)
-            setOnTouchListener { _, event ->
-                if (isActive && event.action == android.view.MotionEvent.ACTION_DOWN) {
-                    startDragCallback?.invoke(holder)
-                }
-                false
-            }
         }
         container.dragHandle.apply {
             isHapticFeedbackEnabled = false
@@ -126,6 +138,7 @@ object HomeEditMode {
         }
         if (!isActive) {
             isActive = true
+            enteredAt = android.os.SystemClock.uptimeMillis()
             io.sentry.Sentry.addBreadcrumb("HomeEditMode: enter()")
             notifyChanged()
         }
@@ -133,6 +146,7 @@ object HomeEditMode {
 
     fun exit() {
         wasForced = false
+        enteredByHold = false
         if (isActive) {
             isActive = false
             notifyChanged()

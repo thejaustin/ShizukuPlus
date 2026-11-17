@@ -644,7 +644,10 @@ open class HomeActivity :
                 // Holding any draggable card picks it up straight away; the holder's own long-click
                 // still enters edit mode, so hold -> edit mode -> drag is a single gesture. The
                 // drag handle path (startDragCallback) keeps working for edit mode's explicit grip.
-                override fun isLongPressDragEnabled() = true
+                override fun isLongPressDragEnabled() = !ShizukuSettings.isHomeLayoutLocked()
+
+                // Set when a card actually changed places during this drag (Quick card moves).
+                private var movedThisDrag = false
 
                 override fun getMovementFlags(
                     rv: RecyclerView,
@@ -658,7 +661,9 @@ open class HomeActivity :
                         makeMovementFlags(0, 0)
                     }
 
-                override fun getMoveThreshold(viewHolder: RecyclerView.ViewHolder): Float = 0.35f
+                // chooseDropTarget below has its own hysteresis (the center has to cross), so a
+                // small threshold just makes the first swap come sooner.
+                override fun getMoveThreshold(viewHolder: RecyclerView.ViewHolder): Float = 0.15f
 
                 override fun interpolateOutOfBoundsScroll(
                     recyclerView: RecyclerView,
@@ -680,6 +685,7 @@ open class HomeActivity :
                 ): Boolean {
                     if (!adapter.isDraggable(target.bindingAdapterPosition)) return false
                     adapter.moveItem(src.bindingAdapterPosition, target.bindingAdapterPosition)
+                    movedThisDrag = true
                     HapticUtils.segmentTick(src.itemView)
                     return true
                 }
@@ -692,8 +698,11 @@ open class HomeActivity :
                 ) = adapter.isDraggable(target.bindingAdapterPosition)
 
                 /**
-                 * Dynamic bounding-box overlap and center containment target resolution.
-                 * Prevents tall-vs-short card deadlock and provides seamless vertical and grid reordering.
+                 * Only cards ahead of the drag qualify, and only once the held card's center has
+                 * crossed theirs (in the grid: is inside them). Scoring by overlap let the card
+                 * just passed win again straight after a swap, so tall and short cards traded
+                 * places back and forth under a still finger. When a fast drag crosses several,
+                 * the farthest one is taken.
                  */
                 override fun chooseDropTarget(
                     selected: RecyclerView.ViewHolder,
@@ -702,31 +711,35 @@ open class HomeActivity :
                     curY: Int,
                 ): RecyclerView.ViewHolder? {
                     val view = selected.itemView
-                    val curTop = curY
-                    val curBottom = curY + view.height
-                    val curLeft = curX
-                    val curRight = curX + view.width
-                    val curCenterX = curLeft + view.width / 2
-                    val curCenterY = curTop + view.height / 2
-
+                    val centerX = curX + view.width / 2
+                    val centerY = curY + view.height / 2
+                    val dx = curX - view.left
+                    val dy = curY - view.top
                     var best: RecyclerView.ViewHolder? = null
-                    var maxScore = -1
-
+                    var bestDistance = -1
                     for (target in dropTargets) {
                         val t = target.itemView
-                        val overlapX = (kotlin.math.min(curRight, t.right) - kotlin.math.max(curLeft, t.left)).coerceAtLeast(0)
-                        val overlapY = (kotlin.math.min(curBottom, t.bottom) - kotlin.math.max(curTop, t.top)).coerceAtLeast(0)
-                        val overlapArea = overlapX * overlapY
-
-                        val centerInside = (curCenterX in t.left..t.right) && (curCenterY in t.top..t.bottom)
-                        val score = overlapArea + if (centerInside) 1_000_000 else 0
-
-                        if (score > maxScore && (overlapArea > 0 || centerInside)) {
-                            maxScore = score
+                        val tCenterX = (t.left + t.right) / 2
+                        val tCenterY = (t.top + t.bottom) / 2
+                        val crossed =
+                            if (spanCount > 1) {
+                                centerX in t.left..t.right && centerY in t.top..t.bottom
+                            } else {
+                                (dy > 0 && t.top > view.top && centerY > tCenterY) ||
+                                    (dy < 0 && t.top < view.top && centerY < tCenterY)
+                            }
+                        // Grid: the target must lie the way the card is going, too.
+                        val ahead =
+                            spanCount <= 1 ||
+                                ((t.left - view.left) * dx >= 0 && (t.top - view.top) * dy >= 0)
+                        if (!crossed || !ahead) continue
+                        val distance = kotlin.math.abs(t.top - view.top) + kotlin.math.abs(t.left - view.left)
+                        if (distance > bestDistance) {
+                            bestDistance = distance
                             best = target
                         }
                     }
-                    return best ?: super.chooseDropTarget(selected, dropTargets, curX, curY)
+                    return best
                 }
 
                 override fun onSelectedChanged(
@@ -738,6 +751,8 @@ open class HomeActivity :
                         // Block updateData's notifyDataSetChanged before entering edit mode so the
                         // full rebind doesn't race with the active drag gesture.
                         adapter.isDragging = true
+                        movedThisDrag = false
+                        HomeEditMode.beginHold()
                         HomeEditMode.enter()
                         for (i in 0 until recyclerView.childCount) {
                             val child = recyclerView.getChildAt(i)
@@ -747,6 +762,8 @@ open class HomeActivity :
                             }
                         }
                         viewHolder?.itemView?.let { card ->
+                            // The press feedback leaves a lifted card's scale to the drag.
+                            card.setTag(R.id.tag_drag_lifted, true)
                             HapticUtils.dragStart(card)
                             (card as? com.google.android.material.card.MaterialCardView)?.cardElevation = 6f * resources.displayMetrics.density
                             if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
@@ -774,6 +791,7 @@ open class HomeActivity :
                 ) {
                     super.clearView(rv, vh)
                     adapter.isDragging = false
+                    vh.itemView.setTag(R.id.tag_drag_lifted, null)
                     HapticUtils.gestureEnd(vh.itemView)
                     morphCardRadius(vh.itemView, lifted = false)
                     (vh.itemView as? com.google.android.material.card.MaterialCardView)?.cardElevation = 0f
@@ -783,6 +801,12 @@ open class HomeActivity :
                     vh.itemView.springTo(SpringAnimation.ALPHA, 1f, MaterialR.attr.motionSpringDefaultEffects)
                     vh.itemView.springTo(SpringAnimation.TRANSLATION_Z, 0f, MaterialR.attr.motionSpringDefaultEffects)
                     adapter.persistCardOrder()
+                    // Quick card moves: a hold that moved a card is a finished move, not a trip
+                    // into edit mode. A hold without a move still opens edit mode.
+                    if (movedThisDrag && HomeEditMode.enteredByHold && ShizukuSettings.isHomeQuickMoveEnabled()) {
+                        HomeEditMode.exit()
+                    }
+                    movedThisDrag = false
                     vh.itemView.post {
                         if (!adapter.isDragging) {
                             adapter.updateData()

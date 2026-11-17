@@ -58,6 +58,22 @@
             android:defaultValue="false"
             app:badgeType="experimental" />
 
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="home_quick_move"
+            android:title="@string/settings_home_quick_move_title"
+            android:summary="@string/settings_home_quick_move_summary"
+            android:icon="@drawable/ic_drag_handle"
+            android:defaultValue="false"
+            app:badgeType="experimental" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="home_compact_cards"
+            android:title="@string/settings_home_compact_cards_title"
+            android:summary="@string/settings_home_compact_cards_summary"
+            android:icon="@drawable/ic_space_dashboard_24"
+            android:defaultValue="false"
+            app:badgeType="experimental" />
+
         <!-- Switch rows only (GrayableIconSwitchPreference); Compose switches keep the standard look. -->
         <rikka.preference.SimpleMenuPreference
             android:key="switch_row_design"

@@ -449,6 +449,10 @@
     <string name="settings_experimental_color_schemes_summary">Custom accents colour every part of the app, and High contrast and Android\'s contrast setting switch to matching high-contrast schemes</string>
     <string name="settings_experimental_category_color">Look &amp; motion</string>
     <string name="settings_experimental_screen_transitions_title">Material screen transitions</string>
+    <string name="settings_home_quick_move_title">Quick card moves</string>
+    <string name="settings_home_quick_move_summary">Hold a card on Home and drag it somewhere new: letting go puts it down and you\'re done, without tapping Done. Holding a card without moving it still opens edit mode.</string>
+    <string name="settings_home_compact_cards_title">Compact Home cards</string>
+    <string name="settings_home_compact_cards_summary">Smaller titles, tighter padding and closer buttons on Home cards, so more fits on screen.</string>
     <string name="settings_expressive_controls_preview_title">Expressive controls preview</string>
     <string name="settings_expressive_controls_preview_summary">Wavy progress bars, the shape-morphing loading indicator, split buttons, multi-select button groups and the shorter flexible navigation bar from Material 3 Expressive. Reopen screens to see the change</string>
     <string name="settings_experimental_screen_transitions_summary">Screens and settings pages slide forward and back instead of exploding or cutting</string>
