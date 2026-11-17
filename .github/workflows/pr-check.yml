@@ -11,6 +11,10 @@ on:
       - '.github/pull_request_template.md'
       - 'LICENSE*'
 
+# Read-only token by default; a job that needs more asks for it itself.
+permissions:
+  contents: read
+
 jobs:
   lint-and-build:
     runs-on: ubuntu-latest

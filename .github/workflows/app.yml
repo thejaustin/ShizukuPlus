@@ -23,6 +23,10 @@ on:
         required: false
         default: false
 
+# Read-only token by default; a job that needs more asks for it itself.
+permissions:
+  contents: read
+
 jobs:
   pre-push-guard:
     runs-on: ubuntu-latest

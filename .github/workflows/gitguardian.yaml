@@ -10,6 +10,10 @@ on:
       - '**.md'
       - 'docs/**'
 
+# Read-only token by default; a job that needs more asks for it itself.
+permissions:
+  contents: read
+
 jobs:
   scanning:
     name: GitGuardian scan
