@@ -253,9 +253,17 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                             val holder = listView?.findViewHolderForAdapterPosition(position)
                             holder?.itemView?.let { itemView ->
                                 val defaultBg = itemView.background
-                                val tintColor = TypedValue()
-                                requireContext().theme.resolveAttribute(R.attr.colorPrimaryContainer, tintColor, true)
-                                val highlight = android.graphics.drawable.ColorDrawable(tintColor.data)
+                                // A wash of the primary colour rather than its container: the row's
+                                // text keeps its own colour, and a container can be light in a dark
+                                // theme (high-contrast schemes), which left white text on it (#687).
+                                val tint =
+                                    com.google.android.material.color.MaterialColors
+                                        .getColor(itemView, androidx.appcompat.R.attr.colorPrimary)
+                                val highlight =
+                                    android.graphics.drawable.ColorDrawable(
+                                        androidx.core.graphics.ColorUtils
+                                            .setAlphaComponent(tint, 0x3D),
+                                    )
                                 itemView.background = highlight
                                 android.animation.ValueAnimator.ofInt(255, 0).apply {
                                     duration = ShizukuSettings.scaledAnimationDuration(700)

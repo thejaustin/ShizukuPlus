@@ -214,6 +214,23 @@ class ServerStatusViewHolder(
         diagnosticsChip.chipIconTint =
             android.content.res.ColorStateList
                 .valueOf(textColor)
+        // Chips sit on the card, so they take their colours from its "on" colour: a container can
+        // be light in a dark theme (high-contrast schemes), and the chips' own dark surface left
+        // dark text on a dark chip there (#687).
+        val chipBg =
+            android.content.res.ColorStateList.valueOf(
+                androidx.core.graphics.ColorUtils
+                    .setAlphaComponent(textColor, 0x1F),
+            )
+        val chipStroke =
+            android.content.res.ColorStateList.valueOf(
+                androidx.core.graphics.ColorUtils
+                    .setAlphaComponent(textColor, 0x80),
+            )
+        for (chip in listOf(logChip, diagnosticsChip)) {
+            chip.chipBackgroundColor = chipBg
+            chip.chipStrokeColor = chipStroke
+        }
 
         // Icon pill uses vivid semantic role colors so it stands out against the card's lighter
         // container background — matching pill-to-card was invisible in users' issue screenshots.
