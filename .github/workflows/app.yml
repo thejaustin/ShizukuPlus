@@ -322,6 +322,26 @@ jobs:
         run: |
           ./gradlew :manager:uploadSentryProguardMappingsShizukuplusRelease :manager:uploadSentryNativeSymbolsForShizukuplusRelease
 
+      # Tells Sentry which commits are in this build, so a commit message saying
+      # "Fixes SHIZUKUPLUS-XX" resolves that issue once the build ships, and issues show the
+      # commits that may have caused them. Sentry works out the range from the previous release.
+      - name: Associate commits with the Sentry release
+        if: ${{ env.SENTRY_AUTH_TOKEN != '' && env.IS_DEBUG == 'false' }}
+        continue-on-error: true
+        env:
+          RELEASE: shizuku-plus@Shizuku+ ${{ steps.buildWithGradle.outputs.versionName }}
+        run: |
+          API=https://sentry.io/api/0/organizations/af-developments/releases
+          AUTH="Authorization: Bearer $SENTRY_AUTH_TOKEN"
+          # Create the release if the upload above didn't (an existing one answers 208, and
+          # ignores refs), then attach this commit with PUT.
+          jq -n --arg v "$RELEASE" '{version: $v, projects: ["shizukuplus"]}' |
+            curl -sS -X POST "$API/" -H "$AUTH" -H 'Content-Type: application/json' \
+              --data-binary @- -o /dev/null -w 'create: HTTP %{http_code}\n'
+          jq -n --arg sha "$GITHUB_SHA" '{refs: [{repository: "thejaustin/ShizukuPlus", commit: $sha}]}' |
+            curl -sSf -X PUT "$API/$(jq -rn --arg v "$RELEASE" '$v|@uri')/" -H "$AUTH" \
+              -H 'Content-Type: application/json' --data-binary @- -o /dev/null -w 'commits: HTTP %{http_code}\n'
+
       - name: Upload ShizukuPlus Artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
