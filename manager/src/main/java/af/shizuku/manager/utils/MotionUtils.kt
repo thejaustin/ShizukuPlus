@@ -116,6 +116,9 @@ object MotionUtils {
         }
     }
 
+    /** Whether any [springTo] spring on this view is still moving. */
+    fun View.hasRunningSprings(): Boolean = springs()?.values?.any { it.animation.isRunning } == true
+
     /** Stops every [springTo] spring on this view, e.g. before a recycled view is reused. */
     fun View.cancelAllSprings() {
         springs()?.values?.forEach {

@@ -17,7 +17,6 @@ import android.widget.TextView
 import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
-import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.preference.PreferenceViewHolder
 import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.color.MaterialColors
@@ -67,9 +66,9 @@ open class GrayableIconSwitchPreference
                     morph?.fillFraction = 1f
                     // Undo the off tint "Icon is the switch" leaves on a recycled or restyled row.
                     if (morph != null && icon.getTag(R.id.tag_icon_glyph_tinted) == true) tintGlyph(icon, glyphColor(icon, key), 1f)
-                    icon.alpha = if (isChecked) 1.0f else OFF_ICON_ALPHA
-                    icon.scaleX = if (isChecked) 1.0f else 0.90f
-                    icon.scaleY = if (isChecked) 1.0f else 0.90f
+                    // A row that can't be used right now reads as off too.
+                    af.shizuku.manager.utils.OffStateIcon
+                        .apply(icon, on = isChecked && isEnabled, animate = false)
                 }
             }
         }
@@ -154,11 +153,9 @@ open class GrayableIconSwitchPreference
                     val off = MaterialColors.getColor(icon, MaterialR.attr.colorOnSurfaceVariant)
                     animateFill(morph, if (isChecked) 1f else 0f) { tintGlyph(icon, on, it, off) }
                 } else {
-                    // Icon scale springs (may bounce); its dimming fades without overshoot.
-                    val scale = if (isChecked) 1.0f else 0.90f
-                    icon.springTo(SpringAnimation.SCALE_X, scale, MaterialR.attr.motionSpringFastSpatial)
-                    icon.springTo(SpringAnimation.SCALE_Y, scale, MaterialR.attr.motionSpringFastSpatial)
-                    icon.springTo(SpringAnimation.ALPHA, if (isChecked) 1.0f else OFF_ICON_ALPHA, MaterialR.attr.motionSpringFastEffects)
+                    // Scale springs (may bounce); fade and colour settle without overshoot.
+                    af.shizuku.manager.utils.OffStateIcon
+                        .apply(icon, on = isChecked, animate = true)
                 }
             }
         }
@@ -168,7 +165,6 @@ open class GrayableIconSwitchPreference
  * An off row's icon: dimmer, but well above the 38% M3 uses for disabled, so it never reads as
  * unavailable. The container also morphs from the off shape to the on shape when switched on.
  */
-private const val OFF_ICON_ALPHA = 0.6f
 
 private const val DESIGN_ICON_SWITCH = "icon_switch"
 private const val STATE_LABEL_TAG = "switch_state_label"

@@ -5,6 +5,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ## [Unreleased]
 
 ### ✨ Features
+- **Greyscale off icons (experimental)** — Settings → Experimental → "Greyscale off icons": a setting's icon loses its colour while it's off or unavailable, and the colour flows back as you switch it on. Apps without access look the same in the app list. Off by default.
 - **Compact Home cards (experimental)** — Settings → Experimental → "Compact Home cards" gives Home smaller titles and summaries, slightly smaller icons, 16dp card padding and 8dp between cards (the Material 3 card spacing), and keeps wrapped buttons like Activity log and Diagnostics close together. Off by default.
 - **Quick card moves (experimental)** — Settings → Experimental → "Quick card moves": hold a Home card, drag it where you want it and let go; you're done, without tapping Done. Holding a card without moving it still opens edit mode. Off by default.
 - **Wallet & Messages repair** — Service Doctor's Google Wallet check now also covers Google Messages (RCS) and extended root features, and you can run it any time, even when nothing is detected. Pick exactly what it does from a checklist: remove leftover su files, turn off SU Bridge, Magisk/BusyBox mocking, device spoofing or extended root features, refresh Play Integrity, restart Messages and Carrier Services so RCS reconnects, or clear Wallet's data. Found problems are pre-selected; your choices for the refresh steps are remembered, and clearing Wallet is never on unless you pick it.

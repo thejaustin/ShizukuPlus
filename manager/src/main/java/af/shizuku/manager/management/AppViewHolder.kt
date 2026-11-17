@@ -867,21 +867,9 @@ class AppViewHolder(
         granted: Boolean,
         animate: Boolean,
     ) {
-        val scale = if (granted) 1f else 0.9f
-        val alpha = if (granted) 1f else 0.6f
-        if (!animate) {
-            // A spring still running from the row's previous app would overwrite these.
-            with(af.shizuku.manager.utils.MotionUtils) { icon.cancelAllSprings() }
-            icon.scaleX = scale
-            icon.scaleY = scale
-            icon.alpha = alpha
-            return
-        }
-        with(af.shizuku.manager.utils.MotionUtils) {
-            icon.springTo(androidx.dynamicanimation.animation.SpringAnimation.SCALE_X, scale, com.google.android.material.R.attr.motionSpringFastSpatial)
-            icon.springTo(androidx.dynamicanimation.animation.SpringAnimation.SCALE_Y, scale, com.google.android.material.R.attr.motionSpringFastSpatial)
-            icon.springTo(androidx.dynamicanimation.animation.SpringAnimation.ALPHA, alpha, com.google.android.material.R.attr.motionSpringFastEffects)
-        }
+        // The same "off" look as a switch row that's off (shared, so the two never drift apart).
+        af.shizuku.manager.utils.OffStateIcon
+            .apply(icon, on = granted, animate = animate)
     }
 
     override fun onRecycle() {
