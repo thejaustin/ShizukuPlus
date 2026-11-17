@@ -8,72 +8,44 @@ files:
     content_segmentation: 0
     languages_mapping:
       android_code:
+        # The languages that have a values-* folder here. A code Crowdin doesn't know makes the
+        # whole config invalid (uploads and the release build's download both stopped), so add
+        # a language when its folder is added, with its code from Crowdin's language list.
         af: af
         ar: ar
         az: az
-        be: be
-        bg: bg
-        bn: bn
-        bs: bs
-        ca: ca
         cs: cs
-        da: da
         de: de
         el: el
-        eo: eo
         es-ES: es
-        et: et
-        eu: eu
         fa: fa
         fi: fi
         fil: fil
         fr: fr
-        gl: gl
-        gu: gu
         he: iw
-        hi: hi
-        hr: hr
         hu: hu
         hy-AM: hy
         id: id
-        is: is
         it: it
         ja: ja
         ka: ka
-        kk: kk
-        km: km
-        kn: kn
         ko: ko
-        lt: lt
-        lv: lv
-        mk: mk
-        ml: ml
-        mr: mr
         ms: ms
-        my: my
-        ne: ne
         nl: nl
         "no": "no"
-        pa-IN: pa
         pl: pl
         pt-PT: pt
         pt-BR: pt-rBR
         ro: ro
         ru: ru
-        si: si
-        sk: sk
         sl: sl
-        sq: sq
         sr: sr
         sv-SE: sv
-        sw: sw
         ta: ta
-        te: te
         th: th
         tr: tr
         uk: uk
         ur-PK: ur
-        uz: uz
         vi: vi
         zh-CN: zh-rCN
         zh-TW: zh-rTW
@@ -83,72 +55,44 @@ files:
     content_segmentation: 0
     languages_mapping:
       android_code:
+        # The languages that have a values-* folder here. A code Crowdin doesn't know makes the
+        # whole config invalid (uploads and the release build's download both stopped), so add
+        # a language when its folder is added, with its code from Crowdin's language list.
         af: af
         ar: ar
         az: az
-        be: be
-        bg: bg
-        bn: bn
-        bs: bs
-        ca: ca
         cs: cs
-        da: da
         de: de
         el: el
-        eo: eo
         es-ES: es
-        et: et
-        eu: eu
         fa: fa
         fi: fi
         fil: fil
         fr: fr
-        gl: gl
-        gu: gu
         he: iw
-        hi: hi
-        hr: hr
         hu: hu
         hy-AM: hy
         id: id
-        is: is
         it: it
         ja: ja
         ka: ka
-        kk: kk
-        km: km
-        kn: kn
         ko: ko
-        lt: lt
-        lv: lv
-        mk: mk
-        ml: ml
-        mr: mr
         ms: ms
-        my: my
-        ne: ne
         nl: nl
         "no": "no"
-        pa-IN: pa
         pl: pl
         pt-PT: pt
         pt-BR: pt-rBR
         ro: ro
         ru: ru
-        si: si
-        sk: sk
         sl: sl
-        sq: sq
         sr: sr
         sv-SE: sv
-        sw: sw
         ta: ta
-        te: te
         th: th
         tr: tr
         uk: uk
         ur-PK: ur
-        uz: uz
         vi: vi
         zh-CN: zh-rCN
         zh-TW: zh-rTW
