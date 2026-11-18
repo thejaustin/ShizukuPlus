@@ -217,10 +217,15 @@ class ServerStatusViewHolder(
         // Chips sit on the card, so they take their colours from its "on" colour: a container can
         // be light in a dark theme (high-contrast schemes), and the chips' own dark surface left
         // dark text on a dark chip there (#687).
+        // Opaque: M3 chips paint their own surface colour underneath the background, so a
+        // translucent background still showed the dark surface (the first #687 fix).
         val chipBg =
             android.content.res.ColorStateList.valueOf(
-                androidx.core.graphics.ColorUtils
-                    .setAlphaComponent(textColor, 0x1F),
+                androidx.core.graphics.ColorUtils.compositeColors(
+                    androidx.core.graphics.ColorUtils
+                        .setAlphaComponent(textColor, 0x1F),
+                    bgColor,
+                ),
             )
         val chipStroke =
             android.content.res.ColorStateList.valueOf(

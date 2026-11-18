@@ -601,6 +601,25 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
     ) {
         val appContext = ctx.applicationContext
         lifecycleScope.launch(Dispatchers.IO) {
+            // Never with other users or profiles present: marking setup incomplete also lifts
+            // Android's own "several users" refusal, and on Samsung a new Device Owner then
+            // removes Secure Folder with everything in it (#688). Unknown counts as present.
+            val others = otherUsers()
+            if (others == null || others.isNotEmpty()) {
+                withContext(Dispatchers.Main) {
+                    if (!isAdded) return@withContext
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.dhizuku_activate_other_users_title)
+                        .setMessage(
+                            getString(
+                                R.string.dhizuku_activate_other_users_message,
+                                others?.joinToString("\n") { "• $it" } ?: "-",
+                            ),
+                        ).setPositiveButton(android.R.string.ok, null)
+                        .show()
+                }
+                return@launch
+            }
             val output = withSetupIncomplete { runServerShell("dpm set-device-owner $component").second }
             val dpm = appContext.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
             val isOwner = runCatching { dpm.isDeviceOwnerApp(appContext.packageName) }.getOrDefault(false)
@@ -618,6 +637,18 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                 }
             }
         }
+    }
+
+    // Every user and profile except this one, as "Name (id)" from `pm list users`
+    // (UserInfo{150:Secure Folder:...}); null when the list can't be read.
+    private fun otherUsers(): List<String>? {
+        val (code, out) = runServerShell("pm list users")
+        if (code != 0) return null
+        val me = android.os.Process.myUid() / 100000
+        val users =
+            Regex("""UserInfo\{(\d+):([^:}]*)""").findAll(out).map { it.groupValues[1].toInt() to it.groupValues[2] }.toList()
+        if (users.isEmpty()) return null
+        return users.filter { it.first != me }.map { (id, name) -> "${name.ifBlank { "User" }} ($id)" }
     }
 
     // Android refuses a Device Owner while accounts are signed in only once setup has completed. As

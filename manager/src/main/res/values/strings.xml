@@ -1565,6 +1565,8 @@
     <string name="dhizuku_activate_success">Shizuku+ is now the Device Owner</string>
     <string name="dhizuku_activate_failed_title">Couldn\'t activate</string>
     <string name="dhizuku_activate_failed_message">Android said:\n\n%1$s\n\nIf it mentions accounts or other users, this device still needs them removed (Settings → Accounts) before activating; you can add them back afterwards. If another app is already Device Owner, remove it from that app first.</string>
+    <string name="dhizuku_activate_other_users_title">Other profiles on this device</string>
+    <string name="dhizuku_activate_other_users_message">This device has other users or profiles:\n\n%1$s\n\nThat includes Secure Folder, work profiles, Private Space, Dual Messenger and dual apps. Making Shizuku+ the Device Owner can delete them and everything in them, so it won\'t activate while they exist.\n\nTo use Dhizuku Mode, back up and remove those profiles first.</string>
     <string name="dhizuku_status_active">Device Owner: Active</string>
     <string name="settings_dhizuku_allowed_apps">Apps allowed to use Dhizuku</string>
     <string name="settings_dhizuku_allowed_apps_none">No apps yet. Apps ask the first time they connect</string>
