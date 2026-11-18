@@ -75,6 +75,14 @@
             app:badgeType="experimental" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="dhizuku_limited_mode"
+            android:title="@string/settings_dhizuku_limited_mode_title"
+            android:summary="@string/settings_dhizuku_limited_mode_summary"
+            android:icon="@drawable/ic_admin_panel_settings_24"
+            android:defaultValue="false"
+            app:badgeType="experimental" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="home_compact_cards"
             android:title="@string/settings_home_compact_cards_title"
             android:summary="@string/settings_home_compact_cards_summary"

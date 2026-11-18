@@ -222,6 +222,7 @@ public class ShizukuSettings {
         public static final String KEY_TERMINAL_EXPORT_SU = "terminal_export_su";
         /** Experimental: smaller titles, tighter padding and buttons on Home cards. */
         public static final String KEY_HOME_COMPACT_CARDS = "home_compact_cards";
+        public static final String KEY_DHIZUKU_LIMITED_MODE = "dhizuku_limited_mode";
         /** Experimental: icons of switches that are off (and apps without access) turn greyscale. */
         public static final String KEY_GRAYSCALE_OFF_ICONS = "grayscale_off_icons";
         public static final String KEY_FLOATING_NAV_LABEL_MODE = "floating_nav_label_mode";
@@ -2448,6 +2449,12 @@ public class ShizukuSettings {
     public static boolean isGrayscaleOffIconsEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_GRAYSCALE_OFF_ICONS, false);
+    }
+
+    /** Experimental: offer Profile Owner ("limited mode") when Device Owner is blocked by other profiles. */
+    public static boolean isDhizukuLimitedModeEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_DHIZUKU_LIMITED_MODE, false);
     }
 
     public static boolean isHomeCompactCardsEnabled() {

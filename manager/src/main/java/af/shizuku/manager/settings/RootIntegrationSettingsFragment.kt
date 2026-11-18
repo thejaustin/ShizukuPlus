@@ -425,7 +425,11 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
         val active = isDeviceOwnerActive(ctx)
         val statusLine =
             if (active) {
-                getString(R.string.dhizuku_status_active)
+                val isProfileOwner =
+                    runCatching {
+                        (ctx.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager).isProfileOwnerApp(ctx.packageName)
+                    }.getOrDefault(false)
+                getString(if (isProfileOwner) R.string.dhizuku_status_active_limited else R.string.dhizuku_status_active)
             } else {
                 getString(R.string.dhizuku_status_not_set)
             }
@@ -541,6 +545,32 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
         }
     }
 
+    // Android lifts the "no new profiles" restrictions when the owner goes, but Samsung's Knox
+    // flags may stay and keep Secure Folder from being created; say so instead of letting the user
+    // find out from Secure Folder's own vague error. Only what wasn't set before activating counts,
+    // checked after a moment since the policy service may apply the change asynchronously.
+    private fun reportOwnerLeftovers(ctx: Context) {
+        val appContext = ctx.applicationContext
+        lifecycleScope.launch(Dispatchers.IO) {
+            kotlinx.coroutines.delay(2_000)
+            val left =
+                af.shizuku.manager.admin.OwnerActivation
+                    .leftoverLimits(appContext)
+            if (left.isEmpty()) {
+                af.shizuku.manager.admin.OwnerActivation
+                    .clearBaseline()
+            }
+            withContext(Dispatchers.Main) {
+                if (!isAdded || left.isEmpty()) return@withContext
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.dhizuku_clear_owner_leftovers_title)
+                    .setMessage(getString(R.string.dhizuku_clear_owner_leftovers_message, left.joinToString("\n") { "• $it" }))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+            }
+        }
+    }
+
     private fun showClearDeviceOwnerDialog(ctx: Context) {
         MaterialAlertDialogBuilder(ctx)
             .setTitle(R.string.dhizuku_clear_owner_title)
@@ -561,6 +591,7 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
                 dpm.clearProfileOwner(admin)
             }
             notifyUser(R.string.dhizuku_clear_owner_success, long = true)
+            reportOwnerLeftovers(ctx)
             val dhizukuPref = findPreference<TwoStatePreference>(KEY_DHIZUKU_MODE)
             if (dhizukuPref != null) {
                 ShizukuSettings.setDhizukuModeEnabled(false)
@@ -593,120 +624,104 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
     }
 
     private fun serverCanSetDeviceOwner(): Boolean =
-        runCatching { Shizuku.pingBinder() && Shizuku.getUid().let { it == 0 || it == 2000 } }.getOrDefault(false)
+        af.shizuku.manager.admin.OwnerActivation
+            .serverCanActivate()
 
     private fun activateDeviceOwner(
         ctx: Context,
-        component: String,
+        @Suppress("UNUSED_PARAMETER") component: String,
     ) {
         val appContext = ctx.applicationContext
         lifecycleScope.launch(Dispatchers.IO) {
-            // Never with other users or profiles present: marking setup incomplete also lifts
-            // Android's own "several users" refusal, and on Samsung a new Device Owner then
-            // removes Secure Folder with everything in it (#688). Unknown counts as present.
-            val others = otherUsers()
+            // Never with other users or profiles present (see OwnerActivation). Unknown counts as
+            // present.
+            val others =
+                af.shizuku.manager.admin.OwnerActivation
+                    .otherUsers()
             if (others == null || others.isNotEmpty()) {
                 withContext(Dispatchers.Main) {
-                    if (!isAdded) return@withContext
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(R.string.dhizuku_activate_other_users_title)
-                        .setMessage(
-                            getString(
-                                R.string.dhizuku_activate_other_users_message,
-                                others?.joinToString("\n") { "• $it" } ?: "-",
-                            ),
-                        ).setPositiveButton(android.R.string.ok, null)
-                        .show()
+                    if (isAdded) showOtherUsersBlocked(others)
                 }
                 return@launch
             }
-            val output = withSetupIncomplete { runServerShell("dpm set-device-owner $component").second }
-            val dpm = appContext.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-            val isOwner = runCatching { dpm.isDeviceOwnerApp(appContext.packageName) }.getOrDefault(false)
             withContext(Dispatchers.Main) {
                 if (!isAdded) return@withContext
-                if (isOwner) {
-                    notifyUser(R.string.dhizuku_activate_success, long = true)
-                    findPreference<TwoStatePreference>(KEY_DHIZUKU_MODE)?.let { updateDhizukuDeviceOwnerStatus(it) }
-                } else {
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle(R.string.dhizuku_activate_failed_title)
-                        .setMessage(getString(R.string.dhizuku_activate_failed_message, output.ifBlank { "-" }))
-                        .setPositiveButton(android.R.string.ok, null)
-                        .show()
-                }
+                // What a Device Owner blocks for as long as it's active, said before it happens.
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.dhizuku_activate_confirm_title)
+                    .setMessage(R.string.dhizuku_activate_confirm_message)
+                    .setPositiveButton(R.string.dhizuku_setup_activate_now) { _, _ ->
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            runActivation(appContext, af.shizuku.manager.admin.OwnerActivation.Mode.DEVICE_OWNER)
+                        }
+                    }.setNegativeButton(android.R.string.cancel, null)
+                    .show()
             }
         }
     }
 
-    // Every user and profile except this one, as "Name (id)" from `pm list users`
-    // (UserInfo{150:Secure Folder:...}); null when the list can't be read.
-    private fun otherUsers(): List<String>? {
-        val (code, out) = runServerShell("pm list users")
-        if (code != 0) return null
-        val me = android.os.Process.myUid() / 100000
-        val users =
-            Regex("""UserInfo\{(\d+):([^:}]*)""").findAll(out).map { it.groupValues[1].toInt() to it.groupValues[2] }.toList()
-        if (users.isEmpty()) return null
-        return users.filter { it.first != me }.map { (id, name) -> "${name.ifBlank { "User" }} ($id)" }
-    }
-
-    // Android refuses a Device Owner while accounts are signed in only once setup has completed. As
-    // the Dhizuku app does, mark this user's setup as not complete for the moment the owner is set,
-    // make the device-policy service re-read it (it caches the value from Android 12), and always
-    // put it back. Without this, activating meant removing every account first (#674).
-    private fun <T> withSetupIncomplete(block: () -> T): T {
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) return block()
-        val user = android.os.Process.myUid() / 100000
-        val (_, current) = runServerShell("settings --user $user get secure user_setup_complete")
-        if (current.trim() != "1") return block()
-        if (runServerShell("settings --user $user put secure user_setup_complete 0").first != 0) return block()
-        forceUpdateUserSetupComplete(user)
-        try {
-            return block()
-        } finally {
-            runServerShell("settings --user $user put secure user_setup_complete 1")
-            forceUpdateUserSetupComplete(user)
+    // Shown instead of activating; with the experimental limited mode on it offers that instead,
+    // which Android allows next to other profiles.
+    private fun showOtherUsersBlocked(others: List<String>?) {
+        val builder =
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dhizuku_activate_other_users_title)
+                .setMessage(
+                    getString(
+                        R.string.dhizuku_activate_other_users_message,
+                        others?.joinToString("\n") { "• $it" } ?: "-",
+                    ),
+                ).setPositiveButton(android.R.string.ok, null)
+        if (others != null && ShizukuSettings.isDhizukuLimitedModeEnabled()) {
+            builder.setNeutralButton(R.string.dhizuku_limited_mode_use) { _, _ -> confirmLimitedMode() }
         }
+        builder.show()
     }
 
-    // Hidden IDevicePolicyManager.forceUpdateUserSetupComplete, called as the server (shell holds
-    // the permission it needs) through a Shizuku binder wrapper.
-    private fun forceUpdateUserSetupComplete(user: Int) {
-        runCatching {
-            val binder = rikka.shizuku.SystemServiceHelper.getSystemService(Context.DEVICE_POLICY_SERVICE) ?: return
-            val service =
-                Class
-                    .forName("android.app.admin.IDevicePolicyManager\$Stub")
-                    .getMethod("asInterface", android.os.IBinder::class.java)
-                    .invoke(null, rikka.shizuku.ShizukuBinderWrapper(binder))
-            val iface = Class.forName("android.app.admin.IDevicePolicyManager")
-            runCatching { iface.getMethod("forceUpdateUserSetupComplete", Int::class.javaPrimitiveType).invoke(service, user) }
-                .getOrElse { iface.getMethod("forceUpdateUserSetupComplete").invoke(service) }
-        }.onFailure { timber.log.Timber.w(it, "forceUpdateUserSetupComplete failed") }
-    }
-
-    // Runs [command] as the server and returns its exit code and combined output (dpm's own message
-    // is the useful part when it refuses).
-    @Suppress("DEPRECATION")
-    private fun runServerShell(command: String): Pair<Int, String> =
-        try {
-            val proc = Shizuku.newProcess(arrayOf("sh", "-c", "$command 2>&1"), null, null)
-            val out = StringBuilder()
-            val reader =
-                Thread {
-                    runCatching { out.append(proc.inputStream.bufferedReader().use { it.readText() }) }
-                }.apply {
-                    isDaemon = true
-                    start()
+    private fun confirmLimitedMode() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.dhizuku_limited_mode_title)
+            .setMessage(R.string.dhizuku_limited_mode_message)
+            .setPositiveButton(R.string.dhizuku_limited_mode_activate) { _, _ ->
+                val appContext = requireContext().applicationContext
+                lifecycleScope.launch(Dispatchers.IO) {
+                    runActivation(appContext, af.shizuku.manager.admin.OwnerActivation.Mode.PROFILE_OWNER)
                 }
-            val finished = proc.waitForTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-            if (!finished) proc.destroy()
-            reader.join(2_000)
-            (if (finished) proc.exitValue() else -1) to out.toString().trim()
-        } catch (e: Exception) {
-            -1 to (e.message ?: e.javaClass.simpleName)
+            }.setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private suspend fun runActivation(
+        appContext: Context,
+        mode: af.shizuku.manager.admin.OwnerActivation.Mode,
+    ) {
+        val result =
+            af.shizuku.manager.admin.OwnerActivation
+                .activate(appContext, mode)
+        val output = result.output
+        val isOwner = result.backupOn != null
+        withContext(Dispatchers.Main) {
+            if (!isAdded) return@withContext
+            if (isOwner) {
+                notifyUser(
+                    if (mode == af.shizuku.manager.admin.OwnerActivation.Mode.DEVICE_OWNER) {
+                        R.string.dhizuku_activate_success
+                    } else {
+                        R.string.dhizuku_limited_mode_success
+                    },
+                    long = true,
+                )
+                findPreference<TwoStatePreference>(KEY_DHIZUKU_MODE)?.let { updateDhizukuDeviceOwnerStatus(it) }
+                if (result.backupOn == false) notifyUser(R.string.dhizuku_activate_backup_off, long = true)
+            } else {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.dhizuku_activate_failed_title)
+                    .setMessage(getString(R.string.dhizuku_activate_failed_message, output.ifBlank { "-" }))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show()
+            }
         }
+    }
 
     private fun isBootloaderUnlocked(): Boolean {
         fun readProp(key: String): String? =

@@ -113,6 +113,14 @@ object ShizukuStateMachine {
                 // runs with defaults the user changed.
                 af.shizuku.manager.ShizukuSettings
                     .syncAllPlusFeaturesToServer()
+                // Undo a "setup not complete" left behind by an owner activation that was killed
+                // half way (OwnerActivation).
+                runCatching { ShizukuApplication.appContext }.getOrNull()?.let { ctx ->
+                    Thread {
+                        af.shizuku.manager.admin.OwnerActivation
+                            .recoverStuckSetup(ctx)
+                    }.start()
+                }
             },
         )
         Shizuku.addBinderDeadListener(
