@@ -40,18 +40,13 @@ class JniSmokeTest {
         System.loadLibrary("adb")
 
         try {
-            val outerClass = Class.forName("af.shizuku.manager.adb.AdbPairingClient")
-            val pairingContextClass =
-                outerClass.declaredClasses
-                    .firstOrNull { it.simpleName == "PairingContext" }
-            assertNotNull(
-                "PairingContext inner class not found — check AdbPairingClient structure",
-                pairingContextClass,
-            )
+            // PairingContext is a top-level private class in AdbPairingClient.kt, not an inner class.
+            val pairingContextClass = Class.forName("af.shizuku.manager.adb.PairingContext")
+            assertNotNull("PairingContext class not found", pairingContextClass)
 
             // Find nativeConstructor in PairingContext.Companion
             val companionClass =
-                pairingContextClass!!
+                pairingContextClass
                     .declaredClasses
                     .firstOrNull { it.simpleName == "Companion" }
             assertNotNull("PairingContext.Companion not found", companionClass)
