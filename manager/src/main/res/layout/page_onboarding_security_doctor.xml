@@ -146,6 +146,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:maxLines="1"
+                android:paddingHorizontal="4dp"
+                android:textSize="13sp"
                 android:text="@string/onboarding_assistant_off" />
 
             <com.google.android.material.button.MaterialButton
@@ -154,6 +157,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:maxLines="1"
+                android:paddingHorizontal="4dp"
+                android:textSize="13sp"
                 android:text="@string/onboarding_assistant_quiet" />
 
             <com.google.android.material.button.MaterialButton
@@ -162,6 +168,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:maxLines="1"
+                android:paddingHorizontal="4dp"
+                android:textSize="13sp"
                 android:text="@string/onboarding_assistant_balanced" />
 
             <com.google.android.material.button.MaterialButton
@@ -170,6 +179,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:maxLines="1"
+                android:paddingHorizontal="4dp"
+                android:textSize="13sp"
                 android:text="@string/onboarding_assistant_active" />
 
         </com.google.android.material.button.MaterialButtonToggleGroup>
