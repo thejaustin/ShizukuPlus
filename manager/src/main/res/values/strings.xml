@@ -1099,6 +1099,12 @@
     <string name="watchdog_status_running">Shizuku+ is running</string>
     <string name="watchdog_status_stopped">Shizuku+ isn\'t running</string>
     <string name="helper_notifications_channel">Helper notifications</string>
+    <string name="settings_assistant_level">Service Doctor assistance</string>
+    <string name="settings_assistant_level_off">Off — security warnings only</string>
+    <string name="settings_assistant_level_quiet">Quiet — tells you, never acts</string>
+    <string name="settings_assistant_level_balanced">Balanced — tips and safe auto-fixes</string>
+    <string name="settings_assistant_level_active">Active — also notifies for every problem</string>
+    <string name="settings_assistant_level_custom">Custom — set one by one below</string>
     <string name="settings_helper_notifications">Helper notifications</string>
     <string name="settings_helper_notifications_off">Off</string>
     <string name="settings_helper_notifications_stopped">When Shizuku+ stops or needs you</string>

@@ -253,6 +253,20 @@
         <item>apps</item>
         <item>hub</item>
     </string-array>
+    <string-array name="assistant_levels">
+        <item>@string/settings_assistant_level_off</item>
+        <item>@string/settings_assistant_level_quiet</item>
+        <item>@string/settings_assistant_level_balanced</item>
+        <item>@string/settings_assistant_level_active</item>
+        <item>@string/settings_assistant_level_custom</item>
+    </string-array>
+    <string-array name="assistant_levels_values" translatable="false">
+        <item>off</item>
+        <item>quiet</item>
+        <item>balanced</item>
+        <item>active</item>
+        <item>custom</item>
+    </string-array>
     <string-array name="helper_notifications">
         <item>@string/settings_helper_notifications_off</item>
         <item>@string/settings_helper_notifications_stopped</item>

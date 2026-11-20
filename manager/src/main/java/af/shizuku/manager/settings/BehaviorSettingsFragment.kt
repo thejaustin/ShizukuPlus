@@ -153,6 +153,33 @@ class BehaviorSettingsFragment :
             }
         }
 
+        findPreference<androidx.preference.ListPreference>("assistant_level")?.apply {
+            val prefs = ShizukuSettings.getPreferences()
+            value =
+                af.shizuku.manager.utils.AssistantLevel
+                    .current(prefs)
+                    .value
+            summaryProvider =
+                androidx.preference.ListPreference.SimpleSummaryProvider
+                    .getInstance()
+            setOnPreferenceChangeListener { _, newValue ->
+                val level =
+                    af.shizuku.manager.utils.AssistantLevel
+                        .of(newValue as? String)
+                if (level == af.shizuku.manager.utils.AssistantLevel.CUSTOM) return@setOnPreferenceChangeListener false
+                level.apply(prefs)
+                // The switches below read their own keys; refresh them to match the preset.
+                findPreference<androidx.preference.ListPreference>("helper_notifications")?.value = ShizukuSettings.getHelperNotificationLevel()
+                findPreference<androidx.preference.TwoStatePreference>("problems_on_home")?.isChecked = ShizukuSettings.isProblemsOnHomeEnabled()
+                val app = requireContext().applicationContext
+                view?.post {
+                    af.shizuku.manager.utils.ShizukuIssues
+                        .render(app)
+                }
+                true
+            }
+        }
+
         findPreference<androidx.preference.ListPreference>("helper_notifications")?.apply {
             value = ShizukuSettings.getHelperNotificationLevel()
             summaryProvider =

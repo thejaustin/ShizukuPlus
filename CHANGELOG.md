@@ -5,6 +5,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ## [Unreleased]
 
 ### ✨ Features
+- **Service Doctor assistance level** — Settings → Behavior → "Service Doctor assistance" sets how much Service Doctor helps on its own in one go: Off (security warnings only), Quiet (tells you, never acts), Balanced (tips and safe auto-fixes, how it already worked) or Active (also notifies for every problem). It shows Custom if you set the switches below one by one.
 - **Dhizuku limited mode (experimental)** — Settings → Experimental → "Dhizuku limited mode": when Secure Folder or another profile blocks Device Owner, the setup offers Shizuku+ as Profile Owner of your main profile instead. Android allows that next to other profiles and doesn't remove them. Dhizuku apps can hide and suspend apps, grant permissions and set restrictions, but can't install apps silently. Off by default; not yet tested next to Secure Folder on every Samsung version.
 - **Greyscale off icons (experimental)** — Settings → Experimental → "Greyscale off icons": a setting's icon loses its colour while it's off or unavailable, and the colour flows back as you switch it on. Apps without access look the same in the app list. Off by default.
 - **Compact Home cards (experimental)** — Settings → Experimental → "Compact Home cards" gives Home smaller titles and summaries, slightly smaller icons, 16dp card padding and 8dp between cards (the Material 3 card spacing), and keeps wrapped buttons like Activity log and Diagnostics close together. Off by default.
