@@ -7,6 +7,7 @@ import af.shizuku.manager.utils.IntentCrypto
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -62,6 +63,9 @@ class BinderRequestReceiver : BroadcastReceiver() {
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     ShellBinderRequestHandler.handleRequest(context, intent, requireAuth = true)
+                } catch (t: Throwable) {
+                    // A fresh scope has no handler: an uncaught throw here kills the app.
+                    Log.w("BinderRequestReceiver", "Authenticated binder request failed", t)
                 } finally {
                     pending.finish()
                 }

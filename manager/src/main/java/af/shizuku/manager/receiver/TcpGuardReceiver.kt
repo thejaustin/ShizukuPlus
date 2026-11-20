@@ -6,6 +6,7 @@ import af.shizuku.manager.utils.TcpNetworkGuard
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,6 +33,8 @@ class TcpGuardReceiver : BroadcastReceiver() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 TcpNetworkGuard.closePort(context.applicationContext, port)
+            } catch (t: Throwable) {
+                Log.w("TcpGuardReceiver", "closePort failed", t)
             } finally {
                 pending.finish()
             }
