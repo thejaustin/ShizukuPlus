@@ -44,6 +44,12 @@ jobs:
           chmod +x pre-push-guard/scripts/pre_push_check.sh
           bash pre-push-guard/scripts/pre_push_check.sh
 
+      # Informational: earlier issue fixes touched by this push, listed in the run summary.
+      - name: Regression watch
+        if: ${{ github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000' }}
+        continue-on-error: true
+        run: bash scripts/dev/regression-watch.sh ${{ github.event.before }} >> "$GITHUB_STEP_SUMMARY"
+
   lint:
     needs: [pre-push-guard]
     runs-on: ubuntu-latest
