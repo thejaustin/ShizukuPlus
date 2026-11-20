@@ -58,7 +58,8 @@ class BackupRestorePlusImpl(private val allowed: java.util.function.BooleanSuppl
         val (readSide, writeSide) = ParcelFileDescriptor.createPipe()
         Thread {
             try {
-                val proc = Runtime.getRuntime().exec(args)
+                // Nobody reads stderr; an undrained pipe past ~64KB would hang the child and the reader.
+                val proc = ProcessBuilder(*args).redirectError(ProcessBuilder.Redirect.to(java.io.File("/dev/null"))).start()
                 try {
                     // stderr must be drained separately — it can't be merged into stdout
                     // here because stdout is the tar data stream we forward to the caller.
@@ -269,11 +270,14 @@ class BackupRestorePlusImpl(private val allowed: java.util.function.BooleanSuppl
 
     override fun restoreAppData(backupStream: ParcelFileDescriptor?): Boolean {
         if (backupStream == null) return false
-        if (Build.VERSION.SDK_INT >= 32) return false
+        if (Build.VERSION.SDK_INT >= 32) {
+            runCatching { backupStream.close() }
+            return false
+        }
         return try {
-            val pb = ProcessBuilder("bu", "restore")
-            pb.redirectErrorStream(false)
-            val proc = pb.start()
+            // Unread output would fill the pipe and block waitFor() on this binder thread.
+            val proc = ProcessBuilder("bu", "restore")
+                .redirectOutput(ProcessBuilder.Redirect.to(java.io.File("/dev/null"))).redirectError(ProcessBuilder.Redirect.to(java.io.File("/dev/null"))).start()
             Thread {
                 try {
                     ParcelFileDescriptor.AutoCloseInputStream(backupStream).use { src ->
@@ -284,7 +288,11 @@ class BackupRestorePlusImpl(private val allowed: java.util.function.BooleanSuppl
                 }
             }.also { it.isDaemon = true }.start()
             proc.waitFor() == 0
-        } catch (_: Exception) { false }
+        } catch (_: Exception) {
+            // The writer thread never started, so nobody else closes the stream.
+            runCatching { backupStream.close() }
+            false
+        }
     }
 
     // ── External Storage Backup / Restore ─────────────────────────────────────
