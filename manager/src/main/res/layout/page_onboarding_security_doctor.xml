@@ -114,6 +114,66 @@
 
         </LinearLayout>
 
+
+        <!-- How much Service Doctor helps on its own -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="@string/onboarding_assistant_title"
+            android:textAppearance="?textAppearanceTitleMedium"
+            android:textColor="?colorOnSurface" />
+
+        <TextView
+            android:id="@+id/assistant_level_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textAppearance="?textAppearanceBodySmall"
+            android:textColor="?colorOnSurfaceVariant" />
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:id="@+id/assistant_level_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:selectionRequired="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/assistant_off"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/onboarding_assistant_off" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/assistant_quiet"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/onboarding_assistant_quiet" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/assistant_balanced"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/onboarding_assistant_balanced" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/assistant_active"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/onboarding_assistant_active" />
+
+        </com.google.android.material.button.MaterialButtonToggleGroup>
+
     </LinearLayout>
 
 </ScrollView>
