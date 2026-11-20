@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && bash scripts/dev/check-build.sh 2>&1 | tail -8"
+            "command": "f=$(jq -r \".tool_input.file_path // empty\"); case \"$f\" in *.xml) xmllint --noout \"$f\" 2>&1 | tail -5;; esac"
           }
         ]
       }
