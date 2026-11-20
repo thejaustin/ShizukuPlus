@@ -416,7 +416,7 @@ class WatchdogService : Service() {
             PendingIntent.getActivity(
                 this,
                 10,
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thejaustin/ShizukuPlus/wiki#shizuku-keeps-stopping-randomly"))
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thejaustin/ShizukuPlus/wiki/ShizukuPlus-Knowledgebase#shizuku-keeps-stopping-randomly"))
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
             )
