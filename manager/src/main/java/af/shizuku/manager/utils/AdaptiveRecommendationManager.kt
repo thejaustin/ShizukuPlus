@@ -23,6 +23,7 @@ object AdaptiveRecommendationManager {
     const val ID_USB_TCP_PERSISTENCE = "usb_tcp_persistence"
     const val ID_STABILITY_TIPS = "stability_tips"
     const val ID_TCP_NETWORK_GUARD = "tcp_network_guard"
+    const val ID_BATTERY_SAVER = "battery_saver"
 
     private const val KEY_LAST_PROMPT_PREFIX = "adaptive_last_prompt_"
     private const val COOLDOWN_MS = 3 * 24 * 60 * 60 * 1000L // 3-day cooldown between automatic prompts
@@ -284,6 +285,35 @@ object AdaptiveRecommendationManager {
                         Toast.LENGTH_SHORT,
                     ).show()
                 onEnabled()
+            },
+        )
+    }
+
+    /**
+     * Battery Saver defers the alarms and jobs that bring a stopped service back, so a Watchdog or
+     * Start on Boot that is on can still miss a restart. Suggest only; the user opens the settings.
+     */
+    @JvmStatic
+    fun maybeRecommendBatterySaver(context: Context): Boolean {
+        if (!ShizukuSettings.isAdaptiveRecommendationsEnabled()) return false
+        if (!ShizukuSettings.getWatchdog() && !ShizukuSettings.getStartOnBoot(context)) return false
+        val power = context.getSystemService(Context.POWER_SERVICE) as? android.os.PowerManager
+        if (power?.isPowerSaveMode != true) return false
+
+        return showRecommendationDialog(
+            context = context,
+            id = ID_BATTERY_SAVER,
+            title = context.getString(R.string.recommendation_battery_saver_title),
+            message = context.getString(R.string.recommendation_battery_saver_message),
+            positiveLabel = context.getString(R.string.recommendation_battery_saver_open),
+            onAccept = {
+                runCatching {
+                    context.startActivity(
+                        android.content
+                            .Intent(android.provider.Settings.ACTION_BATTERY_SAVER_SETTINGS)
+                            .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+                    )
+                }
             },
         )
     }

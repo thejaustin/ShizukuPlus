@@ -329,6 +329,8 @@ class BehaviorSettingsFragment :
         WatchdogService.addRunningListener(watchdogRunningListener)
         syncModeVisibility()
         syncWatchdogPreference()
+        af.shizuku.manager.utils.AdaptiveRecommendationManager
+            .maybeRecommendBatterySaver(requireContext())
         // Pick up changes made outside the card (e.g. TcpNetworkGuard, quick settings tile).
         wirelessAdbPreference.reload()
         VerifiedInstallPrefs.refresh(this)

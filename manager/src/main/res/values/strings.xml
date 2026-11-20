@@ -1099,6 +1099,9 @@
     <string name="watchdog_status_running">Shizuku+ is running</string>
     <string name="watchdog_status_stopped">Shizuku+ isn\'t running</string>
     <string name="helper_notifications_channel">Helper notifications</string>
+    <string name="recommendation_battery_saver_title">Battery Saver is on</string>
+    <string name="recommendation_battery_saver_message">While Battery Saver is on, Android delays the checks that restart Shizuku+ if it stops, so it may stay stopped until you open the app. You can turn Battery Saver off, or exempt Shizuku+ in its settings.</string>
+    <string name="recommendation_battery_saver_open">Open Battery Saver</string>
     <string name="settings_assistant_level">Service Doctor assistance</string>
     <string name="settings_assistant_level_off">Off — security warnings only</string>
     <string name="settings_assistant_level_quiet">Quiet — tells you, never acts</string>
