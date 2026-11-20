@@ -1126,6 +1126,9 @@
     <string name="doctor_report_failed_fixes_title">Tell me what it couldn\'t fix</string>
     <string name="doctor_report_failed_fixes_desc">When self-healing tries a fix in the background and it doesn\'t work, show it in the helper notifications</string>
     <string name="watchdog_turn_off">Turn Off</string>
+    <string name="watchdog_possible_cause">Possible cause: %1$s.</string>
+    <string name="watchdog_cause_battery_saver">Battery Saver is on</string>
+    <string name="watchdog_cause_battery_optimization">battery optimization is still on for Shizuku+</string>
     <string name="watchdog_shizuku_crashed_title">Shizuku crashed recently</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog restarted the service. Tap to learn about potential fixes to prevent future crashes.</string>
     <string name="battery_exemption_channel_name">Battery optimization</string>
