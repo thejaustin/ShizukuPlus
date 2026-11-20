@@ -61,6 +61,8 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Overlay protection** — Permission prompts ignore taps through other apps' overlays on Android 11 and older, and the automation token is hidden from clipboard previews.
 
 ### 🛠 Fixes & Improvements
+- **Service Doctor assistance "Custom"** — Choosing it did nothing. It now only appears as the label when you have set the switches below one by one, and the setting follows those switches.
+- **Docked navigation bar** — The bar is now solid with no outline, so content no longer shows through it at the bottom of the screen.
 - **Service Doctor rows open their own help** — every row used to open the same Root Compatibility page; now each opens the section for that exact check (battery, Samsung Auto Blocker, HyperOS autostart, port discovery and so on), with its wiki section one tap away. Several "Learn more" links that landed on the wiki home page now go to the right answer.
 - **The home card's "Tap to…" text works** — after a Watchdog restart, tapping the problem on the status card opens the help it mentions instead of doing nothing.
 - **Readable status card with custom accents** — With Full colour schemes and high contrast, the Home status card's Activity log and Diagnostics buttons were dark on dark (still the case in r3346), and the status banner at the top of Settings was pale text on a light card. Both, and the flash that marks a setting you jumped to, now take their colours from what's behind them ([#687](https://github.com/thejaustin/ShizukuPlus/issues/687)).
