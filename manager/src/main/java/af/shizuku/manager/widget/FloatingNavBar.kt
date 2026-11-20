@@ -14,7 +14,6 @@ import af.shizuku.manager.settings.SettingsActivity
 import af.shizuku.manager.shell.ShellTutorialActivity
 import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
-import af.shizuku.manager.utils.ShizukuStateMachine
 import android.app.Activity
 import android.app.ActivityOptions
 import android.app.Application
@@ -166,8 +165,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 key == ShizukuSettings.Keys.KEY_FLOATING_NAV_AUTOHIDE ||
                 key == ShizukuSettings.Keys.KEY_SHAPE_STYLE ||
                 key == ShizukuSettings.Keys.KEY_LAST_GRANTED_APP_COUNT ||
-                key == ShizukuSettings.Keys.KEY_AMOLED_PLUS ||
-                key == "has_update"
+                key == ShizukuSettings.Keys.KEY_AMOLED_PLUS
             ) {
                 current?.get()?.let { sync(it) }
             }
@@ -303,16 +301,8 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             nav.removeBadge(R.id.nav_apps)
         }
 
-        val hasUpdate = runCatching { ShizukuSettings.getPreferences().getBoolean("has_update", false) }.getOrDefault(false)
-        val hasSkew = ShizukuStateMachine.isServerVersionSkewed()
-        if ((hasUpdate || hasSkew) && isTabShown(R.id.nav_settings)) {
-            val badge = nav.getOrCreateBadge(R.id.nav_settings)
-            badge.backgroundColor = MaterialColors.getColor(activity, androidx.appcompat.R.attr.colorError, Color.RED)
-            badge.clearNumber()
-            badge.isVisible = true
-        } else {
-            nav.removeBadge(R.id.nav_settings)
-        }
+        // Settings never gets a dot: a stale server is already announced by the restart card on Home.
+        nav.removeBadge(R.id.nav_settings)
     }
 
     private fun attachLongPressListeners(

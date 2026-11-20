@@ -37,5 +37,15 @@
             android:textColor="?attr/colorOnSurfaceVariant"
             android:lineSpacingMultiplier="1.2"
             android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:paddingVertical="6dp"
+            android:textAppearance="?attr/textAppearanceLabelLarge"
+            android:textColor="?attr/colorPrimary"
+            android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

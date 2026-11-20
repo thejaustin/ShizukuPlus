@@ -409,11 +409,34 @@ class ChangelogTimelineAdapter(
             val target = if (hasDetail) detail else headline
             val collapsedLines = if (hasDetail) DETAIL_LINES else HEADLINE_LINES
 
+            val more = row.findViewById<TextView>(R.id.more)
+
+            // "Read more" only shows when the text is actually cut off, so a short note has no
+            // dead control; once open, "Show less" stays so the row can be closed again.
+            fun updateMore(open: Boolean) {
+                if (open) {
+                    more.text = more.context.getString(R.string.changelog_show_less)
+                    more.visibility = View.VISIBLE
+                    return
+                }
+                target.post {
+                    val layout = target.layout
+                    val cut = layout != null && layout.lineCount > 0 && layout.getEllipsisCount(layout.lineCount - 1) > 0
+                    more.text = more.context.getString(R.string.changelog_read_more)
+                    more.visibility = if (cut) View.VISIBLE else View.GONE
+                }
+            }
+
             fun apply(open: Boolean) {
                 target.maxLines = if (open) Int.MAX_VALUE else collapsedLines
                 target.ellipsize = if (open) null else TextUtils.TruncateAt.END
+                updateMore(open)
             }
             apply(key in openChanges)
+            val ripple = android.util.TypedValue()
+            if (ctxOf(row).theme.resolveAttribute(android.R.attr.selectableItemBackground, ripple, true)) {
+                row.setBackgroundResource(ripple.resourceId)
+            }
             row.setOnClickListener {
                 HapticUtils.segmentTick(it)
                 val open = if (openChanges.remove(key)) false else openChanges.add(key)
@@ -479,6 +502,9 @@ class ChangelogTimelineAdapter(
         // Headline rows are short, so a section can show more of them before "Show more".
         private const val PREVIEW_LIMIT = 9
         private const val PREVIEW_SIZE = 8
+
+        private fun ctxOf(v: View) = v.context
+
         private const val DETAIL_LINES = 2
         private const val HEADLINE_LINES = 3
         private const val RELATIVE_DAYS = 6

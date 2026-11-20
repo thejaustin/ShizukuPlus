@@ -1530,6 +1530,7 @@
     <string name="changelog_badge_new">New</string>
     <string name="changelog_show_more">Show %d more</string>
     <string name="changelog_show_less">Show less</string>
+    <string name="changelog_read_more">Read more</string>
     <string name="changelog_older_retry">Couldn\'t load older releases. Retry</string>
     <string name="changelog_summary_new_releases">%d new releases</string>
     <string name="changelog_summary_up_to_date">You\'re up to date</string>
