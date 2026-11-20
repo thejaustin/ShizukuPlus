@@ -199,6 +199,13 @@ object ChangelogParser {
         return withoutRefs.substring(0, sentenceEnd + 1)
     }
 
+    /** Plain wording for every bullet of a raw body, for dialogs that render the markdown as-is. */
+    fun plainify(body: String): String =
+        body.lines().joinToString("\n") { line ->
+            val b = BULLET.matchEntire(line)
+            if (b != null) "- " + plainWording(b.groupValues[1]) else HTML_COMMENT.replace(line, "")
+        }
+
     private fun clean(text: String): String {
         val noHash = COMMIT_HASH.replace(plainWording(text.trim()), "")
         val stripped = CC_PREFIX.replaceFirst(noHash, "")

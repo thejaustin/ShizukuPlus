@@ -1251,7 +1251,10 @@ open class HomeActivity :
         val notesBody =
             updateInfo.releaseNotes
                 .substringBefore("## 📦 Recent Releases")
-                .trim()
+                .let {
+                    af.shizuku.manager.home.changelog.ChangelogParser
+                        .plainify(it)
+                }.trim()
                 .ifEmpty { getString(R.string.update_no_release_notes) }
         val releaseNotesView = dialogView.findViewById<TextView>(R.id.update_release_notes)
         Markwon.create(this).setMarkdown(releaseNotesView, notesBody)

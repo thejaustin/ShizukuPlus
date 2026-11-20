@@ -141,6 +141,9 @@ class ChangelogDialogFragment : BottomSheetDialogFragment() {
 
         fun formatNotes(rawNotes: String): String {
             if (rawNotes.isBlank()) return ""
+            val rawNotes =
+                af.shizuku.manager.home.changelog.ChangelogParser
+                    .plainify(rawNotes)
 
             // When a release contains a curated "What's new" section, use it directly instead of
             // unrolling folded developer commit dumps into the user dialog.
