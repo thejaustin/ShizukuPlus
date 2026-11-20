@@ -95,9 +95,10 @@ jobs:
         env:
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
-          # A PR opened with GITHUB_TOKEN doesn't trigger the PR checks, so the translations
-          # are validated below instead; a red run here means don't merge the PR as is.
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # A PR opened with the built-in GITHUB_TOKEN doesn't trigger the PR checks, so a
+          # fine-grained token (this repo only: Contents + Pull requests write) opens it when set.
+          # The translations are also validated below; a red run means don't merge the PR as is.
+          GITHUB_TOKEN: ${{ secrets.CROWDIN_PR_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Validate downloaded translations
         run: |
