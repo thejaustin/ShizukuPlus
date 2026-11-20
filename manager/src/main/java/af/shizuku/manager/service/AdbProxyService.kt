@@ -158,7 +158,9 @@ class AdbProxyService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var serverSocket: ServerSocket? = null
-    private val clients: MutableSet<Socket> = java.util.concurrent.ConcurrentHashMap.newKeySet()
+    private val clients: MutableSet<Socket> =
+        java.util.concurrent.ConcurrentHashMap
+            .newKeySet()
     private var serverJob: Job? = null
     private var isProxyRunning = false
 

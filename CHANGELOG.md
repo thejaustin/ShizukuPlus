@@ -106,6 +106,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Cleaned Downloads directory** — Prevents duplicate backup copies from being left in the public Downloads folder ([#651](https://github.com/thejaustin/ShizukuPlus/issues/651)).
 
 ### 🎨 Look & Feel
+- **Easier-to-scan changelog** — After an update, the changelog opens with a short list of the newest features. Each change shows a one-line headline you can tap for the details, sections show more before "Show more", and "Expand all" in the sort menu opens every release at once.
 - **Classic and Expressive icon shapes** — Cookie, clover, sunny, gem, flower, and burst shapes restored alongside Material Expressive options.
 - **Shape-morphing switches** — Standardized on Material 3 Expressive switches with thumb checkmarks and smooth icon morphing animations.
 - **Livelier switch designs** — The shape thumb grows under your finger like the standard switch handle and no longer shrinks under its X while off, and with "Icon is the switch" an off icon now uses the quieter outline colours of an off switch, warming to its full colour as it fills.

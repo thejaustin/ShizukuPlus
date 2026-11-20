@@ -1512,6 +1512,12 @@
     <string name="changelog_older_retry">Couldn\'t load older releases. Retry</string>
     <string name="changelog_summary_new_releases">%d new releases</string>
     <string name="changelog_summary_up_to_date">You\'re up to date</string>
+    <string name="changelog_expand_all">Expand all</string>
+    <string name="changelog_collapse_all">Collapse all</string>
+    <plurals name="changelog_highlights_more">
+        <item quantity="one">+%d more new feature below</item>
+        <item quantity="other">+%d more new features below</item>
+    </plurals>
     <plurals name="changelog_change_count">
         <item quantity="one">%d change</item>
         <item quantity="other">%d changes</item>
