@@ -1,0 +1,26 @@
+# Weekly dependency update PRs. Minor and patch updates come grouped in one PR per ecosystem;
+# majors come one at a time. Nothing merges automatically: a dependency bump can need new
+# ProGuard keeps (manager/proguard-rules.pro), so check the release smoke test before merging.
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels: [dependencies]
+    groups:
+      gradle-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels: [dependencies]
+    groups:
+      actions-minor-patch:
+        update-types: [minor, patch]
