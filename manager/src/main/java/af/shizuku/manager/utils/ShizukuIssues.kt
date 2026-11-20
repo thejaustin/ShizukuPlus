@@ -54,6 +54,8 @@ object ShizukuIssues {
         val contentIntent: PendingIntent? = null,
         /** A security warning (a debugging port open to strangers): alerts even with the level Off. */
         val security: Boolean = false,
+        /** A Service Doctor guide id (see KnowledgebaseRegistry.guideForCheck): the card opens that help in the app. */
+        val helpCheckId: String? = null,
     )
 
     /** The "Helper notifications" setting. */
@@ -236,6 +238,7 @@ object ShizukuIssues {
             context.getString(R.string.issue_stopped_text),
             actions,
             contentIntent,
+            helpCheckId = "shizuku_server",
         )
 
     private val main by lazy { Handler(Looper.getMainLooper()) }

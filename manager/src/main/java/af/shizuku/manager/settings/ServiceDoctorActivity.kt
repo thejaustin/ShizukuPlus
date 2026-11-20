@@ -495,6 +495,7 @@ class ServiceDoctorActivity : AppBarActivity() {
                         ok = item.ok,
                         onFix = createFixAction(item),
                         topicId = item.id,
+                        lead = listOfNotNull("**${item.title}** — ${item.status}", item.tip?.takeIf { it.isNotBlank() }).joinToString("\n\n"),
                         actionLabelRes = item.actionLabelRes ?: R.string.doctor_button_fix,
                         isOptional = item.optional,
                         onQuickFix = if (item.id == "wallet_integrity") ({ quickWalletRepair() }) else null,
@@ -616,6 +617,8 @@ class ServiceDoctorActivity : AppBarActivity() {
         val ok: Boolean,
         val onFix: (() -> Unit)? = null,
         val topicId: String? = null,
+        /** What this check found on this device, shown above the general help. */
+        val lead: String? = null,
         val actionLabelRes: Int = R.string.doctor_button_fix,
         val isOptional: Boolean = false,
         /** With the expressive preview on, a split button runs this and keeps [onFix] in its menu. */
@@ -684,7 +687,7 @@ class ServiceDoctorActivity : AppBarActivity() {
                 af.shizuku.manager.utils.HapticUtils
                     .tap(it)
                 af.shizuku.manager.knowledgebase.KnowledgebaseHelper
-                    .showForCheck(context, check.topicId)
+                    .showForCheck(context, check.topicId, check.lead)
             }
 
             val split = check.onFix != null && check.onQuickFix != null && ShizukuSettings.isExpressiveControlsPreviewEnabled()
@@ -703,7 +706,7 @@ class ServiceDoctorActivity : AppBarActivity() {
                             1 -> check.onFix.invoke()
                             else ->
                                 af.shizuku.manager.knowledgebase.KnowledgebaseHelper
-                                    .showForCheck(context, check.topicId)
+                                    .showForCheck(context, check.topicId, check.lead)
                         }
                         true
                     }

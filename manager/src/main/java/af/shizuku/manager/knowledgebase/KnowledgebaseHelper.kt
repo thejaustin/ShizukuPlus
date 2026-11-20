@@ -24,6 +24,7 @@ object KnowledgebaseHelper {
     fun showForCheck(
         context: Context,
         checkId: String?,
+        lead: String? = null,
     ) {
         val guide = KnowledgebaseRegistry.guideForCheck(checkId)
         if (guide == null) {
@@ -32,7 +33,7 @@ object KnowledgebaseHelper {
         }
         val activity = context.findActivity<FragmentActivity>()
         if (activity != null && !activity.isFinishing && !activity.isDestroyed) {
-            KnowledgebaseBottomSheet.show(activity.supportFragmentManager, guide.topicId, guide.wikiUrl)
+            KnowledgebaseBottomSheet.show(activity.supportFragmentManager, guide.topicId, guide.wikiUrl, lead)
         } else {
             CustomTabsHelper.launchUrlOrCopy(context, guide.wikiUrl)
         }

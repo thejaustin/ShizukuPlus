@@ -101,12 +101,13 @@ object KnowledgebaseRegistry {
             "start_mdns_timeout" to guide(TOPIC_WIRELESS_ADB, "port-discovery-keeps-timing-out"),
             "start_adb_key" to guide(TOPIC_WIRELESS_ADB, "adb-key-problems"),
             "secure_settings" to guide(TOPIC_WIRELESS_ADB, "secure-settings-permission"),
-            "accessibility_service" to guide(TOPIC_WIRELESS_ADB, "wireless-debugging-is-off"),
+            "accessibility_service" to guide(TOPIC_WIRELESS_ADB, "adb-pairing-accessibility-service"),
             "secondary_user" to guide(TOPIC_WIRELESS_ADB, "secure-folder-and-secondary-users"),
             "su_bridge_a16" to guide(TOPIC_ROOT_COMPAT, "su-bridge-on-android-16"),
             "wallet_integrity" to guide(TOPIC_ROOT_COMPAT, "google-wallet-and-messages"),
-            "root_access" to guide(TOPIC_ROOT_COMPAT, "su-bridge-on-android-16"),
-            "shizuku_server" to guide(TOPIC_WIRELESS_ADB, "wireless-debugging-is-off"),
+            "root_access" to guide(TOPIC_ROOT_COMPAT, "root-access"),
+            "watchdog_crash" to guide(TOPIC_BATTERY_OEM, "shizuku-keeps-stopping-randomly"),
+            "shizuku_server" to guide(TOPIC_BATTERY_OEM, "the-server-is-stopped"),
         )
 
     fun guideForCheck(checkId: String?): CheckGuide? = CHECK_GUIDES[checkId]

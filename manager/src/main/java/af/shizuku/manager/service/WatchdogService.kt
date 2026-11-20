@@ -432,6 +432,7 @@ class WatchdogService : Service() {
                     getString(R.string.watchdog_shizuku_crashed_text),
                     actions,
                     learnMore,
+                    helpCheckId = "watchdog_crash",
                 )
             },
         )

@@ -28,11 +28,13 @@ import io.noties.markwon.Markwon
 class KnowledgebaseBottomSheet : BottomSheetDialogFragment() {
     private var topicId: String = KnowledgebaseRegistry.TOPIC_ROOT_COMPAT
     private var wikiUrl: String? = null
+    private var lead: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         topicId = arguments?.getString(ARG_TOPIC_ID) ?: KnowledgebaseRegistry.TOPIC_ROOT_COMPAT
         wikiUrl = arguments?.getString(ARG_WIKI_URL)
+        lead = arguments?.getString(ARG_LEAD)
     }
 
     override fun onCreateView(
@@ -177,9 +179,9 @@ class KnowledgebaseBottomSheet : BottomSheetDialogFragment() {
                     .open(topic.assetFileName)
                     .bufferedReader()
                     .use { it.readText() }
-            markwon.setMarkdown(contentTextView, markdown)
+            markwon.setMarkdown(contentTextView, lead?.let { "$it\n\n---\n\n" }.orEmpty() + markdown)
         } catch (e: Exception) {
-            contentTextView.text = topic.subtitle
+            contentTextView.text = lead ?: topic.subtitle
         }
 
         scrollView.addView(contentTextView)
@@ -269,11 +271,13 @@ class KnowledgebaseBottomSheet : BottomSheetDialogFragment() {
         const val TAG = "KnowledgebaseBottomSheet"
         private const val ARG_TOPIC_ID = "arg_topic_id"
         private const val ARG_WIKI_URL = "arg_wiki_url"
+        private const val ARG_LEAD = "arg_lead"
 
         fun show(
             fragmentManager: FragmentManager,
             topicId: String,
             wikiUrl: String? = null,
+            lead: String? = null,
         ) {
             if (fragmentManager.isStateSaved || fragmentManager.isDestroyed) return
             val existing = fragmentManager.findFragmentByTag(TAG)
@@ -284,6 +288,7 @@ class KnowledgebaseBottomSheet : BottomSheetDialogFragment() {
                         Bundle().apply {
                             putString(ARG_TOPIC_ID, topicId)
                             putString(ARG_WIKI_URL, wikiUrl)
+                            putString(ARG_LEAD, lead)
                         }
                 }
             sheet.show(fragmentManager, TAG)

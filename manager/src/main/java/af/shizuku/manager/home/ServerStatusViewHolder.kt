@@ -342,7 +342,14 @@ class ServerStatusViewHolder(
         // The problem text often ends "Tap to …" (watchdog crash, vendor battery limit): the
         // notification opens its contentIntent, so the card has to as well.
         val tapIntent = issue?.contentIntent
-        if (tapIntent != null) {
+        val helpId = issue?.helpCheckId
+        if (helpId != null) {
+            // In-app help first: sending our own PendingIntent can be blocked as a background launch.
+            summaryView.setOnClickListener {
+                af.shizuku.manager.knowledgebase.KnowledgebaseHelper
+                    .showForCheck(summaryView.context, helpId)
+            }
+        } else if (tapIntent != null) {
             summaryView.setOnClickListener {
                 try {
                     tapIntent.send()
