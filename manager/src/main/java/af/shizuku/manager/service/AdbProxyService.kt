@@ -158,6 +158,7 @@ class AdbProxyService : Service() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var serverSocket: ServerSocket? = null
+    private val clients: MutableSet<Socket> = java.util.concurrent.ConcurrentHashMap.newKeySet()
     private var serverJob: Job? = null
     private var isProxyRunning = false
 
@@ -182,15 +183,17 @@ class AdbProxyService : Service() {
         isProxyRunning = true
         serverJob =
             serviceScope.launch {
+                var socket: ServerSocket? = null
                 runCatching {
                     // Bind only to loopback — never exposed to network
-                    val socket = ServerSocket(PROXY_PORT, 8, InetAddress.getByName("127.0.0.1"))
-                    socket.soTimeout = 0 // Block indefinitely waiting for connections
-                    serverSocket = socket
+                    val bound = ServerSocket(PROXY_PORT, 8, InetAddress.getByName("127.0.0.1"))
+                    socket = bound
+                    bound.soTimeout = 0 // Block indefinitely waiting for connections
+                    serverSocket = bound
                     Timber.tag(TAG).i("Proxy listening on 127.0.0.1:$PROXY_PORT")
                     while (isActive) {
                         try {
-                            val client = socket.accept()
+                            val client = bound.accept()
                             launch { handleClient(client) }
                         } catch (e: SocketException) {
                             if (isActive) Timber.tag(TAG).e(e, "Server socket error")
@@ -201,10 +204,13 @@ class AdbProxyService : Service() {
                     Timber.tag(TAG).e(e, "Proxy failed to start")
                     isProxyRunning = false
                 }
+                // Stop can land before serverSocket is published; this job always owns the close.
+                runCatching { socket?.close() }
             }
     }
 
     private suspend fun handleClient(socket: Socket) {
+        clients.add(socket)
         socket.use {
             socket.soTimeout = 0
             try {
@@ -219,6 +225,8 @@ class AdbProxyService : Service() {
                 Timber.tag(TAG).w("Client dropped: %s", e.message)
             } catch (e: Exception) {
                 Timber.tag(TAG).e(e, "Client error")
+            } finally {
+                clients.remove(socket)
             }
         }
     }
@@ -229,6 +237,9 @@ class AdbProxyService : Service() {
         serverJob?.cancel()
         runCatching { serverSocket?.close() }
         serverSocket = null
+        // handler.loop() blocks on the socket and ignores cancellation; closing unblocks it.
+        clients.toList().forEach { runCatching { it.close() } }
+        clients.clear()
     }
 
     override fun onDestroy() {
