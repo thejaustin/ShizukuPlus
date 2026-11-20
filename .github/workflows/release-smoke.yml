@@ -36,7 +36,7 @@ concurrency:
 jobs:
   smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 75
     steps:
       - name: Checkout
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -86,6 +86,8 @@ jobs:
         if: steps.changed.outputs.run == 'true'
         run: |
           yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
+          # Same heap as the release job in app.yml, so R8 doesn't run out of memory here only.
+          export GRADLE_OPTS="-Xmx4g -XX:MaxMetaspaceSize=512m"
           ./gradlew :manager:assembleShizukuplusRelease \
             -x uploadSentryProguardMappingsShizukuplusRelease --stacktrace
 
