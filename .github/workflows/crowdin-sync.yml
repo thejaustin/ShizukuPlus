@@ -6,19 +6,22 @@ on:
     paths:
       - 'manager/src/main/res/values/strings.xml'
       - 'manager/src/main/res/values/strings_companion.xml'
-      - 'manager/src/main/res/values-*/strings.xml'
-      - 'manager/src/main/res/values-*/strings_companion.xml'
   schedule:
     # Weekly Monday 06:00 UTC — pull approved translations and open a PR
     - cron: '0 6 * * 1'
   workflow_dispatch:
     inputs:
       direction:
-        description: 'upload (push sources & translations to Crowdin) or download (pull translations)'
+        description: 'upload (push English source strings to Crowdin) or download (pull translations)'
         required: true
         default: 'upload'
         type: choice
         options: [upload, download]
+      upload_translations:
+        description: 'With upload: also send the repo translations to Crowdin (unapproved; seed Crowdin with this once)'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -26,7 +29,7 @@ permissions:
 
 jobs:
   upload-sources:
-    name: Upload source strings & translations to Crowdin
+    name: Upload source strings to Crowdin
     if: |
       github.event_name == 'push' ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.direction == 'upload')
@@ -34,13 +37,15 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - name: Upload sources & existing translations
+      # Translations are only uploaded on request and never auto-approved, so machine drafts
+      # from scripts/i18n/local_translate.py can't overwrite translators' approved work.
+      - name: Upload sources
         uses: crowdin/github-action@8f01d54f70f1713ee3f09d82c2bbb2daeac28689 # v2
         with:
           upload_sources: true
-          upload_translations: true
-          auto_approve_imported: true
-          import_eq_suggestions: true
+          upload_translations: ${{ github.event.inputs.upload_translations == 'true' }}
+          auto_approve_imported: false
+          import_eq_suggestions: false
           crowdin_branch_name: master
           config: crowdin.yml
         env:
@@ -48,10 +53,16 @@ jobs:
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
 
       - name: Report Sync Summary
-        if: always()
+        if: success()
         run: |
           echo "### 🌐 Crowdin Translation Sync Status" >> $GITHUB_STEP_SUMMARY
-          echo "Source strings & translations successfully synced with Crowdin project [Shizuku+](https://crowdin.com/project/ShizukuPlus)." >> $GITHUB_STEP_SUMMARY
+          echo "Source strings synced with Crowdin project [Shizuku+](https://crowdin.com/project/ShizukuPlus)." >> $GITHUB_STEP_SUMMARY
+
+      - name: Report Sync Failure
+        if: failure()
+        run: |
+          echo "### ❌ Crowdin Translation Sync Failed" >> $GITHUB_STEP_SUMMARY
+          echo "Upload to Crowdin failed; see the step log. A 402 error means the Crowdin plan or licence has lapsed." >> $GITHUB_STEP_SUMMARY
 
   download-translations:
     name: Download translations from Crowdin → open PR
@@ -77,15 +88,31 @@ jobs:
           pull_request_labels: 'type: enhancement'
           localization_branch_name: crowdin-translations
           crowdin_branch_name: master
-          skip_untranslated_strings: false
+          # Untranslated strings would otherwise be written out in English and clash with
+          # strings_machine_translated.xml; leaving them out lets Android fall back to English.
+          skip_untranslated_strings: true
           config: crowdin.yml
         env:
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
+          # A PR opened with GITHUB_TOKEN doesn't trigger the PR checks, so the translations
+          # are validated below instead; a red run here means don't merge the PR as is.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Validate downloaded translations
+        run: |
+          python3 scripts/i18n/check_translations.py
+          python3 scripts/i18n/check_arrays.py
+          python3 scripts/i18n/check_shrink.py --base ${{ github.sha }}
+
       - name: Report Download Summary
-        if: always()
+        if: success()
         run: |
           echo "### 📥 Crowdin Translation Pull Status" >> $GITHUB_STEP_SUMMARY
-          echo "Approved community translations checked and synced from [Crowdin](https://crowdin.com/project/ShizukuPlus)." >> $GITHUB_STEP_SUMMARY
+          echo "Approved community translations downloaded from [Crowdin](https://crowdin.com/project/ShizukuPlus) and validated." >> $GITHUB_STEP_SUMMARY
+
+      - name: Report Download Failure
+        if: failure()
+        run: |
+          echo "### ❌ Crowdin Translation Pull Failed" >> $GITHUB_STEP_SUMMARY
+          echo "Download or validation failed; see the step log. Don't merge the crowdin-translations PR until it's fixed." >> $GITHUB_STEP_SUMMARY

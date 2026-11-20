@@ -41,6 +41,11 @@ jobs:
           chmod +x pre-push-guard/scripts/pre_push_check.sh
           bash pre-push-guard/scripts/pre_push_check.sh
 
+      - name: Check translations
+        run: |
+          python3 scripts/i18n/check_translations.py
+          python3 scripts/i18n/check_arrays.py
+
       - name: Setup Java
         uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
         with:

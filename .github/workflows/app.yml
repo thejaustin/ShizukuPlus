@@ -65,6 +65,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
 
+      - name: Check translations
+        run: |
+          python3 scripts/i18n/check_translations.py
+          python3 scripts/i18n/check_arrays.py
+
       - name: Accept SDK Licenses
         run: yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
 
@@ -205,11 +210,23 @@ jobs:
           upload_sources: false
           download_translations: true
           create_pull_request: false
-          skip_untranslated_strings: false
+          skip_untranslated_strings: true
           config: crowdin.yml
         env:
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_TOKEN }}
+
+      # Translations fetched above go straight into the release, so check them first and fall
+      # back to the committed ones if any would break the build or crash at runtime.
+      - name: Validate translations
+        if: ${{ env.HAS_CROWDIN == 'true' }}
+        run: |
+          if ! { python3 scripts/i18n/check_translations.py && python3 scripts/i18n/check_arrays.py \
+                 && python3 scripts/i18n/check_shrink.py; }; then
+            echo "::warning::Crowdin translations failed validation or dropped strings; building with the committed translations instead"
+            git checkout -- manager/src/main/res core/ui/src/main/res
+            git clean -fdq -- manager/src/main/res core/ui/src/main/res
+          fi
 
       - name: Build with Gradle
         id: buildWithGradle
