@@ -1,0 +1,122 @@
+name: Release Smoke Test
+
+# Runs the R8-minified release build on an emulator. Missing ProGuard keeps only crash minified
+# builds, and the regular build job never launches the APK. Nightly when master changed, and on
+# any change to shrinking rules or dependencies.
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  push:
+    branches: [master]
+    paths:
+      - 'manager/proguard-rules.pro'
+      - '**/build.gradle'
+      - '**/build.gradle.kts'
+      - 'gradle/libs.versions.toml'
+      - 'scripts/ci/release-smoke.sh'
+      - '.github/workflows/release-smoke.yml'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'manager/proguard-rules.pro'
+      - '**/build.gradle'
+      - '**/build.gradle.kts'
+      - 'gradle/libs.versions.toml'
+      - 'scripts/ci/release-smoke.sh'
+      - '.github/workflows/release-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          submodules: 'recursive'
+          fetch-depth: 0
+
+      - name: Skip the nightly run when master hasn't changed
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" = schedule ] && [ -z "$(git log --since='25 hours ago' --format=%h -1)" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "No commits in the last day; skipping." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Java
+        if: steps.changed.outputs.run == 'true'
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Gradle
+        if: steps.changed.outputs.run == 'true'
+        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
+
+      # Throwaway key: signing.gradle only refuses a CI release build without signing.properties.
+      # This APK is never uploaded, so it can't be mistaken for a real release.
+      - name: Create signing.properties (throwaway key)
+        if: steps.changed.outputs.run == 'true'
+        run: |
+          cat <<'EOF' > signing.properties
+          KEYSTORE_PASSWORD=android
+          KEYSTORE_ALIAS=androiddebugkey
+          KEYSTORE_ALIAS_PASSWORD=android
+          KEYSTORE_FILE=../debug.jks
+          EOF
+          keytool -genkeypair -v -keystore debug.jks -storepass android \
+            -alias androiddebugkey -keypass android \
+            -keyalg RSA -keysize 2048 -validity 1 \
+            -dname "CN=Smoke Test, O=CI, C=US" 2>/dev/null
+
+      # No SENTRY_DSN or SENTRY_AUTH_TOKEN: emulator crashes stay out of the real Sentry project.
+      - name: Build release APK
+        if: steps.changed.outputs.run == 'true'
+        run: |
+          yes | /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
+          ./gradlew :manager:assembleShizukuplusRelease \
+            -x uploadSentryProguardMappingsShizukuplusRelease --stacktrace
+
+      - name: Enable KVM hardware acceleration
+        if: steps.changed.outputs.run == 'true'
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # emulator-runner runs each script line in its own shell, so everything is in one script.
+      - name: Run release smoke test on emulator
+        if: steps.changed.outputs.run == 'true'
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2
+        with:
+          api-level: 30
+          arch: x86_64
+          profile: pixel_2
+          emulator-options: -no-window -no-audio -no-boot-anim -gpu swiftshader_indirect
+          disable-animations: true
+          # Then the instrumented JNI/screen smoke tests on the debug build (same throwaway key).
+          script: |
+            bash scripts/ci/release-smoke.sh
+            adb uninstall af.shizuku.plus.api || true
+            ./gradlew :manager:connectedShizukuplusDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=af.shizuku.manager.JniSmokeTest,af.shizuku.manager.ScreenSmokeTest --stacktrace
+
+      - name: Upload logs
+        if: always() && steps.changed.outputs.run == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-smoke-logs
+          path: |
+            smoke-logs/
+            manager/build/outputs/androidTest-results/
