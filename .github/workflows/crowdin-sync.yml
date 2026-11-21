@@ -7,8 +7,8 @@ on:
       - 'manager/src/main/res/values/strings.xml'
       - 'manager/src/main/res/values/strings_companion.xml'
   schedule:
-    # Weekly Monday 06:00 UTC — pull approved translations and open a PR
-    - cron: '0 6 * * 1'
+    # Weekly Monday 06:17 UTC (off the top of the hour, where scheduled runs get delayed or dropped) — pull approved translations and open a PR
+    - cron: '17 6 * * 1'
   workflow_dispatch:
     inputs:
       direction:
@@ -16,7 +16,7 @@ on:
         required: true
         default: 'upload'
         type: choice
-        options: [upload, download]
+        options: [upload, download, status]
       upload_translations:
         description: 'With upload: also send the repo translations to Crowdin (unapproved; seed Crowdin with this once)'
         required: false
@@ -83,8 +83,10 @@ jobs:
           pull_request_body: |
             Automated translation sync from Crowdin.
 
-            Includes all strings approved by translation reviewers since the last sync.
-            Please review for any unexpected changes before merging.
+            Includes every translation Crowdin holds for the strings in the app, approved or not
+            (Crowdin's export isn't limited to approved work, so repo translations seeded earlier
+            stay in). Machine drafts that a translation now covers are dropped in a follow-up
+            commit. Check that lint-and-build is green and skim the diff before merging.
           pull_request_labels: 'type: enhancement'
           localization_branch_name: crowdin-translations
           crowdin_branch_name: master
@@ -100,20 +102,72 @@ jobs:
           # The translations are also validated below; a red run means don't merge the PR as is.
           GITHUB_TOKEN: ${{ secrets.CROWDIN_PR_TOKEN || secrets.GITHUB_TOKEN }}
 
+      # The Crowdin action switches back to master when it finishes, so the validators would
+      # otherwise check master instead of the translations it just pushed.
+      - name: Check out the translation branch
+        id: branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -n "$(gh pr list --head crowdin-translations --state open --json number --jq '.[0].number')" ]; then
+            git fetch -q origin crowdin-translations
+            git checkout -q crowdin-translations
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No open translation PR (nothing new from Crowdin)." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # Crowdin returns a translation for a key that still has a machine draft: the draft has to
+      # go, because a key in two files is an aapt duplicate-resource error. Pushed with the PR
+      # token so the PR checks run again on the new commit.
+      - name: Drop machine drafts that Crowdin now covers
+        if: steps.branch.outputs.found == 'true'
+        env:
+          PUSH_TOKEN: ${{ secrets.CROWDIN_PR_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          python3 scripts/i18n/promote_drafts.py
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add manager/src/main/res
+            git commit -q -m "chore(i18n): drop machine drafts now covered by Crowdin translations"
+            git push -q "https://x-access-token:${PUSH_TOKEN}@github.com/${{ github.repository }}" HEAD:crowdin-translations
+          fi
+
       - name: Validate downloaded translations
+        if: steps.branch.outputs.found == 'true'
         run: |
           python3 scripts/i18n/check_translations.py
           python3 scripts/i18n/check_arrays.py
           python3 scripts/i18n/check_shrink.py --base ${{ github.sha }}
 
       - name: Report Download Summary
-        if: success()
+        if: success() && steps.branch.outputs.found == 'true'
         run: |
           echo "### 📥 Crowdin Translation Pull Status" >> $GITHUB_STEP_SUMMARY
-          echo "Approved community translations downloaded from [Crowdin](https://crowdin.com/project/ShizukuPlus) and validated." >> $GITHUB_STEP_SUMMARY
+          echo "Translations downloaded from [Crowdin](https://crowdin.com/project/ShizukuPlus) and validated on the crowdin-translations branch." >> $GITHUB_STEP_SUMMARY
 
       - name: Report Download Failure
         if: failure()
         run: |
           echo "### ❌ Crowdin Translation Pull Failed" >> $GITHUB_STEP_SUMMARY
           echo "Download or validation failed; see the step log. Don't merge the crowdin-translations PR until it's fixed." >> $GITHUB_STEP_SUMMARY
+
+  status:
+    name: Crowdin progress per language
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.direction == 'status'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      # Read-only: prints translated and approved percentages per language, so the repo can be
+      # compared with Crowdin without a Crowdin login.
+      - name: Crowdin status
+        uses: crowdin/github-action@8f01d54f70f1713ee3f09d82c2bbb2daeac28689 # v2
+        with:
+          command: status
+          command_args: '--branch master'
+          config: crowdin.yml
+        env:
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_TOKEN }}

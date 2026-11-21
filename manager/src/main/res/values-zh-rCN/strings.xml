@@ -1264,7 +1264,6 @@
     <string name="changelog_older_retry">无法加载更早的版本，请重试</string>
     <string name="changelog_summary_new_releases">%d 个新版本</string>
     <string name="changelog_summary_up_to_date">已是最新</string>
-    <string name="compat_hub_uninstall_btn">卸载兼容中心</string>
 
     <!-- New strings for features added after the last zh-rCN sync -->
     <string name="home_samsung_system_uid_title"><![CDATA[启动（三星系统 UID）]]></string>
