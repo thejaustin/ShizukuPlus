@@ -235,6 +235,8 @@ abstract class BaseSettingsFragment : PreferenceFragmentCompat() {
                 // target preference is actually visible in the adapter before we try to scroll.
                 val targetPref = findPreference<androidx.preference.Preference>(highlightKey)
                 (targetPref?.parent as? CollapsiblePreferenceCategory)?.expand()
+                // A link to a whole group (category_app_interactions etc.) opens that group too.
+                (targetPref as? CollapsiblePreferenceCategory)?.expand()
 
                 val adapter = listView?.adapter
                 if (adapter != null) {
