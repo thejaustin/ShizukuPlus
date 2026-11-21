@@ -397,18 +397,17 @@ class ChangelogTimelineAdapter(
             val headline = row.findViewById<TextView>(R.id.text)
             val detail = row.findViewById<TextView>(R.id.detail)
             headline.text = InlineFormatter.format(split.headline, chipColor, density, onLink)
-            headline.movementMethod = LinkMovementMethod.getInstance()
+            headline.movementMethod = linksOnly
             val key = "${r.tag}|${text.hashCode()}"
             val hasDetail = split.detail != null
             if (hasDetail) {
                 headline.setTypeface(headline.typeface, Typeface.BOLD)
                 detail.visibility = View.VISIBLE
                 detail.text = InlineFormatter.format(split.detail!!, chipColor, density, onLink)
-                detail.movementMethod = LinkMovementMethod.getInstance()
+                detail.movementMethod = linksOnly
             }
-            // A TextView with a link movement method is clickable and swallows taps on plain
-            // text, so the row never opened. Not clickable: taps on links still reach the method,
-            // and every other tap falls through to the row.
+            // linksOnly lets taps that miss a link fall through to the row; the movement method
+            // also marks the view clickable, which would swallow them again.
             headline.isClickable = false
             headline.isFocusable = false
             detail.isClickable = false
@@ -428,7 +427,9 @@ class ChangelogTimelineAdapter(
                 }
                 target.post {
                     val layout = target.layout
-                    val cut = layout != null && layout.lineCount > 0 && layout.getEllipsisCount(layout.lineCount - 1) > 0
+                    val cut =
+                        layout != null && layout.lineCount > 0 &&
+                            (layout.lineCount > collapsedLines || layout.getEllipsisCount(layout.lineCount - 1) > 0)
                     more.text = more.context.getString(R.string.changelog_read_more)
                     more.visibility = if (cut) View.VISIBLE else View.GONE
                 }
@@ -437,6 +438,10 @@ class ChangelogTimelineAdapter(
             fun apply(open: Boolean) {
                 target.maxLines = if (open) Int.MAX_VALUE else collapsedLines
                 target.ellipsize = if (open) null else TextUtils.TruncateAt.END
+                // setMaxLines alone keeps the old layout, so no ellipsis drew and the cut was invisible.
+                target.text = target.text
+                target.isClickable = false
+                target.isFocusable = false
                 updateMore(open)
             }
             apply(key in openChanges)
@@ -511,6 +516,23 @@ class ChangelogTimelineAdapter(
         private const val PREVIEW_SIZE = 8
 
         private fun ctxOf(v: View) = v.context
+
+        /** Opens links but returns false for any other touch, so the row behind the text gets the tap. */
+        private val linksOnly =
+            object : LinkMovementMethod() {
+                override fun onTouchEvent(
+                    widget: TextView,
+                    buffer: android.text.Spannable,
+                    event: android.view.MotionEvent,
+                ): Boolean {
+                    val layout = widget.layout ?: return false
+                    val x = (event.x - widget.totalPaddingLeft + widget.scrollX).toInt()
+                    val y = (event.y - widget.totalPaddingTop + widget.scrollY).toInt()
+                    val off = layout.getOffsetForHorizontal(layout.getLineForVertical(y), x.toFloat())
+                    if (buffer.getSpans(off, off, android.text.style.ClickableSpan::class.java).isEmpty()) return false
+                    return super.onTouchEvent(widget, buffer, event)
+                }
+            }
 
         private const val DETAIL_LINES = 2
         private const val HEADLINE_LINES = 3

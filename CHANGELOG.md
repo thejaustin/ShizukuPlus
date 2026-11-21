@@ -61,6 +61,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 - **Overlay protection** — Permission prompts ignore taps through other apps' overlays on Android 11 and older, and the automation token is hidden from clipboard previews.
 
 ### 🛠 Fixes & Improvements
+- **Release notes open with a tap** — Longer notes in What's New now show "Read more" / "Show less" and open when you tap them; before, they were cut off with no way in. The red dot on the Settings tab is gone, since the Restart card on Home already says the same thing.
 - **Service Doctor assistance "Custom"** — Choosing it did nothing. It now only appears as the label when you have set the switches below one by one, and the setting follows those switches.
 - **Docked navigation bar** — The bar is now solid with no outline, so content no longer shows through it at the bottom of the screen.
 - **Service Doctor rows open their own help** — every row used to open the same Root Compatibility page; now each opens the section for that exact check (battery, Samsung Auto Blocker, HyperOS autostart, port discovery and so on), with its wiki section one tap away. Several "Learn more" links that landed on the wiki home page now go to the right answer.
