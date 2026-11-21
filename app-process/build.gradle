@@ -21,6 +21,6 @@ dependencies {
     compileOnly project(":api")
     compileOnly libs.androidx.annotation
     compileOnly libs.hidden.stub
-    implementation 'commons-cli:commons-cli:1.5.0'
+    implementation 'commons-cli:commons-cli:1.11.0'
     implementation libs.hiddenapibypass
 }
