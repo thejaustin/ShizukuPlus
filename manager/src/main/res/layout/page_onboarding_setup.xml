@@ -110,6 +110,17 @@
                     android:textColor="?colorOnSurfaceVariant"
                     android:layout_marginBottom="20dp" />
 
+                <!-- Which of the two steps comes next; hidden where there is no pairing step -->
+                <TextView
+                    android:id="@+id/text_wadb_step"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:textAppearance="?textAppearanceLabelLarge"
+                    android:textColor="?colorPrimary"
+                    android:visibility="gone" />
+
+                <!-- Primary is filled, secondary tonal: the code puts Pair or Start in each -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -117,7 +128,7 @@
                     android:gravity="center_vertical">
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_wadb_start"
+                        android:id="@+id/btn_wadb_primary"
                         style="@style/Widget.Material3Expressive.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -125,7 +136,7 @@
                         android:text="@string/home_root_button_start" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn_wadb_pair"
+                        android:id="@+id/btn_wadb_secondary"
                         style="?attr/materialButtonTonalStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

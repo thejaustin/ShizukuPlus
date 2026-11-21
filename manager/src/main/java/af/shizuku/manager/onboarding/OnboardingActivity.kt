@@ -87,6 +87,7 @@ class OnboardingActivity : AppActivity() {
 
     // Setup page live refs
     private var setupStatusRunning: View? = null
+    private var setupPage: PageOnboardingSetupBinding? = null
 
     private var pendingPairLaunch: Boolean = false
 
@@ -227,14 +228,48 @@ class OnboardingActivity : AppActivity() {
         ShizukuStateMachine.addListener(stateListener)
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Coming back from the pairing screen: Pair may now be done.
+        refreshWadbButtons()
+    }
+
     override fun onDestroy() {
         ShizukuStateMachine.removeListener(stateListener)
         super.onDestroy()
     }
 
+    /**
+     * Nothing stores "paired" as such, so this goes by what only a pairing (or TCP mode) allows:
+     * a port saved after a successful ADB connect, a TCP port, or a server already running.
+     */
+    private fun hasAdbPairing(): Boolean =
+        ShizukuSettings.getLastPort() > 0 ||
+            EnvironmentUtils.getAdbTcpPort() > 0 ||
+            ShizukuStateMachine.get() == ShizukuStateMachine.State.RUNNING
+
+    /** Pair is the filled button until this device has a pairing, then Start takes its place. */
+    private fun refreshWadbButtons() {
+        val page = setupPage ?: return
+        if (page.cardWadb.visibility != View.VISIBLE) return
+        // Before Android 11 there is no pairing step, so Start is the only action.
+        val tls = EnvironmentUtils.isTlsSupported()
+        val needsPair = tls && !hasAdbPairing()
+        val start = View.OnClickListener { StartWirelessAdbViewHolder.start(this, lifecycleScope) }
+        val pair = View.OnClickListener { onPairClicked() }
+        page.btnWadbPrimary.setText(if (needsPair) R.string.onboarding_setup_pair else R.string.home_root_button_start)
+        page.btnWadbPrimary.setOnClickListener(if (needsPair) pair else start)
+        page.btnWadbSecondary.visibility = if (tls) View.VISIBLE else View.GONE
+        page.btnWadbSecondary.setText(if (needsPair) R.string.home_root_button_start else R.string.adb_pairing)
+        page.btnWadbSecondary.setOnClickListener(if (needsPair) start else pair)
+        page.textWadbStep.visibility = if (tls) View.VISIBLE else View.GONE
+        page.textWadbStep.setText(if (needsPair) R.string.onboarding_setup_step_pair else R.string.onboarding_setup_step_start)
+    }
+
     private fun updateSetupPageState(state: ShizukuStateMachine.State) {
         val isRunning = state == ShizukuStateMachine.State.RUNNING
         setupStatusRunning?.visibility = if (isRunning) View.VISIBLE else View.GONE
+        refreshWadbButtons()
         val setupIdx = pages.indexOf(PageType.SETUP)
         if (setupIdx >= 0 && isRunning && binding.pager.currentItem == setupIdx && !isFinishing) {
             binding.pager.postDelayed({
@@ -522,6 +557,7 @@ class OnboardingActivity : AppActivity() {
 
         private fun bindSetupPage(binding: PageOnboardingSetupBinding) {
             setupStatusRunning = binding.statusRunning
+            setupPage = binding
 
             // Show/hide method cards based on device
             val showWadb =
@@ -533,21 +569,13 @@ class OnboardingActivity : AppActivity() {
             binding.cardWadb.visibility = if (showWadb) View.VISIBLE else View.GONE
             binding.cardRoot.visibility = if (showRoot) View.VISIBLE else View.GONE
 
-            // Wireless ADB buttons
+            // Wireless ADB buttons (Pair / Start are set by refreshWadbButtons)
             if (showWadb) {
-                if (EnvironmentUtils.isTlsSupported()) {
-                    binding.btnWadbPair.visibility = View.VISIBLE
-                    binding.btnWadbPair.setOnClickListener { onPairClicked() }
-                }
-
                 binding.btnWadbGuide.setOnClickListener {
                     af.shizuku.manager.knowledgebase.KnowledgebaseHelper.show(
                         this@OnboardingActivity,
                         af.shizuku.manager.knowledgebase.KnowledgebaseRegistry.TOPIC_WIRELESS_ADB,
                     )
-                }
-                binding.btnWadbStart.setOnClickListener {
-                    StartWirelessAdbViewHolder.start(this@OnboardingActivity, lifecycleScope)
                 }
             }
 
@@ -569,8 +597,8 @@ class OnboardingActivity : AppActivity() {
 
             // Interactive touch springs
             binding.cardWadb.applySpringTouch()
-            binding.btnWadbStart.applySpringTouch()
-            binding.btnWadbPair.applySpringTouch()
+            binding.btnWadbPrimary.applySpringTouch()
+            binding.btnWadbSecondary.applySpringTouch()
             binding.btnWadbGuide.applySpringTouch()
             binding.cardRoot.applySpringTouch()
             binding.btnRootStart.applySpringTouch()
