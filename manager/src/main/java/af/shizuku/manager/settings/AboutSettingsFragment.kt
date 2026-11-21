@@ -138,17 +138,6 @@ class AboutSettingsFragment : BaseSettingsFragment() {
             true
         }
 
-        findPreference<Preference>("support_development")?.setOnPreferenceClickListener {
-            val urls = intArrayOf(R.string.about_support_url_sponsors, R.string.about_support_url)
-            MaterialAlertDialogBuilder(context)
-                .setTitle(R.string.about_support_title)
-                .setItems(R.array.about_support_link_names) { _, which ->
-                    CustomTabsHelper.launchUrlOrCopy(context, context.getString(urls[which]))
-                }.setNegativeButton(android.R.string.cancel, null)
-                .show()
-            true
-        }
-
         findPreference<Preference>(ShizukuSettings.Keys.KEY_REPORT_BUG)?.setOnPreferenceClickListener {
             BugReportDialog().show(parentFragmentManager, "BugReportDialog")
             true

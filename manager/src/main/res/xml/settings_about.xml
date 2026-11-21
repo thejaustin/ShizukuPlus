@@ -88,10 +88,10 @@
             android:title="@string/settings_help"
             android:icon="@drawable/ic_help_outline_24" />
 
-        <Preference
+        <af.shizuku.manager.settings.SupportLinkPreference
             android:key="support_development"
             android:title="@string/about_support_title"
-            android:summary="@string/about_support_summary"
+            android:summary="@string/about_support_summary_v2"
             android:icon="@drawable/ic_favorite_24" />
 
         <Preference

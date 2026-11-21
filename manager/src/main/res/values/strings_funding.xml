@@ -12,4 +12,8 @@
         <item>GitHub Sponsors</item>
         <item>Buy Me a Coffee</item>
     </string-array>
+    <string name="about_support_summary_v2">Free and open source. If it saved you a headache, you can toss a coffee in the jar.</string>
+    <!-- Short pill labels; both are service names. -->
+    <string name="about_support_pill_sponsors" translatable="false">Sponsors</string>
+    <string name="about_support_pill_coffee" translatable="false">Coffee</string>
 </resources>
