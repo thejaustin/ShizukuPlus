@@ -177,6 +177,7 @@ class AdbPairingAccessibilityService : AccessibilityService() {
         serviceScope.launch {
             var toastMsg = getString(R.string.notification_adb_pairing_failed_title)
             var succeeded = false
+            var reason = AdbPairingService.Reason.UNKNOWN
             try {
                 val key =
                     try {
@@ -185,6 +186,7 @@ class AdbPairingAccessibilityService : AccessibilityService() {
                         Timber.tag(TAG).e(e, "Failed to load AdbKey")
                         Sentry.captureException(e)
                         toastMsg = getString(R.string.adb_error_key_store)
+                        reason = AdbPairingService.Reason.KEY_STORE
                         return@launch
                     }
 
@@ -193,6 +195,7 @@ class AdbPairingAccessibilityService : AccessibilityService() {
                         start()
                     }.onFailure {
                         Timber.tag(TAG).e(it, "Pairing client failed")
+                        reason = AdbPairingService.reasonFor(it)
                         when (it) {
                             is ConnectException -> toastMsg = getString(R.string.cannot_connect_port)
                             is AdbInvalidPairingCodeException -> toastMsg = getString(R.string.paring_code_is_wrong)
@@ -243,6 +246,7 @@ class AdbPairingAccessibilityService : AccessibilityService() {
                     AdbPairingService.setState(
                         AdbPairingService.Phase.FAILED,
                         toastMsg.takeIf { it != getString(R.string.notification_adb_pairing_failed_title) },
+                        reason,
                     )
                 }
                 isPairing = false

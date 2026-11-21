@@ -12,7 +12,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.text.InputType
-import android.util.Log
 import androidx.lifecycle.Observer
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,9 +25,16 @@ import java.net.ConnectException
 class AdbPairingService : Service() {
     enum class Phase { IDLE, SEARCHING, FOUND, PAIRING, PAIRED, STARTING, FAILED }
 
+    /**
+     * Why the pairing screen should show a particular variant of [Phase]: SEARCHING after the
+     * dialog's code went away is CODE_EXPIRED, FAILED says which failure it was.
+     */
+    enum class Reason { NONE, WRONG_CODE, CODE_EXPIRED, CANT_CONNECT, KEY_STORE, TIMED_OUT, UNKNOWN }
+
     data class State(
         val phase: Phase,
         val detail: String? = null,
+        val reason: Reason = Reason.NONE,
     )
 
     companion object {
@@ -47,6 +53,7 @@ class AdbPairingService : Service() {
         private const val startAction = "start"
         private const val stopAction = "stop"
         private const val replyAction = "reply"
+        private const val refreshAction = "refresh"
         internal const val dialogReplyAction = "dialog_reply"
         private const val remoteInputResultKey = "paring_code"
         private const val portKey = "port_number"
@@ -60,9 +67,25 @@ class AdbPairingService : Service() {
         internal fun setState(
             phase: Phase,
             detail: String? = null,
+            reason: Reason = Reason.NONE,
         ) {
-            stateFlow.value = State(phase, detail)
+            stateFlow.value = State(phase, detail, reason)
         }
+
+        /** The Reason for a pairing failure, shared by both pairing paths. */
+        internal fun reasonFor(error: Throwable?): Reason =
+            when (error) {
+                is AdbInvalidPairingCodeException -> Reason.WRONG_CODE
+                is ConnectException -> Reason.CANT_CONNECT
+                is AdbKeyException -> Reason.KEY_STORE
+                else -> Reason.UNKNOWN
+            }
+
+        /**
+         * Starts (or refreshes) the pairing service so its "enter code" notification is rebuilt,
+         * e.g. after Legacy pairing was turned on from the pairing screen.
+         */
+        fun refreshIntent(context: Context): Intent = Intent(context, AdbPairingService::class.java).setAction(refreshAction)
 
         // Port of the pairing service the open "Pair with code" dialog advertises, or -1. Read by
         // the auto-fill accessibility service, which prefers it over the port parsed from screen.
@@ -200,10 +223,11 @@ class AdbPairingService : Service() {
             val nm = getSystemService(NotificationManager::class.java)
             if (port <= 0) {
                 // The pairing dialog was closed: drop the reply action, it points at a dead port.
+                // Settings only closes it when the user leaves or cancels it, so its code is gone.
                 if (discoveredPairingPort > 0) {
                     discoveredPairingPort = -1
-                    setState(Phase.SEARCHING)
-                    nm.notify(NOTIFICATION_ID, searchingNotification)
+                    setState(Phase.SEARCHING, reason = Reason.CODE_EXPIRED)
+                    nm.notify(NOTIFICATION_ID, expiredNotification)
                 }
                 return@Observer
             }
@@ -248,6 +272,15 @@ class AdbPairingService : Service() {
             when (intent?.action) {
                 startAction -> {
                     onStart()
+                }
+                refreshAction -> {
+                    val port = discoveredPairingPort
+                    if (port > 0 && !pairingSubmitted) {
+                        startSearch()
+                        createInputNotification(port, alert = false)
+                    } else {
+                        onStart()
+                    }
                 }
                 replyAction -> {
                     val code = RemoteInput.getResultsFromIntent(intent)?.getCharSequence(remoteInputResultKey) ?: ""
@@ -303,6 +336,7 @@ class AdbPairingService : Service() {
     // The system's limit for this service type. Removing the notification is the only sign: a
     // toast would show over whatever app the user is in.
     override fun onTimeout(startId: Int) {
+        if (!pairingSubmitted) setState(Phase.FAILED, reason = Reason.TIMED_OUT)
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
@@ -331,7 +365,15 @@ class AdbPairingService : Service() {
     }
 
     private fun onStart(): Notification {
-        if (!pairingSubmitted) setState(if (discoveredPairingPort > 0) Phase.FOUND else Phase.SEARCHING)
+        if (!pairingSubmitted) {
+            val current = state.value
+            when {
+                discoveredPairingPort > 0 -> setState(Phase.FOUND)
+                // Keep "the code closed" while still waiting for a new dialog.
+                current.phase == Phase.SEARCHING -> setState(Phase.SEARCHING, reason = current.reason)
+                else -> setState(Phase.SEARCHING)
+            }
+        }
         startSearch()
         return searchingNotification
     }
@@ -351,7 +393,10 @@ class AdbPairingService : Service() {
                 try {
                     AdbKey(PreferenceAdbKeyStore(ShizukuSettings.getPreferences()), "shizuku+")
                 } catch (e: Throwable) {
-                    Timber.e("failed to load or create AdbKey", e)
+                    Timber.tag(tag).e(e, "failed to load or create AdbKey")
+                    // Report it like any other failure; returning here left the screen on
+                    // "Pairing" and the notification on its progress state for good.
+                    handleResult(false, AdbKeyException(e))
                     return@launch
                 }
 
@@ -393,29 +438,28 @@ class AdbPairingService : Service() {
             autoStarted = onPaired(this)
             setState(if (autoStarted) Phase.STARTING else Phase.PAIRED)
         } else {
-            title = getString(R.string.notification_adb_pairing_failed_title)
-
+            val reason = reasonFor(exception)
+            title =
+                getString(
+                    when (reason) {
+                        Reason.WRONG_CODE -> R.string.pairing_v2_wrong_code_title
+                        Reason.CANT_CONNECT -> R.string.pairing_v2_cant_connect_title
+                        Reason.KEY_STORE -> R.string.pairing_v2_key_title
+                        else -> R.string.pairing_v2_failed_title
+                    },
+                )
+            // A readable line for every cause; the stack trace of an unknown one goes to the log
+            // (and Service Doctor), not into a notification.
             text =
-                when (exception) {
-                    is ConnectException -> {
-                        getString(R.string.cannot_connect_port)
-                    }
-                    is AdbInvalidPairingCodeException -> {
-                        getString(R.string.paring_code_is_wrong)
-                    }
-                    is AdbKeyException -> {
-                        getString(R.string.adb_error_key_store)
-                    }
-                    else -> {
-                        exception?.let { Log.getStackTraceString(it) }
-                    }
-                }
-
-            // Known causes have a readable message; anything else is a stack trace, which belongs
-            // in the notification's detail, not on the pairing screen.
-            val knownCause =
-                exception is ConnectException || exception is AdbInvalidPairingCodeException || exception is AdbKeyException
-            setState(Phase.FAILED, if (knownCause) text else null)
+                getString(
+                    when (reason) {
+                        Reason.WRONG_CODE -> R.string.pairing_v2_wrong_code_text
+                        Reason.CANT_CONNECT -> R.string.pairing_v2_cant_connect_text
+                        Reason.KEY_STORE -> R.string.pairing_v2_key_text
+                        else -> R.string.pairing_v2_failed_text
+                    },
+                )
+            setState(Phase.FAILED, exception?.javaClass?.simpleName, reason)
             if (exception != null) {
                 Timber.tag(tag).w(exception, "Pair failed")
             } else {
@@ -430,6 +474,7 @@ class AdbPairingService : Service() {
                 .setColor(getColor(R.color.notification))
                 .setSmallIcon(R.drawable.ic_notification_icon)
                 .setContentTitle(title)
+                .apply { if (text != null) style = Notification.BigTextStyle().bigText(text) }
                 // The result alerts once (no setOnlyAlertOnce): the user is still in Settings, and
                 // the heads-up is where they see a wrong code or tap Start.
                 .setContentText(
@@ -587,7 +632,12 @@ class AdbPairingService : Service() {
         return replyNotificationAction
     }
 
-    private val searchingNotification by unsafeLazy {
+    private val searchingNotification by unsafeLazy { buildSearchingNotification(expired = false) }
+
+    // Same actions as the searching one; says the old code is gone instead of only "searching".
+    private val expiredNotification by unsafeLazy { buildSearchingNotification(expired = true) }
+
+    private fun buildSearchingNotification(expired: Boolean): Notification {
         val manualIntent =
             Intent(this, AdbPairingDialogActivity::class.java).apply {
                 putExtra(portKey, -1)
@@ -605,12 +655,15 @@ class AdbPairingService : Service() {
                 },
             )
 
-        Notification
+        val text = getString(if (expired) R.string.pairing_v2_expired_text else R.string.pairing_v2_notif_searching_text)
+        return Notification
             .Builder(this, NOTIFICATION_CHANNEL)
             .setColor(getColor(R.color.notification))
             .setSmallIcon(R.drawable.ic_notification_icon)
-            .setContentTitle(getString(R.string.notification_adb_pairing_searching_for_service_title))
-            .setContentText(getString(R.string.notification_adb_pairing_input_paring_code))
+            .setContentTitle(
+                getString(if (expired) R.string.pairing_v2_expired_title else R.string.notification_adb_pairing_searching_for_service_title),
+            ).setContentText(text)
+            .setStyle(Notification.BigTextStyle().bigText(text))
             .setContentIntent(manualPendingIntent)
             .setOnlyAlertOnce(true)
             .addAction(
@@ -648,7 +701,7 @@ class AdbPairingService : Service() {
                 .Builder(this, NOTIFICATION_CHANNEL)
                 .setColor(getColor(R.color.notification))
                 .setContentTitle(getString(R.string.notification_adb_pairing_service_found_title))
-                .setContentText(getString(R.string.notification_adb_pairing_input_paring_code))
+                .setContentText(getString(R.string.pairing_v2_notif_found_text_legacy))
                 .setSmallIcon(R.drawable.ic_notification_icon)
                 .setContentIntent(contentIntent)
                 .setAutoCancel(false)
@@ -659,7 +712,7 @@ class AdbPairingService : Service() {
             .Builder(this, NOTIFICATION_CHANNEL)
             .setColor(getColor(R.color.notification))
             .setContentTitle(getString(R.string.notification_adb_pairing_service_found_title))
-            .setContentText(getString(R.string.notification_adb_pairing_input_paring_code))
+            .setContentText(getString(R.string.pairing_v2_notif_found_text))
             .setSmallIcon(R.drawable.ic_notification_icon)
             // No content intent: tapping the body would open an activity over Settings and can
             // close the system pairing dialog (invalidating the code). Inline reply only.
