@@ -109,6 +109,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # The action runs in Docker as root and leaves .git files the runner user can't write.
+          sudo chown -R "$(id -u):$(id -g)" "$GITHUB_WORKSPACE"
           if [ -n "$(gh pr list --head crowdin-translations --state open --json number --jq '.[0].number')" ]; then
             git fetch -q origin crowdin-translations
             git checkout -q crowdin-translations
