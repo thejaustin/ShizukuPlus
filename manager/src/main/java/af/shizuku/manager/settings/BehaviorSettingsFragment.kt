@@ -153,6 +153,26 @@ class BehaviorSettingsFragment :
             }
         }
 
+        findPreference<androidx.preference.ListPreference>("assistant_level")?.apply {
+            val prefs = ShizukuSettings.getPreferences()
+            refreshAssistantLevel()
+            setOnPreferenceChangeListener { _, newValue ->
+                val level =
+                    af.shizuku.manager.utils.AssistantLevel
+                        .of(newValue as? String)
+                level.apply(prefs)
+                // The switches below read their own keys; refresh them to match the preset.
+                findPreference<androidx.preference.ListPreference>("helper_notifications")?.value = ShizukuSettings.getHelperNotificationLevel()
+                findPreference<androidx.preference.TwoStatePreference>("problems_on_home")?.isChecked = ShizukuSettings.isProblemsOnHomeEnabled()
+                val app = requireContext().applicationContext
+                view?.post {
+                    af.shizuku.manager.utils.ShizukuIssues
+                        .render(app)
+                }
+                true
+            }
+        }
+
         findPreference<androidx.preference.ListPreference>("helper_notifications")?.apply {
             value = ShizukuSettings.getHelperNotificationLevel()
             summaryProvider =
@@ -296,12 +316,35 @@ class BehaviorSettingsFragment :
         startupCategory.setCustomSummary(if (isRootMode) getString(R.string.settings_mode_indicator_root) else null)
     }
 
+    private val assistantKeys =
+        setOf(
+            ShizukuSettings.Keys.KEY_HELPER_NOTIFICATIONS,
+            ShizukuSettings.Keys.KEY_PROBLEMS_ON_HOME,
+            ShizukuSettings.Keys.KEY_ADAPTIVE_RECOMMENDATIONS_ENABLED,
+            ShizukuSettings.Keys.KEY_DOCTOR_ADAPTIVE_AUTO_HEAL,
+            "diagnostics_enabled",
+        )
+
+    /** Shows the preset the switches add up to, or "Custom" (display only) once they've been set one by one. */
+    private fun refreshAssistantLevel() {
+        val pref = findPreference<androidx.preference.ListPreference>("assistant_level") ?: return
+        val level =
+            af.shizuku.manager.utils.AssistantLevel
+                .current(ShizukuSettings.getPreferences())
+        val isCustom = level == af.shizuku.manager.utils.AssistantLevel.CUSTOM
+        pref.value = if (isCustom) null else level.value
+        pref.summary = if (isCustom) getString(R.string.settings_assistant_level_custom) else pref.entry
+    }
+
     override fun onResume() {
         super.onResume()
+        refreshAssistantLevel()
         preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
         WatchdogService.addRunningListener(watchdogRunningListener)
         syncModeVisibility()
         syncWatchdogPreference()
+        af.shizuku.manager.utils.AdaptiveRecommendationManager
+            .maybeRecommendBatterySaver(requireContext())
         // Pick up changes made outside the card (e.g. TcpNetworkGuard, quick settings tile).
         wirelessAdbPreference.reload()
         VerifiedInstallPrefs.refresh(this)
@@ -317,6 +360,7 @@ class BehaviorSettingsFragment :
         sharedPreferences: SharedPreferences,
         key: String?,
     ) {
+        if (key in assistantKeys) refreshAssistantLevel()
         if (key == KEY_WATCHDOG) syncWatchdogPreference()
         if (key in VerifiedInstallPrefs.WATCHED_KEYS) VerifiedInstallPrefs.refresh(this)
         if (key == NetworkTrust.KEY_MODE || key == NetworkTrust.KEY_AUTO_CLOSE || key == NetworkTrust.KEY_TRUSTED_SSIDS) {

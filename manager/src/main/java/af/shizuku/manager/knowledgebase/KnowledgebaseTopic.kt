@@ -44,7 +44,7 @@ object KnowledgebaseRegistry {
                     title = "Keep-Alive & Battery Optimization",
                     subtitle = "Prevent Samsung, Xiaomi, and Pixel task killers from freezing Shizuku",
                     assetFileName = "knowledgebase/oem_battery_protection.md",
-                    webFallbackUrl = "https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection#error-reference",
+                    webFallbackUrl = "https://github.com/thejaustin/ShizukuPlus/wiki/ShizukuPlus-Knowledgebase#shizuku-keeps-stopping-randomly",
                     iconRes = R.drawable.ic_server_24,
                 ),
             TOPIC_TERMINAL_RISH to
@@ -68,6 +68,49 @@ object KnowledgebaseRegistry {
         )
 
     fun getTopic(id: String): KnowledgebaseTopic? = TOPICS[id]
+
+    private const val KB_WIKI = "https://github.com/thejaustin/ShizukuPlus/wiki/ShizukuPlus-Knowledgebase"
+
+    /** A Service Doctor check's own help: the in-app topic for the broad picture, the wiki section for the specifics. */
+    data class CheckGuide(
+        val topicId: String,
+        val wikiUrl: String,
+    )
+
+    private fun guide(
+        topicId: String,
+        anchor: String,
+    ) = CheckGuide(topicId, "$KB_WIKI#$anchor")
+
+    // Anchors match the "Service Doctor checks" headings in the wiki's ShizukuPlus-Knowledgebase page.
+    private val CHECK_GUIDES =
+        mapOf(
+            "battery_optimization" to guide(TOPIC_BATTERY_OEM, "battery-optimization"),
+            "background_limits" to guide(TOPIC_BATTERY_OEM, "background-limits"),
+            "phantom_process" to guide(TOPIC_BATTERY_OEM, "phantom-process-killer"),
+            "device_hardening" to guide(TOPIC_BATTERY_OEM, "device-hardening-and-doze-exemption"),
+            "samsung_autoblocker" to guide(TOPIC_BATTERY_OEM, "samsung-auto-blocker"),
+            "samsung_max_restrictions" to guide(TOPIC_BATTERY_OEM, "samsung-maximum-restrictions"),
+            "xiaomi_adb" to guide(TOPIC_BATTERY_OEM, "xiaomi-and-hyperos"),
+            "xiaomi_autostart" to guide(TOPIC_BATTERY_OEM, "xiaomi-and-hyperos"),
+            "oppo_permission" to guide(TOPIC_BATTERY_OEM, "coloros-and-oxygenos"),
+            "oppo_battery" to guide(TOPIC_BATTERY_OEM, "coloros-and-oxygenos"),
+            "tcl_autostart" to guide(TOPIC_BATTERY_OEM, "tcl-auto-start"),
+            "wireless_adb" to guide(TOPIC_WIRELESS_ADB, "wireless-debugging-is-off"),
+            "local_network" to guide(TOPIC_WIRELESS_ADB, "local-network-access"),
+            "start_mdns_timeout" to guide(TOPIC_WIRELESS_ADB, "port-discovery-keeps-timing-out"),
+            "start_adb_key" to guide(TOPIC_WIRELESS_ADB, "adb-key-problems"),
+            "secure_settings" to guide(TOPIC_WIRELESS_ADB, "secure-settings-permission"),
+            "accessibility_service" to guide(TOPIC_WIRELESS_ADB, "adb-pairing-accessibility-service"),
+            "secondary_user" to guide(TOPIC_WIRELESS_ADB, "secure-folder-and-secondary-users"),
+            "su_bridge_a16" to guide(TOPIC_ROOT_COMPAT, "su-bridge-on-android-16"),
+            "wallet_integrity" to guide(TOPIC_ROOT_COMPAT, "google-wallet-and-messages"),
+            "root_access" to guide(TOPIC_ROOT_COMPAT, "root-access"),
+            "watchdog_crash" to guide(TOPIC_BATTERY_OEM, "shizuku-keeps-stopping-randomly"),
+            "shizuku_server" to guide(TOPIC_BATTERY_OEM, "the-server-is-stopped"),
+        )
+
+    fun guideForCheck(checkId: String?): CheckGuide? = CHECK_GUIDES[checkId]
 
     /** Maps settings preference keys to specific knowledgebase topics. */
     fun topicForPrefKey(key: String?): String? =

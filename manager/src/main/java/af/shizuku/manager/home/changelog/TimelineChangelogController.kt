@@ -137,7 +137,13 @@ class TimelineChangelogController(
                     menu.add(0, i, i, s.label).isChecked = s == sort
                 }
                 menu.setGroupCheckable(0, true, true)
+                menu.add(1, EXPAND_ALL_ID, 100, if (adapter.allExpanded) R.string.changelog_collapse_all else R.string.changelog_expand_all)
                 setOnMenuItemClickListener {
+                    if (it.itemId == EXPAND_ALL_ID) {
+                        HapticUtils.segmentTick(sortChip)
+                        adapter.setAllExpanded(!adapter.allExpanded)
+                        return@setOnMenuItemClickListener true
+                    }
                     sort = ChangelogSort.values()[it.itemId]
                     HapticUtils.segmentTick(sortChip)
                     updateSortLabel()
@@ -211,7 +217,16 @@ class TimelineChangelogController(
                 else -> ctx.getString(R.string.update_available_title)
             }
         val from = if (!latest.isInstalled && !installedAhead) "v$installedTag" else null
-        return TimelineRow.Summary(from, latest.tag, headline, tally)
+        // Lead with what people can actually try: the newest feature headlines, capped so a huge
+        // release still opens on a short list.
+        val featureTitles =
+            pool
+                .flatMap { r -> r.sections.filter { it.kind == ChangeKind.FEATURE }.flatMap { it.items } }
+                .map { ChangeSplitter.plainHeadline(it) }
+                .filter { it.isNotBlank() }
+                .distinct()
+        val highlights = featureTitles.take(HIGHLIGHT_COUNT)
+        return TimelineRow.Summary(from, latest.tag, headline, tally, highlights, featureTitles.size - highlights.size)
     }
 
     private fun loadOlder() {
@@ -255,6 +270,8 @@ class TimelineChangelogController(
                 ?.get(1)
                 ?.toIntOrNull() ?: 0
 
+        private const val HIGHLIGHT_COUNT = 5
+        private const val EXPAND_ALL_ID = 1000
         private const val PAGE_SIZE = 15
         private const val MIN_FOR_MORE = 10
     }

@@ -197,6 +197,15 @@
         android:defaultValue="false">
 
 
+        <!-- A preset over the switches below; shows Custom when they've been set one by one. -->
+        <rikka.preference.SimpleMenuPreference
+            android:key="assistant_level"
+            android:title="@string/settings_assistant_level"
+            android:entries="@array/assistant_levels"
+            android:entryValues="@array/assistant_levels_values"
+            android:persistent="false"
+            android:icon="@drawable/ic_outline_info_24" />
+
         <!-- No defaultValue: BehaviorSettingsFragment sets it from getHelperNotificationLevel(), which
              carries over the old "Crash notifications" switch. -->
         <rikka.preference.SimpleMenuPreference

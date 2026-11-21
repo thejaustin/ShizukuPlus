@@ -7,7 +7,9 @@ import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.useTextAppearance
 import android.animation.ValueAnimator
 import android.content.res.ColorStateList
+import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.text.TextUtils
 import android.text.format.DateUtils
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -33,6 +35,10 @@ sealed class TimelineRow {
         val toLabel: String,
         val headline: String,
         val tally: String,
+        /** Plain headlines of the newest features, shown as a short "what's new" list. */
+        val highlights: List<String> = emptyList(),
+        /** Features beyond [highlights], for the "+N more" line. */
+        val moreHighlights: Int = 0,
     ) : TimelineRow()
 
     data class Release(
@@ -53,6 +59,7 @@ class ChangelogTimelineAdapter(
     private var rows: List<TimelineRow> = emptyList()
     private val expandedTags = mutableSetOf<String>()
     private val fullSections = mutableSetOf<String>() // "tag|kind" sections opened past the preview
+    private val openChanges = mutableSetOf<String>() // "tag|hash" changes whose detail is fully open
 
     // Newest first; the installed release's place in it, for the update path on the rail.
     private var releaseOrder: List<String> = emptyList()
@@ -68,6 +75,15 @@ class ChangelogTimelineAdapter(
         installedPos = newRows.filterIsInstance<TimelineRow.Release>().indexOfFirst { it.release.isInstalled }
         notifyDataSetChanged()
     }
+
+    /** Opens (or closes) every release card at once; the newest-release card stays open when collapsing. */
+    fun setAllExpanded(expand: Boolean) {
+        expandedTags.clear()
+        if (expand) expandedTags.addAll(releaseOrder) else releaseOrder.firstOrNull()?.let { expandedTags.add(it) }
+        notifyDataSetChanged()
+    }
+
+    val allExpanded: Boolean get() = releaseOrder.isNotEmpty() && expandedTags.containsAll(releaseOrder)
 
     override fun getItemCount() = rows.size
 
@@ -136,6 +152,7 @@ class ChangelogTimelineAdapter(
         private val arrow = v.findViewById<ImageView>(R.id.arrow)
         private val headline = v.findViewById<TextView>(R.id.headline)
         private val tally = v.findViewById<TextView>(R.id.tally)
+        private val highlights = v.findViewById<TextView>(R.id.highlights)
 
         fun bind(row: TimelineRow.Summary) {
             val surface = color(itemView, com.google.android.material.R.attr.colorSurface)
@@ -151,6 +168,12 @@ class ChangelogTimelineAdapter(
             headline.text = row.headline
             tally.text = row.tally
             tally.visibility = if (row.tally.isBlank()) View.GONE else View.VISIBLE
+            val lines = row.highlights.map { "•  $it" }.toMutableList()
+            if (row.moreHighlights > 0) {
+                lines.add(itemView.resources.getQuantityString(R.plurals.changelog_highlights_more, row.moreHighlights, row.moreHighlights))
+            }
+            highlights.text = lines.joinToString("\n")
+            highlights.visibility = if (lines.isEmpty()) View.GONE else View.VISIBLE
         }
 
         private fun View.isVisible(v: Boolean) {
@@ -324,19 +347,7 @@ class ChangelogTimelineAdapter(
             val itemsBox = card.findViewById<LinearLayout>(R.id.items)
             val density = ctx.resources.displayMetrics.density
             val chipColor = ColorUtils.setAlphaComponent(fg, 0x22)
-            shown.forEach { text ->
-                val row = inflater.inflate(R.layout.item_changelog_change, itemsBox, false)
-                row.findViewById<View>(R.id.dot).background =
-                    GradientDrawable().apply {
-                        shape = GradientDrawable.OVAL
-                        setColor(fg)
-                    }
-                row.findViewById<TextView>(R.id.text).apply {
-                    this.text = InlineFormatter.format(text, chipColor, density, onLink)
-                    movementMethod = LinkMovementMethod.getInstance()
-                }
-                itemsBox.addView(row)
-            }
+            shown.forEach { text -> itemsBox.addView(buildChange(inflater, itemsBox, r, text, fg, chipColor, density)) }
             val expander = card.findViewById<TextView>(R.id.expander)
             if (long) {
                 expander.visibility = View.VISIBLE
@@ -361,6 +372,62 @@ class ChangelogTimelineAdapter(
                 }
             }
             return card
+        }
+
+        /**
+         * One change as a scannable row: the headline always shows; the longer detail is two lines until
+         * the row is tapped. A change with no bold lead is the headline itself, clamped to three lines.
+         */
+        private fun buildChange(
+            inflater: LayoutInflater,
+            parent: ViewGroup,
+            r: TimelineRelease,
+            text: String,
+            fg: Int,
+            chipColor: Int,
+            density: Float,
+        ): View {
+            val row = inflater.inflate(R.layout.item_changelog_change, parent, false)
+            row.findViewById<View>(R.id.dot).background =
+                GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(fg)
+                }
+            val split = ChangeSplitter.split(text)
+            val headline = row.findViewById<TextView>(R.id.text)
+            val detail = row.findViewById<TextView>(R.id.detail)
+            headline.text = InlineFormatter.format(split.headline, chipColor, density, onLink)
+            headline.movementMethod = LinkMovementMethod.getInstance()
+            val key = "${r.tag}|${text.hashCode()}"
+            val hasDetail = split.detail != null
+            if (hasDetail) {
+                headline.setTypeface(headline.typeface, Typeface.BOLD)
+                detail.visibility = View.VISIBLE
+                detail.text = InlineFormatter.format(split.detail!!, chipColor, density, onLink)
+                detail.movementMethod = LinkMovementMethod.getInstance()
+            }
+            val target = if (hasDetail) detail else headline
+            val collapsedLines = if (hasDetail) DETAIL_LINES else HEADLINE_LINES
+
+            fun apply(open: Boolean) {
+                target.maxLines = if (open) Int.MAX_VALUE else collapsedLines
+                target.ellipsize = if (open) null else TextUtils.TruncateAt.END
+            }
+            apply(key in openChanges)
+            row.setOnClickListener {
+                HapticUtils.segmentTick(it)
+                val open = if (openChanges.remove(key)) false else openChanges.add(key)
+                if (ShizukuSettings.isExpressiveAnimationsEnabled()) {
+                    (itemView.parent as? ViewGroup)?.let {
+                        TransitionManager.beginDelayedTransition(
+                            it,
+                            AutoTransition().setDuration(ShizukuSettings.scaledAnimationDuration(200)),
+                        )
+                    }
+                }
+                apply(open)
+            }
+            return row
         }
     }
 
@@ -409,8 +476,11 @@ class ChangelogTimelineAdapter(
     }
 
     companion object {
-        private const val PREVIEW_LIMIT = 6
-        private const val PREVIEW_SIZE = 5
+        // Headline rows are short, so a section can show more of them before "Show more".
+        private const val PREVIEW_LIMIT = 9
+        private const val PREVIEW_SIZE = 8
+        private const val DETAIL_LINES = 2
+        private const val HEADLINE_LINES = 3
         private const val RELATIVE_DAYS = 6
 
         private val iso =

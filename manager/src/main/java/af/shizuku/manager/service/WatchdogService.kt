@@ -6,6 +6,7 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.database.ActivityLogManager
 import af.shizuku.manager.receiver.ShizukuReceiverStarter
 import af.shizuku.manager.utils.LiveActivityNotificationManager
+import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.ShizukuIssues
 import af.shizuku.manager.utils.ShizukuStateMachine
 import af.shizuku.manager.utils.StockShizukuCompat
@@ -395,6 +396,18 @@ class WatchdogService : Service() {
      * back after a restart. Either shows in this notification; one that stayed down also alerts if
      * the user's "Helper notifications" setting allows it.
      */
+
+    /** A setting that is on right now and is known to get the service killed, else null. Observed state, not proof. */
+    private fun likelyCause(): String? {
+        val ctx = applicationContext
+        val power = ctx.getSystemService(POWER_SERVICE) as? android.os.PowerManager
+        return when {
+            power?.isPowerSaveMode == true -> getString(R.string.watchdog_cause_battery_saver)
+            !SettingsHelper.isIgnoringBatteryOptimizations(ctx) -> getString(R.string.watchdog_cause_battery_optimization)
+            else -> null
+        }
+    }
+
     private fun reportCrash(stopped: Boolean) {
         val ctx = applicationContext
         val actions = mutableListOf(ShizukuIssues.retryAction(ctx))
@@ -416,10 +429,12 @@ class WatchdogService : Service() {
             PendingIntent.getActivity(
                 this,
                 10,
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thejaustin/ShizukuPlus/wiki#shizuku-keeps-stopping-randomly"))
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/thejaustin/ShizukuPlus/wiki/ShizukuPlus-Knowledgebase#shizuku-keeps-stopping-randomly"))
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
             )
+        val cause = likelyCause()
+        if (cause != null) ActivityLogManager.log("Shizuku", ctx.packageName, "Watchdog: possible cause - $cause")
         ShizukuIssues.report(
             ctx,
             if (stopped) {
@@ -429,9 +444,10 @@ class WatchdogService : Service() {
                     KEY_CRASHED,
                     ShizukuIssues.Severity.PROBLEM,
                     getString(R.string.watchdog_shizuku_crashed_title),
-                    getString(R.string.watchdog_shizuku_crashed_text),
+                    getString(R.string.watchdog_shizuku_crashed_text) + (cause?.let { " " + getString(R.string.watchdog_possible_cause, it) } ?: ""),
                     actions,
                     learnMore,
+                    helpCheckId = "watchdog_crash",
                 )
             },
         )

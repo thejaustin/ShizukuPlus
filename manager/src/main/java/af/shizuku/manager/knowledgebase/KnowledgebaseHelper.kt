@@ -19,4 +19,23 @@ object KnowledgebaseHelper {
             CustomTabsHelper.launchUrlOrCopy(context, fallbackUrl)
         }
     }
+
+    /** Help for one Service Doctor check: its own wiki section, not the broad topic. */
+    fun showForCheck(
+        context: Context,
+        checkId: String?,
+        lead: String? = null,
+    ) {
+        val guide = KnowledgebaseRegistry.guideForCheck(checkId)
+        if (guide == null) {
+            show(context, KnowledgebaseRegistry.TOPIC_BATTERY_OEM)
+            return
+        }
+        val activity = context.findActivity<FragmentActivity>()
+        if (activity != null && !activity.isFinishing && !activity.isDestroyed) {
+            KnowledgebaseBottomSheet.show(activity.supportFragmentManager, guide.topicId, guide.wikiUrl, lead)
+        } else {
+            CustomTabsHelper.launchUrlOrCopy(context, guide.wikiUrl)
+        }
+    }
 }

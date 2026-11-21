@@ -42,7 +42,8 @@ class AppInspectorImpl(private val allowed: java.util.function.BooleanSupplier) 
         val (readSide, writeSide) = ParcelFileDescriptor.createPipe()
         Thread {
             try {
-                val proc = Runtime.getRuntime().exec(args)
+                // Nobody reads stderr; an undrained pipe past ~64KB would hang the child and the reader.
+                val proc = ProcessBuilder(*args).redirectError(ProcessBuilder.Redirect.to(java.io.File("/dev/null"))).start()
                 try {
                     proc.inputStream.use { src ->
                         ParcelFileDescriptor.AutoCloseOutputStream(writeSide).use { dst ->

@@ -495,6 +495,7 @@ class ServiceDoctorActivity : AppBarActivity() {
                         ok = item.ok,
                         onFix = createFixAction(item),
                         topicId = item.id,
+                        lead = listOfNotNull("**${item.title}** — ${item.status}", item.tip?.takeIf { it.isNotBlank() }).joinToString("\n\n"),
                         actionLabelRes = item.actionLabelRes ?: R.string.doctor_button_fix,
                         isOptional = item.optional,
                         onQuickFix = if (item.id == "wallet_integrity") ({ quickWalletRepair() }) else null,
@@ -616,6 +617,8 @@ class ServiceDoctorActivity : AppBarActivity() {
         val ok: Boolean,
         val onFix: (() -> Unit)? = null,
         val topicId: String? = null,
+        /** What this check found on this device, shown above the general help. */
+        val lead: String? = null,
         val actionLabelRes: Int = R.string.doctor_button_fix,
         val isOptional: Boolean = false,
         /** With the expressive preview on, a split button runs this and keeps [onFix] in its menu. */
@@ -680,18 +683,11 @@ class ServiceDoctorActivity : AppBarActivity() {
                         .valueOf(context.themeColor(android.R.attr.colorError))
             }
 
-            val topic =
-                check.topicId ?: when {
-                    check.title.contains("battery", ignoreCase = true) || check.title.contains("sleeping", ignoreCase = true) || check.title.contains("autostart", ignoreCase = true) || check.title.contains("blocker", ignoreCase = true) -> af.shizuku.manager.knowledgebase.KnowledgebaseRegistry.TOPIC_BATTERY_OEM
-                    check.title.contains("adb", ignoreCase = true) || check.title.contains("network", ignoreCase = true) -> af.shizuku.manager.knowledgebase.KnowledgebaseRegistry.TOPIC_WIRELESS_ADB
-                    check.title.contains("su", ignoreCase = true) || check.title.contains("root", ignoreCase = true) || check.title.contains("wallet", ignoreCase = true) -> af.shizuku.manager.knowledgebase.KnowledgebaseRegistry.TOPIC_ROOT_COMPAT
-                    else -> af.shizuku.manager.knowledgebase.KnowledgebaseRegistry.TOPIC_BATTERY_OEM
-                }
             holder.itemView.setOnClickListener {
                 af.shizuku.manager.utils.HapticUtils
                     .tap(it)
                 af.shizuku.manager.knowledgebase.KnowledgebaseHelper
-                    .show(context, topic)
+                    .showForCheck(context, check.topicId, check.lead)
             }
 
             val split = check.onFix != null && check.onQuickFix != null && ShizukuSettings.isExpressiveControlsPreviewEnabled()
@@ -710,7 +706,7 @@ class ServiceDoctorActivity : AppBarActivity() {
                             1 -> check.onFix.invoke()
                             else ->
                                 af.shizuku.manager.knowledgebase.KnowledgebaseHelper
-                                    .show(context, topic)
+                                    .showForCheck(context, check.topicId, check.lead)
                         }
                         true
                     }

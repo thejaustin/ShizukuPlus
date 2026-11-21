@@ -379,10 +379,19 @@
     <string name="onboarding_activity_log_title">History on Home Screen</string>
     <string name="onboarding_activity_log_desc">View recent starts and app activations at a glance</string>
     <string name="onboarding_security_doctor_title">Network Shield &amp; Doctor</string>
-    <string name="onboarding_security_doctor_desc">Automatic dual-stack protection secures your active debugging port on untrusted Wi-Fi, while Service Doctor monitors background health.</string>
+    <string name="onboarding_security_doctor_desc">Shizuku+ can protect the connection it opens on public Wi-Fi, and Service Doctor keeps an eye on whether everything is still working.</string>
     <string name="onboarding_network_guard_title">Network Trust Shield</string>
     <string name="onboarding_network_guard_desc">Block TCP starts on open or untrusted networks</string>
     <string name="onboarding_watchdog_title">Watchdog Background Keepalive</string>
+    <string name="onboarding_assistant_title">How much should Service Doctor help?</string>
+    <string name="onboarding_assistant_off">Off</string>
+    <string name="onboarding_assistant_quiet">Quiet</string>
+    <string name="onboarding_assistant_balanced">Balanced</string>
+    <string name="onboarding_assistant_active">Active</string>
+    <string name="onboarding_assistant_desc_off">Only warnings about your security. Nothing else.</string>
+    <string name="onboarding_assistant_desc_quiet">Tells you when something needs you. Never changes anything or makes suggestions.</string>
+    <string name="onboarding_assistant_desc_balanced">Tells you when something needs you, suggests fixes, and repairs small things on its own. You can change this any time in Settings.</string>
+    <string name="onboarding_assistant_desc_active">Everything in Balanced, plus a notification for every problem it finds.</string>
     <string name="onboarding_watchdog_desc">Automatically heal and revive the server if killed</string>
     <string name="onboarding_take_tour">Feature Tour</string>
     <string name="onboarding_take_tour_summary">Explore the new M3 Expressive look, home layout, and network trust shield</string>
@@ -390,15 +399,15 @@
     <string name="onboarding_returning_welcome_desc">Your existing permissions, setup, and authorized apps remain fully preserved. Discover what\'s new in this release:</string>
     <string name="onboarding_returning_status_preserved">Setup &amp; apps intact</string>
     <string name="onboarding_returning_feat_m3e_title">Material 3 Expressive UI</string>
-    <string name="onboarding_returning_feat_m3e_desc">Fluid spring physics, shape morphing, visual app icon picker, and interactive multi-toggle pills.</string>
+    <string name="onboarding_returning_feat_m3e_desc">A smoother, more playful look: things bounce and morph as you use them, and you can pick your app icon from a visual list.</string>
     <string name="onboarding_returning_feat_gestures_title">Connected Gestures &amp; Actions</string>
-    <string name="onboarding_returning_feat_gestures_desc">Segmented swipe action groups, tactile preview cards, and customized quick actions.</string>
-    <string name="onboarding_returning_feat_doctor_title">Adaptive Service Doctor</string>
-    <string name="onboarding_returning_feat_doctor_desc">Proactive background diagnostics, health monitoring, and one-tap automated self-healing.</string>
+    <string name="onboarding_returning_feat_gestures_desc">Swipe a row to do something quickly, with a preview of what each swipe does before you set it.</string>
+    <string name="onboarding_returning_feat_doctor_title">Service Doctor helps as you go</string>
+    <string name="onboarding_returning_feat_doctor_desc">Every check now explains itself in plain words, with the exact steps for your phone. Choose how much it speaks up in Settings, or turn it off.</string>
     <string name="onboarding_returning_feat_layout_nav_title">Floating Nav &amp; Modern Layouts</string>
-    <string name="onboarding_returning_feat_layout_nav_desc">Docked Floating Action Bar, customizable tab bar navigation, and collapsible settings categories.</string>
-    <string name="onboarding_returning_feat_wireless_title">Enhanced Wireless ADB &amp; Keypad</string>
-    <string name="onboarding_returning_feat_wireless_desc">Dedicated numeric keypad for pairing codes, on-device loopback ADB on 127.0.0.1, and auto-disable USB debugging.</string>
+    <string name="onboarding_returning_feat_layout_nav_desc">A floating bar to move around, tabs you can arrange, and settings grouped into sections you can fold away.</string>
+    <string name="onboarding_returning_feat_wireless_title">Easier wireless setup</string>
+    <string name="onboarding_returning_feat_wireless_desc">Type the pairing code on a number pad, and let Shizuku+ reconnect on its own after a restart.</string>
     <string name="onboarding_returning_action_jump">Jump to Dashboard</string>
 
     <!-- Swipe hint overlay -->
@@ -1099,6 +1108,15 @@
     <string name="watchdog_status_running">Shizuku+ is running</string>
     <string name="watchdog_status_stopped">Shizuku+ isn\'t running</string>
     <string name="helper_notifications_channel">Helper notifications</string>
+    <string name="recommendation_battery_saver_title">Battery Saver is on</string>
+    <string name="recommendation_battery_saver_message">While Battery Saver is on, Android delays the checks that restart Shizuku+ if it stops, so it may stay stopped until you open the app. You can turn Battery Saver off, or exempt Shizuku+ in its settings.</string>
+    <string name="recommendation_battery_saver_open">Open Battery Saver</string>
+    <string name="settings_assistant_level">Service Doctor assistance</string>
+    <string name="settings_assistant_level_off">Off — security warnings only</string>
+    <string name="settings_assistant_level_quiet">Quiet — tells you, never acts</string>
+    <string name="settings_assistant_level_balanced">Balanced — tips and safe auto-fixes</string>
+    <string name="settings_assistant_level_active">Active — also notifies for every problem</string>
+    <string name="settings_assistant_level_custom">Custom — set one by one below</string>
     <string name="settings_helper_notifications">Helper notifications</string>
     <string name="settings_helper_notifications_off">Off</string>
     <string name="settings_helper_notifications_stopped">When Shizuku+ stops or needs you</string>
@@ -1117,6 +1135,9 @@
     <string name="doctor_report_failed_fixes_title">Tell me what it couldn\'t fix</string>
     <string name="doctor_report_failed_fixes_desc">When self-healing tries a fix in the background and it doesn\'t work, show it in the helper notifications</string>
     <string name="watchdog_turn_off">Turn Off</string>
+    <string name="watchdog_possible_cause">Possible cause: %1$s.</string>
+    <string name="watchdog_cause_battery_saver">Battery Saver is on</string>
+    <string name="watchdog_cause_battery_optimization">battery optimization is still on for Shizuku+</string>
     <string name="watchdog_shizuku_crashed_title">Shizuku crashed recently</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog restarted the service. Tap to learn about potential fixes to prevent future crashes.</string>
     <string name="battery_exemption_channel_name">Battery optimization</string>
@@ -1512,6 +1533,12 @@
     <string name="changelog_older_retry">Couldn\'t load older releases. Retry</string>
     <string name="changelog_summary_new_releases">%d new releases</string>
     <string name="changelog_summary_up_to_date">You\'re up to date</string>
+    <string name="changelog_expand_all">Expand all</string>
+    <string name="changelog_collapse_all">Collapse all</string>
+    <plurals name="changelog_highlights_more">
+        <item quantity="one">+%d more new feature below</item>
+        <item quantity="other">+%d more new features below</item>
+    </plurals>
     <plurals name="changelog_change_count">
         <item quantity="one">%d change</item>
         <item quantity="other">%d changes</item>

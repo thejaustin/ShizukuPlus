@@ -11,8 +11,11 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -65,34 +68,46 @@ object TcpNetworkGuard {
         appContext?.let { enforce(it) }
     }
 
+    // Network changes fire enforce() repeatedly: a newer run replaces the one in flight, and a
+    // throw (the shell paths below can fail) is logged instead of killing the process.
+    private val enforceScope =
+        CoroutineScope(
+            SupervisorJob() + Dispatchers.IO +
+                CoroutineExceptionHandler { _, t -> Timber.tag("TcpNetworkGuard").w(t, "enforce failed") },
+        )
+    private var enforceJob: Job? = null
+
+    @Synchronized
     fun enforce(context: Context) {
         val ctx = context.applicationContext
-        CoroutineScope(Dispatchers.IO).launch {
-            // Off the main thread: reading the network name may go through the shell.
-            if (!NetworkTrust.shouldBlockTcp(ctx)) {
-                dismiss(ctx)
-                return@launch
-            }
-            val port = EnvironmentUtils.getAdbTcpPort()
-            val isWirelessAdbOn =
-                try {
-                    android.provider.Settings.Global
-                        .getInt(ctx.contentResolver, "adb_wifi_enabled", 0) == 1
-                } catch (_: Exception) {
-                    false
+        enforceJob?.cancel()
+        enforceJob =
+            enforceScope.launch {
+                // Off the main thread: reading the network name may go through the shell.
+                if (!NetworkTrust.shouldBlockTcp(ctx)) {
+                    dismiss(ctx)
+                    return@launch
                 }
-            if (port <= 0 && !isWirelessAdbOn) {
-                dismiss(ctx)
-                return@launch
+                val port = EnvironmentUtils.getAdbTcpPort()
+                val isWirelessAdbOn =
+                    try {
+                        android.provider.Settings.Global
+                            .getInt(ctx.contentResolver, "adb_wifi_enabled", 0) == 1
+                    } catch (_: Exception) {
+                        false
+                    }
+                if (port <= 0 && !isWirelessAdbOn) {
+                    dismiss(ctx)
+                    return@launch
+                }
+                val assessment = NetworkTrust.assess(ctx)
+                val effectivePort = if (port > 0) port else 5555
+                if (NetworkTrust.isAutoCloseEnabled()) {
+                    closePort(ctx, port)
+                } else {
+                    notifyOpenPort(ctx, effectivePort, assessment)
+                }
             }
-            val assessment = NetworkTrust.assess(ctx)
-            val effectivePort = if (port > 0) port else 5555
-            if (NetworkTrust.isAutoCloseEnabled()) {
-                closePort(ctx, port)
-            } else {
-                notifyOpenPort(ctx, effectivePort, assessment)
-            }
-        }
     }
 
     suspend fun closePort(

@@ -319,7 +319,7 @@ class StorageProxyImpl(
     }
 
     private fun runTar(vararg args: String): List<String>? = try {
-        val proc = ProcessBuilder("tar", *args).start()
+        val proc = ProcessBuilder("tar", *args).redirectError(ProcessBuilder.Redirect.to(java.io.File("/dev/null"))).start()
         val lines = proc.inputStream.bufferedReader().readLines().filter { it.isNotBlank() }
         if (proc.waitFor() == 0) lines else null
     } catch (_: Exception) {

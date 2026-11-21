@@ -187,6 +187,7 @@ class AdbStartWorker(
 
                             var awaitingAuth = false
                             var timeoutJob: Job? = null
+
                             var unlockReceiver: BroadcastReceiver? = null
                             // Samsung firmware aggressively resets adb_wifi_enabled to 0 on boot
                             // (observed on One UI 6/7/8). Track how many times we've re-enabled it
@@ -266,7 +267,7 @@ class AdbStartWorker(
                                                 intent: Intent,
                                             ) {
                                                 if (intent.action == Intent.ACTION_USER_PRESENT) {
-                                                    context.unregisterReceiver(this)
+                                                    runCatching { context.unregisterReceiver(this) }
                                                     unlockReceiver = null
                                                     // If the user has configured network protection and the
                                                     // current network is untrusted (open, captive portal, or
@@ -328,7 +329,8 @@ class AdbStartWorker(
                                 adbMdns.stop()
                                 timeoutJob?.cancel()
                                 cr.unregisterContentObserver(observer)
-                                unlockReceiver?.let { applicationContext.unregisterReceiver(it) }
+                                // Already unregistered by onReceive is fine; a throw here would mask the result.
+                                unlockReceiver?.let { runCatching { applicationContext.unregisterReceiver(it) } }
                             }
                         }.first()
                 }
