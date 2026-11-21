@@ -355,7 +355,7 @@
 
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Welcome to Shizuku+</string>
-    <string name="onboarding_welcome_desc">An enhanced Shizuku with powerful app management features. Swipe gestures, quick actions, and customizable experiences — all in one place.</string>
+    <string name="onboarding_welcome_desc">Shizuku+ lets apps you approve use system features that normally need root or a computer. Setup takes a few minutes, and you choose which apps get access.</string>
     <string name="onboarding_swipe_title">Default Gestures</string>
     <string name="onboarding_swipe_desc">By default, in the app management list, swipe right to open an app or swipe left to view its system settings page.</string>
     <string name="onboarding_gestures_title">Custom Gestures</string>
@@ -364,6 +364,7 @@
     <string name="onboarding_longpress_desc">Choose which actions appear when you long-press an app, or enable Shizuku+ exclusive features like Dhizuku Mode.</string>
     <string name="onboarding_next">Next</string>
     <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_restore_invalid">Not a Shizuku+ backup</string>
     <string name="onboarding_get_started">Get Started</string>
     <string name="onboarding_setup_title">Start Shizuku+</string>
     <string name="onboarding_setup_desc">Choose how to start Shizuku+ on this device. You can also do this later from the main screen.</string>
@@ -381,7 +382,7 @@
     <string name="onboarding_security_doctor_title">Network Shield &amp; Doctor</string>
     <string name="onboarding_security_doctor_desc">Shizuku+ can protect the connection it opens on public Wi-Fi, and Service Doctor keeps an eye on whether everything is still working.</string>
     <string name="onboarding_network_guard_title">Network Trust Shield</string>
-    <string name="onboarding_network_guard_desc">Block TCP starts on open or untrusted networks</string>
+    <string name="onboarding_network_guard_desc">Won\'t start Shizuku+ over the network on open Wi-Fi (no password). Pick trusted networks in Settings.</string>
     <string name="onboarding_watchdog_title">Watchdog Background Keepalive</string>
     <string name="onboarding_assistant_title">How much should Service Doctor help?</string>
     <string name="onboarding_assistant_off">Off</string>
@@ -390,9 +391,9 @@
     <string name="onboarding_assistant_active">Active</string>
     <string name="onboarding_assistant_desc_off">Only warnings about your security. Nothing else.</string>
     <string name="onboarding_assistant_desc_quiet">Tells you when something needs you. Never changes anything or makes suggestions.</string>
-    <string name="onboarding_assistant_desc_balanced">Tells you when something needs you, suggests fixes, and repairs small things on its own. You can change this any time in Settings.</string>
+    <string name="onboarding_assistant_desc_balanced">Tells you when something needs you, suggests fixes, and can restart the service or clear stale settings by itself. You can change this any time in Settings.</string>
     <string name="onboarding_assistant_desc_active">Everything in Balanced, plus a notification for every problem it finds.</string>
-    <string name="onboarding_watchdog_desc">Automatically heal and revive the server if killed</string>
+    <string name="onboarding_watchdog_desc">Keeps a small notification showing and restarts Shizuku+ if it gets stopped. Turn it off any time in Settings.</string>
     <string name="onboarding_take_tour">Feature Tour</string>
     <string name="onboarding_take_tour_summary">Explore the new M3 Expressive look, home layout, and network trust shield</string>
     <string name="onboarding_returning_welcome_title">Welcome Back to Shizuku+</string>
