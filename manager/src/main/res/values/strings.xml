@@ -376,6 +376,7 @@
     <string name="onboarding_setup_pair">Pair</string>
     <string name="onboarding_setup_step_pair">Step 1 of 2: pair</string>
     <string name="onboarding_setup_step_start">Step 2 of 2: start</string>
+    <string name="onboarding_setup_running_hint">That worked. Tap Next to keep going.</string>
     <string name="onboarding_layout_nav_title">Home &amp; Navigation</string>
     <string name="onboarding_layout_nav_desc">Tailor your daily workspace. Drag to reorder cards on Home, or use the floating pill navigation bar.</string>
     <string name="onboarding_floating_nav_title">Floating Navigation Bar</string>

@@ -90,6 +90,17 @@ class OnboardingActivity : AppActivity() {
     private var setupStatusRunning: View? = null
     private var setupPage: PageOnboardingSetupBinding? = null
 
+    // Only a start seen on this screen moves on by itself, and only once.
+    private var lastSeenRunning = false
+    private var autoAdvanced = false
+    private val advanceFromSetup =
+        Runnable {
+            val setupIdx = pages.indexOf(PageType.SETUP)
+            if (!isFinishing && setupIdx >= 0 && binding.pager.currentItem == setupIdx && setupIdx + 1 < pages.size) {
+                binding.pager.currentItem = setupIdx + 1
+            }
+        }
+
     private var pendingPairLaunch: Boolean = false
 
     private val notifPermissionLauncher =
@@ -226,6 +237,8 @@ class OnboardingActivity : AppActivity() {
         updateDots(binding.pager.currentItem)
         updateButtons(binding.pager.currentItem)
 
+        // Running already when the tour opened is not a start the user just made.
+        lastSeenRunning = ShizukuStateMachine.get() == ShizukuStateMachine.State.RUNNING
         ShizukuStateMachine.addListener(stateListener)
     }
 
@@ -237,6 +250,7 @@ class OnboardingActivity : AppActivity() {
 
     override fun onDestroy() {
         ShizukuStateMachine.removeListener(stateListener)
+        if (::binding.isInitialized) binding.pager.removeCallbacks(advanceFromSetup)
         super.onDestroy()
     }
 
@@ -269,16 +283,62 @@ class OnboardingActivity : AppActivity() {
 
     private fun updateSetupPageState(state: ShizukuStateMachine.State) {
         val isRunning = state == ShizukuStateMachine.State.RUNNING
-        setupStatusRunning?.visibility = if (isRunning) View.VISIBLE else View.GONE
+        val justStarted = isRunning && !lastSeenRunning
+        lastSeenRunning = isRunning
         refreshWadbButtons()
-        val setupIdx = pages.indexOf(PageType.SETUP)
-        if (setupIdx >= 0 && isRunning && binding.pager.currentItem == setupIdx && !isFinishing) {
-            binding.pager.postDelayed({
-                if (!isFinishing && binding.pager.currentItem == setupIdx && setupIdx + 1 < pages.size) {
-                    binding.pager.currentItem = setupIdx + 1
-                }
-            }, 1800)
+        val status = setupStatusRunning ?: return
+        if (!isRunning) {
+            status.visibility = View.GONE
+            return
         }
+        if (justStarted) {
+            val setupIdx = pages.indexOf(PageType.SETUP)
+            val onSetupPage = setupIdx >= 0 && binding.pager.currentItem == setupIdx
+            // Off screen it just appears; no buzz for a page the user isn't looking at.
+            showSetupSuccess(status, animate = onSetupPage)
+            if (!autoAdvanced && onSetupPage && !isFinishing) {
+                autoAdvanced = true
+                binding.pager.removeCallbacks(advanceFromSetup)
+                binding.pager.postDelayed(advanceFromSetup, 1800)
+            }
+        } else if (status.visibility != View.VISIBLE) {
+            // Already running: show it and let the user tap Next.
+            showSetupSuccess(status, animate = false)
+        }
+    }
+
+    /** The "it worked" row: the check scales in with a success haptic, or just appears. */
+    private fun showSetupSuccess(
+        status: View,
+        animate: Boolean,
+    ) {
+        val icon = setupPage?.statusRunningIcon
+        status.animate().cancel()
+        icon?.animate()?.cancel()
+        status.visibility = View.VISIBLE
+        val duration = ShizukuSettings.scaledAnimationDuration(300)
+        if (animate) HapticUtils.success(status)
+        if (!animate || duration <= 0L) {
+            status.alpha = 1f
+            icon?.scaleX = 1f
+            icon?.scaleY = 1f
+            return
+        }
+        status.alpha = 0f
+        status
+            .animate()
+            .alpha(1f)
+            .setDuration(duration)
+            .start()
+        icon?.scaleX = 0.4f
+        icon?.scaleY = 0.4f
+        icon
+            ?.animate()
+            ?.scaleX(1f)
+            ?.scaleY(1f)
+            ?.setDuration(duration)
+            ?.setInterpolator(android.view.animation.OvershootInterpolator(2f))
+            ?.start()
     }
 
     private fun setupDots() {
