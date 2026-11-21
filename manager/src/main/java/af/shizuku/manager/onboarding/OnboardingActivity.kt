@@ -17,9 +17,12 @@ import af.shizuku.manager.starter.Starter
 import af.shizuku.manager.starter.StarterActivity
 import af.shizuku.manager.update.UpdateInstaller
 import af.shizuku.manager.utils.AssistantLevel
+import af.shizuku.manager.utils.CardBorder
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
+import af.shizuku.manager.utils.MotionUtils.springTo
+import af.shizuku.manager.utils.NetworkStateHelper
 import af.shizuku.manager.utils.NetworkTrust
 import af.shizuku.manager.utils.SettingsBackupManager
 import af.shizuku.manager.utils.ShizukuStateMachine
@@ -27,9 +30,13 @@ import android.Manifest
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
+import android.net.ConnectivityManager
+import android.net.Network
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,14 +45,18 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
+import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,7 +69,30 @@ class OnboardingActivity : AppActivity() {
     companion object {
         const val EXTRA_NEW_FEATURES_ONLY = "extra_new_features_only"
         const val EXTRA_SINCE_VERSION_CODE = "extra_since_version_code"
+
+        private const val STATE_PAGE = "onboarding_page"
+        private const val STATE_PENDING_PAIR = "onboarding_pending_pair"
+        private const val STATE_PENDING_SUCCESS = "onboarding_pending_success"
+        private const val STATE_AUTO_ADVANCED = "onboarding_auto_advanced"
+        private const val STATE_START_METHOD = "onboarding_start_method"
+        private const val STATE_START_FAILED = "onboarding_start_failed"
     }
+
+    /** What the setup page's main card shows, picked from the phone's state in [computeSetupUi]. */
+    private enum class SetupUi {
+        RUNNING,
+        STARTING,
+        FAILED,
+        ROOT,
+        OLD_ANDROID,
+        DEV_OFF,
+        WIFI_OFF,
+        NOT_PAIRED,
+        PAIRED,
+    }
+
+    /** The way a start was tried from this screen, so Try again repeats it. */
+    private enum class StartMethod { NONE, ROOT, WIRELESS }
 
     enum class PageType {
         WELCOME,
@@ -106,6 +140,13 @@ class OnboardingActivity : AppActivity() {
         }
 
     private var pendingPairLaunch: Boolean = false
+
+    // A start made from this screen, and whether it ended without the service running.
+    private var startMethod = StartMethod.NONE
+    private var startFailed = false
+    private var awayDuringStart = false
+    private var lastState: ShizukuStateMachine.State? = null
+    private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
     private val notifPermissionLauncher =
         registerForActivityResult(
@@ -176,6 +217,13 @@ class OnboardingActivity : AppActivity() {
 
         isNewFeaturesOnly = intent.getBooleanExtra(EXTRA_NEW_FEATURES_ONLY, false)
         sinceVersionCode = intent.getIntExtra(EXTRA_SINCE_VERSION_CODE, -1)
+        if (savedInstanceState != null) {
+            pendingPairLaunch = savedInstanceState.getBoolean(STATE_PENDING_PAIR)
+            pendingSetupSuccess = savedInstanceState.getBoolean(STATE_PENDING_SUCCESS)
+            autoAdvanced = savedInstanceState.getBoolean(STATE_AUTO_ADVANCED)
+            startMethod = StartMethod.values().getOrElse(savedInstanceState.getInt(STATE_START_METHOD)) { StartMethod.NONE }
+            startFailed = savedInstanceState.getBoolean(STATE_START_FAILED)
+        }
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -197,7 +245,11 @@ class OnboardingActivity : AppActivity() {
         binding.pager.adapter = onboardingAdapter
         binding.pager.offscreenPageLimit = pages.size
 
-        setupDots()
+        // Back on the page the user was on before a rotation or a trip through low memory.
+        val restoredPage = savedInstanceState?.getInt(STATE_PAGE, 0)?.coerceIn(0, pages.size - 1) ?: 0
+        if (restoredPage > 0) binding.pager.setCurrentItem(restoredPage, false)
+
+        setupDots(restoredPage)
         // One page needs no position dots.
         binding.dotsContainer.visibility = if (pages.size > 1) View.VISIBLE else View.GONE
 
@@ -240,22 +292,80 @@ class OnboardingActivity : AppActivity() {
             },
         )
 
-        updateDots(binding.pager.currentItem)
         updateButtons(binding.pager.currentItem)
 
         // Running already when the tour opened is not a start the user just made.
         lastSeenRunning = ShizukuStateMachine.get() == ShizukuStateMachine.State.RUNNING
+        lastState = ShizukuStateMachine.get()
         ShizukuStateMachine.addListener(stateListener)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (::binding.isInitialized) outState.putInt(STATE_PAGE, binding.pager.currentItem)
+        outState.putBoolean(STATE_PENDING_PAIR, pendingPairLaunch)
+        outState.putBoolean(STATE_PENDING_SUCCESS, pendingSetupSuccess)
+        outState.putBoolean(STATE_AUTO_ADVANCED, autoAdvanced)
+        outState.putInt(STATE_START_METHOD, startMethod.ordinal)
+        outState.putBoolean(STATE_START_FAILED, startFailed)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Wi-Fi coming and going changes which setup card is the right one.
+        if (networkCallback == null && pages.contains(PageType.SETUP)) {
+            val cm = getSystemService(ConnectivityManager::class.java) ?: return
+            val callback =
+                object : ConnectivityManager.NetworkCallback() {
+                    override fun onAvailable(network: Network) = postRenderSetup()
+
+                    override fun onLost(network: Network) = postRenderSetup()
+                }
+            try {
+                cm.registerDefaultNetworkCallback(callback)
+                networkCallback = callback
+            } catch (e: Exception) {
+                Timber.w(e, "Couldn't watch the network for the setup page")
+            }
+        }
+    }
+
+    override fun onStop() {
+        networkCallback?.let {
+            try {
+                getSystemService(ConnectivityManager::class.java)?.unregisterNetworkCallback(it)
+            } catch (_: Exception) {
+            }
+        }
+        networkCallback = null
+        super.onStop()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // The Starter screen is in front now; what state we come back to decides if it worked.
+        if (startMethod != StartMethod.NONE && !startFailed) awayDuringStart = true
+    }
+
+    private fun postRenderSetup() {
+        runOnUiThread { if (!isFinishing && !isDestroyed) renderSetup() }
     }
 
     override fun onResume() {
         super.onResume()
         // Coming back from the pairing screen: Pair may now be done.
         refreshWadbButtons()
+        val state = ShizukuStateMachine.get()
+        if (awayDuringStart) {
+            awayDuringStart = false
+            // Back from the Starter and still not up: that start didn't work.
+            if (state != ShizukuStateMachine.State.RUNNING && state != ShizukuStateMachine.State.STARTING) startFailed = true
+        }
         if (pendingSetupSuccess) {
             pendingSetupSuccess = false
-            if (ShizukuStateMachine.get() == ShizukuStateMachine.State.RUNNING) playSetupSuccess()
+            if (state == ShizukuStateMachine.State.RUNNING) playSetupSuccess()
         }
+        renderSetup()
     }
 
     override fun onDestroy() {
@@ -280,7 +390,7 @@ class OnboardingActivity : AppActivity() {
         // Before Android 11 there is no pairing step, so Start is the only action.
         val tls = EnvironmentUtils.isTlsSupported()
         val needsPair = tls && !hasAdbPairing()
-        val start = View.OnClickListener { StartWirelessAdbViewHolder.start(this, lifecycleScope) }
+        val start = View.OnClickListener { startWireless() }
         val pair = View.OnClickListener { onPairClicked() }
         page.btnWadbPrimary.setText(if (needsPair) R.string.onboarding_setup_pair else R.string.home_root_button_start)
         page.btnWadbPrimary.setOnClickListener(if (needsPair) pair else start)
@@ -289,9 +399,24 @@ class OnboardingActivity : AppActivity() {
         page.btnWadbSecondary.setOnClickListener(if (needsPair) start else pair)
         page.textWadbStep.visibility = if (tls) View.VISIBLE else View.GONE
         page.textWadbStep.setText(if (needsPair) R.string.onboarding_setup_step_pair else R.string.onboarding_setup_step_start)
+        fitButtonRow(page.wadbActions)
     }
 
     private fun updateSetupPageState(state: ShizukuStateMachine.State) {
+        val previous = lastState
+        lastState = state
+        when (state) {
+            ShizukuStateMachine.State.RUNNING, ShizukuStateMachine.State.STARTING -> startFailed = false
+            ShizukuStateMachine.State.CRASHED -> if (startMethod != StartMethod.NONE) startFailed = true
+            ShizukuStateMachine.State.STOPPED ->
+                if (startMethod != StartMethod.NONE && previous == ShizukuStateMachine.State.STARTING) startFailed = true
+            else -> Unit
+        }
+        updateSuccessRow(state)
+        renderSetup()
+    }
+
+    private fun updateSuccessRow(state: ShizukuStateMachine.State) {
         val isRunning = state == ShizukuStateMachine.State.RUNNING
         val justStarted = isRunning && !lastSeenRunning
         lastSeenRunning = isRunning
@@ -320,6 +445,286 @@ class OnboardingActivity : AppActivity() {
         } else if (!pendingSetupSuccess && status.visibility != View.VISIBLE) {
             // Already running: show it and let the user tap Next.
             showSetupSuccess(status, animate = false)
+        }
+    }
+
+    /** Developer options as far as an app can tell; a hidden value counts as on. */
+    private fun isDeveloperOptionsOn(): Boolean =
+        try {
+            Settings.Global.getInt(contentResolver, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) > 0 ||
+                Settings.Global.getInt(contentResolver, Settings.Global.ADB_ENABLED, 0) > 0 ||
+                // Android 17 reads these as 0 for apps, so 0 says nothing there.
+                Build.VERSION.SDK_INT >= 37
+        } catch (_: Exception) {
+            true
+        }
+
+    /** Picks the one card that fits this phone right now, most pressing first. */
+    private fun computeSetupUi(state: ShizukuStateMachine.State): SetupUi {
+        if (state == ShizukuStateMachine.State.RUNNING) {
+            // Started behind the Starter screen: keep "Starting" up until the success plays on return.
+            return if (pendingSetupSuccess) SetupUi.STARTING else SetupUi.RUNNING
+        }
+        if (state == ShizukuStateMachine.State.STARTING) return SetupUi.STARTING
+        if (startFailed) return SetupUi.FAILED
+        if (EnvironmentUtils.isRooted()) return SetupUi.ROOT
+        val tls = EnvironmentUtils.isTlsSupported()
+        // A TCP port (adb tcpip, or a TV) skips pairing, Wi-Fi checks and Developer options.
+        val tcp = EnvironmentUtils.getAdbTcpPort() > 0 || ShizukuSettings.getTcpMode()
+        if (!tls && !EnvironmentUtils.isTelevision() && !tcp) return SetupUi.OLD_ANDROID
+        if (!tcp && !isDeveloperOptionsOn()) return SetupUi.DEV_OFF
+        if (!tcp && tls && !NetworkStateHelper.isWirelessAdbSupportedNetwork(this)) return SetupUi.WIFI_OFF
+        return if (tls && !hasAdbPairing()) SetupUi.NOT_PAIRED else SetupUi.PAIRED
+    }
+
+    private fun startWithRoot() {
+        startMethod = StartMethod.ROOT
+        startFailed = false
+        startActivity(
+            Intent(this, StarterActivity::class.java).apply {
+                putExtra(StarterActivity.EXTRA_IS_ROOT, true)
+            },
+        )
+    }
+
+    private fun startWireless() {
+        startMethod = StartMethod.WIRELESS
+        startFailed = false
+        StartWirelessAdbViewHolder.start(this, lifecycleScope)
+    }
+
+    private fun retryStart() {
+        when (startMethod) {
+            StartMethod.ROOT -> startWithRoot()
+            else -> startWireless()
+        }
+        renderSetup()
+    }
+
+    private fun openGuide() {
+        af.shizuku.manager.knowledgebase.KnowledgebaseHelper.show(
+            this,
+            af.shizuku.manager.knowledgebase.KnowledgebaseRegistry.TOPIC_WIRELESS_ADB,
+        )
+    }
+
+    private fun openSafely(vararg intents: Intent) {
+        for (intent in intents) {
+            try {
+                startActivity(intent)
+                return
+            } catch (_: Exception) {
+            }
+        }
+        Timber.w("No screen on this phone handles %s", intents.firstOrNull()?.action)
+    }
+
+    private fun openWifiSettings() {
+        val panel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) Intent(Settings.Panel.ACTION_WIFI) else null
+        openSafely(*listOfNotNull(panel, Intent(Settings.ACTION_WIFI_SETTINGS)).toTypedArray())
+    }
+
+    private class SetupAction(
+        val text: CharSequence,
+        val onClick: () -> Unit,
+    )
+
+    /**
+     * Draws the setup page for [computeSetupUi]: one card with an icon, a status word, a short
+     * reason and one filled action, then every other way that works on this phone, root first.
+     */
+    private fun renderSetup() {
+        val page = setupPage ?: return
+        val ui = computeSetupUi(ShizukuStateMachine.get())
+        val appName = getString(R.string.app_name)
+        val showWadb =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ||
+                EnvironmentUtils.isTelevision() ||
+                EnvironmentUtils.getAdbTcpPort() > 0
+        val rooted = EnvironmentUtils.isRooted()
+        val busy = ui == SetupUi.RUNNING || ui == SetupUi.STARTING
+
+        page.cardState.isVisible = ui != SetupUi.RUNNING
+        page.textStateLabel.isVisible = !busy && ui != SetupUi.FAILED
+        page.btnSetupLater.isVisible = ui != SetupUi.RUNNING
+
+        val guide = SetupAction(getString(R.string.home_wireless_adb_view_guide_button)) { openGuide() }
+        var icon = R.drawable.ic_wadb_24
+        var word = R.string.onboarding_v2_status_not_running
+        val title: String
+        val desc: String
+        var primary: SetupAction? = null
+        var secondary: SetupAction? = null
+        var tertiary: SetupAction? = null
+        when (ui) {
+            SetupUi.RUNNING, SetupUi.STARTING -> {
+                icon = R.drawable.ic_server_start_24
+                word = R.string.onboarding_v2_status_starting
+                title = getString(R.string.onboarding_v2_setup_starting_title, appName)
+                desc = getString(R.string.onboarding_v2_setup_starting_desc)
+            }
+            SetupUi.FAILED -> {
+                icon = R.drawable.ic_server_error_24
+                word = R.string.onboarding_v2_status_failed
+                title = getString(R.string.onboarding_v2_setup_failed_title)
+                desc = getString(R.string.onboarding_v2_setup_failed_desc)
+                primary = SetupAction(getString(R.string.onboarding_v2_setup_retry)) { retryStart() }
+                secondary =
+                    SetupAction(getString(R.string.onboarding_v2_setup_open_doctor)) {
+                        openSafely(Intent(this, af.shizuku.manager.settings.ServiceDoctorActivity::class.java))
+                    }
+            }
+            SetupUi.ROOT -> {
+                icon = R.drawable.ic_root_24
+                title = getString(R.string.onboarding_v2_setup_root_title)
+                desc = getString(R.string.onboarding_setup_root_desc)
+                primary = SetupAction(getString(R.string.home_root_button_start)) { startWithRoot() }
+            }
+            SetupUi.OLD_ANDROID -> {
+                icon = R.drawable.ic_smartphone_24
+                word = R.string.onboarding_v2_status_blocked
+                title = getString(R.string.onboarding_v2_setup_old_android_title)
+                desc = getString(R.string.onboarding_v2_setup_old_android_desc, Build.VERSION.RELEASE)
+                primary = SetupAction(getString(R.string.home_adb_button_view_command)) { showAdbCommandDialog() }
+            }
+            SetupUi.DEV_OFF -> {
+                icon = R.drawable.ic_code_24
+                word = R.string.onboarding_v2_status_blocked
+                title = getString(R.string.onboarding_v2_setup_dev_off_title)
+                desc = getString(R.string.onboarding_v2_setup_dev_off_desc)
+                primary =
+                    SetupAction(getString(R.string.onboarding_v2_setup_open_about)) {
+                        openSafely(Intent(Settings.ACTION_DEVICE_INFO_SETTINGS), Intent(Settings.ACTION_SETTINGS))
+                    }
+                secondary = guide
+            }
+            SetupUi.WIFI_OFF -> {
+                icon = R.drawable.ic_wifi_24
+                word = R.string.onboarding_v2_status_blocked
+                title = getString(R.string.onboarding_v2_setup_wifi_off_title)
+                desc = getString(R.string.onboarding_v2_setup_wifi_off_desc)
+                primary = SetupAction(getString(R.string.onboarding_v2_setup_open_wifi)) { openWifiSettings() }
+                secondary = guide
+            }
+            SetupUi.NOT_PAIRED -> {
+                title = getString(R.string.onboarding_v2_setup_pair_title)
+                desc = getString(R.string.onboarding_v2_setup_pair_desc)
+                primary = SetupAction(getString(R.string.onboarding_setup_pair)) { onPairClicked() }
+                secondary = guide
+            }
+            SetupUi.PAIRED -> {
+                title = getString(R.string.onboarding_v2_setup_start_title, appName)
+                desc = getString(R.string.onboarding_v2_setup_start_desc)
+                primary = SetupAction(getString(R.string.home_root_button_start)) { startWireless() }
+                if (EnvironmentUtils.isTlsSupported()) {
+                    secondary = SetupAction(getString(R.string.onboarding_v2_setup_pair_again)) { onPairClicked() }
+                }
+                tertiary = guide
+            }
+        }
+
+        // The icon tile: red only for a failed start, and always next to a word.
+        val failed = ui == SetupUi.FAILED
+        page.stateIcon.setImageResource(icon)
+        page.stateIcon.backgroundTintList =
+            ColorStateList.valueOf(
+                themeColor(if (failed) com.google.android.material.R.attr.colorErrorContainer else com.google.android.material.R.attr.colorTertiaryContainer),
+            )
+        page.stateIcon.imageTintList =
+            ColorStateList.valueOf(
+                themeColor(if (failed) com.google.android.material.R.attr.colorOnErrorContainer else com.google.android.material.R.attr.colorOnTertiaryContainer),
+            )
+        page.stateIcon.isVisible = ui != SetupUi.STARTING
+        page.stateProgress.isVisible = ui == SetupUi.STARTING
+        page.stateWord.setText(word)
+        page.stateWord.setTextColor(
+            themeColor(if (failed) androidx.appcompat.R.attr.colorError else androidx.appcompat.R.attr.colorPrimary),
+        )
+        page.stateTitle.text = title
+        page.stateDesc.text = desc
+        page.stateHeader.contentDescription = "${getString(word)}. $title"
+
+        fun MaterialButton.show(action: SetupAction?) {
+            isVisible = action != null
+            if (action == null) {
+                setOnClickListener(null)
+                return
+            }
+            text = action.text
+            setOnClickListener {
+                HapticUtils.tap(it)
+                action.onClick()
+            }
+        }
+        page.btnStatePrimary.show(primary)
+        page.btnStateSecondary.show(secondary)
+        page.btnStateTertiary.show(tertiary)
+        page.stateActions.isVisible = primary != null
+        if (primary != null) fitButtonRow(page.stateActions)
+
+        // Every other way that works here; the main card's own way isn't repeated below it.
+        val wadbOnCard = ui == SetupUi.NOT_PAIRED || ui == SetupUi.PAIRED || ui == SetupUi.WIFI_OFF || ui == SetupUi.DEV_OFF
+        page.cardRoot.isVisible = !busy && rooted && ui != SetupUi.ROOT
+        page.cardWadb.isVisible = !busy && showWadb && !wadbOnCard
+        page.cardAdb.isVisible = !busy && ui != SetupUi.OLD_ANDROID
+        page.textOtherWays.isVisible = page.cardRoot.isVisible || page.cardWadb.isVisible || page.cardAdb.isVisible
+        refreshWadbButtons()
+    }
+
+    private val savedRowParams = java.util.WeakHashMap<View, IntArray>()
+
+    /**
+     * Keeps a row of buttons inside the screen: side by side while they fit, stacked full width
+     * when they don't (large font sizes, long translations, narrow windows).
+     */
+    private fun fitButtonRow(row: LinearLayout) {
+        val gap = dpToPx(8)
+        val children = (0 until row.childCount).map { row.getChildAt(it) }
+        children.forEach { child ->
+            val lp = child.layoutParams as LinearLayout.LayoutParams
+            savedRowParams.getOrPut(child) { intArrayOf(lp.width, (lp.weight * 1000).toInt(), lp.marginStart, lp.marginEnd, lp.topMargin) }
+        }
+
+        fun layOut(stacked: Boolean) {
+            row.orientation = if (stacked) LinearLayout.VERTICAL else LinearLayout.HORIZONTAL
+            var first = true
+            children.forEach { child ->
+                val saved = savedRowParams.getValue(child)
+                val lp = child.layoutParams as LinearLayout.LayoutParams
+                if (stacked) {
+                    lp.width = ViewGroup.LayoutParams.MATCH_PARENT
+                    lp.weight = 0f
+                    lp.marginStart = 0
+                    lp.marginEnd = 0
+                    lp.topMargin = if (first || child.visibility == View.GONE) 0 else gap
+                } else {
+                    lp.width = saved[0]
+                    lp.weight = saved[1] / 1000f
+                    lp.marginStart = saved[2]
+                    lp.marginEnd = saved[3]
+                    lp.topMargin = saved[4]
+                }
+                if (child.visibility != View.GONE) first = false
+                child.layoutParams = lp
+            }
+        }
+
+        if (resources.configuration.fontScale >= 1.3f) {
+            layOut(stacked = true)
+            return
+        }
+        layOut(stacked = false)
+        row.post {
+            val available = row.width - row.paddingStart - row.paddingEnd
+            if (available <= 0) return@post
+            val unspecified = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+            val needed =
+                children.filter { it.visibility != View.GONE }.sumOf { child ->
+                    child.measure(unspecified, unspecified)
+                    val lp = child.layoutParams as LinearLayout.LayoutParams
+                    child.measuredWidth + lp.marginStart + lp.marginEnd
+                }
+            if (needed > available) layOut(stacked = true)
         }
     }
 
@@ -358,18 +763,14 @@ class OnboardingActivity : AppActivity() {
             .alpha(1f)
             .setDuration(duration)
             .start()
+        // The check springs in (it may overshoot); the fade above never does.
         icon?.scaleX = 0.4f
         icon?.scaleY = 0.4f
-        icon
-            ?.animate()
-            ?.scaleX(1f)
-            ?.scaleY(1f)
-            ?.setDuration(duration)
-            ?.setInterpolator(android.view.animation.OvershootInterpolator(2f))
-            ?.start()
+        icon?.springTo(SpringAnimation.SCALE_X, 1f, com.google.android.material.R.attr.motionSpringFastSpatial)
+        icon?.springTo(SpringAnimation.SCALE_Y, 1f, com.google.android.material.R.attr.motionSpringFastSpatial)
     }
 
-    private fun setupDots() {
+    private fun setupDots(selected: Int) {
         binding.dotsContainer.removeAllViews()
         dots.clear()
         val dotWidth = dpToPx(8)
@@ -381,10 +782,12 @@ class OnboardingActivity : AppActivity() {
         repeat(pages.size) { i ->
             val dot =
                 View(this).apply {
-                    val w = if (i == 0) pillWidth else dotWidth
+                    val w = if (i == selected) pillWidth else dotWidth
                     val lp = LinearLayout.LayoutParams(w, heightPx)
                     lp.setMargins(marginPx, 0, marginPx, 0)
                     layoutParams = lp
+                    // The row reads as one "Page X of N"; single dots say nothing.
+                    importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
                     background =
                         GradientDrawable().apply {
                             shape = GradientDrawable.RECTANGLE
@@ -394,7 +797,7 @@ class OnboardingActivity : AppActivity() {
             dots.add(dot)
             binding.dotsContainer.addView(dot)
         }
-        updateDots(0)
+        updateDots(selected)
     }
 
     private fun updateDots(selected: Int) {
@@ -404,6 +807,8 @@ class OnboardingActivity : AppActivity() {
         val dotWidth = dpToPx(8)
         val heightPx = dpToPx(8)
         val cornerPx = dpToPx(4).toFloat()
+        val duration = ShizukuSettings.scaledAnimationDuration(260)
+        binding.dotsContainer.contentDescription = getString(R.string.onboarding_v2_page_position, selected + 1, pages.size)
 
         dots.forEachIndexed { i, dot ->
             val isSelected = i == selected
@@ -419,10 +824,12 @@ class OnboardingActivity : AppActivity() {
 
             (dot.tag as? ValueAnimator)?.cancel()
 
-            if (currentWidth != targetWidth) {
+            if (currentWidth != targetWidth && duration <= 0L) {
+                dot.layoutParams = (dot.layoutParams as LinearLayout.LayoutParams).also { it.width = targetWidth }
+            } else if (currentWidth != targetWidth) {
                 val anim =
                     ValueAnimator.ofInt(currentWidth, targetWidth).apply {
-                        duration = 260
+                        this.duration = duration
                         interpolator = FastOutSlowInInterpolator()
                         addUpdateListener { va ->
                             val w = va.animatedValue as Int
@@ -552,6 +959,7 @@ class OnboardingActivity : AppActivity() {
         }
 
         private fun bindWelcomePage(binding: PageOnboardingWelcomeBinding) {
+            CardBorder.applyAll(binding.root)
             binding.cardRestoreBackup.applySpringTouch()
             binding.btnRestoreBackup.applySpringTouch()
             binding.btnPickBackupFile.applySpringTouch()
@@ -591,6 +999,7 @@ class OnboardingActivity : AppActivity() {
         }
 
         private fun bindWelcomeReturningPage(binding: PageOnboardingWelcomeReturningBinding) {
+            CardBorder.applyAll(binding.root)
             binding.heroIcon.applySpringTouch()
             binding.cardFeatM3e.applySpringTouch()
             binding.cardFeatLayoutNav.applySpringTouch()
@@ -652,51 +1061,20 @@ class OnboardingActivity : AppActivity() {
         private fun bindSetupPage(binding: PageOnboardingSetupBinding) {
             setupStatusRunning = binding.statusRunning
             setupPage = binding
+            CardBorder.applyAll(binding.root)
 
-            // Show/hide method cards based on device
-            val showWadb =
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ||
-                    EnvironmentUtils.isTelevision() ||
-                    EnvironmentUtils.getAdbTcpPort() > 0
-            val showRoot = EnvironmentUtils.isRooted()
-
-            binding.cardWadb.visibility = if (showWadb) View.VISIBLE else View.GONE
-            binding.cardRoot.visibility = if (showRoot) View.VISIBLE else View.GONE
-
-            // Wireless ADB buttons (Pair / Start are set by refreshWadbButtons)
-            if (showWadb) {
-                binding.btnWadbGuide.setOnClickListener {
-                    af.shizuku.manager.knowledgebase.KnowledgebaseHelper.show(
-                        this@OnboardingActivity,
-                        af.shizuku.manager.knowledgebase.KnowledgebaseRegistry.TOPIC_WIRELESS_ADB,
-                    )
-                }
-            }
-
-            // Root button
-            if (showRoot) {
-                binding.btnRootStart.setOnClickListener {
-                    startActivity(
-                        Intent(this@OnboardingActivity, StarterActivity::class.java).apply {
-                            putExtra(StarterActivity.EXTRA_IS_ROOT, true)
-                        },
-                    )
-                }
-            }
-
-            // PC/ADB button
-            binding.btnAdbCommand.setOnClickListener {
-                showAdbCommandDialog()
-            }
+            binding.btnWadbGuide.setOnClickListener { openGuide() }
+            binding.btnRootStart.setOnClickListener { startWithRoot() }
+            binding.btnAdbCommand.setOnClickListener { showAdbCommandDialog() }
 
             // Interactive touch springs
-            binding.cardWadb.applySpringTouch()
+            binding.btnStatePrimary.applySpringTouch()
+            binding.btnStateSecondary.applySpringTouch()
+            binding.btnStateTertiary.applySpringTouch()
             binding.btnWadbPrimary.applySpringTouch()
             binding.btnWadbSecondary.applySpringTouch()
             binding.btnWadbGuide.applySpringTouch()
-            binding.cardRoot.applySpringTouch()
             binding.btnRootStart.applySpringTouch()
-            binding.cardAdb.applySpringTouch()
             binding.btnAdbCommand.applySpringTouch()
             binding.btnSetupLater.applySpringTouch()
 
@@ -713,6 +1091,47 @@ class OnboardingActivity : AppActivity() {
         }
 
         private fun bindSecurityDoctorPage(binding: PageOnboardingSecurityDoctorBinding) {
+            CardBorder.applyAll(binding.root)
+            binding.previewNotificationApp.text =
+                getString(R.string.app_name) + " \u00b7 " + getString(R.string.onboarding_v2_preview_notification_time)
+
+            // The whole row is the switch, for touch and for screen readers.
+            fun linkRow(
+                row: View,
+                switch: CompoundButton,
+            ) {
+                row.setOnClickListener { switch.toggle() }
+                ViewCompat.setAccessibilityDelegate(
+                    row,
+                    object : AccessibilityDelegateCompat() {
+                        override fun onInitializeAccessibilityNodeInfo(
+                            host: View,
+                            info: AccessibilityNodeInfoCompat,
+                        ) {
+                            super.onInitializeAccessibilityNodeInfo(host, info)
+                            info.className = android.widget.Switch::class.java.name
+                            info.isCheckable = true
+                            info.isChecked = switch.isChecked
+                        }
+                    },
+                )
+            }
+            linkRow(binding.rowNetworkGuard, binding.switchNetworkGuard)
+            linkRow(binding.rowWatchdog, binding.switchWatchdog)
+
+            // Four labels side by side don't fit at very large font sizes: stack them.
+            if (resources.configuration.fontScale >= 1.6f) {
+                binding.assistantLevelGroup.orientation = LinearLayout.VERTICAL
+                for (i in 0 until binding.assistantLevelGroup.childCount) {
+                    val button = binding.assistantLevelGroup.getChildAt(i)
+                    button.layoutParams =
+                        (button.layoutParams as LinearLayout.LayoutParams).also {
+                            it.width = ViewGroup.LayoutParams.MATCH_PARENT
+                            it.weight = 0f
+                        }
+                    (button as? MaterialButton)?.maxLines = 2
+                }
+            }
             val networkListener =
                 CompoundButton.OnCheckedChangeListener { view, checked ->
                     if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
@@ -770,6 +1189,15 @@ class OnboardingActivity : AppActivity() {
                     binding.previewChip.isVisible = level == AssistantLevel.QUIET
                     binding.previewFixCard.isVisible = level == AssistantLevel.BALANCED || level == AssistantLevel.ACTIVE
                     binding.previewNotification.isVisible = level == AssistantLevel.ACTIVE
+                    binding.assistantPreviewCard.contentDescription =
+                        getString(
+                            when (level) {
+                                AssistantLevel.OFF -> R.string.onboarding_v2_preview_a11y_off
+                                AssistantLevel.QUIET -> R.string.onboarding_v2_preview_a11y_quiet
+                                AssistantLevel.ACTIVE -> R.string.onboarding_v2_preview_a11y_active
+                                else -> R.string.onboarding_v2_preview_a11y_balanced
+                            },
+                        )
                 }
                 // A cancelled fade skips its end action; the new one below applies this level.
                 preview.animate().cancel()

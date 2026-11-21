@@ -2,23 +2,28 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
 
     <LinearLayout
+        android:id="@+id/setup_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingHorizontal="24dp"
-        android:paddingTop="40dp"
+        android:paddingTop="@dimen/onboarding_page_padding_top"
         android:paddingBottom="8dp">
 
         <TextView
+            android:id="@+id/setup_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:accessibilityHeading="true"
             android:text="@string/onboarding_setup_title"
             android:textAppearance="?textAppearanceHeadlineLarge"
+            android:textColor="?colorOnSurface"
             android:layout_marginBottom="12dp" />
 
         <TextView
@@ -27,135 +32,342 @@
             android:text="@string/onboarding_setup_desc"
             android:textAppearance="?textAppearanceBodyLarge"
             android:textColor="?colorOnSurfaceVariant"
-            android:lineSpacingMultiplier="1.4"
-            android:layout_marginBottom="32dp" />
+            android:lineSpacingMultiplier="1.3"
+            android:layout_marginBottom="24dp" />
 
-        <!-- Running status banner -->
-        <LinearLayout
+        <!-- Running: the "it worked" card. Its visibility is driven by the success logic. -->
+        <com.google.android.material.card.MaterialCardView
             android:id="@+id/status_running"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/onboarding_success_bg"
-            android:paddingHorizontal="24dp"
-            android:paddingVertical="16dp"
-            android:layout_marginBottom="24dp"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/status_running_icon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_server_ok_24"
-                android:contentDescription="@null"
-                app:tint="?colorPrimary" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="16dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/onboarding_setup_running"
-                    android:textAppearance="?textAppearanceTitleLarge" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="@string/onboarding_setup_running_hint"
-                    android:textAppearance="?textAppearanceBodyMedium"
-                    android:textColor="?colorOnSurfaceVariant" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <!-- Wireless Debugging card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_wadb"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
-            app:strokeWidth="0dp"
+            android:accessibilityLiveRegion="polite"
+            android:visibility="gone"
+            app:cardBackgroundColor="?colorPrimaryContainer"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="?colorSurfaceContainerHigh"
-            android:visibility="gone">
+            app:contentPadding="@dimen/card_content_padding"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
+            app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/status_running_icon"
+                    style="@style/CardIcon"
+                    android:backgroundTint="?colorPrimary"
+                    android:tint="?colorOnPrimary"
+                    android:contentDescription="@null"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_server_ok_24" />
 
                 <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/onboarding_v2_status_running"
+                        android:textAppearance="?textAppearanceLabelLarge"
+                        android:textColor="?colorOnPrimaryContainer" />
+
+                    <TextView
+                        style="@style/CardTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/onboarding_setup_running"
+                        android:textColor="?colorOnPrimaryContainer" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/onboarding_setup_running_hint"
+                        android:textAppearance="?textAppearanceBodyMedium"
+                        android:textColor="?colorOnPrimaryContainer" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- The next step for this phone: the code fills icon, words and buttons per state -->
+        <TextView
+            android:id="@+id/text_state_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="@string/onboarding_v2_setup_suggested"
+            android:textAppearance="?textAppearanceLabelLarge"
+            android:textColor="?colorPrimary" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:accessibilityLiveRegion="polite"
+            app:cardBackgroundColor="?colorSurfaceContainerHigh"
+            app:cardElevation="0dp"
+            app:contentPadding="@dimen/card_content_padding"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/state_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="12dp">
+                    android:focusable="true"
+                    android:screenReaderFocusable="true">
 
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/ic_wadb_24"
-                        android:contentDescription="@null"
-                        app:tint="?colorPrimary" />
+                    <FrameLayout
+                        android:layout_width="48dp"
+                        android:layout_height="48dp">
 
-                    <TextView
+                        <ImageView
+                            android:id="@+id/state_icon"
+                            style="@style/CardIcon.Droplet"
+                            android:contentDescription="@null"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_wadb_24" />
+
+                        <com.google.android.material.loadingindicator.LoadingIndicator
+                            android:id="@+id/state_progress"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:importantForAccessibility="no"
+                            android:visibility="gone" />
+
+                    </FrameLayout>
+
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginStart="16dp"
-                        android:text="@string/home_wireless_adb_title"
-                        android:textAppearance="?textAppearanceHeadlineSmall" />
+                        android:orientation="vertical">
+
+                        <!-- Status as a word next to the icon, never colour alone -->
+                        <TextView
+                            android:id="@+id/state_word"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?textAppearanceLabelLarge"
+                            android:textColor="?colorOnSurfaceVariant"
+                            tools:text="@string/onboarding_v2_status_not_running" />
+
+                        <TextView
+                            android:id="@+id/state_title"
+                            style="@style/CardTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="@string/onboarding_v2_setup_pair_title" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/state_desc"
+                    style="@style/CardSummary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/onboarding_setup_wadb_desc"
-                    android:textAppearance="?textAppearanceBodyMedium"
-                    android:textColor="?colorOnSurfaceVariant"
-                    android:layout_marginBottom="20dp" />
+                    android:layout_marginTop="12dp"
+                    tools:text="@string/onboarding_v2_setup_pair_desc" />
 
-                <!-- Which of the two steps comes next; hidden where there is no pairing step -->
-                <TextView
-                    android:id="@+id/text_wadb_step"
-                    android:layout_width="wrap_content"
+                <!-- One filled action, a tonal second one and a text link; stacks when they don't fit -->
+                <LinearLayout
+                    android:id="@+id/state_actions"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:textAppearance="?textAppearanceLabelLarge"
-                    android:textColor="?colorPrimary"
-                    android:visibility="gone" />
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                <!-- Primary is filled, secondary tonal: the code puts Pair or Start in each -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_state_primary"
+                        style="@style/CardButton.Primary"
+                        android:layout_marginEnd="8dp"
+                        tools:text="@string/onboarding_setup_pair" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_state_secondary"
+                        style="@style/CardButton"
+                        android:layout_marginEnd="8dp"
+                        android:visibility="gone"
+                        tools:text="@string/home_wireless_adb_view_guide_button"
+                        tools:visibility="visible" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_state_tertiary"
+                        style="?attr/borderlessButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/text_other_ways"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:accessibilityHeading="true"
+            android:text="@string/onboarding_v2_setup_other_ways"
+            android:textAppearance="?textAppearanceTitleSmall"
+            android:textColor="?colorOnSurfaceVariant" />
+
+        <!-- Root card: first of the other ways, since root needs no setup at all -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_root"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="?colorSurfaceContainerHigh"
+            app:cardElevation="0dp"
+            app:contentPadding="@dimen/card_content_padding"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
 
+                    <ImageView
+                        style="@style/CardIcon"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_root_24" />
+
+                    <TextView
+                        style="@style/CardTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/home_root_title" />
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/CardSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/onboarding_setup_root_desc" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_root_start"
+                    style="@style/CardButton"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/home_root_button_start" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Wireless Debugging card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_wadb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="?colorSurfaceContainerHigh"
+            app:cardElevation="0dp"
+            app:contentPadding="@dimen/card_content_padding"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        style="@style/CardIcon"
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_wadb_24" />
+
+                    <TextView
+                        style="@style/CardTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/home_wireless_adb_title" />
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/CardSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/onboarding_setup_wadb_desc" />
+
+                <!-- Which of the two steps comes next; hidden where there is no pairing step -->
+                <TextView
+                    android:id="@+id/text_wadb_step"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textAppearance="?textAppearanceLabelLarge"
+                    android:textColor="?colorPrimary"
+                    android:visibility="gone" />
+
+                <!-- Tonal like every card below the suggested one; the code puts Pair or Start in each -->
+                <LinearLayout
+                    android:id="@+id/wadb_actions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_wadb_primary"
-                        style="@style/Widget.Material3Expressive.Button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        style="@style/CardButton"
                         android:layout_marginEnd="8dp"
                         android:text="@string/home_root_button_start" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_wadb_secondary"
-                        style="?attr/materialButtonTonalStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        style="@style/CardButton"
                         android:layout_marginEnd="8dp"
                         android:text="@string/adb_pairing"
                         android:visibility="gone" />
@@ -173,121 +385,56 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Root card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_root"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
-            app:strokeWidth="0dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="?colorSurfaceContainerHigh"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="12dp">
-
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/ic_root_24"
-                        android:contentDescription="@null"
-                        app:tint="?colorPrimary" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/home_root_title"
-                        android:textAppearance="?textAppearanceHeadlineSmall" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/onboarding_setup_root_desc"
-                    android:textAppearance="?textAppearanceBodyMedium"
-                    android:textColor="?colorOnSurfaceVariant"
-                    android:layout_marginBottom="20dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_root_start"
-                    style="@style/Widget.Material3Expressive.Button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/home_root_button_start" />
-
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
         <!-- PC/ADB card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_adb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
-            app:strokeWidth="0dp"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="?colorSurfaceContainerHigh"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="?colorSurfaceContainerHigh">
+            app:contentPadding="@dimen/card_content_padding"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
+            app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="12dp">
+                    android:gravity="center_vertical">
 
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:src="@drawable/ic_adb_24"
+                        style="@style/CardIcon"
                         android:contentDescription="@null"
-                        app:tint="?colorPrimary" />
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_adb_24" />
 
                     <TextView
+                        style="@style/CardTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginStart="16dp"
-                        android:text="@string/home_adb_title"
-                        android:textAppearance="?textAppearanceHeadlineSmall" />
+                        android:text="@string/home_adb_title" />
 
                 </LinearLayout>
 
                 <TextView
+                    style="@style/CardSummary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/onboarding_setup_adb_desc"
-                    android:textAppearance="?textAppearanceBodyMedium"
-                    android:textColor="?colorOnSurfaceVariant"
-                    android:layout_marginBottom="20dp" />
+                    android:layout_marginTop="12dp"
+                    android:text="@string/onboarding_setup_adb_desc" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_adb_command"
-                    style="@style/Widget.Material3Expressive.Button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/CardButton"
+                    android:layout_marginTop="16dp"
                     android:text="@string/home_adb_button_view_command" />
 
             </LinearLayout>
