@@ -94,6 +94,16 @@
             android:summary="@string/about_support_summary"
             android:icon="@drawable/ic_favorite_24" />
 
+        <ListPreference
+            android:key="support_link"
+            android:title="@string/about_support_link_title"
+            android:dialogTitle="@string/about_support_link_title"
+            android:entries="@array/about_support_link_names"
+            android:entryValues="@array/about_support_link_values"
+            android:defaultValue="sponsors"
+            android:summary="%s"
+            android:icon="@drawable/ic_favorite_24" />
+
         <Preference
             android:key="report_bug"
             android:title="@string/settings_report_bug"

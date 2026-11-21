@@ -139,7 +139,10 @@ class AboutSettingsFragment : BaseSettingsFragment() {
         }
 
         findPreference<Preference>("support_development")?.setOnPreferenceClickListener {
-            CustomTabsHelper.launchUrlOrCopy(context, context.getString(R.string.about_support_url))
+            val choice = ShizukuSettings.getPreferences()?.getString(ShizukuSettings.Keys.KEY_SUPPORT_LINK, "sponsors")
+            val url =
+                if (choice == "coffee") R.string.about_support_url else R.string.about_support_url_sponsors
+            CustomTabsHelper.launchUrlOrCopy(context, context.getString(url))
             true
         }
 

@@ -30,6 +30,7 @@ public class ShizukuSettings {
 
     public static final String NAME = "settings";
     public static class Keys {
+        public static final String KEY_SUPPORT_LINK = "support_link";
         public static final String KEY_START_ON_BOOT = "start_on_boot";
         public static final String KEY_SYNCED_START_ON_BOOT_DEFAULT = "synced_start_on_boot_default";
         public static final String KEY_WATCHDOG = "watchdog";
