@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- To translators: you can leave your here -->
+    <!-- UI Settings - Expressive -->
+    <!-- UI Settings - Display -->
+    <!-- UI Settings - One UI Theme -->
+    <!-- UI Settings - Typography & Layout -->
+    <!-- UI Settings - Corner Rounding -->
     <!-- Home - Status -->
     <string name="home_status_service_is_running">%1$s çalışıyor</string>
     <string name="home_status_service_not_running">%1$s çalışmıyor</string>
+    <!-- %2$s is the Shizuku service API version (e.g. 13.6), not the app version. -->
     <string name="home_status_service_version">Sürüm %2$s, %1$s</string>
     <string name="home_status_service_version_update"><![CDATA[Sürüm %2$s, %1$s<br>Sürüm %3$s, güncelleştirmek için yeniden başlatın]]></string>
     <!-- Home - Adb -->
@@ -48,6 +54,11 @@
         başlatın:\n- \"Geliştirici Seçenekleri\"ne gidin\n- \"USB hata ayıklama\" ve \"Kablosuz hata
         ayıklama\"yı etkinleştirin\n- \"Kablosuz hata ayıklama\"nın sol tarafına dokunun\n- \"Cihazı
         eşleştirme koduyla eşleştir\"e dokunun\n- Bildirimde eşleştirme kodunu girin</string>
+    <!-- Service Doctor -->
+    <!-- Root Compatibility -->
+    <!-- Shell Tutorial -->
+    <!-- Adb Pairing Dialog -->
+    <!-- App Management -->
     <string name="dialog_adb_pairing_accessibility_enable">Eşleştirme işlemini başlatmak için lütfen
         erişilebilirlik hizmetini etkinleştirin. Bu, Shizuku\'nun eşleştirme kodunu algılamasını
         sağlar.\n\nKod bulunduğunda veya enerji tasarrufu için 1 dakika sonra erişilebilirlik
@@ -122,6 +133,8 @@
         kaldırılabilir. Bunun nasıl yapılacağına ilişkin ayrıntılar için lütfen yardımı okuyun. 
         \n 
         \nİşlemin etkili olabilmesi için Shizuku yeniden başlatılmalı.</string>
+    <!-- Application management - context menu -->
+    <!-- Application management - search / filter / sort -->
     <!-- Application management -->
     <string name="app_management_dialog_adb_is_limited_title">ADB’nin izni sınırlıdır</string>
     <string name="app_management_dialog_adb_is_limited_message"><![CDATA[Cihaz üreticinizin adb iznini sınırlaması son derece olasıdır. <p>Bu belgede<b><a href="%1$s">sisteminiz için bir çözüm olabilir</a></b>.]]></string>
@@ -148,6 +161,11 @@
         dosyasında %2$s için bir takma ad oluşturabilirsiniz.</string>
     <string name="terminal_tutorial_3">Aşağıdaki komutla bir kabuk açın:</string>
     <string name="rish_description"><![CDATA[%1$sile herhangi bir terminal uygulamasında kabuk komutlarını çalıştırabilirsiniz.<p>Nasıl kullanılacağı hakkında daha fazla bilgi edinmek için dokunun.]]></string>
+    <!-- Settings — swipe customisation -->
+    <!-- Settings — long-press customisation -->
+    <!-- Onboarding -->
+    <!-- Swipe hint overlay -->
+    <!-- App Name & Icon Customization / Camouflage (Issue #615) -->
     <!-- Settings -->
     <string name="settings_title">Ayarlar</string>
     <string name="settings_start_on_boot">Önyüklemede başla</string>
@@ -170,11 +188,19 @@
     <string name="settings_language">Dil</string>
     <string name="settings_translation">Çeviriye katılın</string>
     <string name="settings_translation_summary">%s , dilinize çevirmemize yardımcı olun</string>
-    <string name="settings_help">Yardım</string>
     <string name="settings_report_bug">Bir hata bildirin</string>
     <string name="settings_legacy_pairing">Miras eşleştirmesi</string>
     <string name="settings_legacy_pairing_summary">Eşleştirme kodunu bildirim yerine bir iletişim
         kutusuna girin</string>
+    <!-- Shizuku+ Features -->
+    <!-- Plus feature short titles (used in settings preference titles) -->
+    <!-- Dhizuku admin tools -->
+    <!-- Backup / Restore settings -->
+    <!-- Experimental Plus settings (developer section) -->
+    <!-- Detailed Help Strings -->
+    <!-- Plus settings category titles -->
+    <!-- Root Integration (renamed from Legacy Compatibility) -->
+    <!-- Sentry Offline Notice -->
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">Öncelikle lütfen aşağıdakileri yapın:</string>
     <string name="bug_report_dialog_update">^1 operatörünü kullandığınızdan emin olun.</string>
@@ -188,6 +214,13 @@
     <string name="bug_report_dialog_method">Hesabınız varsa lütfen ^1 üzerinden bir sorun bildirin.</string>
     <string name="bug_report_dialog_method_2">Alternatif olarak, e-posta gönderebilirsiniz.</string>
     <string name="bug_report_dialog_button_email">E-posta</string>
+    <!-- Service Doctor -->
+    <!--
+      Three recovery outcomes — shown after the 1-tap wallet fix runs.
+      ROOT:        Shizuku uid=0 — verdict files deleted, immediate recovery expected.
+      ADB_MODE:    Shizuku uid=2000 — can\'t touch GMS data dir; best-effort steps taken.
+      NO_SHIZUKU:  Shizuku wasn\'t running; only unprivileged Wallet stop was possible.
+    -->
     <!-- Snackbar -->
     <string name="snackbar_invalid_port">Bağlantı noktası 1 ile 65535 arasında olmalıdır</string>
     <string name="snackbar_battery_optimization_home">Önyükleme/bekçi köpeği sırasında başlatmanın
@@ -204,8 +237,7 @@
     <string name="dark_theme_off">Her zaman hafif</string>
     <string name="dark_theme_on">Her zaman karanlık</string>
     <!-- About -->
-    <!-- Start -->
-    <!-- Stop -->
+    <!-- Start/Stop -->
     <string name="action_stop">Shizuku’yu durdur</string>
     <string name="dialog_stop_message">Shizuku hizmeti durdurulacak.</string>
     <!-- Notification -->
@@ -257,4 +289,74 @@
     <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> yeni Shizuku desteğine sahip ama eski Shizuku talep ediyor. Bu Shizuku çalışmadığı zaman meydana gelir, lütfen Shizuku uygulamasını kontrol edin.<p>Eski Shizuku uygulaması Mart 2019’da kullanımdan kaldırılmıştır.]]></string>
     <string name="dialog_requesting_legacy_button_open_shizuku">Shizuku’yu aç</string>
     <string name="wadb_notification_attempt_now">Şimdi dene</string>
+    <!-- Settings navigation summaries -->
+    <!-- Accessibility - Content Descriptions -->
+    <!-- Empty State Views -->
+    <!-- Settings diagnostics preference (settings_advanced.xml) -->
+    <!-- Verified install preferences (settings_app_management.xml) -->
+    <!-- Custom accent color preference (settings_personalization.xml) -->
+    <!-- Update Settings -->
+    <!-- SU Bridge configuration -->
+    <!-- Root modules — Rootless Bridges -->
+    <!-- Root modules — Mocking &amp; Simulation -->
+    <!-- Bootloader Integration settings -->
+    <!-- Developer Options -->
+    <!-- Update Notifications -->
+    <!-- Migration Dialog -->
+    <!-- Update Dialogs -->
+    <!-- Settings backup/restore -->
+    <!-- Common action labels -->
+    <!-- Service Doctor auto-fix -->
+    <!-- ADB Pairing -->
+    <!-- Update dialog -->
+    <!-- Accessibility service status -->
+    <!-- Dhizuku Device Owner Setup -->
+    <!-- Clear Device Owner (Issue #237) -->
+    <!-- Pairing fallback (Issue #204) -->
+    <!-- Remote App DB Sync -->
+    <!-- Binder Enhancements (Issue #199) -->
+    <!-- Automation Engine (Issue #435) -->
+    <!-- Companion Mode -->
+    <!-- App picker dialog -->
+    <!-- Root Compatibility Hub -->
+    <!-- Home Automation dialog labels -->
+    <!-- Misc -->
+    <string name="settings_help">Yardım</string>
+    <!-- APK verification API key strings -->
+    <!-- Scripting & Snippets (#11) -->
+    <!-- Tasker/Locale automation plugin (#6) -->
+    <!-- Network Firewall automation trusted networks -->
+    <!-- Biometric lock -->
+    <!-- Stealth mode -->
+    <!-- OTA flash danger dialog -->
+    <!-- SU path preset picker dialog -->
+    <!-- Device Owner (Dhizuku) toasts -->
+    <!-- Backup/restore picker dialog -->
+    <!-- Peer Settings Sharing / Drop-In Sync -->
+    <!-- Samsung ADB dialog -->
+    <!-- Tile service: state subtitles (shown in Samsung OneUI wide tile text area and standard subtitle) -->
+    <!-- Tile service: mode labels -->
+    <!-- Tile service: action labels (tap dialog and long-press options activity) -->
+    <!-- Tile service error -->
+    <!-- App Profiles automation activity -->
+    <!-- App Backup feature -->
+    <!-- Mode-contextual settings (#433) -->
+    <!-- Hide backup settings (#461) -->
+    <!-- Launcher icon &amp; stealth -->
+    <!-- AI Bridge -->
+    <!-- Package identity / MDM bypass UI (#469) -->
+    <!-- Device Control card &amp; screen -->
+    <!-- Stealth Mode -->
+    <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
+    <!-- Feature Hub experimental category label -->
+    <!-- Permission Manager card &amp; screen -->
+    <!-- Home layout simulator accessibility labels (decorative preview widget — a11y toggles) -->
+    <!-- Keep-alive and stability tips for unexpected deactivations -->
+    <!-- Activity log entries. The log stores the English text (it is parsed for the event type and
+         exported in bug reports); ActivityLogText maps it to these when it is shown. -->
+    <!-- Adaptive settings & tiered complexity -->
+    <!-- In-App Knowledgebase & Consumer-friendly settings -->
+    <!-- Adaptive Recommendations & Startup Scripts -->
+    <!-- App Reachability & Filtering -->
+    <!-- Settings standardization: standard rows replacing the compound grids -->
 </resources>

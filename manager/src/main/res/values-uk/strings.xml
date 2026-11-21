@@ -5,10 +5,8 @@
     <string name="server_memory_usage">Використання пам\'яті сервером</string>
     <string name="server_memory_uncapped">Необмежено</string>
     <string name="server_clients_connected">Підключено %1$d додатків</string>
-
     <!-- To translators: you can leave your here -->
     <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
-
     <!-- UI Settings - Expressive -->
     <string name="settings_expressive_shapes">Виразні форми іконок</string>
     <string name="settings_expressive_shapes_summary">Використовувати асиметричні форми листка та краплі для іконок</string>
@@ -17,32 +15,24 @@
     <string name="settings_icon_style">Стиль іконок</string>
     <string name="settings_shape_style">Стиль форми контейнера</string>
     <string name="settings_animation_intensity">Інтенсивність анімації</string>
-
     <!-- UI Settings - Display -->
     <string name="settings_edge_to_edge">Макет від краю до краю</string>
     <string name="settings_blur_ui">Ефект матового скла</string>
-
     <!-- UI Settings - One UI Theme -->
     <string name="settings_oneui_theme">Стиль One UI</string>
     <string name="settings_oneui_theme_summary">Відповідає мові дизайну Samsung One UI — великі закруглені кути та жирний шрифт. Колір залишається без змін; для цього використовуйте Material You або власний акцент вище.</string>
     <string name="settings_one_handed_mode">Режим керування однією рукою</string>
     <string name="settings_one_handed_mode_summary">Зсунути інтерактивний контент до нижньої частини екрана для зручного доступу великим пальцем</string>
-
     <!-- UI Settings - Typography & Layout -->
     <string name="settings_bold_typography">Жирна типографіка</string>
     <string name="settings_expanded_headers">Розширені заголовки розділів</string>
-
     <!-- UI Settings - Corner Rounding -->
     <string name="settings_corner_rounding_override">Округлення кутів</string>
-
-    <!-- UI Settings - System-following -->
-
     <string-array name="icon_styles">
         <item>Стандартний (Залитий)</item>
         <item>Контурний</item>
         <item>Двотонний</item>
     </string-array>
-
     <string name="settings_icon_color_mode">Кольори двотонних іконок</string>
     <string name="settings_icon_color_mode_summary">Як розфарбовується фон двотонної іконки</string>
     <string-array name="icon_color_modes">
@@ -50,7 +40,6 @@
         <item>Однаковий колір для всіх</item>
         <item>Різний колір для кожної</item>
     </string-array>
-
     <string-array name="shape_styles">
         <item>Zen (Листок/Крапля)</item>
         <item>Сучасний (Material 3)</item>
@@ -58,24 +47,21 @@
         <item>Органічний (Squircle)</item>
         <item>Гострий (Кутастий)</item>
     </string-array>
-
     <string-array name="animation_intensities">
         <item>Вимкнено</item>
         <item>Легка</item>
         <item>Стандартна</item>
         <item>Виразна</item>
     </string-array>
-
-
     <!-- Home - Status -->
     <string name="home_status_service_is_running">%1$s працює</string>
     <string name="home_status_service_not_running">%1$s не працює</string>
     <string name="home_status_service_not_running_summary">%1$s зупинено</string>
     <string name="home_status_service_user_root">root</string>
     <string name="home_status_service_user_adb">adb</string>
+    <!-- %2$s is the Shizuku service API version (e.g. 13.6), not the app version. -->
     <string name="home_status_service_version">Версія %2$s, %1$s</string>
     <string name="home_status_service_version_update"><![CDATA[Версія %2$s, %1$s<br>Запустіть знову, щоб оновитися до версії %3$s]]></string>
-
     <!-- Home - Adb -->
     <string name="home_adb_title"><![CDATA[Почніть з підключення до ПК]]></string>
     <string name="home_adb_description"><![CDATA[Для пристроїв без root потрібно використовувати adb для запуску Shizuku (потрібне підключення до комп\'ютера). Цей процес потрібно повторювати кожного разу, коли пристрій перезавантажується. Будь ласка, <b><a href=\"%1$s\">прочитайте довідку</a></b>.]]></string>
@@ -84,18 +70,22 @@
     <string name="home_adb_dialog_view_command_message"><![CDATA[<font face=\"monospace\">%1$s</font><br><br>* Є деякі інші міркування, будь ласка, спочатку підтвердьте, що ви прочитали довідку.]]></string>
     <string name="home_adb_dialog_view_command_copy_button">Копіювати</string>
     <string name="home_adb_dialog_view_command_button_send">Відправити</string>
-
     <!-- Home - Wireless Adb -->
     <string name="home_wireless_adb_title"><![CDATA[Запуск за допомогою бездротового налагодження]]></string>
     <string name="home_wireless_adb_description"><![CDATA[Починаючи з Android 11 та вище, ви можете ввімкнути бездротове налагодження та запустити Shizuku прямо з вашого пристрою, не під\'єднуючись до комп\'ютера.<p>Будь ласка, спочатку перегляньте покрокову інструкцію.]]></string>
     <string name="home_wireless_adb_description_pre_11"><![CDATA[До Android 11, щоб увімкнути бездротове налагодження, під\'єднання до ПК є обов\'язковим.]]></string>
     <string name="home_wireless_adb_view_guide_button">Покрокова інструкція</string>
     <string name="home_layout_sim_adb">ADB</string>
-
     <!-- Adb -->
     <string name="dialog_adb_discovery">Пошук сервісу бездротового налагодження</string>
     <string name="dialog_adb_discovery_message">Будь ласка, увімкніть \"Бездротове налагодження\" в \"Параметрах розробника\". \"Бездротове налагодження\" автоматично вимикається при зміні мереж.\n\nЗверніть увагу, не вимикайте \"Параметри розробника\" чи \"Налагодження USB\", інакше Shizuku буде зупинено.</string>
     <string name="dialog_adb_discovery_message_toggle_wireless_debugging">Будь ласка, спробуйте вимкнути та увімкнути \"Бездротове налагодження\", якщо пошук продовжується.</string>
+    <string name="dialog_adb_wifi_disconnected_warning"><![CDATA[<b>Wi-Fi відключено.</b><br>Android не може виявити бездротове налагодження через мобільні дані (5G/LTE).]]></string>
+    <string name="dialog_adb_hotspot_tip"><![CDATA[💡 <b>Порада:</b> увімкніть <b>Мобільну точку доступу</b> телефону, щоб використовувати бездротове налагодження без мережі Wi-Fi, або підключіться через локальний порт 5555.]]></string>
+    <string name="dialog_adb_samsung_hotspot_warning"><![CDATA[💡 <b>Примітка для Samsung:</b> One UI вимикає бездротове налагодження, поки активна Мобільна точка доступу. Підключіться до Wi-Fi-точки доступу іншого пристрою (офлайн — це нормально) або один раз виконайте <code>adb tcpip 5555</code> через USB.]]></string>
+    <string name="dialog_adb_open_hotspot">Налаштування мобільної точки доступу</string>
+    <string name="dialog_adb_probing_loopback">Перевірка локального порту (127.0.0.1:5555)...</string>
+    <string name="dialog_adb_loopback_found">Знайдено активну службу ADB на порту %1$d! Підключення...</string>
     <string name="dialog_adb_port">Порт</string>
     <string name="dialog_adb_invalid_port">Порт – це ціле число від 1 до 65535.</string>
     <string name="adb_pairing">Створення пари</string>
@@ -107,13 +97,24 @@
     <string name="dialog_wireless_adb_not_enabled">Бездротове налагодження не ввімкнено.\nЗверніть увагу, до Android 11 для увімкнення бездротового налагодження потрібне підключення до комп\'ютера.</string>
     <string name="dialog_usb_debugging_not_enabled">Налагодження USB не ввімкнено.\nБудь ласка, увімкніть його в розділі \"Параметри розробника\".</string>
     <string name="dialog_adb_pairing_message">Будь ласка, розпочніть створення пари, виконавши такі кроки:\n- Перейдіть до розділу \"Параметри розробника\"\n- Увімкніть \"Налагодження USB\" та \"Бездротове налагодження\"\n- Натисніть ліву частину розділу \"Бездротове налагодження\"\n- Натисніть \"Створити пару з пристроєм за допомогою коду\"\n- Введіть код створення пари зі сповіщення</string>
-
     <!-- Service Doctor -->
+    <string name="snackbar_samsung_auto_blocker">Samsung Auto Blocker може блокувати ADB на One UI 7/8. Перевірте налаштування безпеки.</string>
+    <string name="snackbar_action_check">Перевірити</string>
+    <string name="doctor_check_accessibility">Служба спеціальних можливостей для пари ADB</string>
     <string name="doctor_check_samsung_autoblocker">Samsung Auto Blocker</string>
+    <string name="doctor_check_samsung_max_restrictions">Максимальні обмеження (One UI 8+)</string>
     <string name="doctor_check_secondary_user">Другий користувач / Захищена папка</string>
     <string name="doctor_check_phantom_process">Вбивця фантомних процесів</string>
+    <string name="doctor_check_su_bridge_a16">SU-міст (ADB на Android 16+)</string>
     <string name="doctor_status_manual_check">Потребує ручної перевірки</string>
     <string name="doctor_status_detected">Виявлено</string>
+    <string name="doctor_status_fix_available">Доступне виправлення</string>
+    <string name="doctor_status_autoblocker_on">Увімкнено (Вимкніть)</string>
+    <string name="doctor_status_samsung_max_restrictions_on">Увімкнено (Має бути вимкнено)</string>
+    <string name="doctor_status_su_bridge_path_set">експортований шлях встановлено</string>
+    <string name="doctor_status_su_bridge_no_path">Експортований шлях не налаштовано</string>
+    <string name="doctor_tip_oneui8_max_restrictions">One UI 8+: «Максимальні обмеження» в Auto Blocker вимикають ADB. Вимкніть їх, щоб користуватися Shizuku.</string>
+    <string name="doctor_tip_su_bridge_a16">Android 16+ обмежує запис у /data/local/tmp з ADB-оболонки. Відкрийте Хаб сумісності Root і натисніть «Експорт», щоб встановити шлях SU-моста, який працює на вашому пристрої.</string>
     <string name="doctor_tip_samsung_autoblocker"><b>Samsung Auto Blocker</b>: Переконайтеся, що його <b>ВИМКНЕНО</b> або що \'Максимальні обмеження\' вимкнено. Він непомітно блокує команди ADB на One UI 7/8+.</string>
     <string name="doctor_tip_oneui_connectivity"><b>Підключення One UI 7/8</b>: Якщо бездротове створення пари не працює, спробуйте використати <b>режим розділеного екрана</b> з одночасно відкритими Shizuku та Параметрами розробника.</string>
     <string name="doctor_tip_s22_ultra"><b>Порада для S22 Ultra</b>: Для стабільного ADB наберіть `*#0808#` і виберіть `MTP + ADB`, якщо виникають розриви з\'єднання.</string>
@@ -121,26 +122,22 @@
     <string name="doctor_tip_phantom_process"><b>Вбивця фантомних процесів</b>: Android 12-15+ може вбити Shizuku, якщо виконується забагато команд. Кнопка \'Виправити\' намагається вимкнути цей ліміт.</string>
     <string name="doctor_tip_samsung_optimization"><b>Автооптимізація Samsung</b>: Вимкніть \'Автоматичне перезавантаження\' в Обслуговуванні пристрою, щоб запобігти закриттю Shizuku вночі.</string>
     <string name="doctor_tip_samsung_sleeping"><b>Сплячі додатки Samsung</b>: Натискання \'Виправити\' відкриває список <b>\'Додатки, що ніколи не сплять\'</b>. Натисніть кнопку <b>+</b> і додайте Shizuku+, щоб запобігти заморожуванню фонової служби системою Samsung.</string>
-    <string name="doctor_tip_s22_ultra_exynos"><b>S22 Ultra (Exynos)</b>: Якщо служба працює повільно, спробуйте вимкнути <b>\'RAM Plus\'</b> в Обслуговування пристрою > Пам\'ять.</string>
+    <string name="doctor_tip_s22_ultra_exynos"><b>S22 Ultra (Exynos)</b>: Якщо служба працює повільно, спробуйте вимкнути <b>\'RAM Plus\'</b> в Обслуговування пристрою &gt; Пам\'ять.</string>
     <string name="doctor_tip_s22_ultra_snapdragon"><b>S22 Ultra (Snapdragon)</b>: Переконайтеся, що в Швидких налаштуваннях увімкнено \'Покращена обробка\' для максимальної пропускної здатності команд.</string>
     <string name="doctor_system_well_configured">Ваша система виглядає добре налаштованою для Shizuku+.</string>
-
     <!-- Root Compatibility -->
     <string name="su_bridge_other_detected_apps">Інші виявлені root-додатки</string>
     <string name="su_bridge_installed_root_app">Встановлений root-додаток</string>
     <string name="su_bridge_suggested_root_app">Пропонований root-додаток</string>
-
     <!-- Shell Tutorial -->
     <string name="terminal_tutorial_export_summary">Експортувати файли (%1$s, %2$s, %3$s та %4$s) у нову папку.</string>
     <string name="terminal_tutorial_copy_summary">Це скопіює експортовані файли до приватного сховища вашого термінального додатка. Ви також можете додати псевдоніми для %1$s, %2$s та %3$s у ваш &lt;font face=\"monospace\"&gt;.bashrc&lt;/font&gt; або &lt;font face=\"monospace\"&gt;.zshrc&lt;/font&gt;.</string>
     <string name="terminal_tutorial_run_command">sh /шлях/до/%1$s</string>
     <string name="terminal_tutorial_run_plus_command">sh /шлях/до/plus [команда]</string>
-
     <!-- Adb Pairing Dialog -->
     <string name="adb_pairing_searching">Пошук сервісу створення пари…</string>
     <string name="adb_pairing_status_pairing">Створення пари з пристроєм…</string>
     <string name="adb_pairing_status_failed">Не вдалося створити пару.</string>
-
     <!-- App Management -->
     <string name="dialog_adb_pairing_accessibility_enable">Будь ласка, увімкніть службу доступності, щоб розпочати процес створення пари. Це дозволить Shizuku виявити код.\n\nСлужба доступності вимкнеться після знаходження коду або через 1 хвилину для економії енергії.</string>
     <string name="dialog_adb_pairing_accessibility_navigate">Будь ласка, розпочніть створення пари, виконавши такі кроки:\n- Перейдіть до розділу \"Параметри розробника\"\n- Увімкніть \"Налагодження USB\" та \"Бездротове налагодження\"\n- Натисніть ліву частину \"Бездротове налагодження\"\n- Натисніть \"Створити пару з пристроєм за допомогою коду\". Shizuku автоматично виявить код створення пари.</string>
@@ -161,13 +158,11 @@
     <string name="adb_pairing_tutorial_content_finish">Поверніться до Shizuku і запустіть службу.</string>
     <string name="adb_pairing_tutorial_content_network">Shizuku потребує доступу до локальної мережі. Це контролюється мережевим дозволом.</string>
     <string name="adb_pairing_tutorial_content_network_limation_not_foreground">Деякі системи (наприклад, MIUI) забороняють додаткам доступ до мережі, коли вони не видимі на екрані. Будь ласка, вимкніть оптимізацію батареї для Shizuku на таких системах.</string>
-
     <!-- Home - Root -->
     <string name="home_root_title"><![CDATA[Запуск (для пристроїв з root)]]></string>
     <string name="home_root_description"><![CDATA[Якщо ви використовуєте Magisk, можете спробувати %1$s. Для користувачів root це з часом замінить Shizuku. Зверніть увагу, наявним додаткам потрібно внести невеликі зміни, щоб використовувати %2$s.]]></string>
     <string name="home_root_button_start">Запуск</string>
     <string name="home_root_button_restart">Перезапуск</string>
-
     <!-- Home - Application management -->
     <string name="home_app_management_title">Керування додатками</string>
     <plurals name="home_app_management_authorized_apps_count">
@@ -178,7 +173,6 @@
     </plurals>
     <string name="home_app_management_view_authorized_apps"><![CDATA[Натисніть для керування авторизованими додатками]]></string>
     <string name="home_app_management_empty">Додатки, які запросили або оголосили дозвіл Shizuku, з\'являться тут.</string>
-
     <!-- Home - Automation -->
     <string name="home_automation_title">Керуйте Shizuku за допомогою додатків автоматизації</string>
     <string name="home_automation_description">Такі додатки, як Tasker та MacroDroid, можуть надсилати наміри (intents) для автоматичного запуску/зупинки Shizuku.</string>
@@ -192,15 +186,12 @@
     <string name="home_automation_regenerate_token">Згенерувати новий токен?</string>
     <string name="home_automation_regenerate_token_message">Вам потрібно буде переналаштувати ваші наміри з новим токеном.</string>
     <string name="home_automation_token_encrypt_failed">Не вдалося захистити токен — спробуйте ще раз</string>
-
     <!-- Home - Learn more -->
     <string name="home_learn_more_title">Посібник розробника</string>
     <string name="home_learn_more_description">Дізнайтеся, як розробляти з Shizuku</string>
-
     <!-- Home - Adb permissions limited -->
     <string name="home_adb_is_limited_title">Потрібен додатковий крок</string>
     <string name="home_adb_is_limited_description">Виробник вашого пристрою обмежив дозволи ADB, і додатки, що використовують Shizuku, не працюватимуть належним чином.\n\nЗазвичай це обмеження можна зняти, змінивши деякі опції в \"Параметрах розробника\". Будь ласка, прочитайте довідку для деталей.\n\nВам може знадобитися перезапустити Shizuku, щоб зміни набули чинності.</string>
-
     <!-- Application management - context menu -->
     <string name="app_management_context_open_app">Відкрити додаток</string>
     <string name="app_management_context_app_info">Інформація про додаток</string>
@@ -213,7 +204,6 @@
     <string name="app_management_hidden">Додаток приховано</string>
     <string name="app_management_selected">Вибрано %d</string>
     <string name="app_management_undo">Скасувати</string>
-
     <!-- Application management - search / filter / sort -->
     <string name="app_management_hint_search">Пошук додатків…</string>
     <string name="app_management_filter_all">Усі</string>
@@ -225,7 +215,6 @@
     <string name="app_management_sort_a_to_z">Назва (А–Я)</string>
     <string name="app_management_sort_last_installed">Останні встановлені</string>
     <string name="app_management_sort_last_updated">Останні оновлені</string>
-
     <!-- Application management -->
     <string name="app_management_dialog_adb_is_limited_title">Дозвіл ADB обмежено</string>
     <string name="app_management_dialog_adb_is_limited_message"><![CDATA[Цілком можливо, що виробник вашого пристрою обмежує дозволи ADB.<p>Можливо, є рішення для вашої системи у <b><a href=\"%1$s\">цьому документі</a></b>.]]></string>
@@ -236,7 +225,6 @@
     <string name="app_management_bulk_revoke">Відкликати у вибраних</string>
     <string name="app_management_bulk_hide">Приховати вибрані</string>
     <string name="app_management_bulk_select_all">Вибрати все</string>
-
     <!-- Terminal -->
     <string name="home_terminal_title">Використовуйте Shizuku в термінальних додатках</string>
     <string name="home_terminal_description">Виконуйте команди оболонки в термінальних додатках через Shizuku</string>
@@ -249,21 +237,18 @@
     <string name="terminal_tutorial_2_description">Порада: Якщо домашній каталог (~) вашого терміналу знаходиться у приватній папці, розміщення файлів там дозволить запускати %1$s без вказування повного шляху.\n\nВ іншому випадку ви можете створити псевдонім (alias) для %2$s у конфігураційному файлі %3$s вашого терміналу.</string>
     <string name="terminal_tutorial_3">Відкрийте оболонку або виконайте команду Shizuku+:</string>
     <string name="rish_description"><![CDATA[За допомогою %1$s ви можете виконувати команди оболонки в будь-якому термінальному додатку.<p>Натисніть, щоб дізнатися більше про те, як цим користуватися.]]></string>
-
     <!-- Settings — swipe customisation -->
     <string name="settings_action_none">Немає</string>
     <string name="settings_action_open_app">Відкрити додаток</string>
     <string name="settings_action_app_info">Інформація про додаток</string>
     <string name="settings_action_toggle_permission">Перемкнути дозвіл</string>
     <string name="settings_action_hide_from_list">Приховати зі списку</string>
-
     <!-- Settings — long-press customisation -->
     <string name="settings_lp_category_summary">Виберіть дії, які з\'являтимуться при довгому натисканні на додаток у списку. Якщо увімкнено лише одну, вона спрацює миттєво — без меню.</string>
     <string name="settings_lp_open_app">Відкрити додаток</string>
     <string name="settings_lp_app_info">Інформація про додаток</string>
     <string name="settings_lp_toggle_permission">Перемкнути дозвіл Shizuku</string>
     <string name="settings_lp_hide_from_list">Приховати зі списку</string>
-
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Ласкаво просимо до Shizuku+</string>
     <string name="onboarding_welcome_desc">Вдосконалений Shizuku з потужними функціями керування додатками. Свайпи, швидкі дії та кастомізація — усе в одному місці.</string>
@@ -283,12 +268,11 @@
     <string name="onboarding_setup_wadb_desc">Android 11+, комп\'ютер не потрібен. Використовує бездротове налагодження.</string>
     <string name="onboarding_setup_root_desc">Ваш пристрій має root-права. Запустіть Shizuku з root-доступом.</string>
     <string name="onboarding_setup_adb_desc">Будь-який пристрій. Виконайте одну команду ADB з комп\'ютера для запуску.</string>
-
     <!-- Swipe hint overlay -->
     <string name="swipe_hint_title">Жести свайпу</string>
     <string name="swipe_hint_right">Свайп вправо для швидкої дії</string>
     <string name="swipe_hint_left">Свайп вліво для швидкої дії</string>
-
+    <!-- App Name & Icon Customization / Camouflage (Issue #615) -->
     <!-- Settings -->
     <string name="settings_title">Налаштування</string>
     <string name="settings_start_on_boot">Запуск під час завантаження</string>
@@ -297,12 +281,18 @@
     <string name="settings_use_system_color">Використовувати системний колір теми</string>
     <string name="settings_watchdog">Сторожовий пес (Watchdog)</string>
     <string name="settings_watchdog_summary">Автоматично перезапускати Shizuku після збою або непередбаченої зупинки. Не може перепідключитися при відключенні базової мережі (наприклад, кабель USB від\'єднано під час використання RNDIS/USB ADB).</string>
-    <string name="settings_tcp_mode_summary">Дозволяє Shizuku перезапускатися без Wi-Fi. (Shizuku має бути успішно запущено хоча б раз після перезавантаження)</string>
-    <string name="settings_tcp_mode_dialog_close_port">TCP порт буде закрито негайно. Вам знадобиться Wi-Fi, щоб знову увімкнути режим TCP. Продовжити?</string>
+    <string name="settings_device_hardening">Захист пристрою та підтримка активності</string>
+    <string name="settings_device_hardening_summary">Звільнити Shizuku та термінал-клієнти від Doze, автоматично надавати WRITE_SECURE_SETTINGS та синхронізувати бінарні файли стартера</string>
+    <string name="doctor_check_device_hardening">Захист пристрою та звільнення від Doze</string>
+    <string name="device_hardening_applied">Захист пристрою та оптимізації Doze застосовано</string>
+    <string name="settings_tcp_mode_summary">"Дозволяє Shizuku перезапускатися без Wi-Fi. (Shizuku має бути успішно запущено хоча б раз після перезавантаження)"</string>
+    <string name="settings_tcp_mode_dialog_close_port">"TCP порт буде закрито негайно. Вам знадобиться Wi-Fi, щоб знову увімкнути режим TCP. Продовжити?"</string>
     <string name="settings_tcp_mode_closing_port">Закриття TCP порту...</string>
     <string name="settings_restart_dialog_title">Потрібен перезапуск</string>
     <string name="settings_restart_dialog_message">Shizuku потрібно перезапустити, щоб застосувати це налаштування.</string>
     <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>Потрібен Wi-Fi. Shizuku продовжить роботу і чекатиме на підключення до Wi-Fi перед тим, як перезапуститися у фоновому режимі.</b>]]></string>
+    <string name="settings_auto_reconnect_mdns">Інтелектуальне автопідключення</string>
+    <string name="settings_auto_reconnect_mdns_summary">Автоматично перезапускати сервер при відкритті додатка якщо порт бездротового ADB вже активний</string>
     <string name="settings_auto_disable_usb_debugging">Авто-вимкнення налагодження USB</string>
     <string name="settings_auto_disable_usb_debugging_summary">Вимикати налагодження USB при зупинці Shizuku</string>
     <string name="settings_language">Мова</string>
@@ -318,16 +308,19 @@
     <string name="settings_enable_activity_log">Увімкнути журнал активності</string>
     <string name="settings_enable_activity_log_summary">Записувати та відображати виклики API Shizuku та події на головному екрані.</string>
     <string name="settings_show_activity_log_home">Показувати Журнал активності</string>
+    <string name="settings_show_status_card_outline">Контур картки статусу</string>
+    <string name="settings_show_status_card_outline_summary">Показувати кольоровий контур на картці статусу служби</string>
     <string name="settings_update_app_database">Оновити базу даних додатків</string>
     <string name="settings_update_app_database_summary">Завантажити найсвіжіші описи додатків та рекомендації з покращень із GitHub.</string>
     <string name="settings_update_app_database_error">Не вдалося оновити базу даних</string>
+    <string name="home_edit_mode_title">Розташування карток</string>
+    <string name="home_edit_mode_done">Готово</string>
     <string name="settings_legacy_pairing">Старе створення пари</string>
     <string name="settings_legacy_pairing_summary">Вводити код створення пари в діалозі замість сповіщення</string>
     <string name="settings_reset_adb_keys">Скинути ключі ADB</string>
     <string name="settings_reset_adb_keys_summary">Видалити наявні ключі ADB та сертифікати. Корисно, якщо створення пари зависло або KeyStore пошкоджено.</string>
     <string name="settings_reset_adb_keys_success">Ключі ADB очищено</string>
     <string name="settings_reset_adb_keys_error">Не вдалося скинути ключі ADB</string>
-
     <!-- Shizuku+ Features -->
     <string name="settings_shizuku_plus_features">Функції Shizuku+</string>
     <string name="settings_dhizuku_mode">Режим Dhizuku</string>
@@ -351,6 +344,40 @@
     <string name="settings_overlay_manager_plus_summary">Керування системними RRO оверлеями. Необхідно для роботи тем Hex Installer та Substratum без root-прав.</string>
     <string name="settings_network_governor_plus_summary">Привілейований контроль мережі. Використовується AFWall+ для надійної системної фільтрації.</string>
     <string name="settings_activity_manager_plus_summary">Нативний контроль процесів. Дозволяє MacroDroid, Tasker та Naptime глибоко зупиняти додатки та призначати кошики режиму очікування.</string>
+    <!-- Plus feature short titles (used in settings preference titles) -->
+    <string name="settings_network_governor_plus_title">DNS Governor</string>
+    <string name="settings_continuity_bridge_title">Continuity Bridge</string>
+    <string name="settings_activity_manager_plus_title">Керування процесами</string>
+    <string name="settings_status_bar_governor_plus_title">Керування статусним рядком</string>
+    <string name="settings_package_governor_plus_title">Package Governor</string>
+    <string name="settings_avf_manager_title">Менеджер ВМ</string>
+    <!-- Dhizuku admin tools -->
+    <string name="settings_dhizuku_screencap_lockdown">Блокування захоплення екрана</string>
+    <string name="settings_dhizuku_screencap_lockdown_summary">Вимкнути знімки екрана та записи екрана глобально на всьому пристрої</string>
+    <string name="settings_dhizuku_usb_lockdown">Блокування даних USB</string>
+    <string name="settings_dhizuku_usb_lockdown_summary">Заборонити передачу файлів по USB (MTP) та фізично захистити пристрій</string>
+    <string name="settings_dhizuku_suspended_packages">Призупинені застосунки</string>
+    <string name="settings_dhizuku_suspended_packages_summary">Виберіть застосунки для заморозки та повного блокування від запуску</string>
+    <!-- Backup / Restore settings -->
+    <string name="settings_backup_settings">Резервне копіювання налаштувань</string>
+    <string name="settings_backup_settings_summary">Експортуйте конфігурації та покращення безпечно за допомогою біометричного шифрування.</string>
+    <string name="settings_restore_settings">Відновити налаштування</string>
+    <string name="settings_restore_settings_summary">Відновіть конфігурації з зашифрованої резервної копії.</string>
+    <!-- Experimental Plus settings (developer section) -->
+    <string name="settings_ai_core_master">AI Core Master</string>
+    <string name="settings_ai_core_master_summary">Увімкнути привілейовані операції AI: планування NPU та доступ до ієрархії вікон</string>
+    <string name="settings_npu_acceleration">Прискорення NPU</string>
+    <string name="settings_npu_acceleration_summary">Делегувати завдання AI-виведення нейронному процесору пристрою, якщо доступний</string>
+    <string name="settings_window_crawler">Сканер ієрархії вікон</string>
+    <string name="settings_window_crawler_summary">Дозволити AI-автоматизації зчитувати ієрархію вікна без Служб доступності</string>
+    <string name="settings_ai_automation_experimental">Експериментальна AI-автоматизація</string>
+    <string name="settings_ai_automation_experimental_summary">Увімкнути імітацію жестів, захоплення пікселів та введення тексту для автоматизації на основі AI</string>
+    <string name="settings_keystore_fallback">Програмний резерв KeyStore</string>
+    <string name="settings_samsung_uid_escalation">Ескалація Samsung System UID</string>
+    <string name="settings_samsung_uid_escalation_summary">Спроба ескалації до UID 1000 (system) з використанням експлойту, специфічного для непатчених пристроїв Samsung (автор pascua28). Використовуйте на свій страх і ризик.</string>
+    <string name="settings_display_tuner_plus_title">Налаштування дисплея</string>
+    <string name="settings_device_control_home_title">Картка керування пристроєм</string>
+    <string name="settings_device_control_home_summary">Показати картку керування пристроєм на головному екрані. Дозволяє привілейоване керування Wi-Fi, Bluetooth, мобільними даними, дисплеєм, звуком та живленням. Експериментальна функція — може спричинити непередбачувану поведінку на деяких пристроях.</string>
     <string name="settings_plus_learn_more">Дізнатися більше</string>
     <string name="settings_plus_feature_help_enable">Увімкнути функцію</string>
     <string name="settings_plus_feature_help_close">Закрити</string>
@@ -371,37 +398,26 @@
     <string name="diagnostics_action_required">Потрібна дія</string>
     <string name="diagnostics_disable_button">Вимкнути діагностику</string>
     <string name="help_general_plus_summary"><![CDATA[<b>Як Shizuku+ працює з іншими додатками</b><br><br>Shizuku+ надає <i>ексклюзивні функції Plus</i> (Міст сховища, Міст інтелекту, Міст тем), доступні через цей додаток та будь-який сторонній додаток, який явно звертається до API Shizuku+ (af.shizuku.plus.api).<br><br><b>Важливо:</b> Shizuku+ повністю зворотно сумісний з оригінальним API Shizuku. Наявні додатки, які використовують стоковий Shizuku (наприклад, SD Maid SE та SwiftBackup), автоматично виявлятимуть і працюватимуть із Shizuku+ без потреби в оновленнях від розробників.<br><br><b>Використання разом зі стоковим Shizuku:</b> Одночасно може працювати лише одна служба. Картка \"Компаньйон\" на головному екрані дозволяє легко перемикатися, якщо у вас досі встановлено стоковий Shizuku, але рекомендується видалити його і користуватися виключно Shizuku+.]]></string>
-
     <!-- Detailed Help Strings -->
     <string name="help_dhizuku_title">Про режим Dhizuku</string>
     <string name="help_dhizuku_detail">Dhizuku дозволяє Shizuku ділитися своїми привілеями Власника пристрою (DevicePolicyManager) зі сторонніми додатками. Це необхідно для таких додатків, як Dhizuku Manager або утиліти режиму кіоска, яким потрібно керувати системними політиками, не будучи єдиним Власником пристрою.</string>
-
     <string name="help_shell_interceptor_title">Про Прискорювач оболонки</string>
     <string name="help_shell_interceptor_detail">Прискорювач оболонки перехоплює стандартні команди (am, pm, settings) і перекладає їх безпосередньо у виклики API сервера Shizuku. Це уникає значного навантаження при створенні нового процесу /system/bin/sh для кожної команди, роблячи автоматизацію в MacroDroid чи Tasker значно швидшою та енергоефективнішою.</string>
-
     <string name="help_avf_manager_title">Про Менеджер AVF</string>
     <string name="help_avf_manager_detail">Менеджер платформи віртуалізації Android (AVF) дозволяє запускати ізольовані віртуальні машини Linux або Microdroid. На підтримуваному обладнанні (Snapdragon 8 Gen 1+, Tensor G2+) це забезпечує апаратно прискорену віртуалізацію з підтримкою VirtIO-GPU для запуску десктопних середовищ Linux або ізольованих безпечних завдань.</string>
-
     <string name="help_storage_proxy_title">Про Міст сховища</string>
-
     <string name="help_continuity_bridge_title">Про Безперервність між пристроями</string>
     <string name="help_continuity_bridge_detail">Міст безперервності дозволяє пристроям із Shizuku+ в одній мережі передавати завдання і синхронізувати буфер обміну/стан додатків. Він використовує API Handoff з Android 17 (портовані за можливості), щоб забезпечити безшовний перехід завдань автоматизації між вашим телефоном та планшетом.</string>
-
     <string name="help_ai_core_plus_title">Про Міст інтелекту</string>
-    <string name="help_ai_core_plus_detail">Міст інтелекту надає AI-асистентам привілейований доступ до вмісту екрана та планування NPU. Це відкриває можливості на кшталт "Circle to Search" або екранного контексту для локальних LLM, забезпечуючи високопродуктивне захоплення кадрів з урахуванням вікон, що обходить стандартні обмеження запису екрана Android.</string>
-
+    <string name="help_ai_core_plus_detail">Міст інтелекту надає AI-асистентам привілейований доступ до вмісту екрана та планування NPU. Це відкриває можливості на кшталт \"Circle to Search\" або екранного контексту для локальних LLM, забезпечуючи високопродуктивне захоплення кадрів з урахуванням вікон, що обходить стандартні обмеження запису екрана Android.</string>
     <string name="help_window_manager_plus_title">Про Налаштування вікон</string>
     <string name="help_window_manager_plus_detail">Window Tuner відкриває розширені прапорці WindowManager, які дозволяють примусово перевести будь-який додаток у вільноформатний (free-form) режим, розмістити у постійній Bubble-панелі або рендерити за допомогою оверлеїв поверх усього. Це потужний інструмент для багатозадачності та кастомізації десктопу OneUI.</string>
-
     <string name="help_overlay_manager_plus_title">Про Міст системних тем</string>
     <string name="help_overlay_manager_plus_detail">Цей міст забезпечує безрутовий доступ до OverlayManagerService (OMS). Він використовує сучасні OverlayManagerTransactions для реєстрації Fabricated Overlays, дозволяючи додаткам на кшталт Hex Installer змінювати системні кольори, шрифти та розміри на OneUI 6/7/8 без потреби у рутуванні пристрою.</string>
-
     <string name="help_network_governor_plus_title">Про Регулятор мережі та DNS</string>
     <string name="help_network_governor_plus_detail">Регулятор мережі надає привілейований доступ до INetworkPolicyManager та налаштувань Private DNS. Він може примусово застосовувати POLICY_REJECT_ALL для окремих додатків, створюючи надійний системний фаєрвол, який працює навіть на підключеннях Wi-Fi та 5G без активного VPN-тунелю.</string>
-
     <string name="help_activity_manager_plus_title">Про Глибокий контроль процесів</string>
     <string name="help_activity_manager_plus_detail">Глибокий контроль процесів дозволяє серверу обходити стандартні обмеження гібернації додатків та режиму очікування. Він може примусово перевести додатки у кошик очікування RESTRICTED або виконати справжній deepForceStop (вбиваючи всі служби та фонові завдання), що важливо для агресивних інструментів економії батареї.</string>
-
     <!-- Plus settings category titles -->
     <string name="settings_root_magisk_mocking">Імітація середовища Magisk</string>
     <string name="settings_root_magisk_mocking_summary">Імітує бінарні файли, властивості та внутрішні папки Magisk, щоб обдурити додатки, які шукають root.</string>
@@ -413,16 +429,12 @@
     <string name="settings_root_busybox_mocking_summary">Повертає фейковий рядок версії для команди \'busybox\', щоб задовольнити вимоги застарілих скриптів.</string>
     <string name="help_root_magisk_title">Про імітацію Magisk</string>
     <string name="help_root_magisk_detail">Багато додатків перевіряють наявність root, шукаючи специфічні властивості Magisk або папку /sbin/.magisk. Цей модуль симулює ці елементи, дозволяючи вам використовувати root-функції у додатках, які відмовляються запускатися без виявлення середовища Magisk.</string>
-
     <string name="help_root_auto_grant_title">Про Автосхвалення</string>
     <string name="help_root_auto_grant_detail">Старі root-додатки часто намагаються надати собі дозволи через оболонку. Цей міст прослуховує виклики \'pm grant\' і використовує підвищені привілеї Shizuku для миттєвого схвалення, уникаючи ручного керування дозволами.</string>
-
     <string name="help_root_file_interceptor_title">Про Перехоплювач файлів</string>
     <string name="help_root_file_interceptor_detail">Коли додатки копіюють файли до /data/data за допомогою стандартної оболонки, вони часто втрачають власність та контексти SELinux. Цей модуль автоматично додає прапорці на кшталт --preserve=all для збереження цілісності файлів і запобігання збоям додатків.</string>
-
     <string name="help_root_busybox_title">Про симуляцію BusyBox</string>
     <string name="help_root_busybox_detail">BusyBox — це набір Unix-утиліт, поширений на рутованих пристроях. Деякі старі root-додатки перевіряють його наявність перед виконанням логіки. Цей модуль повертає симульовану успішну відповідь на команду \'busybox\'.</string>
-
     <string name="settings_experimental_root_summary">Увімкнути шар сумісності для операцій, базованих на root, через Shizuku</string>
     <string name="settings_spoof_device_summary">Повідомляти додаткам іншу модель пристрою для сумісності або тестування</string>
     <string name="settings_experimental_root_experimental">Експериментальна сумісність Root</string>
@@ -430,7 +442,6 @@
     <string name="settings_open_source_licenses">Ліцензії з відкритим кодом</string>
     <string name="settings_open_source_licenses_summary">Бібліотеки з відкритим кодом, що використовуються в Shizuku+</string>
     <string name="settings_spoof_target">Цільовий пристрій</string>
-
     <!-- Root Integration (renamed from Legacy Compatibility) -->
     <string name="settings_adb_proxy">Локальний ADB Проксі-сервер</string>
     <string name="settings_adb_proxy_summary">Емулювати ADB сервер на порту 15555 для підтримки додатків, які потребують Бездротовий ADB, без утримання системної функції активною.</string>
@@ -472,16 +483,12 @@
     <string name="su_bridge_self_test_fail">Міст не працює</string>
     <string name="su_bridge_self_test_copy">Копіювати результат</string>
     <string name="su_bridge_self_test_copied">Результат самоперевірки скопійовано</string>
-    <string name="su_bridge_device_identity_title">Ідентичність пристрою</string>
-    <string name="starter_service_started">Службу запущено.</string>
     <string name="su_bridge_device_identity_real">Справжня: %s</string>
     <string name="su_bridge_device_identity_spoofed">Підмінена: %s</string>
     <string name="su_bridge_device_identity_none">Немає (відображається справжній пристрій)</string>
-
     <!-- Sentry Offline Notice -->
     <string name="sentry_offline_notice_title">Звіти про збої офлайн</string>
     <string name="sentry_offline_notice_summary">Автоматичне звітування про збої через Sentry наразі вимкнено через обмеження квоти (скидається 1 травня). Будь ласка, повідомляйте про будь-які збої власноруч.</string>
-
     <string name="manual_report_title">Ручний звіт про збій</string>
     <string name="manual_report_summary">Згенеруйте детальний звіт із журналами, щоб допомогти нам вручну розв\'язувати проблеми.</string>
     <string name="manual_report_button_github">Скопіювати звіт та перейти на GitHub</string>
@@ -493,8 +500,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ виявив збій з вашої останньої сесії. Бажаєте згенерувати звіт, щоб допомогти нам це виправити?</string>
     <string name="crash_detected_dialog_ignore">Ігнорувати</string>
     <string name="shortcut_open_terminal">Відкрити Термінал</string>
-
-
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">Спочатку, будь ласка, виконайте наступне:</string>
     <string name="bug_report_dialog_update">Перевірте, чи ви використовуєте ^1.</string>
@@ -506,7 +511,6 @@
     <string name="bug_report_dialog_method">Будь ласка, надішліть запит на ^1, якщо у вас є обліковий запис.</string>
     <string name="bug_report_dialog_method_2">В іншому випадку ви можете надіслати електронного листа.</string>
     <string name="bug_report_dialog_button_email">Електронна пошта</string>
-
     <!-- Service Doctor -->
     <string name="home_service_doctor_title">Доктор Сервісу</string>
     <string name="home_service_doctor_summary">Маєте проблеми із запуском Shizuku? Натисніть для проведення діагностики.</string>
@@ -521,13 +525,48 @@
     <string name="doctor_status_stopped">Зупинено</string>
     <string name="doctor_status_not_enabled">Не увімкнено</string>
     <string name="doctor_status_optimized">Оптимізовано (Може вбити службу)</string>
+    <string name="doctor_check_xiaomi_adb">Налагодження USB Xiaomi/HyperOS (Параметри безпеки)</string>
+    <string name="doctor_status_xiaomi_adb_unknown">Увімкніть у Параметрах розробника</string>
     <string name="doctor_tip_xiaomi">Xiaomi/HyperOS: Увімкніть \"Налагодження USB (Налаштування безпеки)\" в Параметрах розробника.</string>
+    <string name="doctor_check_xiaomi_autostart">Автозапуск Xiaomi/HyperOS</string>
+    <string name="doctor_status_xiaomi_autostart_unknown">Надайте Автозапуск, щоб служба працювала</string>
+    <string name="doctor_tip_xiaomi_battery">Батарея HyperOS: відкрийте налаштування Батареї та встановіть для Shizuku+ «Без обмежень». HyperOS завершує фонові процеси з інтервалом Doze (~30 хв), якщо це не налаштовано.</string>
+    <string name="doctor_check_oppo_permission">Моніторинг дозволів ColorOS/OxygenOS</string>
     <string name="doctor_tip_oppo_permission">Oppo/Realme/OnePlus: Вимкніть \"Моніторинг дозволів\" в Параметрах розробника, щоб запобігти завершенню фонових служб.</string>
+    <string name="doctor_check_oppo_battery">Автозапуск ColorOS/OxygenOS</string>
+    <string name="doctor_status_oppo_battery_unknown">Увімкніть Автозапуск, щоб служба працювала</string>
+    <string name="doctor_tip_oppo_battery">Автозапуск ColorOS: натисніть «Виправити», щоб відкрити налаштування батареї. Увімкніть Автозапуск і встановіть для Shizuku+ «Без обмежень», щоб ColorOS не завершував фонову службу.</string>
+    <string name="doctor_check_tcl_autostart">Автозапуск TCL</string>
+    <string name="doctor_status_tcl_autostart_unknown">Додайте до білого списку автозапуску</string>
     <string name="doctor_tip_tcl_background">TCL: Переконайтеся, що Shizuku+ додано до \"Автозапуску\" та списку \"Високе енергоспоживання у фоновому режимі\" в Налаштуваннях.</string>
     <string name="doctor_tip_battery">Вимкніть оптимізацію батареї для Shizuku+, щоб запобігти її закриттю у фоновому режимі.</string>
+    <string name="doctor_tip_background_restricted">Фонові обмеження: Android помістив Shizuku+ у режим фонових обмежень. Перейдіть до Про додаток → Батарея → і встановіть «Без обмежень», щоб відновити надійність служби.</string>
     <string name="doctor_tip_adb">Бездротове налагодження має бути активним для запуску Shizuku у режимі без root після перезавантаження.</string>
+    <string name="doctor_check_local_network">Доступ до локальної мережі</string>
+    <string name="doctor_tip_local_network">Доступ до локальної мережі (%1$s): Android 16/17 потребує цей дозвіл для виявлення та підключення до служби бездротового налагодження. Без нього Shizuku+ непомітно не запускається в режимі ADB. Натисніть «Виправити», щоб надати його.</string>
     <string name="doctor_button_fix">Виправити</string>
-
+    <string name="doctor_wallet_risk_tmp_su">Ризик безпеки (виявлено бінарний файл su)</string>
+    <!--
+      Three recovery outcomes — shown after the 1-tap wallet fix runs.
+      ROOT:        Shizuku uid=0 — verdict files deleted, immediate recovery expected.
+      ADB_MODE:    Shizuku uid=2000 — can\'t touch GMS data dir; best-effort steps taken.
+      NO_SHIZUKU:  Shizuku wasn\'t running; only unprivileged Wallet stop was possible.
+    -->
+    <string name="doctor_fix_wallet_success">Готово. Працює з root — файли вердикту Play Integrity видалено безпосередньо з GMS. Відкрийте Google Гаманець; він має запрацювати одразу.</string>
+    <string name="doctor_fix_wallet_success_adb_mode">Готово. Shizuku працює в режимі ADB-оболонки, тому файл вердикту Play Integrity на диску видалити не можна (лише root може торкатися теки даних GMS).\n\nЩо було зроблено натомість:\n• завершено процес DroidGuard (очищає вердикт у пам\'яті)\n• зупинено GMS\n• виконано спробу перевизначення TTL Play Integrity (спонукає GMS негайно переатестуватися)\n• запитано нову розминку атестації (запускає повторну оцінку DroidGuard з чистим пристроєм)\n• очищено дані Гаманця (примушує новий запит цілісності з новим nonce)\n• повторно підтверджено маршрутизацію NFC-платежів\n\nСпробуйте відкрити Гаманець зараз — він має відновитися одразу. Якщо все ще заблоковано, натисніть «Очистити дані Play Services» нижче для гарантованого негайного відновлення (потрібно буде знову увійти в Google).</string>
+    <string name="doctor_fix_wallet_success_no_shizuku">Готово. Shizuku не працював, тому вдалося зупинити лише сам Гаманець — кешований вердикт Play Integrity в GMS усе ще збережено.\n\nГаманець має відновитися самостійно приблизно за 1 годину, коли вердикт природно втратить чинність. Для негайного відновлення натисніть «Очистити дані Play Services» нижче (потрібно буде знову увійти в Google).\n\nЩоб уникнути цього наступного разу, переконайтеся, що Shizuku запущено перед вимкненням root-функцій — це вмикає більш ретельне очищення.</string>
+    <string name="doctor_fix_wallet_failed">Не вдалося автоматично видалити root-бінарні файли. Ви можете скопіювати команду ADB нижче, щоб видалити їх вручну через термінал.</string>
+    <string name="doctor_action_clear_gms_cache">Очистити дані Play Services</string>
+    <string name="doctor_action_open_wallet">Відкрити Google Гаманець</string>
+    <string name="doctor_action_copy_adb_cmd">Копіювати команду ADB</string>
+    <string name="doctor_adb_cmd_copied">Команду очищення ADB скопійовано в буфер обміну</string>
+    <string name="su_bridge_cleanup_tmp">Видалити Міст з /data/local/tmp</string>
+    <string name="su_bridge_deploy_to_tmp">Розгорнути Міст у /data/local/tmp</string>
+    <string name="su_bridge_cleanup_success">SU-міст видалено з /data/local/tmp. Безпеку Google Гаманця відновлено.</string>
+    <string name="su_bridge_cleanup_failed">Не вдалося видалити SU-міст з /data/local/tmp. Переконайтеся, що Shizuku запущено.</string>
+    <string name="su_bridge_deploy_success">SU-міст розгорнуто в /data/local/tmp.</string>
+    <string name="su_bridge_warning_wallet_title">Повідомлення про Google Гаманець</string>
+    <string name="su_bridge_warning_wallet_message">Розгортання «su» в /data/local/tmp або ввімкнення Імітації Magisk запускає виявлення root в Android у Google Play Services, що вимикає безконтактні платежі Google Гаманця. Ви можете видалити це в будь-який час, щоб відновити роботу Гаманця.</string>
     <!-- Snackbar -->
     <string name="snackbar_invalid_port">Порт має бути в діапазоні від 1 до 65535</string>
     <string name="snackbar_battery_optimization_home">Для коректної роботи запуску під час завантаження/сторожового таймера оптимізацію батареї необхідно вимкнути.</string>
@@ -535,7 +574,6 @@
     <string name="snackbar_action_fix">Виправити</string>
     <string name="snackbar_server_version_skew">Shizuku+ був оновлений, але запущена служба все ще використовує стару версію. Перезапустіть її, щоб підключені додатки продовжували працювати.</string>
     <string name="snackbar_action_restart">Перезапустити</string>
-
     <!-- Toast -->
     <string name="toast_no_email_app">Поштового додатка не знайдено</string>
     <string name="toast_app_frozen">Додаток заморожено</string>
@@ -545,6 +583,7 @@
     <string name="lp_action_freeze_app">Заморозити додаток (Вимкнути)</string>
     <string name="lp_action_unfreeze_app">Розморозити додаток (Увімкнути)</string>
     <string name="su_path_preset_applied">Застосовано пресет шляху SU: %1$s</string>
+    <string name="su_path_invalid">Неприпустимий шлях. Має бути абсолютним шляхом (починається з /), що містить лише літери, цифри, слеші, підкреслення, крапки та дефіси.</string>
     <string name="stock_shizuku_conflict_title">Виявлено несумісний сервер</string>
     <string name="stock_shizuku_conflict_description">Оригінальний сервер Shizuku працює у фоновому режимі. Він несумісний із Shizuku+ та блокує його запуск.</string>
     <string name="stock_shizuku_conflict_fix_button">Виправити конфлікт</string>
@@ -553,6 +592,13 @@
     <string name="stock_shizuku_restarting_via_root">Перезапуск через Root…</string>
     <string name="backup_exported_success">Резервну копію успішно експортовано</string>
     <string name="backup_restored_success">Резервну копію успішно відновлено. Будь ласка, перезапустіть додаток.</string>
+    <string name="backup_restored_restart_hint">Налаштування відновлено. Перезапустіть, щоб застосувати зміни теми/мови.</string>
+    <string name="backup_restored_restart_now">Перезапустити</string>
+    <string name="backup_menu_search">Пошук застосунків</string>
+    <string name="backup_menu_backup_all">Зберегти всі застосунки</string>
+    <string name="backup_batch_complete">Збережено %1$d застос. до %3$s (%2$d не вдалося)</string>
+    <string name="backup_menu_show_system">Показати системні застосунки</string>
+    <string name="backup_badge_no_backup">no-backup</string>
     <string name="backup_failed_generic">Помилка резервного копіювання: %1$s</string>
     <string name="restore_failed_generic">Помилка відновлення: %1$s</string>
     <string name="backup_auth_failed">Помилка автентифікації (%1$s)</string>
@@ -561,23 +607,19 @@
     <string name="adb_error_ssl_title">Помилка з\'єднання</string>
     <string name="adb_error_ssl_message">Збій підтвердження Бездротового ADB (помилка протоколу SSL). Зазвичай це відбувається, коли ключі ADB пошкоджено. Бажаєте скинути їх в Параметрах розробника?</string>
     <string name="adb_error_ssl_button_reset">Перейти до Параметрів розробника</string>
-
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">Тема</string>
     <string name="dark_theme_off">Завжди світла</string>
     <string name="dark_theme_on">Завжди темна</string>
     <string name="follow_system">Як у системі</string>
-
     <!-- About -->
     <string name="settings_about">Про додаток</string>
     <string name="about_view_source_code_title">Вихідний код</string>
-
     <!-- Start/Stop -->
     <string name="start">Запуск</string>
     <string name="stop">Зупинити</string>
     <string name="action_stop">Зупинити Shizuku</string>
     <string name="dialog_stop_message">Сервіс Shizuku буде зупинено.</string>
-
     <!-- Notification -->
     <string name="notification_channel_automation">Автоматизація</string>
     <string name="notification_automation_title">Автоматизація працює</string>
@@ -595,16 +637,14 @@
     <string name="notification_auth_missing_message">Додайте параметр \"auth\" до вашого наміру (intent). Ви можете знайти ваш токен, натиснувши \"Переглянути наміри\" в додатку.</string>
     <string name="notification_auth_invalid_title">Недійсний токен автентифікації</string>
     <string name="notification_auth_invalid_message">Переконайтеся, що токен у вашому намірі збігається з тим, що показаний у розділі \"Переглянути наміри\" в додатку.</string>
-
     <!-- Permission related, appears in system permission UI -->
-    <string name="permission_group_label" translatable="false">Shizuku</string>
-    <string name="permission_group_description" translatable="false">@string/permission_label</string>
     <string name="permission_label">доступ до Shizuku</string>
     <string name="permission_description">Дозволити додатку використовувати Shizuku.</string>
+    <string name="permission_label_plus">доступ до Shizuku (+)</string>
+    <string name="permission_description_plus">Дозволити додатку використовувати Shizuku (+).</string>
     <string name="permission_warning_template"><![CDATA[Дозволити додатку <b>%1$s</b> таке: %2$s?]]></string>
     <string name="grant_dialog_button_allow_always">Дозволяти завжди</string>
     <string name="grant_dialog_button_deny">"Заборонити"</string>
-
     <!-- Starter -->
     <string name="starter">Запуск</string>
     <string name="start_with_root_failed">Неможливо запустити службу, оскільки не надано дозвіл root або цей пристрій не рутовано.</string>
@@ -612,27 +652,31 @@
     <string name="starter_retry">Спробувати знову</string>
     <string name="adb_error_timeout">Служба не запустилася вчасно. Переконайтеся, що Бездротове налагодження увімкнено та спробуйте знову.</string>
     <string name="adb_error_generic">Сталася непередбачена помилка. Будь ласка, спробуйте знову.</string>
-
     <!-- WADB Starter -->
     <string name="wadb_notification_title">Запуск Shizuku…</string>
     <string name="wadb_notification_wifi_required">Очікування підключення до Wi-Fi перед продовженням</string>
     <string name="wadb_notification_retry">Очікування повторної спроби</string>
+    <string name="wadb_mdns_blocked_title">mDNS-виявлення постійно дає збій</string>
+    <string name="wadb_mdns_blocked_text">Виявлення порту постійно перевищує час очікування. Можливо, ваш пристрій блокує multicast-трафік (поширено на Vivo/FunTouchOS). Спробуйте ввімкнути TCP-режим у налаштуваннях для надійного підключення без Wi-Fi.</string>
+    <string name="wadb_mdns_switch_tcp_action">Відкрити налаштування TCP</string>
     <string name="wadb_error_title">Помилка під час запуску при завантаженні</string>
+    <string name="wadb_error_cannot_connect">Не вдалося підключитися до служби ADB — перевірте, чи ввімкнено бездротове налагодження</string>
+    <string name="wadb_error_discovery_timeout">Час пошуку ADB вичерпано — переконайтеся, що Wi-Fi підключено, і спробуйте ще раз</string>
+    <string name="wadb_error_ssl_mismatch">Помилка SSL/TLS — скасуйте ключі ADB у Параметрах розробника та створіть пару знову</string>
+    <string name="wadb_error_not_authorized">Потрібна авторизація бездротового налагодження</string>
+    <string name="wadb_error_generic_short">Не вдалося підключитися до ADB</string>
     <string name="wadb_permission_error_notification_title">Помилка дозволу</string>
     <string name="wadb_permission_error_notification_content">Shizuku потребує WRITE_SECURE_SETTINGS для запуску під час завантаження. Натисніть, щоб дізнатися, як надати дозвіл.</string>
-
     <!-- Watchdog -->
     <string name="watchdog_running">Сторожовий пес працює</string>
     <string name="watchdog_turn_off">Вимкнути</string>
     <string name="watchdog_shizuku_crashed_title">Shizuku нещодавно зазнав збою</string>
     <string name="watchdog_shizuku_crashed_text">Watchdog перезапустив службу. Натисніть, щоб дізнатися про можливі виправлення для запобігання збоям у майбутньому.</string>
-
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">Не вдається запустити браузер</string>
     <string name="toast_copied_to_clipboard">Скопійовано в буфер обміну</string>
     <string name="accessibility_service_label">Помічник створення пари Shizuku+</string>
     <string name="accessibility_service_description">Забезпечує підтримку створення пари для пристроїв (наприклад, телевізорів та телефонів Samsung One UI), де не можна легко використовувати сповіщення або розділений екран.\n\nДозволяє Shizuku+ витягувати код створення пари з екрана для бездротового налагодження. Він вимкнеться, як тільки код буде знайдено.</string>
-
     <!-- Messages for legacy -->
     <string name="dialog_legacy_not_support_title">%1$s не підтримує сучасну версію Shizuku</string>
     <string name="dialog_legacy_not_support_message"><![CDATA[Підтримка старої версії Shizuku завершилася у березні 2019 року. Також стара версія Shizuku не працює на новіших системах Android.<p>Будь ласка, попросіть розробника <b>%1$s</b> оновити додаток.]]></string>
@@ -640,9 +684,6 @@
     <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> має підтримку сучасної версії Shizuku, але запитує стару. Це може бути через те, що Shizuku не запущено, будь ласка, перевірте це у додатку Shizuku.<p>Підтримка старої версії Shizuku завершилася у березні 2019 року.]]></string>
     <string name="dialog_requesting_legacy_button_open_shizuku">Відкрити Shizuku</string>
     <string name="wadb_notification_attempt_now">Спробувати зараз</string>
-
-
-
     <!-- Settings navigation summaries -->
     <string name="settings_category_activity_log">Журнал активності</string>
     <string name="settings_category_appearance">Зовнішній вигляд</string>
@@ -668,8 +709,6 @@
     <string name="fake_adb_pairing_message">Додаток намагається підключитися до Shizuku+ через Фейковий локальний сервер ADB.\n\nВідбиток ключа RSA:\n%1$s</string>
     <string name="fake_adb_pairing_allow">Дозволити</string>
     <string name="fake_adb_pairing_deny">Відхилити</string>
-
-
     <!-- Accessibility - Content Descriptions -->
     <string name="accessibility_icon_server_status">Іконка статусу сервера</string>
     <string name="accessibility_icon_app_management">Іконка керування додатками</string>
@@ -681,22 +720,30 @@
     <string name="accessibility_icon_learn_more">Іконка Дізнатися більше</string>
     <string name="accessibility_icon_warning">Іконка Попередження</string>
     <string name="accessibility_icon_drag_handle">Потягніть, щоб змінити порядок</string>
+    <string name="accessibility_icon_toggle_visibility">Перемкнути видимість картки</string>
     <string name="accessibility_icon_info">Інформація</string>
     <string name="accessibility_button_start">Кнопка Запуск</string>
     <string name="accessibility_state_expanded">Розгорнуто</string>
     <string name="accessibility_state_collapsed">Згорнуто</string>
     <string name="accessibility_action_app_info">Відкрити системну інформацію про додаток</string>
     <string name="accessibility_permission_granted">Дозвіл надано</string>
-
     <!-- Empty State Views -->
+    <string name="empty_state_title_service_starting">Запускається…</string>
+    <string name="empty_state_description_service_starting">Очікування завершення запуску Shizuku+. Зазвичай це триває недовго.</string>
     <string name="empty_state_title_no_results">Результатів не знайдено</string>
     <string name="empty_state_description_no_results">Жоден додаток не відповідає вашим фільтрам або критеріям пошуку.</string>
     <string name="empty_state_title_no_home_cards">Всі картки приховано</string>
     <string name="empty_state_action_restore_home_cards">Відновити картки</string>
     <string name="empty_state_title_activity_log_empty">Активність не записано</string>
     <string name="empty_state_description_activity_log_empty">Виклики API Shizuku та події з\'являться тут, коли увімкнено журналювання активності.</string>
-
-    <!-- Settings category titles -->
+    <!-- Settings diagnostics preference (settings_advanced.xml) -->
+    <string name="settings_diagnostics_enabled">Діагностика налаштувань</string>
+    <string name="settings_diagnostics_enabled_summary">Проактивно сканувати конфігурації на наявність конфліктів та аномалій</string>
+    <!-- Verified install preferences (settings_app_management.xml) -->
+    <!-- Custom accent color preference (settings_personalization.xml) -->
+    <string name="settings_custom_accent_title">Власний акцентний колір</string>
+    <!-- Update Settings -->
+    <string name="settings_behavior_category_startup">Запуск та відновлення</string>
     <string name="settings_advanced_category_diagnostics">Діагностика</string>
     <string name="settings_advanced_category_adb_tools">Інструменти ADB</string>
     <string name="settings_personalization_category_color_theme">Колір та тема</string>
@@ -710,13 +757,34 @@
     <string name="settings_root_category_rootless_bridges">Беруткові мости</string>
     <string name="settings_root_category_mocking">Імітація та симуляція</string>
     <string name="settings_root_category_bootloader">Інтеграція завантажувача</string>
+    <!-- SU Bridge configuration -->
+    <string name="settings_custom_su_path">Власний шлях SU</string>
+    <string name="settings_custom_su_path_summary">Шлях, який SU Bridge надає як бінарний файл \'su\'. Залиште порожнім для автовизначення зі стандартних місць.</string>
+    <!-- Root modules — Rootless Bridges -->
+    <string name="settings_root_build_prop_redirect">Перенаправлення build.prop</string>
+    <string name="settings_root_build_prop_redirect_summary">Перенаправити модифікації системних властивостей build до записуваного проксі-файлу без root</string>
+    <string name="help_root_build_prop_title">Про перенаправлення build.prop</string>
+    <string name="help_root_build_prop_detail">Цей модуль автоматично копіює оригінальний build.prop до шляху, доступного для запису, та перенаправляє всі записи до нього, дозволяючи налаштовувати системні значення без root.</string>
+    <string name="settings_root_iptables_mocking">Імітація успіху брандмауера</string>
+    <string name="settings_root_iptables_mocking_summary">Перехоплювати та імітувати успіх для правил iptables, коли локальні дозволи netfilter недоступні</string>
+    <string name="help_root_iptables_title">Про імітацію брандмауера</string>
+    <string name="help_root_iptables_detail">Імітує успішне виконання команд iptables, коли обмеження без root не дозволяють встановити реальні правила, дозволяючи брандмауерам продовжувати роботу.</string>
+    <!-- Root modules — Mocking &amp; Simulation -->
+    <string name="settings_overlay_fs_proxy">Ghosting системи OverlayFS</string>
+    <string name="settings_overlay_fs_proxy_summary">[Розробник] Бездоганне монтування віртуальних оверлейних файлових систем для імітації rw /system для root-застосунків. Попередження: Дуже експериментально.</string>
+    <string name="settings_root_kernel_ghosting">Ghosting драйверів ядра</string>
+    <string name="settings_root_kernel_ghosting_summary">[Розробник] Приховано імітувати успіх для команд insmod/rmmod без завантаження модулів ядра.</string>
+    <string name="settings_root_partition_ghosting">Ghosting прошивки розділів</string>
+    <string name="settings_root_partition_ghosting_summary">[Розробник] Перехоплювати та імітувати операції \'dd\', що впливають на /dev/block/. Запобігає збою ROM-прошивальників, нічого не роблячи.</string>
+    <string name="settings_root_power_ghosting">Ghosting стану живлення</string>
+    <string name="settings_root_power_ghosting_summary">[Розробник] Перехоплювати команди перезавантаження, відновлення та м\'якого перезавантаження та тихо ігнорувати їх, щоб запобігти небажаним перезапускам пристрою.</string>
+    <!-- Bootloader Integration settings -->
+    <string name="settings_bootloader_flash_ota">Системне завантаження OTA</string>
+    <string name="settings_bootloader_flash_ota_summary">Прошити OTA-завантаження до неактивного слота без root або кастомного відновлення</string>
+    <string name="settings_bootloader_fastbootd">Перехід до FastbootD</string>
+    <string name="settings_bootloader_fastbootd_summary">Перезапустити безпосередньо в fastbootd user space з оболонки Shizuku</string>
     <string name="settings_developer_category_debug">Відлагодження та діагностика</string>
     <string name="settings_plus_category_device_owner_tools">Інструменти власника пристрою</string>
-    <string name="settings_auto_reconnect_mdns">Інтелектуальне автопідключення</string>
-    <string name="settings_auto_reconnect_mdns_summary">Автоматично перезапускати сервер при відкритті додатка якщо порт бездротового ADB вже активний</string>
-
-    <!-- Update Settings -->
-    
     <!-- Developer Options -->
     <string name="settings_developer_options">Параметри розробника</string>
     <string name="settings_auto_update_title">Автоматична перевірка оновлень</string>
@@ -728,10 +796,8 @@
     <string name="update_channel_dev">Dev / Попередній випуск</string>
     <string name="update_channel_dev_warning_title">Перейти на канал Dev?</string>
     <string name="update_channel_dev_warning_message">Випуски Dev збираються з найостанніших змін коду і можуть містити баги, збої або критичні зміни. Використовуйте цей канал лише якщо хочете протестувати нові функції завчасно.\n\nВи зможете повернутися на Стабільний канал у будь-який момент.</string>
-
     <string name="settings_check_for_update_summary">Перевірити наявність нової версії власноруч</string>
     <string name="settings_last_check_title">Остання перевірка</string>
-
     <!-- Update Notifications -->
     <string name="update_notification_channel">Сповіщення про оновлення</string>
     <string name="update_notification_channel_description">Сповіщення щодо завантаження та встановлення оновлень додатка</string>
@@ -746,9 +812,7 @@
     <string name="update_download_failed_storage">Недостатньо вільного місця у пам\'яті для завантаження оновлення.</string>
     <string name="update_download_failed_cannot_resume">Завантаження не вдалося відновити після переривання. Будь ласка, спробуйте знову.</string>
     <string name="update_download_failed_http">Помилка мережі перервала завантаження. Будь ласка, перевірте з\'єднання та спробуйте ще раз.</string>
-
     <!-- Migration Dialog -->
-
     <!-- Update Dialogs -->
     <string name="update_available_title">Доступне оновлення</string>
     <string name="update_available_message">Нова версія %1$s доступна для завантаження.</string>
@@ -770,42 +834,33 @@
     <string name="shell_export_success">Файли успішно експортовано</string>
     <string name="shell_export_failed">Експорт не вдався — жоден файл не було записано</string>
     <string name="shell_export_partial">Експортовано %1$d з %2$d файлів (деякі з помилками)</string>
-
     <!-- Settings backup/restore -->
     <string name="adb_native_unavailable">Створення пари по ADB недоступне на цьому пристрої</string>
-
     <string name="changelog_title">Що нового</string>
     <string name="changelog_close">Закрити</string>
+    <string name="changelog_view_on_github">Переглянути на GitHub</string>
+    <string name="changelog_fallback_message">Не вдалося завантажити примітки до випуску для цього оновлення (можливо, ви офлайн). Натисніть \"Переглянути на GitHub\", щоб побачити зміни.</string>
     <string name="changelog_earlier_releases">Попередні релізи</string>
     <string name="changelog_version_history">Історія версій</string>
     <string name="changelog_all_new_updates">Усі нові оновлення (%d)</string>
     <string name="changelog_tag_new">Нове</string>
-    <string name="changelog_view_on_github">Переглянути на GitHub</string>
-    <string name="changelog_fallback_message">Не вдалося завантажити примітки до випуску для цього оновлення (можливо, ви офлайн). Натисніть \"Переглянути на GitHub\", щоб побачити зміни.</string>
-
     <string name="aicore_plus_label">Міст автоматизації AICore+</string>
     <string name="aicore_plus_description">Необхідно для функцій Shizuku+ AICore+. Надає привілейоване дампування ієрархії інтерфейсу та симуляцію фізичного вводу для автоматизації на базі ШІ. Не переглядає паролі чи особисті дані.</string>
-
     <!-- Common action labels -->
     <string name="action_clear_all">Очистити все</string>
     <string name="action_continue">Продовжити</string>
     <string name="action_open_github">GitHub</string>
-
     <!-- Service Doctor auto-fix -->
     <string name="service_doctor_fix_phantom_attempted">Ліміт фантомних процесів вимкнено. Перезапустіть службу, якщо необхідно.</string>
     <string name="service_doctor_fix_requires_service">Shizuku має бути запущеним, щоб застосувати це виправлення автоматично.</string>
     <string name="service_doctor_fix_failed">Автовиправлення не вдалося: %1$s</string>
     <string name="service_doctor_fix_blocked_samsung">Автовиправлення заблоковано — можливо, увімкнено Максимальні обмеження Samsung. Вимкніть їх у Auto Blocker і спробуйте знову.</string>
     <string name="service_doctor_fix_blocked_generic">Автовиправлення заблоковано — обмеження пристрою не дозволяють привілейовані команди оболонки. Перевірте налаштування ADB/OEM.</string>
-
     <!-- ADB Pairing -->
     <string name="adb_foreground_op_denied">Не вдалося запустити фонову службу — дозвіл START_FOREGROUND відхилено. Будь ласка, перевірте дозволи додатків вашого пристрою.</string>
-
     <!-- Update dialog -->
     <string name="update_no_release_notes">Примітки до випуску недоступні.</string>
-
     <!-- Accessibility service status -->
-
     <!-- Dhizuku Device Owner Setup -->
     <string name="dhizuku_setup_title">Налаштування Власника пристрою</string>
     <string name="dhizuku_setup_message">Режим Dhizuku вимагає, щоб Shizuku+ був встановлений як Власник пристрою. Виконайте цю команду один раз через ADB, коли увімкнено налагодження USB:\n\n%1$s\n\nПісля виконання команди перезапустіть Shizuku.</string>
@@ -813,7 +868,6 @@
     <string name="dhizuku_setup_copied">Команду скопійовано до буфера обміну</string>
     <string name="dhizuku_status_active">Власник пристрою: Активно</string>
     <string name="dhizuku_status_not_set">Власника пристрою не задано — натисніть для отримання інструкцій</string>
-
     <!-- Clear Device Owner (Issue #237) -->
     <string name="settings_clear_device_owner">Видалити Власника пристрою</string>
     <string name="settings_clear_device_owner_summary">Звільнити Shizuku+ від статусу Власника пристрою. Обов\'язково перед видаленням додатка або зниженням версії.</string>
@@ -822,26 +876,24 @@
     <string name="dhizuku_clear_owner_confirm">Видалити</string>
     <string name="dhizuku_clear_owner_success">Статус Власника пристрою видалено. Тепер ви можете видалити додаток або знизити версію Shizuku+.</string>
     <string name="dhizuku_clear_owner_failure">Не вдалося видалити статус Власника пристрою. Можливо, спершу потрібно запустити службу.</string>
-
     <!-- Pairing fallback (Issue #204) -->
     <string name="dialog_notif_permission_denied">У дозволі на сповіщення відмовлено. Ви можете увімкнути його в Налаштуваннях або створити пару вручну.</string>
-    
     <!-- Remote App DB Sync -->
-
     <!-- Binder Enhancements (Issue #199) -->
     <string name="settings_binder_firewall">Фаєрвол Binder</string>
     <string name="settings_binder_firewall_summary">Аудит і блокування чутливих системних транзакцій від неавторизованих додатків</string>
     <string name="settings_shadow_binder">Shadow Binder</string>
     <string name="settings_shadow_binder_summary">Перехоплення та підміна викликів системних служб для приховування інформації про пристрій або стану додатків</string>
     <string name="settings_shadow_binder_hidden_packages">Приховані пакети</string>
-
+    <!-- Automation Engine (Issue #435) -->
+    <string name="settings_automation_trusted_networks">Довірені мережі</string>
+    <string name="settings_automation_auto_hide_packages">Автоприховування на передньому плані</string>
     <plurals name="settings_shadow_binder_hidden_packages_count">
         <item quantity="one">Вибрано %d додаток</item>
         <item quantity="few">Вибрано %d додатки</item>
         <item quantity="many">Вибрано %d додатків</item>
         <item quantity="other">Вибрано %d додатків</item>
     </plurals>
-
     <!-- Companion Mode -->
     <string name="settings_companion_mode">Показувати картку Компаньйона</string>
     <string name="settings_companion_mode_summary">Показувати картку для швидкого відкриття оригінального Shizuku. Зверніть увагу: одночасно може працювати лише одна служба Shizuku 2014 використовуйте це для перемикання між ними.</string>
@@ -851,28 +903,20 @@
     <string name="home_companion_description">Оригінальний Shizuku встановлено. Одночасно може працювати лише одна служба 2014 натисніть, щоб переключитися на стоковий Shizuku для додатків, які цього вимагають.</string>
     <string name="home_companion_open">Відкрити</string>
     <string name="watchdog_open_stock_shizuku">Відкрити стоковий Shizuku</string>
-
     <string name="settings_live_activity">Сповіщення Live Activity</string>
-
     <!-- App picker dialog -->
     <string name="app_management_empty">Додатки не знайдено</string>
     <string name="app_management_search_hint">Пошук додатків</string>
-
     <!-- Root Compatibility Hub -->
-
     <!-- Home Automation dialog labels -->
-
     <!-- Misc -->
-
     <string name="settings_help">Допомога</string>
-
     <!-- APK verification API key strings -->
     <string name="verify_virustotal_key_title">API-ключ VirusTotal</string>
     <string name="verify_virustotal_key_required">API-ключ необхідний для використання сканування VirusTotal</string>
     <string name="verify_api_key_hint">Натисніть, щоб ввести API-ключ</string>
     <string name="verify_api_key_configured">API-ключ збережено · натисніть, щоб оновити</string>
     <string name="verify_get_api_key">Отримати API-ключ</string>
-
     <!-- Scripting & Snippets (#11) -->
     <string name="scripting_title">Скрипти</string>
     <string name="scripting_summary">Зберігайте, діліться та запускайте привілейовані фрагменти оболонки</string>
@@ -894,7 +938,6 @@
     <string name="scripting_delete">Видалити</string>
     <string name="scripting_auto_run_label">Автозапуск при старті служби</string>
     <string name="scripting_auto_run_badge_desc">Запускається автоматично при старті служби</string>
-
     <!-- Tasker/Locale automation plugin (#6) -->
     <string name="automation_plugin_action_label">Служба Shizuku+</string>
     <string name="automation_plugin_action_edit_title">Виберіть дію</string>
@@ -906,32 +949,27 @@
     <string name="automation_plugin_condition_title">Служба Shizuku+ працює</string>
     <string name="automation_plugin_condition_description">Ця умова виконується завжди, коли запущено службу Shizuku+.</string>
     <string name="automation_plugin_condition_blurb">Служба Shizuku+ працює</string>
-
     <string name="cd_navigate_back">Назад</string>
     <string name="cd_settings_search">Пошук</string>
     <string name="cd_settings_search_clear">Очистити</string>
     <string name="settings_search_hint">Пошук налаштувань…</string>
     <string name="settings_search_empty_state">Налаштування не знайдено</string>
-
     <!-- Network Firewall automation trusted networks -->
-
     <!-- Biometric lock -->
     <string name="biometric_prompt_title">Розблокувати Shizuku+</string>
     <string name="biometric_prompt_subtitle">Пройдіть автентифікацію для доступу до чутливих налаштувань</string>
-
     <!-- Stealth mode -->
     <string name="stealth_mode_enable_title">Увімкнути Стелс-режим?</string>
     <string name="stealth_mode_enable_message">Іконка додатка буде видалена з вашого лаунчера.\n\nВи все ще зможете відкривати додаток зі сповіщення Shizuku. Щоб повернути іконку, вимкніть стелс-режим через ADB:\n\nadb shell pm enable %1$s/af.shizuku.manager.LauncherAlias</string>
     <string name="stealth_mode_enable_button">Увімкнути</string>
-
     <!-- OTA flash danger dialog -->
     <string name="ota_flash_danger_title">Небезпечна експериментальна функція</string>
     <string name="ota_flash_danger_message">Системне прошивання OTA використовує android.os.UpdateEngine через оболонку Shizuku для встановлення zip-пакетів у ваш неактивний слот.\n\nУВАГА: Прошивання несумісного пакета ПРИЗВЕДЕ до повного окірпічування (hard brick) або бутлупу. Ви впевнені, що хочете увімкнути цю функцію?</string>
     <string name="ota_flash_danger_confirm">Я розумію, Увімкнути</string>
-
     <!-- SU path preset picker dialog -->
     <string name="su_path_preset_dialog_title">Виберіть пресет шляху до SU</string>
-
+    <string name="su_path_preset_default">За замовчуванням (Автовизначення)</string>
+    <string name="su_path_preset_custom">Власний шлях…</string>
     <!-- Device Owner (Dhizuku) toasts -->
     <string name="dpm_screen_capture_disabled">Захоплення екрана глобально вимкнено</string>
     <string name="dpm_screen_capture_enabled">Захоплення екрана увімкнено</string>
@@ -940,17 +978,15 @@
     <string name="dpm_usb_unlocked">Дані USB розблоковано</string>
     <string name="dpm_freeze_failed">Не вдалося заморозити: %1$s</string>
     <string name="dpm_freeze_success">Заморожено додатків: %1$d</string>
-
     <!-- Backup/restore picker dialog -->
     <string name="backup_export_title">Експортувати резервну копію</string>
     <string name="backup_type_encrypted">Зашифровано (рекомендовано)</string>
     <string name="backup_type_plain">Простий текст — для тестування між перевстановленнями</string>
     <string name="backup_no_file_manager_save">Не знайдено файлового менеджера для збереження резервної копії</string>
     <string name="backup_no_file_manager_open">Не знайдено файлового менеджера для відкриття резервної копії</string>
-
+    <!-- Peer Settings Sharing / Drop-In Sync -->
     <!-- Samsung ADB dialog -->
     <string name="adb_dialog_popup_settings">Налаштування спливаючих вікон</string>
-
     <!-- Tile service: state subtitles (shown in Samsung OneUI wide tile text area and standard subtitle) -->
     <string name="tile_subtitle_active">Активно</string>
     <string name="tile_subtitle_starting">Запуск…</string>
@@ -966,10 +1002,9 @@
     <string name="tile_action_stop">Зупинити службу</string>
     <string name="tile_action_restart">Перезапустити службу</string>
     <string name="tile_action_open_app">Відкрити додаток</string>
-
     <!-- Tile service error -->
     <string name="tile_state_update_failed">Не вдалося оновити стан Shizuku: %1$s</string>
-
+    <string name="tile_open_app_required">Відкрийте Shizuku, щоб запустити або створити пару бездротового налагодження</string>
     <!-- App Profiles automation activity -->
     <string name="app_profiles_title">Профілі додатків</string>
     <string name="app_profile_state_default">За замовчуванням</string>
@@ -989,84 +1024,13 @@
     <string name="settings_display_tuner_plus_summary">Перевизначення роздільної здатності дисплея та DPI — так само, як adb shell wm size/density — що дозволяє додаткам і засобам автоматизації налаштовувати макет екрана, не потребуючи доступу до ADB.</string>
     <string name="help_display_tuner_plus_title">Налаштування дисплея</string>
     <string name="help_display_tuner_plus_detail">Надає привілейовану конфігурацію дисплея за допомогою інструменту wm оболонки: перевизначення роздільної здатності (wm size) та щільності (wm density) на льоту, читання поточних і фізичних значень, а також скидання перевизначень до заводських налаштувань пристрою. Корисно для виправлення проблем із макетом додатків, примусового встановлення певного співвідношення сторін для запису екрана, налаштувань режиму робочого столу та масштабування доступності — історично функція лише для root, яка тепер доступна через процес оболонки ADB.</string>
-
-    <!-- ==== Full Ukraine additions: missing keys sync ==== -->
-    <string name="dialog_adb_wifi_disconnected_warning"><![CDATA[<b>Wi-Fi відключено.</b><br>Android не може виявити бездротове налагодження через мобільні дані (5G/LTE).]]></string>
-    <string name="dialog_adb_hotspot_tip"><![CDATA[💡 <b>Порада:</b> увімкніть <b>Мобільну точку доступу</b> телефону, щоб використовувати бездротове налагодження без мережі Wi-Fi, або підключіться через локальний порт 5555.]]></string>
-    <string name="dialog_adb_samsung_hotspot_warning"><![CDATA[💡 <b>Примітка для Samsung:</b> One UI вимикає бездротове налагодження, поки активна Мобільна точка доступу. Підключіться до Wi-Fi-точки доступу іншого пристрою (офлайн — це нормально) або один раз виконайте <code>adb tcpip 5555</code> через USB.]]></string>
-    <string name="dialog_adb_open_hotspot">Налаштування мобільної точки доступу</string>
-    <string name="dialog_adb_probing_loopback">Перевірка локального порту (127.0.0.1:5555)...</string>
-    <string name="dialog_adb_loopback_found">Знайдено активну службу ADB на порту %1$d! Підключення...</string>
-    <string name="snackbar_samsung_auto_blocker">Samsung Auto Blocker може блокувати ADB на One UI 7/8. Перевірте налаштування безпеки.</string>
-    <string name="snackbar_action_check">Перевірити</string>
-    <string name="doctor_check_accessibility">Служба спеціальних можливостей для пари ADB</string>
-    <string name="doctor_check_samsung_max_restrictions">Максимальні обмеження (One UI 8+)</string>
-    <string name="doctor_check_su_bridge_a16">SU-міст (ADB на Android 16+)</string>
-    <string name="doctor_status_fix_available">Доступне виправлення</string>
-    <string name="doctor_status_autoblocker_on">Увімкнено (Вимкніть)</string>
-    <string name="doctor_status_samsung_max_restrictions_on">Увімкнено (Має бути вимкнено)</string>
-    <string name="doctor_status_su_bridge_path_set">експортований шлях встановлено</string>
-    <string name="doctor_status_su_bridge_no_path">Експортований шлях не налаштовано</string>
-    <string name="doctor_tip_oneui8_max_restrictions">One UI 8+: «Максимальні обмеження» в Auto Blocker вимикають ADB. Вимкніть їх, щоб користуватися Shizuku.</string>
-    <string name="doctor_tip_su_bridge_a16">Android 16+ обмежує запис у /data/local/tmp з ADB-оболонки. Відкрийте Хаб сумісності Root і натисніть «Експорт», щоб встановити шлях SU-моста, який працює на вашому пристрої.</string>
-    <string name="settings_device_hardening">Захист пристрою та підтримка активності</string>
-    <string name="settings_device_hardening_summary">Звільнити Shizuku та термінал-клієнти від Doze, автоматично надавати WRITE_SECURE_SETTINGS та синхронізувати бінарні файли стартера</string>
-    <string name="doctor_check_device_hardening">Захист пристрою та звільнення від Doze</string>
-    <string name="device_hardening_applied">Захист пристрою та оптимізації Doze застосовано</string>
-    <string name="settings_show_status_card_outline">Контур картки статусу</string>
-    <string name="settings_show_status_card_outline_summary">Показувати кольоровий контур на картці статусу служби</string>
-    <string name="home_edit_mode_title">Розташування карток</string>
-    <string name="home_edit_mode_done">Готово</string>
-    <string name="doctor_check_xiaomi_adb">Налагодження USB Xiaomi/HyperOS (Параметри безпеки)</string>
-    <string name="doctor_status_xiaomi_adb_unknown">Увімкніть у Параметрах розробника</string>
-    <string name="doctor_check_xiaomi_autostart">Автозапуск Xiaomi/HyperOS</string>
-    <string name="doctor_status_xiaomi_autostart_unknown">Надайте Автозапуск, щоб служба працювала</string>
-    <string name="doctor_tip_xiaomi_battery">Батарея HyperOS: відкрийте налаштування Батареї та встановіть для Shizuku+ «Без обмежень». HyperOS завершує фонові процеси з інтервалом Doze (~30 хв), якщо це не налаштовано.</string>
-    <string name="doctor_check_oppo_permission">Моніторинг дозволів ColorOS/OxygenOS</string>
-    <string name="doctor_check_oppo_battery">Автозапуск ColorOS/OxygenOS</string>
-    <string name="doctor_status_oppo_battery_unknown">Увімкніть Автозапуск, щоб служба працювала</string>
-    <string name="doctor_tip_oppo_battery">Автозапуск ColorOS: натисніть «Виправити», щоб відкрити налаштування батареї. Увімкніть Автозапуск і встановіть для Shizuku+ «Без обмежень», щоб ColorOS не завершував фонову службу.</string>
-    <string name="doctor_check_tcl_autostart">Автозапуск TCL</string>
-    <string name="doctor_status_tcl_autostart_unknown">Додайте до білого списку автозапуску</string>
-    <string name="doctor_tip_background_restricted">Фонові обмеження: Android помістив Shizuku+ у режим фонових обмежень. Перейдіть до Про додаток → Батарея → і встановіть «Без обмежень», щоб відновити надійність служби.</string>
-    <string name="doctor_check_local_network">Доступ до локальної мережі</string>
-    <string name="doctor_tip_local_network">Доступ до локальної мережі (%1$s): Android 16/17 потребує цей дозвіл для виявлення та підключення до служби бездротового налагодження. Без нього Shizuku+ непомітно не запускається в режимі ADB. Натисніть «Виправити», щоб надати його.</string>
-    <string name="doctor_wallet_risk_tmp_su">Ризик безпеки (виявлено бінарний файл su)</string>
-    <string name="doctor_fix_wallet_success">Готово. Працює з root — файли вердикту Play Integrity видалено безпосередньо з GMS. Відкрийте Google Гаманець; він має запрацювати одразу.</string>
-    <string name="doctor_fix_wallet_success_adb_mode">Готово. Shizuku працює в режимі ADB-оболонки, тому файл вердикту Play Integrity на диску видалити не можна (лише root може торкатися теки даних GMS).\n\nЩо було зроблено натомість:\n• завершено процес DroidGuard (очищає вердикт у пам\'яті)\n• зупинено GMS\n• виконано спробу перевизначення TTL Play Integrity (спонукає GMS негайно переатестуватися)\n• запитано нову розминку атестації (запускає повторну оцінку DroidGuard з чистим пристроєм)\n• очищено дані Гаманця (примушує новий запит цілісності з новим nonce)\n• повторно підтверджено маршрутизацію NFC-платежів\n\nСпробуйте відкрити Гаманець зараз — він має відновитися одразу. Якщо все ще заблоковано, натисніть «Очистити дані Play Services» нижче для гарантованого негайного відновлення (потрібно буде знову увійти в Google).</string>
-    <string name="doctor_fix_wallet_success_no_shizuku">Готово. Shizuku не працював, тому вдалося зупинити лише сам Гаманець — кешований вердикт Play Integrity в GMS усе ще збережено.\n\nГаманець має відновитися самостійно приблизно за 1 годину, коли вердикт природно втратить чинність. Для негайного відновлення натисніть «Очистити дані Play Services» нижче (потрібно буде знову увійти в Google).\n\nЩоб уникнути цього наступного разу, переконайтеся, що Shizuku запущено перед вимкненням root-функцій — це вмикає більш ретельне очищення.</string>
-    <string name="doctor_fix_wallet_failed">Не вдалося автоматично видалити root-бінарні файли. Ви можете скопіювати команду ADB нижче, щоб видалити їх вручну через термінал.</string>
-    <string name="doctor_action_clear_gms_cache">Очистити дані Play Services</string>
-    <string name="doctor_action_open_wallet">Відкрити Google Гаманець</string>
-    <string name="doctor_action_copy_adb_cmd">Копіювати команду ADB</string>
-    <string name="doctor_adb_cmd_copied">Команду очищення ADB скопійовано в буфер обміну</string>
-    <string name="su_bridge_cleanup_tmp">Видалити Міст з /data/local/tmp</string>
-    <string name="su_bridge_deploy_to_tmp">Розгорнути Міст у /data/local/tmp</string>
-    <string name="su_bridge_cleanup_success">SU-міст видалено з /data/local/tmp. Безпеку Google Гаманця відновлено.</string>
-    <string name="su_bridge_cleanup_failed">Не вдалося видалити SU-міст з /data/local/tmp. Переконайтеся, що Shizuku запущено.</string>
-    <string name="su_bridge_deploy_success">SU-міст розгорнуто в /data/local/tmp.</string>
-    <string name="su_bridge_warning_wallet_title">Повідомлення про Google Гаманець</string>
-    <string name="su_bridge_warning_wallet_message">Розгортання «su» в /data/local/tmp або ввімкнення Імітації Magisk запускає виявлення root в Android у Google Play Services, що вимикає безконтактні платежі Google Гаманця. Ви можете видалити це в будь-який час, щоб відновити роботу Гаманця.</string>
-    <string name="permission_group_label_plus">Shizuku (+)</string>
-    <string name="permission_group_description_plus">@string/permission_label_plus</string>
-    <string name="permission_label_plus">доступ до Shizuku (+)</string>
-    <string name="permission_description_plus">Дозволити додатку використовувати Shizuku (+).</string>
-    <string name="wadb_error_cannot_connect">Не вдалося підключитися до служби ADB — перевірте, чи ввімкнено бездротове налагодження</string>
-    <string name="wadb_error_discovery_timeout">Час пошуку ADB вичерпано — переконайтеся, що Wi-Fi підключено, і спробуйте ще раз</string>
-    <string name="wadb_error_ssl_mismatch">Помилка SSL/TLS — скасуйте ключі ADB у Параметрах розробника та створіть пару знову</string>
-    <string name="wadb_error_not_authorized">Потрібна авторизація бездротового налагодження</string>
-    <string name="wadb_error_generic_short">Не вдалося підключитися до ADB</string>
-    <string name="accessibility_icon_toggle_visibility">Перемкнути видимість картки</string>
-    <string name="empty_state_title_service_starting">Запускається…</string>
-    <string name="empty_state_description_service_starting">Очікування завершення запуску Shizuku+. Зазвичай це триває недовго.</string>
-    <string name="settings_automation_trusted_networks">Довірені мережі</string>
-    <string name="settings_automation_auto_hide_packages">Автоприховування на передньому плані</string>
-    <string name="su_path_preset_default">За замовчуванням (Автовизначення)</string>
-    <string name="su_path_preset_custom">Власний шлях…</string>
-    <string name="tile_open_app_required">Відкрийте Shizuku, щоб запустити або створити пару бездротового налагодження</string>
+    <!-- App Backup feature -->
     <string name="home_backup_title">Резервне копіювання додатків</string>
     <string name="home_backup_summary">Резервне копіювання та відновлення даних додатків без root</string>
+    <string name="home_backup_summary_with_dir">Зберігає до %1$s</string>
     <string name="backup_action_backup">Резервна копія</string>
+    <string name="backup_action_restore">Відновити</string>
+    <string name="backup_restore_complete">Відновлено зовнішні дані для %1$s</string>
     <string name="backup_action_freeze">Заморозити</string>
     <string name="backup_action_unfreeze">Розморозити</string>
     <string name="backup_in_progress">Виконується резервне копіювання…</string>
@@ -1075,168 +1039,81 @@
     <string name="backup_unfreeze_success">Додаток розморожено</string>
     <string name="dialog_adb_pair_device">Створити пару з цим пристроєм зараз</string>
     <string name="dialog_adb_autopair_enabled">✓ Автопара активна — пару буде підтверджено автоматично</string>
+    <!-- Mode-contextual settings (#433) -->
     <string name="settings_mode_indicator_root">Працює в режимі root — параметри лише для ADB приховано</string>
+    <!-- Hide backup settings (#461) -->
     <string name="settings_hide_backup_settings">Приховати резервне копіювання та відновлення</string>
     <string name="settings_hide_backup_settings_summary">Прибрати розділ «Резервне копіювання та відновлення» з екрана налаштувань Хаба функцій</string>
+    <!-- Launcher icon &amp; stealth -->
+    <!-- AI Bridge -->
+    <!-- Package identity / MDM bypass UI (#469) -->
     <string name="settings_package_identity_category">Ідентичність пакета</string>
     <string name="package_identity_info_title">Про рандомізацію назви пакета</string>
     <string name="package_identity_info_detail">MDM та корпоративні системи виявлення root часто сканують відомі назви пакетів (af.shizuku.manager). Справжня рандомізація назви пакета — як у Shevery — вимагає перевстановлення додатка з іншим applicationId, вбудованим в APK на етапі збирання. Менеджер не може перейменувати себе під час роботи.\n\nПлани на майбутнє: майбутній робочий процес CI «Зберіть власний» дозволить згенерувати APK з власною назвою. До того часу це налаштування лише зберігає відображувану назву. Для обходу MDM зараз використовуйте Прихований режим, щоб прибрати іконку запуску.</string>
     <string name="settings_package_identity_current">Поточний пакет: %1$s</string>
     <string name="settings_package_identity_roadmap">Повне перейменування під час роботи потребує власної збірки — див. issue #469</string>
-
-    <!-- Accessibility descriptions for home card simulator toggles -->
-    <string name="accessibility_sim_toggle_activity_log">Увімкнути/вимкнути карточку журналу активності</string>
-    <string name="accessibility_sim_toggle_adb">Увімкнути/вимкнути карточку запуску ADB</string>
-    <string name="accessibility_sim_toggle_automation">Увімкнути/вимкнути карточку автоматизації</string>
-    <string name="accessibility_sim_toggle_learn_more">Увімкнути/вимкнути карточку «Дізнатися більше»</string>
-    <string name="accessibility_sim_toggle_terminal">Увімкнути/вимкнути карточку термінала</string>
-
-    <!-- Backup -->
-    <string name="backup_action_restore">Відновити</string>
-    <string name="backup_badge_no_backup">no-backup</string>
-    <string name="backup_batch_complete">Збережено %1$d застос. до %3$s (%2$d не вдалося)</string>
-    <string name="backup_menu_backup_all">Зберегти всі застосунки</string>
-    <string name="backup_menu_search">Пошук застосунків</string>
-    <string name="backup_menu_show_system">Показати системні застосунки</string>
-    <string name="backup_restore_complete">Відновлено зовнішні дані для %1$s</string>
-    <string name="backup_restored_restart_hint">Налаштування відновлено. Перезапустіть, щоб застосувати зміни теми/мови.</string>
-    <string name="backup_restored_restart_now">Перезапустити</string>
-
-    <!-- Corner style options -->
-    <string name="corner_style_sharp">Гострий / Плаский</string>
-
-    <!-- Device Control -->
+    <!-- Device Control card &amp; screen -->
     <string name="home_device_control_title">Керування пристроєм</string>
     <string name="home_device_control_summary">Підключення, дисплей, звук і живлення</string>
     <string name="device_control_section_connectivity">Підключення</string>
-    <string name="device_control_section_display">Дисплей</string>
-    <string name="device_control_section_audio">Звук</string>
-    <string name="device_control_section_power">Живлення</string>
-    <string name="device_control_section_system">Зовнішній вигляд системи</string>
     <string name="device_control_airplane_mode">Режим польоту</string>
     <string name="device_control_wifi">Wi-Fi</string>
     <string name="device_control_bluetooth">Bluetooth</string>
     <string name="device_control_mobile_data">Мобільні дані</string>
     <string name="device_control_nfc">NFC</string>
+    <string name="device_control_private_dns">Приватний DNS</string>
+    <string name="device_control_dns_off">Вимкнено</string>
+    <string name="device_control_dns_auto">Авто</string>
+    <string name="device_control_dns_custom">Власний</string>
+    <string name="device_control_dns_hostname_label">Ім\'я хоста DNS</string>
+    <string name="device_control_dns_apply">Застосувати</string>
+    <string name="device_control_section_display">Дисплей</string>
     <string name="device_control_auto_brightness">Автояскравість</string>
     <string name="device_control_brightness">Яскравість: %1$d</string>
     <string name="device_control_auto_rotate">Автоповорот</string>
     <string name="device_control_screen_timeout">Час вимкнення екрана</string>
-    <string name="device_control_font_scale">Масштаб шрифту: %1$s×</string>
-    <string name="device_control_animations">Системні анімації</string>
+    <string name="device_control_section_audio">Звук</string>
     <string name="device_control_volume_media">Гучність медіа: %1$d</string>
     <string name="device_control_volume_ring">Гучність дзвінка: %1$d</string>
     <string name="device_control_volume_alarm">Гучність будильника: %1$d</string>
-    <string name="device_control_private_dns">Приватний DNS</string>
-    <string name="device_control_dns_apply">Застосувати</string>
-    <string name="device_control_dns_auto">Авто</string>
-    <string name="device_control_dns_off">Вимкнено</string>
-    <string name="device_control_dns_custom">Власний</string>
-    <string name="device_control_dns_hostname_label">Ім\'я хоста DNS</string>
+    <string name="device_control_section_system">Зовнішній вигляд системи</string>
+    <string name="device_control_animations">Системні анімації</string>
+    <string name="device_control_font_scale">Масштаб шрифту: %1$s×</string>
+    <string name="device_control_section_power">Живлення</string>
     <string name="device_control_reboot">Перезавантажити</string>
     <string name="device_control_reboot_title">Перезавантажити пристрій</string>
     <string name="device_control_reboot_confirm">Ви впевнені, що хочете перезавантажити пристрій?</string>
     <string name="device_control_shutdown">Вимкнути</string>
     <string name="device_control_shutdown_title">Вимкнути пристрій</string>
     <string name="device_control_shutdown_confirm">Ви впевнені, що хочете вимкнути пристрій?</string>
-
-    <!-- Help dialogs -->
+    <string name="nav_back">Назад</string>
+    <!-- Stealth Mode -->
     <string name="help_stealth_mode_title">Режим невидимості</string>
-    <string name="help_root_build_prop_title">Про перенаправлення build.prop</string>
-    <string name="help_root_build_prop_detail">Цей модуль автоматично копіює оригінальний build.prop до шляху, доступного для запису, та перенаправляє всі записи до нього, дозволяючи налаштовувати системні значення без root.</string>
-    <string name="help_root_iptables_title">Про імітацію брандмауера</string>
-    <string name="help_root_iptables_detail">Імітує успішне виконання команд iptables, коли обмеження без root не дозволяють встановити реальні правила, дозволяючи брандмауерам продовжувати роботу.</string>
-
-    <!-- Home screen summaries -->
-    <string name="home_backup_summary_with_dir">Зберігає до %1$s</string>
+    <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
+    <string name="corner_style_sharp">Гострий / Плаский</string>
+    <!-- Feature Hub experimental category label -->
+    <!-- Permission Manager card &amp; screen -->
     <string name="home_permission_manager_title">Менеджер дозволів</string>
     <string name="home_permission_manager_summary">Надавайте дозволи рівня оболонки будь-якому застосунку без root</string>
-
-    <!-- Navigation -->
-    <string name="nav_back">Назад</string>
-
-    <!-- Permission Manager -->
     <string name="permission_manager_search_hint">Пошук застосунків…</string>
-    <string name="permission_manager_section_runtime">Дозволи середовища виконання</string>
-    <string name="permission_manager_section_privileged">Привілейовані дозволи (надаються оболонкою)</string>
-    <string name="permission_manager_privileged_note">Ці дозволи зазвичай обмежені системними або root-застосунками, але можуть бути надані процесом оболонки ADB. Корисно для застосунків резервного копіювання (Neo Backup, Swift Backup), яким потрібен доступ DUMP, READ_LOGS або подібний.</string>
     <string name="permission_manager_no_apps">Застосунки не знайдено</string>
     <string name="permission_manager_no_permissions">Немає оголошених дозволів середовища виконання або привілейованих</string>
-
-    <!-- Settings: Plus features -->
-    <string name="settings_custom_accent_title">Власний акцентний колір</string>
-    <string name="settings_behavior_category_startup">Запуск та відновлення</string>
-    <string name="settings_backup_settings">Резервне копіювання налаштувань</string>
-    <string name="settings_backup_settings_summary">Експортуйте конфігурації та покращення безпечно за допомогою біометричного шифрування.</string>
-    <string name="settings_restore_settings">Відновити налаштування</string>
-    <string name="settings_restore_settings_summary">Відновіть конфігурації з зашифрованої резервної копії.</string>
-    <string name="settings_diagnostics_enabled">Діагностика налаштувань</string>
-    <string name="settings_diagnostics_enabled_summary">Проактивно сканувати конфігурації на наявність конфліктів та аномалій</string>
-    <string name="settings_keystore_fallback">Програмний резерв KeyStore</string>
-
-    <!-- Settings: Governor modules -->
-    <string name="settings_network_governor_plus_title">DNS Governor</string>
-    <string name="settings_activity_manager_plus_title">Керування процесами</string>
-    <string name="settings_package_governor_plus_title">Package Governor</string>
-    <string name="settings_status_bar_governor_plus_title">Керування статусним рядком</string>
-    <string name="settings_display_tuner_plus_title">Налаштування дисплея</string>
-    <string name="settings_continuity_bridge_title">Continuity Bridge</string>
-    <string name="settings_avf_manager_title">Менеджер ВМ</string>
-
-    <!-- Settings: Root compatibility -->
-    <string name="settings_custom_su_path">Власний шлях SU</string>
-    <string name="settings_custom_su_path_summary">Шлях, який SU Bridge надає як бінарний файл \'su\'. Залиште порожнім для автовизначення зі стандартних місць.</string>
-    <string name="settings_root_build_prop_redirect">Перенаправлення build.prop</string>
-    <string name="settings_root_build_prop_redirect_summary">Перенаправити модифікації системних властивостей build до записуваного проксі-файлу без root</string>
-    <string name="settings_root_iptables_mocking">Імітація успіху брандмауера</string>
-    <string name="settings_root_iptables_mocking_summary">Перехоплювати та імітувати успіх для правил iptables, коли локальні дозволи netfilter недоступні</string>
-    <string name="settings_root_kernel_ghosting">Ghosting драйверів ядра</string>
-    <string name="settings_root_kernel_ghosting_summary">[Розробник] Приховано імітувати успіх для команд insmod/rmmod без завантаження модулів ядра.</string>
-    <string name="settings_root_partition_ghosting">Ghosting прошивки розділів</string>
-    <string name="settings_root_partition_ghosting_summary">[Розробник] Перехоплювати та імітувати операції \'dd\', що впливають на /dev/block/. Запобігає збою ROM-прошивальників, нічого не роблячи.</string>
-    <string name="settings_root_power_ghosting">Ghosting стану живлення</string>
-    <string name="settings_root_power_ghosting_summary">[Розробник] Перехоплювати команди перезавантаження, відновлення та м\'якого перезавантаження та тихо ігнорувати їх, щоб запобігти небажаним перезапускам пристрою.</string>
-    <string name="settings_overlay_fs_proxy">Ghosting системи OverlayFS</string>
-    <string name="settings_overlay_fs_proxy_summary">[Розробник] Бездоганне монтування віртуальних оверлейних файлових систем для імітації rw /system для root-застосунків. Попередження: Дуже експериментально.</string>
-
-    <!-- Settings: Samsung / DHizuku -->
-    <string name="settings_samsung_uid_escalation">Ескалація Samsung System UID</string>
-    <string name="settings_samsung_uid_escalation_summary">Спроба ескалації до UID 1000 (system) з використанням експлойту, специфічного для непатчених пристроїв Samsung (автор pascua28). Використовуйте на свій страх і ризик.</string>
-    <string name="settings_dhizuku_screencap_lockdown">Блокування захоплення екрана</string>
-    <string name="settings_dhizuku_screencap_lockdown_summary">Вимкнути знімки екрана та записи екрана глобально на всьому пристрої</string>
-    <string name="settings_dhizuku_usb_lockdown">Блокування даних USB</string>
-    <string name="settings_dhizuku_usb_lockdown_summary">Заборонити передачу файлів по USB (MTP) та фізично захистити пристрій</string>
-    <string name="settings_dhizuku_suspended_packages">Призупинені застосунки</string>
-    <string name="settings_dhizuku_suspended_packages_summary">Виберіть застосунки для заморозки та повного блокування від запуску</string>
-
-    <!-- Settings: AI & NPU -->
-    <string name="settings_ai_core_master">AI Core Master</string>
-    <string name="settings_ai_core_master_summary">Увімкнути привілейовані операції AI: планування NPU та доступ до ієрархії вікон</string>
-    <string name="settings_npu_acceleration">Прискорення NPU</string>
-    <string name="settings_npu_acceleration_summary">Делегувати завдання AI-виведення нейронному процесору пристрою, якщо доступний</string>
-    <string name="settings_ai_automation_experimental">Експериментальна AI-автоматизація</string>
-    <string name="settings_ai_automation_experimental_summary">Увімкнути імітацію жестів, захоплення пікселів та введення тексту для автоматизації на основі AI</string>
-    <string name="settings_window_crawler">Сканер ієрархії вікон</string>
-    <string name="settings_window_crawler_summary">Дозволити AI-автоматизації зчитувати ієрархію вікна без Служб доступності</string>
-
-    <!-- Settings: Bootloader -->
-    <string name="settings_bootloader_fastbootd">Перехід до FastbootD</string>
-    <string name="settings_bootloader_fastbootd_summary">Перезапустити безпосередньо в fastbootd user space з оболонки Shizuku</string>
-    <string name="settings_bootloader_flash_ota">Системне завантаження OTA</string>
-    <string name="settings_bootloader_flash_ota_summary">Прошити OTA-завантаження до неактивного слота без root або кастомного відновлення</string>
-
-    <!-- Settings: APK verification -->
-
-    <!-- SU path validation -->
-    <string name="su_path_invalid">Неприпустимий шлях. Має бути абсолютним шляхом (починається з /), що містить лише літери, цифри, слеші, підкреслення, крапки та дефіси.</string>
-
-    <!-- Wireless ADB / mDNS -->
-    <string name="wadb_mdns_blocked_title">mDNS-виявлення постійно дає збій</string>
-    <string name="wadb_mdns_blocked_text">Виявлення порту постійно перевищує час очікування. Можливо, ваш пристрій блокує multicast-трафік (поширено на Vivo/FunTouchOS). Спробуйте ввімкнути TCP-режим у налаштуваннях для надійного підключення без Wi-Fi.</string>
-    <string name="wadb_mdns_switch_tcp_action">Відкрити налаштування TCP</string>
-
-    <!-- Device Control home card (Feature Hub → Experimental) -->
-    <string name="settings_device_control_home_title">Картка керування пристроєм</string>
-    <string name="settings_device_control_home_summary">Показати картку керування пристроєм на головному екрані. Дозволяє привілейоване керування Wi-Fi, Bluetooth, мобільними даними, дисплеєм, звуком та живленням. Експериментальна функція — може спричинити непередбачувану поведінку на деяких пристроях.</string>
+    <string name="permission_manager_section_privileged">Привілейовані дозволи (надаються оболонкою)</string>
+    <string name="permission_manager_section_runtime">Дозволи середовища виконання</string>
+    <string name="permission_manager_privileged_note">Ці дозволи зазвичай обмежені системними або root-застосунками, але можуть бути надані процесом оболонки ADB. Корисно для застосунків резервного копіювання (Neo Backup, Swift Backup), яким потрібен доступ DUMP, READ_LOGS або подібний.</string>
+    <!-- Home layout simulator accessibility labels (decorative preview widget — a11y toggles) -->
+    <string name="accessibility_sim_toggle_adb">Увімкнути/вимкнути карточку запуску ADB</string>
+    <string name="accessibility_sim_toggle_terminal">Увімкнути/вимкнути карточку термінала</string>
+    <string name="accessibility_sim_toggle_automation">Увімкнути/вимкнути карточку автоматизації</string>
+    <string name="accessibility_sim_toggle_activity_log">Увімкнути/вимкнути карточку журналу активності</string>
+    <string name="accessibility_sim_toggle_learn_more">Увімкнути/вимкнути карточку «Дізнатися більше»</string>
+    <!-- Keep-alive and stability tips for unexpected deactivations -->
+    <!-- Activity log entries. The log stores the English text (it is parsed for the event type and
+         exported in bug reports); ActivityLogText maps it to these when it is shown. -->
+    <!-- Adaptive settings & tiered complexity -->
+    <!-- In-App Knowledgebase & Consumer-friendly settings -->
     <string name="settings_check_for_update_title">Перевірити наявність оновлення</string>
+    <!-- Adaptive Recommendations & Startup Scripts -->
+    <!-- App Reachability & Filtering -->
+    <!-- Settings standardization: standard rows replacing the compound grids -->
 </resources>

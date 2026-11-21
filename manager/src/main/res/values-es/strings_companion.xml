@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="companion_conflict_title">Shizuku original detectado</string>
-    <string name="companion_conflict_description">Tener instalado el Shizuku original junto con Shizuku+ puede causar conflictos de permisos y fallos en las aplicaciones. Para garantizar que Shizuku+ funcione correctamente, desinstala o inhabilita la aplicación Shizuku original.\n\nPuedes hacerlo a través de:\n1. Ajustes -> Aplicaciones -> Shizuku -> Inhabilitar/Desinstalar\n2. Los botones de abajo (si el servicio Shizuku+ está en ejecución)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_conflict_description">Tener instalado el Shizuku original junto con Shizuku+ puede causar conflictos de permisos y fallos en las aplicaciones. Para garantizar que Shizuku+ funcione correctamente, desinstala o inhabilita la aplicación Shizuku original.\n\nPuedes hacerlo a través de:\n1. Ajustes -&gt; Aplicaciones -&gt; Shizuku -&gt; Inhabilitar/Desinstalar\n2. Los botones de abajo (si el servicio Shizuku+ está en ejecución)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
     <string name="companion_action_disable">Inhabilitar original</string>
     <string name="companion_action_uninstall">Desinstalar original</string>
     <string name="companion_disable_success">El Shizuku original se ha inhabilitado correctamente.</string>
     <string name="companion_disable_failure">Error al inhabilitar el Shizuku original. Asegúrate de que Shizuku+ esté en ejecución o usa ADB manualmente.</string>
     <string name="companion_action_disabling">Inhabilitando…</string>
-
     <string name="compat_hub_installed_title">Compat Hub instalado</string>
     <string name="compat_hub_installed_desc">Las aplicaciones de terceros (como SwiftBackup) ahora detectarán Shizuku+ sin problemas.</string>
     <string name="compat_hub_missing_title">Se requiere Compat Hub</string>

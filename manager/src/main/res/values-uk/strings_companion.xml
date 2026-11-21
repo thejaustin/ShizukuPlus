@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="companion_conflict_title">Виявлено оригінальний Shizuku</string>
-    <string name="companion_conflict_description">Наявність оригінального Shizuku поруч із Shizuku+ може спричинити конфлікти дозволів та збої програм. Щоб забезпечити правильну роботу Shizuku+, будь ласка, видаліть або вимкніть оригінальний Shizuku.\n\nЦе можна зробити через:\n1. Налаштування -> Програми -> Shizuku -> Вимкнути/Видалити\n2. Кнопки нижче (якщо служба Shizuku+ запущена)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_conflict_description">Наявність оригінального Shizuku поруч із Shizuku+ може спричинити конфлікти дозволів та збої програм. Щоб забезпечити правильну роботу Shizuku+, будь ласка, видаліть або вимкніть оригінальний Shizuku.\n\nЦе можна зробити через:\n1. Налаштування -&gt; Програми -&gt; Shizuku -&gt; Вимкнути/Видалити\n2. Кнопки нижче (якщо служба Shizuku+ запущена)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
     <string name="companion_action_disable">Вимкнути оригінальний</string>
     <string name="companion_action_uninstall">Видалити оригінальний</string>
     <string name="companion_disable_success">Оригінальний Shizuku успішно вимкнено.</string>
     <string name="companion_disable_failure">Не вдалося вимкнути оригінальний Shizuku. Переконайтеся, що Shizuku+ запущено, або використайте ADB вручну.</string>
     <string name="companion_action_disabling">Вимкнення…</string>
-
     <string name="compat_hub_installed_title">Compat Hub встановлено</string>
     <string name="compat_hub_installed_desc">Сторонні програми (наприклад, SwiftBackup) тепер автоматично виявлятимуть Shizuku+.</string>
     <string name="compat_hub_missing_title">Потрібен Compat Hub</string>

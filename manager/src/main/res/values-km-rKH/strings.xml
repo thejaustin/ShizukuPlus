@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- To translators: you can leave your here -->
+    <!-- UI Settings - Expressive -->
+    <!-- UI Settings - Display -->
+    <!-- UI Settings - One UI Theme -->
+    <!-- UI Settings - Typography & Layout -->
+    <!-- UI Settings - Corner Rounding -->
+    <!-- Home - Status -->
+    <!-- %2$s is the Shizuku service API version (e.g. 13.6), not the app version. -->
+    <!-- Home - Adb -->
+    <!-- Home - Wireless Adb -->
+    <!-- Adb -->
+    <!-- Service Doctor -->
+    <!-- Root Compatibility -->
+    <!-- Shell Tutorial -->
+    <!-- Adb Pairing Dialog -->
+    <!-- App Management -->
+    <!-- Home - Root -->
+    <!-- Home - Application management -->
+    <!-- Home - Automation -->
+    <!-- Home - Learn more -->
+    <!-- Home - Adb permissions limited -->
+    <!-- Application management - context menu -->
+    <!-- Application management - search / filter / sort -->
+    <!-- Application management -->
+    <!-- Terminal -->
+    <!-- Settings — swipe customisation -->
+    <!-- Settings — long-press customisation -->
+    <!-- Onboarding -->
+    <!-- Swipe hint overlay -->
+    <!-- App Name & Icon Customization / Camouflage (Issue #615) -->
+    <!-- Settings -->
+    <!-- Shizuku+ Features -->
+    <!-- Plus feature short titles (used in settings preference titles) -->
+    <!-- Dhizuku admin tools -->
+    <!-- Backup / Restore settings -->
+    <!-- Experimental Plus settings (developer section) -->
+    <!-- Detailed Help Strings -->
+    <!-- Plus settings category titles -->
+    <!-- Root Integration (renamed from Legacy Compatibility) -->
+    <!-- Sentry Offline Notice -->
+    <!-- Bug Report Dialog -->
+    <!-- Service Doctor -->
+    <!--
+      Three recovery outcomes — shown after the 1-tap wallet fix runs.
+      ROOT:        Shizuku uid=0 — verdict files deleted, immediate recovery expected.
+      ADB_MODE:    Shizuku uid=2000 — can\'t touch GMS data dir; best-effort steps taken.
+      NO_SHIZUKU:  Shizuku wasn\'t running; only unprivileged Wallet stop was possible.
+    -->
+    <!-- Snackbar -->
+    <!-- Toast -->
+    <!-- Dark Mode Setting Override -->
+    <!-- About -->
+    <!-- Start/Stop -->
+    <!-- Notification -->
+    <!-- Permission related, appears in system permission UI -->
+    <!-- Starter -->
+    <!-- WADB Starter -->
+    <!-- Watchdog -->
+    <!-- Misc -->
+    <!-- Messages for legacy -->
+    <!-- Settings navigation summaries -->
+    <!-- Accessibility - Content Descriptions -->
+    <!-- Empty State Views -->
+    <!-- Settings diagnostics preference (settings_advanced.xml) -->
+    <!-- Verified install preferences (settings_app_management.xml) -->
+    <!-- Custom accent color preference (settings_personalization.xml) -->
+    <!-- Update Settings -->
+    <!-- SU Bridge configuration -->
+    <!-- Root modules — Rootless Bridges -->
+    <!-- Root modules — Mocking &amp; Simulation -->
+    <!-- Bootloader Integration settings -->
+    <!-- Developer Options -->
+    <!-- Update Notifications -->
+    <!-- Migration Dialog -->
+    <!-- Update Dialogs -->
+    <!-- Settings backup/restore -->
+    <!-- Common action labels -->
+    <!-- Service Doctor auto-fix -->
+    <!-- ADB Pairing -->
+    <!-- Update dialog -->
+    <!-- Accessibility service status -->
+    <!-- Dhizuku Device Owner Setup -->
+    <!-- Clear Device Owner (Issue #237) -->
+    <!-- Pairing fallback (Issue #204) -->
+    <!-- Remote App DB Sync -->
+    <!-- Binder Enhancements (Issue #199) -->
+    <!-- Automation Engine (Issue #435) -->
+    <!-- Companion Mode -->
+    <!-- App picker dialog -->
+    <!-- Root Compatibility Hub -->
+    <!-- Home Automation dialog labels -->
+    <!-- Misc -->
+    <!-- APK verification API key strings -->
+    <!-- Scripting & Snippets (#11) -->
+    <!-- Tasker/Locale automation plugin (#6) -->
+    <!-- Network Firewall automation trusted networks -->
+    <!-- Biometric lock -->
+    <!-- Stealth mode -->
+    <!-- OTA flash danger dialog -->
+    <!-- SU path preset picker dialog -->
+    <!-- Device Owner (Dhizuku) toasts -->
+    <!-- Backup/restore picker dialog -->
+    <!-- Peer Settings Sharing / Drop-In Sync -->
+    <!-- Samsung ADB dialog -->
+    <!-- Tile service: state subtitles (shown in Samsung OneUI wide tile text area and standard subtitle) -->
+    <!-- Tile service: mode labels -->
+    <!-- Tile service: action labels (tap dialog and long-press options activity) -->
+    <!-- Tile service error -->
+    <!-- App Profiles automation activity -->
+    <!-- App Backup feature -->
+    <!-- Mode-contextual settings (#433) -->
+    <!-- Hide backup settings (#461) -->
+    <!-- Launcher icon &amp; stealth -->
+    <!-- AI Bridge -->
+    <!-- Package identity / MDM bypass UI (#469) -->
+    <!-- Device Control card &amp; screen -->
+    <!-- Stealth Mode -->
+    <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
+    <!-- Feature Hub experimental category label -->
+    <!-- Permission Manager card &amp; screen -->
+    <!-- Home layout simulator accessibility labels (decorative preview widget — a11y toggles) -->
+    <!-- Keep-alive and stability tips for unexpected deactivations -->
+    <!-- Activity log entries. The log stores the English text (it is parsed for the event type and
+         exported in bug reports); ActivityLogText maps it to these when it is shown. -->
+    <!-- Adaptive settings & tiered complexity -->
+    <!-- In-App Knowledgebase & Consumer-friendly settings -->
+    <!-- Adaptive Recommendations & Startup Scripts -->
+    <!-- App Reachability & Filtering -->
+    <!-- Settings standardization: standard rows replacing the compound grids -->
+</resources>

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="companion_conflict_title">Originele Shizuku gedetecteerd</string>
-    <string name="companion_conflict_description">Het gelijktijdig geïnstalleerd hebben van de originele Shizuku naast Shizuku+ kan machtigingsconflicten en app-crashes veroorzaken. Verwijder of schakel de originele Shizuku-app uit om ervoor te zorgen dat Shizuku+ correct werkt.\n\nU kunt dit doen via:\n1. Instellingen -> Apps -> Shizuku -> Uitschakelen/Verwijderen\n2. Onderstaande knoppen (als de Shizuku+-service actief is)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_conflict_description">Het gelijktijdig geïnstalleerd hebben van de originele Shizuku naast Shizuku+ kan machtigingsconflicten en app-crashes veroorzaken. Verwijder of schakel de originele Shizuku-app uit om ervoor te zorgen dat Shizuku+ correct werkt.\n\nU kunt dit doen via:\n1. Instellingen -&gt; Apps -&gt; Shizuku -&gt; Uitschakelen/Verwijderen\n2. Onderstaande knoppen (als de Shizuku+-service actief is)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
     <string name="companion_action_disable">Origineel uitschakelen</string>
     <string name="companion_action_uninstall">Origineel verwijderen</string>
     <string name="companion_disable_success">Originele Shizuku is succesvol uitgeschakeld.</string>
     <string name="companion_disable_failure">Kan originele Shizuku niet uitschakelen. Zorg ervoor dat Shizuku+ actief is of gebruik ADB handmatig.</string>
     <string name="companion_action_disabling">Uitschakelen…</string>
-
     <string name="compat_hub_installed_title">Compat Hub geïnstalleerd</string>
     <string name="compat_hub_installed_desc">Apps van derden (zoals SwiftBackup) detecteren Shizuku+ nu naadloos.</string>
     <string name="compat_hub_missing_title">Compat Hub vereist</string>

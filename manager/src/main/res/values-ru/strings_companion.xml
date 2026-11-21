@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="companion_conflict_title">Обнаружен оригинальный Shizuku</string>
-    <string name="companion_conflict_description">Установка оригинального Shizuku параллельно с Shizuku+ может привести к конфликтам разрешений и сбоям приложений. Чтобы обеспечить правильную работу Shizuku+, удалите или отключите оригинальное приложение Shizuku.\n\nЭто можно сделать через:\n1. Настройки -> Приложения -> Shizuku -> Отключить/Удалить\n2. Кнопки ниже (если служба Shizuku+ запущена)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_conflict_description">Установка оригинального Shizuku параллельно с Shizuku+ может привести к конфликтам разрешений и сбоям приложений. Чтобы обеспечить правильную работу Shizuku+, удалите или отключите оригинальное приложение Shizuku.\n\nЭто можно сделать через:\n1. Настройки -&gt; Приложения -&gt; Shizuku -&gt; Отключить/Удалить\n2. Кнопки ниже (если служба Shizuku+ запущена)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
     <string name="companion_action_disable">Отключить оригинал</string>
     <string name="companion_action_uninstall">Удалить оригинал</string>
     <string name="companion_disable_success">Оригинальный Shizuku успешно отключен.</string>
     <string name="companion_disable_failure">Не удалось отключить оригинальный Shizuku. Убедитесь, что Shizuku+ запущен, или воспользуйтесь ADB вручную.</string>
     <string name="companion_action_disabling">Отключение…</string>
-
     <string name="compat_hub_installed_title">Compat Hub установлен</string>
     <string name="compat_hub_installed_desc">Сторонние приложения (например, SwiftBackup) теперь будут без проблем обнаруживать Shizuku+.</string>
     <string name="compat_hub_missing_title">Требуется Compat Hub</string>

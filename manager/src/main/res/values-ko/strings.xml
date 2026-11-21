@@ -28,58 +28,58 @@
     <string name="settings_expanded_headers">확장된 섹션 헤더</string>
     <!-- UI Settings - Corner Rounding -->
     <string name="settings_corner_rounding_override">모서리 둥글기</string>
-    <!-- UI Settings - System-following -->
     <string name="settings_icon_color_mode">투톤 아이콘 색상</string>
     <string name="settings_icon_color_mode_summary">투톤 아이콘 배경에 색상을 입히는 방식</string>
     <!-- Home - Status -->
-<string name="home_status_service_is_running">%1$s가 실행 중입니다</string>
-<string name="home_status_service_not_running">%1$s가 실행 중이 아닙니다</string>
+    <string name="home_status_service_is_running">%1$s가 실행 중입니다</string>
+    <string name="home_status_service_not_running">%1$s가 실행 중이 아닙니다</string>
     <string name="home_status_service_not_running_summary">%1$s이(가) 중지되었습니다</string>
     <string name="home_status_service_user_root">루트</string>
     <string name="home_status_service_user_adb">adb</string>
-<string name="home_status_service_version">%1$s, 버전 %2$s</string>
-<string name="home_status_service_version_update"><![CDATA[%1$s, 버전 %2$s<br>다시 시작하여 버전 %3$s로 업데이트]]></string>
+    <!-- %2$s is the Shizuku service API version (e.g. 13.6), not the app version. -->
+    <string name="home_status_service_version">%1$s, 버전 %2$s</string>
+    <string name="home_status_service_version_update"><![CDATA[%1$s, 버전 %2$s<br>다시 시작하여 버전 %3$s로 업데이트]]></string>
     <!-- Home - Adb -->
-<string name="home_adb_title"><![CDATA[컴퓨터에 연결하여 시작]]></string>
-<string name="home_adb_description"><![CDATA[루링 없이 Shizuku를 시작하기 위해 adb가 필요합니다. (컴퓨터 연결 필수) 이 작업은 다시 시작 시 마다 필요로 합니다. 자세한 정보는 <b><a href="%1$s">도움말</a></b>을 확인하세요.]]></string>
-<string name="home_adb_button_view_help">도움말 읽기</string>
-<string name="home_adb_button_view_command">명령어 보기</string>
-<string name="home_adb_dialog_view_command_message"><![CDATA[<font face=monospace>%1$s</font><br><br>* 몇 가지 다른 참고 사항이 있으므로, 도움말을 먼저 확인하세요.]]></string>
-<string name="home_adb_dialog_view_command_copy_button">복사</string>
-<string name="home_adb_dialog_view_command_button_send">보내기</string>
+    <string name="home_adb_title"><![CDATA[컴퓨터에 연결하여 시작]]></string>
+    <string name="home_adb_description"><![CDATA[루링 없이 Shizuku를 시작하기 위해 adb가 필요합니다. (컴퓨터 연결 필수) 이 작업은 다시 시작 시 마다 필요로 합니다. 자세한 정보는 <b><a href="%1$s">도움말</a></b>을 확인하세요.]]></string>
+    <string name="home_adb_button_view_help">도움말 읽기</string>
+    <string name="home_adb_button_view_command">명령어 보기</string>
+    <string name="home_adb_dialog_view_command_message"><![CDATA[<font face=monospace>%1$s</font><br><br>* 몇 가지 다른 참고 사항이 있으므로, 도움말을 먼저 확인하세요.]]></string>
+    <string name="home_adb_dialog_view_command_copy_button">복사</string>
+    <string name="home_adb_dialog_view_command_button_send">보내기</string>
     <!-- Home - Wireless Adb -->
-<string name="home_wireless_adb_title"><![CDATA[무선 디버깅으로 시작]]></string>
-<string name="home_wireless_adb_description"><![CDATA[Android 11 또는 그 이상 버전에서는 컴퓨터에 연결하지 않아도 무선 디버깅을 활성화하하여 기기에서 직접 Shizuku를 시작할 수 있습니다.<p>단계별 가이드를 먼저 확인하세요.]]></string>
-<string name="home_wireless_adb_description_pre_11"><![CDATA[Android 11 이전에서는 무선 디버깅을 활성화하기 위해 컴퓨터에 연결해야 합니다.]]></string>
-<string name="home_wireless_adb_view_guide_button">단계별 가이드</string>
+    <string name="home_wireless_adb_title"><![CDATA[무선 디버깅으로 시작]]></string>
+    <string name="home_wireless_adb_description"><![CDATA[Android 11 또는 그 이상 버전에서는 컴퓨터에 연결하지 않아도 무선 디버깅을 활성화하하여 기기에서 직접 Shizuku를 시작할 수 있습니다.<p>단계별 가이드를 먼저 확인하세요.]]></string>
+    <string name="home_wireless_adb_description_pre_11"><![CDATA[Android 11 이전에서는 무선 디버깅을 활성화하기 위해 컴퓨터에 연결해야 합니다.]]></string>
+    <string name="home_wireless_adb_view_guide_button">단계별 가이드</string>
     <string name="home_layout_sim_adb">ADB</string>
     <!-- Adb -->
-<string name="dialog_adb_discovery">무선 디버깅 서비스 검색 중</string>
-<string name="dialog_adb_discovery_message">\"개발자 옵션\"에서 \"무선 디버깅\"을 사용으로 설정하세요. \"무선 디버깅\"은
+    <string name="dialog_adb_discovery">무선 디버깅 서비스 검색 중</string>
+    <string name="dialog_adb_discovery_message">\"개발자 옵션\"에서 \"무선 디버깅\"을 사용으로 설정하세요. \"무선 디버깅\"은
         네트워크가 변경될 때 자동으로 사용 안 함으로 변경됩니다.
         \n
         \n\"개발자 옵션\"이나 \"USB 디버깅\"을 사용 안 함으로 하면 Shizuku가 중지됩니다.</string>
-<string name="dialog_adb_discovery_message_toggle_wireless_debugging">\"무선 디버깅\"이 검색중으로 유지된다면
+    <string name="dialog_adb_discovery_message_toggle_wireless_debugging">\"무선 디버깅\"이 검색중으로 유지된다면
         비활성화했다가 다시 활성화해 보세요.</string>
-    <string name="dialog_adb_wifi_disconnected_warning">&lt;b&gt;Wi-Fi가 연결되지 않았습니다.&lt;/b&gt;&lt;br&gt;Android에서는 모바일 데이터(5G/LTE)로 무선 디버깅을 검색할 수 없습니다.</string>
-    <string name="dialog_adb_hotspot_tip">💡 &lt;b&gt;팁:&lt;/b&gt; 휴대전화의 &lt;b&gt;모바일 핫스팟&lt;/b&gt;을 켜면 Wi-Fi 네트워크 없이도 무선 디버깅을 사용할 수 있습니다. 또는 로컬 포트 5555로 연결하세요.</string>
-    <string name="dialog_adb_samsung_hotspot_warning">💡 &lt;b&gt;Samsung 참고:&lt;/b&gt; One UI는 모바일 핫스팟이 활성화된 동안 무선 디버깅을 비활성화합니다. 다른 기기의 Wi-Fi 핫스팟에 연결(오프라인도 가능)하거나 USB를 통해 &lt;code&gt;adb tcpip 5555&lt;/code&gt;를 한 번 실행하세요.</string>
+    <string name="dialog_adb_wifi_disconnected_warning"><![CDATA[&lt;b&gt;Wi-Fi가 연결되지 않았습니다.&lt;/b&gt;&lt;br&gt;Android에서는 모바일 데이터(5G/LTE)로 무선 디버깅을 검색할 수 없습니다.]]></string>
+    <string name="dialog_adb_hotspot_tip"><![CDATA[💡 &lt;b&gt;팁:&lt;/b&gt; 휴대전화의 &lt;b&gt;모바일 핫스팟&lt;/b&gt;을 켜면 Wi-Fi 네트워크 없이도 무선 디버깅을 사용할 수 있습니다. 또는 로컬 포트 5555로 연결하세요.]]></string>
+    <string name="dialog_adb_samsung_hotspot_warning"><![CDATA[💡 &lt;b&gt;Samsung 참고:&lt;/b&gt; One UI는 모바일 핫스팟이 활성화된 동안 무선 디버깅을 비활성화합니다. 다른 기기의 Wi-Fi 핫스팟에 연결(오프라인도 가능)하거나 USB를 통해 &lt;code&gt;adb tcpip 5555&lt;/code&gt;를 한 번 실행하세요.]]></string>
     <string name="dialog_adb_open_hotspot">모바일 핫스팟 설정</string>
     <string name="dialog_adb_probing_loopback">로컬 포트(127.0.0.1:5555) 확인 중…</string>
     <string name="dialog_adb_loopback_found">포트 %1$d에서 활성 ADB 서비스를 찾았습니다! 연결 중…</string>
-<string name="dialog_adb_port">포트 번호</string>
-<string name="dialog_adb_invalid_port">포트 번호는 1에서 65535 사이의 정수입니다.</string>
-<string name="adb_pairing">페어링</string>
-<string name="dialog_adb_pairing_title">기기와 페어링</string>
-<string name="dialog_adb_pairing_discovery">페어링 서비스 검색 중</string>
-<string name="dialog_adb_pairing_paring_code">페어링 코드</string>
-<string name="paring_code_is_wrong">페어링 코드가 올바르지 않습니다.</string>
-<string name="cannot_connect_port">무선 디버깅 서비스에 연결할 수 없습니다.\n\nShizuku가 모든 방화벽, 광고 차단, VPN 또는
+    <string name="dialog_adb_port">포트 번호</string>
+    <string name="dialog_adb_invalid_port">포트 번호는 1에서 65535 사이의 정수입니다.</string>
+    <string name="adb_pairing">페어링</string>
+    <string name="dialog_adb_pairing_title">기기와 페어링</string>
+    <string name="dialog_adb_pairing_discovery">페어링 서비스 검색 중</string>
+    <string name="dialog_adb_pairing_paring_code">페어링 코드</string>
+    <string name="paring_code_is_wrong">페어링 코드가 올바르지 않습니다.</string>
+    <string name="cannot_connect_port">무선 디버깅 서비스에 연결할 수 없습니다.\n\nShizuku가 모든 방화벽, 광고 차단, VPN 또는
         네트워크 접근 제한 관련 앱에서 화이트리스트에 등록되어 있는지 꼭 확인해 주세요.</string>
-<string name="dialog_wireless_adb_not_enabled">무선 디버깅을 사용하고 있지 않습니다.
+    <string name="dialog_wireless_adb_not_enabled">무선 디버깅을 사용하고 있지 않습니다.
         \n안드로이드 11 이전은 무선 디버깅을 사용하기 위해서 컴퓨터 연결을 필수로 해야 합니다.</string>
-<string name="dialog_usb_debugging_not_enabled">USB 디버깅이 활성화되어 있지 않습니다.\n\"개발자 옵션\"에서 활성화해 주세요.</string>
-<string name="dialog_adb_pairing_message">다음 단계를 수행하여 페어링을 시작하세요.\n- \"개발자 옵션\"으로 이동합니다.\n-
+    <string name="dialog_usb_debugging_not_enabled">USB 디버깅이 활성화되어 있지 않습니다.\n\"개발자 옵션\"에서 활성화해 주세요.</string>
+    <string name="dialog_adb_pairing_message">다음 단계를 수행하여 페어링을 시작하세요.\n- \"개발자 옵션\"으로 이동합니다.\n-
         \"USB 디버깅\" 및 \"무선 디버깅\"을 활성화합니다.\n- \"무선 디버깅\"의 왼쪽을 탭합니다.\n- \"페어링 코드로 장치 페어링\"을 탭합니다.\n-
         알림에 페어링 코드를 입력합니다.</string>
     <!-- Service Doctor -->
@@ -127,54 +127,53 @@
     <string name="adb_pairing_status_pairing">기기와 페어링 중…</string>
     <string name="adb_pairing_status_failed">페어링 실패.</string>
     <!-- App Management -->
-<string name="dialog_adb_pairing_accessibility_enable">페어링 과정을 시작하려면 접근성 서비스를 활성화하세요. 이렇게 하면
+    <string name="dialog_adb_pairing_accessibility_enable">페어링 과정을 시작하려면 접근성 서비스를 활성화하세요. 이렇게 하면
         Shizuku가 페어링 코드를 감지할 수 있습니다.\n\n코드를 찾거나 1분 후에 에너지 절약을 위해 접근성 서비스가 꺼집니다.</string>
-<string name="dialog_adb_pairing_accessibility_navigate">다음 단계를 수행하여 페어링을 시작하세요.\n- \"개발자 옵션\"으로
+    <string name="dialog_adb_pairing_accessibility_navigate">다음 단계를 수행하여 페어링을 시작하세요.\n- \"개발자 옵션\"으로
         이동합니다.\n- \"USB 디버깅\" 및 \"무선 디버깅\"을 활성화합니다.\n- \"무선 디버깅\"의 왼쪽을 탭합니다.\n- \"페어링 코드로 기기 페어링\"을
         탭합니다. Shizuku가 자동으로 페어링 코드를 감지합니다.</string>
-<string name="adb_pairing_requires_multi_window">먼저 화면 분할 (멀티 윈도우) 모드로 진입하세요.</string>
-<string name="adb_pairing_requires_multi_window_reason">이 시스템은 페어링 대화 대화가 항상 보이도록 요구합니다. 분할 화면
+    <string name="adb_pairing_requires_multi_window">먼저 화면 분할 (멀티 윈도우) 모드로 진입하세요.</string>
+    <string name="adb_pairing_requires_multi_window_reason">이 시스템은 페어링 대화 대화가 항상 보이도록 요구합니다. 분할 화면
         모드를 사용하는 것만이 이 앱과 시스템 대화 대화를 동시에 볼 수 있는 방법입니다.</string>
-<string name="adb_error_key_store">무선 디버깅용 키를 생성할 수 없습니다.\n이는 이 장치의 KeyStore 메커니즘이 고장 났기 때문일 수
+    <string name="adb_error_key_store">무선 디버깅용 키를 생성할 수 없습니다.\n이는 이 장치의 KeyStore 메커니즘이 고장 났기 때문일 수
         있습니다.</string>
-<string name="adb_error_stop_tcp">TCP를 통한 ADB를 중지하지 못했습니다.</string>
-<string name="adb_pair_required">페어링 단계를 먼저 진행하세요.</string>
-<string name="enable">할 수 있게 하다</string>
-<string name="development_settings">개발자 옵션</string>
-<string name="notification_settings">알림 옵션</string>
-<string name="adb_pairing_tutorial_content_notification">Shizuku의 알림이 페어링을 완료하는 데 도움이 될 수도 있습니다.</string>
-<string name="adb_pairing_tutorial_content_steps">\"개발자 옵션\"으로 이동한 다음 \"USB 디버깅\"과 \"무선 디버깅\"을
+    <string name="adb_error_stop_tcp">TCP를 통한 ADB를 중지하지 못했습니다.</string>
+    <string name="adb_pair_required">페어링 단계를 먼저 진행하세요.</string>
+    <string name="enable">할 수 있게 하다</string>
+    <string name="development_settings">개발자 옵션</string>
+    <string name="notification_settings">알림 옵션</string>
+    <string name="adb_pairing_tutorial_content_notification">Shizuku의 알림이 페어링을 완료하는 데 도움이 될 수도 있습니다.</string>
+    <string name="adb_pairing_tutorial_content_steps">\"개발자 옵션\"으로 이동한 다음 \"USB 디버깅\"과 \"무선 디버깅\"을
         활성화합니다.</string>
-<string name="adb_pairing_tutorial_content_enter_pairing_code">\"무선 디버깅\"의 왼쪽을 탭한 다음 \"페어링 코드로
+    <string name="adb_pairing_tutorial_content_enter_pairing_code">\"무선 디버깅\"의 왼쪽을 탭한 다음 \"페어링 코드로
         기기 페어링\"을 탭합니다. 알림에 있는 코드를 입력하여 페어링을 완료합니다.</string>
-<string name="adb_pairing_tutorial_content_notification_blocked">페어링 프로세스에서는 Shizuku의 알림과 상호
+    <string name="adb_pairing_tutorial_content_notification_blocked">페어링 프로세스에서는 Shizuku의 알림과 상호
         작용해야 합니다. Shizuku가 알림을 게시하도록 허용하십시오.</string>
-<string name="adb_pairing_tutorial_content_miui">MIUI 사용자는 시스템 설정의 \"알림\" - \"알림 창\"에서 알림 스타일을
+    <string name="adb_pairing_tutorial_content_miui">MIUI 사용자는 시스템 설정의 \"알림\" - \"알림 창\"에서 알림 스타일을
         \"Android\"로 전환해야 합니다.</string>
-<string name="adb_pairing_tutorial_content_miui_2">그렇지 않으면 알림에서 페어링 코드를 입력하지 못할 수도 있습니다.</string>
-<string name="adb_pairing_tutorial_content_finish">시즈쿠에게 돌아가서 시즈쿠를 시작해.</string>
-<string name="adb_pairing_tutorial_content_network">시즈쿠는 로컬 네트워크에 접속해야 해. 네트워크 권한으로 제어됩니다.</string>
-<string name="adb_pairing_tutorial_content_network_limation_not_foreground">일부 시스템(예: MIUI)은 앱이
+    <string name="adb_pairing_tutorial_content_miui_2">그렇지 않으면 알림에서 페어링 코드를 입력하지 못할 수도 있습니다.</string>
+    <string name="adb_pairing_tutorial_content_finish">시즈쿠에게 돌아가서 시즈쿠를 시작해.</string>
+    <string name="adb_pairing_tutorial_content_network">시즈쿠는 로컬 네트워크에 접속해야 해. 네트워크 권한으로 제어됩니다.</string>
+    <string name="adb_pairing_tutorial_content_network_limation_not_foreground">일부 시스템(예: MIUI)은 앱이
         포그라운드 서비스를 사용하더라도 보이지 않으면 네트워크에 접속하지 못하게 합니다. 해당 시스템에서는 시즈쿠의 배터리 최적화 기능을 비활성화해 주세요.</string>
     <!-- Home - Root -->
-<string name="home_root_title"><![CDATA[시작 (루팅된 기기용)]]></string>
-<string name="home_root_description"><![CDATA[Magisk를 사용 중이라면 %1$s를 사용해 보세요. 루트 사용자의 경우, 이 명령은 Shizuku를 대체하게 됩니다. 참고: %2$s를 사용하려면 기존 애플리케이션을 약간 변경해야 합니다.]]></string>
-<string name="home_root_button_start">시작</string>
-<string name="home_root_button_restart">재시작</string>
+    <string name="home_root_title"><![CDATA[시작 (루팅된 기기용)]]></string>
+    <string name="home_root_description"><![CDATA[Magisk를 사용 중이라면 %1$s를 사용해 보세요. 루트 사용자의 경우, 이 명령은 Shizuku를 대체하게 됩니다. 참고: %2$s를 사용하려면 기존 애플리케이션을 약간 변경해야 합니다.]]></string>
+    <string name="home_root_button_start">시작</string>
+    <string name="home_root_button_restart">재시작</string>
     <!-- Home - Application management -->
-<string name="home_app_management_title">어플리케이션 관리</string>
-<plurals name="home_app_management_authorized_apps_count">
-        <item quantity="one">%d개 앱 인증됨</item>
+    <string name="home_app_management_title">어플리케이션 관리</string>
+    <plurals name="home_app_management_authorized_apps_count">
         <item quantity="other"><![CDATA[%d개 앱 인증됨]]></item>
     </plurals>
-<string name="home_app_management_view_authorized_apps"><![CDATA[탭하여 인증된 앱 관리]]></string>
-<string name="home_app_management_empty">Shizuku 권한을 요청하거나 선언한 앱이 여기에 표시됩니다.</string>
+    <string name="home_app_management_view_authorized_apps"><![CDATA[탭하여 인증된 앱 관리]]></string>
+    <string name="home_app_management_empty">Shizuku 권한을 요청하거나 선언한 앱이 여기에 표시됩니다.</string>
     <!-- Home - Automation -->
-<string name="home_automation_title">자동화 앱으로 Shizuku 제어</string>
-<string name="home_automation_description">Tasker 및 MacroDroid와 같은 앱은 Shizuku를 자동으로 시작/중지하는 인텐트를
+    <string name="home_automation_title">자동화 앱으로 Shizuku 제어</string>
+    <string name="home_automation_description">Tasker 및 MacroDroid와 같은 앱은 Shizuku를 자동으로 시작/중지하는 인텐트를
         보낼 수 있습니다.</string>
     <string name="home_automation_description_device_restriction">기기에서 시작 인텐트를 사용하려면 먼저 PC에서 %1$s를 실행하여 TCP를 통한 ADB를 활성화해야 합니다.</string>
-<string name="home_automation_button_view_intents">의도 보기</string>
+    <string name="home_automation_button_view_intents">의도 보기</string>
     <string name="home_automation_bottom_sheet_intents">인텐트</string>
     <string name="home_automation_bottom_sheet_label_action">동작</string>
     <string name="home_automation_bottom_sheet_label_package">패키지</string>
@@ -184,11 +183,11 @@
     <string name="home_automation_regenerate_token_message">새 토큰으로 인텐트를 다시 구성해야 합니다.</string>
     <string name="home_automation_token_encrypt_failed">토큰을 안전하게 보호하지 못했습니다 — 다시 시도하세요</string>
     <!-- Home - Learn more -->
-<string name="home_learn_more_title">개발자 가이드</string>
-<string name="home_learn_more_description">Shizuku로 개발하는 방법 알아보기</string>
+    <string name="home_learn_more_title">개발자 가이드</string>
+    <string name="home_learn_more_description">Shizuku로 개발하는 방법 알아보기</string>
     <!-- Home - Adb permissions limited -->
-<string name="home_adb_is_limited_title">추가 단계를 진행해야 합니다</string>
-<string name="home_adb_is_limited_description">디바이스 제조업체에서 ADB 권한을 제한하여 Shizuku를 사용하는 앱이 제대로
+    <string name="home_adb_is_limited_title">추가 단계를 진행해야 합니다</string>
+    <string name="home_adb_is_limited_description">디바이스 제조업체에서 ADB 권한을 제한하여 Shizuku를 사용하는 앱이 제대로
         작동하지 않습니다.
         \n
         \n일반적으로 \'개발자 옵션\'에서 일부 옵션을 조정하여 이 제한을 해제할 수 있습니다. 자세한 방법은 도움말을 참조하세요.
@@ -218,32 +217,32 @@
     <string name="app_management_sort_last_installed">최근 설치 순</string>
     <string name="app_management_sort_last_updated">최근 업데이트 순</string>
     <!-- Application management -->
-<string name="app_management_dialog_adb_is_limited_title">ADB의 권한이 제한됨</string>
-<string name="app_management_dialog_adb_is_limited_message"><![CDATA[기기 제조사에서 ADB의 권한을 제한하고 있을 가능성이 높습니다.<p><b><a href="%1$s">이 문서</a></b>에 시스템에 대한 해결 방안이 있을 수 있습니다.]]></string>
-<string name="app_management_item_summary_requires_root">* 루트 권한으로 실행된 Shizuku 필요</string>
+    <string name="app_management_dialog_adb_is_limited_title">ADB의 권한이 제한됨</string>
+    <string name="app_management_dialog_adb_is_limited_message"><![CDATA[기기 제조사에서 ADB의 권한을 제한하고 있을 가능성이 높습니다.<p><b><a href="%1$s">이 문서</a></b>에 시스템에 대한 해결 방안이 있을 수 있습니다.]]></string>
+    <string name="app_management_item_summary_requires_root">* 루트 권한으로 실행된 Shizuku 필요</string>
     <string name="app_management_item_summary_partial_root">⚠ 부분 지원 — 일부 기능은 루트 권한의 Shizuku가 여전히 필요합니다</string>
-<string name="app_management_toggle_all">모두 전환</string>
+    <string name="app_management_toggle_all">모두 전환</string>
     <string name="app_management_bulk_grant">선택 항목에 권한 부여</string>
     <string name="app_management_bulk_revoke">선택 항목의 권한 취소</string>
     <string name="app_management_bulk_hide">선택 항목 숨기기</string>
     <string name="app_management_bulk_select_all">모두 선택</string>
     <!-- Terminal -->
-<string name="home_terminal_title">터미널에서 Shizuku 사용</string>
-<string name="home_terminal_description">Shizuku를 통해 터미널 앱에서 셸 명령 실행</string>
-<string name="terminal_tutorial_miui">사용자들은 MIUI가 내보내기 기능에서 사용되는 Storage Access Framework를
+    <string name="home_terminal_title">터미널에서 Shizuku 사용</string>
+    <string name="home_terminal_description">Shizuku를 통해 터미널 앱에서 셸 명령 실행</string>
+    <string name="terminal_tutorial_miui">사용자들은 MIUI가 내보내기 기능에서 사용되는 Storage Access Framework를
         손상시킨다고 보고했습니다.</string>
-<string name="terminal_tutorial_miui_2">MIUI를 사용하는 경우 Shizuku APK의 assets 폴더에서 파일을 추출해야 할 수도
+    <string name="terminal_tutorial_miui_2">MIUI를 사용하는 경우 Shizuku APK의 assets 폴더에서 파일을 추출해야 할 수도
         있습니다.</string>
-<string name="terminal_tutorial_1">파일을 새 폴더로 내보냅니다.</string>
-<string name="terminal_tutorial_1_description">%1$s 및 %2$s두 개의 파일이 내보내집니다. 선택한 폴더에 해당 파일이 이미 있는
+    <string name="terminal_tutorial_1">파일을 새 폴더로 내보냅니다.</string>
+    <string name="terminal_tutorial_1_description">%1$s 및 %2$s두 개의 파일이 내보내집니다. 선택한 폴더에 해당 파일이 이미 있는
         경우 삭제됩니다.</string>
-<string name="terminal_export_files">파일 내보내기</string>
-<string name="terminal_tutorial_2">터미널 앱을 사용하여 파일을 개인 파일 디렉토리에 복사합니다.</string>
-<string name="terminal_tutorial_2_description">팁: 터미널 앱의 홈 디렉토리(~)가 개인 파일 디렉토리에 있는 경우, 해당 디렉토리에
+    <string name="terminal_export_files">파일 내보내기</string>
+    <string name="terminal_tutorial_2">터미널 앱을 사용하여 파일을 개인 파일 디렉토리에 복사합니다.</string>
+    <string name="terminal_tutorial_2_description">팁: 터미널 앱의 홈 디렉토리(~)가 개인 파일 디렉토리에 있는 경우, 해당 디렉토리에
         파일을 두면 경로를 쓰지 않고도 %1$s 을 실행할 수 있습니다.\n\n그렇지 않은 경우, 터미널 앱의 %3$s 구성 파일에서 %2$s 에 대한 별칭을 만들 수
         있습니다.</string>
-<string name="terminal_tutorial_3">다음 명령으로 셸을 엽니다.</string>
-<string name="rish_description"><![CDATA[%1$s를 사용하면 모든 터미널 앱에서 셸 명령을 실행할 수 있습니다.<p>탭하여 사용 방법에 대한 자세한 내용을 알아보세요.]]></string>
+    <string name="terminal_tutorial_3">다음 명령으로 셸을 엽니다.</string>
+    <string name="rish_description"><![CDATA[%1$s를 사용하면 모든 터미널 앱에서 셸 명령을 실행할 수 있습니다.<p>탭하여 사용 방법에 대한 자세한 내용을 알아보세요.]]></string>
     <!-- Settings — swipe customisation -->
     <string name="settings_action_none">없음</string>
     <string name="settings_action_open_app">앱 열기</string>
@@ -279,39 +278,40 @@
     <string name="swipe_hint_title">스와이프 제스처</string>
     <string name="swipe_hint_right">빠른 동작을 위해 오른쪽으로 스와이프</string>
     <string name="swipe_hint_left">빠른 동작을 위해 왼쪽으로 스와이프</string>
+    <!-- App Name & Icon Customization / Camouflage (Issue #615) -->
     <!-- Settings -->
-<string name="settings_title">설정</string>
-<string name="settings_start_on_boot">부팅 시 시작</string>
-<string name="settings_start_on_boot_summary">Android 11 이상 또는 루트가 필요합니다.</string>
-<string name="settings_start_on_boot_bug">Android 11-12의 버그로 인해 무선 디버깅은 권한이 부여된 네트워크를 기억하지
+    <string name="settings_title">설정</string>
+    <string name="settings_start_on_boot">부팅 시 시작</string>
+    <string name="settings_start_on_boot_summary">Android 11 이상 또는 루트가 필요합니다.</string>
+    <string name="settings_start_on_boot_bug">Android 11-12의 버그로 인해 무선 디버깅은 권한이 부여된 네트워크를 기억하지
         못합니다.\n\n재부팅할 때마다 인증 대화상자가 뜰 때 \"허용\" 버튼을 눌러 네트워크를 재승인해야 합니다.</string>
-<string name="settings_use_system_color">시스템 테마 색상 사용</string>
-<string name="settings_watchdog">지키는 개</string>
-<string name="settings_watchdog_summary">충돌이나 예기치 않은 중지 후 Shizuku+를 자동으로 다시 시작합니다. 기본 네트워크가 끊어지면(RNDIS/USB ADB 사용 중 USB 케이블 분리 등) 다시 연결할 수 없습니다.</string>
+    <string name="settings_use_system_color">시스템 테마 색상 사용</string>
+    <string name="settings_watchdog">지키는 개</string>
+    <string name="settings_watchdog_summary">충돌이나 예기치 않은 중지 후 Shizuku+를 자동으로 다시 시작합니다. 기본 네트워크가 끊어지면(RNDIS/USB ADB 사용 중 USB 케이블 분리 등) 다시 연결할 수 없습니다.</string>
     <string name="settings_device_hardening">기기 강화 및 연결 유지</string>
     <string name="settings_device_hardening_summary">Shizuku와 터미널 클라이언트를 Doze에서 제외하고, WRITE_SECURE_SETTINGS를 자동으로 부여하며, 스타터 바이너리를 동기화합니다</string>
     <string name="doctor_check_device_hardening">기기 강화 및 Doze 제외</string>
     <string name="device_hardening_applied">기기 강화 및 Doze 최적화가 적용되었습니다</string>
-<string name="settings_tcp_mode_summary">"Shizuku가 Wi-Fi 없이 재시작할 수 있도록 합니다. (Shizuku는 재부팅 후 한 번
+    <string name="settings_tcp_mode_summary">"Shizuku가 Wi-Fi 없이 재시작할 수 있도록 합니다. (Shizuku는 재부팅 후 한 번
         시작되어야 합니다.)"</string>
-<string name="settings_tcp_mode_dialog_close_port">"TCP 포트가 즉시 닫힙니다. TCP 모드를 다시 켜려면 Wi-Fi에 연결해야
+    <string name="settings_tcp_mode_dialog_close_port">"TCP 포트가 즉시 닫힙니다. TCP 모드를 다시 켜려면 Wi-Fi에 연결해야
         합니다. 계속하시겠습니까?"</string>
-<string name="settings_tcp_mode_closing_port">TCP 포트를 닫는 중...</string>
-<string name="settings_restart_dialog_title">재시작 필요</string>
-<string name="settings_restart_dialog_message">시즈쿠는 이 설정을 적용하려면 다시 시작해야 합니다.</string>
-<string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>와이파이가 필수입니다. 시즈쿠는 계속 달리면서 와이파이 연결이 될 때까지 기다렸다가 백그라운드에서 다시 시작할 것이다.</b>]]></string>
+    <string name="settings_tcp_mode_closing_port">TCP 포트를 닫는 중...</string>
+    <string name="settings_restart_dialog_title">재시작 필요</string>
+    <string name="settings_restart_dialog_message">시즈쿠는 이 설정을 적용하려면 다시 시작해야 합니다.</string>
+    <string name="settings_restart_dialog_message_wifi_required"><![CDATA[<br><br><b>와이파이가 필수입니다. 시즈쿠는 계속 달리면서 와이파이 연결이 될 때까지 기다렸다가 백그라운드에서 다시 시작할 것이다.</b>]]></string>
     <string name="settings_auto_reconnect_mdns">지능형 자동 재연결</string>
     <string name="settings_auto_reconnect_mdns_summary">무선 ADB 포트가 이미 활성 상태인 경우 앱이 열릴 때 서비스를 자동으로 다시 시작합니다</string>
     <string name="settings_auto_disable_usb_debugging">USB 디버깅 자동 비활성화</string>
     <string name="settings_auto_disable_usb_debugging_summary">Shizuku를 중지할 때 USB 디버깅을 비활성화합니다</string>
-<string name="settings_language">언어</string>
-<string name="settings_translation">번역 참여</string>
-<string name="settings_translation_summary">%s를 당신의 언어로 번역할 수 있도록 도와주세요</string>
+    <string name="settings_language">언어</string>
+    <string name="settings_translation">번역 참여</string>
+    <string name="settings_translation_summary">%s를 당신의 언어로 번역할 수 있도록 도와주세요</string>
     <string name="settings_version">버전</string>
     <string name="settings_developer_options_revealed">개발자 옵션이 표시되었습니다!</string>
     <string name="settings_developer_options_click_more">개발자 옵션을 표시하려면 %d번 더 탭하세요.</string>
     <string name="settings_diagnostics_category">진단</string>
-<string name="settings_report_bug">버그 신고</string>
+    <string name="settings_report_bug">버그 신고</string>
     <string name="settings_activity_log">활동 로그</string>
     <string name="settings_activity_log_clear">로그 지우기</string>
     <string name="settings_enable_activity_log">활동 로그 활성화</string>
@@ -324,8 +324,8 @@
     <string name="settings_update_app_database_error">데이터베이스 업데이트에 실패했습니다</string>
     <string name="home_edit_mode_title">카드 정렬</string>
     <string name="home_edit_mode_done">완료</string>
-<string name="settings_legacy_pairing">레거시 페어링</string>
-<string name="settings_legacy_pairing_summary">알림 대신 대화 상자에 페어링 코드를 입력하세요.</string>
+    <string name="settings_legacy_pairing">레거시 페어링</string>
+    <string name="settings_legacy_pairing_summary">알림 대신 대화 상자에 페어링 코드를 입력하세요.</string>
     <string name="settings_reset_adb_keys">ADB 키 초기화</string>
     <string name="settings_reset_adb_keys_summary">기존 ADB 키와 인증서를 삭제합니다. 페어링이 멈추거나 KeyStore가 손상된 경우 유용합니다.</string>
     <string name="settings_reset_adb_keys_success">ADB 키가 지워졌습니다</string>
@@ -406,7 +406,7 @@
     <string name="diagnostics_disable_confirm">비활성화</string>
     <string name="diagnostics_action_required">조치 필요</string>
     <string name="diagnostics_disable_button">진단 비활성화</string>
-    <string name="help_general_plus_summary">&lt;b&gt;Shizuku+가 다른 앱과 함께 작동하는 방식&lt;/b&gt;&lt;br&gt;&lt;br&gt;Shizuku+는 이 앱과 Shizuku+ API(af.shizuku.plus.api)를 명시적으로 대상으로 하는 타사 앱에서 액세스할 수 있는 &lt;i&gt;독점 Plus 기능&lt;/i&gt;(Storage Bridge, AI Bridge, Theming Bridge)을 제공합니다.&lt;br&gt;&lt;br&gt;&lt;b&gt;중요:&lt;/b&gt; Shizuku+는 원본 Shizuku API와 완전히 하위 호환됩니다. 기존 Shizuku를 사용하는 기존 앱(SD Maid SE 및 SwiftBackup 등)은 개발자 업데이트 없이 자동으로 Shizuku+를 검색하고 함께 동작합니다.&lt;br&gt;&lt;br&gt;&lt;b&gt;기존 Shizuku와 함께 사용:&lt;/b&gt; 한 번에 하나의 서비스만 실행할 수 있습니다. 기존 Shizuku가 아직 설치되어 있는 경우 홈 화면의 Companion 카드를 사용하면 전환이 쉽지만, 기존 Shizuku를 제거하고 Shizuku+만 사용하는 것이 좋습니다.</string>
+    <string name="help_general_plus_summary"><![CDATA[&lt;b&gt;Shizuku+가 다른 앱과 함께 작동하는 방식&lt;/b&gt;&lt;br&gt;&lt;br&gt;Shizuku+는 이 앱과 Shizuku+ API(af.shizuku.plus.api)를 명시적으로 대상으로 하는 타사 앱에서 액세스할 수 있는 &lt;i&gt;독점 Plus 기능&lt;/i&gt;(Storage Bridge, AI Bridge, Theming Bridge)을 제공합니다.&lt;br&gt;&lt;br&gt;&lt;b&gt;중요:&lt;/b&gt; Shizuku+는 원본 Shizuku API와 완전히 하위 호환됩니다. 기존 Shizuku를 사용하는 기존 앱(SD Maid SE 및 SwiftBackup 등)은 개발자 업데이트 없이 자동으로 Shizuku+를 검색하고 함께 동작합니다.&lt;br&gt;&lt;br&gt;&lt;b&gt;기존 Shizuku와 함께 사용:&lt;/b&gt; 한 번에 하나의 서비스만 실행할 수 있습니다. 기존 Shizuku가 아직 설치되어 있는 경우 홈 화면의 Companion 카드를 사용하면 전환이 쉽지만, 기존 Shizuku를 제거하고 Shizuku+만 사용하는 것이 좋습니다.]]></string>
     <!-- Detailed Help Strings -->
     <string name="help_dhizuku_title">Dhizuku 모드 정보</string>
     <string name="help_dhizuku_detail">Dhizuku를 사용하면 Shizuku가 Device Owner(DevicePolicyManager) 권한을 타사 앱과 공유할 수 있습니다. 이는 스스로 유일한 Device Owner가 되지 않고도 시스템 정책을 관리해야 하는 Dhizuku Manager와 같은 앱이나 특정 키오스크 모드 도구에 필수적입니다.</string>
@@ -418,7 +418,7 @@
     <string name="help_continuity_bridge_title">Multi-Device Continuity 정보</string>
     <string name="help_continuity_bridge_detail">Continuity Bridge를 사용하면 같은 네트워크상의 Shizuku+ 기기 간에 작업을 인계하고 클립보드/앱 상태를 동기화할 수 있습니다. Android 17 Handoff API(가능한 경우 백포트됨)를 활용하여 휴대폰과 태블릿 간에 자동화 작업을 원활하게 전환할 수 있습니다.</string>
     <string name="help_ai_core_plus_title">Intelligence Bridge 정보</string>
-    <string name="help_ai_core_plus_detail">Intelligence Bridge는 AI 어시스턴트에게 화면 콘텐츠 및 NPU 스케줄링에 대한 특권 액세스를 부여합니다. 표준 Android 화면 녹화 제한을 우회하는 고성능의 창 인식 프레임 캡처를 제공하여 "Circle to Search"와 같은 기능이나 로컬 LLM을 위한 화면 인식 컨텍스트를 가능하게 합니다.</string>
+    <string name="help_ai_core_plus_detail">Intelligence Bridge는 AI 어시스턴트에게 화면 콘텐츠 및 NPU 스케줄링에 대한 특권 액세스를 부여합니다. 표준 Android 화면 녹화 제한을 우회하는 고성능의 창 인식 프레임 캡처를 제공하여 \"Circle to Search\"와 같은 기능이나 로컬 LLM을 위한 화면 인식 컨텍스트를 가능하게 합니다.</string>
     <string name="help_window_manager_plus_title">Window Tuner 정보</string>
     <string name="help_window_manager_plus_detail">Window Tuner는 모든 앱을 자유형 모드로 강제 전환하거나, 지속적인 Bubble Bar에 배치하거나, 항상 위 오버레이로 렌더링할 수 있는 고급 WindowManager 플래그를 노출합니다. 이는 멀티태스킹과 OneUI 데스크톱 경험을 사용자 지정하는 데 유용한 강력한 도구입니다.</string>
     <string name="help_overlay_manager_plus_title">System Theming Bridge 정보</string>
@@ -475,12 +475,12 @@
     <string name="su_bridge_magic_setup_all_no_apps">자동화를 지원하는 루트 앱이 없습니다.</string>
     <string name="su_bridge_copy_open">경로 복사 및 열기</string>
     <string name="su_bridge_no_export">SU 경로가 설정되지 않았습니다. 먼저 홈 화면에서 Shizuku 파일을 내보내세요.</string>
-    <string name="root_hub_shizuku_aware_note">SU 브릿지는 루트되지 않은 기기에 루트와 유사한 액세스를 제공합니다. 그러나 다른 앱을 수정하려면 "자동 설정"에 루트 모드의 Shizuku가 필요합니다. ADB 모드에서는 "경로 복사"를 사용해 앱을 수동으로 구성하세요.</string>
+    <string name="root_hub_shizuku_aware_note">SU 브릿지는 루트되지 않은 기기에 루트와 유사한 액세스를 제공합니다. 그러나 다른 앱을 수정하려면 \"자동 설정\"에 루트 모드의 Shizuku가 필요합니다. ADB 모드에서는 \"경로 복사\"를 사용해 앱을 수동으로 구성하세요.</string>
     <string name="su_bridge_how_to_use">사용 방법:</string>
     <string name="su_bridge_step_1">1. 홈 화면에서 Shizuku 파일을 내보내세요.</string>
-    <string name="su_bridge_step_2">2. 루트 앱의 설정에서 "SU Path" 또는 "Binary Path"를 찾으세요.</string>
+    <string name="su_bridge_step_2">2. 루트 앱의 설정에서 \"SU Path\" 또는 \"Binary Path\"를 찾으세요.</string>
     <string name="su_bridge_step_3">3. 내보낸 \'su\' 파일의 경로로 변경하세요.</string>
-    <string name="su_bridge_step_4">4. 사용자 지정 경로 설정이 없는 앱의 경우 Shizuku+ 설정에서 "SU Bridge"를 활성화하세요. 이렇게 하면 많은 레거시 su 호출이 자동으로 리디렉션됩니다.</string>
+    <string name="su_bridge_step_4">4. 사용자 지정 경로 설정이 없는 앱의 경우 Shizuku+ 설정에서 \"SU Bridge\"를 활성화하세요. 이렇게 하면 많은 레거시 su 호출이 자동으로 리디렉션됩니다.</string>
     <string name="su_bridge_su_path_label">내보낸 su 경로</string>
     <string name="su_bridge_copy_path">경로 복사</string>
     <string name="su_bridge_default_nav_hint">앱 설정에서 사용자 지정 SU 경로 설정</string>
@@ -492,8 +492,6 @@
     <string name="su_bridge_self_test_fail">브릿지가 동작하지 않습니다</string>
     <string name="su_bridge_self_test_copy">결과 복사</string>
     <string name="su_bridge_self_test_copied">자가 테스트 결과가 복사되었습니다</string>
-    <string name="su_bridge_device_identity_title">기기 ID</string>
-    <string name="starter_service_started">서비스가 시작되었습니다.</string>
     <string name="su_bridge_device_identity_real">실제: %s</string>
     <string name="su_bridge_device_identity_spoofed">스푸핑됨: %s</string>
     <string name="su_bridge_device_identity_none">없음 (실제 기기 표시)</string>
@@ -512,16 +510,16 @@
     <string name="crash_detected_dialog_ignore">무시</string>
     <string name="shortcut_open_terminal">터미널 열기</string>
     <!-- Bug Report Dialog -->
-<string name="bug_report_dialog_before_reporting">먼저 다음 사항을 수행해 주십시오.</string>
-<string name="bug_report_dialog_update">^1을 사용하고 있는지 확인하세요.</string>
-<string name="bug_report_dialog_link_update">최신 버전</string>
-<string name="bug_report_dialog_wiki">^1을 읽고 관련된 모든 문제 해결 단계를 따르십시오.</string>
-<string name="bug_report_dialog_link_wiki">위키</string>
-<string name="bug_report_dialog_issues">버그가 이미 보고되었는지 확인하려면 ^1을 모두 검색해 보세요.</string>
-<string name="bug_report_dialog_link_issues">기존 문제</string>
-<string name="bug_report_dialog_method">계정이 있으시면 ^1에 이슈를 제출해 주세요.</string>
-<string name="bug_report_dialog_method_2">아니면 이메일을 보내셔도 됩니다.</string>
-<string name="bug_report_dialog_button_email">이메일</string>
+    <string name="bug_report_dialog_before_reporting">먼저 다음 사항을 수행해 주십시오.</string>
+    <string name="bug_report_dialog_update">^1을 사용하고 있는지 확인하세요.</string>
+    <string name="bug_report_dialog_link_update">최신 버전</string>
+    <string name="bug_report_dialog_wiki">^1을 읽고 관련된 모든 문제 해결 단계를 따르십시오.</string>
+    <string name="bug_report_dialog_link_wiki">위키</string>
+    <string name="bug_report_dialog_issues">버그가 이미 보고되었는지 확인하려면 ^1을 모두 검색해 보세요.</string>
+    <string name="bug_report_dialog_link_issues">기존 문제</string>
+    <string name="bug_report_dialog_method">계정이 있으시면 ^1에 이슈를 제출해 주세요.</string>
+    <string name="bug_report_dialog_method_2">아니면 이메일을 보내셔도 됩니다.</string>
+    <string name="bug_report_dialog_button_email">이메일</string>
     <!-- Service Doctor -->
     <string name="home_service_doctor_title">서비스 닥터</string>
     <string name="home_service_doctor_summary">Shizuku+ 시작에 문제가 있나요? 탭하여 진단 검사를 실행하세요.</string>
@@ -538,18 +536,18 @@
     <string name="doctor_status_optimized">최적화됨 (서비스가 종료될 수 있음)</string>
     <string name="doctor_check_xiaomi_adb">Xiaomi/HyperOS USB 디버깅 (보안 설정)</string>
     <string name="doctor_status_xiaomi_adb_unknown">개발자 옵션에서 활성화</string>
-    <string name="doctor_tip_xiaomi">Xiaomi/HyperOS: 개발자 옵션에서 "USB Debugging (Security Settings)"을 활성화하세요.</string>
+    <string name="doctor_tip_xiaomi">Xiaomi/HyperOS: 개발자 옵션에서 \"USB Debugging (Security Settings)\"을 활성화하세요.</string>
     <string name="doctor_check_xiaomi_autostart">Xiaomi/HyperOS 자동 시작</string>
     <string name="doctor_status_xiaomi_autostart_unknown">서비스 유지를 위해 자동 시작 허용</string>
     <string name="doctor_tip_xiaomi_battery"><b>HyperOS 배터리</b>: 배터리 설정을 열어 Shizuku+를 <b>제한 없음</b>으로 설정하세요. 이렇게 하지 않으면 HyperOS가 Doze 주기(약 30분)마다 백그라운드 프로세스를 종료합니다.</string>
     <string name="doctor_check_oppo_permission">ColorOS/OxygenOS 권한 모니터링</string>
-    <string name="doctor_tip_oppo_permission">Oppo/Realme/OnePlus: 백그라운드 서비스 종료를 방지하기 위해 개발자 옵션에서 "Permission Monitoring"을 비활성화하세요.</string>
+    <string name="doctor_tip_oppo_permission">Oppo/Realme/OnePlus: 백그라운드 서비스 종료를 방지하기 위해 개발자 옵션에서 \"Permission Monitoring\"을 비활성화하세요.</string>
     <string name="doctor_check_oppo_battery">ColorOS/OxygenOS 자동 실행</string>
     <string name="doctor_status_oppo_battery_unknown">서비스 유지를 위해 자동 실행 활성화</string>
     <string name="doctor_tip_oppo_battery"><b>ColorOS 자동 실행</b>: 수정을 눌러 배터리 설정을 여세요. <b>자동 실행</b>을 활성화하고 Shizuku+를 <b>제한 없음</b>으로 설정하면 ColorOS가 백그라운드 서비스를 종료하지 않습니다.</string>
     <string name="doctor_check_tcl_autostart">TCL 자동 시작</string>
     <string name="doctor_status_tcl_autostart_unknown">자동 시작 허용 목록에 추가</string>
-    <string name="doctor_tip_tcl_background">TCL: 설정에서 Shizuku+가 "자동 시작" 및 "높은 백그라운드 전력 소비" 허용 목록에 추가되었는지 확인하세요.</string>
+    <string name="doctor_tip_tcl_background">TCL: 설정에서 Shizuku+가 \"자동 시작\" 및 \"높은 백그라운드 전력 소비\" 허용 목록에 추가되었는지 확인하세요.</string>
     <string name="doctor_tip_battery">백그라운드에서 종료되는 것을 방지하기 위해 Shizuku+의 배터리 최적화를 비활성화하세요.</string>
     <string name="doctor_tip_background_restricted"><b>백그라운드 제한됨</b>: Android가 Shizuku+를 백그라운드 제한 모드로 설정했습니다. 앱 정보 → 배터리로 이동하여 제한 없음으로 설정하면 서비스 안정성이 복원됩니다.</string>
     <string name="doctor_tip_adb">재부팅 후 Shizuku+가 루트가 아닌 모드에서 시작되려면 무선 디버깅이 활성화되어 있어야 합니다.</string>
@@ -564,8 +562,8 @@
       NO_SHIZUKU:  Shizuku wasn\'t running; only unprivileged Wallet stop was possible.
     -->
     <string name="doctor_fix_wallet_success">완료되었습니다. 루트로 실행 중 — GMS에서 Play Integrity 판정 파일이 직접 삭제되었습니다. Google Wallet을 열면 즉시 동작합니다.</string>
-    <string name="doctor_fix_wallet_success_adb_mode">완료되었습니다. Shizuku가 ADB 셸 모드에서 실행 중이므로 디스크의 Play Integrity 판정 파일을 삭제할 수 없습니다(GMS의 데이터 디렉토리는 루트만 접근할 수 있습니다).\n\n대신 수행된 작업:\n• DroidGuard 프로세스 종료 (메모리 내 판정 삭제)\n• GMS 중지\n• Play Integrity TTL 재정의 시도 (GMS가 즉시 다시 인증하도록 유도)\n• 새로운 인증 워밍업 요청 (깨끗한 기기로 DroidGuard 재평가 트리거)\n• Wallet 데이터 삭제 (새 nonce로 새 무결성 요청 강제)\n• NFC 결제 라우팅 재확인\n\n지금 Wallet을 열어 보세요 — 즉시 복구될 것입니다. 여전히 차단된 경우 아래 "Play 서비스 데이터 지우기"를 탭하면 즉시 복구가 보장됩니다(그 후 Google에 다시 로그인해야 합니다).</string>
-    <string name="doctor_fix_wallet_success_no_shizuku">완료되었습니다. Shizuku가 실행 중이 아니었으므로 Wallet 자체만 중지할 수 있었습니다 — GMS에 캐시된 Play Integrity 판정은 그대로 남아 있습니다.\n\n판정이 자연스럽게 만료되면 Wallet은 약 1시간 이내에 자동으로 복구됩니다. 즉시 복구하려면 아래 "Play 서비스 데이터 지우기"를 탭하세요(그 후 Google에 다시 로그인해야 합니다).\n\n다음부터 이를 방지하려면 루트 기능을 비활성화하기 전에 Shizuku가 실행 중인지 확인하세요 — 더 철저한 정리가 가능해집니다.</string>
+    <string name="doctor_fix_wallet_success_adb_mode">완료되었습니다. Shizuku가 ADB 셸 모드에서 실행 중이므로 디스크의 Play Integrity 판정 파일을 삭제할 수 없습니다(GMS의 데이터 디렉토리는 루트만 접근할 수 있습니다).\n\n대신 수행된 작업:\n• DroidGuard 프로세스 종료 (메모리 내 판정 삭제)\n• GMS 중지\n• Play Integrity TTL 재정의 시도 (GMS가 즉시 다시 인증하도록 유도)\n• 새로운 인증 워밍업 요청 (깨끗한 기기로 DroidGuard 재평가 트리거)\n• Wallet 데이터 삭제 (새 nonce로 새 무결성 요청 강제)\n• NFC 결제 라우팅 재확인\n\n지금 Wallet을 열어 보세요 — 즉시 복구될 것입니다. 여전히 차단된 경우 아래 \"Play 서비스 데이터 지우기\"를 탭하면 즉시 복구가 보장됩니다(그 후 Google에 다시 로그인해야 합니다).</string>
+    <string name="doctor_fix_wallet_success_no_shizuku">완료되었습니다. Shizuku가 실행 중이 아니었으므로 Wallet 자체만 중지할 수 있었습니다 — GMS에 캐시된 Play Integrity 판정은 그대로 남아 있습니다.\n\n판정이 자연스럽게 만료되면 Wallet은 약 1시간 이내에 자동으로 복구됩니다. 즉시 복구하려면 아래 \"Play 서비스 데이터 지우기\"를 탭하세요(그 후 Google에 다시 로그인해야 합니다).\n\n다음부터 이를 방지하려면 루트 기능을 비활성화하기 전에 Shizuku가 실행 중인지 확인하세요 — 더 철저한 정리가 가능해집니다.</string>
     <string name="doctor_fix_wallet_failed">루트 바이너리를 자동으로 삭제할 수 없습니다. 아래 ADB 명령을 복사하여 터미널에서 수동으로 제거할 수 있습니다.</string>
     <string name="doctor_action_clear_gms_cache">Play 서비스 데이터 지우기</string>
     <string name="doctor_action_open_wallet">Google Wallet 열기</string>
@@ -579,14 +577,14 @@
     <string name="su_bridge_warning_wallet_title">Google Wallet 안내</string>
     <string name="su_bridge_warning_wallet_message">\'su\'를 /data/local/tmp에 배포하거나 Magisk 모킹을 활성화하면 Google Play 서비스에서 Android 루트 감지가 트리거되어 Google Wallet 비접촉 결제가 비활성화됩니다. 언제든지 제거하여 Wallet을 복원할 수 있습니다.</string>
     <!-- Snackbar -->
-<string name="snackbar_invalid_port">포트는 1~65535 사이여야 합니다.</string>
-<string name="snackbar_battery_optimization_home">부팅/워치독 시작 시 배터리 최적화를 비활성화해야 제대로 작동합니다.</string>
-<string name="snackbar_battery_optimization_settings">이 기능을 사용하려면 배터리 최적화를 비활성화하세요.</string>
-<string name="snackbar_action_fix">고치다</string>
+    <string name="snackbar_invalid_port">포트는 1~65535 사이여야 합니다.</string>
+    <string name="snackbar_battery_optimization_home">부팅/워치독 시작 시 배터리 최적화를 비활성화해야 제대로 작동합니다.</string>
+    <string name="snackbar_battery_optimization_settings">이 기능을 사용하려면 배터리 최적화를 비활성화하세요.</string>
+    <string name="snackbar_action_fix">고치다</string>
     <string name="snackbar_server_version_skew">Shizuku+가 업데이트되었지만 실행 중인 서비스는 여전히 이전 버전입니다. 연결된 앱이 계속 동작하도록 다시 시작하세요.</string>
     <string name="snackbar_action_restart">다시 시작</string>
     <!-- Toast -->
-<string name="toast_no_email_app">이메일 앱을 찾을 수 없습니다</string>
+    <string name="toast_no_email_app">이메일 앱을 찾을 수 없습니다</string>
     <string name="toast_app_frozen">앱이 동결되었습니다</string>
     <string name="toast_app_unfrozen">앱 동결이 해제되었습니다</string>
     <string name="toast_operation_failed">작업 실패</string>
@@ -613,15 +611,15 @@
     <string name="backup_failed_generic">백업 실패: %1$s</string>
     <string name="restore_failed_generic">복원 실패: %1$s</string>
     <string name="backup_auth_failed">인증 실패 (%1$s)</string>
-<string name="toast_shizuku_already_starting">시즈쿠는 이미 배경에서 시작하고 있습니다</string>
-<string name="toast_accessibility_tv_only">이 자동화는 TLS를 지원하는 TV 또는 Samsung One UI 기기용입니다.</string>
+    <string name="toast_shizuku_already_starting">시즈쿠는 이미 배경에서 시작하고 있습니다</string>
+    <string name="toast_accessibility_tv_only">이 자동화는 TLS를 지원하는 TV 또는 Samsung One UI 기기용입니다.</string>
     <string name="adb_error_ssl_title">연결 오류</string>
     <string name="adb_error_ssl_message">무선 ADB 핸드셰이크에 실패했습니다(SSL 프로토콜 오류). 이는 일반적으로 ADB 키가 손상되었을 때 발생합니다. 개발자 옵션에서 키를 재설정하시겠습니까?</string>
     <string name="adb_error_ssl_button_reset">개발자 옵션으로 이동</string>
     <!-- Dark Mode Setting Override -->
-<string name="dark_theme">주제</string>
-<string name="dark_theme_off">항상 가볍다</string>
-<string name="dark_theme_on">항상 어둡다</string>
+    <string name="dark_theme">주제</string>
+    <string name="dark_theme_off">항상 가볍다</string>
+    <string name="dark_theme_on">항상 어둡다</string>
     <string name="follow_system">시스템 따르기</string>
     <!-- About -->
     <string name="settings_about">정보</string>
@@ -629,76 +627,76 @@
     <!-- Start/Stop -->
     <string name="start">시작</string>
     <string name="stop">중지</string>
-<string name="action_stop">Shizuku 중지</string>
-<string name="dialog_stop_message">Shizuku 서비스가 중지됩니다.</string>
+    <string name="action_stop">Shizuku 중지</string>
+    <string name="dialog_stop_message">Shizuku 서비스가 중지됩니다.</string>
     <!-- Notification -->
     <string name="notification_channel_automation">자동화</string>
     <string name="notification_automation_title">자동화가 실행 중입니다</string>
-<string name="notification_channel_adb_pairing">무선 디버깅 페어링</string>
-<string name="notification_adb_pairing_input_paring_code">페어링 코드 입력</string>
-<string name="notification_adb_pairing_searching_for_service_title">페어링 서비스 검색중</string>
-<string name="notification_adb_pairing_service_found_title">페어링 서비스를 찾았습니다</string>
-<string name="notification_adb_pairing_stop_searching">검색 중지</string>
-<string name="notification_adb_pairing_working_title">페어링 진행 중</string>
-<string name="notification_adb_pairing_succeed_title">페어링 성공</string>
-<string name="notification_adb_pairing_succeed_text">지금 Shizuku 서비스를 시작할 수 있습니다.</string>
-<string name="notification_adb_pairing_failed_title">페어링 실패</string>
-<string name="notification_adb_pairing_retry">재시도</string>
+    <string name="notification_channel_adb_pairing">무선 디버깅 페어링</string>
+    <string name="notification_adb_pairing_input_paring_code">페어링 코드 입력</string>
+    <string name="notification_adb_pairing_searching_for_service_title">페어링 서비스 검색중</string>
+    <string name="notification_adb_pairing_service_found_title">페어링 서비스를 찾았습니다</string>
+    <string name="notification_adb_pairing_stop_searching">검색 중지</string>
+    <string name="notification_adb_pairing_working_title">페어링 진행 중</string>
+    <string name="notification_adb_pairing_succeed_title">페어링 성공</string>
+    <string name="notification_adb_pairing_succeed_text">지금 Shizuku 서비스를 시작할 수 있습니다.</string>
+    <string name="notification_adb_pairing_failed_title">페어링 실패</string>
+    <string name="notification_adb_pairing_retry">재시도</string>
     <string name="notification_auth_missing_title">인증 토큰 필요</string>
     <string name="notification_auth_missing_message">인텐트에 “auth” 엑스트라를 추가하세요. 앱에서 “View intents”를 탭하면 토큰을 확인할 수 있습니다.</string>
     <string name="notification_auth_invalid_title">잘못된 인증 토큰</string>
     <string name="notification_auth_invalid_message">인텐트의 토큰이 앱의 “View intents” 아래에 표시된 토큰과 일치하는지 확인하세요.</string>
     <!-- Permission related, appears in system permission UI -->
-<string name="permission_label">Shizuku에 접근</string>
-<string name="permission_description">앱이 Shizuku를 사용하도록 허용합니다.</string>
+    <string name="permission_label">Shizuku에 접근</string>
+    <string name="permission_description">앱이 Shizuku를 사용하도록 허용합니다.</string>
     <string name="permission_label_plus">Shizuku(+) 액세스</string>
     <string name="permission_description_plus">앱이 Shizuku(+)를 사용하도록 허용합니다.</string>
-<string name="permission_warning_template"><![CDATA[<b>%1$s</b>을(를) %2$s에 허용하시겠습니까\?]]></string>
-<string name="grant_dialog_button_allow_always">항상 허용</string>
-<string name="grant_dialog_button_deny">"거부"</string>
+    <string name="permission_warning_template"><![CDATA[<b>%1$s</b>을(를) %2$s에 허용하시겠습니까\?]]></string>
+    <string name="grant_dialog_button_allow_always">항상 허용</string>
+    <string name="grant_dialog_button_deny">"거부"</string>
     <!-- Starter -->
-<string name="starter">실행기</string>
-<string name="start_with_root_failed">루트 권한이 부여되지 않았거나 이 기기가 루팅되지 않아서 서비스를 시작할 수 없습니다.</string>
+    <string name="starter">실행기</string>
+    <string name="start_with_root_failed">루트 권한이 부여되지 않았거나 이 기기가 루팅되지 않아서 서비스를 시작할 수 없습니다.</string>
     <string name="starter_waiting">서비스를 기다리는 중…</string>
     <string name="starter_retry">다시 시도</string>
     <string name="adb_error_timeout">서비스가 시간 내에 시작되지 않았습니다. 무선 디버깅이 활성화되어 있는지 확인하고 다시 시도하세요.</string>
     <string name="adb_error_generic">예상치 못한 오류가 발생했습니다. 다시 시도하세요.</string>
     <!-- WADB Starter -->
-<string name="wadb_notification_title">시즈쿠 시작…</string>
-<string name="wadb_notification_wifi_required">진행하기 전에 Wi-Fi 연결을 기다리는 중</string>
-<string name="wadb_notification_retry">재시도 대기 중</string>
+    <string name="wadb_notification_title">시즈쿠 시작…</string>
+    <string name="wadb_notification_wifi_required">진행하기 전에 Wi-Fi 연결을 기다리는 중</string>
+    <string name="wadb_notification_retry">재시도 대기 중</string>
     <string name="wadb_mdns_blocked_title">mDNS 검색이 계속 실패합니다</string>
     <string name="wadb_mdns_blocked_text">포트 검색이 계속 시간 초과됩니다. 기기가 멀티캐스트 트래픽을 차단하고 있을 수 있습니다(Vivo/FunTouchOS에서 흔함). Wi-Fi 없이 안정적으로 연결하려면 설정에서 TCP 모드를 활성화해 보세요.</string>
     <string name="wadb_mdns_switch_tcp_action">TCP 설정 열기</string>
-<string name="wadb_error_title">부팅 시 시작 중 오류 발생</string>
+    <string name="wadb_error_title">부팅 시 시작 중 오류 발생</string>
     <string name="wadb_error_cannot_connect">ADB 서비스에 연결할 수 없습니다 — 무선 디버깅이 활성화되어 있는지 확인하세요</string>
     <string name="wadb_error_discovery_timeout">ADB 검색 시간이 초과되었습니다 — Wi-Fi가 연결되어 있는지 확인하고 다시 시도하세요</string>
     <string name="wadb_error_ssl_mismatch">SSL/TLS 오류 — 개발자 옵션에서 ADB 키를 취소하고 다시 페어링하세요</string>
     <string name="wadb_error_not_authorized">무선 디버깅 인증이 필요합니다</string>
     <string name="wadb_error_generic_short">ADB 연결 실패</string>
-<string name="wadb_permission_error_notification_title">권한 오류</string>
-<string name="wadb_permission_error_notification_content">Shizuku를 부팅 시 시작하려면
+    <string name="wadb_permission_error_notification_title">권한 오류</string>
+    <string name="wadb_permission_error_notification_content">Shizuku를 부팅 시 시작하려면
         WRITE_SECURE_SETTINGS 권한이 필요합니다. 탭하여 권한을 부여하는 방법을 알아보세요.</string>
     <!-- Watchdog -->
-<string name="watchdog_running">워치독이 실행 중입니다</string>
-<string name="watchdog_turn_off">끄세요</string>
-<string name="watchdog_shizuku_crashed_title">시즈쿠는 최근에 추락했습니다</string>
-<string name="watchdog_shizuku_crashed_text">Watchdog이 서비스를 다시 시작했습니다. 향후 충돌을 방지하기 위한 잠재적인 수정
+    <string name="watchdog_running">워치독이 실행 중입니다</string>
+    <string name="watchdog_turn_off">끄세요</string>
+    <string name="watchdog_shizuku_crashed_title">시즈쿠는 최근에 추락했습니다</string>
+    <string name="watchdog_shizuku_crashed_text">Watchdog이 서비스를 다시 시작했습니다. 향후 충돌을 방지하기 위한 잠재적인 수정
         사항을 알아보려면 탭하세요.</string>
     <!-- Misc -->
-<string name="dialog_cannot_open_browser_title">브라우저를 실행할 수 없음</string>
-<string name="toast_copied_to_clipboard">클립보드에 복사됨</string>
+    <string name="dialog_cannot_open_browser_title">브라우저를 실행할 수 없음</string>
+    <string name="toast_copied_to_clipboard">클립보드에 복사됨</string>
     <string name="accessibility_service_label">Shizuku+ 페어링 도우미</string>
-<string name="accessibility_service_description">알림이나 분할 화면을 사용할 수 없는 기기(예: Android 14 이상을 실행하는
+    <string name="accessibility_service_description">알림이나 분할 화면을 사용할 수 없는 기기(예: Android 14 이상을 실행하는
         TV)에 대한 페어링 지원을 제공합니다.\n\nShizuku가 무선 디버깅 페어링 화면에서 페어링 코드를 추출할 수 있도록 합니다. 페어링 코드를 찾으면
         Shizuku가 자동으로 비활성화됩니다.</string>
     <!-- Messages for legacy -->
-<string name="dialog_legacy_not_support_title">%1$s는 최신 Shizuku를 지원하지 않음</string>
-<string name="dialog_legacy_not_support_message"><![CDATA[구형 Shizuku는 2019년 3월에 지원이 중단되었습니다. 또한, 구형 Shizuku는 새로운 안드로이드 시스템에서 동작하지 않습니다.<p><b>%1$s</b> 개발자에게 업데이트를 문의하세요.]]></string>
-<string name="dialog_requesting_legacy_title">%1$s가 구형 Shizuku를 요청하고 있음</string>
-<string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b>가 최신 Shizuku를 지원하지만, 구형 Shizuku를 요청하고 있습니다. Shizuku가 실행 중이지 않아서 발생할 수 있으니 Shizuku 앱에서 확인하세요.<p>구형 Shizuku는 2019년 3월 부터 지원이 중단되었습니다.]]></string>
-<string name="dialog_requesting_legacy_button_open_shizuku">Shizuku 열기</string>
-<string name="wadb_notification_attempt_now">지금 시도하세요</string>
+    <string name="dialog_legacy_not_support_title">%1$s는 최신 Shizuku를 지원하지 않음</string>
+    <string name="dialog_legacy_not_support_message"><![CDATA[구형 Shizuku는 2019년 3월에 지원이 중단되었습니다. 또한, 구형 Shizuku는 새로운 안드로이드 시스템에서 동작하지 않습니다.<p><b>%1$s</b> 개발자에게 업데이트를 문의하세요.]]></string>
+    <string name="dialog_requesting_legacy_title">%1$s가 구형 Shizuku를 요청하고 있음</string>
+    <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b>가 최신 Shizuku를 지원하지만, 구형 Shizuku를 요청하고 있습니다. Shizuku가 실행 중이지 않아서 발생할 수 있으니 Shizuku 앱에서 확인하세요.<p>구형 Shizuku는 2019년 3월 부터 지원이 중단되었습니다.]]></string>
+    <string name="dialog_requesting_legacy_button_open_shizuku">Shizuku 열기</string>
+    <string name="wadb_notification_attempt_now">지금 시도하세요</string>
     <!-- Settings navigation summaries -->
     <string name="settings_category_activity_log">활동 로그</string>
     <string name="settings_category_appearance">외관</string>
@@ -757,8 +755,6 @@
     <!-- Verified install preferences (settings_app_management.xml) -->
     <!-- Custom accent color preference (settings_personalization.xml) -->
     <string name="settings_custom_accent_title">사용자 지정 강조 색상</string>
-    <!-- AI Bridge feature preference (settings_shizuku_plus.xml) -->
-    <!-- Backup error messages (ShizukuPlusSettingsFragment.kt) -->
     <!-- Update Settings -->
     <string name="settings_behavior_category_startup">시작 및 복구</string>
     <string name="settings_advanced_category_diagnostics">진단</string>
@@ -906,7 +902,6 @@
     <string name="settings_automation_trusted_networks">신뢰할 수 있는 네트워크</string>
     <string name="settings_automation_auto_hide_packages">포그라운드 시 자동 숨기기</string>
     <plurals name="settings_shadow_binder_hidden_packages_count">
-        <item quantity="one">%d개의 앱 선택됨</item>
         <item quantity="other">%d개의 앱 선택됨</item>
     </plurals>
     <!-- Companion Mode -->
@@ -925,7 +920,7 @@
     <!-- Root Compatibility Hub -->
     <!-- Home Automation dialog labels -->
     <!-- Misc -->
-<string name="settings_help">돕다</string>
+    <string name="settings_help">돕다</string>
     <!-- APK verification API key strings -->
     <string name="verify_virustotal_key_title">VirusTotal API 키</string>
     <string name="verify_virustotal_key_required">VirusTotal 검사를 사용하려면 API 키가 필요합니다</string>
@@ -999,6 +994,7 @@
     <string name="backup_type_plain">일반 텍스트 — 재설치 간 테스트용</string>
     <string name="backup_no_file_manager_save">백업을 저장할 파일 관리자 앱을 찾을 수 없습니다</string>
     <string name="backup_no_file_manager_open">백업을 열 파일 관리자 앱을 찾을 수 없습니다</string>
+    <!-- Peer Settings Sharing / Drop-In Sync -->
     <!-- Samsung ADB dialog -->
     <string name="adb_dialog_popup_settings">팝업 설정</string>
     <!-- Tile service: state subtitles (shown in Samsung OneUI wide tile text area and standard subtitle) -->
@@ -1058,10 +1054,12 @@
     <!-- Hide backup settings (#461) -->
     <string name="settings_hide_backup_settings">백업 &amp; 복원 숨기기</string>
     <string name="settings_hide_backup_settings_summary">기능 허브 설정 화면에서 백업 &amp; 복원 섹션을 제거합니다</string>
+    <!-- Launcher icon &amp; stealth -->
+    <!-- AI Bridge -->
     <!-- Package identity / MDM bypass UI (#469) -->
     <string name="settings_package_identity_category">패키지 식별 정보</string>
     <string name="package_identity_info_title">패키지 이름 무작위화에 대하여</string>
-    <string name="package_identity_info_detail">MDM 및 기업 루트 감지 시스템은 알려진 패키지 이름(af.shizuku.manager)을 스캔하는 경우가 많습니다. Shevery처럼 진정한 패키지 이름 무작위화를 하려면 빌드 시 APK에 다른 applicationId를 포함해 앱을 다시 설치해야 합니다. 실행 중인 관리자는 스스로 이름을 바꿀 수 없습니다.\n\n로드맵: 향후 "Build-Your-Own" CI 워크플로를 통해 사용자 지정 이름의 APK를 생성할 수 있게 될 예정입니다. 그때까지 이 설정은 표시 라벨만 저장합니다. 지금 당장 MDM 우회를 원하면 스텔스 모드를 사용하여 런처 아이콘을 제거하세요.</string>
+    <string name="package_identity_info_detail">MDM 및 기업 루트 감지 시스템은 알려진 패키지 이름(af.shizuku.manager)을 스캔하는 경우가 많습니다. Shevery처럼 진정한 패키지 이름 무작위화를 하려면 빌드 시 APK에 다른 applicationId를 포함해 앱을 다시 설치해야 합니다. 실행 중인 관리자는 스스로 이름을 바꿀 수 없습니다.\n\n로드맵: 향후 \"Build-Your-Own\" CI 워크플로를 통해 사용자 지정 이름의 APK를 생성할 수 있게 될 예정입니다. 그때까지 이 설정은 표시 라벨만 저장합니다. 지금 당장 MDM 우회를 원하면 스텔스 모드를 사용하여 런처 아이콘을 제거하세요.</string>
     <string name="settings_package_identity_current">현재 패키지: %1$s</string>
     <string name="settings_package_identity_roadmap">전체 런타임 이름 변경에는 사용자 지정 빌드가 필요합니다 — issue #469 참조</string>
     <!-- Device Control card &amp; screen -->
@@ -1119,5 +1117,13 @@
     <string name="accessibility_sim_toggle_automation">자동화 카드 표시 토글</string>
     <string name="accessibility_sim_toggle_activity_log">활동 로그 카드 표시 토글</string>
     <string name="accessibility_sim_toggle_learn_more">자세히 알아보기 카드 표시 토글</string>
+    <!-- Keep-alive and stability tips for unexpected deactivations -->
+    <!-- Activity log entries. The log stores the English text (it is parsed for the event type and
+         exported in bug reports); ActivityLogText maps it to these when it is shown. -->
+    <!-- Adaptive settings & tiered complexity -->
+    <!-- In-App Knowledgebase & Consumer-friendly settings -->
     <string name="settings_check_for_update_title">업데이트 확인</string>
+    <!-- Adaptive Recommendations & Startup Scripts -->
+    <!-- App Reachability & Filtering -->
+    <!-- Settings standardization: standard rows replacing the compound grids -->
 </resources>

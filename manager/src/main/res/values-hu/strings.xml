@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- To translators: you can leave your here -->
+    <!-- UI Settings - Expressive -->
+    <!-- UI Settings - Display -->
+    <!-- UI Settings - One UI Theme -->
+    <!-- UI Settings - Typography & Layout -->
+    <!-- UI Settings - Corner Rounding -->
     <!-- Home - Status -->
     <string name="home_status_service_is_running">A %1$s fut</string>
     <string name="home_status_service_not_running">A %1$s nem fut</string>
+    <!-- %2$s is the Shizuku service API version (e.g. 13.6), not the app version. -->
     <string name="home_status_service_version">Verzió %2$s, %1$s</string>
     <string name="home_status_service_version_update"><![CDATA[Verzió %2$s, %1$s<br>Kezdje újra a %3$s verzióra való frissítéshez]]></string>
     <!-- Home - Adb -->
@@ -48,6 +54,11 @@
         „USB-hibakeresés” és a „Vezeték nélküli hibakeresés” lehetőséget\n- Koppintson a „Vezeték
         nélküli hibakeresés” bal oldalára\n- Koppintson az „Eszköz párosítása párosító kóddal”
         lehetőségre\n- Írja be az értesítésben megjelenő párosítási kódot</string>
+    <!-- Service Doctor -->
+    <!-- Root Compatibility -->
+    <!-- Shell Tutorial -->
+    <!-- Adb Pairing Dialog -->
+    <!-- App Management -->
     <string name="dialog_adb_pairing_accessibility_enable">Kérjük, engedélyezze az
         akadálymentesítési szolgáltatást a párosítási folyamat megkezdéséhez. Ez lehetővé teszi a
         Shizuku számára a párosítási kód észlelését.\n\nAz akadálymentesítési szolgáltatás
@@ -123,6 +134,8 @@
         megfelelően.\n\nÁltalában ez a korlátozás bizonyos beállítások módosításával feloldható a
         \"Fejlesztői lehetőségek\"-nél. Kérjük, olvassa el a súgót ennek részleteiért.\n\nLehet,
         hogy újra kell indítania a Shizukut, hogy a művelet érvénybe lépjen.</string>
+    <!-- Application management - context menu -->
+    <!-- Application management - search / filter / sort -->
     <!-- Application management -->
     <string name="app_management_dialog_adb_is_limited_title">Az adb engedélye korlátozott</string>
     <string name="app_management_dialog_adb_is_limited_message"><![CDATA[Nagyon valószínű, hogy az eszköz gyártója korlátozza az adb engedélyét.<p>Lehet, hogy van megoldás a rendszeréhez ebben a <b><a href=\"%1$s\">dokumentumban</a></b>.]]></string>
@@ -149,6 +162,11 @@
         számára a terminálalkalmazásod %3$s konfigurációs fájljában.</string>
     <string name="terminal_tutorial_3">Nyisson meg egy shell-t a következő paranccsal:</string>
     <string name="rish_description"><![CDATA[A %1$sparanccsal shell parancsokat futtathatsz bármelyik terminálalkalmazásban.<p>Koppints ide, ha többet szeretnél megtudni a használatáról.]]></string>
+    <!-- Settings — swipe customisation -->
+    <!-- Settings — long-press customisation -->
+    <!-- Onboarding -->
+    <!-- Swipe hint overlay -->
+    <!-- App Name & Icon Customization / Camouflage (Issue #615) -->
     <!-- Settings -->
     <string name="settings_title">Beállítások</string>
     <string name="settings_start_on_boot">Indítás rendszerindításkor</string>
@@ -172,11 +190,19 @@
     <string name="settings_language">Nyelv</string>
     <string name="settings_translation">Vegyen részt a fordításban</string>
     <string name="settings_translation_summary">Segítsen nekünk lefordítani a %s-t az Ön nyelvére</string>
-    <string name="settings_help">Segítség</string>
     <string name="settings_report_bug">Hiba jelentése</string>
     <string name="settings_legacy_pairing">Régi párosítás</string>
     <string name="settings_legacy_pairing_summary">A párosítási kódot egy párbeszédpanelen, ne pedig
         egy értesítésben add meg</string>
+    <!-- Shizuku+ Features -->
+    <!-- Plus feature short titles (used in settings preference titles) -->
+    <!-- Dhizuku admin tools -->
+    <!-- Backup / Restore settings -->
+    <!-- Experimental Plus settings (developer section) -->
+    <!-- Detailed Help Strings -->
+    <!-- Plus settings category titles -->
+    <!-- Root Integration (renamed from Legacy Compatibility) -->
+    <!-- Sentry Offline Notice -->
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">Először is, kérjük, tegye a következőket:</string>
     <string name="bug_report_dialog_update">Ellenőrizd, hogy a ^1-et használod-e.</string>
@@ -191,6 +217,13 @@
         fiókja.</string>
     <string name="bug_report_dialog_method_2">Egyébként küldhetsz egy e-mailt.</string>
     <string name="bug_report_dialog_button_email">Email</string>
+    <!-- Service Doctor -->
+    <!--
+      Three recovery outcomes — shown after the 1-tap wallet fix runs.
+      ROOT:        Shizuku uid=0 — verdict files deleted, immediate recovery expected.
+      ADB_MODE:    Shizuku uid=2000 — can\'t touch GMS data dir; best-effort steps taken.
+      NO_SHIZUKU:  Shizuku wasn\'t running; only unprivileged Wallet stop was possible.
+    -->
     <!-- Snackbar -->
     <string name="snackbar_invalid_port">A portszámnak 1 és 65535 között kell lennie.</string>
     <string name="snackbar_battery_optimization_home">A rendszerindításkor/watchdogkor történő
@@ -207,8 +240,7 @@
     <string name="dark_theme_off">Mindig könnyű</string>
     <string name="dark_theme_on">Mindig sötét</string>
     <!-- About -->
-    <!-- Start -->
-    <!-- Stop -->
+    <!-- Start/Stop -->
     <string name="action_stop">A Shizuku leállítása</string>
     <string name="dialog_stop_message">A Shizuku szolgáltatás leáll.</string>
     <!-- Notification -->
@@ -263,4 +295,74 @@
     <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> modern Shizuku támogatással rendelkezik, de az örökölt Shizukut kéri. Ez azért lehet, mert a Shizuku nem fut, ellenőrizze a Shizuku alkalmazást.<p>Az örökölt Shizuku 2019 márciusa óta elavult.]]></string>
     <string name="dialog_requesting_legacy_button_open_shizuku">Nyissa meg a Shizukut</string>
     <string name="wadb_notification_attempt_now">Próbálja meg most</string>
+    <!-- Settings navigation summaries -->
+    <!-- Accessibility - Content Descriptions -->
+    <!-- Empty State Views -->
+    <!-- Settings diagnostics preference (settings_advanced.xml) -->
+    <!-- Verified install preferences (settings_app_management.xml) -->
+    <!-- Custom accent color preference (settings_personalization.xml) -->
+    <!-- Update Settings -->
+    <!-- SU Bridge configuration -->
+    <!-- Root modules — Rootless Bridges -->
+    <!-- Root modules — Mocking &amp; Simulation -->
+    <!-- Bootloader Integration settings -->
+    <!-- Developer Options -->
+    <!-- Update Notifications -->
+    <!-- Migration Dialog -->
+    <!-- Update Dialogs -->
+    <!-- Settings backup/restore -->
+    <!-- Common action labels -->
+    <!-- Service Doctor auto-fix -->
+    <!-- ADB Pairing -->
+    <!-- Update dialog -->
+    <!-- Accessibility service status -->
+    <!-- Dhizuku Device Owner Setup -->
+    <!-- Clear Device Owner (Issue #237) -->
+    <!-- Pairing fallback (Issue #204) -->
+    <!-- Remote App DB Sync -->
+    <!-- Binder Enhancements (Issue #199) -->
+    <!-- Automation Engine (Issue #435) -->
+    <!-- Companion Mode -->
+    <!-- App picker dialog -->
+    <!-- Root Compatibility Hub -->
+    <!-- Home Automation dialog labels -->
+    <!-- Misc -->
+    <string name="settings_help">Segítség</string>
+    <!-- APK verification API key strings -->
+    <!-- Scripting & Snippets (#11) -->
+    <!-- Tasker/Locale automation plugin (#6) -->
+    <!-- Network Firewall automation trusted networks -->
+    <!-- Biometric lock -->
+    <!-- Stealth mode -->
+    <!-- OTA flash danger dialog -->
+    <!-- SU path preset picker dialog -->
+    <!-- Device Owner (Dhizuku) toasts -->
+    <!-- Backup/restore picker dialog -->
+    <!-- Peer Settings Sharing / Drop-In Sync -->
+    <!-- Samsung ADB dialog -->
+    <!-- Tile service: state subtitles (shown in Samsung OneUI wide tile text area and standard subtitle) -->
+    <!-- Tile service: mode labels -->
+    <!-- Tile service: action labels (tap dialog and long-press options activity) -->
+    <!-- Tile service error -->
+    <!-- App Profiles automation activity -->
+    <!-- App Backup feature -->
+    <!-- Mode-contextual settings (#433) -->
+    <!-- Hide backup settings (#461) -->
+    <!-- Launcher icon &amp; stealth -->
+    <!-- AI Bridge -->
+    <!-- Package identity / MDM bypass UI (#469) -->
+    <!-- Device Control card &amp; screen -->
+    <!-- Stealth Mode -->
+    <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
+    <!-- Feature Hub experimental category label -->
+    <!-- Permission Manager card &amp; screen -->
+    <!-- Home layout simulator accessibility labels (decorative preview widget — a11y toggles) -->
+    <!-- Keep-alive and stability tips for unexpected deactivations -->
+    <!-- Activity log entries. The log stores the English text (it is parsed for the event type and
+         exported in bug reports); ActivityLogText maps it to these when it is shown. -->
+    <!-- Adaptive settings & tiered complexity -->
+    <!-- In-App Knowledgebase & Consumer-friendly settings -->
+    <!-- Adaptive Recommendations & Startup Scripts -->
+    <!-- App Reachability & Filtering -->
+    <!-- Settings standardization: standard rows replacing the compound grids -->
 </resources>
