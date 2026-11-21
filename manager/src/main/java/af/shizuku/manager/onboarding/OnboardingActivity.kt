@@ -42,6 +42,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -93,6 +94,9 @@ class OnboardingActivity : AppActivity() {
     // Only a start seen on this screen moves on by itself, and only once.
     private var lastSeenRunning = false
     private var autoAdvanced = false
+
+    // Started while the Starter or pairing screen was in front: play the success on return.
+    private var pendingSetupSuccess = false
     private val advanceFromSetup =
         Runnable {
             val setupIdx = pages.indexOf(PageType.SETUP)
@@ -248,6 +252,10 @@ class OnboardingActivity : AppActivity() {
         super.onResume()
         // Coming back from the pairing screen: Pair may now be done.
         refreshWadbButtons()
+        if (pendingSetupSuccess) {
+            pendingSetupSuccess = false
+            if (ShizukuStateMachine.get() == ShizukuStateMachine.State.RUNNING) playSetupSuccess()
+        }
     }
 
     override fun onDestroy() {
@@ -290,22 +298,40 @@ class OnboardingActivity : AppActivity() {
         refreshWadbButtons()
         val status = setupStatusRunning ?: return
         if (!isRunning) {
+            pendingSetupSuccess = false
             status.visibility = View.GONE
             return
         }
         if (justStarted) {
             val setupIdx = pages.indexOf(PageType.SETUP)
             val onSetupPage = setupIdx >= 0 && binding.pager.currentItem == setupIdx
-            // Off screen it just appears; no buzz for a page the user isn't looking at.
-            showSetupSuccess(status, animate = onSetupPage)
-            if (!autoAdvanced && onSetupPage && !isFinishing) {
-                autoAdvanced = true
-                binding.pager.removeCallbacks(advanceFromSetup)
-                binding.pager.postDelayed(advanceFromSetup, 1800)
+            if (onSetupPage && !lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                // Hidden behind another screen: keep the row hidden so it can play on return.
+                pendingSetupSuccess = true
+                status.visibility = View.GONE
+                return
             }
-        } else if (status.visibility != View.VISIBLE) {
+            if (onSetupPage) {
+                playSetupSuccess()
+            } else {
+                // Off screen it just appears; no buzz for a page the user isn't looking at.
+                showSetupSuccess(status, animate = false)
+            }
+        } else if (!pendingSetupSuccess && status.visibility != View.VISIBLE) {
             // Already running: show it and let the user tap Next.
             showSetupSuccess(status, animate = false)
+        }
+    }
+
+    /** Success on the visible setup page: animate, then move on once. */
+    private fun playSetupSuccess() {
+        val status = setupStatusRunning ?: return
+        showSetupSuccess(status, animate = true)
+        val setupIdx = pages.indexOf(PageType.SETUP)
+        if (!autoAdvanced && setupIdx >= 0 && binding.pager.currentItem == setupIdx && !isFinishing) {
+            autoAdvanced = true
+            binding.pager.removeCallbacks(advanceFromSetup)
+            binding.pager.postDelayed(advanceFromSetup, 1800)
         }
     }
 
