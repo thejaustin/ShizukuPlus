@@ -25,6 +25,11 @@ object ChangelogParser {
     private val FEATURE_WORDS = Regex("""^(add|added|adds|new|introduce[sd]?|support|supports|implement(ed)?|enable[sd]?|allow|auto|expand|unify|let|use|scope|improve[sd]?)\b|\bfeature\b|auto-""")
     private val DOCS_WORDS = Regex("""\b(readme|docs?|documentation|changelog|wiki|translat\w*|devlog|ai_devlog|i18n|locali[sz]\w*)\b""")
 
+    private val APP_NOTE = Regex("""<!--\s*app:\s*(.*?)\s*-->""", RegexOption.DOT_MATCHES_ALL)
+    private val HTML_COMMENT = Regex("""<!--.*?-->""", RegexOption.DOT_MATCHES_ALL)
+    private val ISSUE_REF = Regex("""\s*\(\[#\d+\]\([^)]*\)(?:,\s*\[#\d+\]\([^)]*\))*\)""")
+    private val SENTENCE_END = Regex("""[.!?](?=\s|$)""")
+    private const val SHORT_ENTRY = 150
     private val NOISE_WORDS = Regex("""\b(readme(\.md)?|crowdin|dependabot|translation[s]?)\b""", RegexOption.IGNORE_CASE)
 
     fun parse(body: String): List<ChangeSection> {
@@ -178,8 +183,31 @@ object ChangelogParser {
         }
     }
 
+    /**
+     * In-app notes are for people who don't know how Android works underneath, so they read shorter
+     * than the GitHub notes. An entry can carry its own wording as `<!--app: ... -->` (GitHub hides
+     * it); without one, a long CHANGELOG-style entry ("**Title** - what it does. Technical
+     * detail...") shows its title and first sentence, and issue links are dropped.
+     */
+    private fun plainWording(text: String): String {
+        APP_NOTE.find(text)?.let { return it.groupValues[1].trim() }
+        val noComments = HTML_COMMENT.replace(text, "").trim()
+        val withoutRefs = ISSUE_REF.replace(noComments, "").trim()
+        if (!withoutRefs.startsWith("**") || withoutRefs.length <= SHORT_ENTRY) return withoutRefs
+        val dash = withoutRefs.indexOf(" — ").takeIf { it > 0 } ?: return withoutRefs
+        val sentenceEnd = SENTENCE_END.find(withoutRefs, dash + 3)?.range?.first ?: return withoutRefs
+        return withoutRefs.substring(0, sentenceEnd + 1)
+    }
+
+    /** Plain wording for every bullet of a raw body, for dialogs that render the markdown as-is. */
+    fun plainify(body: String): String =
+        body.lines().joinToString("\n") { line ->
+            val b = BULLET.matchEntire(line)
+            if (b != null) "- " + plainWording(b.groupValues[1]) else HTML_COMMENT.replace(line, "")
+        }
+
     private fun clean(text: String): String {
-        val noHash = COMMIT_HASH.replace(text.trim(), "")
+        val noHash = COMMIT_HASH.replace(plainWording(text.trim()), "")
         val stripped = CC_PREFIX.replaceFirst(noHash, "")
         return stripped.replaceFirstChar { it.uppercase() }
     }

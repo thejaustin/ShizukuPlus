@@ -20,6 +20,7 @@ import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
 import rikka.shizuku.Shizuku
 import rikka.shizuku.ShizukuApiConstants
+import timber.log.Timber
 
 class ServerStatusViewHolder(
     private val binding: HomeServerStatusBinding,
@@ -338,5 +339,27 @@ class ServerStatusViewHolder(
         textView.text = title.toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
         summaryView.text = (summary + problem).toHtml(HtmlCompat.FROM_HTML_OPTION_TRIM_WHITESPACE)
         summaryView.visibility = if (TextUtils.isEmpty(summaryView.text)) View.GONE else View.VISIBLE
+        // The problem text often ends "Tap to …" (watchdog crash, vendor battery limit): the
+        // notification opens its contentIntent, so the card has to as well.
+        val tapIntent = issue?.contentIntent
+        val helpId = issue?.helpCheckId
+        if (helpId != null) {
+            // In-app help first: sending our own PendingIntent can be blocked as a background launch.
+            summaryView.setOnClickListener {
+                af.shizuku.manager.knowledgebase.KnowledgebaseHelper
+                    .showForCheck(summaryView.context, helpId)
+            }
+        } else if (tapIntent != null) {
+            summaryView.setOnClickListener {
+                try {
+                    tapIntent.send()
+                } catch (e: android.app.PendingIntent.CanceledException) {
+                    Timber.w(e, "Problem card tap: intent was cancelled")
+                }
+            }
+        } else {
+            summaryView.setOnClickListener(null)
+            summaryView.isClickable = false
+        }
     }
 }

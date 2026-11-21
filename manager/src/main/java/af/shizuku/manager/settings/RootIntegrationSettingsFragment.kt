@@ -163,7 +163,14 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
 
                     var message: String? = null
                     if (packagesList.isNotEmpty()) {
-                        val toSuspend = packagesList.filter { installed.contains(it) }
+                        // A synced or restored list must never suspend systemui, settings or other
+                        // boot-critical packages (same boot-loop class as #686).
+                        val toSuspend =
+                            packagesList.filter { name ->
+                                installed.contains(name) &&
+                                    !af.shizuku.common.util.BootCriticalPackages
+                                        .isBootCritical(name, runCatching { pm.getApplicationInfo(name, 0) }.getOrNull())
+                            }
                         val failed = dpm.setPackagesSuspended(admin, toSuspend.toTypedArray(), true)
                         message =
                             if (failed.isNotEmpty()) {

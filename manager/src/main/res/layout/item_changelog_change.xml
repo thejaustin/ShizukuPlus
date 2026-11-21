@@ -14,11 +14,38 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="12dp" />
 
-    <TextView
-        android:id="@+id/text"
+    <LinearLayout
+        android:id="@+id/body"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:lineSpacingMultiplier="1.2" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:lineSpacingMultiplier="1.2" />
+
+        <TextView
+            android:id="@+id/detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:lineSpacingMultiplier="1.2"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:paddingVertical="6dp"
+            android:textAppearance="?attr/textAppearanceLabelLarge"
+            android:textColor="?attr/colorPrimary"
+            android:visibility="gone" />
+    </LinearLayout>
 </LinearLayout>

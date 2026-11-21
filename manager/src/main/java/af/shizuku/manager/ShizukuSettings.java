@@ -183,6 +183,7 @@ public class ShizukuSettings {
         public static final String KEY_DOCTOR_ADAPTIVE_AUTO_HEAL = "doctor_adaptive_auto_heal";
         public static final String KEY_DOCTOR_HEAL_PAIRING_HELPER = "doctor_heal_pairing_helper";
         public static final String KEY_WATCHDOG_AUTO_RESTART = "watchdog_auto_restart";
+        public static final String KEY_AUTO_RESTART_AFTER_UPDATE = "auto_restart_after_update";
         public static final String KEY_TOASTS_OVER_OTHER_APPS = "toasts_over_other_apps";
         public static final String KEY_PROBLEMS_ON_HOME = "problems_on_home";
         public static final String KEY_DOCTOR_REPORT_FAILED_FIXES = "doctor_report_failed_fixes";
@@ -1086,6 +1087,11 @@ public class ShizukuSettings {
      * Whether the Watchdog restarts a server that stopped unexpectedly (on by default). Off, it
      * only keeps its status notification up and reports the stop.
      */
+    public static boolean isAutoRestartAfterUpdateEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_AUTO_RESTART_AFTER_UPDATE, false);
+    }
+
     public static boolean isWatchdogAutoRestartEnabled() {
         SharedPreferences p = getPreferences();
         return p == null || p.getBoolean(Keys.KEY_WATCHDOG_AUTO_RESTART, true);

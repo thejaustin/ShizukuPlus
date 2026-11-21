@@ -14,7 +14,6 @@ import af.shizuku.manager.settings.SettingsActivity
 import af.shizuku.manager.shell.ShellTutorialActivity
 import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
-import af.shizuku.manager.utils.ShizukuStateMachine
 import android.app.Activity
 import android.app.ActivityOptions
 import android.app.Application
@@ -166,8 +165,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 key == ShizukuSettings.Keys.KEY_FLOATING_NAV_AUTOHIDE ||
                 key == ShizukuSettings.Keys.KEY_SHAPE_STYLE ||
                 key == ShizukuSettings.Keys.KEY_LAST_GRANTED_APP_COUNT ||
-                key == ShizukuSettings.Keys.KEY_AMOLED_PLUS ||
-                key == "has_update"
+                key == ShizukuSettings.Keys.KEY_AMOLED_PLUS
             ) {
                 current?.get()?.let { sync(it) }
             }
@@ -303,16 +301,8 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             nav.removeBadge(R.id.nav_apps)
         }
 
-        val hasUpdate = runCatching { ShizukuSettings.getPreferences().getBoolean("has_update", false) }.getOrDefault(false)
-        val hasSkew = ShizukuStateMachine.isServerVersionSkewed()
-        if ((hasUpdate || hasSkew) && isTabShown(R.id.nav_settings)) {
-            val badge = nav.getOrCreateBadge(R.id.nav_settings)
-            badge.backgroundColor = MaterialColors.getColor(activity, androidx.appcompat.R.attr.colorError, Color.RED)
-            badge.clearNumber()
-            badge.isVisible = true
-        } else {
-            nav.removeBadge(R.id.nav_settings)
-        }
+        // Settings never gets a dot: a stale server is already announced by the restart card on Home.
+        nav.removeBadge(R.id.nav_settings)
     }
 
     private fun attachLongPressListeners(
@@ -712,11 +702,16 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                     ColorUtils.blendARGB(0xFFF6F7F9.toInt(), primary, 0.08f)
                 }
 
-            val blurActive = isBlur && setupBlur(activity, root)
+            // A docked bar sits on the screen edge like a system navigation bar: opaque, so rows
+            // scrolling under it and the gesture area don't show through as a smear.
+            val docked = barStyle == STYLE_DOCKED
+            val blurActive = isBlur && !docked && setupBlur(activity, root)
             // With real blur behind it the tint can be lighter; without, keep it denser so labels
             // stay legible over busy content.
             val alphaFraction =
-                if (blurActive) {
+                if (docked) {
+                    1f
+                } else if (blurActive) {
                     0.55f
                 } else if (isAmoled) {
                     0.90f
@@ -737,7 +732,8 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                     Color.argb(120, 255, 255, 255)
                 }
             card.strokeColor = glassRim
-            card.strokeWidth = (1.0f * density).toInt()
+            // The rim would also run down the sides and along the screen edge on a docked bar.
+            card.strokeWidth = if (docked) 0 else (1.0f * density).toInt()
             when (barStyle) {
                 STYLE_DOCKED -> {
                     // Only the top corners round off; the bottom sits flush on the screen edge.

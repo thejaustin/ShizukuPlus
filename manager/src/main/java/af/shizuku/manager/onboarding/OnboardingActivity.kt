@@ -21,6 +21,7 @@ import af.shizuku.manager.ktx.themeColor
 import af.shizuku.manager.starter.Starter
 import af.shizuku.manager.starter.StarterActivity
 import af.shizuku.manager.update.UpdateInstaller
+import af.shizuku.manager.utils.AssistantLevel
 import af.shizuku.manager.utils.EnvironmentUtils
 import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
@@ -746,6 +747,33 @@ class OnboardingActivity : AppActivity() {
                     if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
                     ShizukuSettings.setWatchdog(this@OnboardingActivity, checked)
                 }
+            }
+
+            val prefs = ShizukuSettings.getPreferences()
+            val levelButtons =
+                mapOf(
+                    AssistantLevel.OFF to binding.assistantOff,
+                    AssistantLevel.QUIET to binding.assistantQuiet,
+                    AssistantLevel.BALANCED to binding.assistantBalanced,
+                    AssistantLevel.ACTIVE to binding.assistantActive,
+                )
+            val levelDescs =
+                mapOf(
+                    AssistantLevel.OFF to R.string.onboarding_assistant_desc_off,
+                    AssistantLevel.QUIET to R.string.onboarding_assistant_desc_quiet,
+                    AssistantLevel.BALANCED to R.string.onboarding_assistant_desc_balanced,
+                    AssistantLevel.ACTIVE to R.string.onboarding_assistant_desc_active,
+                )
+            // Someone who set the switches one by one keeps them until they pick a level here.
+            val startLevel = AssistantLevel.current(prefs).takeIf { it != AssistantLevel.CUSTOM } ?: AssistantLevel.BALANCED
+            binding.assistantLevelDesc.setText(levelDescs.getValue(startLevel))
+            if (AssistantLevel.current(prefs) != AssistantLevel.CUSTOM) levelButtons.getValue(startLevel).isChecked = true
+            binding.assistantLevelGroup.addOnButtonCheckedListener { group, id, checked ->
+                if (!checked) return@addOnButtonCheckedListener
+                val level = levelButtons.entries.first { it.value.id == id }.key
+                HapticUtils.segmentTick(group)
+                level.apply(prefs)
+                binding.assistantLevelDesc.setText(levelDescs.getValue(level))
             }
         }
 

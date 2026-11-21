@@ -111,4 +111,22 @@ class ChangelogFormatAndParseTest {
         assertTrue("Should classify fix highlight", sections.any { it.kind == ChangeKind.FIX })
         assertTrue("Should classify feature highlight", sections.any { it.kind == ChangeKind.FEATURE })
     }
+
+    @Test
+    fun changelogParser_usesAppNoteAndTrimsLongEntriesToFirstSentence() {
+        val raw =
+            """
+            # 14.0.0
+
+            ## What's new
+
+            ### ✨ Features
+            - **Scopes** — Dev wording about binder transactions. <!--app: **Choose what each app can do** — Limit an app to what it needs. -->
+            - **Long one** — Plain first sentence here. Then a lot of technical detail about the AIDL stub and the binder cache that goes on well past the limit so it must be trimmed ([#12](https://github.com/x/y/issues/12)).
+            """.trimIndent()
+
+        val items = ChangelogParser.parse(raw).flatMap { it.items }
+        assertTrue(items.any { it == "**Choose what each app can do** — Limit an app to what it needs." })
+        assertTrue(items.any { it == "**Long one** — Plain first sentence here." })
+    }
 }

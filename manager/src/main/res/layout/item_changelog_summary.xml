@@ -78,5 +78,15 @@
             android:layout_marginTop="4dp"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textColor="?attr/colorOnPrimaryContainer" />
+
+        <TextView
+            android:id="@+id/highlights"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:lineSpacingMultiplier="1.2"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="?attr/colorOnPrimaryContainer"
+            android:visibility="gone" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

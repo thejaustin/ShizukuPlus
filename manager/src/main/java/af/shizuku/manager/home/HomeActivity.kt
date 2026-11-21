@@ -9,6 +9,7 @@ import af.shizuku.manager.home.compose.HomeScreen
 import af.shizuku.manager.ktx.startWithSceneTransition
 import af.shizuku.manager.ktx.toHtml
 import af.shizuku.manager.management.AppsViewModel
+import af.shizuku.manager.receiver.ShizukuReceiverStarter
 import af.shizuku.manager.settings.SettingsActivity
 import af.shizuku.manager.update.UpdateChecker
 import af.shizuku.manager.update.UpdateDialogHelper
@@ -19,6 +20,7 @@ import af.shizuku.manager.utils.MotionUtils.springTo
 import af.shizuku.manager.utils.SettingsHelper
 import af.shizuku.manager.utils.SettingsPage
 import af.shizuku.manager.utils.ShizukuStateMachine
+import af.shizuku.manager.utils.UserStopFlag
 import af.shizuku.manager.worker.AdbStartWorker
 import android.Manifest
 import android.app.NotificationManager
@@ -236,6 +238,25 @@ open class HomeActivity :
         )
     }
 
+    /**
+     * Stops the old server, then starts one on the current build as soon as it is gone. The stop
+     * is not the user's, so it clears the stop flag the Watchdog honours, and a start that never
+     * comes (the server ignoring exit()) just leaves the Restart choice to the next launch.
+     */
+    private fun restartStaleServer() {
+        val app = applicationContext
+        lateinit var listener: (ShizukuStateMachine.State) -> Unit
+        listener = { state ->
+            if (state == ShizukuStateMachine.State.STOPPED || state == ShizukuStateMachine.State.CRASHED) {
+                ShizukuStateMachine.removeListener(listener)
+                UserStopFlag.clear()
+                ShizukuReceiverStarter.start(app, true)
+            }
+        }
+        ShizukuStateMachine.addListener(listener)
+        ShizukuReceiverStarter.stop()
+    }
+
     private fun maybeShowVersionSkewSnackbar() {
         if (versionSkewSnackbarShown) return
         if (!ShizukuStateMachine.isServerVersionSkewed()) return
@@ -248,6 +269,18 @@ open class HomeActivity :
                 findViewById(android.R.id.content) ?: window.decorView,
                 msg = getString(R.string.snackbar_server_foreign),
                 duration = Snackbar.LENGTH_INDEFINITE,
+                actionText = getString(android.R.string.ok),
+                action = {},
+            )
+            return
+        }
+        if (ShizukuSettings.isAutoRestartAfterUpdateEnabled()) {
+            restartStaleServer()
+            SnackbarHelper.show(
+                this,
+                findViewById(android.R.id.content) ?: window.decorView,
+                msg = getString(R.string.snackbar_server_restarting),
+                duration = Snackbar.LENGTH_LONG,
                 actionText = getString(android.R.string.ok),
                 action = {},
             )
@@ -1251,7 +1284,10 @@ open class HomeActivity :
         val notesBody =
             updateInfo.releaseNotes
                 .substringBefore("## 📦 Recent Releases")
-                .trim()
+                .let {
+                    af.shizuku.manager.home.changelog.ChangelogParser
+                        .plainify(it)
+                }.trim()
                 .ifEmpty { getString(R.string.update_no_release_notes) }
         val releaseNotesView = dialogView.findViewById<TextView>(R.id.update_release_notes)
         Markwon.create(this).setMarkdown(releaseNotesView, notesBody)
