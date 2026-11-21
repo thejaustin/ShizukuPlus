@@ -38,9 +38,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -120,7 +122,7 @@ class OnboardingActivity : AppActivity() {
                         if (SettingsBackupManager.importAndCommit(this, json, trustPrivileged = false)) {
                             onBackupRestored(null)
                         } else {
-                            Toast.makeText(this, getString(R.string.restore_failed_generic, "Invalid backup format"), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, getString(R.string.restore_failed_generic, getString(R.string.onboarding_restore_invalid)), Toast.LENGTH_SHORT).show()
                         }
                     }
                 } catch (e: Exception) {
@@ -184,12 +186,6 @@ class OnboardingActivity : AppActivity() {
 
         setupDots()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
-        ) {
-            notifPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-
         binding.pager.registerOnPageChangeCallback(
             object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
@@ -217,8 +213,24 @@ class OnboardingActivity : AppActivity() {
 
         binding.btnSkip.setOnClickListener { completeOnboarding() }
 
-        updateDots(0)
-        updateButtons(0)
+        // Back steps to the previous page; only the first page leaves.
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    val current = binding.pager.currentItem
+                    if (current > 0) {
+                        binding.pager.currentItem = current - 1
+                    } else {
+                        isEnabled = false
+                        onBackPressedDispatcher.onBackPressed()
+                    }
+                }
+            },
+        )
+
+        updateDots(binding.pager.currentItem)
+        updateButtons(binding.pager.currentItem)
 
         ShizukuStateMachine.addListener(stateListener)
     }
@@ -312,7 +324,9 @@ class OnboardingActivity : AppActivity() {
     }
 
     private fun updateButtons(position: Int) {
-        binding.btnSkip.visibility = if (position < pages.size - 1) View.VISIBLE else View.INVISIBLE
+        // The setup page has its own "later" button; a global Skip beside it also skipped the Doctor choice.
+        val canSkip = position < pages.size - 1 && pages.getOrNull(position) != PageType.SETUP
+        binding.btnSkip.visibility = if (canSkip) View.VISIBLE else View.INVISIBLE
         binding.btnNext.text =
             if (position < pages.size - 1) {
                 getString(R.string.onboarding_next)
@@ -397,7 +411,11 @@ class OnboardingActivity : AppActivity() {
             .show()
     }
 
+    private var completed = false
+
     private fun completeOnboarding() {
+        if (completed) return
+        completed = true
         // Restoring was offered on the welcome page; from here on this install's own settings
         // are what the reinstall copy keeps.
         SettingsBackupManager.markRestoreChecked()
@@ -484,7 +502,7 @@ class OnboardingActivity : AppActivity() {
                         if (SettingsBackupManager.importAndCommit(this@OnboardingActivity, json, trustPrivileged = trusted)) {
                             onBackupRestored(foundBackup)
                         } else {
-                            Toast.makeText(this@OnboardingActivity, getString(R.string.restore_failed_generic, "Invalid backup format"), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@OnboardingActivity, getString(R.string.restore_failed_generic, getString(R.string.onboarding_restore_invalid)), Toast.LENGTH_SHORT).show()
                         }
                     } catch (e: Exception) {
                         Timber.e(e, "Failed to restore found backup during onboarding")
@@ -726,28 +744,35 @@ class OnboardingActivity : AppActivity() {
         }
 
         private fun bindSecurityDoctorPage(binding: PageOnboardingSecurityDoctorBinding) {
-            val currentMode = NetworkTrust.mode()
-            binding.switchNetworkGuard.apply {
-                isChecked = currentMode != NetworkTrust.MODE_OFF
-                setOnCheckedChangeListener { view, checked ->
+            val networkListener =
+                CompoundButton.OnCheckedChangeListener { view, checked ->
                     if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
-                    val mode = if (checked) NetworkTrust.MODE_OPEN else NetworkTrust.MODE_OFF
-                    ShizukuSettings
-                        .getPreferences()
-                        ?.edit()
-                        ?.putString(NetworkTrust.KEY_MODE, mode)
-                        ?.putBoolean(NetworkTrust.KEY_AUTO_CLOSE, checked)
-                        ?.apply()
+                    val edit = ShizukuSettings.getPreferences()?.edit() ?: return@OnCheckedChangeListener
+                    // Turning it on must not replace a mode the user already chose (trusted networks).
+                    if (!checked) {
+                        edit.putString(NetworkTrust.KEY_MODE, NetworkTrust.MODE_OFF)
+                    } else if (NetworkTrust.mode() == NetworkTrust.MODE_OFF) {
+                        edit.putString(NetworkTrust.KEY_MODE, NetworkTrust.MODE_OPEN)
+                    }
+                    edit.putBoolean(NetworkTrust.KEY_AUTO_CLOSE, checked).apply()
                 }
-            }
-
-            binding.switchWatchdog.apply {
-                isChecked = ShizukuSettings.getWatchdog()
-                setOnCheckedChangeListener { view, checked ->
+            val watchdogListener =
+                CompoundButton.OnCheckedChangeListener { view, checked ->
                     if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
                     ShizukuSettings.setWatchdog(this@OnboardingActivity, checked)
                 }
+
+            // Show what is stored without firing the listeners (they would write it back).
+            fun syncSwitches() {
+                binding.switchNetworkGuard.setOnCheckedChangeListener(null)
+                binding.switchNetworkGuard.isChecked = NetworkTrust.mode() != NetworkTrust.MODE_OFF
+                binding.switchNetworkGuard.setOnCheckedChangeListener(networkListener)
+                binding.switchWatchdog.setOnCheckedChangeListener(null)
+                // A new install's Watchdog turns on with its first server start, so show that.
+                binding.switchWatchdog.isChecked = ShizukuSettings.getWatchdog() || ShizukuSettings.isWatchdogDefaultPending()
+                binding.switchWatchdog.setOnCheckedChangeListener(watchdogListener)
             }
+            syncSwitches()
 
             val prefs = ShizukuSettings.getPreferences()
             val levelButtons =
@@ -774,6 +799,7 @@ class OnboardingActivity : AppActivity() {
                 HapticUtils.segmentTick(group)
                 level.apply(prefs)
                 binding.assistantLevelDesc.setText(levelDescs.getValue(level))
+                syncSwitches()
             }
         }
 
