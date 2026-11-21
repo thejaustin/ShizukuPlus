@@ -1,29 +1,38 @@
 package af.shizuku.manager.settings
 
 import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.utils.CustomTabsHelper
 import android.content.Context
 import android.util.AttributeSet
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 
 /**
  * The Support development row: title and a calm summary on the left, and on the right a small
- * pill pair that opens GitHub Sponsors or Buy Me a Coffee directly. Nothing is stored or locked.
+ * dropdown pill to pick GitHub Sponsors or Buy Me a Coffee. Tapping the row opens the pick; the pick is only a remembered link, nothing is locked.
  */
 class SupportLinkPreference
     @JvmOverloads
@@ -46,9 +55,16 @@ class SupportLinkPreference
             val summary = summary
             val prefIcon = icon
             val ctx = context
+            val choice = mutableStateOf(ShizukuSettings.getPreferences()?.getString(KEY, "sponsors") ?: "sponsors")
             cv.setPreferenceContent {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                val url = if (choice.value == "coffee") R.string.about_support_url else R.string.about_support_url_sponsors
+                                CustomTabsHelper.launchUrlOrCopy(ctx, ctx.getString(url))
+                            }.padding(horizontal = 16.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     if (prefIcon != null) {
@@ -72,36 +88,57 @@ class SupportLinkPreference
                             )
                         }
                     }
-                    Column(
-                        modifier = Modifier.padding(start = 12.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        SupportPill(R.string.about_support_pill_sponsors) {
-                            CustomTabsHelper.launchUrlOrCopy(ctx, ctx.getString(R.string.about_support_url_sponsors))
-                        }
-                        SupportPill(R.string.about_support_pill_coffee) {
-                            CustomTabsHelper.launchUrlOrCopy(ctx, ctx.getString(R.string.about_support_url))
-                        }
-                    }
+                    SupportDropdown(
+                        selected = choice.value,
+                        onSelect = {
+                            choice.value = it
+                            ShizukuSettings
+                                .getPreferences()
+                                ?.edit()
+                                ?.putString(KEY, it)
+                                ?.apply()
+                        },
+                    )
                 }
             }
         }
     }
 
+private const val KEY = "support_link"
+
+/** Compact pill on the right: shows where support goes and drops a two-item menu to change it. */
 @androidx.compose.runtime.Composable
-private fun SupportPill(
-    label: Int,
-    onClick: () -> Unit,
+private fun SupportDropdown(
+    selected: String,
+    onSelect: (String) -> Unit,
 ) {
-    FilledTonalButton(
-        onClick = onClick,
-        contentPadding = ButtonDefaults.ExtraSmallContentPadding,
-        modifier = Modifier.width(96.dp),
-    ) {
-        Text(
-            androidx.compose.ui.res
-                .stringResource(label),
-            style = MaterialTheme.typography.labelLarge,
-        )
+    var open by remember { mutableStateOf(false) }
+    val names = listOf("sponsors" to R.string.about_support_pill_sponsors, "coffee" to R.string.about_support_pill_coffee)
+    Box(modifier = Modifier.padding(start = 12.dp)) {
+        FilledTonalButton(
+            onClick = { open = true },
+            contentPadding = ButtonDefaults.ContentPadding,
+        ) {
+            Text(
+                stringResource(names.first { it.first == selected }.second),
+                style = MaterialTheme.typography.labelLarge,
+            )
+            Icon(
+                androidx.compose.ui.res
+                    .painterResource(R.drawable.ic_outline_expand_more_24),
+                contentDescription = stringResource(R.string.about_support_link_title),
+            )
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            names.forEach { (value, label) ->
+                DropdownMenuItem(
+                    text = { Text(stringResource(label)) },
+                    onClick = {
+                        onSelect(value)
+                        open = false
+                    },
+                )
+            }
+        }
     }
 }
