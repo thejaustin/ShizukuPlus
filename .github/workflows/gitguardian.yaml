@@ -29,7 +29,7 @@ jobs:
           fetch-depth: 0 # fetch all history so multiple commits can be scanned
           
       - name: GitGuardian scan
-        uses: GitGuardian/ggshield/actions/secret@0314bfd58b75042fd42bc3418edb3e37f6179853 # v1.51.0
+        uses: GitGuardian/ggshield/actions/secret@4cccd600fd3890a7aba07fd0a45e483f3099fe70 # v1.56.1
         env:
           GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
           GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
