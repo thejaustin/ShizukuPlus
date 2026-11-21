@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- To translators: you can leave your here -->
+    <!-- UI Settings - Expressive -->
+    <!-- UI Settings - Display -->
+    <!-- UI Settings - One UI Theme -->
+    <!-- UI Settings - Typography & Layout -->
+    <!-- UI Settings - Corner Rounding -->
     <!-- Home - Status -->
     <string name="home_status_service_is_running">%1$s sedang berjalan</string>
     <string name="home_status_service_not_running">%1$s tidak berjalan</string>
+    <!-- %2$s is the Shizuku service API version (e.g. 13.6), not the app version. -->
     <string name="home_status_service_version">Versi %2$s, %1$s</string>
     <string name="home_status_service_version_update"><![CDATA[Versi %2$s, %1$s<br>Mula semula untuk mengemas kini kepada versi %3$s]]></string>
     <!-- Home - Adb -->
@@ -47,6 +53,11 @@
         USB\" dan \"Penyahpepijatan tanpa wayar\"\n- Ketik sebelah kiri \"Penyahpepijatan tanpa
         wayar\"\n- Ketik \"Pasangkan peranti dengan kod berpasangan\"\n- Masukkan kod gandingan
         dalam pemberitahuan</string>
+    <!-- Service Doctor -->
+    <!-- Root Compatibility -->
+    <!-- Shell Tutorial -->
+    <!-- Adb Pairing Dialog -->
+    <!-- App Management -->
     <string name="dialog_adb_pairing_accessibility_enable">Sila dayakan perkhidmatan kebolehaksesan
         untuk memulakan proses berpasangan. Ini membolehkan Shizuku mengesan kod
         berpasangan.\n\nPerkhidmatan kebolehaksesan akan dimatikan apabila kod ditemui atau selepas
@@ -118,6 +129,8 @@
         betul.\n\nBiasanya, had ini boleh ditarik balik dengan melaraskan beberapa pilihan dalam
         \"Pilihan pembangun\". Sila baca bantuan untuk mendapatkan butiran tentang cara melakukan
         ini.\n\nAnda mungkin perlu memulakan semula Shizuku untuk operasi berkuat kuasa.</string>
+    <!-- Application management - context menu -->
+    <!-- Application management - search / filter / sort -->
     <!-- Application management -->
     <string name="app_management_dialog_adb_is_limited_title">Kebenaran adb adalah terhad</string>
     <string name="app_management_dialog_adb_is_limited_message"><![CDATA[Kemungkinan besar pengeluar peranti anda mengehadkan kebenaran adb.<p>Mungkin terdapat penyelesaian untuk sistem anda dalam <b><a href=\"%1$s\">dokumen ini</a></b>.]]></string>
@@ -144,6 +157,11 @@
         dalam fail konfigurasi %3$s apl terminal anda.</string>
     <string name="terminal_tutorial_3">Buka shell dengan arahan berikut:</string>
     <string name="rish_description"><![CDATA[Dengan %1$s, anda boleh menjalankan arahan shell dalam mana-mana apl terminal.<p>Ketik untuk mengetahui lebih lanjut tentang cara menggunakannya.]]></string>
+    <!-- Settings — swipe customisation -->
+    <!-- Settings — long-press customisation -->
+    <!-- Onboarding -->
+    <!-- Swipe hint overlay -->
+    <!-- App Name & Icon Customization / Camouflage (Issue #615) -->
     <!-- Settings -->
     <string name="settings_title">tetapan</string>
     <string name="settings_start_on_boot">Mulakan semasa but</string>
@@ -167,11 +185,19 @@
     <string name="settings_language">Bahasa</string>
     <string name="settings_translation">Mengambil bahagian dalam terjemahan</string>
     <string name="settings_translation_summary">Bantu kami menterjemah %s ke dalam bahasa anda</string>
-    <string name="settings_help">Tolong</string>
     <string name="settings_report_bug">Laporkan pepijat</string>
     <string name="settings_legacy_pairing">Gandingan warisan</string>
     <string name="settings_legacy_pairing_summary">Masukkan kod gandingan dalam dialog dan bukannya
         pemberitahuan</string>
+    <!-- Shizuku+ Features -->
+    <!-- Plus feature short titles (used in settings preference titles) -->
+    <!-- Dhizuku admin tools -->
+    <!-- Backup / Restore settings -->
+    <!-- Experimental Plus settings (developer section) -->
+    <!-- Detailed Help Strings -->
+    <!-- Plus settings category titles -->
+    <!-- Root Integration (renamed from Legacy Compatibility) -->
+    <!-- Sentry Offline Notice -->
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">Pertama, sila lakukan perkara berikut:</string>
     <string name="bug_report_dialog_update">Pastikan anda menggunakan ^1.</string>
@@ -185,6 +211,13 @@
     <string name="bug_report_dialog_method">Sila kemukakan isu pada ^1 jika anda mempunyai akaun.</string>
     <string name="bug_report_dialog_method_2">Jika tidak, anda boleh menghantar e-mel.</string>
     <string name="bug_report_dialog_button_email">E-mel</string>
+    <!-- Service Doctor -->
+    <!--
+      Three recovery outcomes — shown after the 1-tap wallet fix runs.
+      ROOT:        Shizuku uid=0 — verdict files deleted, immediate recovery expected.
+      ADB_MODE:    Shizuku uid=2000 — can\'t touch GMS data dir; best-effort steps taken.
+      NO_SHIZUKU:  Shizuku wasn\'t running; only unprivileged Wallet stop was possible.
+    -->
     <!-- Snackbar -->
     <string name="snackbar_invalid_port">Pelabuhan mestilah antara 1 dan 65535</string>
     <string name="snackbar_battery_optimization_home">Pengoptimuman bateri mesti dilumpuhkan untuk
@@ -201,8 +234,7 @@
     <string name="dark_theme_off">Sentiasa ringan</string>
     <string name="dark_theme_on">Sentiasa gelap</string>
     <!-- About -->
-    <!-- Start -->
-    <!-- Stop -->
+    <!-- Start/Stop -->
     <string name="action_stop">Hentikan Shizuku</string>
     <string name="dialog_stop_message">Perkhidmatan Shizuku akan dihentikan.</string>
     <!-- Notification -->
@@ -256,4 +288,74 @@
     <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> mempunyai sokongan Shizuku moden, tetapi ia meminta Shizuku warisan. Ini mungkin kerana Shizuku tidak berjalan, sila semak dalam aplikasi Shizuku.<p>Legasi Shizuku telah ditamatkan sejak Mac 2019.]]></string>
     <string name="dialog_requesting_legacy_button_open_shizuku">Buka Shizuku</string>
     <string name="wadb_notification_attempt_now">Cuba sekarang</string>
+    <!-- Settings navigation summaries -->
+    <!-- Accessibility - Content Descriptions -->
+    <!-- Empty State Views -->
+    <!-- Settings diagnostics preference (settings_advanced.xml) -->
+    <!-- Verified install preferences (settings_app_management.xml) -->
+    <!-- Custom accent color preference (settings_personalization.xml) -->
+    <!-- Update Settings -->
+    <!-- SU Bridge configuration -->
+    <!-- Root modules — Rootless Bridges -->
+    <!-- Root modules — Mocking &amp; Simulation -->
+    <!-- Bootloader Integration settings -->
+    <!-- Developer Options -->
+    <!-- Update Notifications -->
+    <!-- Migration Dialog -->
+    <!-- Update Dialogs -->
+    <!-- Settings backup/restore -->
+    <!-- Common action labels -->
+    <!-- Service Doctor auto-fix -->
+    <!-- ADB Pairing -->
+    <!-- Update dialog -->
+    <!-- Accessibility service status -->
+    <!-- Dhizuku Device Owner Setup -->
+    <!-- Clear Device Owner (Issue #237) -->
+    <!-- Pairing fallback (Issue #204) -->
+    <!-- Remote App DB Sync -->
+    <!-- Binder Enhancements (Issue #199) -->
+    <!-- Automation Engine (Issue #435) -->
+    <!-- Companion Mode -->
+    <!-- App picker dialog -->
+    <!-- Root Compatibility Hub -->
+    <!-- Home Automation dialog labels -->
+    <!-- Misc -->
+    <string name="settings_help">Tolong</string>
+    <!-- APK verification API key strings -->
+    <!-- Scripting & Snippets (#11) -->
+    <!-- Tasker/Locale automation plugin (#6) -->
+    <!-- Network Firewall automation trusted networks -->
+    <!-- Biometric lock -->
+    <!-- Stealth mode -->
+    <!-- OTA flash danger dialog -->
+    <!-- SU path preset picker dialog -->
+    <!-- Device Owner (Dhizuku) toasts -->
+    <!-- Backup/restore picker dialog -->
+    <!-- Peer Settings Sharing / Drop-In Sync -->
+    <!-- Samsung ADB dialog -->
+    <!-- Tile service: state subtitles (shown in Samsung OneUI wide tile text area and standard subtitle) -->
+    <!-- Tile service: mode labels -->
+    <!-- Tile service: action labels (tap dialog and long-press options activity) -->
+    <!-- Tile service error -->
+    <!-- App Profiles automation activity -->
+    <!-- App Backup feature -->
+    <!-- Mode-contextual settings (#433) -->
+    <!-- Hide backup settings (#461) -->
+    <!-- Launcher icon &amp; stealth -->
+    <!-- AI Bridge -->
+    <!-- Package identity / MDM bypass UI (#469) -->
+    <!-- Device Control card &amp; screen -->
+    <!-- Stealth Mode -->
+    <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
+    <!-- Feature Hub experimental category label -->
+    <!-- Permission Manager card &amp; screen -->
+    <!-- Home layout simulator accessibility labels (decorative preview widget — a11y toggles) -->
+    <!-- Keep-alive and stability tips for unexpected deactivations -->
+    <!-- Activity log entries. The log stores the English text (it is parsed for the event type and
+         exported in bug reports); ActivityLogText maps it to these when it is shown. -->
+    <!-- Adaptive settings & tiered complexity -->
+    <!-- In-App Knowledgebase & Consumer-friendly settings -->
+    <!-- Adaptive Recommendations & Startup Scripts -->
+    <!-- App Reachability & Filtering -->
+    <!-- Settings standardization: standard rows replacing the compound grids -->
 </resources>

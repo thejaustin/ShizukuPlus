@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="companion_conflict_title">Shizuku d\'origine détecté</string>
-    <string name="companion_conflict_description">Avoir Shizuku d\'origine installé aux côtés de Shizuku+ peut provoquer des conflits de permissions et des plantages d\'applications. Pour vous assurer que Shizuku+ fonctionne correctement, veuillez désinstaller ou désactiver l\'application Shizuku d\'origine.\n\nVous pouvez le faire via :\n1. Paramètres -> Applications -> Shizuku -> Désactiver/Désinstaller\n2. Les boutons ci-dessous (si le service Shizuku+ est en cours d\'exécution)\n3. ADB : adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_conflict_description">Avoir Shizuku d\'origine installé aux côtés de Shizuku+ peut provoquer des conflits de permissions et des plantages d\'applications. Pour vous assurer que Shizuku+ fonctionne correctement, veuillez désinstaller ou désactiver l\'application Shizuku d\'origine.\n\nVous pouvez le faire via :\n1. Paramètres -&gt; Applications -&gt; Shizuku -&gt; Désactiver/Désinstaller\n2. Les boutons ci-dessous (si le service Shizuku+ est en cours d\'exécution)\n3. ADB : adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
     <string name="companion_action_disable">Désactiver l\'original</string>
     <string name="companion_action_uninstall">Désinstaller l\'original</string>
     <string name="companion_disable_success">Shizuku d\'origine a été désactivé avec succès.</string>
     <string name="companion_disable_failure">Échec de la désactivation de Shizuku d\'origine. Assurez-vous que Shizuku+ fonctionne ou utilisez ADB manuellement.</string>
     <string name="companion_action_disabling">Désactivation…</string>
-
     <string name="compat_hub_installed_title">Compat Hub installé</string>
     <string name="compat_hub_installed_desc">Les applications tierces (comme SwiftBackup) détecteront désormais Shizuku+ de manière transparente.</string>
     <string name="compat_hub_missing_title">Compat Hub requis</string>

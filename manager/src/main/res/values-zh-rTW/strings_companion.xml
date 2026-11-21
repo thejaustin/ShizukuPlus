@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="companion_conflict_title">偵測到原版 Shizuku</string>
-    <string name="companion_conflict_description">同時安裝原版 Shizuku 與 Shizuku+ 可能導致權限衝突和應用程式當機。為確保 Shizuku+ 正常運作，請解除安裝或停用原版 Shizuku 應用程式。\n\n您可以透過以下方式操作：\n1. 設定 -> 應用程式 -> Shizuku -> 停用/解除安裝\n2. 下方按鈕（若 Shizuku+ 服務正在執行）\n3. ADB：adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_conflict_description">同時安裝原版 Shizuku 與 Shizuku+ 可能導致權限衝突和應用程式當機。為確保 Shizuku+ 正常運作，請解除安裝或停用原版 Shizuku 應用程式。\n\n您可以透過以下方式操作：\n1. 設定 -&gt; 應用程式 -&gt; Shizuku -&gt; 停用/解除安裝\n2. 下方按鈕（若 Shizuku+ 服務正在執行）\n3. ADB：adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
     <string name="companion_action_disable">停用原版</string>
     <string name="companion_action_uninstall">解除安裝原版</string>
     <string name="companion_disable_success">已成功停用原版 Shizuku。</string>
     <string name="companion_disable_failure">停用原版 Shizuku 失敗。請確保 Shizuku+ 正在執行，或手動使用 ADB。</string>
     <string name="companion_action_disabling">正在停用…</string>
-
     <string name="compat_hub_installed_title">已安裝相容中心</string>
     <string name="compat_hub_installed_desc">第三方應用程式（如 SwiftBackup）現在可以無縫偵測到 Shizuku+。</string>
     <string name="compat_hub_missing_title">需要相容中心</string>

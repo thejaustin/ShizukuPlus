@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="companion_conflict_title">تم اكتشاف نسخة Shizuku الأصلية</string>
-    <string name="companion_conflict_description">قد يؤدي تثبيت نسخة Shizuku الأصلية إلى جانب Shizuku+ إلى تعارض في الأذونات وأعطال في التطبيقات. لضمان عمل Shizuku+ بشكل صحيح، يرجى إلغاء تثبيت تطبيق Shizuku الأصلي أو تعطيله.\n\nيمكنك القيام بذلك عبر:\n1. الإعدادات -> التطبيقات -> Shizuku -> تعطيل/إلغاء التثبيت\n2. الأزرار أدناه (إذا كانت خدمة Shizuku+ قيد التشغيل)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_conflict_description">قد يؤدي تثبيت نسخة Shizuku الأصلية إلى جانب Shizuku+ إلى تعارض في الأذونات وأعطال في التطبيقات. لضمان عمل Shizuku+ بشكل صحيح، يرجى إلغاء تثبيت تطبيق Shizuku الأصلي أو تعطيله.\n\nيمكنك القيام بذلك عبر:\n1. الإعدادات -&gt; التطبيقات -&gt; Shizuku -&gt; تعطيل/إلغاء التثبيت\n2. الأزرار أدناه (إذا كانت خدمة Shizuku+ قيد التشغيل)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
     <string name="companion_action_disable">تعطيل النسخة الأصلية</string>
     <string name="companion_action_uninstall">إلغاء تثبيت النسخة الأصلية</string>
     <string name="companion_disable_success">تم تعطيل نسخة Shizuku الأصلية بنجاح.</string>
     <string name="companion_disable_failure">فشل تعطيل نسخة Shizuku الأصلية. تأكد من تشغيل Shizuku+ أو استخدم ADB يدويًا.</string>
     <string name="companion_action_disabling">جارٍ التعطيل…</string>
-
     <string name="compat_hub_installed_title">تم تثبيت Compat Hub</string>
     <string name="compat_hub_installed_desc">ستكتشف تطبيقات الطرف الثالث (مثل SwiftBackup) الآن Shizuku+ بسلاسة.</string>
     <string name="compat_hub_missing_title">يلزم تثبيت Compat Hub</string>

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="companion_conflict_title">Đã phát hiện Shizuku gốc</string>
-    <string name="companion_conflict_description">Cài đặt Shizuku gốc cùng lúc với Shizuku+ có thể gây xung đột quyền và lỗi dừng ứng dụng. Để đảm bảo Shizuku+ hoạt động bình thường, vui lòng gỡ cài đặt hoặc tắt ứng dụng Shizuku gốc.\n\nBạn có thể thực hiện việc này qua:\n1. Cài đặt -> Ứng dụng -> Shizuku -> Tắt/Gỡ cài đặt\n2. Các nút bên dưới (nếu dịch vụ Shizuku+ đang chạy)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_conflict_description">Cài đặt Shizuku gốc cùng lúc với Shizuku+ có thể gây xung đột quyền và lỗi dừng ứng dụng. Để đảm bảo Shizuku+ hoạt động bình thường, vui lòng gỡ cài đặt hoặc tắt ứng dụng Shizuku gốc.\n\nBạn có thể thực hiện việc này qua:\n1. Cài đặt -&gt; Ứng dụng -&gt; Shizuku -&gt; Tắt/Gỡ cài đặt\n2. Các nút bên dưới (nếu dịch vụ Shizuku+ đang chạy)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
     <string name="companion_action_disable">Tắt bản gốc</string>
     <string name="companion_action_uninstall">Gỡ cài đặt bản gốc</string>
     <string name="companion_disable_success">Đã tắt Shizuku gốc thành công.</string>
     <string name="companion_disable_failure">Không thể tắt Shizuku gốc. Hãy đảm bảo Shizuku+ đang chạy hoặc sử dụng ADB thủ công.</string>
     <string name="companion_action_disabling">Đang tắt…</string>
-
     <string name="compat_hub_installed_title">Đã cài đặt Compat Hub</string>
     <string name="compat_hub_installed_desc">Các ứng dụng bên thứ ba (như SwiftBackup) giờ đây sẽ phát hiện Shizuku+ một cách liền mạch.</string>
     <string name="compat_hub_missing_title">Cần có Compat Hub</string>
