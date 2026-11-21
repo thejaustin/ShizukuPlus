@@ -115,7 +115,7 @@ object SettingsShareManager {
     fun exportToPeer(context: Context): Boolean {
         if (!isPeerInstalled(context)) return false
         return try {
-            val json = SettingsBackupManager.export(context)
+            val json = SettingsBackupManager.withoutSecrets(SettingsBackupManager.export(context))
             val lastMod = getLastModified()
             val uri = Uri.parse("content://${getPeerAuthority(context)}")
             val extras =

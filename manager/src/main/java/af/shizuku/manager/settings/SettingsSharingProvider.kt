@@ -49,7 +49,7 @@ class SettingsSharingProvider : ContentProvider() {
 
         return when (method) {
             METHOD_GET_SETTINGS -> {
-                val json = SettingsBackupManager.export(ctx)
+                val json = SettingsBackupManager.withoutSecrets(SettingsBackupManager.export(ctx))
                 val lastMod = ShizukuSettings.getSettingsLastModified()
                 Bundle().apply {
                     putString(EXTRA_SETTINGS_JSON, json)

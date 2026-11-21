@@ -33,7 +33,7 @@ Off by default (Settings → App safety check). When turned on, a Shizuku+ acces
 All of that is read on the device. If you turn on VirusTotal or Pithus and add a key, it also shows what those services know about that exact APK. Only its hash is sent, and Pithus gets your key only for APKs it already has a report on. "Hasn't seen this app" means unknown, not safe. See [`AppSafetyCheck.kt`](../manager/src/main/java/af/shizuku/manager/authorization/AppSafetyCheck.kt).
 
 ### API keys
-VirusTotal and Pithus API keys you enter are stored on the device only. They're never in cloud backups, plain exports or the reinstall copy. Only the encrypted export and the on-device sync between Shizuku+ and the Drop-In carry them (see below).
+VirusTotal and Pithus API keys you enter are stored on the device only. They're never in cloud backups, plain exports or the reinstall copy. Only the encrypted export carries them.
 
 ## What a settings backup contains
 
@@ -49,7 +49,7 @@ Shizuku+ has five ways to carry settings over:
 
 The encrypted export can only be restored on the same install. After a reinstall or clearing app data, use a plain export.
 
-The sync between Shizuku+ and the Drop-In goes straight from one app to the other on the same phone, through a connection only apps signed with the same key can open ([`SettingsSharingProvider.kt`](../manager/src/main/java/af/shizuku/manager/settings/SettingsSharingProvider.kt)). Auto-sync is on by default once both are installed; you can turn it off in Settings → Advanced. It carries everything except the "never backed up" list below, so your API keys, trusted Wi-Fi names and hidden apps go across, and settings from the next section are applied as they are instead of waiting for you to confirm.
+The sync between Shizuku+ and the Drop-In goes straight from one app to the other on the same phone, through a connection only apps signed with the same key can open ([`SettingsSharingProvider.kt`](../manager/src/main/java/af/shizuku/manager/settings/SettingsSharingProvider.kt)). Auto-sync is on by default once both are installed; you can turn it off in Settings → Advanced. It carries everything except the "never backed up" list below and the secret settings (API keys, trusted Wi-Fi names, hidden apps), which stay in the app they were entered in. Settings from the next section are applied as they are instead of waiting for you to confirm.
 
 A backup with no Watchdog setting in it restores the Watchdog as off.
 
@@ -59,7 +59,7 @@ A backup with no Watchdog setting in it restores the Watchdog as off.
 - **Per-device consent:** crash reporting and the accessibility service. You're asked again on each device.
 - **Runtime state:** caches, update-check times, one-time migration flags, the server's auth token.
 
-The full list is `EXCLUDED_KEYS` in [`SettingsBackupManager.kt`](../manager/src/main/java/af/shizuku/manager/utils/SettingsBackupManager.kt). `SECRET_KEYS` in the same file is the list that stays out of everything except the encrypted export and the sync with the Drop-In.
+The full list is `EXCLUDED_KEYS` in [`SettingsBackupManager.kt`](../manager/src/main/java/af/shizuku/manager/utils/SettingsBackupManager.kt). `SECRET_KEYS` in the same file is the list that stays out of everything except the encrypted export.
 
 ### Restored, but held off until you confirm
 Settings that widen what Shizuku+ or other apps can do aren't switched on by a restore on their own (the sync between Shizuku+ and the Drop-In is the exception, see above). After restoring, the app lists any the backup had on and asks before turning them on. These include:
