@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="companion_conflict_title">Orijinal Shizuku Algılandı</string>
-    <string name="companion_conflict_description">Orijinal Shizuku\'nun Shizuku+ ile birlikte yüklü olması izin çakışmalarına ve uygulama çökmelerine neden olabilir. Shizuku+\'nın düzgün çalışmasını sağlamak için lütfen orijinal Shizuku uygulamasını kaldırın veya devre dışı bırakın.\n\nBunu şu yollarla yapabilirsiniz:\n1. Ayarlar -> Uygulamalar -> Shizuku -> Devre Dışı Bırak/Kaldır\n2. Aşağıdaki düğmeler (Shizuku+ hizmeti çalışıyorsa)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_conflict_description">Orijinal Shizuku\'nun Shizuku+ ile birlikte yüklü olması izin çakışmalarına ve uygulama çökmelerine neden olabilir. Shizuku+\'nın düzgün çalışmasını sağlamak için lütfen orijinal Shizuku uygulamasını kaldırın veya devre dışı bırakın.\n\nBunu şu yollarla yapabilirsiniz:\n1. Ayarlar -&gt; Uygulamalar -&gt; Shizuku -&gt; Devre Dışı Bırak/Kaldır\n2. Aşağıdaki düğmeler (Shizuku+ hizmeti çalışıyorsa)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
     <string name="companion_action_disable">Orijinali Devre Dışı Bırak</string>
     <string name="companion_action_uninstall">Orijinali Kaldır</string>
     <string name="companion_disable_success">Orijinal Shizuku başarıyla devre dışı bırakıldı.</string>
     <string name="companion_disable_failure">Orijinal Shizuku devre dışı bırakılamadı. Shizuku+\'nın çalıştığından emin olun veya ADB\'yi manuel olarak kullanın.</string>
     <string name="companion_action_disabling">Devre dışı bırakılıyor…</string>
-
     <string name="compat_hub_installed_title">Compat Hub Yüklendi</string>
     <string name="compat_hub_installed_desc">Üçüncü taraf uygulamalar (SwiftBackup gibi) artık Shizuku+\'yı sorunsuz bir şekilde algılayacaktır.</string>
     <string name="compat_hub_missing_title">Compat Hub Gerekli</string>

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="companion_conflict_title">Orijinal Shizuku Aşkar Edildi</string>
-    <string name="companion_conflict_description">Orijinal Shizuku-nun Shizuku+ ilə birlikdə quraşdırılması icazə münaqişələrinə və tətbiqin sıradan çıxmasına səbəb ola bilər. Shizuku+-ın düzgün işləməsini təmin etmək üçün xahiş olunur, orijinal Shizuku tətbiqini silin və ya söndürün.\n\nBunu aşağıdakı vasitələrlə edə bilərsiniz:\n1. Tənzimləmələr -> Tətbiqlər -> Shizuku -> Söndür / Sil\n2. Aşağıdakı düymələr vasitəsilə (Shizuku+ xidməti işləyirsə)\n3. ADB vasitəsilə: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_conflict_description">Orijinal Shizuku-nun Shizuku+ ilə birlikdə quraşdırılması icazə münaqişələrinə və tətbiqin sıradan çıxmasına səbəb ola bilər. Shizuku+-ın düzgün işləməsini təmin etmək üçün xahiş olunur, orijinal Shizuku tətbiqini silin və ya söndürün.\n\nBunu aşağıdakı vasitələrlə edə bilərsiniz:\n1. Tənzimləmələr -&gt; Tətbiqlər -&gt; Shizuku -&gt; Söndür / Sil\n2. Aşağıdakı düymələr vasitəsilə (Shizuku+ xidməti işləyirsə)\n3. ADB vasitəsilə: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
     <string name="companion_action_disable">Orijinalı Söndür</string>
     <string name="companion_action_uninstall">Orijinalı Sil</string>
     <string name="companion_disable_success">Orijinal Shizuku uğurla söndürüldü.</string>
     <string name="companion_disable_failure">Orijinal Shizuku-nu söndürmək mümkün olmadı. Shizuku+-ın işlədiyindən əmin olun və ya ADB-dən əl ilə istifadə edin.</string>
     <string name="companion_action_disabling">Söndürülür…</string>
-
     <string name="compat_hub_installed_title">Uyğunluq Mərkəzi Aktivdir</string>
     <string name="compat_hub_installed_desc">Standart Shizuku API-dən istifadə edən tətbiqlər (SD Maid, SwiftBackup və əksər digərləri) artıq Shizuku+-ı aşkar edə və istifadə edə bilər.</string>
     <string name="compat_hub_missing_title">Uyğunluq Mərkəzi Quraşdırılmayıb</string>

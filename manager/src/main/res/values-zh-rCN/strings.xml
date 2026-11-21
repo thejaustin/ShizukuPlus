@@ -5,10 +5,8 @@
     <string name="server_memory_usage">服务器内存占用</string>
     <string name="server_memory_uncapped">无上限</string>
     <string name="server_clients_connected">已连接 %1$d 个应用</string>
-
     <!-- To translators: you can leave your here -->
     <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
-
     <!-- UI Settings - Expressive -->
     <string name="settings_expressive_shapes">表现力图标形状</string>
     <string name="settings_expressive_shapes_summary">为图标使用不对称的叶片与水滴形状</string>
@@ -17,26 +15,25 @@
     <string name="settings_icon_style">图标样式</string>
     <string name="settings_shape_style">容器形状样式</string>
     <string name="settings_animation_intensity">动画强度</string>
-
     <!-- UI Settings - Display -->
     <string name="settings_edge_to_edge">边到边布局</string>
     <string name="settings_blur_ui">毛玻璃效果</string>
-
     <!-- UI Settings - One UI Theme -->
     <string name="settings_oneui_theme">One UI 风格</string>
     <string name="settings_oneui_theme_summary">匹配三星 One UI 的设计语言——更大的圆角与粗体排版。颜色不受影响；如需改色请使用上方的 Material You 或自定义强调色。</string>
     <string name="settings_one_handed_mode">单手模式</string>
     <string name="settings_one_handed_mode_summary">将交互内容下移，方便拇指触达</string>
+    <!-- UI Settings - Typography & Layout -->
     <string name="settings_bold_typography">粗体排版</string>
     <string name="settings_expanded_headers">展开式分组标题</string>
+    <!-- UI Settings - Corner Rounding -->
     <string name="settings_corner_rounding_override">圆角半径</string>
-
     <string-array name="icon_styles">
         <item>标准（填充）</item>
         <item>描边</item>
         <item>双色调</item>
     </string-array>
-
+    <string name="home_edit_mode_banner">长按并拖动卡片以自定义首页布局</string>
     <string name="settings_icon_color_mode">双色调图标颜色</string>
     <string name="settings_icon_color_mode_summary">双色调图标背景的着色方式</string>
     <string-array name="icon_color_modes">
@@ -44,7 +41,6 @@
         <item>全部相同颜色</item>
         <item>每个图标不同颜色</item>
     </string-array>
-
     <string-array name="shape_styles">
         <item>禅意（叶片/水滴）</item>
         <item>现代（Material 3）</item>
@@ -52,35 +48,30 @@
         <item>有机（方圆形）</item>
         <item>切割（棱角）</item>
     </string-array>
-
     <string-array name="animation_intensities">
         <item>无</item>
         <item>轻微</item>
         <item>标准</item>
         <item>表现力</item>
     </string-array>
-
-
-
     <!-- Home - Status -->
     <string name="home_status_service_is_running">%1$s 正在运行</string>
     <string name="home_status_service_not_running">%1$s未运行</string>
     <string name="home_status_service_not_running_summary">%1$s 已停止</string>
     <string name="home_status_service_user_root">root</string>
     <string name="home_status_service_user_adb">adb</string>
+    <!-- %2$s is the Shizuku service API version (e.g. 13.6), not the app version. -->
     <string name="home_status_service_version">版本 %2$s，%1$s</string>
     <string name="home_status_service_version_update"><![CDATA[版本 %2$s，%1$s<br>再次启动来升级到版本 %3$s]]></string>
-
     <!-- Home - Adb -->
     <string name="home_adb_title"><![CDATA[通过连接电脑启动（使用 adb）]]></string>
     <string name="home_adb_description"><![CDATA[对于没有 root 的设备需要借助 adb 来启动 Shizuku（需要连接电脑）。这个过程每次设备重新启动后需要重新进行。请<b><a href=\"%1$s\">阅读帮助</a></b>。]]></string>
-    <string name="home_adb_description_active"><![CDATA[Shizuku+ 已通过电脑 ADB 激活。设备重启后请重新运行命令以重新连接。请<b><a href=\"%1$s\">阅读帮助</a></b>。]]></string>
     <string name="home_adb_button_view_help">阅读帮助</string>
     <string name="home_adb_button_view_command">查看指令</string>
+    <string name="home_adb_description_active"><![CDATA[Shizuku+ 已通过电脑 ADB 激活。设备重启后请重新运行命令以重新连接。请<b><a href=\"%1$s\">阅读帮助</a></b>。]]></string>
     <string name="home_adb_dialog_view_command_message"><![CDATA[<font face="monospace">%1$s</font><br><br>* 还有一些其他注意事项，请确认你已阅读帮助。]]></string>
     <string name="home_adb_dialog_view_command_copy_button">复制</string>
     <string name="home_adb_dialog_view_command_button_send">发送</string>
-
     <!-- Home - Wireless Adb -->
     <string name="home_wireless_adb_title"><![CDATA[通过无线调试启动]]></string>
     <string name="home_wireless_adb_description"><![CDATA[在 Android 11 或更高版本上，您可以直接从您的设备启用无线调试并启动 Shizuku，无需连接到计算机。<p>请先查看分步骤指南。]]></string>
@@ -89,7 +80,6 @@
     <string name="home_wireless_adb_button_reconnect">重新连接</string>
     <string name="home_wireless_adb_description_active"><![CDATA[Shizuku+ 正在通过无线调试运行。如果连接中断，请点按“重新连接”。]]></string>
     <string name="home_layout_sim_adb">ADB</string>
-
     <!-- Adb -->
     <string name="dialog_adb_discovery">正在搜索无线调试服务</string>
     <string name="dialog_adb_discovery_message">请在“开发者选项”中启用“无线调试”功能。当网络变化时“无线调试”会被自动禁用。\n\n注意：请不要禁用“开发者选项”或“USB 调试”，否则 Shizuku 会被停止。</string>
@@ -111,7 +101,6 @@
     <string name="dialog_wireless_adb_not_enabled">无线调试未启用。\n请注意，在 Android 11 之前，要启用无线调试必须连接电脑。</string>
     <string name="dialog_usb_debugging_not_enabled">USB调试未启用。\n请在“开发者选项”中启用它。</string>
     <string name="dialog_adb_pairing_message">请按照以下步骤开始配对：\n- 打开“开发者选项”\n- 启用“USB调试”和“无线调试”\n- 点击“无线调试”左侧\n- 点击“使用配对码配对设备”\n- 在通知栏中输入配对码</string>
-
     <!-- Service Doctor -->
     <string name="snackbar_samsung_auto_blocker">三星自动拦截器可能会在 One UI 7/8 上阻止 ADB。请检查安全设置。</string>
     <string name="snackbar_action_check">检查</string>
@@ -137,26 +126,22 @@
     <string name="doctor_tip_phantom_process"><b>幽灵进程杀手</b>：如果执行过多命令，Android 12-15+ 可能会终止 Shizuku+。「修复」按钮会尝试关闭该限制。</string>
     <string name="doctor_tip_samsung_optimization"><b>三星自动优化</b>：请在设备维护中关闭「自动重启」，以免 Shizuku+ 在夜间被终止。</string>
     <string name="doctor_tip_samsung_sleeping"><b>三星休眠应用</b>：点按修复会直接打开<b>「永不休眠的应用」</b>列表。点按 <b>+</b> 按钮并添加 Shizuku+，以免三星冻结后台服务。</string>
-    <string name="doctor_tip_s22_ultra_exynos"><b>S22 Ultra（Exynos）</b>：如果服务响应迟缓，请尝试在设备维护 > 内存中关闭<b>「RAM Plus」</b>。</string>
+    <string name="doctor_tip_s22_ultra_exynos"><b>S22 Ultra（Exynos）</b>：如果服务响应迟缓，请尝试在设备维护 &gt; 内存中关闭<b>「RAM Plus」</b>。</string>
     <string name="doctor_tip_s22_ultra_snapdragon"><b>S22 Ultra（骁龙）</b>：请确保在快捷设置中启用「增强处理」，以获得最大的命令吞吐量。</string>
     <string name="doctor_system_well_configured">你的系统似乎已为 Shizuku+ 配置良好。</string>
-
     <!-- Root Compatibility -->
     <string name="su_bridge_other_detected_apps">其他检测到的 Root 应用</string>
     <string name="su_bridge_installed_root_app">已安装的 Root 应用</string>
     <string name="su_bridge_suggested_root_app">建议的 Root 应用</string>
-
     <!-- Shell Tutorial -->
     <string name="terminal_tutorial_export_summary">将这些文件（%1$s、%2$s、%3$s 和 %4$s）导出到新文件夹。</string>
     <string name="terminal_tutorial_copy_summary">这会把导出的文件复制到终端应用的私有存储。你也可以在 <font face="monospace">.bashrc</font> 或 <font face="monospace">.zshrc</font> 中为 %1$s、%2$s 和 %3$s 添加别名。</string>
     <string name="terminal_tutorial_run_command">sh /path/to/%1$s</string>
     <string name="terminal_tutorial_run_plus_command">sh /path/to/plus [command]</string>
-
     <!-- Adb Pairing Dialog -->
     <string name="adb_pairing_searching">正在搜索配对服务…</string>
     <string name="adb_pairing_status_pairing">正在与设备配对…</string>
     <string name="adb_pairing_status_failed">配对失败。</string>
-
     <!-- App Management -->
     <string name="dialog_adb_pairing_accessibility_enable">请启用辅助功能服务以开始配对过程。这将使 Shizuku 能够检测到配对码。\n\n辅助功能服务将在找到配对码后或1分钟后关闭以节省电量。</string>
     <string name="dialog_adb_pairing_accessibility_navigate">请按照以下步骤开始配对：\n- 进入“开发者选项”\n- 启用“USB调试”和“无线调试”\n- 点击“无线调试”左侧\n- 点击“使用配对码配对设备”。Shizuku 将自动检测配对码。</string>
@@ -177,23 +162,20 @@
     <string name="adb_pairing_tutorial_content_finish">回到 Shizuku 并启动 Shizuku。</string>
     <string name="adb_pairing_tutorial_content_network">Shizuku 需要访问本地网络。这受网络权限控制。</string>
     <string name="adb_pairing_tutorial_content_network_limation_not_foreground">某些系统（例如 MIUI）会禁止应用在不可见时访问网络，即使该应用使用了前台服务。请在这些系统上为 Shizuku 关闭电池优化功能。</string>
-
     <!-- Home - Root -->
     <string name="home_root_title"><![CDATA[启动（针对已 root 设备）]]></string>
+    <string name="home_samsung_system_uid_title"><![CDATA[启动（三星系统 UID）]]></string>
     <string name="home_root_description"><![CDATA[如果您正在使用 Magisk，可以尝试使用 %1$s。对于 root 用户，它最终会取代 Shizuku。请注意，现有应用程序需要稍作修改才能使用 %2$s。]]></string>
+    <string name="home_root_description_samsung"><![CDATA[通过三星系统 UID 提权方式运行，无需 Magisk 或 Root——Shizuku+ 使用三星设备上内置的系统特权账户。]]></string>
     <string name="home_root_button_start">启动</string>
     <string name="home_root_button_restart">重新启动</string>
-    <string name="home_root_description_samsung"><![CDATA[通过三星系统 UID 提权方式运行，无需 Magisk 或 Root——Shizuku+ 使用三星设备上内置的系统特权账户。]]></string>
-
     <!-- Home - Application management -->
     <string name="home_app_management_title">应用管理</string>
     <plurals name="home_app_management_authorized_apps_count">
-        <item quantity="one"><![CDATA[已授权 %d 个应用]]></item>
         <item quantity="other"><![CDATA[已授权 %d 个应用]]></item>
     </plurals>
     <string name="home_app_management_view_authorized_apps"><![CDATA[点按以管理授权的应用]]></string>
     <string name="home_app_management_empty">已请求或声明 Shizuku 权限的应用将显示在此处。</string>
-
     <!-- Home - Automation -->
     <string name="home_automation_title">使用自动化应用控制 Shizuku+</string>
     <string name="home_automation_description">Tasker 和 MacroDroid 等应用可以发送 Intent 来自动启动/停止 Shizuku+。</string>
@@ -207,15 +189,12 @@
     <string name="home_automation_regenerate_token">重新生成令牌？</string>
     <string name="home_automation_regenerate_token_message">你需要使用新令牌重新配置 intent。</string>
     <string name="home_automation_token_encrypt_failed">无法保护令牌 — 请重试</string>
-
     <!-- Home - Learn more -->
     <string name="home_learn_more_title">开发者指南</string>
     <string name="home_learn_more_description">了解如何使用 Shizuku 开发</string>
-
     <!-- Home - Adb permissions limited -->
     <string name="home_adb_is_limited_title">您需要进行额外的步骤</string>
     <string name="home_adb_is_limited_description">您的设备制造商限制了 adb 的权限，使用 Shizuku 的应用无法正常工作。\n\n通常，在“开发者选项”中调整一些选项即可解除此限制。请阅读帮助来了解具体的操作方式。\n\n您可能需要重新启动 Shizuku 以使操作生效。</string>
-
     <!-- Application management - context menu -->
     <string name="app_management_context_open_app">打开应用</string>
     <string name="app_management_context_app_info">应用信息</string>
@@ -228,7 +207,6 @@
     <string name="app_management_hidden">应用已隐藏</string>
     <string name="app_management_selected">已选择 %d 项</string>
     <string name="app_management_undo">撤销</string>
-
     <!-- Application management - search / filter / sort -->
     <string name="app_management_hint_search">搜索应用…</string>
     <string name="app_management_filter_all">全部</string>
@@ -240,7 +218,6 @@
     <string name="app_management_sort_a_to_z">名称（A–Z）</string>
     <string name="app_management_sort_last_installed">最近安装</string>
     <string name="app_management_sort_last_updated">最近更新</string>
-
     <!-- Application management -->
     <string name="app_management_dialog_adb_is_limited_title">adb 权限受限</string>
     <string name="app_management_dialog_adb_is_limited_message"><![CDATA[这极有可能是你的设备制造商限制了 adb 的权限。<p><b><a href="%1$s">此文档</a></b>中可能有针对你的系统的解决方案。]]></string>
@@ -251,7 +228,6 @@
     <string name="app_management_bulk_revoke">撤销所选</string>
     <string name="app_management_bulk_hide">隐藏所选</string>
     <string name="app_management_bulk_select_all">全选</string>
-
     <!-- Terminal -->
     <string name="home_terminal_title">在终端应用中使用 Shizuku+</string>
     <string name="home_terminal_description">通过 Shizuku+ 在终端应用中运行 shell 命令</string>
@@ -264,21 +240,18 @@
     <string name="terminal_tutorial_2_description">提示：如果你的终端应用程序的主目录（~）位于私有文件目录中，将文件放在那里就可以直接运行 %1$s 而无需输入路径。\n\n否则，你可以在终端应用程序的 %3$s 配置文件中为 %2$s 创建一个别名。</string>
     <string name="terminal_tutorial_3">使用以下命令打开 shell：</string>
     <string name="rish_description"><![CDATA[使用 %1$s，您可以在任何终端应用程序中运行 shell 命令。<p>点击了解更多使用方法。]]></string>
-
     <!-- Settings — swipe customisation -->
     <string name="settings_action_none">无</string>
     <string name="settings_action_open_app">打开应用</string>
     <string name="settings_action_app_info">应用信息</string>
     <string name="settings_action_toggle_permission">切换权限</string>
     <string name="settings_action_hide_from_list">从列表中隐藏</string>
-
     <!-- Settings — long-press customisation -->
     <string name="settings_lp_category_summary">选择在管理列表中长按应用时显示的操作。若只启用一项，则会直接触发——不显示菜单。</string>
     <string name="settings_lp_open_app">打开应用</string>
     <string name="settings_lp_app_info">应用信息</string>
     <string name="settings_lp_toggle_permission">切换 Shizuku 权限</string>
     <string name="settings_lp_hide_from_list">从列表中隐藏</string>
-
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">欢迎使用 Shizuku+</string>
     <string name="onboarding_welcome_desc">功能增强的 Shizuku，带来强大的应用管理能力。滑动手势、快捷操作与可定制体验，尽在一处。</string>
@@ -298,12 +271,34 @@
     <string name="onboarding_setup_wadb_desc">Android 11+，无需电脑。使用无线调试。</string>
     <string name="onboarding_setup_root_desc">你的设备已 root。以 root 权限启动 Shizuku。</string>
     <string name="onboarding_setup_adb_desc">适用于任何设备。从电脑运行一条 ADB 命令即可开始。</string>
-
+    <string name="onboarding_layout_nav_title">首页与导航</string>
+    <string name="onboarding_layout_nav_desc">定制你的日常操作空间。拖动首页卡片调整顺序，或使用悬浮胶囊导航栏。</string>
+    <string name="onboarding_floating_nav_title">悬浮导航栏</string>
+    <string name="onboarding_floating_nav_desc">滚动时自动隐藏的胶囊式底栏</string>
+    <string name="onboarding_activity_log_title">首页历史记录</string>
+    <string name="onboarding_activity_log_desc">一目了然地查看最近的启动与应用激活记录</string>
+    <string name="onboarding_security_doctor_title">网络护盾与服务诊断</string>
+    <string name="onboarding_security_doctor_desc">自动双栈防护可在不受信任的 Wi-Fi 上保护你正在使用的调试端口，同时服务诊断会监控后台健康状态。</string>
+    <string name="onboarding_network_guard_title">网络信任护盾</string>
+    <string name="onboarding_network_guard_desc">在开放或不受信任的网络上阻止启动 TCP</string>
+    <string name="onboarding_watchdog_title">看门狗后台保活</string>
+    <string name="onboarding_watchdog_desc">服务被杀后自动修复并重新唤醒</string>
+    <string name="onboarding_take_tour">功能导览</string>
+    <string name="onboarding_take_tour_summary">探索全新的 M3 表现力外观、首页布局与网络信任护盾</string>
     <!-- Swipe hint overlay -->
     <string name="swipe_hint_title">滑动手势</string>
     <string name="swipe_hint_right">右滑执行快捷操作</string>
     <string name="swipe_hint_left">左滑执行快捷操作</string>
-
+    <!-- App Name & Icon Customization / Camouflage (Issue #615) -->
+    <string name="app_name_classic">Shizuku</string>
+    <string name="app_name_system">系统服务</string>
+    <string name="app_name_tools">工具</string>
+    <string name="app_name_files">文件</string>
+    <string name="app_name_notes">笔记</string>
+    <string name="settings_app_icon_name_title">应用图标与名称</string>
+    <string name="settings_app_icon_name_summary">自定义启动器图标与应用名称</string>
+    <string name="settings_show_home_cards_outline">首页卡片边框</string>
+    <string name="settings_show_home_cards_outline_summary">在首页卡片周围显示细微描边</string>
     <!-- Settings -->
     <string name="settings_title">设置</string>
     <string name="settings_start_on_boot">自启动</string>
@@ -312,11 +307,12 @@
     <string name="settings_use_system_color">使用系统主题颜色</string>
     <string name="settings_watchdog">看门狗</string>
     <string name="settings_watchdog_summary">在崩溃或意外停止后自动重启 Shizuku+。当底层网络断开时（例如使用 RNDIS/USB ADB 时拔出 USB 数据线）无法重新连接。</string>
+    <string name="settings_watchdog_not_running">已开启，当前未运行</string>
     <string name="settings_device_hardening">设备加固与保活</string>
     <string name="settings_device_hardening_summary">让 Shizuku 与终端客户端不受 Doze 影响，自动授予 WRITE_SECURE_SETTINGS，并同步启动器二进制文件</string>
     <string name="doctor_check_device_hardening">设备加固与 Doze 豁免</string>
     <string name="device_hardening_applied">已应用设备加固与 Doze 优化</string>
-    <string name="settings_tcp_mode_summary">\"允许 Shizuku+ 在没有 Wi-Fi 的情况下重启。（Shizuku+ 必须在重启后启动过一次）\"</string>
+    <string name="settings_tcp_mode_summary">"\"允许 Shizuku+ 在没有 Wi-Fi 的情况下重启。（Shizuku+ 必须在重启后启动过一次）\""</string>
     <string name="settings_tcp_mode_dialog_close_port">"TCP 端口将立即关闭。您需要连接 Wi-Fi 才能重新启用 TCP 模式。是否继续？"</string>
     <string name="settings_tcp_mode_closing_port">正在关闭 TCP 端口...</string>
     <string name="settings_restart_dialog_title">需要重启</string>
@@ -335,7 +331,6 @@
     <string name="settings_developer_options_revealed">开发者选项已开启！</string>
     <string name="settings_developer_options_click_more">再点击 %d 次以开启开发者选项。</string>
     <string name="settings_diagnostics_category">诊断</string>
-
     <string name="settings_report_bug">报告错误</string>
     <string name="settings_activity_log">活动日志</string>
     <string name="settings_activity_log_clear">清除日志</string>
@@ -355,7 +350,6 @@
     <string name="settings_reset_adb_keys_summary">删除现有的 ADB 密钥与证书。适用于配对卡住或 KeyStore 损坏的情况。</string>
     <string name="settings_reset_adb_keys_success">已清除 ADB 密钥</string>
     <string name="settings_reset_adb_keys_error">重置 ADB 密钥失败</string>
-
     <!-- Shizuku+ Features -->
     <string name="settings_shizuku_plus_features">Shizuku+ 功能</string>
     <string name="settings_dhizuku_mode">Dhizuku 模式</string>
@@ -379,22 +373,26 @@
     <string name="settings_overlay_manager_plus_summary">管理系统 RRO 叠加层。Hex Installer 和 Substratum 主题需要它才能在无 root 下工作。</string>
     <string name="settings_network_governor_plus_summary">特权网络控制。AFWall+ 用它实现可靠的系统级过滤。</string>
     <string name="settings_activity_manager_plus_summary">原生进程控制。让 MacroDroid、Tasker 和 Naptime 能够深度强制停止应用并设置待机分组。</string>
+    <!-- Plus feature short titles (used in settings preference titles) -->
     <string name="settings_network_governor_plus_title">DNS 调控</string>
     <string name="settings_continuity_bridge_title">连续性桥接</string>
     <string name="settings_activity_manager_plus_title">进程控制</string>
     <string name="settings_status_bar_governor_plus_title">状态栏控制</string>
     <string name="settings_package_governor_plus_title">应用包调控</string>
     <string name="settings_avf_manager_title">虚拟机管理</string>
+    <!-- Dhizuku admin tools -->
     <string name="settings_dhizuku_screencap_lockdown">屏幕截图锁定</string>
     <string name="settings_dhizuku_screencap_lockdown_summary">在设备全局禁用截屏与录屏</string>
     <string name="settings_dhizuku_usb_lockdown">USB 数据锁定</string>
     <string name="settings_dhizuku_usb_lockdown_summary">禁止 USB 文件传输（MTP），从物理层面保护设备</string>
     <string name="settings_dhizuku_suspended_packages">已暂停的应用</string>
     <string name="settings_dhizuku_suspended_packages_summary">选择要冻结并彻底禁止运行的应用</string>
+    <!-- Backup / Restore settings -->
     <string name="settings_backup_settings">备份设置</string>
     <string name="settings_backup_settings_summary">使用生物识别加密安全导出你的配置与增强项。</string>
     <string name="settings_restore_settings">恢复设置</string>
     <string name="settings_restore_settings_summary">从加密备份中恢复你的配置。</string>
+    <!-- Experimental Plus settings (developer section) -->
     <string name="settings_ai_core_master">AI 核心总开关</string>
     <string name="settings_ai_core_master_summary">启用高权限 AI 操作：NPU 调度与窗口层级访问</string>
     <string name="settings_npu_acceleration">NPU 加速</string>
@@ -429,38 +427,28 @@
     <string name="diagnostics_action_required">需要处理</string>
     <string name="diagnostics_disable_button">关闭诊断</string>
     <string name="help_general_plus_summary"><![CDATA[<b>Shizuku+ 如何与其他应用协作</b><br><br>Shizuku+ 提供<i>专属 Plus 功能</i>（存储桥接、AI 桥接、主题桥接），可通过本应用以及任何显式使用 Shizuku+ API（af.shizuku.plus.api）的第三方应用访问。<br><br><b>重要：</b>Shizuku+ 完全向后兼容原版 Shizuku API。使用原版 Shizuku 的现有应用（如 SD Maid SE 和 SwiftBackup）会自动发现并使用 Shizuku+，无需开发者做任何适配。<br><br><b>与原版 Shizuku 共用：</b>同一时间只能运行一个服务。如果你仍安装了原版 Shizuku，主界面上的「伴侣」卡片可让切换变得轻松，但建议卸载原版 Shizuku，专享 Shizuku+。]]></string>
-
     <!-- Detailed Help Strings -->
     <string name="help_dhizuku_title">关于 Dhizuku 模式</string>
     <string name="help_dhizuku_detail">Dhizuku 允许 Shizuku 将其设备所有者（DevicePolicyManager）权限共享给第三方应用。这对 Dhizuku Manager 或某些需要在非唯一设备所有者的情况下管理系统策略的 kiosk 模式工具来说至关重要。</string>
-
     <string name="help_shell_interceptor_title">关于 Shell 加速器</string>
     <string name="help_shell_interceptor_detail">Shell 加速器会拦截标准 shell 命令（am、pm、settings），并将其直接转换为 Shizuku 服务器 API 调用。这样可避免为每条命令启动新的 /system/bin/sh 进程所带来的高开销，让 MacroDroid 或 Tasker 中的自动化显著更快、更省电。</string>
-
     <string name="help_avf_manager_title">关于 AVF 管理器</string>
     <string name="help_avf_manager_detail">Android 虚拟化框架（AVF）管理器允许你运行隔离的 Linux 或 Microdroid 虚拟机。在受支持的硬件（骁龙 8 Gen 1+、Tensor G2+）上，可启用支持 VirtIO-GPU 的硬件加速虚拟化，用于运行桌面 Linux 环境或隔离的安全任务。</string>
-
     <string name="help_storage_proxy_title">关于存储桥接</string>
-
     <string name="help_continuity_bridge_title">关于多设备连续性</string>
     <string name="help_continuity_bridge_detail">连续性桥接允许同一网络中的 Shizuku+ 设备移交任务并同步剪贴板/应用状态。它利用 Android 17 的 Handoff API（在可能的情况下向下移植），让自动化任务能在手机与平板之间无缝切换。</string>
-
     <string name="help_ai_core_plus_title">关于智能桥接</string>
     <string name="help_ai_core_plus_detail">智能桥接授予 AI 助手对屏幕内容和 NPU 调度的特权访问。它通过提供高性能、感知窗口的帧捕获（绕过 Android 标准的录屏限制），实现「圈选搜索」或本地大模型的屏幕感知上下文等功能。</string>
-
     <string name="help_window_manager_plus_title">关于窗口调校器</string>
     <string name="help_window_manager_plus_detail">窗口调校器开放了进阶的 WindowManager 标志，可强制任何应用进入自由窗口模式、放入常驻气泡栏，或以始终置顶的悬浮层渲染。这是多任务处理与定制 One UI 桌面体验的强大工具。</string>
-
     <string name="help_overlay_manager_plus_title">关于系统主题桥接</string>
     <string name="help_overlay_manager_plus_detail">此桥接提供对 OverlayManagerService（OMS）的无 root 访问。它使用现代的 OverlayManagerTransactions 注册 Fabricated Overlays，让 Hex Installer 等应用无需 root 即可在 One UI 6/7/8 上修改系统颜色、字体与尺寸。</string>
-
     <string name="help_network_governor_plus_title">关于网络与 DNS 管理</string>
     <string name="help_network_governor_plus_detail">网络管理器提供对 INetworkPolicyManager 与私人 DNS 设置的特权访问。它能为单个应用强制执行 POLICY_REJECT_ALL，即使在使用 Wi-Fi 和 5G 连接、没有活动 VPN 隧道的情况下，也能提供可靠的系统级防火墙。</string>
-
     <string name="help_activity_manager_plus_title">关于深度进程控制</string>
     <string name="help_activity_manager_plus_detail">深度进程控制允许服务器绕过标准的应用休眠与待机限制。它可以把应用强制放入 RESTRICTED 待机分组，或执行真正的 deepForceStop（终止所有服务与后台任务），这对激进的省电工具来说不可或缺。</string>
-
     <!-- Plus settings category titles -->
+    <string name="settings_plus_category_core">核心</string>
     <string name="settings_root_magisk_mocking">Magisk 环境模拟</string>
     <string name="settings_root_magisk_mocking_summary">伪造 Magisk 二进制文件、属性和内部文件夹，以蒙骗检测 root 的应用。</string>
     <string name="settings_root_auto_grant">自动批准桥接</string>
@@ -471,16 +459,12 @@
     <string name="settings_root_busybox_mocking_summary">为「busybox」命令返回伪造的版本字符串，以满足旧脚本的需求。</string>
     <string name="help_root_magisk_title">关于 Magisk 模拟</string>
     <string name="help_root_magisk_detail">许多应用通过查找 Magisk 专有属性或 /sbin/.magisk 文件夹来检测 root。本模块会模拟这些特征，让你能在那些检测不到 Magisk 环境就拒绝启动的应用中使用仅供 root 使用的功能。</string>
-
     <string name="help_root_auto_grant_title">关于自动批准</string>
     <string name="help_root_auto_grant_detail">传统 root 应用常会尝试通过 shell 为自己授予权限。此桥接会监听这些「pm grant」调用，并利用 Shizuku 的提权能力立即批准它们，免去手动管理权限的麻烦。</string>
-
     <string name="help_root_file_interceptor_title">关于文件拦截器</string>
     <string name="help_root_file_interceptor_detail">当应用用标准 shell 把文件复制到 /data/data 时，往往会丢失归属和 SELinux 上下文。本模块会自动添加 --preserve=all 等标志，以保持文件完整性并防止应用崩溃。</string>
-
     <string name="help_root_busybox_title">关于 BusyBox 模拟</string>
     <string name="help_root_busybox_detail">BusyBox 是 root 设备上常见的 Unix 工具集。一些较旧的 root 应用在执行逻辑前会检查它是否存在。本模块会为「busybox」命令返回模拟的成功响应。</string>
-
     <string name="settings_experimental_root_summary">setprop、mount 和 SELinux 的功能解决方法。</string>
     <string name="settings_spoof_device_summary">为系统属性查询返回通用设备身份。</string>
     <string name="settings_experimental_root_experimental">实验性 Root 兼容性</string>
@@ -488,7 +472,6 @@
     <string name="settings_open_source_licenses">开源许可</string>
     <string name="settings_open_source_licenses_summary">Shizuku+ 使用的开源库</string>
     <string name="settings_spoof_target">目标设备</string>
-
     <!-- Root Integration (renamed from Legacy Compatibility) -->
     <string name="settings_adb_proxy">本地 ADB 代理服务器</string>
     <string name="settings_adb_proxy_summary">在 15555 端口模拟 ADB 服务器，让需要无线 ADB 的应用无需一直开启系统功能。</string>
@@ -496,6 +479,7 @@
     <string name="settings_on_device_adb_tcp_summary">直接在设备上启用 ADB TCP 模式（端口 5555）。需要 root。</string>
     <string name="settings_force_start_wadb">绕过 WADB 的 Wi-Fi 检查</string>
     <string name="settings_force_start_wadb_summary">即使 Wi-Fi 断开也尝试启动 Shizuku。</string>
+    <string name="settings_usb_phone_switch_notify">USB 连接与切换通知</string>
     <string name="settings_fake_su">SU 桥接（su 包装器）</string>
     <string name="settings_fake_su_summary">为支持自定义路径的传统 root 应用提供一个由 Shizuku 支持的「su」二进制文件。</string>
     <string name="settings_root_integration_hub">Root 集成中心</string>
@@ -530,16 +514,20 @@
     <string name="su_bridge_self_test_fail">桥接无法工作</string>
     <string name="su_bridge_self_test_copy">复制结果</string>
     <string name="su_bridge_self_test_copied">已复制自检结果</string>
-    <string name="su_bridge_device_identity_title">设备标识</string>
-    <string name="starter_service_started">服务已启动。</string>
+    <string name="su_bridge_terminal_profile_title">终端与环境设置</string>
+    <string name="su_bridge_terminal_profile_desc">对于 Termux 和 shell 脚本，请将 SU 桥接加入 PATH 开头，或添加别名，让「su」无需 root 也能无缝运行。</string>
+    <string name="su_bridge_copy_termux_setup">复制 Termux 配置命令</string>
+    <string name="su_bridge_termux_setup_copied">Termux 命令已复制到剪贴板</string>
+    <string name="su_bridge_configure_dialog_title">配置 %s</string>
+    <string name="su_bridge_configure_dialog_message">1. SU 桥接路径已复制到剪贴板：\n\n%1$s\n\n2. 打开 %2$s，找到其 root/二进制文件路径设置：\n\n%3$s\n\n3. 粘贴已复制的 SU 桥接路径。</string>
+    <string name="su_bridge_open_app">打开应用</string>
     <string name="su_bridge_device_identity_real">真实：%s</string>
     <string name="su_bridge_device_identity_spoofed">伪造：%s</string>
     <string name="su_bridge_device_identity_none">无（显示真实设备）</string>
-
     <!-- Sentry Offline Notice -->
     <string name="sentry_offline_notice_title">崩溃报告已离线</string>
     <string name="sentry_offline_notice_summary">由于配额限制，通过 Sentry 的自动崩溃报告目前已停用（5 月 1 日重置）。如有崩溃请手动反馈。</string>
-
+    <string name="sentry_offline_report_github">在 GitHub 上反馈</string>
     <string name="manual_report_title">手动崩溃报告</string>
     <string name="manual_report_summary">生成带日志的详细报告，帮助我们手动排查问题。</string>
     <string name="manual_report_button_github">复制报告并前往 GitHub</string>
@@ -551,8 +539,6 @@
     <string name="crash_detected_dialog_message">Shizuku+ 检测到你上次使用时发生了崩溃。是否生成报告以帮助我们修复？</string>
     <string name="crash_detected_dialog_ignore">忽略</string>
     <string name="shortcut_open_terminal">打开终端</string>
-
-
     <!-- Bug Report Dialog -->
     <string name="bug_report_dialog_before_reporting">首先，请执行以下操作：</string>
     <string name="bug_report_dialog_update">请检查您是否正在使用^1。</string>
@@ -564,10 +550,15 @@
     <string name="bug_report_dialog_method">如果您有账号，请在^1上提交问题。</string>
     <string name="bug_report_dialog_method_2">否则，您可以通过发送电子邮件的方式。</string>
     <string name="bug_report_dialog_button_email">电子邮件</string>
-
     <!-- Service Doctor -->
     <string name="home_service_doctor_title">服务医生</string>
     <string name="home_service_doctor_summary">启动 Shizuku+ 遇到困难？点按运行诊断检查。</string>
+    <string name="doctor_tips_title">故障排除与修复</string>
+    <string name="doctor_action_rerun">重新运行</string>
+    <string name="doctor_summary_healthy_title">所有系统运行正常</string>
+    <string name="doctor_summary_healthy_subtitle">所有诊断检查均已通过，服务环境处于最佳状态。</string>
+    <string name="doctor_summary_issues_title">检测到 %1$d 个问题</string>
+    <string name="doctor_summary_issues_subtitle">请查看下方建议的修复方案，以恢复服务的完整可靠性。</string>
     <string name="doctor_check_battery">电池优化</string>
     <string name="doctor_check_adb">无线调试</string>
     <string name="doctor_check_root">Root 访问</string>
@@ -621,7 +612,6 @@
     <string name="su_bridge_deploy_success">SU 桥接已部署到 /data/local/tmp。</string>
     <string name="su_bridge_warning_wallet_title">Google 钱包提醒</string>
     <string name="su_bridge_warning_wallet_message">将「su」部署到 /data/local/tmp 或启用 Magisk 模拟，会触发 Google Play 服务的 Android root 检测，从而导致 Google 钱包的感应支付被禁用。你可以随时将其移除以恢复钱包。</string>
-
     <!-- Snackbar -->
     <string name="snackbar_invalid_port">端口必须介于 1 和 65535 之间</string>
     <string name="snackbar_battery_optimization_home">要使开机启动/看门狗功能正常工作，必须禁用电池优化。</string>
@@ -629,7 +619,6 @@
     <string name="snackbar_action_fix">修复</string>
     <string name="snackbar_server_version_skew">Shizuku+ 已更新，但正在运行的服务仍是旧版本。请重启服务，以免已连接的应用失效。</string>
     <string name="snackbar_action_restart">重启</string>
-
     <!-- Toast -->
     <string name="toast_no_email_app">未找到电子邮件应用</string>
     <string name="toast_app_frozen">应用已冻结</string>
@@ -663,23 +652,20 @@
     <string name="adb_error_ssl_title">连接错误</string>
     <string name="adb_error_ssl_message">无线 ADB 握手失败（SSL 协议错误）。这通常发生在 ADB 密钥损坏时。是否在开发者选项中重置它们？</string>
     <string name="adb_error_ssl_button_reset">前往开发者选项</string>
-
     <!-- Dark Mode Setting Override -->
     <string name="dark_theme">主题</string>
     <string name="dark_theme_off">浅色主题</string>
     <string name="dark_theme_on">深色主题</string>
     <string name="follow_system">跟随系统</string>
-
     <!-- About -->
     <string name="settings_about">关于</string>
+    <string name="settings_about_category_updates">更新</string>
     <string name="about_view_source_code_title">源代码</string>
-
     <!-- Start/Stop -->
-     <string name="start">启动</string>
-     <string name="stop">停止</string>
+    <string name="start">启动</string>
+    <string name="stop">停止</string>
     <string name="action_stop">停止 Shizuku+</string>
     <string name="dialog_stop_message">Shizuku+ 服务将被停止。</string>
-
     <!-- Notification -->
     <string name="notification_channel_automation">自动化</string>
     <string name="notification_automation_title">自动化正在运行</string>
@@ -698,27 +684,20 @@
     <string name="notification_auth_invalid_title">认证令牌无效</string>
     <string name="notification_auth_invalid_message">请确保 intent 中的令牌与应用中「查看 intent」所显示的令牌一致。</string>
     <!-- Permission related, appears in system permission UI -->
-    
-    
     <string name="permission_label">使用 Shizuku</string>
     <string name="permission_description">允许应用使用 Shizuku。</string>
-    
-    
     <string name="permission_label_plus">使用 Shizuku (+)</string>
     <string name="permission_description_plus">允许该应用使用 Shizuku (+)。</string>
     <string name="permission_warning_template"><![CDATA[要允许<b>%1$s</b>%2$s吗？]]></string>
     <string name="grant_dialog_button_allow_always">始终允许</string>
     <string name="grant_dialog_button_deny">"拒绝"</string>
-
     <!-- Starter -->
     <string name="starter">启动程序</string>
-    
     <string name="start_with_root_failed">未授予 root 权限或是该设备没有 root，因此无法启动服务。</string>
     <string name="starter_waiting">正在等待服务…</string>
     <string name="starter_retry">重试</string>
     <string name="adb_error_timeout">服务未能在限定时间内启动。请确认已开启无线调试后重试。</string>
     <string name="adb_error_generic">发生了意外错误。请重试。</string>
-
     <!-- WADB Starter -->
     <string name="wadb_notification_title">正在启动 Shizuku…</string>
     <string name="wadb_notification_wifi_required">正在等待 Wi-Fi 连接，连接成功后才能继续</string>
@@ -734,19 +713,26 @@
     <string name="wadb_error_generic_short">ADB 连接失败</string>
     <string name="wadb_permission_error_notification_title">权限错误</string>
     <string name="wadb_permission_error_notification_content">Shizuku 需要 WRITE_SECURE_SETTINGS 权限才能开机启动。点击了解如何授予此权限。</string>
-
     <!-- Watchdog -->
     <string name="watchdog_running">看门狗正在运行</string>
     <string name="watchdog_turn_off">关</string>
     <string name="watchdog_shizuku_crashed_title">Shizuku 最近崩溃了</string>
     <string name="watchdog_shizuku_crashed_text">看门狗已重启服务。点击了解可防止未来崩溃的潜在修复方案。</string>
-
+    <string name="battery_exemption_channel_name">电池优化</string>
+    <string name="battery_exemption_notification_title">允许 Shizuku+ 在后台运行</string>
+    <string name="battery_exemption_notification_text">看门狗已自动开启。请将 Shizuku+ 从电池优化中豁免，以便服务停止时能够自动重启。</string>
+    <string name="vendor_battery_notification_title">Shizuku+ 可能会在后台被停止</string>
+    <string name="vendor_battery_notification_text">看门狗可能会被 %1$s 停止。点按打开可让 Shizuku+ 持续运行的设置。</string>
+    <string name="vendor_battery_restriction_background_activity">后台活动限制</string>
+    <string name="vendor_battery_restriction_standby_bucket">Android 对不常用应用的限制</string>
+    <string name="vendor_battery_restriction_samsung_deep_sleep">三星的深度休眠应用</string>
+    <string name="vendor_battery_restriction_xiaomi_autostart">小米的自启动设置</string>
+    <string name="vendor_battery_restriction_xiaomi_no_restrict">小米的省电策略（未设为「无限制」）</string>
     <!-- Misc -->
     <string name="dialog_cannot_open_browser_title">无法启动浏览器</string>
     <string name="toast_copied_to_clipboard">已复制到剪贴板</string>
     <string name="accessibility_service_label">Shizuku+ 配对助手</string>
     <string name="accessibility_service_description">为通知或分屏不易使用的设备（例如电视和三星 One UI 手机）提供配对支持。\n\n使 Shizuku+ 能够从无线调试配对界面提取配对码。找到配对码后，该服务会自动禁用。</string>
-
     <!-- Messages for legacy -->
     <string name="dialog_legacy_not_support_title">%1$s 不支持现代 Shizuku</string>
     <string name="dialog_legacy_not_support_message"><![CDATA[旧式 Shizuku 已于 2019 年 3 月被弃用。此外，旧式 Shizuku 无法在较新版本的 Android 系统上工作。<p>请要求 <b>%1$s</b> 的开发者进行更新。]]></string>
@@ -754,9 +740,14 @@
     <string name="dialog_requesting_legacy_message"><![CDATA[<b>%1$s</b> 支持现代 Shizuku，但它正在请求旧式 Shizuku。这可能是因为 Shizuku 没有运行，请在 Shizuku 应用内检查。<p>旧式 Shizuku 已于 2019 年 3 月被弃用。]]></string>
     <string name="dialog_requesting_legacy_button_open_shizuku">打开 Shizuku</string>
     <string name="wadb_notification_attempt_now">现在尝试</string>
-
-
-
+    <string name="wadb_notification_ask_again">再次询问</string>
+    <string name="wadb_notification_awaiting_auth">正在等待你在本机接受「允许 USB 调试」提示</string>
+    <string name="wadb_notification_ask_again_from">如果你点按了「拒绝」，「再次询问」会从 %1$s 重新显示该提示</string>
+    <string name="wadb_notification_ask_again_ready">如果你点按了「拒绝」，请点按「再次询问」以再次显示该提示</string>
+    <string name="wadb_notification_ask_again_used">这是本次等待的最后一次提示，等待将于 %1$s 结束</string>
+    <string name="wadb_notification_ask_again_used_untimed">这是本次等待的最后一次提示</string>
+    <string name="wadb_notification_wait_ends">本次等待将于 %1$s 结束</string>
+    <string name="wadb_notification_auth_timed_out">未及时接受「允许 USB 调试」提示。请点按「现在尝试」重试</string>
     <!-- Settings navigation summaries -->
     <string name="settings_category_activity_log">活动日志</string>
     <string name="settings_category_appearance">外观</string>
@@ -782,8 +773,6 @@
     <string name="fake_adb_pairing_message">有应用正试图通过伪造的本地 ADB 服务器连接到 Shizuku+。\n\nRSA 密钥指纹：\n%1$s</string>
     <string name="fake_adb_pairing_allow">允许</string>
     <string name="fake_adb_pairing_deny">拒绝</string>
-
-
     <!-- Accessibility - Content Descriptions -->
     <string name="accessibility_icon_server_status">服务器状态图标</string>
     <string name="accessibility_icon_app_management">应用管理图标</string>
@@ -802,7 +791,6 @@
     <string name="accessibility_state_collapsed">已折叠</string>
     <string name="accessibility_action_app_info">打开应用信息设置</string>
     <string name="accessibility_permission_granted">已授予权限</string>
-
     <!-- Empty State Views -->
     <string name="empty_state_title_service_starting">正在启动…</string>
     <string name="empty_state_description_service_starting">正在等待 Shizuku+ 完成启动。通常只需片刻。</string>
@@ -810,12 +798,30 @@
     <string name="empty_state_description_no_results">没有应用符合当前的筛选或搜索条件。</string>
     <string name="empty_state_title_no_home_cards">所有卡片均已隐藏</string>
     <string name="empty_state_action_restore_home_cards">恢复卡片</string>
+    <string name="home_restore_default">恢复默认</string>
+    <string name="home_restore_default_dialog_title">恢复默认</string>
+    <string name="home_restore_default_dialog_message">将主页卡片恢复为默认顺序，并取消隐藏所有卡片？</string>
+    <string name="home_restore_default_success">主页卡片已恢复为默认</string>
     <string name="empty_state_title_activity_log_empty">暂无活动记录</string>
     <string name="empty_state_description_activity_log_empty">启用活动日志后，Shizuku API 调用与事件会显示在这里。</string>
+    <string name="activity_log_sort_by_app">按应用</string>
+    <string name="activity_log_sort_by_type">按类型</string>
+    <string name="activity_log_sort_most_active">最活跃</string>
+    <string name="activity_log_stack_activities">合并重复事件</string>
+    <string name="activity_log_stacked_count">%d 次</string>
+    <string name="activity_log_type_start">启动</string>
+    <string name="activity_log_type_stop">停止</string>
+    <string name="activity_log_type_permission">权限</string>
+    <string name="activity_log_type_app_mgmt">应用</string>
+    <string name="activity_log_type_watchdog">看门狗</string>
+    <string name="activity_log_type_system">系统</string>
+    <string name="activity_log_type_other">事件</string>
+    <!-- Settings diagnostics preference (settings_advanced.xml) -->
     <string name="settings_diagnostics_enabled">设置诊断</string>
     <string name="settings_diagnostics_enabled_summary">主动扫描配置中的冲突与异常</string>
+    <!-- Verified install preferences (settings_app_management.xml) -->
+    <!-- Custom accent color preference (settings_personalization.xml) -->
     <string name="settings_custom_accent_title">自定义强调色</string>
-
     <!-- Update Settings -->
     <string name="settings_behavior_category_startup">启动与恢复</string>
     <string name="settings_advanced_category_diagnostics">诊断</string>
@@ -831,8 +837,10 @@
     <string name="settings_root_category_rootless_bridges">免 Root 桥接</string>
     <string name="settings_root_category_mocking">伪装与模拟</string>
     <string name="settings_root_category_bootloader">引导加载程序集成</string>
+    <!-- SU Bridge configuration -->
     <string name="settings_custom_su_path">自定义 SU 路径</string>
     <string name="settings_custom_su_path_summary">SU 桥接以 su 二进制形式暴露的路径。留空则从常见位置自动探测。</string>
+    <!-- Root modules — Rootless Bridges -->
     <string name="settings_root_build_prop_redirect">build.prop 重定向</string>
     <string name="settings_root_build_prop_redirect_summary">免 Root 将系统构建属性修改重定向到可写代理文件</string>
     <string name="help_root_build_prop_title">关于 build.prop 重定向</string>
@@ -841,6 +849,7 @@
     <string name="settings_root_iptables_mocking_summary">本地 netfilter 权限不足时，拦截 iptables 规则并伪装为执行成功</string>
     <string name="help_root_iptables_title">关于防火墙伪装</string>
     <string name="help_root_iptables_detail">当免 Root 限制导致无法真正下发规则时，将 iptables 命令伪装为执行成功，让防火墙类应用得以继续正常工作。</string>
+    <!-- Root modules — Mocking &amp; Simulation -->
     <string name="settings_overlay_fs_proxy">OverlayFS 系统幻影</string>
     <string name="settings_overlay_fs_proxy_summary">［开发者］无缝挂载虚拟 overlay 文件系统，为需要 Root 的应用模拟可读写的 /system。警告：极度实验性。</string>
     <string name="settings_root_kernel_ghosting">内核驱动幻影</string>
@@ -849,13 +858,13 @@
     <string name="settings_root_partition_ghosting_summary">［开发者］拦截并伪装针对 /dev/block/ 的 dd 操作。避免刷机工具在无实际操作时崩溃。</string>
     <string name="settings_root_power_ghosting">电源状态幻影</string>
     <string name="settings_root_power_ghosting_summary">［开发者］拦截 reboot、recovery 与 soft-reboot 命令并静默忽略，避免设备意外重启。</string>
+    <!-- Bootloader Integration settings -->
     <string name="settings_bootloader_flash_ota">免系统 OTA 刷写</string>
     <string name="settings_bootloader_flash_ota_summary">无需 Root 或第三方恢复模式，将 OTA 载荷刷入非活动槽位</string>
     <string name="settings_bootloader_fastbootd">FastbootD 切换</string>
     <string name="settings_bootloader_fastbootd_summary">从 Shizuku shell 直接重启进入 fastbootd 用户空间</string>
     <string name="settings_developer_category_debug">调试与诊断</string>
     <string name="settings_plus_category_device_owner_tools">设备所有者工具</string>
-    
     <!-- Developer Options -->
     <string name="settings_developer_options">开发者选项</string>
     <string name="settings_auto_update_title">自动检查更新</string>
@@ -869,7 +878,6 @@
     <string name="update_channel_dev_warning_message">开发版基于最新提交构建，可能包含缺陷、崩溃或不兼容变更。仅在希望提前体验新功能时使用。\n\n你可以随时切回稳定版。</string>
     <string name="settings_check_for_update_summary">手动检查是否有新版本</string>
     <string name="settings_last_check_title">上次检查</string>
-
     <!-- Update Notifications -->
     <string name="update_notification_channel">更新通知</string>
     <string name="update_notification_channel_description">应用更新下载与安装的通知</string>
@@ -884,9 +892,7 @@
     <string name="update_download_failed_storage">存储空间不足，无法下载更新。</string>
     <string name="update_download_failed_cannot_resume">下载中断后无法续传。请重试。</string>
     <string name="update_download_failed_http">网络错误导致下载中断。请检查网络连接后重试。</string>
-
     <!-- Migration Dialog -->
-
     <!-- Update Dialogs -->
     <string name="update_available_title">有可用更新</string>
     <string name="update_available_message">新版本 %1$s 可供下载。</string>
@@ -908,10 +914,8 @@
     <string name="shell_export_success">文件导出成功</string>
     <string name="shell_export_failed">导出失败——无法写入任何文件</string>
     <string name="shell_export_partial">已导出 %2$d 个文件中的 %1$d 个（部分失败）</string>
-
     <!-- Settings backup/restore -->
     <string name="adb_native_unavailable">此设备不支持 ADB 配对</string>
-
     <string name="changelog_title">更新内容</string>
     <string name="changelog_close">关闭</string>
     <string name="changelog_view_on_github">在 GitHub 上查看</string>
@@ -920,30 +924,51 @@
     <string name="changelog_version_history">版本历史</string>
     <string name="changelog_all_new_updates">所有新更新 (%d)</string>
     <string name="changelog_tag_new">新</string>
-
+    <string name="settings_changelog_style">更新日志样式</string>
+    <string name="changelog_style_classic">经典</string>
+    <string name="changelog_style_classic_desc">一次显示一个版本，并附版本标签</string>
+    <string name="changelog_style_timeline_desc">所有版本按时间轴排列，可分组、可筛选</string>
+    <string name="changelog_style_sheet_title">选择更新日志样式</string>
+    <string name="changelog_style_sheet_subtitle">「更新内容」焕然一新，请选择你喜欢的样式。</string>
+    <string name="changelog_style_sheet_hint">你随时可在「设置 → 个性化」中更改。</string>
+    <string name="changelog_style_sheet_confirm">使用此样式</string>
+    <string name="changelog_style_timeline">时间轴</string>
+    <string name="changelog_kind_features">功能</string>
+    <string name="changelog_kind_fixes">修复</string>
+    <string name="changelog_kind_ui">界面与优化</string>
+    <string name="changelog_kind_docs">文档</string>
+    <string name="changelog_kind_other">其他</string>
+    <string name="changelog_filter_all">全部</string>
+    <string name="changelog_filter_empty">没有符合此筛选条件的更改。</string>
+    <string name="changelog_sort_newest">最新优先</string>
+    <string name="changelog_sort_oldest">最早优先</string>
+    <string name="changelog_sort_most_changes">变更最多</string>
+    <string name="changelog_badge_latest">最新</string>
+    <string name="changelog_badge_installed">已安装</string>
+    <string name="changelog_badge_prerelease">预发布</string>
+    <string name="changelog_badge_new">新</string>
+    <string name="changelog_show_more">再显示 %d 项</string>
+    <string name="changelog_show_less">收起</string>
+    <string name="changelog_older_retry">无法加载更早的版本，请重试</string>
+    <string name="changelog_summary_new_releases">%d 个新版本</string>
+    <string name="changelog_summary_up_to_date">已是最新</string>
     <string name="aicore_plus_label">AICore+ 自动化桥接</string>
     <string name="aicore_plus_description">Shizuku+ AICore+ 功能所需。为 AI 驱动的自动化提供特权 UI 层级转储与物理输入模拟能力，不会读取密码或个人数据。</string>
-
     <!-- Common action labels -->
     <string name="action_clear_all">全部清除</string>
     <string name="action_continue">继续</string>
     <string name="action_open_github">GitHub</string>
-
     <!-- Service Doctor auto-fix -->
     <string name="service_doctor_fix_phantom_attempted">已关闭幽灵进程限制。如有需要请重启服务。</string>
     <string name="service_doctor_fix_requires_service">需要 Shizuku 正在运行才能自动应用此修复。</string>
     <string name="service_doctor_fix_failed">自动修复失败：%1$s</string>
     <string name="service_doctor_fix_blocked_samsung">自动修复被阻止——可能启用了三星「最高限制」。请在自动拦截器中关闭后重试。</string>
     <string name="service_doctor_fix_blocked_generic">自动修复被阻止——设备限制禁止执行特权 shell 命令。请检查 ADB/OEM 设置。</string>
-
     <!-- ADB Pairing -->
     <string name="adb_foreground_op_denied">无法启动前台服务——START_FOREGROUND 权限被拒绝。请检查设备的应用权限。</string>
-
     <!-- Update dialog -->
     <string name="update_no_release_notes">暂无发布说明。</string>
-
     <!-- Accessibility service status -->
-
     <!-- Dhizuku Device Owner Setup -->
     <string name="dhizuku_setup_title">设置设备所有者</string>
     <string name="dhizuku_setup_message">Dhizuku 模式需要将 Shizuku+ 设为设备所有者。请在开启 USB 调试的情况下通过 ADB 运行一次以下命令：\n\n%1$s\n\n运行命令后，请重启 Shizuku。</string>
@@ -951,7 +976,6 @@
     <string name="dhizuku_setup_copied">已复制命令到剪贴板</string>
     <string name="dhizuku_status_active">设备所有者：已激活</string>
     <string name="dhizuku_status_not_set">未设置设备所有者——点按查看设置说明</string>
-
     <!-- Clear Device Owner (Issue #237) -->
     <string name="settings_clear_device_owner">移除设备所有者</string>
     <string name="settings_clear_device_owner_summary">解除 Shizuku+ 的设备所有者状态。卸载或降级前需要执行此操作。</string>
@@ -960,27 +984,21 @@
     <string name="dhizuku_clear_owner_confirm">移除</string>
     <string name="dhizuku_clear_owner_success">已移除设备所有者状态。现在可以卸载或降级 Shizuku+。</string>
     <string name="dhizuku_clear_owner_failure">移除设备所有者状态失败。可能需要先启动服务。</string>
-
     <!-- Pairing fallback (Issue #204) -->
     <string name="dialog_notif_permission_denied">通知权限被拒绝。你可以在设置中启用，或手动配对。</string>
     <!-- Remote App DB Sync -->
-
     <!-- Binder Enhancements (Issue #199) -->
     <string name="settings_binder_firewall">Binder 防火墙</string>
     <string name="settings_binder_firewall_summary">审计并阻止未授权应用发起敏感系统调用</string>
     <string name="settings_shadow_binder">影子 Binder</string>
     <string name="settings_shadow_binder_summary">拦截并模拟系统服务调用，以隐藏设备信息或应用状态</string>
     <string name="settings_shadow_binder_hidden_packages">隐藏的软件包</string>
-
     <!-- Automation Engine (Issue #435) -->
     <string name="settings_automation_trusted_networks">受信任网络</string>
     <string name="settings_automation_auto_hide_packages">前台运行时自动隐藏</string>
-
     <plurals name="settings_shadow_binder_hidden_packages_count">
-        <item quantity="one">已选择 %d 个应用</item>
         <item quantity="other">已选择 %d 个应用</item>
     </plurals>
-
     <!-- Companion Mode -->
     <string name="settings_companion_mode">显示伴侣卡片</string>
     <string name="settings_companion_mode_summary">显示一张卡片以便快速打开原版 Shizuku。注意：同一时间只能运行一个 Shizuku 服务——用它可在两者之间切换。</string>
@@ -990,28 +1008,21 @@
     <string name="home_companion_description">已安装原版 Shizuku。同一时间只能运行一个服务——需要依赖它的应用时，点按此处即可切换到原版 Shizuku。</string>
     <string name="home_companion_open">打开</string>
     <string name="watchdog_open_stock_shizuku">打开原版 Shizuku</string>
-
     <string name="settings_live_activity">实时活动通知</string>
-
+    <string name="settings_live_activity_summary">在看门狗通知中显示实时服务活动</string>
     <!-- App picker dialog -->
     <string name="app_management_empty">未找到应用</string>
     <string name="app_management_search_hint">搜索应用</string>
-
     <!-- Root Compatibility Hub -->
-
     <!-- Home Automation dialog labels -->
-
     <!-- Misc -->
-
     <string name="settings_help">帮助</string>
-
     <!-- APK verification API key strings -->
     <string name="verify_virustotal_key_title">VirusTotal API 密钥</string>
     <string name="verify_virustotal_key_required">使用 VirusTotal 扫描需要 API 密钥</string>
     <string name="verify_api_key_hint">点按输入 API 密钥</string>
     <string name="verify_api_key_configured">API 密钥已保存 · 点按更新</string>
     <string name="verify_get_api_key">获取 API 密钥</string>
-
     <!-- Scripting & Snippets (#11) -->
     <string name="scripting_title">脚本</string>
     <string name="scripting_summary">保存、分享并运行特权 shell 片段</string>
@@ -1033,7 +1044,6 @@
     <string name="scripting_delete">删除</string>
     <string name="scripting_auto_run_label">服务启动时自动运行</string>
     <string name="scripting_auto_run_badge_desc">服务启动时自动运行</string>
-
     <!-- Tasker/Locale automation plugin (#6) -->
     <string name="automation_plugin_action_label">Shizuku+ 服务</string>
     <string name="automation_plugin_action_edit_title">选择操作</string>
@@ -1045,34 +1055,27 @@
     <string name="automation_plugin_condition_title">Shizuku+ 服务正在运行</string>
     <string name="automation_plugin_condition_description">只要 Shizuku+ 服务正在运行，此条件即成立。</string>
     <string name="automation_plugin_condition_blurb">Shizuku+ 服务正在运行</string>
-
     <string name="cd_navigate_back">返回</string>
     <string name="cd_settings_search">搜索</string>
     <string name="cd_settings_search_clear">清除</string>
     <string name="settings_search_hint">搜索设置…</string>
     <string name="settings_search_empty_state">未找到设置项</string>
-
     <!-- Network Firewall automation trusted networks -->
-
     <!-- Biometric lock -->
     <string name="biometric_prompt_title">解锁 Shizuku+</string>
     <string name="biometric_prompt_subtitle">通过身份验证以访问敏感设置</string>
-
     <!-- Stealth mode -->
     <string name="stealth_mode_enable_title">启用隐身模式？</string>
     <string name="stealth_mode_enable_message">应用图标将从启动器中移除。\n\n你仍可通过 Shizuku 通知打开应用。如需恢复图标，请通过 ADB 关闭隐身模式：\n\nadb shell pm enable %1$s/af.shizuku.manager.LauncherAlias</string>
     <string name="stealth_mode_enable_button">启用</string>
-
     <!-- OTA flash danger dialog -->
     <string name="ota_flash_danger_title">危险的实验性功能</string>
     <string name="ota_flash_danger_message">无系统分区 OTA 刷写通过 Shizuku shell 调用 android.os.UpdateEngine，把 zip 载荷安装到非活动槽位。\n\n危险：刷入不兼容的载荷必定导致手机变砖或无法开机。确定要启用此功能吗？</string>
     <string name="ota_flash_danger_confirm">我已了解，启用</string>
-
     <!-- SU path preset picker dialog -->
     <string name="su_path_preset_dialog_title">选择 SU 路径预设</string>
     <string name="su_path_preset_default">默认（自动检测）</string>
     <string name="su_path_preset_custom">自定义路径…</string>
-
     <!-- Device Owner (Dhizuku) toasts -->
     <string name="dpm_screen_capture_disabled">已全局禁用屏幕捕获</string>
     <string name="dpm_screen_capture_enabled">已启用屏幕捕获</string>
@@ -1081,17 +1084,24 @@
     <string name="dpm_usb_unlocked">USB 数据已解锁</string>
     <string name="dpm_freeze_failed">冻结失败：%1$s</string>
     <string name="dpm_freeze_success">已冻结 %1$d 个应用</string>
-
     <!-- Backup/restore picker dialog -->
     <string name="backup_export_title">导出备份</string>
     <string name="backup_type_encrypted">加密（推荐）</string>
     <string name="backup_type_plain">明文——用于跨重装测试</string>
     <string name="backup_no_file_manager_save">未找到可用于保存备份的文件管理器应用</string>
     <string name="backup_no_file_manager_open">未找到可用于打开备份的文件管理器应用</string>
-
+    <!-- Peer Settings Sharing / Drop-In Sync -->
+    <string name="settings_sync_peer_title">与 %1$s 同步</string>
+    <string name="settings_sync_peer_summary_installed">%1$s 已安装 • 点击同步设置</string>
+    <string name="settings_sync_peer_import">从 %1$s 导入设置</string>
+    <string name="settings_sync_peer_export">导出设置到 %1$s</string>
+    <string name="settings_sync_peer_import_success">已成功从 %1$s 导入设置</string>
+    <string name="settings_sync_peer_export_success">已成功导出设置到 %1$s</string>
+    <string name="settings_sync_peer_failed">与 %1$s 同步设置失败。请确保两个应用均已安装且为最新版本。</string>
+    <string name="settings_auto_sync_peer_title">自动与 %1$s 同步</string>
+    <string name="settings_auto_sync_peer_summary">在切换应用时自动同步偏好设置和配置</string>
     <!-- Samsung ADB dialog -->
     <string name="adb_dialog_popup_settings">弹窗设置</string>
-
     <!-- Tile service: state subtitles (shown in Samsung OneUI wide tile text area and standard subtitle) -->
     <string name="tile_subtitle_active">活动</string>
     <string name="tile_subtitle_starting">正在启动…</string>
@@ -1110,7 +1120,6 @@
     <!-- Tile service error -->
     <string name="tile_state_update_failed">更新 Shizuku 状态失败：%1$s</string>
     <string name="tile_open_app_required">打开 Shizuku 以启动或配对无线调试</string>
-
     <!-- App Profiles automation activity -->
     <string name="app_profiles_title">应用配置档</string>
     <string name="app_profile_state_default">默认</string>
@@ -1121,6 +1130,9 @@
     <string name="su_bridge_api36_adb_warning_title">Android 16 ADB 限制</string>
     <string name="su_bridge_api36_adb_warning_body">在 Android 16+ 上，ADB shell 进程无法写入 /data/local/tmp。请改为将 Shizuku 文件导出到某个文件夹——SU 桥接会使用该导出路径。</string>
     <string name="su_bridge_export_files">导出文件…</string>
+    <string name="su_bridge_kernelsu_upgrade_title">检测到 KernelSU——升级为 Root 桥接</string>
+    <string name="su_bridge_kernelsu_upgrade_body">KernelSU 已安装并在本次开机中生效。请在 KernelSU 下重启 Shizuku 服务，让桥接获得真正的 uid=0 root 权限，而不是 uid=2000（ADB shell）。这样，同时获得 Shizuku+ 与 KernelSU 授权的应用将以完整的 root 权限运行。</string>
+    <string name="su_bridge_kernelsu_restart_shizuku">以 Root 身份重启 Shizuku</string>
     <string name="settings_status_bar_governor_plus_summary">控制状态栏与快捷设置面板：折叠/展开通知栏、切换展开锁定、管理磁贴布局——全程无需用户操作。</string>
     <string name="help_status_bar_governor_plus_title">状态栏控制</string>
     <string name="help_status_bar_governor_plus_detail">通过系统 statusbar 服务授予对状态栏与快捷设置面板的特权访问。应用与自动化脚本可以折叠或展开通知栏、锁定展开以防止用户访问、点击单个快捷设置磁贴、读取或重写完整磁贴列表——全程无需解锁设备或用户手势。</string>
@@ -1130,7 +1142,6 @@
     <string name="settings_display_tuner_plus_summary">覆盖显示分辨率与 DPI——与 adb shell wm size/density 相同——让应用和自动化脚本无需自身具备 ADB 权限即可调整屏幕布局。</string>
     <string name="help_display_tuner_plus_title">显示调校</string>
     <string name="help_display_tuner_plus_detail">通过 wm shell 工具提供特权显示配置：即时覆盖分辨率（wm size）与密度（wm density）、读取当前值与物理值，并将覆盖重置为设备默认值。适用于修复应用布局问题、为录屏强制指定宽高比、桌面模式微调以及无障碍缩放——这些历史上仅限 root 的能力如今可通过 ADB shell 进程使用。</string>
-
     <!-- App Backup feature -->
     <string name="home_backup_title">应用备份</string>
     <string name="home_backup_summary">无需 root 即可备份和恢复应用数据</string>
@@ -1146,21 +1157,23 @@
     <string name="backup_unfreeze_success">应用已解冻</string>
     <string name="dialog_adb_pair_device">立即配对此设备</string>
     <string name="dialog_adb_autopair_enabled">✓ 自动配对已启用——配对将自动确认</string>
-
     <!-- Mode-contextual settings (#433) -->
     <string name="settings_mode_indicator_root">当前为 Root 模式——仅限 ADB 的选项已隐藏</string>
-
     <!-- Hide backup settings (#461) -->
     <string name="settings_hide_backup_settings">隐藏「备份与恢复」</string>
     <string name="settings_hide_backup_settings_summary">从功能中心设置界面中移除「备份与恢复」分区</string>
-
+    <!-- Launcher icon &amp; stealth -->
+    <string name="settings_hide_launcher_icon">隐藏桌面图标</string>
+    <string name="settings_hide_launcher_icon_summary">从桌面移除应用，可通过 ADB 或其他应用打开。</string>
+    <string name="settings_stealth_mode_pkg_query">包查询过滤</string>
+    <!-- AI Bridge -->
+    <string name="settings_ai_bridge_title">AI 桥接与 NPU</string>
     <!-- Package identity / MDM bypass UI (#469) -->
     <string name="settings_package_identity_category">软件包标识</string>
     <string name="package_identity_info_title">关于包名随机化</string>
     <string name="package_identity_info_detail">MDM 与企业 root 检测系统常会扫描已知包名（af.shizuku.manager）。真正的包名随机化——如 Shevery 所采用的方案——需要在构建时把不同的 applicationId 写入 APK 并重新安装应用。管理器在运行中无法重命名自身。\n\n规划：未来的「自制构建」CI 工作流将允许你生成自定义名称的 APK。在此之前，此设置仅保存一个显示标签。如需立即绕过 MDM，请使用隐身模式移除启动器图标。</string>
     <string name="settings_package_identity_current">当前包名：%1$s</string>
     <string name="settings_package_identity_roadmap">运行时完全重命名需要自定义构建——参见 issue #469</string>
-
     <!-- Device Control card &amp; screen -->
     <string name="home_device_control_title">设备控制</string>
     <string name="home_device_control_summary">连接、显示、音频与电源</string>
@@ -1196,11 +1209,11 @@
     <string name="device_control_shutdown_title">关闭设备</string>
     <string name="device_control_shutdown_confirm">确定要关闭设备吗？</string>
     <string name="nav_back">返回</string>
-
     <!-- Stealth Mode -->
     <string name="help_stealth_mode_title">隐身模式</string>
+    <!-- Per-section corner style options (shared by home card and settings card shape prefs) -->
     <string name="corner_style_sharp">直角 / 扁平</string>
-
+    <!-- Feature Hub experimental category label -->
     <!-- Permission Manager card &amp; screen -->
     <string name="home_permission_manager_title">权限管理器</string>
     <string name="home_permission_manager_summary">无需 root 即可为任意应用授予 shell 级权限</string>
@@ -1210,115 +1223,29 @@
     <string name="permission_manager_section_privileged">特权权限（可由 shell 授予）</string>
     <string name="permission_manager_section_runtime">运行时权限</string>
     <string name="permission_manager_privileged_note">这些权限通常仅限系统或 root 应用，但可由 ADB shell 进程授予。对需要 DUMP、READ_LOGS 或类似访问权限的备份应用（Neo Backup、Swift Backup）很有用。</string>
+    <!-- Home layout simulator accessibility labels (decorative preview widget — a11y toggles) -->
     <string name="accessibility_sim_toggle_adb">切换 ADB 启动卡片显示</string>
     <string name="accessibility_sim_toggle_terminal">切换终端卡片显示</string>
     <string name="accessibility_sim_toggle_automation">切换自动化卡片显示</string>
     <string name="accessibility_sim_toggle_activity_log">切换活动日志卡片显示</string>
     <string name="accessibility_sim_toggle_learn_more">切换了解更多卡片显示</string>
-
-    <!-- Settings sync peer -->
-    <string name="settings_sync_peer_title">与 %1$s 同步</string>
-    <string name="settings_sync_peer_summary_installed">%1$s 已安装 • 点击同步设置</string>
-    <string name="settings_sync_peer_import">从 %1$s 导入设置</string>
-    <string name="settings_sync_peer_export">导出设置到 %1$s</string>
-    <string name="settings_sync_peer_import_success">已成功从 %1$s 导入设置</string>
-    <string name="settings_sync_peer_export_success">已成功导出设置到 %1$s</string>
-    <string name="settings_sync_peer_failed">与 %1$s 同步设置失败。请确保两个应用均已安装且为最新版本。</string>
-    <string name="settings_auto_sync_peer_title">自动与 %1$s 同步</string>
-    <string name="settings_auto_sync_peer_summary">在切换应用时自动同步偏好设置和配置</string>
-
-    <!-- Reviewed machine-translated drafts, moved from strings_machine_translated.xml -->
-    <string name="activity_log_sort_by_app">按应用</string>
-    <string name="activity_log_type_start">启动</string>
-    <string name="activity_log_type_stop">停止</string>
-    <string name="activity_log_type_permission">权限</string>
-    <string name="activity_log_type_app_mgmt">应用</string>
-    <string name="activity_log_type_watchdog">看门狗</string>
-    <string name="activity_log_type_system">系统</string>
-    <string name="activity_log_type_other">事件</string>
-    <string name="settings_changelog_style">更新日志样式</string>
-    <string name="changelog_style_classic">经典</string>
-    <string name="changelog_style_classic_desc">一次显示一个版本，并附版本标签</string>
-    <string name="changelog_style_timeline_desc">所有版本按时间轴排列，可分组、可筛选</string>
-    <string name="changelog_style_sheet_title">选择更新日志样式</string>
-    <string name="changelog_style_sheet_subtitle">「更新内容」焕然一新，请选择你喜欢的样式。</string>
-    <string name="changelog_style_sheet_hint">你随时可在「设置 → 个性化」中更改。</string>
-    <string name="changelog_style_sheet_confirm">使用此样式</string>
-    <string name="changelog_style_timeline">时间轴</string>
-    <string name="changelog_kind_features">功能</string>
-    <string name="changelog_kind_fixes">修复</string>
-    <string name="changelog_kind_ui">界面与优化</string>
-    <string name="changelog_kind_docs">文档</string>
-    <string name="changelog_kind_other">其他</string>
-    <string name="changelog_filter_all">全部</string>
-    <string name="changelog_filter_empty">没有符合此筛选条件的更改。</string>
-    <string name="changelog_sort_newest">最新优先</string>
-    <string name="changelog_sort_oldest">最早优先</string>
-    <string name="changelog_sort_most_changes">变更最多</string>
-    <string name="changelog_badge_latest">最新</string>
-    <string name="changelog_badge_installed">已安装</string>
-    <string name="changelog_badge_prerelease">预发布</string>
-    <string name="changelog_badge_new">新</string>
-    <string name="changelog_show_more">再显示 %d 项</string>
-    <string name="changelog_show_less">收起</string>
-    <string name="changelog_older_retry">无法加载更早的版本，请重试</string>
-    <string name="changelog_summary_new_releases">%d 个新版本</string>
-    <string name="changelog_summary_up_to_date">已是最新</string>
-
-    <!-- New strings for features added after the last zh-rCN sync -->
-    <string name="home_samsung_system_uid_title"><![CDATA[启动（三星系统 UID）]]></string>
-    <string name="settings_watchdog_not_running">已开启，当前未运行</string>
-    <string name="settings_plus_category_core">核心</string>
-    <string name="settings_usb_phone_switch_notify">USB 连接与切换通知</string>
-    <string name="su_bridge_terminal_profile_title">终端与环境设置</string>
-    <string name="su_bridge_terminal_profile_desc">对于 Termux 和 shell 脚本，请将 SU 桥接加入 PATH 开头，或添加别名，让「su」无需 root 也能无缝运行。</string>
-    <string name="su_bridge_copy_termux_setup">复制 Termux 配置命令</string>
-    <string name="su_bridge_termux_setup_copied">Termux 命令已复制到剪贴板</string>
-    <string name="su_bridge_configure_dialog_title">配置 %s</string>
-    <string name="su_bridge_configure_dialog_message">1. SU 桥接路径已复制到剪贴板：\n\n%1$s\n\n2. 打开 %2$s，找到其 root/二进制文件路径设置：\n\n%3$s\n\n3. 粘贴已复制的 SU 桥接路径。</string>
-    <string name="su_bridge_open_app">打开应用</string>
-    <string name="doctor_tips_title">故障排除与修复</string>
-    <string name="doctor_action_rerun">重新运行</string>
-    <string name="doctor_summary_healthy_title">所有系统运行正常</string>
-    <string name="doctor_summary_healthy_subtitle">所有诊断检查均已通过，服务环境处于最佳状态。</string>
-    <string name="doctor_summary_issues_title">检测到 %1$d 个问题</string>
-    <string name="doctor_summary_issues_subtitle">请查看下方建议的修复方案，以恢复服务的完整可靠性。</string>
-    <string name="battery_exemption_channel_name">电池优化</string>
-    <string name="battery_exemption_notification_title">允许 Shizuku+ 在后台运行</string>
-    <string name="battery_exemption_notification_text">看门狗已自动开启。请将 Shizuku+ 从电池优化中豁免，以便服务停止时能够自动重启。</string>
-    <string name="vendor_battery_notification_title">Shizuku+ 可能会在后台被停止</string>
-    <string name="vendor_battery_notification_text">看门狗可能会被 %1$s 停止。点按打开可让 Shizuku+ 持续运行的设置。</string>
-    <string name="vendor_battery_restriction_background_activity">后台活动限制</string>
-    <string name="vendor_battery_restriction_standby_bucket">Android 对不常用应用的限制</string>
-    <string name="vendor_battery_restriction_samsung_deep_sleep">三星的深度休眠应用</string>
-    <string name="vendor_battery_restriction_xiaomi_autostart">小米的自启动设置</string>
-    <string name="vendor_battery_restriction_xiaomi_no_restrict">小米的省电策略（未设为「无限制」）</string>
-    <string name="wadb_notification_ask_again">再次询问</string>
-    <string name="wadb_notification_awaiting_auth">正在等待你在本机接受「允许 USB 调试」提示</string>
-    <string name="wadb_notification_ask_again_from">如果你点按了「拒绝」，「再次询问」会从 %1$s 重新显示该提示</string>
-    <string name="wadb_notification_ask_again_ready">如果你点按了「拒绝」，请点按「再次询问」以再次显示该提示</string>
-    <string name="wadb_notification_ask_again_used">这是本次等待的最后一次提示，等待将于 %1$s 结束</string>
-    <string name="wadb_notification_ask_again_used_untimed">这是本次等待的最后一次提示</string>
-    <string name="wadb_notification_wait_ends">本次等待将于 %1$s 结束</string>
-    <string name="wadb_notification_auth_timed_out">未及时接受「允许 USB 调试」提示。请点按「现在尝试」重试</string>
-    <string name="home_restore_default">恢复默认</string>
-    <string name="home_restore_default_dialog_title">恢复默认</string>
-    <string name="home_restore_default_dialog_message">将主页卡片恢复为默认顺序，并取消隐藏所有卡片？</string>
-    <string name="home_restore_default_success">主页卡片已恢复为默认</string>
-    <string name="activity_log_sort_by_type">按类型</string>
-    <string name="activity_log_sort_most_active">最活跃</string>
-    <string name="activity_log_stack_activities">合并重复事件</string>
-    <string name="activity_log_stacked_count">%d 次</string>
-    <string name="settings_live_activity_summary">在看门狗通知中显示实时服务活动</string>
-    <string name="su_bridge_kernelsu_upgrade_title">检测到 KernelSU——升级为 Root 桥接</string>
-    <string name="su_bridge_kernelsu_upgrade_body">KernelSU 已安装并在本次开机中生效。请在 KernelSU 下重启 Shizuku 服务，让桥接获得真正的 uid=0 root 权限，而不是 uid=2000（ADB shell）。这样，同时获得 Shizuku+ 与 KernelSU 授权的应用将以完整的 root 权限运行。</string>
-    <string name="su_bridge_kernelsu_restart_shizuku">以 Root 身份重启 Shizuku</string>
     <string name="tcp_guard_title">TCP 调试已在不受信任的网络上开放</string>
     <string name="tcp_guard_text">ADB TCP 端口 %1$d 正在监听，且%2$s。除非你此刻需要，否则请关闭该端口。</string>
     <string name="tcp_guard_reason_open">你正处于开放 Wi-Fi 网络</string>
     <string name="tcp_guard_reason_captive">你正处于强制门户（公共）Wi-Fi 网络</string>
     <string name="tcp_guard_reason_untrusted">此网络不在你的受信任列表中</string>
     <string name="tcp_guard_close">关闭端口</string>
+    <string name="settings_wireless_adb_title">无线 ADB</string>
+    <string name="settings_tcp_port_label">端口</string>
+    <string name="settings_tcp_randomize">随机</string>
+    <string name="settings_tcp_protection_label">网络保护</string>
+    <string name="settings_tcp_protection_off">关闭</string>
+    <string name="settings_tcp_protection_open">开放网络</string>
+    <string name="settings_tcp_protection_trusted">仅受信任</string>
+    <string name="settings_tcp_trusted_networks_label">受信任的 Wi-Fi 网络</string>
+    <string name="settings_tcp_auto_close_untrusted">在不受信任网络上自动关闭</string>
+    <string name="settings_tcp_ssid_label">网络名称（SSID）</string>
+    <string name="settings_tcp_remove_network">移除 %1$s</string>
     <string name="tcp_protection_off">关闭</string>
     <string name="tcp_protection_open">开放与公共 Wi-Fi</string>
     <string name="tcp_protection_trusted">仅受信任网络</string>
@@ -1341,6 +1268,7 @@
     <string name="background_nudge_title">Shizuku 频繁被停止</string>
     <string name="background_nudge_text">你手机的电池管理可能在后台限制 Shizuku。请打开服务医生进行修复。</string>
     <string name="activity_log_type_connection">连接</string>
+    <!-- Keep-alive and stability tips for unexpected deactivations -->
     <string name="tip_watchdog_desc">监控 Shizuku 服务器，并在其被杀死或终止时自动重启</string>
     <string name="tip_auto_reconnect_desc">在 Wi-Fi 下自动重新发现无线调试并重新连接</string>
     <string name="tip_start_on_boot_desc">设备开机时自动启动 Shizuku 服务</string>
@@ -1360,10 +1288,13 @@
     <string name="activity_log_copied">已将 %1$s 复制到剪贴板</string>
     <string name="activity_log_clear_confirm_title">清除活动日志？</string>
     <string name="activity_log_clear_confirm_message">所有已记录的活动日志事件都将被永久删除。</string>
+    <!-- Activity log entries. The log stores the English text (it is parsed for the event type and
+         exported in bug reports); ActivityLogText maps it to these when it is shown. -->
+    <!-- Adaptive settings & tiered complexity -->
     <string name="settings_status_banner_title">服务状态</string>
+    <!-- In-App Knowledgebase & Consumer-friendly settings -->
     <string name="open_in_browser">在浏览器中打开</string>
     <string name="knowledgebase_title">知识库</string>
-
     <string name="widget_status_running">运行中</string>
     <string name="widget_status_stopped">已停止</string>
     <string name="home_layout_sim_title">首页布局模拟器</string>
@@ -1372,57 +1303,6 @@
     <string name="home_layout_sim_activity_logs">活动日志</string>
     <string name="home_layout_sim_developer_guide">开发者指南</string>
     <string name="home_layout_sim_hint">点击模型中的模拟区块，即可在主屏幕首页上即时切换它们的显示状态。</string>
-    <string name="icon_style_filled">实心</string>
-    <string name="icon_style_outlined">描边</string>
-    <string name="icon_style_twotone">双色调</string>
-    <string name="home_edit_mode_banner">长按并拖动卡片以自定义首页布局</string>
-    <string name="onboarding_m3e_title">富有表现力的外观与手感</string>
-    <string name="onboarding_m3e_desc">通过自适应图标样式、AMOLED+ 对比度和流畅动效打造个性化体验。</string>
-    <string name="onboarding_icon_style_title">图标样式</string>
-    <string name="onboarding_amoled_title">AMOLED+ 纯黑</string>
-    <string name="onboarding_amoled_desc">深色模式下呈现纯黑背景</string>
-    <string name="onboarding_animations_title">表现力动效</string>
-    <string name="onboarding_animations_desc">流畅的弹簧物理与触感动效</string>
-    <string name="onboarding_layout_nav_title">首页与导航</string>
-    <string name="onboarding_layout_nav_desc">定制你的日常操作空间。拖动首页卡片调整顺序，或使用悬浮胶囊导航栏。</string>
-    <string name="onboarding_floating_nav_title">悬浮导航栏</string>
-    <string name="onboarding_floating_nav_desc">滚动时自动隐藏的胶囊式底栏</string>
-    <string name="onboarding_activity_log_title">首页历史记录</string>
-    <string name="onboarding_activity_log_desc">一目了然地查看最近的启动与应用激活记录</string>
-    <string name="onboarding_security_doctor_title">网络护盾与服务诊断</string>
-    <string name="onboarding_security_doctor_desc">自动双栈防护可在不受信任的 Wi-Fi 上保护你正在使用的调试端口，同时服务诊断会监控后台健康状态。</string>
-    <string name="onboarding_network_guard_title">网络信任护盾</string>
-    <string name="onboarding_network_guard_desc">在开放或不受信任的网络上阻止启动 TCP</string>
-    <string name="onboarding_watchdog_title">看门狗后台保活</string>
-    <string name="onboarding_watchdog_desc">服务被杀后自动修复并重新唤醒</string>
-    <string name="onboarding_take_tour">功能导览</string>
-    <string name="onboarding_take_tour_summary">探索全新的 M3 表现力外观、首页布局与网络信任护盾</string>
-    <string name="app_name_classic">Shizuku</string>
-    <string name="app_name_system">系统服务</string>
-    <string name="app_name_tools">工具</string>
-    <string name="app_name_files">文件</string>
-    <string name="app_name_notes">笔记</string>
-    <string name="settings_app_icon_name_title">应用图标与名称</string>
-    <string name="settings_app_icon_name_summary">自定义启动器图标与应用名称</string>
-    <string name="settings_show_home_cards_outline">首页卡片边框</string>
-    <string name="settings_show_home_cards_outline_summary">在首页卡片周围显示细微描边</string>
-    <string name="sentry_offline_report_github">在 GitHub 上反馈</string>
-    <string name="settings_about_category_updates">更新</string>
-    <string name="settings_hide_launcher_icon">隐藏桌面图标</string>
-    <string name="settings_hide_launcher_icon_summary">从桌面移除应用，可通过 ADB 或其他应用打开。</string>
-    <string name="settings_stealth_mode_pkg_query">包查询过滤</string>
-    <string name="settings_ai_bridge_title">AI 桥接与 NPU</string>
-    <string name="settings_wireless_adb_title">无线 ADB</string>
-    <string name="settings_tcp_port_label">端口</string>
-    <string name="settings_tcp_randomize">随机</string>
-    <string name="settings_tcp_protection_label">网络保护</string>
-    <string name="settings_tcp_protection_off">关闭</string>
-    <string name="settings_tcp_protection_open">开放网络</string>
-    <string name="settings_tcp_protection_trusted">仅受信任</string>
-    <string name="settings_tcp_trusted_networks_label">受信任的 Wi-Fi 网络</string>
-    <string name="settings_tcp_auto_close_untrusted">在不受信任网络上自动关闭</string>
-    <string name="settings_tcp_ssid_label">网络名称（SSID）</string>
-    <string name="settings_tcp_remove_network">移除 %1$s</string>
     <string name="settings_legacy_rish_keepalive">旧版 rish 兼容</string>
     <string name="settings_legacy_rish_keepalive_summary">服务运行期间保持 Shizuku+ 管理端在后台存活，使 MT 管理器等旧版 rish 客户端能够请求 Shell 权限。会显示一条低优先级通知。</string>
     <string name="legacy_rish_keepalive_channel_name">旧版 rish 兼容</string>
@@ -1431,4 +1311,17 @@
     <string name="settings_about_category_app_info">应用信息</string>
     <string name="settings_about_category_project">项目信息</string>
     <string name="settings_check_for_update_title">检查更新</string>
+    <!-- Adaptive Recommendations & Startup Scripts -->
+    <string name="icon_style_filled">实心</string>
+    <string name="icon_style_outlined">描边</string>
+    <string name="icon_style_twotone">双色调</string>
+    <string name="onboarding_amoled_desc">深色模式下呈现纯黑背景</string>
+    <string name="onboarding_amoled_title">AMOLED+ 纯黑</string>
+    <string name="onboarding_animations_desc">流畅的弹簧物理与触感动效</string>
+    <string name="onboarding_animations_title">表现力动效</string>
+    <string name="onboarding_icon_style_title">图标样式</string>
+    <string name="onboarding_m3e_desc">通过自适应图标样式、AMOLED+ 对比度和流畅动效打造个性化体验。</string>
+    <string name="onboarding_m3e_title">富有表现力的外观与手感</string>
+    <!-- App Reachability & Filtering -->
+    <!-- Settings standardization: standard rows replacing the compound grids -->
 </resources>

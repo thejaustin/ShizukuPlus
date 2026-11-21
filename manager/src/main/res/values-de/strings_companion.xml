@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="companion_conflict_title">Original-Shizuku erkannt</string>
-    <string name="companion_conflict_description">Wenn das originale Shizuku parallel zu Shizuku+ installiert ist, kann dies zu Berechtigungskonflikten und App-Abstürzen führen. Um sicherzustellen, dass Shizuku+ ordnungsgemäß funktioniert, deinstallieren oder deaktivieren Sie bitte das originale Shizuku.\n\nDies ist möglich über:\n1. Einstellungen -> Apps -> Shizuku -> Deaktivieren/Deinstallieren\n2. Die Schaltflächen unten (falls der Shizuku+-Dienst aktiv ist)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_conflict_description">Wenn das originale Shizuku parallel zu Shizuku+ installiert ist, kann dies zu Berechtigungskonflikten und App-Abstürzen führen. Um sicherzustellen, dass Shizuku+ ordnungsgemäß funktioniert, deinstallieren oder deaktivieren Sie bitte das originale Shizuku.\n\nDies ist möglich über:\n1. Einstellungen -&gt; Apps -&gt; Shizuku -&gt; Deaktivieren/Deinstallieren\n2. Die Schaltflächen unten (falls der Shizuku+-Dienst aktiv ist)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
     <string name="companion_action_disable">Original deaktivieren</string>
     <string name="companion_action_uninstall">Original deinstallieren</string>
     <string name="companion_disable_success">Das originale Shizuku wurde erfolgreich deaktiviert.</string>
     <string name="companion_disable_failure">Originales Shizuku konnte nicht deaktiviert werden. Stellen Sie sicher, dass Shizuku+ läuft, oder verwenden Sie ADB manuell.</string>
     <string name="companion_action_disabling">Wird deaktiviert…</string>
-
     <string name="compat_hub_installed_title">Compat Hub installiert</string>
     <string name="compat_hub_installed_desc">Drittanbieter-Apps (wie SwiftBackup) erkennen Shizuku+ nun nahtlos.</string>
     <string name="compat_hub_missing_title">Compat Hub erforderlich</string>

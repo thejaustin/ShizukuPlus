@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="companion_conflict_title">ตรวจพบ Shizuku ดั้งเดิม</string>
-    <string name="companion_conflict_description">การติดตั้ง Shizuku ดั้งเดิมควบคู่ไปกับ Shizuku+ อาจทำให้เกิดข้อขัดแย้งของสิทธิ์และการหยุดทำงานของแอป เพื่อให้แน่ใจว่า Shizuku+ ทำงานได้อย่างถูกต้อง โปรดถอนการติดตั้งหรือปิดใช้งานแอป Shizuku ดั้งเดิม\n\nคุณสามารถทำได้โดย:\n1. การตั้งค่า -> แอป -> Shizuku -> ปิดใช้งาน/ถอนการติดตั้ง\n2. ปุ่มด้านล่าง (หากบริการ Shizuku+ กำลังทำงานอยู่)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_conflict_description">การติดตั้ง Shizuku ดั้งเดิมควบคู่ไปกับ Shizuku+ อาจทำให้เกิดข้อขัดแย้งของสิทธิ์และการหยุดทำงานของแอป เพื่อให้แน่ใจว่า Shizuku+ ทำงานได้อย่างถูกต้อง โปรดถอนการติดตั้งหรือปิดใช้งานแอป Shizuku ดั้งเดิม\n\nคุณสามารถทำได้โดย:\n1. การตั้งค่า -&gt; แอป -&gt; Shizuku -&gt; ปิดใช้งาน/ถอนการติดตั้ง\n2. ปุ่มด้านล่าง (หากบริการ Shizuku+ กำลังทำงานอยู่)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
     <string name="companion_action_disable">ปิดใช้งานเวอร์ชันดั้งเดิม</string>
     <string name="companion_action_uninstall">ถอนการติดตั้งเวอร์ชันดั้งเดิม</string>
     <string name="companion_disable_success">ปิดใช้งาน Shizuku ดั้งเดิมสำเร็จแล้ว</string>
     <string name="companion_disable_failure">ไม่สามารถปิดใช้งาน Shizuku ดั้งเดิมได้ ตรวจสอบว่า Shizuku+ กำลังทำงานอยู่หรือใช้ ADB ด้วยตนเอง</string>
     <string name="companion_action_disabling">กำลังปิดใช้งาน…</string>
-
     <string name="compat_hub_installed_title">ติดตั้ง Compat Hub แล้ว</string>
     <string name="compat_hub_installed_desc">แอปของบุคคลที่สาม (เช่น SwiftBackup) จะตรวจพบ Shizuku+ ได้อย่างราบรื่นแล้วในขณะนี้</string>
     <string name="compat_hub_missing_title">จำเป็นต้องมี Compat Hub</string>

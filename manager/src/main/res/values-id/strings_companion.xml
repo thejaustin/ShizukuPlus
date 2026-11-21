@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="companion_conflict_title">Shizuku Asli Terdeteksi</string>
-    <string name="companion_conflict_description">Memasang Shizuku asli bersamaan dengan Shizuku+ dapat menyebabkan konflik izin dan aplikasi mogok. Untuk memastikan Shizuku+ berfungsi dengan benar, silakan hapus atau nonaktifkan aplikasi Shizuku asli.\n\nAnda dapat melakukannya melalui:\n1. Pengaturan -> Aplikasi -> Shizuku -> Nonaktifkan/Hapus instalan\n2. Tombol di bawah (jika layanan Shizuku+ berjalan)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
+    <string name="companion_conflict_description">Memasang Shizuku asli bersamaan dengan Shizuku+ dapat menyebabkan konflik izin dan aplikasi mogok. Untuk memastikan Shizuku+ berfungsi dengan benar, silakan hapus atau nonaktifkan aplikasi Shizuku asli.\n\nAnda dapat melakukannya melalui:\n1. Pengaturan -&gt; Aplikasi -&gt; Shizuku -&gt; Nonaktifkan/Hapus instalan\n2. Tombol di bawah (jika layanan Shizuku+ berjalan)\n3. ADB: adb shell pm disable-user --user 0 moe.shizuku.privileged.api</string>
     <string name="companion_action_disable">Nonaktifkan Versi Asli</string>
     <string name="companion_action_uninstall">Hapus Instalan Asli</string>
     <string name="companion_disable_success">Shizuku asli berhasil dinonaktifkan.</string>
     <string name="companion_disable_failure">Gagal menonaktifkan Shizuku asli. Pastikan Shizuku+ berjalan atau gunakan ADB secara manual.</string>
     <string name="companion_action_disabling">Menonaktifkan…</string>
-
     <string name="compat_hub_installed_title">Compat Hub Terpasang</string>
     <string name="compat_hub_installed_desc">Aplikasi pihak ketiga (seperti SwiftBackup) sekarang akan mendeteksi Shizuku+ secara lancar.</string>
     <string name="compat_hub_missing_title">Memerlukan Compat Hub</string>
