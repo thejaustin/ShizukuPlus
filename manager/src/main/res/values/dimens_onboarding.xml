@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Onboarding page spacing for short windows (landscape phones, split screen); values-h600dp
+     has the roomier sizes for normal portrait phones. -->
+<resources>
+    <dimen name="onboarding_page_padding_top">16dp</dimen>
+    <dimen name="onboarding_hero_size">64dp</dimen>
+    <dimen name="onboarding_hero_gap">16dp</dimen>
+</resources>

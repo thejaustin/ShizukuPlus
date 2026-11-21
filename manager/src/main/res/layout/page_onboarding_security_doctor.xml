@@ -10,22 +10,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="32dp"
-        android:paddingTop="48dp"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="@dimen/onboarding_page_padding_top"
         android:paddingBottom="16dp">
 
         <ImageView
+            style="@style/CardIcon.Droplet"
             android:layout_width="64dp"
             android:layout_height="64dp"
+            android:padding="16dp"
             android:src="@drawable/ic_shield_24"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="24dp"
-            app:tint="?colorPrimary"
+            android:layout_marginBottom="16dp"
+            android:importantForAccessibility="no"
             android:contentDescription="@null" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:accessibilityHeading="true"
             android:text="@string/onboarding_security_doctor_title"
             android:textAppearance="?textAppearanceHeadlineMedium"
             android:textColor="?colorOnSurface"
@@ -38,168 +40,211 @@
             android:textAppearance="?textAppearanceBodyLarge"
             android:textColor="?colorOnSurfaceVariant"
             android:lineSpacingMultiplier="1.3"
-            android:layout_marginBottom="28dp" />
+            android:layout_marginBottom="20dp" />
 
-        <!-- Network Trust Shield switch -->
-        <LinearLayout
+        <!-- The two switches as one grouped card, like a settings section -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingVertical="10dp">
+            app:cardBackgroundColor="?colorSurfaceContainerHigh"
+            app:cardElevation="0dp"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
+            app:strokeWidth="0dp">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingVertical="8dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Network Trust Shield switch: the whole row toggles it -->
+                <LinearLayout
+                    android:id="@+id/row_network_guard"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/onboarding_network_guard_title"
-                    android:textAppearance="?textAppearanceTitleMedium"
-                    android:textColor="?colorOnSurface" />
+                    android:minHeight="72dp"
+                    android:background="?selectableItemBackground"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="16dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/onboarding_network_guard_title"
+                            android:textAppearance="?textAppearanceBodyLarge"
+                            android:textColor="?colorOnSurface" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/onboarding_network_guard_desc"
+                            android:textAppearance="?textAppearanceBodyMedium"
+                            android:textColor="?colorOnSurfaceVariant" />
+
+                    </LinearLayout>
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switch_network_guard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:importantForAccessibility="no" />
+
+                </LinearLayout>
+
+                <!-- Watchdog switch -->
+                <LinearLayout
+                    android:id="@+id/row_watchdog"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/onboarding_network_guard_desc"
-                    android:textAppearance="?textAppearanceBodySmall"
-                    android:textColor="?colorOnSurfaceVariant" />
+                    android:minHeight="72dp"
+                    android:background="?selectableItemBackground"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="16dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/onboarding_watchdog_title"
+                            android:textAppearance="?textAppearanceBodyLarge"
+                            android:textColor="?colorOnSurface" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/onboarding_watchdog_desc"
+                            android:textAppearance="?textAppearanceBodyMedium"
+                            android:textColor="?colorOnSurfaceVariant" />
+
+                    </LinearLayout>
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switch_watchdog"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:importantForAccessibility="no" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_network_guard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
-        <!-- Watchdog switch -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingVertical="10dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/onboarding_watchdog_title"
-                    android:textAppearance="?textAppearanceTitleMedium"
-                    android:textColor="?colorOnSurface" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/onboarding_watchdog_desc"
-                    android:textAppearance="?textAppearanceBodySmall"
-                    android:textColor="?colorOnSurfaceVariant" />
-
-            </LinearLayout>
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switch_watchdog"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- How much Service Doctor helps on its own -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="24dp"
+            android:accessibilityHeading="true"
             android:text="@string/onboarding_assistant_title"
             android:textAppearance="?textAppearanceTitleMedium"
             android:textColor="?colorOnSurface" />
 
+        <!-- Read out when the level changes -->
         <TextView
             android:id="@+id/assistant_level_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textAppearance="?textAppearanceBodySmall"
+            android:layout_marginTop="4dp"
+            android:accessibilityLiveRegion="polite"
+            android:textAppearance="?textAppearanceBodyMedium"
             android:textColor="?colorOnSurfaceVariant" />
 
+        <!-- Connected button group (M3E 2.3); the code stacks it at very large font sizes -->
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:id="@+id/assistant_level_group"
+            style="@style/Widget.Material3Expressive.MaterialButtonToggleGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             app:selectionRequired="true"
             app:singleSelection="true">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/assistant_off"
-                style="?attr/materialButtonOutlinedStyle"
+                style="?attr/materialButtonTonalStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minHeight="48dp"
                 android:maxLines="1"
-                android:paddingHorizontal="4dp"
-                android:textSize="13sp"
+                android:ellipsize="end"
+                android:paddingHorizontal="8dp"
                 android:text="@string/onboarding_assistant_off" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/assistant_quiet"
-                style="?attr/materialButtonOutlinedStyle"
+                style="?attr/materialButtonTonalStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minHeight="48dp"
                 android:maxLines="1"
-                android:paddingHorizontal="4dp"
-                android:textSize="13sp"
+                android:ellipsize="end"
+                android:paddingHorizontal="8dp"
                 android:text="@string/onboarding_assistant_quiet" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/assistant_balanced"
-                style="?attr/materialButtonOutlinedStyle"
+                style="?attr/materialButtonTonalStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minHeight="48dp"
                 android:maxLines="1"
-                android:paddingHorizontal="4dp"
-                android:textSize="13sp"
+                android:ellipsize="end"
+                android:paddingHorizontal="8dp"
                 android:text="@string/onboarding_assistant_balanced" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/assistant_active"
-                style="?attr/materialButtonOutlinedStyle"
+                style="?attr/materialButtonTonalStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:minHeight="48dp"
                 android:maxLines="1"
-                android:paddingHorizontal="4dp"
-                android:textSize="13sp"
+                android:ellipsize="end"
+                android:paddingHorizontal="8dp"
                 android:text="@string/onboarding_assistant_active" />
 
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
-        <!-- Preview of what the chosen level shows; nothing in it can be tapped -->
+        <!-- Preview of what the chosen level shows. One screen reader node with a per-level
+             description; nothing in it can be tapped. -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/assistant_preview_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge"
-            app:strokeWidth="0dp"
+            android:focusable="true"
+            app:cardBackgroundColor="?colorSurfaceContainer"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="?colorSurfaceContainer">
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
+            app:strokeWidth="0dp">
 
             <LinearLayout
                 android:id="@+id/assistant_preview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:importantForAccessibility="noHideDescendants"
                 android:orientation="vertical"
                 android:padding="16dp">
 
@@ -232,74 +277,136 @@
                     android:clickable="false"
                     android:focusable="false" />
 
-                <!-- Balanced: a suggested fix -->
+                <!-- Balanced: a Service Doctor row as the Doctor draws it (item_doctor_check) -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/preview_fix_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerMedium"
-                    app:strokeWidth="0dp"
+                    app:cardBackgroundColor="?colorSurfaceContainerHigh"
                     app:cardElevation="0dp"
-                    app:cardBackgroundColor="?colorSurfaceContainerHighest">
+                    app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge"
+                    app:strokeWidth="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:paddingVertical="8dp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="8dp">
+                        android:padding="16dp">
 
-                        <TextView
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_server_error_24"
+                            android:contentDescription="@null"
+                            app:tint="?colorError" />
+
+                        <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="@string/onboarding_assistant_preview_fix_text"
-                            android:textAppearance="?textAppearanceBodyMedium"
-                            android:textColor="?colorOnSurface" />
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/onboarding_v2_preview_card_title"
+                                android:textAppearance="?textAppearanceTitleMedium"
+                                android:textColor="?colorOnSurface" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="@string/onboarding_v2_preview_card_status"
+                                android:textAppearance="?textAppearanceBodyMedium"
+                                android:textColor="?colorOnSurfaceVariant" />
+
+                        </LinearLayout>
 
                         <com.google.android.material.button.MaterialButton
+                            style="?attr/materialButtonTonalStyle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            style="?attr/materialButtonTonalStyle"
                             android:layout_marginStart="8dp"
-                            android:text="@string/onboarding_assistant_preview_fix_button"
                             android:clickable="false"
                             android:focusable="false"
-                            android:importantForAccessibility="no" />
+                            android:text="@string/doctor_button_fix" />
 
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Active: a notification as well -->
-                <LinearLayout
+                <!-- Active: the notification as well, laid out like a system one -->
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/preview_notification"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="4dp">
+                    app:cardBackgroundColor="?colorSurfaceContainerHighest"
+                    app:cardElevation="0dp"
+                    app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge"
+                    app:strokeWidth="0dp">
 
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_notifications_24"
-                        android:contentDescription="@null"
-                        app:tint="?colorOnSurfaceVariant" />
-
-                    <TextView
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="12dp"
-                        android:text="@string/onboarding_assistant_preview_notification"
-                        android:textAppearance="?textAppearanceBodySmall"
-                        android:textColor="?colorOnSurfaceVariant" />
+                        android:orientation="horizontal"
+                        android:padding="12dp">
 
-                </LinearLayout>
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="@drawable/onboarding_preview_badge"
+                            android:backgroundTint="?colorPrimary"
+                            android:padding="6dp"
+                            android:src="@drawable/ic_notification_icon"
+                            android:contentDescription="@null"
+                            app:tint="?colorOnPrimary" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/preview_notification_app"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="?textAppearanceLabelMedium"
+                                android:textColor="?colorOnSurfaceVariant" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="@string/onboarding_v2_preview_notification_title"
+                                android:textAppearance="?textAppearanceTitleSmall"
+                                android:textColor="?colorOnSurface" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/onboarding_v2_preview_notification_text"
+                                android:textAppearance="?textAppearanceBodyMedium"
+                                android:textColor="?colorOnSurfaceVariant" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/home_root_button_start"
+                                android:textAppearance="?textAppearanceLabelLarge"
+                                android:textColor="?colorPrimary" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
 

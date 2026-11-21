@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="onboarding_page_padding_top">40dp</dimen>
+    <dimen name="onboarding_hero_size">96dp</dimen>
+    <dimen name="onboarding_hero_gap">28dp</dimen>
+</resources>
