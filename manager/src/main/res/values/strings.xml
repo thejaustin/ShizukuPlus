@@ -355,7 +355,7 @@
 
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Welcome to Shizuku+</string>
-    <string name="onboarding_welcome_desc">Shizuku+ lets apps you approve use system features that normally need root or a computer. Setup takes a few minutes, and you choose which apps get access.</string>
+    <string name="onboarding_welcome_desc">Shizuku+ lets apps you approve use system features that normally need root or a computer. On top of Shizuku it adds Root and Dhizuku support, limits for what each app can do, a Service Doctor that helps when it stops working, and extra tools for developers. Setup takes a few minutes, and you choose which apps get access.</string>
     <string name="onboarding_swipe_title">Default Gestures</string>
     <string name="onboarding_swipe_desc">By default, in the app management list, swipe right to open an app or swipe left to view its system settings page.</string>
     <string name="onboarding_gestures_title">Custom Gestures</string>
