@@ -7,7 +7,7 @@ ShizukuPlus is a fork of Shizuku, and a lot of it was written with AI tools (see
 | What | When | Where it goes |
 |---|---|---|
 | Crash reports | Only after you say yes to the first-run prompt or turn on **Settings → Advanced → Crash reporting**. Off until then. | Sentry |
-| Update check | When the app checks for updates | GitHub (`api.github.com`, `github.com`) |
+| Update check | When you check for updates, when you open the app if **Automatic updates** is on, and every 6 or 12 hours or once a day only if you pick that in **Check for updates in the background** (default: only when you open the app) | GitHub (`api.github.com`, `github.com`) |
 | App compatibility list | Periodic download of a public JSON file | GitHub (`raw.githubusercontent.com`) |
 | App safety check | Only if you turn on **VirusTotal check** or **Pithus check** and add your own API key. When an app asks for Shizuku+ access, the SHA-256 hash of its APK is looked up. The APK itself is never uploaded. | VirusTotal (`virustotal.com`), Pithus (`beta.pithus.org`) |
 | Settings backup | Only if Android backup is on for your device | Your Google account (Android Backup), or the new phone during device transfer |
@@ -33,11 +33,11 @@ Off by default (Settings → App safety check). When turned on, a Shizuku+ acces
 All of that is read on the device. If you turn on VirusTotal or Pithus and add a key, it also shows what those services know about that exact APK. Only its hash is sent, and Pithus gets your key only for APKs it already has a report on. "Hasn't seen this app" means unknown, not safe. See [`AppSafetyCheck.kt`](../manager/src/main/java/af/shizuku/manager/authorization/AppSafetyCheck.kt).
 
 ### API keys
-VirusTotal and Pithus API keys you enter are stored on the device only. They're never in cloud backups, plain exports or the reinstall copy (see below).
+VirusTotal and Pithus API keys you enter are stored on the device only. They're never in cloud backups, plain exports or the reinstall copy. Only the encrypted export and the on-device sync between Shizuku+ and the Drop-In carry them (see below).
 
 ## What a settings backup contains
 
-Shizuku+ has four ways to carry settings over:
+Shizuku+ has five ways to carry settings over:
 
 | Backup | Encrypted | Includes API keys, trusted Wi-Fi names and hidden apps |
 |---|---|---|
@@ -45,8 +45,13 @@ Shizuku+ has four ways to carry settings over:
 | **Plain export** | No | No |
 | **Android Backup / device transfer** | By Android | No |
 | **Reinstall copy** (used by in-app updates) | No | No |
+| **Sync with the other Shizuku+ app** (only when both Shizuku+ and the Drop-In are installed) | No, but it never leaves the device | Yes |
 
 The encrypted export can only be restored on the same install. After a reinstall or clearing app data, use a plain export.
+
+The sync between Shizuku+ and the Drop-In goes straight from one app to the other on the same phone, through a connection only apps signed with the same key can open ([`SettingsSharingProvider.kt`](../manager/src/main/java/af/shizuku/manager/settings/SettingsSharingProvider.kt)). Auto-sync is on by default once both are installed; you can turn it off in Settings → Advanced. It carries everything except the "never backed up" list below, so your API keys, trusted Wi-Fi names and hidden apps go across, and settings from the next section are applied as they are instead of waiting for you to confirm.
+
+A backup with no Watchdog setting in it restores the Watchdog as off.
 
 ### Never backed up, in any form
 - **Which apps you allowed.** Each app asks again the first time it needs Shizuku+.
@@ -54,10 +59,10 @@ The encrypted export can only be restored on the same install. After a reinstall
 - **Per-device consent:** crash reporting and the accessibility service. You're asked again on each device.
 - **Runtime state:** caches, update-check times, one-time migration flags, the server's auth token.
 
-The full list is `EXCLUDED_KEYS` and `SECRET_KEYS` in [`SettingsBackupManager.kt`](../manager/src/main/java/af/shizuku/manager/utils/SettingsBackupManager.kt).
+The full list is `EXCLUDED_KEYS` in [`SettingsBackupManager.kt`](../manager/src/main/java/af/shizuku/manager/utils/SettingsBackupManager.kt). `SECRET_KEYS` in the same file is the list that stays out of everything except the encrypted export and the sync with the Drop-In.
 
 ### Restored, but held off until you confirm
-Settings that widen what Shizuku+ or other apps can do aren't switched on by a restore on their own. After restoring, the app lists any the backup had on and asks before turning them on. These include:
+Settings that widen what Shizuku+ or other apps can do aren't switched on by a restore on their own (the sync between Shizuku+ and the Drop-In is the exception, see above). After restoring, the app lists any the backup had on and asks before turning them on. These include:
 - the SU Bridge and root emulation features, and root auto-grant;
 - TCP mode, stealth mode, Shadow Binder and Dhizuku mode;
 - the **Unrestricted access** developer options.

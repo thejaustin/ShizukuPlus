@@ -15,7 +15,7 @@ If you maintain a fork of the original Shizuku (or another derivative) and want 
 ## Development setup
 
 - No local Android SDK is required to contribute — this project builds via GitHub Actions only (`.github/workflows/app.yml`). If you have a local SDK, `./gradlew :manager:assembleRelease` is the verification build.
-- Two build flavors share most of the codebase: `Shizukuplus` (`af.shizuku.plus.api`, coexists with stock Shizuku) and `Dropin` (`moe.shizuku.privileged.api`, replaces it). Check which flavor a change needs to apply to.
+- Two build flavors share most of the codebase: `shizukuplus` (`af.shizuku.plus.api`, coexists with stock Shizuku) and `dropin` (`moe.shizuku.privileged.api`, replaces it). Check which flavor a change needs to apply to.
 - Never commit or modify `key.jks`, `signing.properties`, or anything matching `secrets*`.
 
 ## Submitting a PR
@@ -24,10 +24,12 @@ If you maintain a fork of the original Shizuku (or another derivative) and want 
 - Commit messages: `<type>: <what> - <why>` (e.g. `fix: null-check in FooBar.init - crashes on API 29`).
 - Rebase onto current `master` before requesting review if it's been open a while — conflicts are much easier for you to resolve than for a reviewer.
 - Describe how you tested the change (device/emulator + Android version) — there's no CI-run instrumented test coverage for most UI flows, so this is genuinely useful signal, not a formality.
+- What CI runs on a PR: the build, formatting and lint, a translation check and a **regression watch**, which lists earlier issue fixes that touched the same files so you (and I) can check they still hold. Changes to ProGuard rules or dependencies also run the **release smoke test**, which launches the minified release build on an emulator. Dependency bumps come from Dependabot as weekly PRs and are never merged automatically.
+- Issues and PRs are sorted with labels: `type:`, `status:`, `priority:`, `module:`, `flavor:`, `device:` and `area:`, plus `community: thanks` for outside contributions. You don't need to set them yourself.
 
 ## Translations
 
-Translation contributions are very welcome. If you're adding or updating a locale, please localize the full string set rather than a partial pass where practical — see `manager/src/main/res/values-*/` for existing locales as a reference.
+Translation contributions are very welcome. The easiest way is [Crowdin](https://crowdin.com/project/ShizukuPlus): translations come back into the repo through automatic sync pull requests, and once a string has a translator's version there, its machine-drafted placeholder is dropped. Files in `manager/src/main/res/values-*/` are rewritten by those sync PRs, so a hand edit there can be overwritten; see [TRANSLATING.md](TRANSLATING.md) for details.
 
 ## Security issues
 

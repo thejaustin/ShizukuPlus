@@ -10,6 +10,10 @@ that fails becomes an issue or a fix before the stable dispatch.
       Robolectric suites that can't run on the phone (OnePromptScenarios, VendorBatteryRestriction,
       WatchdogBatteryExemption, ActivityLogDao).
 - [ ] **Emulator smoke tests green.** `smoke-test` job (JniSmokeTest + ScreenSmokeTest), dispatch only.
+- [ ] **Release smoke test green.** `release-smoke.yml` runs the R8 release build on an emulator
+      (nightly when master changed, and on ProGuard/dependency changes). Dependabot PRs wait on it.
+- [ ] **Regression watch read.** `scripts/dev/regression-watch.sh origin/master` (also in the CI
+      step summary): re-check the earlier issue fixes it lists.
 - [ ] **On-device smoke pass:** `bash scripts/dev/device-smoke.sh` (keeps your data).
 - [ ] **Release (R8) build on the phone:** see §2. Needs an uninstall if the phone has a debug build,
       so **export a backup first**.

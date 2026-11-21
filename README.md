@@ -18,13 +18,11 @@ Thank you for your patience, and much love to you all!
 
 # Shizuku+
 
-The advanced privileged-process manager for Android.
+A fork of [Shizuku](https://github.com/RikkaApps/Shizuku) for Android, built on [thedjchi/Shizuku](https://github.com/thedjchi/Shizuku).
 
-Shizuku+ is an enhanced version of [Shizuku](https://github.com/RikkaApps/Shizuku) built on top of [thedjchi/Shizuku](https://github.com/thedjchi/Shizuku), with quality-of-life improvements, backported optimizations, exclusive Plus APIs, M3E theming & TCP connectivity improvements, and more. 
+Shizuku lets normal apps use system APIs directly, through a privileged process you start with ADB or root. Shizuku+ works with the same apps and adds the things I wanted on top: a Service Doctor that helps when the service won't start or keeps stopping, a Watchdog that restarts it, finer control over what each app is allowed to do, extra APIs for developers, and a Material 3 Expressive look.
 
-Shizuku lets normal apps use system-level APIs directly via a privileged process started with adb or root. Shizuku+ keeps full compatibility while adding features for power users and developers through the API and in-app with advanced settings and experimental developments.
-
-✨ Check out everything else this fork offers in the feature section further below!
+✨ Everything it adds is listed further down.
 
 [![Stars](https://img.shields.io/github/stars/thejaustin/ShizukuPlus?style=for-the-badge&color=bfb330&labelColor=807820)](https://github.com/thejaustin/ShizukuPlus/stargazers)
 [![Downloads](https://img.shields.io/github/downloads/thejaustin/ShizukuPlus/total?style=for-the-badge&color=bf7830&labelColor=805020)](https://github.com/thejaustin/ShizukuPlus/releases)
@@ -35,53 +33,94 @@ Shizuku lets normal apps use system-level APIs directly via a privileged process
 
 </div>
 
-> **Contributors welcome!** If you've found a bug or want to improve the codebase, please open an issue or pull request — the project is actively looking for contributors and collaborators.
+> **Contributors welcome!** If you've found a bug or want to improve the codebase, please open an issue or pull request — the project is actively looking for contributors and collaborators. Need help instead? See [SUPPORT.md](SUPPORT.md).
 
 ## ⬇️ Download
 
-Get the latest release from [GitHub Releases](https://github.com/thejaustin/ShizukuPlus/releases) — see the release notes there for what's changed recently.
+Get the latest release from [GitHub Releases](https://github.com/thejaustin/ShizukuPlus/releases). Each release's notes start with what changed for you. New builds go out as pre-releases first (labelled Pre-release on GitHub); stable releases follow.
 
-## ✨ Shizuku+ Core Features
+A release can carry up to four files:
 
-*   **Universal Privilege Provider**: One interface for **Root**, **ADB Shell**, and **Dhizuku (Device Owner)**.
-*   **OneUI 8+ Theming Fix**: Lets theming engines like Hex Installer or Substratum keep working on Android 16/17 and OneUI 8+.
-*   **Dhizuku Mode**: Share the system Device Owner binder with any app that has Shizuku permissions — set up via ADB, no root needed.
-*   **Customizable Gestures**: Swipe left, swipe right, and long-press actions, configurable per app.
-*   **In-App Changelogs**: See what's new after an update without leaving the app.
-*   **Bulk Management**: Multi-select apps to grant/revoke permissions or hide them in one tap.
-*   **Per-app API scopes**: Limit what each authorized app can do (shell, package manager, activity manager, app ops, system settings). An app with a scope off can't get around it with an interactive shell or its own background services.
-*   **Quick safety check** (optional, off by default): When an app asks for access, see where it was installed from, when, and its signing certificate. Add your own VirusTotal or Pithus key to also see whether scanners flag that exact APK; only its hash is looked up.
-*   **Safe by default for other apps**: Shizuku+'s riskier APIs for other apps (other apps' private data, SMS, contacts, location, screenshots, input, reboot) stay off until you turn them on in **Developer options → Unrestricted access** (unlock Developer options by tapping the version 7 times in Settings → About).
-*   **App list sorting up front**: A sort chip leads the filter row: name, last installed, last updated or granted first, and tap again to reverse.
-*   **In-App Knowledgebase**: Clean, offline-first Material 3 peek dialogs with rich guides, copyable command snippets, and direct action buttons without navigating away.
-*   **Activity Log with Morphe Timeline**: Visual node rails with dynamic pulsing status halos, repetitive activity occurrence grouping, and multi-criteria sorting.
-*   **Root Compatibility Hub & Enhanced SU Bridge**: Seamless translation of legacy `su -c` commands into Shizuku IPC with POSIX argument parsing and Android 14–17 support.
-*   **Universal SU Automation**: One-tap 'Magic Setup' to configure installed root apps to use the Shizuku+ SU Bridge.
-*   **Customizable Floating Navigation Bar**: Configurable 2 to 5 tab destinations (Home, Apps, Hub, Service Doctor, Terminal, Settings) with an interactive M3 Compose bottom sheet customizer, haptic feedback, live AMOLED+ surface preview, quick presets (Home Center, Terminal, Doctor), and physical direction-aware slide transitions.
-*   **AMOLED+ Specular Rim Theming**: True black AMOLED+ mode elevated with frosted glass luminous rim highlights (`rgba(255, 255, 255, 0.3)`), backed by a unified recursive card border engine across Home, Settings, Service Doctor, and Root Compatibility.
-*   **App Profiles Automation**: Per-app foreground Binder Firewall rules (Default, Block, Allow) automatically adjusting system permissions as you switch between apps.
-*   **Privileged App Backup & Restore**: Comprehensive backup and restore of split APKs and user data using native SAF tree picker, freeze/unfreeze controls, and glanceable filter chips.
-*   **Adaptive Service Doctor**: Diagnoses and fixes service startup, Samsung Auto Blocker (read from its real settings now) and OEM battery restrictions, with diagnostic checks safely excluding optional root bridges (like the SU bridge) from false positive fixes.
+| File | What it's for |
+|---|---|
+| `Shizuku+-<version>.apk` | The main app (`af.shizuku.plus.api`). It installs next to stock Shizuku. Most people want this one. |
+| `Shizuku+-Drop-In-<version>.apk` | The same app under stock Shizuku's package name (`moe.shizuku.privileged.api`), for apps that only look for that name. It replaces stock Shizuku, so don't install both. |
+| `Shizuku+-Compat-Hub-<version>.apk` | A tiny helper that lets apps looking for stock Shizuku find the main app (see [Third-party app compatibility](#-third-party-app-compatibility)). You can also install it from the app. Not needed with the Drop-In. |
+| `Shizuku+-Dhizuku-Compat-<version>.apk` | Optional, only for Dhizuku Mode: lets apps built with an older Dhizuku library (like Amarok 0.10.1) connect. It can't be installed next to the real Dhizuku app. |
+
+## ☑️ Requirements
+
+**Android 7 or newer · supports up to Android 17 (SDK 37)**
+- **Root mode:** Requires a rooted device
+- **Wireless Debugging mode:** Android 11+ and all Android TVs
+- **PC mode:** All devices
+- **Start on boot:** Available only with Wireless Debugging or Root mode
+
+On **Android 16+**, Shizuku+ asks for the new Local Network Protection permission so wireless-debugging discovery and pairing keep working. On **Android 17**, it handles the hidden-API `deviceId` change so authorized apps still show up and their permissions still apply.
+
+The [Service Connection wiki page](https://github.com/thejaustin/ShizukuPlus/wiki/Service-Connection) walks through each way of starting the service.
+
+## 🔌 Third-Party App Compatibility
+
+Shizuku+ installs under its own package (`af.shizuku.plus.api`) so it can coexist with stock Shizuku. Because most Shizuku-aware apps look specifically for the `moe.shizuku.privileged.api` package, Shizuku+ ships a lightweight **Compat Hub** — a tiny companion app that registers that package name and forwards binder/permission requests to Shizuku+.
+
+**If third-party apps don't detect Shizuku+:**
+1. Start the Shizuku+ service (ADB or root).
+2. On the home screen, use the **Compat Hub** card to install the companion (it's bundled in the app; installation goes through the running service, so start the service first). Long-pressing the button there also offers the Dhizuku Compat add-on.
+3. Re-open the third-party app — it should now detect Shizuku and receive the service binder.
+
+Alternatively, install the **Drop-In** build, which registers as `moe.shizuku.privileged.api` directly (do not install it alongside stock Shizuku).
+
+## 🔒 Privacy & Backups
+
+Nothing leaves your device except update checks, a public app-compatibility list from this repo and, only if you opt in, crash reports (with addresses and other apps' commands stripped) and the safety check's VirusTotal or Pithus hash lookups. Backups never carry your ADB key or the list of apps you allowed, your scanner API keys and trusted Wi-Fi names stay out of cloud backups, plain exports and the reinstall copy (only the encrypted export and the on-device sync with the Drop-In carry them), and the risky APIs for other apps are off until you turn them on. The details, with links to the code, are in [docs/PRIVACY.md](docs/PRIVACY.md).
+
+## ✨ What Shizuku+ Adds
+
+### Help when something goes wrong
+*   **Service Doctor**: Finds out why the service won't start or keeps stopping (wireless debugging and port discovery, battery optimization, Samsung Auto Blocker and Maximum Restrictions, Xiaomi/HyperOS, ColorOS/OxygenOS and TCL autostart, the phantom process killer and more) and offers a fix. During first-run setup you pick how much it does on its own: **Off** (security warnings only), **Quiet** (tells you, never acts), **Balanced** (tips and safe auto-fixes) or **Active** (also notifies for every problem). You can change it later in Settings → Startup & behavior → Service Doctor assistance.
+*   **Watchdog**: Restarts the service when it stops unexpectedly, including when an OEM "sleeping apps" feature freezes the whole app. New installs turn it on the first time the service starts; an update keeps whatever you had before.
 *   **Helper notifications**: Problems show up in one place. With the Watchdog on, its notification says whether Shizuku+ is running and offers a fix button when something's wrong; without it, one quiet notification updates in place. You pick how much you hear (off, only when it stops or needs you, or every problem), and nothing pops up over the app you're using.
+*   **Quick Settings tile**: Check and toggle the service from your notification panel.
+
+### Managing apps
+*   **Per-app API scopes**: Limit what each authorized app can do (shell, package manager, activity manager, app ops, system settings). An app with a scope off can't get around it with an interactive shell or its own background services.
+*   **Safe by default for other apps**: Shizuku+'s riskier APIs for other apps (other apps' private data, SMS, contacts, location, screenshots, input, reboot) stay off until you turn them on in **Developer options → Unrestricted access** (unlock Developer options by tapping the version 7 times in Settings → About).
+*   **Quick safety check** (optional, off by default): When an app asks for access, see where it was installed from, when, and its signing certificate. Add your own VirusTotal or Pithus key to also see whether scanners flag that exact APK; only its hash is looked up.
+*   **Bulk management**: Select several apps to grant, revoke or hide them at once.
+*   **Sorting**: A sort chip leads the filter row: name, last installed, last updated or granted first, and tap again to reverse.
+*   **Swipe actions**: Pick what swiping left, swiping right and the long-press menu do in the app list. They're also in the TalkBack actions menu.
+*   **App Profiles**: Per-app rules (Default, Block, Allow) that are applied as you switch between apps.
+*   **App backup & restore**: Back up and restore apps, including split APKs and their data, to a folder you choose, and freeze or unfreeze them.
+
+### Root, Dhizuku and theming
+*   **Dhizuku Mode**: Shizuku+ can act as the Device Owner and share that with Dhizuku apps (Hail, OwnDroid and others), without root. "Activate now" sets it up through the running service, so no computer is needed. While it's active, Android blocks new Secure Folder, work profiles and similar, and the setup tells you that first. An experimental limited mode uses Profile Owner instead, for when Secure Folder or another profile is already there.
+*   **Root Compatibility Hub & SU Bridge**: Lets apps that expect root run common `su` commands through Shizuku+ instead (details under Backporting & Optimizations below). Magic Setup points installed root apps at the SU Bridge in one tap.
+*   **Theming on One UI 8+**: The System theming bridge lets Hex Installer and Substratum apply overlays without root on Android 16/17 and One UI 8+. It's still being built, so it's off by default in Settings → Experimental features.
+
+### Look and feel
+*   **What's New timeline**: After an update, What's New shows the releases between the version you had and the one you have now on one timeline, with a "You were here" marker where you left off and the stretch you skipped highlighted along the rail.
+*   **Floating navigation bar**: 2 to 5 tabs from Home, Apps, Hub, Service Doctor, Terminal and Settings, reordered by dragging, with Floating, Docked, Compact and Capsule styles and a few presets.
+*   **AMOLED+**: A true black dark mode.
 *   **Expressive morphing icons**: Setting icons morph from an "off" shape into your chosen shape when you switch them on, with Spin, Morph, Pop, Sweep or Liquid motion. There are Material's shapes plus the original hand-built "classic" ones, and experimental switch designs where the icon itself is the switch.
-*   **Integrated Feature Guides & Smart Tooltips**: Long-press any setting for contextual explanations and direct links to the relevant knowledgebase guide.
-*   **Quick Settings Tile**: Check and toggle the service status from your notification panel.
+*   **Built-in help**: Offline guides with copyable commands and buttons that take you to the right place. Long-press any setting to see what it does and jump to its guide.
+*   **Activity log**: A timeline of what the service and apps did, with search, filters, date groups, repeated events grouped together, and export.
 
 <details>
 <summary>🚀 Plus API Features</summary>
 
-Shizuku+ provides exclusive system interfaces for advanced automation and tools — none of these exist in stock Shizuku:
+Shizuku+ offers extra system interfaces to other apps. None of these exist in stock Shizuku. The ones marked *experimental* are still being built: they're off by default and live in Settings → Experimental features.
 
-*   **AICore+ Automation Bridge**: Privileged UI automation (hierarchy dumps, tap/swipe) for AI-driven tools — no root needed. ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
-*   **AVF (Virtual Machine) Manager**: Create, start and stop AVF virtual machines, on devices whose firmware supports AVF. ([added](https://github.com/thejaustin/ShizukuPlus/commit/c8e962f6))
+*   **AICore+ Automation Bridge** (*experimental*): Privileged UI automation (hierarchy dumps, tap/swipe) for AI-driven tools — no root needed. ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
+*   **VM Manager** (*experimental*): Create, start and stop AVF virtual machines, on devices whose firmware supports AVF. ([added](https://github.com/thejaustin/ShizukuPlus/commit/c8e962f6))
 *   **Privileged Storage Proxy**: Fast access to shared storage and read-only access to installed APKs for backup and file tools. Other apps' private data (`/data/data/`, `/Android/data/`, `/Android/obb/`) is off by default; turn on **Developer options → Unrestricted app data access** for tools like Neo Backup. `/data/data/` also needs root. ([added](https://github.com/thejaustin/ShizukuPlus/commit/c8e962f6))
-*   **Device Spoofing** (*Spoof Device Identity* in Settings): Present a different device identity to bypass device-specific restrictions. ([added](https://github.com/thejaustin/ShizukuPlus/commit/11867f44))
-*   **Intelligence Bridge** (*AI Core Plus*): Screen context for AI tools (pixel colors, layer captures, system context). NPU scheduling isn't offered: there's no public API for it, so the call says "not supported" instead of pretending ([#633](https://github.com/thejaustin/ShizukuPlus/issues/633)). ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
-*   **Window Manager Plus**: Force free-form resizing, manage the Bubble Bar, and resilient overlays. ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
-*   **System Theming Bridge** (*Overlay Manager Plus*): Privileged overlay management for rootless theming (e.g. Hex Installer). ([added](https://github.com/thejaustin/ShizukuPlus/commit/55f6b7c7))
+*   **Device Spoofing** (*Spoof Device Identity*, *experimental*): Present a different device identity to get past device-specific restrictions. ([added](https://github.com/thejaustin/ShizukuPlus/commit/11867f44))
+*   **Intelligence Bridge** (*AI Core Plus*, *experimental*): Screen context for AI tools (pixel colors, layer captures, system context). NPU scheduling isn't offered: there's no public API for it, so the call says "not supported" instead of pretending ([#633](https://github.com/thejaustin/ShizukuPlus/issues/633)). ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
+*   **Window tuner** (*Window Manager Plus*, *experimental*): Force free-form resizing, manage the Bubble Bar, and keep overlays alive. ([added](https://github.com/thejaustin/ShizukuPlus/commit/e9bd1187))
+*   **System Theming Bridge** (*Overlay Manager Plus*, *experimental*): Privileged overlay management for rootless theming (e.g. Hex Installer). ([added](https://github.com/thejaustin/ShizukuPlus/commit/55f6b7c7))
 *   **Network & DNS Governor**: Manage Private DNS and firewall routing for rootless ad-blockers. ([added](https://github.com/thejaustin/ShizukuPlus/commit/55f6b7c7))
 *   **Deep Process Control** (*Activity Manager Plus*): Lets process managers kill apps and set standby buckets more aggressively. ([added](https://github.com/thejaustin/ShizukuPlus/commit/55f6b7c7))
-*   **Continuity Bridge**: Secure state and task handoff between Shizuku+ devices. ([added](https://github.com/thejaustin/ShizukuPlus/commit/20cf14f7))
+*   **Continuity Bridge** (*experimental*): State and task handoff between Shizuku+ devices. ([added](https://github.com/thejaustin/ShizukuPlus/commit/20cf14f7))
 
 See the [Shizuku+-API](https://github.com/thejaustin/ShizukuPlus-API) repository for full documentation and client bindings.
 
@@ -94,7 +133,7 @@ Shizuku+ makes regular Shizuku apps faster and more compatible without any code 
 
 *   **Transparent Shell Interceptor**: Routes common `pm`, `am`, and `settings` commands through faster native APIs.
 *   **Local ADB Proxy**: Emulates an ADB server on port 15555, so legacy apps can use Shizuku without Wireless ADB staying on.
-*   **SU Bridge**: A Shizuku-backed `su` drop-in for non-rooted apps that support a custom root path. Common root commands are translated into real framework operations where shell UID allows it — `iptables --uid-owner` per-app blocks become live `NetworkPolicy` restrictions, `resetprop` reads/writes real system properties, and `chmod`/`chown` apply for real — falling back to mocked success only when an operation genuinely requires root (e.g. flashing partitions or loading kernel modules).
+*   **SU Bridge**: A Shizuku-backed `su` for non-rooted apps that support a custom root path. Common root commands are translated into real framework operations where shell UID allows it — `iptables --uid-owner` per-app blocks become live `NetworkPolicy` restrictions, `resetprop` reads/writes real system properties, and `chmod`/`chown` apply for real — falling back to mocked success only when an operation genuinely requires root (e.g. flashing partitions or loading kernel modules).
 *   **`plus` CLI Helper**: A privileged command-line utility, available inside `rish`.
 *   **Dynamic App Database**: Keeps app descriptions and suggestions in the UI up-to-date from GitHub.
 
@@ -102,36 +141,11 @@ Shizuku+ makes regular Shizuku apps faster and more compatible without any code 
 
 ## ⚙️ Modular Control
 
-Everything in Shizuku+ is optional. Use the **Plus Features** category in Settings to toggle:
-*   Transparent Shell Interception
-*   Individual Plus APIs (AVF, Storage, Intelligence, etc.)
-*   Home screen card visibility
-*   Activity Logging
-
-## 🔌 Third-Party App Compatibility
-
-Shizuku+ installs under its own package (`af.shizuku.plus.api`) so it can coexist with stock Shizuku. Because most Shizuku-aware apps look specifically for the `moe.shizuku.privileged.api` package, Shizuku+ ships a lightweight **Compat Hub** — a tiny companion app that registers that package name and forwards binder/permission requests to Shizuku+.
-
-**If third-party apps don't detect Shizuku+:**
-1. Start the Shizuku+ service (ADB or root).
-2. On the home screen, use the **Compat Hub** card to install the companion (it's bundled in the app; installation goes through the running service, so start the service first).
-3. Re-open the third-party app — it should now detect Shizuku and receive the service binder.
-
-Alternatively, install the **drop-in** build, which registers as `moe.shizuku.privileged.api` directly (do not install it alongside stock Shizuku).
-
-## 🔒 Privacy & Backups
-
-Nothing leaves your device except update checks, a public app-compatibility list from this repo and, only if you opt in, crash reports (with addresses and other apps' commands stripped) and the safety check's VirusTotal or Pithus hash lookups. Backups never carry your ADB key or the list of apps you allowed, and the risky APIs for other apps are off until you turn them on. The details, with links to the code, are in [docs/PRIVACY.md](docs/PRIVACY.md).
-
-## ☑️ Requirements
-
-**Minimum: Android 7+ · Fully supported through Android 17 (SDK 37)**
-- **Root mode:** Requires a rooted device
-- **Wireless Debugging mode:** Android 11+ and all Android TVs
-- **PC mode:** All devices
-- **Start on boot:** Available only with Wireless Debugging or Root mode
-
-On **Android 16+**, Shizuku+ requests the new Local Network Protection permissions so wireless-debugging discovery and pairing keep working; on **Android 17**, it transparently handles the hidden-API `deviceId` change so authorized apps still appear and permission grants still apply.
+Everything Shizuku+ adds can be switched off:
+*   **Settings → Advanced & diagnostics → Plus APIs**: the shell interceptor and the Plus APIs that are ready (storage, network, process control)
+*   **Settings → Experimental features**: the Plus APIs and features still being built, all off by default
+*   **Home**: hide or rearrange cards in edit mode
+*   **Settings → Advanced & diagnostics → Activity log**: turn logging off
 
 ## 📃 License
 
@@ -243,7 +257,7 @@ Full license texts and per-library details: [OPEN_SOURCE_LICENSES.md](OPEN_SOURC
 
 *Plus many more via community translation through [Crowdin](https://crowdin.com/project/ShizukuPlus) — thank you to all translators!*
 
-> **Machine-assisted drafts:** where a language was still incomplete, missing strings were filled with AI-assisted drafts in `strings_machine_translated.xml` and are **flagged for native review**. If you speak the language, corrections are very welcome — see [TRANSLATING.md](TRANSLATING.md).
+> **Machine-assisted drafts:** where a language was still incomplete, missing strings were filled with AI-assisted drafts in `strings_machine_translated.xml` and are **flagged for native review**. Translations from Crowdin come back as automatic sync pull requests, and once Crowdin has a translator's version of a string, its draft is dropped. If you speak the language, corrections are very welcome — see [TRANSLATING.md](TRANSLATING.md).
 
 ### Acknowledgments
 - Special thanks to **AkayamiShurui42** for the proactive security research and stability patches (Reference: #239).
