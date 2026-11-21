@@ -10,27 +10,55 @@ jobs:
     permissions:
       issues: write
     steps:
-      - name: Auto-label based on Component dropdown
+      - name: Auto-label from the form and from clear keywords
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           script: |
-            const body = context.payload.issue.body;
-            if (!body) return;
-            
-            const labels = [];
-            
-            if (body.includes('Manager App (UI/Settings)')) labels.push('module: manager-app');
-            if (body.includes('Server/Service')) labels.push('module: server');
-            if (body.includes('API/AIDL')) labels.push('module: api');
-            if (body.includes('Rish (Command Line)')) labels.push('module: rish-cli');
-            if (body.includes('Translation/Localization')) labels.push('module: translation');
-            
-            if (labels.length > 0) {
-              core.info(`Adding labels: ${labels.join(', ')}`);
+            const issue = context.payload.issue;
+            const body = issue.body || '';
+            const text = `${issue.title}\n${body}`.toLowerCase();
+            const labels = new Set();
+
+            // Form dropdowns (exact option text)
+            const forms = {
+              'Manager App (UI/Settings)': 'module: manager-app',
+              'Server/Service': 'module: server',
+              'API/AIDL': 'module: api',
+              'Rish (Command Line)': 'module: rish-cli',
+              'Translation/Localization': 'module: translation',
+              'Shizuku+ (Plus)': 'flavor: plus',
+              'Drop-In (original Shizuku package)': 'flavor: drop-in',
+              'Samsung (One UI)': 'device: samsung',
+              'Pixel / stock Android': 'device: pixel',
+            };
+            for (const [option, label] of Object.entries(forms)) {
+              if (body.includes(option)) labels.add(label);
+            }
+
+            // Keywords only when specific enough to be right; a person can always fix a label.
+            const keywords = [
+              [/dhizuku|device owner/, 'area: dhizuku'],
+              [/root compat|su bridge|\bsu\b binary|start with root/, 'area: root-compat'],
+              [/what'?s new|release notes|changelog/, 'area: whats-new'],
+              [/service doctor|\bdoctor\b/, 'area: doctor'],
+              [/onboarding|first run|pairing code/, 'area: onboarding'],
+            ];
+            for (const [re, label] of keywords) if (re.test(text)) labels.add(label);
+
+            // Don't re-add something a maintainer removed on purpose after the first pass.
+            if (context.payload.action === 'edited') {
+              const events = await github.paginate(github.rest.issues.listEvents, {
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: issue.number,
+              });
+              for (const e of events) if (e.event === 'unlabeled' && e.label) labels.delete(e.label.name);
+            }
+
+            const existing = new Set(issue.labels.map((l) => l.name));
+            const add = [...labels].filter((l) => !existing.has(l));
+            if (add.length) {
+              core.info(`Adding labels: ${add.join(', ')}`);
               await github.rest.issues.addLabels({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.issue.number,
-                labels: labels
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: issue.number, labels: add,
               });
             }
