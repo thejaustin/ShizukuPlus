@@ -7,6 +7,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
+import android.os.SystemClock
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.LinearInterpolator
@@ -54,7 +55,7 @@ class TimelineRailView
             ShizukuSettings.getIconMorphShape().takeIf { it != ExpressiveShapes.OFF } ?: "cookie"
 
         private var haloPhase = 0f
-        private var flowPhase = 0f
+        private var flowPeriodMs = 5000L
         private var flow: ValueAnimator? = null
         private var wantFlow = false
         private val wavePath = Path()
@@ -154,15 +155,15 @@ class TimelineRailView
             flow = null
             if (wantFlow) {
                 val scale = ShizukuSettings.getAnimationDurationScale().coerceAtLeast(0.1f)
+                // Only a frame clock: the phase itself comes from the shared uptime in drawWave, so
+                // every row (each with its own animator) draws the same wave and the rail joins up.
+                flowPeriodMs = (5000 * scale).toLong().coerceAtLeast(1L)
                 flow =
                     ValueAnimator.ofFloat(0f, 1f).apply {
-                        duration = (5000 * scale).toLong()
+                        duration = flowPeriodMs
                         repeatCount = ValueAnimator.INFINITE
                         interpolator = LinearInterpolator()
-                        addUpdateListener {
-                            flowPhase = it.animatedValue as Float
-                            invalidate()
-                        }
+                        addUpdateListener { invalidate() }
                         start()
                     }
             }
@@ -179,11 +180,12 @@ class TimelineRailView
             val amp = 1.5f * density
             val wave = 30f * density
             getLocationInWindow(loc)
+            val flowT = if (wantFlow) (SystemClock.uptimeMillis() % flowPeriodMs) / flowPeriodMs.toFloat() else 0f
             val step = 2f * density
             wavePath.rewind()
             var y = y0
             while (true) {
-                val phase = (loc[1] + y) / wave + if (wantFlow) flowPhase else 0f
+                val phase = (loc[1] + y) / wave + flowT
                 // Settle to a straight line at the node so the wave joins it cleanly.
                 val settle = (kotlin.math.abs(y - nodeCenterY) / (16f * density)).coerceAtMost(1f)
                 val x = cx + amp * settle * kotlin.math.sin(phase * 2f * Math.PI).toFloat()
