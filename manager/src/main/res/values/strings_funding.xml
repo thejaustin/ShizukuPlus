@@ -5,15 +5,11 @@
     <string name="about_support_summary">Free and open source. If it saved you a headache, you can toss a coffee in the jar for device testing and late-night builds.</string>
     <string name="about_support_url" translatable="false">https://buymeacoffee.com/thejaustin</string>
     <string name="about_support_url_sponsors" translatable="false">https://github.com/sponsors/thejaustin</string>
-    <!-- Title of the setting that picks which page the Support development row opens. -->
+    <!-- Kept for older translations; the row now asks in a dialog instead. -->
     <string name="about_support_link_title">Where support goes</string>
     <!-- Option names are service names and stay as they are. -->
     <string-array name="about_support_link_names" translatable="false">
         <item>GitHub Sponsors</item>
         <item>Buy Me a Coffee</item>
-    </string-array>
-    <string-array name="about_support_link_values" translatable="false">
-        <item>sponsors</item>
-        <item>coffee</item>
     </string-array>
 </resources>

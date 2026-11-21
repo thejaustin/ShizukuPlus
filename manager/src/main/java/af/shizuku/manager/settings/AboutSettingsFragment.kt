@@ -139,10 +139,13 @@ class AboutSettingsFragment : BaseSettingsFragment() {
         }
 
         findPreference<Preference>("support_development")?.setOnPreferenceClickListener {
-            val choice = ShizukuSettings.getPreferences()?.getString(ShizukuSettings.Keys.KEY_SUPPORT_LINK, "sponsors")
-            val url =
-                if (choice == "coffee") R.string.about_support_url else R.string.about_support_url_sponsors
-            CustomTabsHelper.launchUrlOrCopy(context, context.getString(url))
+            val urls = intArrayOf(R.string.about_support_url_sponsors, R.string.about_support_url)
+            MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.about_support_title)
+                .setItems(R.array.about_support_link_names) { _, which ->
+                    CustomTabsHelper.launchUrlOrCopy(context, context.getString(urls[which]))
+                }.setNegativeButton(android.R.string.cancel, null)
+                .show()
             true
         }
 
