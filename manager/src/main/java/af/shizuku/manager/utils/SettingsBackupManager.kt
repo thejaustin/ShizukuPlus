@@ -99,9 +99,10 @@ object SettingsBackupManager {
 
     /**
      * Settings that widen privilege, disguise the app or expose a network port, mapped to their
-     * titles. An import (cloud restore, peer sync, a backup file) never switches one of these on by
-     * itself: turning one off is applied, turning one on is held back in [heldBack] for the user
-     * to confirm (see [applyHeldBack]).
+     * titles. An import (cloud restore, a backup file) never switches one of these on by itself:
+     * turning one off is applied, turning one on is held back in [heldBack] for the user to
+     * confirm (see [applyHeldBack]). Sync with this app's other flavor is the exception: it is
+     * signature-checked and the same user's settings, so it passes `trustPrivileged = true`.
      */
     val PRIVILEGED_KEYS: Map<String, Int> =
         mapOf(
