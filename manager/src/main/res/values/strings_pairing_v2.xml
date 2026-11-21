@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Wireless debugging pairing: one designed state per thing that can happen while pairing
+  (the pairing screen's status card, the in-app code dialog, the pairing notification and the
+  start-failed dialog). Names of Android Settings screens and buttons ("Wireless debugging",
+  "Pair device with pairing code", "Build number", "Allow restricted settings") should match
+  what Android shows in your language.
+-->
+<resources>
+
+    <!-- Status word shown above a pairing state's title, next to its icon. A state is never told by colour alone. -->
+    <string name="pairing_v2_word_needs_you">Needs you</string>
+    <!-- Status word: the app is waiting for or doing something on its own. -->
+    <string name="pairing_v2_word_working">Working</string>
+    <!-- Status word: something went wrong. -->
+    <string name="pairing_v2_word_problem">Problem</string>
+    <!-- Status word: pairing finished. -->
+    <string name="pairing_v2_word_done">Done</string>
+
+    <!-- Before pairing: Developer options are not turned on yet. -->
+    <string name="pairing_v2_devopts_off_title">Developer options are off</string>
+    <!-- Body for the Developer-options-off state. "Build number" is the row in About phone / Software information. -->
+    <string name="pairing_v2_devopts_off_text">Open About phone and tap Build number seven times to turn them on, then come back here.</string>
+    <!-- Button: opens Android's About phone page. -->
+    <string name="pairing_v2_action_open_about">Open About phone</string>
+    <!-- Button: opens Android's Developer options page. -->
+    <string name="pairing_v2_action_open_devopts">Open Developer options</string>
+
+    <!-- Before pairing: the phone is not on a Wi-Fi network. -->
+    <string name="pairing_v2_no_wifi_title">Not on Wi-Fi</string>
+    <!-- Body for the no-Wi-Fi state on phones where the phone's own hotspot does not help (Samsung). -->
+    <string name="pairing_v2_no_wifi_text">Wireless debugging only works on a Wi-Fi network. It doesn\'t need internet, so any Wi-Fi will do, including another phone\'s hotspot.</string>
+    <!-- Body for the no-Wi-Fi state on phones where turning on this phone's own hotspot also works. -->
+    <string name="pairing_v2_no_wifi_text_hotspot">Wireless debugging only works on a Wi-Fi network. It doesn\'t need internet, so any Wi-Fi will do. Turning on this phone\'s own hotspot works too.</string>
+    <!-- Button: opens Wi-Fi settings. -->
+    <string name="pairing_v2_action_wifi">Wi-Fi settings</string>
+    <!-- Button: opens hotspot / tethering settings. -->
+    <string name="pairing_v2_action_hotspot">Hotspot settings</string>
+
+    <!-- Before pairing: Wireless debugging is switched off in Developer options. -->
+    <string name="pairing_v2_wd_off_title">Wireless debugging is off</string>
+    <!-- Body for the Wireless-debugging-off state. -->
+    <string name="pairing_v2_wd_off_text">Turn on Wireless debugging, then tap Pair device with pairing code.</string>
+    <!-- Button: opens the Wireless debugging page in Developer options. -->
+    <string name="pairing_v2_action_open_wd">Open Wireless debugging</string>
+
+    <!-- Before pairing: Android 16+ local network access was not granted. -->
+    <string name="pairing_v2_local_net_title">Local network access needed</string>
+    <!-- Body for the local-network state. -->
+    <string name="pairing_v2_local_net_text">Without it, Android hides the pairing service from Shizuku+. It\'s only used to reach Wireless debugging on this phone.</string>
+    <!-- Button: asks for the local network permission. -->
+    <string name="pairing_v2_action_allow">Allow</string>
+    <!-- Button: opens this app's App info page. -->
+    <string name="pairing_v2_action_app_info">Open app info</string>
+
+    <!-- Before pairing: notifications from Shizuku+ are blocked. -->
+    <string name="pairing_v2_notif_blocked_title">Notifications are off</string>
+    <!-- Body for the notifications-blocked state. -->
+    <string name="pairing_v2_notif_blocked_text">Shizuku+ asks for the pairing code in a notification. Allow notifications, or type the code here with Shizuku+ and Settings in split screen.</string>
+    <!-- Button: asks for, or opens the settings for, notifications. -->
+    <string name="pairing_v2_action_allow_notifications">Allow notifications</string>
+    <!-- Button: opens the in-app pairing code dialog. -->
+    <string name="pairing_v2_action_enter_here">Type the code here</string>
+
+    <!-- Pairing: waiting for the user to open the pairing code dialog in Settings. -->
+    <string name="pairing_v2_searching_title">Waiting for the pairing code</string>
+    <!-- Body for the waiting state. -->
+    <string name="pairing_v2_searching_text">In Wireless debugging, tap Pair device with pairing code. Shizuku+ notices when it opens.</string>
+
+    <!-- Pairing: the user closed the pairing dialog in Settings (or Settings closed it), so its code no longer works. -->
+    <string name="pairing_v2_expired_title">The pairing code closed</string>
+    <!-- Body for the closed-code state. -->
+    <string name="pairing_v2_expired_text">Settings closed its pairing dialog, so that code won\'t work any more. Open Pair device with pairing code again for a new one.</string>
+    <!-- Button: opens Wireless debugging so the user gets a fresh code. -->
+    <string name="pairing_v2_action_new_code">Get a new code</string>
+
+    <!-- Pairing: the pairing dialog in Settings is open; the code goes in the notification. -->
+    <string name="pairing_v2_found_title">Pairing code is ready</string>
+    <!-- Body for the found state, notification with a reply box. -->
+    <string name="pairing_v2_found_text">Type the 6-digit code from Settings into the Shizuku+ notification.</string>
+    <!-- Body for the found state when the notification opens a code dialog instead (Legacy pairing). -->
+    <string name="pairing_v2_found_text_legacy">Tap the Shizuku+ notification and type the 6-digit code from Settings.</string>
+    <!-- Button: for phones whose notifications have no reply box; switches the notification to open a code dialog. -->
+    <string name="pairing_v2_action_use_dialog">No reply box? Use a dialog</string>
+
+    <!-- Pairing: the code was sent and Android is checking it. -->
+    <string name="pairing_v2_pairing_title">Pairing</string>
+    <!-- Body for the pairing state. -->
+    <string name="pairing_v2_pairing_text">Checking the code with Android. This takes a few seconds.</string>
+
+    <!-- Pairing failed: wrong code. -->
+    <string name="pairing_v2_wrong_code_title">That code didn\'t match</string>
+    <!-- Body for the wrong-code state. -->
+    <string name="pairing_v2_wrong_code_text">Check the 6 digits in Settings and try again. If Settings closed its dialog, open Pair device with pairing code again for a new code.</string>
+    <!-- Pairing failed: could not connect to the pairing service. -->
+    <string name="pairing_v2_cant_connect_title">Couldn\'t reach the pairing service</string>
+    <!-- Body for the can't-connect state. -->
+    <string name="pairing_v2_cant_connect_text">The pairing dialog may have closed, or the Wi-Fi network changed. Open Pair device with pairing code again.</string>
+    <!-- Pairing failed: the app's ADB key could not be loaded. -->
+    <string name="pairing_v2_key_title">Couldn\'t load the pairing key</string>
+    <!-- Body for the key-store state. -->
+    <string name="pairing_v2_key_text">Android\'s key store didn\'t answer. Restarting the phone usually fixes it, and Service Doctor can reset the ADB keys.</string>
+    <!-- Pairing failed for a reason the app doesn't recognise. -->
+    <string name="pairing_v2_failed_title">Pairing didn\'t work</string>
+    <!-- Body for the unknown-failure state. -->
+    <string name="pairing_v2_failed_text">Something unexpected went wrong. Try again with a new code. If it keeps failing, Service Doctor can look into it.</string>
+    <!-- Pairing stopped: Android ended the background search after its time limit. -->
+    <string name="pairing_v2_timed_out_title">Stopped waiting</string>
+    <!-- Body for the timed-out state. -->
+    <string name="pairing_v2_timed_out_text">Android limits how long Shizuku+ can wait in the background. Tap Look again when you\'re ready to pair.</string>
+    <!-- Button: starts waiting for the pairing dialog again. -->
+    <string name="pairing_v2_action_look_again">Look again</string>
+    <!-- Button: try pairing again. -->
+    <string name="pairing_v2_action_try_again">Try again</string>
+    <!-- Button: opens Service Doctor, the app's troubleshooting screen. -->
+    <string name="pairing_v2_action_service_doctor">Open Service Doctor</string>
+
+    <!-- Pairing succeeded; the service still has to be started by the user. -->
+    <string name="pairing_v2_paired_title">Paired</string>
+    <!-- Body for the paired state. -->
+    <string name="pairing_v2_paired_text">This phone trusts Shizuku+ now. You only need to pair once.</string>
+    <!-- Button: starts the Shizuku+ service right after pairing. -->
+    <string name="pairing_v2_action_start_now">Start now</string>
+    <!-- Pairing succeeded and the service is starting on its own. -->
+    <string name="pairing_v2_starting_title">Paired, starting Shizuku+</string>
+    <!-- Body for the starting state. -->
+    <string name="pairing_v2_starting_text">This screen closes once it\'s running.</string>
+
+    <!-- In-app code dialog: the app is not in split screen, so the Settings dialog would close. -->
+    <string name="pairing_v2_split_title">Use split screen for this</string>
+    <!-- Body for the split-screen state. -->
+    <string name="pairing_v2_split_text">Settings throws the code away if its dialog leaves the screen. Put Shizuku+ and Settings side by side, open Pair device with pairing code, then type the code here.</string>
+    <!-- In-app code dialog: the pairing service was found on this port (a number). -->
+    <string name="pairing_v2_ready_title">Enter the pairing code</string>
+    <!-- Body for the in-app dialog's ready state. %1$d is the port number. -->
+    <string name="pairing_v2_ready_text">Found the pairing service on port %1$d. Type the 6-digit code shown in Settings.</string>
+    <!-- In-app code dialog after success, just before the start screen opens. -->
+    <string name="pairing_v2_success_starting">Starting Shizuku+ now.</string>
+    <!-- Spoken by screen readers when the code field shows an error. %1$s is the error text. -->
+    <string name="pairing_v2_code_error_a11y">Pairing code error: %1$s</string>
+
+    <!-- Switch on the pairing screen's MIUI/HyperOS note. Same setting as Settings > Legacy pairing. -->
+    <string name="pairing_v2_legacy_switch">Type the code in a dialog</string>
+    <!-- Explanation under that switch. -->
+    <string name="pairing_v2_legacy_switch_summary">For phones whose notifications have no reply box. Tapping the notification opens a small code dialog instead.</string>
+    <!-- Snackbar/toast after turning on the code dialog from the pairing screen. -->
+    <string name="pairing_v2_legacy_enabled">The notification now opens a code dialog.</string>
+
+    <!-- Notification body while waiting for the pairing dialog. -->
+    <string name="pairing_v2_notif_searching_text">Open Pair device with pairing code in Wireless debugging.</string>
+    <!-- Notification body once the dialog is open (reply-box version). -->
+    <string name="pairing_v2_notif_found_text">Tap Enter pairing code and type the 6 digits from Settings.</string>
+    <!-- Notification body once the dialog is open (Legacy pairing: tap to open a dialog). -->
+    <string name="pairing_v2_notif_found_text_legacy">Tap here and type the 6 digits from Settings.</string>
+
+    <!-- Accessibility helper restricted on Android 13+: dialog title. -->
+    <string name="pairing_v2_restricted_title">Allow restricted settings first</string>
+    <!-- Dialog body. %1$s is an adb command shown in monospace. "⋮" is the three-dot menu. -->
+    <string name="pairing_v2_restricted_text">Android 13 and newer blocks accessibility services from apps installed outside an app store until you allow it.\n\n1. Tap Accessibility and try to turn on the Shizuku+ Pairing Helper. Android blocks it the first time; that\'s expected.\n2. Come back, tap Open app info, then the ⋮ menu at the top, then Allow restricted settings.\n3. Come back again and tap Continue.\n\nFrom a computer, this command does the same:\n\n%1$s</string>
+    <!-- Button in that dialog: opens Android's Accessibility settings. -->
+    <string name="pairing_v2_action_accessibility">Accessibility</string>
+    <!-- Accessibility helper: dialog title when it can be turned on directly. -->
+    <string name="pairing_v2_helper_title">Turn on the Pairing Helper</string>
+    <!-- Accessibility helper: dialog title once it is on. -->
+    <string name="pairing_v2_helper_ready_title">The Pairing Helper is on</string>
+
+    <!-- Start screen: the start failed. Dialog title. -->
+    <string name="pairing_v2_start_failed_title">Couldn\'t start Shizuku+</string>
+    <!-- Start screen: line added above the error when pairing had just worked. -->
+    <string name="pairing_v2_start_failed_after_pair">Pairing worked, but the start didn\'t.</string>
+
+</resources>
