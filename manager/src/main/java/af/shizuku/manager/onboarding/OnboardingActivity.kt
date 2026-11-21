@@ -40,6 +40,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
@@ -664,9 +665,52 @@ class OnboardingActivity : AppActivity() {
                     AssistantLevel.BALANCED to R.string.onboarding_assistant_desc_balanced,
                     AssistantLevel.ACTIVE to R.string.onboarding_assistant_desc_active,
                 )
+
+            // A stand-in for what each level shows; nothing in it is live.
+            fun showPreview(
+                level: AssistantLevel,
+                animate: Boolean,
+            ) {
+                val preview = binding.assistantPreview
+                val applyLevel = {
+                    binding.previewOff.isVisible = level == AssistantLevel.OFF
+                    binding.previewChip.isVisible = level == AssistantLevel.QUIET
+                    binding.previewFixCard.isVisible = level == AssistantLevel.BALANCED || level == AssistantLevel.ACTIVE
+                    binding.previewNotification.isVisible = level == AssistantLevel.ACTIVE
+                }
+                // A cancelled fade skips its end action; the new one below applies this level.
+                preview.animate().cancel()
+                val duration = ShizukuSettings.scaledAnimationDuration(200)
+                if (!animate || duration <= 0L) {
+                    applyLevel()
+                    preview.alpha = 1f
+                    preview.translationY = 0f
+                    return
+                }
+                val shift = dpToPx(8).toFloat()
+                preview
+                    .animate()
+                    .alpha(0f)
+                    .translationY(-shift)
+                    .setDuration(duration / 2)
+                    .setInterpolator(FastOutSlowInInterpolator())
+                    .withEndAction {
+                        applyLevel()
+                        preview.translationY = shift
+                        preview
+                            .animate()
+                            .alpha(1f)
+                            .translationY(0f)
+                            .setDuration(duration / 2)
+                            .setInterpolator(FastOutSlowInInterpolator())
+                            .start()
+                    }.start()
+            }
+
             // Someone who set the switches one by one keeps them until they pick a level here.
             val startLevel = AssistantLevel.current(prefs).takeIf { it != AssistantLevel.CUSTOM } ?: AssistantLevel.BALANCED
             binding.assistantLevelDesc.setText(levelDescs.getValue(startLevel))
+            showPreview(startLevel, animate = false)
             if (AssistantLevel.current(prefs) != AssistantLevel.CUSTOM) levelButtons.getValue(startLevel).isChecked = true
             binding.assistantLevelGroup.addOnButtonCheckedListener { group, id, checked ->
                 if (!checked) return@addOnButtonCheckedListener
@@ -674,6 +718,7 @@ class OnboardingActivity : AppActivity() {
                 HapticUtils.segmentTick(group)
                 level.apply(prefs)
                 binding.assistantLevelDesc.setText(levelDescs.getValue(level))
+                showPreview(level, animate = true)
                 syncSwitches()
             }
         }

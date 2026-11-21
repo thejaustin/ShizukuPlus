@@ -186,6 +186,125 @@
 
         </com.google.android.material.button.MaterialButtonToggleGroup>
 
+        <!-- Preview of what the chosen level shows; nothing in it can be tapped -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge"
+            app:strokeWidth="0dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="?colorSurfaceContainer">
+
+            <LinearLayout
+                android:id="@+id/assistant_preview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/onboarding_assistant_preview_label"
+                    android:textAppearance="?textAppearanceLabelMedium"
+                    android:textColor="?colorOnSurfaceVariant" />
+
+                <!-- Off -->
+                <TextView
+                    android:id="@+id/preview_off"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/onboarding_assistant_preview_off"
+                    android:textAppearance="?textAppearanceBodyMedium"
+                    android:textColor="?colorOnSurfaceVariant" />
+
+                <!-- Quiet -->
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/preview_chip"
+                    style="@style/Widget.Material3.Chip.Assist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/onboarding_assistant_preview_chip"
+                    app:chipIcon="@drawable/ic_medical_services_24"
+                    app:chipIconTint="?colorPrimary"
+                    android:clickable="false"
+                    android:focusable="false" />
+
+                <!-- Balanced: a suggested fix -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/preview_fix_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerMedium"
+                    app:strokeWidth="0dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="?colorSurfaceContainerHighest">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingVertical="8dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/onboarding_assistant_preview_fix_text"
+                            android:textAppearance="?textAppearanceBodyMedium"
+                            android:textColor="?colorOnSurface" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            style="?attr/materialButtonTonalStyle"
+                            android:layout_marginStart="8dp"
+                            android:text="@string/onboarding_assistant_preview_fix_button"
+                            android:clickable="false"
+                            android:focusable="false"
+                            android:importantForAccessibility="no" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Active: a notification as well -->
+                <LinearLayout
+                    android:id="@+id/preview_notification"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="4dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_notifications_24"
+                        android:contentDescription="@null"
+                        app:tint="?colorOnSurfaceVariant" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="12dp"
+                        android:text="@string/onboarding_assistant_preview_notification"
+                        android:textAppearance="?textAppearanceBodySmall"
+                        android:textColor="?colorOnSurfaceVariant" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
     </LinearLayout>
 
 </ScrollView>

@@ -396,6 +396,12 @@
     <string name="onboarding_assistant_desc_quiet">Tells you when something needs you. Never changes anything or makes suggestions.</string>
     <string name="onboarding_assistant_desc_balanced">Tells you when something needs you, suggests fixes, and can restart the service or clear stale settings by itself. You can change this any time in Settings.</string>
     <string name="onboarding_assistant_desc_active">Everything in Balanced, plus a notification for every problem it finds.</string>
+    <string name="onboarding_assistant_preview_label">Preview</string>
+    <string name="onboarding_assistant_preview_off">No help shown. Security warnings still appear.</string>
+    <string name="onboarding_assistant_preview_chip">Something needs you</string>
+    <string name="onboarding_assistant_preview_fix_text">The service stopped. Start it again?</string>
+    <string name="onboarding_assistant_preview_fix_button">Fix</string>
+    <string name="onboarding_assistant_preview_notification">Service Doctor: the service stopped</string>
     <string name="onboarding_watchdog_desc">Keeps a small notification showing and restarts Shizuku+ if it gets stopped. Turn it off any time in Settings.</string>
     <string name="onboarding_take_tour">Feature Tour</string>
     <string name="onboarding_take_tour_summary">Explore the new M3 Expressive look, home layout, and network trust shield</string>
