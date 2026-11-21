@@ -159,7 +159,12 @@ class TimelineChangelogController(
         val latestTag = releases.firstOrNull()?.tag
         // With updates in between, mark where the user's previous version sits so the new
         // releases above it read as "what you missed".
-        val leftOffTag = releases.dropWhile { it.isNew }.takeIf { releases.any { r -> r.isNew } }?.firstOrNull()?.tag
+        val leftOffTag =
+            releases
+                .dropWhile { it.isNew }
+                .takeIf { releases.any { r -> r.isNew } }
+                ?.firstOrNull()
+                ?.tag
         val filtered =
             sort
                 .apply(releases.map { it.copy(isLatest = it.tag == latestTag, isLeftOff = it.tag == leftOffTag) })
