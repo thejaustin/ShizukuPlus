@@ -11,11 +11,15 @@
     <!-- Heading above the setup cards that are not the suggested one. -->
     <string name="onboarding_v2_setup_other_ways">Other ways to start</string>
 
-    <!-- Status words on the setup card. Always shown next to an icon, so keep them to one or two words. -->
+    <!-- Status word on the setup card, next to an icon: the service is running. One or two words. -->
     <string name="onboarding_v2_status_running">Running</string>
+    <!-- Status word on the setup card, next to an icon: the service is starting. One or two words. -->
     <string name="onboarding_v2_status_starting">Starting</string>
+    <!-- Status word on the setup card, next to an icon: a start was tried and it did not work. One or two words. -->
     <string name="onboarding_v2_status_failed">Didn\'t start</string>
+    <!-- Status word on the setup card, next to an icon: the service is not running yet. One or two words. -->
     <string name="onboarding_v2_status_not_running">Not running</string>
+    <!-- Status word on the setup card, next to an icon: something on the phone has to change before a start can work. -->
     <string name="onboarding_v2_status_blocked">Needs a step first</string>
 
     <!-- Setup card while the service is starting. %1$s is the app name. -->
@@ -26,7 +30,7 @@
     <!-- Setup card after a start made from this screen did not work. -->
     <string name="onboarding_v2_setup_failed_title">That didn\'t start</string>
     <!-- Body for the failed start card. Service Doctor is the app's built-in troubleshooter. -->
-    <string name="onboarding_v2_setup_failed_desc">Nothing on your phone was changed. Try again, or open Service Doctor to see what went wrong.</string>
+    <string name="onboarding_v2_setup_failed_desc">Try again, or open Service Doctor to see what went wrong.</string>
     <!-- Button: try the same start again. -->
     <string name="onboarding_v2_setup_retry">Try again</string>
     <!-- Button: opens the Service Doctor screen. -->
@@ -35,44 +39,55 @@
     <!-- Setup card for a rooted phone: root is the quickest way. -->
     <string name="onboarding_v2_setup_root_title">Start with root</string>
 
-    <!-- Setup card on Android 10 and older, where wireless pairing does not exist. %1$s is the Android version, like "10". -->
+    <!-- Setup card title on Android 10 and older, where wireless pairing does not exist. -->
     <string name="onboarding_v2_setup_old_android_title">Wireless pairing needs Android 11</string>
+    <!-- Body of the Android 10 and older card. %1$s is the Android version, like "10". -->
     <string name="onboarding_v2_setup_old_android_desc">This phone runs Android %1$s. Start it once from a computer with one ADB command. After that it can restart on its own until the phone reboots.</string>
 
-    <!-- Setup card when Developer options are turned off. Keep the menu names close to what Android calls them. -->
+    <!-- Setup card title when Developer options are turned off. Use the name Android uses for that menu. -->
     <string name="onboarding_v2_setup_dev_off_title">Turn on Developer options</string>
+    <!-- Body of the Developer options card. Keep "About phone", "Software information" and "Build number" close to what Android calls them. -->
     <string name="onboarding_v2_setup_dev_off_desc">In Settings, open About phone (on some phones it\'s under Software information) and tap Build number 7 times. Then come back here.</string>
     <!-- Button: opens the system About phone screen. -->
     <string name="onboarding_v2_setup_open_about">Open About phone</string>
 
-    <!-- Setup card when the phone is not on Wi-Fi. -->
+    <!-- Setup card title when the phone is not on Wi-Fi. -->
     <string name="onboarding_v2_setup_wifi_off_title">Connect to Wi-Fi</string>
+    <!-- Body of the Wi-Fi card: wireless debugging needs Wi-Fi but not the internet. -->
     <string name="onboarding_v2_setup_wifi_off_desc">Wireless debugging only works while this phone is on Wi-Fi. It doesn\'t need the internet, and nothing is sent over it.</string>
     <!-- Button: opens the system Wi-Fi panel or settings. -->
     <string name="onboarding_v2_setup_open_wifi">Open Wi-Fi settings</string>
 
-    <!-- Setup card before this phone has been paired (step 1 of 2). -->
+    <!-- Setup card title before this phone has been paired (step 1 of 2). -->
     <string name="onboarding_v2_setup_pair_title">Pair this phone</string>
+    <!-- Body of the pairing card: pairing is a one-time step done on the phone itself. -->
     <string name="onboarding_v2_setup_pair_desc">A one-time step. Android shows a pairing code and you type it in here. No computer needed.</string>
 
-    <!-- Setup card once the phone is paired but the service is not running (step 2 of 2). %1$s is the app name. -->
+    <!-- Setup card title once the phone is paired but the service is not running (step 2 of 2). %1$s is the app name. -->
     <string name="onboarding_v2_setup_start_title">Start %1$s</string>
+    <!-- Body of the start card: what has to be on for Start to work. -->
     <string name="onboarding_v2_setup_start_desc">This phone is paired. Start needs Wireless debugging on and Wi-Fi connected.</string>
     <!-- Button: run pairing again on a phone that was paired before. -->
     <string name="onboarding_v2_setup_pair_again">Pair again</string>
 
-    <!-- Service Doctor preview: the pretend Home card. "Service" is the row title, "Stopped" its status. -->
+    <!-- Service Doctor preview: title of the pretend Service Doctor row. -->
     <string name="onboarding_v2_preview_card_title">Service</string>
+    <!-- Service Doctor preview: status of the pretend Service Doctor row. -->
     <string name="onboarding_v2_preview_card_status">Stopped</string>
-    <!-- Service Doctor preview: the pretend notification. "now" is when it arrived. -->
-    <string name="onboarding_v2_preview_notification_time">now</string>
+    <!-- Service Doctor preview: top line of the pretend notification, "app name · when it arrived". %1$s is the app name. -->
+    <string name="onboarding_v2_preview_notification_header">%1$s · now</string>
+    <!-- Service Doctor preview: title of the pretend notification. -->
     <string name="onboarding_v2_preview_notification_title">The service stopped</string>
+    <!-- Service Doctor preview: text of the pretend notification. "Start" is the button under it. -->
     <string name="onboarding_v2_preview_notification_text">Tap Start to bring it back.</string>
 
-    <!-- Screen reader description of the preview for each Service Doctor level. -->
+    <!-- Screen reader description of the preview when Service Doctor is Off. -->
     <string name="onboarding_v2_preview_a11y_off">Preview: nothing extra is shown. Security warnings still appear.</string>
+    <!-- Screen reader description of the preview at the Quiet level. -->
     <string name="onboarding_v2_preview_a11y_quiet">Preview: a small label on the main screen that says something needs you.</string>
+    <!-- Screen reader description of the preview at the Balanced level. -->
     <string name="onboarding_v2_preview_a11y_balanced">Preview: a card on the main screen that says the service stopped, with a Fix button.</string>
+    <!-- Screen reader description of the preview at the Active level. -->
     <string name="onboarding_v2_preview_a11y_active">Preview: the same card on the main screen, plus a notification that the service stopped.</string>
 
 </resources>

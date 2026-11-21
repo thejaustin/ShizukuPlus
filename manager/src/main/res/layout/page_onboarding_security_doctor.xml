@@ -163,7 +163,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:accessibilityLiveRegion="polite"
             android:textAppearance="?textAppearanceBodyMedium"
             android:textColor="?colorOnSurfaceVariant" />
 

@@ -144,7 +144,11 @@ class OnboardingActivity : AppActivity() {
     // A start made from this screen, and whether it ended without the service running.
     private var startMethod = StartMethod.NONE
     private var startFailed = false
+
+    // Set by a start, cleared by any other trip away, so only leaving for the Starter counts.
+    private var startPending = false
     private var awayDuringStart = false
+    private var renderedUi: SetupUi? = null
     private var lastState: ShizukuStateMachine.State? = null
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
@@ -344,7 +348,10 @@ class OnboardingActivity : AppActivity() {
     override fun onPause() {
         super.onPause()
         // The Starter screen is in front now; what state we come back to decides if it worked.
-        if (startMethod != StartMethod.NONE && !startFailed) awayDuringStart = true
+        if (startPending) {
+            startPending = false
+            awayDuringStart = true
+        }
     }
 
     private fun postRenderSetup() {
@@ -399,14 +406,22 @@ class OnboardingActivity : AppActivity() {
         page.btnWadbSecondary.setOnClickListener(if (needsPair) start else pair)
         page.textWadbStep.visibility = if (tls) View.VISIBLE else View.GONE
         page.textWadbStep.setText(if (needsPair) R.string.onboarding_setup_step_pair else R.string.onboarding_setup_step_start)
-        fitButtonRow(page.wadbActions)
+        if (page.wadbActions.tag != needsPair) {
+            page.wadbActions.tag = needsPair
+            fitButtonRow(page.wadbActions)
+        }
     }
 
     private fun updateSetupPageState(state: ShizukuStateMachine.State) {
         val previous = lastState
         lastState = state
         when (state) {
-            ShizukuStateMachine.State.RUNNING, ShizukuStateMachine.State.STARTING -> startFailed = false
+            ShizukuStateMachine.State.RUNNING -> {
+                // That start worked; a later stop isn't a failed start from here.
+                startFailed = false
+                startMethod = StartMethod.NONE
+            }
+            ShizukuStateMachine.State.STARTING -> startFailed = false
             ShizukuStateMachine.State.CRASHED -> if (startMethod != StartMethod.NONE) startFailed = true
             ShizukuStateMachine.State.STOPPED ->
                 if (startMethod != StartMethod.NONE && previous == ShizukuStateMachine.State.STARTING) startFailed = true
@@ -480,6 +495,7 @@ class OnboardingActivity : AppActivity() {
     private fun startWithRoot() {
         startMethod = StartMethod.ROOT
         startFailed = false
+        startPending = true
         startActivity(
             Intent(this, StarterActivity::class.java).apply {
                 putExtra(StarterActivity.EXTRA_IS_ROOT, true)
@@ -490,6 +506,7 @@ class OnboardingActivity : AppActivity() {
     private fun startWireless() {
         startMethod = StartMethod.WIRELESS
         startFailed = false
+        startPending = true
         StartWirelessAdbViewHolder.start(this, lifecycleScope)
     }
 
@@ -502,6 +519,7 @@ class OnboardingActivity : AppActivity() {
     }
 
     private fun openGuide() {
+        startPending = false
         af.shizuku.manager.knowledgebase.KnowledgebaseHelper.show(
             this,
             af.shizuku.manager.knowledgebase.KnowledgebaseRegistry.TOPIC_WIRELESS_ADB,
@@ -509,6 +527,7 @@ class OnboardingActivity : AppActivity() {
     }
 
     private fun openSafely(vararg intents: Intent) {
+        startPending = false
         for (intent in intents) {
             try {
                 startActivity(intent)
@@ -536,18 +555,39 @@ class OnboardingActivity : AppActivity() {
     private fun renderSetup() {
         val page = setupPage ?: return
         val ui = computeSetupUi(ShizukuStateMachine.get())
-        val appName = getString(R.string.app_name)
         val showWadb =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ||
                 EnvironmentUtils.isTelevision() ||
                 EnvironmentUtils.getAdbTcpPort() > 0
         val rooted = EnvironmentUtils.isRooted()
         val busy = ui == SetupUi.RUNNING || ui == SetupUi.STARTING
+        val changed = ui != renderedUi
+        renderedUi = ui
 
         page.cardState.isVisible = ui != SetupUi.RUNNING
         page.textStateLabel.isVisible = !busy && ui != SetupUi.FAILED
         page.btnSetupLater.isVisible = ui != SetupUi.RUNNING
 
+        if (changed) renderStateCard(page, ui)
+
+        // Every other way that works here; the main card's own way isn't repeated below it.
+        val wadbOnCard = ui == SetupUi.NOT_PAIRED || ui == SetupUi.PAIRED || ui == SetupUi.WIFI_OFF || ui == SetupUi.DEV_OFF
+        page.cardRoot.isVisible = !busy && rooted && ui != SetupUi.ROOT
+        page.cardWadb.isVisible = !busy && showWadb && !wadbOnCard
+        page.cardAdb.isVisible = !busy && ui != SetupUi.OLD_ANDROID
+        page.textOtherWays.isVisible = page.cardRoot.isVisible || page.cardWadb.isVisible || page.cardAdb.isVisible
+        refreshWadbButtons()
+        // Read changes out only from now on, not the first fill while the page may be off screen.
+        ViewCompat.setAccessibilityLiveRegion(page.cardState, ViewCompat.ACCESSIBILITY_LIVE_REGION_POLITE)
+        ViewCompat.setAccessibilityLiveRegion(page.statusRunning, ViewCompat.ACCESSIBILITY_LIVE_REGION_POLITE)
+    }
+
+    /** The main card's icon, word, text and buttons; only redrawn when its state changes. */
+    private fun renderStateCard(
+        page: PageOnboardingSetupBinding,
+        ui: SetupUi,
+    ) {
+        val appName = getString(R.string.app_name)
         val guide = SetupAction(getString(R.string.home_wireless_adb_view_guide_button)) { openGuide() }
         var icon = R.drawable.ic_wadb_24
         var word = R.string.onboarding_v2_status_not_running
@@ -661,14 +701,6 @@ class OnboardingActivity : AppActivity() {
         page.btnStateTertiary.show(tertiary)
         page.stateActions.isVisible = primary != null
         if (primary != null) fitButtonRow(page.stateActions)
-
-        // Every other way that works here; the main card's own way isn't repeated below it.
-        val wadbOnCard = ui == SetupUi.NOT_PAIRED || ui == SetupUi.PAIRED || ui == SetupUi.WIFI_OFF || ui == SetupUi.DEV_OFF
-        page.cardRoot.isVisible = !busy && rooted && ui != SetupUi.ROOT
-        page.cardWadb.isVisible = !busy && showWadb && !wadbOnCard
-        page.cardAdb.isVisible = !busy && ui != SetupUi.OLD_ANDROID
-        page.textOtherWays.isVisible = page.cardRoot.isVisible || page.cardWadb.isVisible || page.cardAdb.isVisible
-        refreshWadbButtons()
     }
 
     private val savedRowParams = java.util.WeakHashMap<View, IntArray>()
@@ -1061,6 +1093,7 @@ class OnboardingActivity : AppActivity() {
         private fun bindSetupPage(binding: PageOnboardingSetupBinding) {
             setupStatusRunning = binding.statusRunning
             setupPage = binding
+            renderedUi = null
             CardBorder.applyAll(binding.root)
 
             binding.btnWadbGuide.setOnClickListener { openGuide() }
@@ -1093,7 +1126,7 @@ class OnboardingActivity : AppActivity() {
         private fun bindSecurityDoctorPage(binding: PageOnboardingSecurityDoctorBinding) {
             CardBorder.applyAll(binding.root)
             binding.previewNotificationApp.text =
-                getString(R.string.app_name) + " \u00b7 " + getString(R.string.onboarding_v2_preview_notification_time)
+                getString(R.string.onboarding_v2_preview_notification_header, getString(R.string.app_name))
 
             // The whole row is the switch, for touch and for screen readers.
             fun linkRow(
@@ -1237,6 +1270,8 @@ class OnboardingActivity : AppActivity() {
                 if (!checked) return@addOnButtonCheckedListener
                 val level = levelButtons.entries.first { it.value.id == id }.key
                 HapticUtils.segmentTick(group)
+                // Announce the new level's description, not the first fill on bind.
+                ViewCompat.setAccessibilityLiveRegion(binding.assistantLevelDesc, ViewCompat.ACCESSIBILITY_LIVE_REGION_POLITE)
                 level.apply(prefs)
                 binding.assistantLevelDesc.setText(levelDescs.getValue(level))
                 showPreview(level, animate = true)
@@ -1266,6 +1301,7 @@ class OnboardingActivity : AppActivity() {
     }
 
     private fun onPairClicked() {
+        startPending = false
         if (EnvironmentUtils.isTelevision()) {
             showAccessibilityDialog()
             return
