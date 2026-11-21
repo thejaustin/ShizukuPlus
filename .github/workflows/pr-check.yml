@@ -41,6 +41,11 @@ jobs:
           chmod +x pre-push-guard/scripts/pre_push_check.sh
           bash pre-push-guard/scripts/pre_push_check.sh
 
+      # Informational: earlier issue fixes this PR touches, listed in the run summary.
+      - name: Regression watch
+        continue-on-error: true
+        run: bash scripts/dev/regression-watch.sh origin/${{ github.base_ref }} >> "$GITHUB_STEP_SUMMARY"
+
       - name: Check translations
         run: |
           python3 scripts/i18n/check_translations.py
