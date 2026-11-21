@@ -25,6 +25,28 @@ body:
         - "Other / I don't know"
     validations:
       required: true
+  - type: dropdown
+    id: flavor
+    attributes:
+      label: Which app is it?
+      description: Settings > About shows this. Pick "Not sure" if you can't tell.
+      options:
+        - "Shizuku+ (Plus)"
+        - "Drop-In (original Shizuku package)"
+        - "Not sure"
+    validations:
+      required: true
+  - type: dropdown
+    id: device_family
+    attributes:
+      label: Device family
+      description: Some problems are specific to a manufacturer's Android.
+      options:
+        - "Samsung (One UI)"
+        - "Pixel / stock Android"
+        - "Other"
+    validations:
+      required: true
   - type: input
     id: version
     attributes:
@@ -57,4 +79,4 @@ body:
     id: additional_context
     attributes:
       label: Additional context
-      description: Add any other context or screenshots about the bug report here.
+      description: Screenshots, and if you can, the report from Doctor or the Activity log (both in the app). Logs make a fix much faster.

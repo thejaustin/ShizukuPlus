@@ -662,6 +662,11 @@ jobs:
             fi
             if [ -n "$WHATS_NEW" ]; then echo "</details>"; echo; fi
 
+            # Credit people outside the core team whose commits are in this release. The GitHub
+            # login comes from the noreply address; bots and the maintainer are skipped.
+            THANKS=$(git log "$RANGE" --no-merges --pretty=format:"%ae" | grep -oE '[^+@]+@users\.noreply\.github\.com' | sed 's/@users.*//' | grep -viE '^(thejaustin|github-actions|dependabot|crowdin|claude)|\[bot\]' | sort -u | sed 's/^/@/' | paste -sd' ' - || true)
+            if [ -n "$THANKS" ]; then echo "Thanks to $THANKS for contributing to this release."; echo; fi
+
             # Surface how many distinct GitHub issues this release touches. Promoting a
             # release to MAJOR_RELEASE (see scripts/backfill_majors.py) stays a deliberate,
             # curated call -- this is just a visible signal so an unusually issue-dense
