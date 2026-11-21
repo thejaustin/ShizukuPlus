@@ -13,13 +13,13 @@
         android:orientation="vertical"
         android:gravity="center_horizontal"
         android:paddingHorizontal="24dp"
-        android:paddingTop="36dp"
+        android:paddingTop="@dimen/onboarding_page_padding_top"
         android:paddingBottom="36dp">
 
         <ImageView
             android:id="@+id/hero_icon"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="@dimen/onboarding_hero_size"
+            android:layout_height="@dimen/onboarding_hero_size"
             android:src="@drawable/ic_system_icon"
             android:layout_marginBottom="16dp"
             android:contentDescription="@null" />
@@ -31,7 +31,7 @@
             android:text="@string/onboarding_returning_welcome_title"
             android:textAppearance="?textAppearanceHeadlineMedium"
             android:textColor="?colorOnSurface"
-            android:textStyle="bold"
+            android:accessibilityHeading="true"
             android:gravity="center"
             android:layout_marginBottom="8dp" />
 
@@ -67,7 +67,7 @@
             app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge"
             app:strokeWidth="0dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="?colorSurfaceContainer">
+            app:cardBackgroundColor="?colorSurfaceContainerHigh">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -77,10 +77,9 @@
                 android:padding="16dp">
 
                 <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    style="@style/CardIcon"
                     android:src="@drawable/ic_palette_24"
-                    app:tint="?colorPrimary"
+                    android:importantForAccessibility="no"
                     android:contentDescription="@null" />
 
                 <LinearLayout
@@ -94,14 +93,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/onboarding_returning_feat_m3e_title"
-                        android:textAppearance="?textAppearanceTitleSmall"
+                        android:textAppearance="?textAppearanceTitleMedium"
                         android:textColor="?colorOnSurface" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/onboarding_returning_feat_m3e_desc"
-                        android:textAppearance="?textAppearanceBodySmall"
+                        android:textAppearance="?textAppearanceBodyMedium"
                         android:textColor="?colorOnSurfaceVariant" />
 
                 </LinearLayout>
@@ -119,7 +118,7 @@
             app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge"
             app:strokeWidth="0dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="?colorSurfaceContainer">
+            app:cardBackgroundColor="?colorSurfaceContainerHigh">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -129,10 +128,9 @@
                 android:padding="16dp">
 
                 <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    style="@style/CardIcon"
                     android:src="@drawable/ic_swipe_24"
-                    app:tint="?colorSecondary"
+                    android:importantForAccessibility="no"
                     android:contentDescription="@null" />
 
                 <LinearLayout
@@ -146,14 +144,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/onboarding_returning_feat_gestures_title"
-                        android:textAppearance="?textAppearanceTitleSmall"
+                        android:textAppearance="?textAppearanceTitleMedium"
                         android:textColor="?colorOnSurface" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/onboarding_returning_feat_gestures_desc"
-                        android:textAppearance="?textAppearanceBodySmall"
+                        android:textAppearance="?textAppearanceBodyMedium"
                         android:textColor="?colorOnSurfaceVariant" />
 
                 </LinearLayout>
@@ -171,7 +169,7 @@
             app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge"
             app:strokeWidth="0dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="?colorSurfaceContainer">
+            app:cardBackgroundColor="?colorSurfaceContainerHigh">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -181,10 +179,9 @@
                 android:padding="16dp">
 
                 <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    style="@style/CardIcon"
                     android:src="@drawable/ic_medical_services_24"
-                    app:tint="?colorTertiary"
+                    android:importantForAccessibility="no"
                     android:contentDescription="@null" />
 
                 <LinearLayout
@@ -198,14 +195,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/onboarding_returning_feat_doctor_title"
-                        android:textAppearance="?textAppearanceTitleSmall"
+                        android:textAppearance="?textAppearanceTitleMedium"
                         android:textColor="?colorOnSurface" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/onboarding_returning_feat_doctor_desc"
-                        android:textAppearance="?textAppearanceBodySmall"
+                        android:textAppearance="?textAppearanceBodyMedium"
                         android:textColor="?colorOnSurfaceVariant" />
 
                 </LinearLayout>
@@ -223,7 +220,7 @@
             app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge"
             app:strokeWidth="0dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="?colorSurfaceContainer">
+            app:cardBackgroundColor="?colorSurfaceContainerHigh">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -233,10 +230,9 @@
                 android:padding="16dp">
 
                 <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    style="@style/CardIcon"
                     android:src="@drawable/ic_smartphone_24"
-                    app:tint="?colorPrimary"
+                    android:importantForAccessibility="no"
                     android:contentDescription="@null" />
 
                 <LinearLayout
@@ -250,14 +246,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/onboarding_returning_feat_layout_nav_title"
-                        android:textAppearance="?textAppearanceTitleSmall"
+                        android:textAppearance="?textAppearanceTitleMedium"
                         android:textColor="?colorOnSurface" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/onboarding_returning_feat_layout_nav_desc"
-                        android:textAppearance="?textAppearanceBodySmall"
+                        android:textAppearance="?textAppearanceBodyMedium"
                         android:textColor="?colorOnSurfaceVariant" />
 
                 </LinearLayout>
@@ -275,7 +271,7 @@
             app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerLarge"
             app:strokeWidth="0dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="?colorSurfaceContainer">
+            app:cardBackgroundColor="?colorSurfaceContainerHigh">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -285,10 +281,9 @@
                 android:padding="16dp">
 
                 <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
+                    style="@style/CardIcon"
                     android:src="@drawable/ic_wadb_24"
-                    app:tint="?colorSecondary"
+                    android:importantForAccessibility="no"
                     android:contentDescription="@null" />
 
                 <LinearLayout
@@ -302,14 +297,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/onboarding_returning_feat_wireless_title"
-                        android:textAppearance="?textAppearanceTitleSmall"
+                        android:textAppearance="?textAppearanceTitleMedium"
                         android:textColor="?colorOnSurface" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/onboarding_returning_feat_wireless_desc"
-                        android:textAppearance="?textAppearanceBodySmall"
+                        android:textAppearance="?textAppearanceBodyMedium"
                         android:textColor="?colorOnSurfaceVariant" />
 
                 </LinearLayout>
@@ -321,7 +316,7 @@
         <!-- Quick Jump to App Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_jump_to_app"
-            style="@style/Widget.Material3.Button.TonalButton"
+            style="?attr/materialButtonTonalStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/onboarding_returning_action_jump"

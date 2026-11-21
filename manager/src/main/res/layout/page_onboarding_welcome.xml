@@ -12,14 +12,14 @@
         android:orientation="vertical"
         android:gravity="center"
         android:paddingHorizontal="32dp"
-        android:paddingTop="48dp"
+        android:paddingTop="@dimen/onboarding_page_padding_top"
         android:paddingBottom="16dp">
 
         <ImageView
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="@dimen/onboarding_hero_size"
+            android:layout_height="@dimen/onboarding_hero_size"
             android:src="@drawable/ic_system_icon"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="@dimen/onboarding_hero_gap"
             android:contentDescription="@null" />
 
         <TextView
@@ -29,7 +29,8 @@
             android:textAppearance="?textAppearanceHeadlineLarge"
             android:textColor="?colorOnSurface"
             android:gravity="center"
-            android:layout_marginBottom="24dp" />
+            android:accessibilityHeading="true"
+            android:layout_marginBottom="16dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -38,7 +39,7 @@
             android:textAppearance="?textAppearanceBodyLarge"
             android:textColor="?colorOnSurfaceVariant"
             android:gravity="center"
-            android:lineSpacingMultiplier="1.4" />
+            android:lineSpacingMultiplier="1.3" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_restore_backup"
@@ -46,40 +47,37 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
             android:visibility="gone"
-            app:cardCornerRadius="16dp"
+            app:shapeAppearanceOverlay="?attr/shapeAppearanceCornerExtraLarge"
             app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="?attr/colorOutlineVariant"
-            app:cardBackgroundColor="?attr/colorSurfaceContainerLow">
+            app:strokeWidth="0dp"
+            app:contentPadding="@dimen/card_content_padding"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerHigh">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="8dp">
+                    android:layout_marginBottom="12dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        style="@style/CardIcon.Droplet"
                         android:src="@drawable/ic_history_24"
-                        app:tint="?attr/colorPrimary"
-                        android:layout_marginEnd="12dp"
+                        android:layout_marginEnd="16dp"
+                        android:importantForAccessibility="no"
                         android:contentDescription="@null" />
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/onboarding_restore_backup_title"
-                        android:textAppearance="?textAppearanceTitleMedium"
-                        android:textColor="?colorOnSurface" />
+                        style="@style/CardTitle"
+                        android:text="@string/onboarding_restore_backup_title" />
 
                 </LinearLayout>
 
@@ -88,13 +86,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/onboarding_restore_backup_desc"
-                    android:textAppearance="?textAppearanceBodyMedium"
-                    android:textColor="?colorOnSurfaceVariant"
-                    android:layout_marginBottom="12dp" />
+                    style="@style/CardSummary"
+                    android:layout_marginBottom="16dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_restore_backup"
-                    style="@style/Widget.Material3.Button"
+                    style="@style/Widget.Material3Expressive.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/onboarding_restore_backup_action" />
@@ -105,7 +102,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_pick_backup_file"
-            style="@style/Widget.Material3.Button.TextButton"
+            style="?attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
