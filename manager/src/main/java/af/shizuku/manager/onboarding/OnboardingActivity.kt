@@ -194,6 +194,8 @@ class OnboardingActivity : AppActivity() {
         binding.pager.offscreenPageLimit = pages.size
 
         setupDots()
+        // One page needs no position dots.
+        binding.dotsContainer.visibility = if (pages.size > 1) View.VISIBLE else View.GONE
 
         binding.pager.registerOnPageChangeCallback(
             object : ViewPager2.OnPageChangeCallback() {
@@ -416,10 +418,11 @@ class OnboardingActivity : AppActivity() {
         val canSkip = position < pages.size - 1 && pages.getOrNull(position) != PageType.SETUP
         binding.btnSkip.visibility = if (canSkip) View.VISIBLE else View.INVISIBLE
         binding.btnNext.text =
-            if (position < pages.size - 1) {
-                getString(R.string.onboarding_next)
-            } else {
-                getString(R.string.onboarding_get_started)
+            when {
+                position < pages.size - 1 -> getString(R.string.onboarding_next)
+                // The single What's New page: one button, named for where it goes.
+                pages.size == 1 -> getString(R.string.onboarding_returning_action_jump)
+                else -> getString(R.string.onboarding_get_started)
             }
     }
 
@@ -574,29 +577,33 @@ class OnboardingActivity : AppActivity() {
                 HapticUtils.tap(it)
                 completeOnboarding()
             }
+            // The bottom bar already has this button when this is the only page.
+            binding.btnJumpToApp.visibility = if (pages.size == 1) View.GONE else View.VISIBLE
+
+            // Each card opens the settings group it talks about (scrolled to and highlighted).
+            fun openSettingsSection(key: String) {
+                try {
+                    startActivity(
+                        Intent(this@OnboardingActivity, af.shizuku.manager.settings.SettingsActivity::class.java)
+                            .putExtra("highlight_key", key),
+                    )
+                } catch (_: Exception) {
+                }
+            }
 
             binding.cardFeatM3e.setOnClickListener {
                 HapticUtils.segmentTick(it)
-                try {
-                    startActivity(Intent(this@OnboardingActivity, af.shizuku.manager.settings.SettingsActivity::class.java))
-                } catch (_: Exception) {
-                }
+                openSettingsSection("category_shape_style")
             }
 
             binding.cardFeatLayoutNav.setOnClickListener {
                 HapticUtils.segmentTick(it)
-                try {
-                    startActivity(Intent(this@OnboardingActivity, af.shizuku.manager.settings.SettingsActivity::class.java))
-                } catch (_: Exception) {
-                }
+                openSettingsSection("category_floating_nav")
             }
 
             binding.cardFeatGestures.setOnClickListener {
                 HapticUtils.segmentTick(it)
-                try {
-                    startActivity(Intent(this@OnboardingActivity, af.shizuku.manager.settings.SettingsActivity::class.java))
-                } catch (_: Exception) {
-                }
+                openSettingsSection("category_app_interactions")
             }
 
             binding.cardFeatDoctor.setOnClickListener {
