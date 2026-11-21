@@ -289,6 +289,7 @@ class ChangelogTimelineAdapter(
             }
             // Strongest first, at most two so a narrow sheet never wraps.
             val wanted = mutableListOf<Triple<Int, Int, Int>>()
+            if (r.isLeftOff) wanted.add(Triple(R.string.changelog_badge_left_off, com.google.android.material.R.attr.colorSecondaryContainer, com.google.android.material.R.attr.colorOnSecondaryContainer))
             if (r.isInstalled) wanted.add(Triple(R.string.changelog_badge_installed, com.google.android.material.R.attr.colorTertiaryContainer, com.google.android.material.R.attr.colorOnTertiaryContainer))
             if (r.isPrerelease) wanted.add(Triple(R.string.changelog_badge_prerelease, com.google.android.material.R.attr.colorErrorContainer, com.google.android.material.R.attr.colorOnErrorContainer))
             if (r.isLatest) wanted.add(Triple(R.string.changelog_badge_latest, com.google.android.material.R.attr.colorPrimaryContainer, com.google.android.material.R.attr.colorOnPrimaryContainer))

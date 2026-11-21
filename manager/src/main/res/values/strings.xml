@@ -1531,6 +1531,7 @@
     <string name="changelog_badge_installed">Installed</string>
     <string name="changelog_badge_prerelease">Pre-release</string>
     <string name="changelog_badge_new">New</string>
+    <string name="changelog_badge_left_off">You were here</string>
     <string name="changelog_show_more">Show %d more</string>
     <string name="changelog_show_less">Show less</string>
     <string name="changelog_read_more">Read more</string>
