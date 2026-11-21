@@ -72,26 +72,51 @@ class AdbPairingDialogActivity : AppActivity() {
                 addView(codeEditText)
             }
 
-        MaterialAlertDialogBuilder(this)
-            .setTitle(
-                if (portFromIntent == -1) {
-                    R.string.dialog_adb_pairing_title
-                } else {
-                    R.string.notification_adb_pairing_service_found_title
-                },
-            ).setView(container)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
+        val dialog =
+            MaterialAlertDialogBuilder(this)
+                .setTitle(
+                    if (portFromIntent == -1) {
+                        R.string.dialog_adb_pairing_title
+                    } else {
+                        R.string.notification_adb_pairing_service_found_title
+                    },
+                ).setView(container)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel) { _, _ -> finish() }
+                .setOnCancelListener { finish() }
+                .create()
+        // OK checks the input first and keeps the dialog open on a mistake; it used to close
+        // either way, so a typo just made the dialog vanish with nothing sent.
+        dialog.setOnShowListener {
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 val targetPort =
                     portFromIntent.takeIf { it != -1 }
                         ?: portEditText?.text?.toString()?.toIntOrNull()
                         ?: -1
                 val code = codeEditText.text?.toString()?.trim() ?: ""
-                if (targetPort in 1..65535 && code.isNotEmpty()) {
-                    startForegroundService(AdbPairingService.dialogReplyIntent(this, targetPort, code))
+                if (targetPort !in 1..65535) {
+                    portEditText?.let { showError(it, getString(R.string.dialog_adb_invalid_port)) }
+                    return@setOnClickListener
                 }
+                if (code.length != 6 || !code.all { c -> c.isDigit() }) {
+                    showError(codeEditText, getString(R.string.dialog_adb_invalid_code))
+                    return@setOnClickListener
+                }
+                startForegroundService(AdbPairingService.dialogReplyIntent(this, targetPort, code))
+                dialog.dismiss()
                 finish()
-            }.setNegativeButton(android.R.string.cancel) { _, _ -> finish() }
-            .setOnCancelListener { finish() }
-            .show()
+            }
+        }
+        dialog.show()
+    }
+
+    private fun showError(
+        field: EditText,
+        message: String,
+    ) {
+        field.error = message
+        field.requestFocus()
+        @Suppress("DEPRECATION")
+        field.announceForAccessibility(getString(R.string.pairing_v2_code_error_a11y, message))
     }
 }

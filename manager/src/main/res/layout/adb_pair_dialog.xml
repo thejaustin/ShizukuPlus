@@ -16,36 +16,14 @@
         android:divider="@drawable/spacing_list_item_vertical"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@android:id/text1"
+        <!-- Where pairing stands (PairingStatePanel, inline, added in code). -->
+        <FrameLayout
+            android:id="@+id/state_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/dialog_adb_pairing_message" />
-
-        <LinearLayout
-            android:id="@android:id/text2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:showDividers="middle"
-            android:divider="@drawable/spacing_list_item_vertical"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/adb_pairing_requires_multi_window"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/adb_pairing_requires_multi_window_reason" />
-
-        </LinearLayout>
+            android:layout_height="wrap_content" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/pairing_code"
-            
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/dialog_adb_pairing_paring_code"
@@ -69,7 +47,6 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/port"
-            
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/dialog_adb_port"
@@ -87,26 +64,6 @@
                 tools:text="12345" />
 
         </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/progress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:layout_marginTop="8dp"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textAppearance="?textAppearanceLabelMedium"
-            android:layout_marginTop="4dp"
-            android:visibility="gone"
-            tools:text="Pairing in progress..."
-            tools:visibility="visible" />
 
     </LinearLayout>
 

@@ -10,9 +10,7 @@ import android.app.Application
 import android.app.Dialog
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
@@ -34,12 +32,18 @@ import java.net.ConnectException
 @RequiresApi(VERSION_CODES.R)
 class AdbPairDialogFragment : DialogFragment() {
     private lateinit var binding: AdbPairDialogBinding
+    private lateinit var statePanel: PairingStatePanel
 
     private val viewModel: ViewModel by activityViewModels()
+
+    // A port was found and then lost: Settings closed its dialog, so its code is gone.
+    private var portLost = false
+    private var finishing = false
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val context = requireContext()
         binding = AdbPairDialogBinding.inflate(LayoutInflater.from(context))
+        statePanel = PairingStatePanel.inflate(binding.stateContainer, inline = true)
 
         val builder =
             MaterialAlertDialogBuilder(context).apply {
@@ -77,8 +81,13 @@ class AdbPairDialogFragment : DialogFragment() {
         codeEditText?.doAfterTextChanged {
             binding.pairingCode.error = null
         }
+        binding.port.editText?.doAfterTextChanged {
+            binding.port.error = null
+        }
 
         binding.pairingCode.error = null
+        binding.pairingCode.isVisible = true
+        binding.port.isVisible = true
 
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).isVisible = true
 
@@ -97,13 +106,13 @@ class AdbPairDialogFragment : DialogFragment() {
                 }
             if (port > 65535 || port < 1) {
                 binding.port.isVisible = true
-                binding.port.error = context.getString(R.string.dialog_adb_invalid_port)
+                showFieldError(binding.port, context.getString(R.string.dialog_adb_invalid_port))
                 return@setOnClickListener
             }
 
             val password = codeEditText?.text?.toString()?.trim() ?: ""
             if (password.length != 6 || !password.all { it.isDigit() }) {
-                binding.pairingCode.error = context.getString(R.string.dialog_adb_invalid_code)
+                showFieldError(binding.pairingCode, context.getString(R.string.dialog_adb_invalid_code))
                 return@setOnClickListener
             }
 
@@ -112,130 +121,232 @@ class AdbPairDialogFragment : DialogFragment() {
 
         viewModel.port.observe(this) { portValue ->
             val portEditText = binding.port.editText
-            if (portValue == -1) {
-                dialog.setTitle(R.string.dialog_adb_pairing_discovery)
-                val inMultiScreen =
-                    activity?.isInMultiWindowMode == true ||
-                        (
-                            activity
-                                ?.window
-                                ?.decorView
-                                ?.display
-                                ?.displayId ?: -1
-                        ) > 0
-                binding.text1.isVisible = inMultiScreen
-                binding.text2.isVisible = !inMultiScreen
-                binding.pairingCode.isVisible = true
-                binding.port.isVisible = true
-                binding.progress.isVisible = true
-                binding.status.isVisible = true
-                if (!af.shizuku.manager.utils.NetworkStateHelper
-                        .isWirelessAdbSupportedNetwork(requireContext())
-                ) {
-                    val tip =
-                        if (af.shizuku.manager.utils.EnvironmentUtils
-                                .isSamsung()
-                        ) {
-                            getString(R.string.dialog_adb_samsung_hotspot_warning)
-                        } else {
-                            getString(R.string.dialog_adb_hotspot_tip)
-                        }
-                    binding.status.text = getString(R.string.dialog_adb_wifi_disconnected_warning) + "\n\n" + tip
-                } else {
-                    binding.status.text = getString(R.string.adb_pairing_searching)
-                }
+            if (portValue <= 0) {
+                if (viewModel.lastPort > 0) portLost = true
                 if (portEditText?.text?.toString() == "-1" || portEditText?.text?.isEmpty() == true) {
                     portEditText?.setText("")
                 }
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isVisible = true
-                dialog.getButton(AlertDialog.BUTTON_NEUTRAL).isVisible = true
             } else {
-                dialog.setTitle(R.string.dialog_adb_pairing_title)
-                binding.text1.isVisible = false
-                binding.text2.isVisible = false
-                binding.pairingCode.isVisible = true
-                binding.port.isVisible = true
-                binding.progress.isVisible = false
-                binding.status.isVisible = false
-                portEditText?.setText(portValue.toString())
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).isVisible = true
-                dialog.getButton(AlertDialog.BUTTON_NEUTRAL).isVisible = false
+                portLost = false
+                if (portEditText?.text?.toString() != portValue.toString()) portEditText?.setText(portValue.toString())
             }
+            viewModel.lastPort = portValue
+            render()
         }
     }
 
     override fun onStart() {
         super.onStart()
 
-        val context = requireContext()
-        val inMultiScreenOrDisplay = (
-            requireActivity().isInMultiWindowMode ||
-                (
-                    requireActivity()
-                        .window
-                        ?.decorView
-                        ?.display
-                        ?.displayId ?: -1
-                ) > 0
-        )
-
-        binding.text1.isVisible = inMultiScreenOrDisplay
-        binding.text2.isVisible = !inMultiScreenOrDisplay
-
-        if (inMultiScreenOrDisplay) {
-            dialog?.setTitle(R.string.dialog_adb_pairing_discovery)
-        } else {
-            dialog?.setTitle(R.string.dialog_adb_pairing_title)
-        }
-
         viewModel.isPairing.observe(this) { isPairing ->
-            binding.progress.isVisible = isPairing
-            binding.status.isVisible = isPairing
-            if (isPairing) {
-                binding.status.text = getString(R.string.adb_pairing_status_pairing)
-                binding.pairingCode.isEnabled = false
-                getDialog()?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled = false
-            } else {
-                binding.pairingCode.isEnabled = true
-                getDialog()?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled = true
-            }
+            binding.pairingCode.isEnabled = !isPairing
+            binding.port.isEnabled = !isPairing
+            getDialog()?.getButton(AlertDialog.BUTTON_POSITIVE)?.isEnabled = !isPairing
+            render()
         }
 
         viewModel.result.observe(this) { state ->
             when (state) {
-                is PairingState.Idle -> {
-                    // Fresh session — nothing to show yet.
-                }
-                is PairingState.Success -> {
-                    Toast.makeText(context, R.string.notification_adb_pairing_succeed_title, Toast.LENGTH_SHORT).show()
-                    dismissAllowingStateLoss()
-                    val act = activity
-                    if (act is androidx.fragment.app.FragmentActivity) {
-                        StartWirelessAdbViewHolder.start(act, act.lifecycleScope)
-                    }
-                }
-                is PairingState.Failure -> {
-                    binding.progress.isVisible = false
-                    binding.status.isVisible = true
-                    binding.status.text = getString(R.string.adb_pairing_status_failed)
-                    when (val error = state.error) {
-                        is ConnectException -> {
-                            binding.port.error = context.getString(R.string.cannot_connect_port)
-                        }
-                        is AdbInvalidPairingCodeException -> {
-                            binding.pairingCode.error = context.getString(R.string.paring_code_is_wrong)
-                        }
-                        is AdbKeyException -> {
-                            Toast
-                                .makeText(context, context.getString(R.string.adb_error_key_store), Toast.LENGTH_LONG)
-                                .apply { setGravity(Gravity.CENTER, 0, 0) }
-                                .show()
-                        }
-                        else -> Unit
-                    }
+                is PairingState.Idle -> Unit
+                is PairingState.Success -> onPaired()
+                is PairingState.Failure -> onFailed(state.error)
+            }
+            render()
+        }
+    }
+
+    // Wi-Fi, Wireless debugging or split screen may have changed while the user was in Settings.
+    override fun onResume() {
+        super.onResume()
+        if (::statePanel.isInitialized) render()
+    }
+
+    private fun inMultiScreen(): Boolean {
+        val activity = activity ?: return false
+        return activity.isInMultiWindowMode || (
+            activity.window
+                ?.decorView
+                ?.display
+                ?.displayId ?: -1
+        ) > 0
+    }
+
+    private fun render() {
+        if (!::statePanel.isInitialized || !isAdded) return
+        val context = requireContext()
+        val result = viewModel.result.value
+        val port = viewModel.port.value ?: -1
+        val spec =
+            when {
+                result is PairingState.Success ->
+                    spec("done", R.drawable.ic_check_24, PairingTone.DONE, R.string.pairing_v2_paired_title, getText(R.string.pairing_v2_success_starting))
+                viewModel.isPairing.value == true ->
+                    spec("pairing", R.drawable.ic_wadb_24, PairingTone.WORKING, R.string.pairing_v2_pairing_title, getText(R.string.pairing_v2_pairing_text))
+                result is PairingState.Failure -> failureSpec(result.error)
+                else -> waitingSpec(context, port)
+            }
+        statePanel.render(spec)
+        dialog?.setTitle(if (port > 0) R.string.dialog_adb_pairing_title else R.string.dialog_adb_pairing_discovery)
+    }
+
+    private fun waitingSpec(
+        context: android.content.Context,
+        port: Int,
+    ): PairingStateSpec {
+        if (port > 0) {
+            return spec(
+                "ready:$port",
+                R.drawable.ic_code_24,
+                PairingTone.NEEDS_YOU,
+                R.string.pairing_v2_ready_title,
+                getString(R.string.pairing_v2_ready_text, port),
+            )
+        }
+        // Notifications don't matter here: this dialog is the way around them.
+        when (PairingPreflight.check(context, includeNotifications = false)) {
+            PairingBlocker.DEVELOPER_OPTIONS_OFF ->
+                return spec(
+                    "blocker:devopts",
+                    R.drawable.ic_settings_outline_24,
+                    PairingTone.NEEDS_YOU,
+                    R.string.pairing_v2_devopts_off_title,
+                    getText(R.string.pairing_v2_devopts_off_text),
+                    PairingAction(R.string.pairing_v2_action_open_about) { PairingPreflight.openAboutPhone(context) },
+                )
+            PairingBlocker.NO_WIFI -> {
+                val hotspot = PairingPreflight.hotspotHelps
+                return spec(
+                    "blocker:wifi",
+                    R.drawable.ic_wifi_24,
+                    PairingTone.NEEDS_YOU,
+                    R.string.pairing_v2_no_wifi_title,
+                    getText(if (hotspot) R.string.pairing_v2_no_wifi_text_hotspot else R.string.pairing_v2_no_wifi_text),
+                    PairingAction(R.string.pairing_v2_action_wifi) { PairingPreflight.openWifi(context) },
+                    if (hotspot) PairingAction(R.string.pairing_v2_action_hotspot) { PairingPreflight.openHotspot(context) } else null,
+                )
+            }
+            PairingBlocker.WIRELESS_DEBUGGING_OFF ->
+                // The dialog's own Developer options button is the way there.
+                return spec(
+                    "blocker:wd",
+                    R.drawable.ic_wadb_24,
+                    PairingTone.NEEDS_YOU,
+                    R.string.pairing_v2_wd_off_title,
+                    getText(R.string.pairing_v2_wd_off_text),
+                )
+            PairingBlocker.LOCAL_NETWORK_DENIED ->
+                return spec(
+                    "blocker:localnet",
+                    R.drawable.ic_wifi_24,
+                    PairingTone.NEEDS_YOU,
+                    R.string.pairing_v2_local_net_title,
+                    getText(R.string.pairing_v2_local_net_text),
+                    PairingAction(R.string.pairing_v2_action_app_info) { PairingPreflight.openAppInfo(context) },
+                )
+            else -> Unit
+        }
+        if (!inMultiScreen()) {
+            return spec(
+                "split",
+                R.drawable.ic_outline_info_24,
+                PairingTone.NEEDS_YOU,
+                R.string.pairing_v2_split_title,
+                getText(R.string.pairing_v2_split_text),
+            )
+        }
+        if (portLost) {
+            return spec(
+                "expired",
+                R.drawable.ic_warning_24,
+                PairingTone.NEEDS_YOU,
+                R.string.pairing_v2_expired_title,
+                getText(R.string.pairing_v2_expired_text),
+            )
+        }
+        return spec(
+            "searching",
+            R.drawable.ic_wadb_24,
+            PairingTone.WORKING,
+            R.string.pairing_v2_searching_title,
+            getText(R.string.pairing_v2_searching_text),
+        )
+    }
+
+    private fun failureSpec(error: Throwable): PairingStateSpec {
+        val context = requireContext()
+        val doctor = PairingAction(R.string.pairing_v2_action_service_doctor) { PairingPreflight.openServiceDoctor(context) }
+        return when (error) {
+            is AdbInvalidPairingCodeException ->
+                spec("failed:wrong", R.drawable.ic_code_24, PairingTone.PROBLEM, R.string.pairing_v2_wrong_code_title, getText(R.string.pairing_v2_wrong_code_text))
+            is ConnectException ->
+                spec(
+                    "failed:connect",
+                    R.drawable.ic_server_error_24,
+                    PairingTone.PROBLEM,
+                    R.string.pairing_v2_cant_connect_title,
+                    getText(R.string.pairing_v2_cant_connect_text),
+                )
+            is AdbKeyException ->
+                spec("failed:key", R.drawable.ic_server_error_24, PairingTone.PROBLEM, R.string.pairing_v2_key_title, getText(R.string.pairing_v2_key_text), doctor)
+            else ->
+                spec(
+                    "failed:unknown",
+                    R.drawable.ic_server_error_24,
+                    PairingTone.PROBLEM,
+                    R.string.pairing_v2_failed_title,
+                    getText(R.string.pairing_v2_failed_text),
+                    doctor,
+                )
+        }
+    }
+
+    private fun spec(
+        key: String,
+        icon: Int,
+        tone: PairingTone,
+        title: Int,
+        text: CharSequence,
+        primary: PairingAction? = null,
+        secondary: PairingAction? = null,
+    ) = PairingStateSpec(key, icon, tone, getText(title), text, primary, secondary)
+
+    private fun onFailed(error: Throwable) {
+        val context = requireContext()
+        when (error) {
+            is AdbInvalidPairingCodeException -> {
+                showFieldError(binding.pairingCode, context.getString(R.string.paring_code_is_wrong))
+                // Ready for the corrected code without clearing it by hand.
+                binding.pairingCode.editText?.let {
+                    it.requestFocus()
+                    it.selectAll()
                 }
             }
+            is ConnectException -> showFieldError(binding.port, context.getString(R.string.cannot_connect_port))
+            else -> Unit
         }
+    }
+
+    // Success keeps the old behaviour (close and start), after the check has had a moment on screen.
+    private fun onPaired() {
+        if (finishing) return
+        finishing = true
+        val delay = ShizukuSettings.scaledAnimationDuration(SUCCESS_HOLD_MS)
+        binding.root.postDelayed({
+            val act = activity
+            dismissAllowingStateLoss()
+            if (act is androidx.fragment.app.FragmentActivity) {
+                StartWirelessAdbViewHolder.start(act, act.lifecycleScope)
+            }
+        }, delay)
+    }
+
+    private fun showFieldError(
+        field: com.google.android.material.textfield.TextInputLayout,
+        message: String,
+    ) {
+        field.error = message
+        @Suppress("DEPRECATION")
+        field.announceForAccessibility(getString(R.string.pairing_v2_code_error_a11y, message))
     }
 
     fun show(fragmentManager: FragmentManager) {
@@ -244,6 +355,10 @@ class AdbPairDialogFragment : DialogFragment() {
     }
 
     override fun getDialog(): AlertDialog? = super.getDialog() as AlertDialog?
+
+    private companion object {
+        const val SUCCESS_HOLD_MS = 700L
+    }
 }
 
 sealed class PairingState {
@@ -267,6 +382,9 @@ class ViewModel(
 
     private val _port = MutableLiveData<Int>()
     val port = _port as LiveData<Int>
+
+    // The last port the dialog saw, so it can tell "not found yet" from "found, then closed".
+    var lastPort = -1
 
     private val _isPairing = MutableLiveData<Boolean>(false)
     val isPairing = _isPairing as LiveData<Boolean>
@@ -292,7 +410,7 @@ class ViewModel(
                 try {
                     AdbKey(PreferenceAdbKeyStore(ShizukuSettings.getPreferences()), "shizuku+")
                 } catch (e: Throwable) {
-                    Timber.e("failed to load or create AdbKey", e)
+                    Timber.e(e, "failed to load or create AdbKey")
                     _isPairing.postValue(false)
                     _result.postValue(PairingState.Failure(AdbKeyException(e)))
                     return@launch
@@ -304,7 +422,7 @@ class ViewModel(
                 }.onFailure {
                     _isPairing.postValue(false)
                     _result.postValue(PairingState.Failure(it))
-                    Timber.e("adb pairing failed", it)
+                    Timber.e(it, "adb pairing failed")
                 }.onSuccess {
                     _isPairing.postValue(false)
                     if (it) {
@@ -318,6 +436,7 @@ class ViewModel(
 
     /** Clears terminal state so a reopened dialog starts fresh (see AdbPairDialogFragment). */
     fun reset() {
+        lastPort = -1
         _result.value = PairingState.Idle
         _isPairing.value = false
     }
