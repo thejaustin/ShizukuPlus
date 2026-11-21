@@ -224,7 +224,14 @@ class TimelineChangelogController(
                 isUpToDate -> ctx.getString(R.string.changelog_summary_up_to_date)
                 else -> ctx.getString(R.string.update_available_title)
             }
-        val from = if (!latest.isInstalled && !installedAhead) "v$installedTag" else null
+        // After an update the installed version is the latest, so "from" is the version they were on.
+        val leftOff = releases.firstOrNull { it.isLeftOff }
+        val from =
+            when {
+                newOnes.isNotEmpty() && leftOff != null -> "v${leftOff.tag}"
+                !latest.isInstalled && !installedAhead -> "v$installedTag"
+                else -> null
+            }
         // Lead with what people can actually try: the newest feature headlines, capped so a huge
         // release still opens on a short list.
         val featureTitles =

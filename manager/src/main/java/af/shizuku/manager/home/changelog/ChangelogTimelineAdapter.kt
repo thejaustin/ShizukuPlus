@@ -429,7 +429,8 @@ class ChangelogTimelineAdapter(
                 target.post {
                     val layout = target.layout
                     val cut =
-                        layout != null && layout.lineCount > 0 &&
+                        layout != null &&
+                            layout.lineCount > 0 &&
                             (layout.lineCount > collapsedLines || layout.getEllipsisCount(layout.lineCount - 1) > 0)
                     more.text = more.context.getString(R.string.changelog_read_more)
                     more.visibility = if (cut) View.VISIBLE else View.GONE
