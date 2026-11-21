@@ -2,6 +2,7 @@ package af.shizuku.manager.adb
 import af.shizuku.core.ui.AppBarActivity
 import af.shizuku.manager.AppConstants
 import af.shizuku.manager.R
+import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.databinding.AdbPairingTutorialActivityBinding
 import af.shizuku.manager.home.StartWirelessAdbViewHolder
 import af.shizuku.manager.home.showAccessibilityDialog
@@ -13,16 +14,18 @@ import af.shizuku.manager.utils.ShizukuStateMachine
 import android.Manifest
 import android.app.AppOpsManager
 import android.app.ForegroundServiceStartNotAllowedException
-import android.app.NotificationManager
 import android.content.pm.PackageManager
+import android.database.ContentObserver
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -39,6 +42,24 @@ class AdbPairingTutorialActivity : AppBarActivity() {
 
     private var notificationEnabled: Boolean = false
 
+    private lateinit var statePanel: PairingStatePanel
+
+    // What blocked pairing at the last render; when it clears, the search is (re)started.
+    private var lastBlocker: PairingBlocker? = null
+
+    // Whether the local network request was already shown this visit: after a "don't ask again"
+    // denial it returns at once, so the button switches to App info.
+    private var localNetworkAsked = false
+
+    // Developer options / Wireless debugging switched in Settings (split screen, or the user
+    // returning) re-render at once instead of waiting for the next resume.
+    private val settingsObserver =
+        object : ContentObserver(Handler(Looper.getMainLooper())) {
+            override fun onChange(selfChange: Boolean) {
+                if (!isFinishing) renderState()
+            }
+        }
+
     // Only a request the user asked for (the "notification options" button) may send them to
     // system settings on denial; the automatic request on first open must never do that.
     private var notifRequestFromUser = false
@@ -48,8 +69,9 @@ class AdbPairingTutorialActivity : AppBarActivity() {
         registerForActivityResult(
             ActivityResultContracts.RequestPermission(),
         ) { granted ->
-            notificationEnabled = isNotificationEnabled()
+            notificationEnabled = PairingPreflight.notificationsEnabled(this)
             syncNotificationEnabled()
+            renderState()
             val fromUser = notifRequestFromUser
             notifRequestFromUser = false
             if (notificationEnabled || granted) {
@@ -76,6 +98,8 @@ class AdbPairingTutorialActivity : AppBarActivity() {
         }
 
         binding = AdbPairingTutorialActivityBinding.inflate(layoutInflater, rootView, true)
+        // Before CardBorder, so the state card follows the same border setting as the others.
+        statePanel = PairingStatePanel.inflate(binding.stateContainer)
         af.shizuku.manager.utils.CardBorder
             .applyAll(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
@@ -103,7 +127,15 @@ class AdbPairingTutorialActivity : AppBarActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        notificationEnabled = isNotificationEnabled()
+        // A failure or success from an earlier visit isn't news any more: start from the top.
+        if (savedInstanceState == null) {
+            val phase = AdbPairingService.state.value.phase
+            if (phase == AdbPairingService.Phase.FAILED || phase == AdbPairingService.Phase.PAIRED) {
+                AdbPairingService.setState(AdbPairingService.Phase.IDLE)
+            }
+        }
+
+        notificationEnabled = PairingPreflight.notificationsEnabled(this)
 
         if (notificationEnabled) {
             startPairingService()
@@ -118,7 +150,6 @@ class AdbPairingTutorialActivity : AppBarActivity() {
 
         binding.apply {
             notification.applySpringTouch()
-            notificationDisabled.applySpringTouch()
             network.applySpringTouch()
             miui.applySpringTouch()
             developerOptions.applySpringTouch()
@@ -129,6 +160,8 @@ class AdbPairingTutorialActivity : AppBarActivity() {
             if (DeviceCompatibility.isMiui()) {
                 miui.isVisible = true
             }
+            legacyPairingSwitch.isChecked = ShizukuSettings.getLegacyPairing()
+            legacyPairingSwitch.setOnCheckedChangeListener { _, checked -> setLegacyPairing(checked) }
 
             developerOptions.setOnClickListener {
                 SettingsHelper.launchOrHighlightWirelessDebugging(context)
@@ -148,10 +181,6 @@ class AdbPairingTutorialActivity : AppBarActivity() {
             startNow.setOnClickListener {
                 StartWirelessAdbViewHolder.start(context, lifecycleScope)
             }
-
-            notificationOptions.setOnClickListener {
-                requestOrOpenNotificationSettings()
-            }
         }
 
         observePairingState()
@@ -166,43 +195,255 @@ class AdbPairingTutorialActivity : AppBarActivity() {
     }
 
     private fun renderPairingState(state: AdbPairingService.State) {
+        statePanel.render(specFor(state))
+    }
+
+    private fun renderState() {
+        if (::statePanel.isInitialized) renderPairingState(AdbPairingService.state.value)
+    }
+
+    // Before a pairing dialog is found, the first thing in the way wins; once one is open (or a
+    // code was sent) the pairing itself is what matters.
+    private fun specFor(state: AdbPairingService.State): PairingStateSpec {
         val phase = state.phase
-        binding.apply {
-            pairingStatus.isVisible = phase != AdbPairingService.Phase.IDLE
-            if (phase == AdbPairingService.Phase.IDLE) return
-            val (title, text) =
-                when (phase) {
-                    AdbPairingService.Phase.SEARCHING ->
-                        R.string.notification_adb_pairing_searching_for_service_title to
-                            getString(R.string.adb_pairing_status_searching_text)
-                    AdbPairingService.Phase.FOUND ->
-                        R.string.notification_adb_pairing_service_found_title to
-                            getString(R.string.adb_pairing_status_found_text)
-                    AdbPairingService.Phase.PAIRING -> R.string.notification_adb_pairing_working_title to null
-                    AdbPairingService.Phase.PAIRED ->
-                        R.string.notification_adb_pairing_succeed_title to
-                            getString(R.string.notification_adb_pairing_succeed_text)
-                    AdbPairingService.Phase.STARTING ->
-                        R.string.notification_adb_pairing_succeed_title to
-                            getString(R.string.notification_adb_pairing_succeed_starting)
-                    else -> R.string.notification_adb_pairing_failed_title to state.detail
-                }
-            pairingStatusTitle.setText(title)
-            pairingStatusText.text = text
-            pairingStatusText.isVisible = !text.isNullOrEmpty()
-            val busy =
+        val waiting =
+            phase == AdbPairingService.Phase.IDLE ||
                 phase == AdbPairingService.Phase.SEARCHING ||
-                    phase == AdbPairingService.Phase.PAIRING ||
-                    phase == AdbPairingService.Phase.STARTING
-            pairingStatusProgress.isVisible = busy
-            pairingStatusIcon.isVisible = !busy
-            when (phase) {
-                AdbPairingService.Phase.FOUND -> pairingStatusIcon.setImageResource(R.drawable.ic_outline_notifications_active_24)
-                AdbPairingService.Phase.PAIRED -> pairingStatusIcon.setImageResource(R.drawable.ic_server_ok_24)
-                AdbPairingService.Phase.FAILED -> pairingStatusIcon.setImageResource(R.drawable.ic_server_error_24)
-                else -> Unit
-            }
+                (phase == AdbPairingService.Phase.FAILED && state.reason == AdbPairingService.Reason.TIMED_OUT)
+        val blocker = if (waiting) PairingPreflight.check(this) else null
+        if (lastBlocker != null && blocker == null && waiting && phase != AdbPairingService.Phase.SEARCHING) {
+            // The user fixed what was in the way; start waiting for the pairing dialog again.
+            window?.decorView?.post { if (!isFinishing) startPairingService() }
         }
+        lastBlocker = blocker
+        if (blocker != null) return blockerSpec(blocker)
+        return when (phase) {
+            AdbPairingService.Phase.IDLE, AdbPairingService.Phase.SEARCHING ->
+                if (state.reason == AdbPairingService.Reason.CODE_EXPIRED) {
+                    spec(
+                        "expired",
+                        R.drawable.ic_warning_24,
+                        PairingTone.NEEDS_YOU,
+                        R.string.pairing_v2_expired_title,
+                        R.string.pairing_v2_expired_text,
+                        primary = PairingAction(R.string.pairing_v2_action_new_code) { openWirelessDebugging() },
+                    )
+                } else {
+                    spec(
+                        "searching",
+                        R.drawable.ic_wadb_24,
+                        PairingTone.WORKING,
+                        R.string.pairing_v2_searching_title,
+                        R.string.pairing_v2_searching_text,
+                        primary = PairingAction(R.string.pairing_v2_action_open_wd) { openWirelessDebugging() },
+                    )
+                }
+            AdbPairingService.Phase.FOUND -> {
+                val legacy = ShizukuSettings.getLegacyPairing()
+                spec(
+                    "found:$legacy",
+                    R.drawable.ic_outline_notifications_active_24,
+                    PairingTone.NEEDS_YOU,
+                    R.string.pairing_v2_found_title,
+                    if (legacy) R.string.pairing_v2_found_text_legacy else R.string.pairing_v2_found_text,
+                    // Side by side with Settings, the code can go straight into the in-app dialog.
+                    primary =
+                        if (isInMultiWindowMode) PairingAction(R.string.pairing_v2_action_enter_here) { openCodeDialog() } else null,
+                    secondary =
+                        if (!legacy) PairingAction(R.string.pairing_v2_action_use_dialog) { setLegacyPairing(true) } else null,
+                )
+            }
+            AdbPairingService.Phase.PAIRING ->
+                spec(
+                    "pairing",
+                    R.drawable.ic_wadb_24,
+                    PairingTone.WORKING,
+                    R.string.pairing_v2_pairing_title,
+                    R.string.pairing_v2_pairing_text,
+                )
+            AdbPairingService.Phase.PAIRED ->
+                spec(
+                    "paired",
+                    R.drawable.ic_check_24,
+                    PairingTone.DONE,
+                    R.string.pairing_v2_paired_title,
+                    R.string.pairing_v2_paired_text,
+                    primary =
+                        PairingAction(R.string.pairing_v2_action_start_now) {
+                            StartWirelessAdbViewHolder.start(this, lifecycleScope)
+                        },
+                )
+            AdbPairingService.Phase.STARTING ->
+                spec(
+                    "starting",
+                    R.drawable.ic_check_24,
+                    PairingTone.DONE,
+                    R.string.pairing_v2_starting_title,
+                    R.string.pairing_v2_starting_text,
+                )
+            AdbPairingService.Phase.FAILED -> failureSpec(state.reason)
+        }
+    }
+
+    private fun failureSpec(reason: AdbPairingService.Reason): PairingStateSpec {
+        val tryAgain = PairingAction(R.string.pairing_v2_action_try_again) { retryPairing() }
+        val doctor = PairingAction(R.string.pairing_v2_action_service_doctor) { PairingPreflight.openServiceDoctor(this) }
+        return when (reason) {
+            AdbPairingService.Reason.WRONG_CODE ->
+                spec(
+                    "failed:wrong",
+                    R.drawable.ic_code_24,
+                    PairingTone.PROBLEM,
+                    R.string.pairing_v2_wrong_code_title,
+                    R.string.pairing_v2_wrong_code_text,
+                    primary = tryAgain,
+                )
+            AdbPairingService.Reason.CANT_CONNECT, AdbPairingService.Reason.CODE_EXPIRED ->
+                spec(
+                    "failed:connect",
+                    R.drawable.ic_server_error_24,
+                    PairingTone.PROBLEM,
+                    R.string.pairing_v2_cant_connect_title,
+                    R.string.pairing_v2_cant_connect_text,
+                    primary = PairingAction(R.string.pairing_v2_action_new_code) { retryPairing() },
+                )
+            AdbPairingService.Reason.KEY_STORE ->
+                spec(
+                    "failed:key",
+                    R.drawable.ic_server_error_24,
+                    PairingTone.PROBLEM,
+                    R.string.pairing_v2_key_title,
+                    R.string.pairing_v2_key_text,
+                    primary = doctor,
+                    secondary = tryAgain,
+                )
+            AdbPairingService.Reason.TIMED_OUT ->
+                spec(
+                    "failed:timeout",
+                    R.drawable.ic_wadb_24,
+                    PairingTone.NEEDS_YOU,
+                    R.string.pairing_v2_timed_out_title,
+                    R.string.pairing_v2_timed_out_text,
+                    primary = PairingAction(R.string.pairing_v2_action_look_again) { startPairingService() },
+                )
+            else ->
+                spec(
+                    "failed:unknown",
+                    R.drawable.ic_server_error_24,
+                    PairingTone.PROBLEM,
+                    R.string.pairing_v2_failed_title,
+                    R.string.pairing_v2_failed_text,
+                    primary = tryAgain,
+                    secondary = doctor,
+                )
+        }
+    }
+
+    private fun blockerSpec(blocker: PairingBlocker): PairingStateSpec =
+        when (blocker) {
+            PairingBlocker.DEVELOPER_OPTIONS_OFF ->
+                spec(
+                    "blocker:devopts",
+                    R.drawable.ic_settings_outline_24,
+                    PairingTone.NEEDS_YOU,
+                    R.string.pairing_v2_devopts_off_title,
+                    R.string.pairing_v2_devopts_off_text,
+                    primary = PairingAction(R.string.pairing_v2_action_open_about) { PairingPreflight.openAboutPhone(this) },
+                )
+            PairingBlocker.NO_WIFI -> {
+                val hotspot = PairingPreflight.hotspotHelps
+                spec(
+                    "blocker:wifi",
+                    R.drawable.ic_wifi_24,
+                    PairingTone.NEEDS_YOU,
+                    R.string.pairing_v2_no_wifi_title,
+                    if (hotspot) R.string.pairing_v2_no_wifi_text_hotspot else R.string.pairing_v2_no_wifi_text,
+                    primary = PairingAction(R.string.pairing_v2_action_wifi) { PairingPreflight.openWifi(this) },
+                    secondary =
+                        if (hotspot) PairingAction(R.string.pairing_v2_action_hotspot) { PairingPreflight.openHotspot(this) } else null,
+                )
+            }
+            PairingBlocker.WIRELESS_DEBUGGING_OFF ->
+                spec(
+                    "blocker:wd",
+                    R.drawable.ic_wadb_24,
+                    PairingTone.NEEDS_YOU,
+                    R.string.pairing_v2_wd_off_title,
+                    R.string.pairing_v2_wd_off_text,
+                    primary = PairingAction(R.string.pairing_v2_action_open_wd) { openWirelessDebugging() },
+                )
+            PairingBlocker.LOCAL_NETWORK_DENIED -> {
+                val permission = LocalNetworkPermission.required()
+                val askAgain = !localNetworkAsked || (permission != null && shouldShowRequestPermissionRationale(permission))
+                spec(
+                    "blocker:localnet",
+                    R.drawable.ic_wifi_24,
+                    PairingTone.NEEDS_YOU,
+                    R.string.pairing_v2_local_net_title,
+                    R.string.pairing_v2_local_net_text,
+                    primary =
+                        if (askAgain) {
+                            PairingAction(R.string.pairing_v2_action_allow) { startPairingService() }
+                        } else {
+                            PairingAction(R.string.pairing_v2_action_app_info) { PairingPreflight.openAppInfo(this) }
+                        },
+                )
+            }
+            PairingBlocker.NOTIFICATIONS_BLOCKED ->
+                spec(
+                    "blocker:notifications",
+                    R.drawable.ic_outline_notifications_active_24,
+                    PairingTone.NEEDS_YOU,
+                    R.string.pairing_v2_notif_blocked_title,
+                    R.string.pairing_v2_notif_blocked_text,
+                    primary = PairingAction(R.string.pairing_v2_action_allow_notifications) { requestOrOpenNotificationSettings() },
+                    secondary = PairingAction(R.string.pairing_v2_action_enter_here) { openCodeDialog() },
+                )
+        }
+
+    private fun spec(
+        key: String,
+        icon: Int,
+        tone: PairingTone,
+        title: Int,
+        text: Int,
+        primary: PairingAction? = null,
+        secondary: PairingAction? = null,
+    ) = PairingStateSpec(key, icon, tone, getText(title), getText(text), primary, secondary)
+
+    private fun openWirelessDebugging() = SettingsHelper.launchOrHighlightWirelessDebugging(this)
+
+    private fun openCodeDialog() {
+        if (supportFragmentManager.isStateSaved) return
+        af.shizuku.manager.home
+            .AdbPairDialogFragment()
+            .show(supportFragmentManager, null)
+    }
+
+    // A failed attempt ends the service; wait for a fresh pairing dialog and send the user to it.
+    private fun retryPairing() {
+        AdbPairingService.setState(AdbPairingService.Phase.IDLE)
+        startPairingService()
+        openWirelessDebugging()
+    }
+
+    // Legacy pairing: the notification opens a code dialog instead of an inline reply, for
+    // notification shades (MIUI/HyperOS and some others) that drop the reply box.
+    private fun setLegacyPairing(enabled: Boolean) {
+        if (ShizukuSettings.getLegacyPairing() == enabled) return
+        ShizukuSettings
+            .getPreferences()
+            .edit()
+            .putBoolean(ShizukuSettings.Keys.KEY_LEGACY_PAIRING, enabled)
+            .apply()
+        if (binding.legacyPairingSwitch.isChecked != enabled) binding.legacyPairingSwitch.isChecked = enabled
+        val phase = AdbPairingService.state.value.phase
+        if (phase == AdbPairingService.Phase.SEARCHING || phase == AdbPairingService.Phase.FOUND) {
+            runCatching { startService(AdbPairingService.refreshIntent(this)) }
+                .onFailure { Timber.tag(AppConstants.TAG).w(it, "refresh pairing notification") }
+        }
+        if (enabled) Toast.makeText(this, R.string.pairing_v2_legacy_enabled, Toast.LENGTH_SHORT).show()
+        renderState()
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -271,22 +512,10 @@ class AdbPairingTutorialActivity : AppBarActivity() {
         SettingsPage.Notifications.NotificationSettings.launch(this)
     }
 
+    // The "code goes in a notification" note only helps when notifications work; when they
+    // don't, the state card says so and offers the way out.
     private fun syncNotificationEnabled() {
-        binding.apply {
-            // Keep steps visible so user can prepare, but show warning
-            notificationDisabled.isGone = notificationEnabled
-            // notification is the "success" card, only show if enabled
-            notification.isVisible = notificationEnabled
-        }
-    }
-
-    private fun isNotificationEnabled(): Boolean {
-        val context = this
-
-        val nm = context.getSystemService(NotificationManager::class.java)
-        val channel = nm.getNotificationChannel(AdbPairingService.NOTIFICATION_CHANNEL)
-        return nm.areNotificationsEnabled() &&
-            (channel == null || channel.importance != NotificationManager.IMPORTANCE_NONE)
+        binding.notification.isVisible = notificationEnabled
     }
 
     private val runningListener: (ShizukuStateMachine.State) -> Unit = { state ->
@@ -298,11 +527,24 @@ class AdbPairingTutorialActivity : AppBarActivity() {
     override fun onStart() {
         super.onStart()
         ShizukuStateMachine.addListener(runningListener)
+        runCatching {
+            contentResolver.registerContentObserver(
+                Settings.Global.getUriFor(Settings.Global.DEVELOPMENT_SETTINGS_ENABLED),
+                false,
+                settingsObserver,
+            )
+            contentResolver.registerContentObserver(
+                Settings.Global.getUriFor(PairingPreflight.ADB_WIFI_ENABLED),
+                false,
+                settingsObserver,
+            )
+        }
     }
 
     override fun onStop() {
         super.onStop()
         ShizukuStateMachine.removeListener(runningListener)
+        runCatching { contentResolver.unregisterContentObserver(settingsObserver) }
     }
 
     override fun onResume() {
@@ -318,7 +560,7 @@ class AdbPairingTutorialActivity : AppBarActivity() {
             StartWirelessAdbViewHolder.start(this, lifecycleScope)
         }
 
-        val newNotificationEnabled = isNotificationEnabled()
+        val newNotificationEnabled = PairingPreflight.notificationsEnabled(this)
         if (newNotificationEnabled != notificationEnabled) {
             notificationEnabled = newNotificationEnabled
             syncNotificationEnabled()
@@ -327,12 +569,23 @@ class AdbPairingTutorialActivity : AppBarActivity() {
                 startPairingService()
             }
         }
+        // Wi-Fi, Wireless debugging or a permission may have changed while the user was away.
+        renderState()
+    }
+
+    override fun onMultiWindowModeChanged(
+        isInMultiWindowMode: Boolean,
+        newConfig: android.content.res.Configuration,
+    ) {
+        super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
+        renderState()
     }
 
     // Android 16+ gates mDNS discovery of the pairing service behind local-network access; request
     // it and only start pairing once the user has responded, so discovery can find the port (#317).
     private val localNetworkPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            renderState()
             // Start pairing whether or not the grant succeeded; a denial just means discovery/
             // connect fails and the service surfaces the error, rather than a silent no-op.
             doStartPairingService()
@@ -341,6 +594,7 @@ class AdbPairingTutorialActivity : AppBarActivity() {
     private fun startPairingService() {
         val permission = LocalNetworkPermission.required()
         if (permission != null && checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
+            localNetworkAsked = true
             localNetworkPermissionLauncher.launch(permission)
         } else {
             doStartPairingService()

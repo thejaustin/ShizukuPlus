@@ -35,69 +35,12 @@
             android:divider="@drawable/spacing_card_vertical"
             android:orientation="vertical">
 
-            <!-- Live pairing status, fed by AdbPairingService.state; hidden while idle. -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/pairing_status"
-                style="@style/DialogCard"
+            <!-- Live pairing state (PairingStatePanel, added in code): what's in the way or where
+                 pairing stands, with the one action that moves it on. Hidden only before the first render. -->
+            <FrameLayout
+                android:id="@+id/state_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:accessibilityLiveRegion="polite"
-                android:focusable="false"
-                android:visibility="gone">
-
-                <FrameLayout
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="-8dp"
-                    android:layout_marginTop="2dp">
-
-                    <com.google.android.material.progressindicator.CircularProgressIndicator
-                        android:id="@+id/pairing_status_progress"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:indeterminate="true"
-                        android:importantForAccessibility="no"
-                        app:indicatorSize="20dp"
-                        app:trackThickness="3dp" />
-
-                    <ImageView
-                        android:id="@+id/pairing_status_icon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:importantForAccessibility="no"
-                        android:tint="?colorOnSecondaryContainer"
-                        android:tintMode="src_in"
-                        android:visibility="gone" />
-
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="36dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/pairing_status_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?textAppearanceTitleSmall"
-                        android:textColor="?colorOnSecondaryContainer" />
-
-                    <TextView
-                        android:id="@+id/pairing_status_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:textAppearance="?textAppearanceBodyMedium"
-                        android:textColor="?colorOnSecondaryContainer"
-                        android:visibility="gone" />
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
+                android:layout_height="wrap_content" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/notification"
@@ -130,57 +73,6 @@
                         android:text="@string/adb_pairing_tutorial_content_notification"
                         android:textAppearance="?textAppearanceBodyMedium"
                         android:textColor="?colorOnSecondaryContainer" />
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/notification_disabled"
-                style="@style/DialogCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="?colorErrorContainer">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="-8dp"
-                    android:layout_marginTop="4dp"
-                    android:importantForAccessibility="no"
-                    android:src="@drawable/ic_outline_info_24"
-                    android:tint="?colorOnErrorContainer"
-                    android:tintMode="src_in" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="36dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:lineSpacingExtra="2sp"
-                        android:text="@string/adb_pairing_tutorial_content_notification_blocked"
-                        android:textAppearance="?textAppearanceBodyMedium"
-                        android:textColor="?colorOnErrorContainer" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/notification_options"
-                        style="?attr/materialButtonTonalStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="-8dp"
-                        android:text="@string/notification_settings"
-                        android:textColor="?colorOnError"
-                        app:backgroundTint="?colorError"
-                        app:iconTint="?colorOnError"
-                        app:iconTintMode="src_in"
-                        app:icon="@drawable/ic_outline_open_in_new_24"
-                        app:iconPadding="16dp" />
 
                 </LinearLayout>
 
@@ -239,7 +131,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                app:cardBackgroundColor="?colorErrorContainer"
                 tools:visibility="visible">
 
                 <ImageView
@@ -249,7 +140,7 @@
                     android:layout_marginTop="4dp"
                     android:importantForAccessibility="no"
                     android:src="@drawable/ic_warning_24"
-                    android:tint="?colorOnErrorContainer"
+                    android:tint="?colorOnSurfaceVariant"
                     android:tintMode="src_in" />
 
                 <LinearLayout
@@ -266,7 +157,7 @@
                         android:duplicateParentState="true"
                         android:text="@string/adb_pairing_tutorial_content_miui"
                         android:textAppearance="?textAppearanceBodyMedium"
-                        android:textColor="?colorOnErrorContainer" />
+                        android:textColor="?colorOnSurfaceVariant" />
 
                     <TextView
                         style="@style/TerminalTutorialText"
@@ -277,7 +168,25 @@
                         android:fontFamily="sans-serif-medium"
                         android:text="@string/adb_pairing_tutorial_content_miui_2"
                         android:textAppearance="?textAppearanceBodyMedium"
-                        android:textColor="?colorOnErrorContainer" />
+                        android:textColor="?colorOnSurfaceVariant" />
+
+                    <!-- Same setting as Settings > Legacy pairing, offered where it's needed. -->
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/legacy_pairing_switch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:minHeight="48dp"
+                        android:text="@string/pairing_v2_legacy_switch"
+                        android:textAppearance="?textAppearanceTitleSmall"
+                        android:textColor="?colorOnSurface" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/pairing_v2_legacy_switch_summary"
+                        android:textAppearance="?textAppearanceBodySmall"
+                        android:textColor="?colorOnSurfaceVariant" />
 
                 </LinearLayout>
 
