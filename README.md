@@ -151,6 +151,10 @@ Everything Shizuku+ adds can be switched off:
 
 [Apache 2.0](LICENSE)
 
+## ☕ Support
+
+Free and open source. If this saved you a headache, you can [toss a coffee in the jar](https://buymeacoffee.com/thejaustin) to help fund device testing and late-night builds. Nothing in the app is locked behind it, and it never asks.
+
 ---
 
 <details>

@@ -89,6 +89,12 @@
             android:icon="@drawable/ic_help_outline_24" />
 
         <Preference
+            android:key="support_development"
+            android:title="@string/about_support_title"
+            android:summary="@string/about_support_summary"
+            android:icon="@drawable/ic_favorite_24" />
+
+        <Preference
             android:key="report_bug"
             android:title="@string/settings_report_bug"
             android:icon="@drawable/ic_bug_report_24" />

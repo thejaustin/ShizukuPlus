@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings > About. One quiet row, never a pop-up. -->
+    <string name="about_support_title">Support development</string>
+    <string name="about_support_summary">Free and open source. If it saved you a headache, you can toss a coffee in the jar for device testing and late-night builds.</string>
+    <string name="about_support_url" translatable="false">https://buymeacoffee.com/thejaustin</string>
+</resources>

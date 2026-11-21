@@ -138,6 +138,11 @@ class AboutSettingsFragment : BaseSettingsFragment() {
             true
         }
 
+        findPreference<Preference>("support_development")?.setOnPreferenceClickListener {
+            CustomTabsHelper.launchUrlOrCopy(context, context.getString(R.string.about_support_url))
+            true
+        }
+
         findPreference<Preference>(ShizukuSettings.Keys.KEY_REPORT_BUG)?.setOnPreferenceClickListener {
             BugReportDialog().show(parentFragmentManager, "BugReportDialog")
             true
