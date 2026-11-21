@@ -406,6 +406,13 @@ class ChangelogTimelineAdapter(
                 detail.text = InlineFormatter.format(split.detail!!, chipColor, density, onLink)
                 detail.movementMethod = LinkMovementMethod.getInstance()
             }
+            // A TextView with a link movement method is clickable and swallows taps on plain
+            // text, so the row never opened. Not clickable: taps on links still reach the method,
+            // and every other tap falls through to the row.
+            headline.isClickable = false
+            headline.isFocusable = false
+            detail.isClickable = false
+            detail.isFocusable = false
             val target = if (hasDetail) detail else headline
             val collapsedLines = if (hasDetail) DETAIL_LINES else HEADLINE_LINES
 
