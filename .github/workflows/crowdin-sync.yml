@@ -72,6 +72,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          # The Crowdin action pushes with the checkout's credentials. The default token makes the
+          # push come from github-actions[bot], whose PR runs wait for manual approval.
+          token: ${{ secrets.CROWDIN_PR_TOKEN || github.token }}
 
       - name: Download approved translations
         uses: crowdin/github-action@8f01d54f70f1713ee3f09d82c2bbb2daeac28689 # v2

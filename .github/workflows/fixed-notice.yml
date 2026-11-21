@@ -1,0 +1,51 @@
+name: Fixed-in notice
+
+# When a commit on master says "Fixes #N", tell the issue which build carries the fix and mark it.
+on:
+  push:
+    branches: [master]
+
+jobs:
+  notice:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Comment and label
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            const before = process.env.BEFORE;
+            const range = /^0+$/.test(before) ? process.env.AFTER : `${before}..${process.env.AFTER}`;
+            const shas = execSync(`git rev-list ${range}`).toString().trim().split('\n').filter(Boolean);
+            const fixes = new Map(); // issue -> sha
+            for (const sha of shas) {
+              const msg = execSync(`git log -1 --format=%B ${sha}`).toString();
+              for (const m of msg.matchAll(/\b(?:fix(?:es|ed)?|close[sd]?|resolve[sd]?)\s+#(\d+)/gi)) {
+                if (!fixes.has(m[1])) fixes.set(m[1], sha);
+              }
+            }
+            for (const [num, sha] of fixes) {
+              let issue;
+              try {
+                ({ data: issue } = await github.rest.issues.get({ owner: context.repo.owner, repo: context.repo.repo, issue_number: Number(num) }));
+              } catch { continue; }
+              if (issue.pull_request) continue;
+              const labels = issue.labels.map((l) => l.name);
+              if (labels.includes('status: fixed-in-prerelease')) continue;
+              // The build's version code is the commit count, which is also the tag's revision.
+              const rev = execSync(`git rev-list --count ${sha}`).toString().trim();
+              await github.rest.issues.addLabels({ owner: context.repo.owner, repo: context.repo.repo, issue_number: issue.number, labels: ['status: fixed-in-prerelease'] });
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: issue.number,
+                body: `A fix for this is now on master (${sha.slice(0, 8)}). It ships in pre-release **13.7.0.r${rev}** or later; once that build is out, the app's update check will offer it.\n\n_Automated notice. If it still happens on that build, please say so here and we'll reopen it._`,
+              });
+            }

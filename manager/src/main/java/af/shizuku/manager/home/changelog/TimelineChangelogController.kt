@@ -157,9 +157,17 @@ class TimelineChangelogController(
 
     private fun render() {
         val latestTag = releases.firstOrNull()?.tag
+        // With updates in between, mark where the user's previous version sits so the new
+        // releases above it read as "what you missed".
+        val leftOffTag =
+            releases
+                .dropWhile { it.isNew }
+                .takeIf { releases.any { r -> r.isNew } }
+                ?.firstOrNull()
+                ?.tag
         val filtered =
             sort
-                .apply(releases.map { it.copy(isLatest = it.tag == latestTag) })
+                .apply(releases.map { it.copy(isLatest = it.tag == latestTag, isLeftOff = it.tag == leftOffTag) })
                 .mapNotNull { r ->
                     if (r.sections.isEmpty() && !r.isInstalled) {
                         // Nothing user-facing left (e.g. a README-only pre-release).
@@ -216,7 +224,14 @@ class TimelineChangelogController(
                 isUpToDate -> ctx.getString(R.string.changelog_summary_up_to_date)
                 else -> ctx.getString(R.string.update_available_title)
             }
-        val from = if (!latest.isInstalled && !installedAhead) "v$installedTag" else null
+        // After an update the installed version is the latest, so "from" is the version they were on.
+        val leftOff = releases.firstOrNull { it.isLeftOff }
+        val from =
+            when {
+                newOnes.isNotEmpty() && leftOff != null -> "v${leftOff.tag}"
+                !latest.isInstalled && !installedAhead -> "v$installedTag"
+                else -> null
+            }
         // Lead with what people can actually try: the newest feature headlines, capped so a huge
         // release still opens on a short list.
         val featureTitles =

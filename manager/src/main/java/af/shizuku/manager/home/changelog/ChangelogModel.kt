@@ -30,6 +30,8 @@ data class TimelineRelease(
     val isInstalled: Boolean,
     val isLatest: Boolean,
     val isPrerelease: Boolean,
+    /** The first release the user had already seen: everything above it is what an update added. */
+    val isLeftOff: Boolean = false,
 ) {
     val changeCount: Int get() = sections.sumOf { it.items.size }
 

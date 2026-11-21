@@ -72,7 +72,11 @@ class ChangelogTimelineAdapter(
         if (autoExpand != null && expandedTags.isEmpty()) expandedTags.add(autoExpand)
         rows = newRows
         releaseOrder = newRows.filterIsInstance<TimelineRow.Release>().map { it.release.tag }
-        installedPos = newRows.filterIsInstance<TimelineRow.Release>().indexOfFirst { it.release.isInstalled }
+        val releaseRows = newRows.filterIsInstance<TimelineRow.Release>()
+        // The path to light runs up from where the user was (after an update) or from the installed
+        // release (update still pending).
+        installedPos = releaseRows.indexOfFirst { it.release.isLeftOff }.takeIf { it >= 0 }
+            ?: releaseRows.indexOfFirst { it.release.isInstalled }
         notifyDataSetChanged()
     }
 
@@ -198,18 +202,22 @@ class ChangelogTimelineAdapter(
             with(af.shizuku.manager.utils.MotionUtils) { header.applySpringTouch(scale = 0.98f) }
         }
 
-        fun stop() = rail.setPulsing(false)
+        fun stop() {
+            rail.setPulsing(false)
+            rail.setFlowing(false)
+        }
 
         fun bind(row: TimelineRow.Release) {
             val r = row.release
             val outline = color(itemView, com.google.android.material.R.attr.colorOutline)
             val outlineVariant = color(itemView, com.google.android.material.R.attr.colorOutlineVariant)
             val primary = color(itemView, androidx.appcompat.R.attr.colorPrimary)
-            val active = r.isLatest || r.isInstalled || r.isNew
+            val active = r.isLatest || r.isInstalled || r.isNew || r.isLeftOff
             val node = if (active) primary else outline
             rail.isFirst = row.isFirst
             rail.isLast = row.isLast
             rail.filled = active
+            rail.isNewNode = r.isNew
             rail.setColors(outlineVariant, node, ColorUtils.setAlphaComponent(node, 0x33), primary)
             rail.setPulsing(r.isLatest && ShizukuSettings.isExpressiveAnimationsEnabled())
             // Behind on updates: light the rail from the installed release up to the latest.
@@ -217,6 +225,7 @@ class ChangelogTimelineAdapter(
             val behind = installedPos > 0 && pos >= 0
             rail.highlightAbove = behind && pos in 1..installedPos
             rail.highlightBelow = behind && pos < installedPos
+            rail.setFlowing((rail.highlightAbove || rail.highlightBelow) && ShizukuSettings.isExpressiveAnimationsEnabled())
 
             version.text = r.tag
             bindBadges(r)
@@ -289,6 +298,7 @@ class ChangelogTimelineAdapter(
             }
             // Strongest first, at most two so a narrow sheet never wraps.
             val wanted = mutableListOf<Triple<Int, Int, Int>>()
+            if (r.isLeftOff) wanted.add(Triple(R.string.changelog_badge_left_off, com.google.android.material.R.attr.colorSecondaryContainer, com.google.android.material.R.attr.colorOnSecondaryContainer))
             if (r.isInstalled) wanted.add(Triple(R.string.changelog_badge_installed, com.google.android.material.R.attr.colorTertiaryContainer, com.google.android.material.R.attr.colorOnTertiaryContainer))
             if (r.isPrerelease) wanted.add(Triple(R.string.changelog_badge_prerelease, com.google.android.material.R.attr.colorErrorContainer, com.google.android.material.R.attr.colorOnErrorContainer))
             if (r.isLatest) wanted.add(Triple(R.string.changelog_badge_latest, com.google.android.material.R.attr.colorPrimaryContainer, com.google.android.material.R.attr.colorOnPrimaryContainer))
@@ -428,7 +438,8 @@ class ChangelogTimelineAdapter(
                 target.post {
                     val layout = target.layout
                     val cut =
-                        layout != null && layout.lineCount > 0 &&
+                        layout != null &&
+                            layout.lineCount > 0 &&
                             (layout.lineCount > collapsedLines || layout.getEllipsisCount(layout.lineCount - 1) > 0)
                     more.text = more.context.getString(R.string.changelog_read_more)
                     more.visibility = if (cut) View.VISIBLE else View.GONE
