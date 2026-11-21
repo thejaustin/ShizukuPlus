@@ -6,13 +6,8 @@ import af.shizuku.manager.R
 import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.adb.AdbPairingTutorialActivity
 import af.shizuku.manager.databinding.ActivityOnboardingBinding
-import af.shizuku.manager.databinding.PageOnboardingGesturesBinding
-import af.shizuku.manager.databinding.PageOnboardingLayoutNavBinding
-import af.shizuku.manager.databinding.PageOnboardingLongpressBinding
-import af.shizuku.manager.databinding.PageOnboardingM3eBinding
 import af.shizuku.manager.databinding.PageOnboardingSecurityDoctorBinding
 import af.shizuku.manager.databinding.PageOnboardingSetupBinding
-import af.shizuku.manager.databinding.PageOnboardingSwipeBinding
 import af.shizuku.manager.databinding.PageOnboardingWelcomeBinding
 import af.shizuku.manager.databinding.PageOnboardingWelcomeReturningBinding
 import af.shizuku.manager.home.StartWirelessAdbViewHolder
@@ -39,7 +34,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -51,6 +45,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import rikka.core.util.ClipboardUtils
 import timber.log.Timber
 import java.io.File
@@ -65,12 +62,7 @@ class OnboardingActivity : AppActivity() {
         WELCOME,
         WELCOME_RETURNING,
         SETUP,
-        M3E,
-        LAYOUT_NAV,
         SECURITY_DOCTOR,
-        SWIPE,
-        GESTURES,
-        LONG_PRESS,
     }
 
     private lateinit var binding: ActivityOnboardingBinding
@@ -96,9 +88,6 @@ class OnboardingActivity : AppActivity() {
     // Setup page live refs
     private var setupStatusRunning: View? = null
 
-    // Swipe page live refs
-    private var swipeIconRight: ImageView? = null
-    private var swipeIconLeft: ImageView? = null
     private var pendingPairLaunch: Boolean = false
 
     private val notifPermissionLauncher =
@@ -116,18 +105,25 @@ class OnboardingActivity : AppActivity() {
             ActivityResultContracts.OpenDocument(),
         ) { uri ->
             if (uri != null) {
-                try {
-                    contentResolver.openInputStream(uri)?.use { stream ->
-                        val json = stream.bufferedReader().use { it.readText() }
-                        if (SettingsBackupManager.importAndCommit(this, json, trustPrivileged = false)) {
-                            onBackupRestored(null)
-                        } else {
-                            Toast.makeText(this, getString(R.string.restore_failed_generic, getString(R.string.onboarding_restore_invalid)), Toast.LENGTH_SHORT).show()
+                lifecycleScope.launch {
+                    try {
+                        val json =
+                            withContext(Dispatchers.IO) {
+                                contentResolver.openInputStream(uri)?.use { stream ->
+                                    stream.bufferedReader().use { it.readText() }
+                                }
+                            }
+                        if (json != null) {
+                            if (SettingsBackupManager.importAndCommit(this@OnboardingActivity, json, trustPrivileged = false)) {
+                                onBackupRestored(null)
+                            } else {
+                                Toast.makeText(this@OnboardingActivity, getString(R.string.restore_failed_generic, getString(R.string.onboarding_restore_invalid)), Toast.LENGTH_SHORT).show()
+                            }
                         }
+                    } catch (e: Exception) {
+                        Timber.e(e, "Failed to restore backup from picked document")
+                        Toast.makeText(this@OnboardingActivity, getString(R.string.restore_failed_generic, e.localizedMessage ?: ""), Toast.LENGTH_SHORT).show()
                     }
-                } catch (e: Exception) {
-                    Timber.e(e, "Failed to restore backup from picked document")
-                    Toast.makeText(this, getString(R.string.restore_failed_generic, e.localizedMessage ?: ""), Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -191,10 +187,6 @@ class OnboardingActivity : AppActivity() {
                 override fun onPageSelected(position: Int) {
                     updateDots(position)
                     updateButtons(position)
-                    val currentPage = pages.getOrNull(position)
-                    if (currentPage == PageType.SWIPE) {
-                        binding.pager.postDelayed({ animateSwipeIcons() }, 300)
-                    }
                 }
             },
         )
@@ -335,44 +327,6 @@ class OnboardingActivity : AppActivity() {
             }
     }
 
-    private fun animateSwipeIcons() {
-        val iconRight = swipeIconRight ?: return
-        val iconLeft = swipeIconLeft ?: return
-        val shift = dpToPx(22).toFloat()
-
-        iconRight.translationX = 0f
-        iconRight
-            .animate()
-            .translationX(shift)
-            .setDuration(ShizukuSettings.scaledAnimationDuration(350))
-            .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
-            .withEndAction {
-                iconRight
-                    .animate()
-                    .translationX(0f)
-                    .setDuration(ShizukuSettings.scaledAnimationDuration(250))
-                    .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
-                    .start()
-            }.start()
-
-        iconLeft.translationX = 0f
-        iconLeft.postDelayed({
-            iconLeft
-                .animate()
-                .translationX(-shift)
-                .setDuration(ShizukuSettings.scaledAnimationDuration(350))
-                .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
-                .withEndAction {
-                    iconLeft
-                        .animate()
-                        .translationX(0f)
-                        .setDuration(ShizukuSettings.scaledAnimationDuration(250))
-                        .setInterpolator(af.shizuku.manager.utils.MotionUtils.STANDARD)
-                        .start()
-                }.start()
-        }, 400)
-    }
-
     /**
      * The user chose to restore: apply everything now (theme, language, boot start, icon, Plus
      * features), ask about privileged settings the backup would switch on, then go home. No
@@ -456,12 +410,7 @@ class OnboardingActivity : AppActivity() {
                 PageType.WELCOME -> OnboardingPageViewHolder.Welcome(PageOnboardingWelcomeBinding.inflate(inflater, parent, false))
                 PageType.WELCOME_RETURNING -> OnboardingPageViewHolder.WelcomeReturning(PageOnboardingWelcomeReturningBinding.inflate(inflater, parent, false))
                 PageType.SETUP -> OnboardingPageViewHolder.Setup(PageOnboardingSetupBinding.inflate(inflater, parent, false))
-                PageType.M3E -> OnboardingPageViewHolder.M3E(PageOnboardingM3eBinding.inflate(inflater, parent, false))
-                PageType.LAYOUT_NAV -> OnboardingPageViewHolder.LayoutNav(PageOnboardingLayoutNavBinding.inflate(inflater, parent, false))
                 PageType.SECURITY_DOCTOR -> OnboardingPageViewHolder.SecurityDoctor(PageOnboardingSecurityDoctorBinding.inflate(inflater, parent, false))
-                PageType.SWIPE -> OnboardingPageViewHolder.Swipe(PageOnboardingSwipeBinding.inflate(inflater, parent, false))
-                PageType.GESTURES -> OnboardingPageViewHolder.Gestures(PageOnboardingGesturesBinding.inflate(inflater, parent, false))
-                PageType.LONG_PRESS -> OnboardingPageViewHolder.LongPress(PageOnboardingLongpressBinding.inflate(inflater, parent, false))
             }
         }
 
@@ -473,15 +422,7 @@ class OnboardingActivity : AppActivity() {
                 is OnboardingPageViewHolder.Welcome -> bindWelcomePage(holder.binding)
                 is OnboardingPageViewHolder.WelcomeReturning -> bindWelcomeReturningPage(holder.binding)
                 is OnboardingPageViewHolder.Setup -> bindSetupPage(holder.binding)
-                is OnboardingPageViewHolder.M3E -> bindM3ePage(holder.binding)
-                is OnboardingPageViewHolder.LayoutNav -> bindLayoutNavPage(holder.binding)
                 is OnboardingPageViewHolder.SecurityDoctor -> bindSecurityDoctorPage(holder.binding)
-                is OnboardingPageViewHolder.Swipe -> {
-                    swipeIconRight = holder.binding.hintIconRight
-                    swipeIconLeft = holder.binding.hintIconLeft
-                }
-                is OnboardingPageViewHolder.Gestures -> Unit
-                is OnboardingPageViewHolder.LongPress -> bindLongPressPage(holder.binding)
             }
         }
 
@@ -494,19 +435,21 @@ class OnboardingActivity : AppActivity() {
             if (foundBackup != null) {
                 binding.cardRestoreBackup.visibility = View.VISIBLE
                 binding.btnRestoreBackup.setOnClickListener {
-                    try {
-                        val json = foundBackup.readText()
-                        // A copy in public Downloads may have been written by another app: hold
-                        // its privileged settings back so they ask, as for a picked file.
-                        val trusted = UpdateInstaller.isTrustedBackupLocation(this@OnboardingActivity, foundBackup)
-                        if (SettingsBackupManager.importAndCommit(this@OnboardingActivity, json, trustPrivileged = trusted)) {
-                            onBackupRestored(foundBackup)
-                        } else {
-                            Toast.makeText(this@OnboardingActivity, getString(R.string.restore_failed_generic, getString(R.string.onboarding_restore_invalid)), Toast.LENGTH_SHORT).show()
+                    lifecycleScope.launch {
+                        try {
+                            val json = withContext(Dispatchers.IO) { foundBackup.readText() }
+                            // A copy in public Downloads may have been written by another app: hold
+                            // its privileged settings back so they ask, as for a picked file.
+                            val trusted = UpdateInstaller.isTrustedBackupLocation(this@OnboardingActivity, foundBackup)
+                            if (SettingsBackupManager.importAndCommit(this@OnboardingActivity, json, trustPrivileged = trusted)) {
+                                onBackupRestored(foundBackup)
+                            } else {
+                                Toast.makeText(this@OnboardingActivity, getString(R.string.restore_failed_generic, getString(R.string.onboarding_restore_invalid)), Toast.LENGTH_SHORT).show()
+                            }
+                        } catch (e: Exception) {
+                            Timber.e(e, "Failed to restore found backup during onboarding")
+                            Toast.makeText(this@OnboardingActivity, getString(R.string.restore_failed_generic, e.localizedMessage ?: ""), Toast.LENGTH_SHORT).show()
                         }
-                    } catch (e: Exception) {
-                        Timber.e(e, "Failed to restore found backup during onboarding")
-                        Toast.makeText(this@OnboardingActivity, getString(R.string.restore_failed_generic, e.localizedMessage ?: ""), Toast.LENGTH_SHORT).show()
                     }
                 }
             } else {
@@ -647,102 +590,6 @@ class OnboardingActivity : AppActivity() {
             updateSetupPageState(ShizukuStateMachine.get())
         }
 
-        private fun bindM3ePage(binding: PageOnboardingM3eBinding) {
-            val currentStyle = ShizukuSettings.getIconStyle()
-            when (currentStyle) {
-                "filled" -> binding.toggleGroupIconStyle.check(R.id.btn_icon_filled)
-                "outlined" -> binding.toggleGroupIconStyle.check(R.id.btn_icon_outlined)
-                else -> binding.toggleGroupIconStyle.check(R.id.btn_icon_twotone)
-            }
-            binding.toggleGroupIconStyle.addOnButtonCheckedListener { group, checkedId, isChecked ->
-                if (isChecked) {
-                    HapticUtils.segmentTick(group)
-                    val style =
-                        when (checkedId) {
-                            R.id.btn_icon_filled -> "filled"
-                            R.id.btn_icon_outlined -> "outlined"
-                            else -> "twotone"
-                        }
-                    ShizukuSettings
-                        .getPreferences()
-                        ?.edit()
-                        ?.putString(ShizukuSettings.Keys.KEY_ICON_STYLE, style)
-                        ?.apply()
-                }
-            }
-
-            binding.switchAmoledPlus.apply {
-                isChecked = ShizukuSettings.isAmoledPlusEnabled()
-                setOnCheckedChangeListener { view, checked ->
-                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
-                    val editor = ShizukuSettings.getPreferences()?.edit()
-                    editor?.putBoolean(ShizukuSettings.Keys.KEY_AMOLED_PLUS, checked)
-                    if (checked) {
-                        editor?.putBoolean(ShizukuSettings.Keys.KEY_BLACK_NIGHT_THEME, true)
-                    }
-                    editor?.apply()
-                }
-            }
-
-            binding.switchExpressiveAnimations.apply {
-                isChecked = ShizukuSettings.isExpressiveAnimationsEnabled()
-                setOnCheckedChangeListener { view, checked ->
-                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
-                    ShizukuSettings
-                        .getPreferences()
-                        ?.edit()
-                        ?.putBoolean(ShizukuSettings.Keys.KEY_EXPRESSIVE_ANIMATIONS, checked)
-                        ?.apply()
-                }
-            }
-        }
-
-        private fun bindLayoutNavPage(binding: PageOnboardingLayoutNavBinding) {
-            binding.switchFloatingNav.apply {
-                isChecked = ShizukuSettings.isFloatingNavBarEnabled()
-                setOnCheckedChangeListener { view, checked ->
-                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
-                    ShizukuSettings.setFloatingNavBarEnabled(checked)
-                }
-            }
-
-            binding.switchActivityLogHome.apply {
-                isChecked =
-                    ShizukuSettings.getPreferences()?.getBoolean(
-                        ShizukuSettings.Keys.KEY_SHOW_ACTIVITY_LOG_HOME,
-                        false,
-                    ) ?: false
-                setOnCheckedChangeListener { view, checked ->
-                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
-                    ShizukuSettings
-                        .getPreferences()
-                        ?.edit()
-                        ?.putBoolean(ShizukuSettings.Keys.KEY_SHOW_ACTIVITY_LOG_HOME, checked)
-                        ?.apply()
-                }
-            }
-
-            binding.cardPreviewHome.applySpringTouch()
-            binding.btnPreviewDrag.setOnClickListener {
-                HapticUtils.gestureStart(it)
-                binding.cardPreviewHome
-                    .animate()
-                    .translationY(-16f)
-                    .scaleX(1.02f)
-                    .scaleY(1.02f)
-                    .setDuration(150)
-                    .withEndAction {
-                        binding.cardPreviewHome
-                            .animate()
-                            .translationY(0f)
-                            .scaleX(1f)
-                            .scaleY(1f)
-                            .setDuration(200)
-                            .start()
-                    }.start()
-            }
-        }
-
         private fun bindSecurityDoctorPage(binding: PageOnboardingSecurityDoctorBinding) {
             val networkListener =
                 CompoundButton.OnCheckedChangeListener { view, checked ->
@@ -802,78 +649,6 @@ class OnboardingActivity : AppActivity() {
                 syncSwitches()
             }
         }
-
-        private fun bindLongPressPage(binding: PageOnboardingLongpressBinding) {
-            binding.switchOpenApp.apply {
-                isChecked = ShizukuSettings.getLongPressOpenApp()
-                setOnCheckedChangeListener { view, checked ->
-                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
-                    ShizukuSettings
-                        .getPreferences()
-                        ?.edit()
-                        ?.putBoolean(ShizukuSettings.Keys.KEY_LP_OPEN_APP, checked)
-                        ?.apply()
-                }
-            }
-            binding.switchAppInfo.apply {
-                isChecked = ShizukuSettings.getLongPressAppInfo()
-                setOnCheckedChangeListener { view, checked ->
-                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
-                    ShizukuSettings
-                        .getPreferences()
-                        ?.edit()
-                        ?.putBoolean(ShizukuSettings.Keys.KEY_LP_APP_INFO, checked)
-                        ?.apply()
-                }
-            }
-            binding.switchTogglePermission.apply {
-                isChecked = ShizukuSettings.getLongPressTogglePermission()
-                setOnCheckedChangeListener { view, checked ->
-                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
-                    ShizukuSettings
-                        .getPreferences()
-                        ?.edit()
-                        ?.putBoolean(ShizukuSettings.Keys.KEY_LP_TOGGLE_PERMISSION, checked)
-                        ?.apply()
-                }
-            }
-            binding.switchHideFromList.apply {
-                isChecked = ShizukuSettings.getLongPressHideFromList()
-                setOnCheckedChangeListener { view, checked ->
-                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
-                    ShizukuSettings
-                        .getPreferences()
-                        ?.edit()
-                        ?.putBoolean(ShizukuSettings.Keys.KEY_LP_HIDE_FROM_LIST, checked)
-                        ?.apply()
-                }
-            }
-            binding.switchDhizuku.apply {
-                isChecked = ShizukuSettings.isDhizukuModeEnabled()
-                setOnCheckedChangeListener { view, checked ->
-                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
-                    ShizukuSettings.setDhizukuModeEnabled(checked)
-                }
-            }
-            binding.switchEnhancedApi.apply {
-                isChecked = ShizukuSettings.isCustomApiEnabled()
-                setOnCheckedChangeListener { view, checked ->
-                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
-                    ShizukuSettings.setCustomApiEnabled(checked)
-                }
-            }
-            binding.switchThemedIcon.apply {
-                isChecked = ShizukuSettings.isThemedIconWanted()
-                setOnCheckedChangeListener { view, checked ->
-                    if (checked) HapticUtils.toggleOn(view) else HapticUtils.toggleOff(view)
-                    ShizukuSettings.setThemedIconWanted(checked)
-                }
-            }
-            binding.btnThemedIconSettings.setOnClickListener {
-                af.shizuku.manager.utils.SettingsPage.ThemedIcons
-                    .launch(this@OnboardingActivity)
-            }
-        }
     }
 
     sealed class OnboardingPageViewHolder(
@@ -891,28 +666,8 @@ class OnboardingActivity : AppActivity() {
             val binding: PageOnboardingSetupBinding,
         ) : OnboardingPageViewHolder(binding.root)
 
-        class M3E(
-            val binding: PageOnboardingM3eBinding,
-        ) : OnboardingPageViewHolder(binding.root)
-
-        class LayoutNav(
-            val binding: PageOnboardingLayoutNavBinding,
-        ) : OnboardingPageViewHolder(binding.root)
-
         class SecurityDoctor(
             val binding: PageOnboardingSecurityDoctorBinding,
-        ) : OnboardingPageViewHolder(binding.root)
-
-        class Swipe(
-            val binding: PageOnboardingSwipeBinding,
-        ) : OnboardingPageViewHolder(binding.root)
-
-        class Gestures(
-            val binding: PageOnboardingGesturesBinding,
-        ) : OnboardingPageViewHolder(binding.root)
-
-        class LongPress(
-            val binding: PageOnboardingLongpressBinding,
         ) : OnboardingPageViewHolder(binding.root)
     }
 
