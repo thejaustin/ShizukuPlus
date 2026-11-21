@@ -522,6 +522,9 @@
     <string name="settings_problems_on_home_summary">Shizuku+\'s status card says what\'s wrong, even with helper notifications off</string>
     <string name="settings_toasts_over_other_apps">Messages over other apps</string>
     <string name="settings_toasts_over_other_apps_summary">Show Shizuku+\'s short messages while you\'re in another app. Off, they only show while Shizuku+ is open, and a pairing result comes as a notification</string>
+    <string name="settings_auto_restart_after_update">Restart after an update</string>
+    <string name="settings_auto_restart_after_update_summary">When the app is updated, restart Shizuku+ on its own so connected apps keep working. Apps using Shizuku+ lose connection for a few seconds. Off, you get a Restart button instead.</string>
+    <string name="snackbar_server_restarting">Shizuku+ was updated and is restarting to match.</string>
     <string name="settings_watchdog_auto_restart">Restart automatically</string>
     <string name="settings_watchdog_auto_restart_summary">Off, the Watchdog only shows the status notification and tells you when Shizuku+ stops</string>
     <string name="settings_watchdog_not_running">On, not running right now</string>

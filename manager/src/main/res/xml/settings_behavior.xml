@@ -35,6 +35,13 @@
             android:title="@string/settings_watchdog_auto_restart"
             android:icon="@drawable/ic_refresh_24" />
 
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="auto_restart_after_update"
+            android:defaultValue="false"
+            android:summary="@string/settings_auto_restart_after_update_summary"
+            android:title="@string/settings_auto_restart_after_update"
+            android:icon="@drawable/ic_refresh_24" />
+
         <Preference
             android:key="startup_scripts"
             android:title="@string/settings_startup_scripts_title"

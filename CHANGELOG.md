@@ -6,6 +6,7 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 
 ### ✨ Features
 - **Crash notice names a likely cause** — When Watchdog restarts Shizuku+, the notice now says if Battery Saver or battery optimization may have caused it, so you know what to change.
+- **Restart after an update, automatically** — A new option in Startup & behavior restarts Shizuku+ on its own after the app updates, so connected apps keep working without you tapping Restart. It is off by default because apps using Shizuku+ lose connection for a few seconds.
 - **Service Doctor asks how much to help at setup** — First-run setup lets you pick Off, Quiet, Balanced or Active, and the "what's new" tour is rewritten in plain language.
 - **Battery Saver heads-up** — if Watchdog or Start on Boot is on while Battery Saver is active, Service Doctor suggests (once, with a "don't show again") that Android may delay restarting Shizuku+, and opens Battery Saver settings if you tap. It follows the Service Doctor assistance level and never changes anything itself.
 - **Service Doctor assistance level** — Settings → Behavior → "Service Doctor assistance" sets how much Service Doctor helps on its own in one go: Off (security warnings only), Quiet (tells you, never acts), Balanced (tips and safe auto-fixes, how it already worked) or Active (also notifies for every problem). It shows Custom if you set the switches below one by one.
