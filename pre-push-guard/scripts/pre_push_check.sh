@@ -308,12 +308,12 @@ else
 fi
 
 # 23. XML settings string reference integrity - each @string/foo in settings_*.xml must
-# have a <string name="foo"> entry in strings.xml. aapt2 only catches this at
+# have a <string name="foo"> entry in values/strings*.xml. aapt2 only catches this at
 # resource-link time (too late for the pre-push guard unless Gradle runs).
 step "Checking settings XML string references resolve"
 MISSING_STRINGS=$(python3 - <<'PYEOF'
 import re, glob
-strings_xml = open('manager/src/main/res/values/strings.xml', encoding='utf-8').read()
+strings_xml = ''.join(open(f, encoding='utf-8').read() for f in glob.glob('manager/src/main/res/values/strings*.xml'))
 defined = set(re.findall(r'<string name="([^"]+)"', strings_xml))
 missing = []
 for f in glob.glob('manager/src/main/res/xml/settings_*.xml'):
