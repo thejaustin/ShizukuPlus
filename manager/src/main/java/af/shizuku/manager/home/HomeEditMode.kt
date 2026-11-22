@@ -230,7 +230,8 @@ object HomeEditMode {
             val fillAlpha = (0x33 * alphaMultiplier).toInt().coerceIn(0, 255)
             return GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                cornerRadius = 16f * density
+                cornerRadius = af.shizuku.manager.utils.CornerScale
+                    .scaled(16f) * density
                 setStroke((1 * density).toInt().coerceAtLeast(1), ColorUtils.setAlphaComponent(outlineVariant, strokeAlpha))
                 setColor(Color.argb(fillAlpha, 0, 0, 0))
             }

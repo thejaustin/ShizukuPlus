@@ -41,6 +41,9 @@ object CornerScale {
             else -> 32f // "default" and "system"
         }
 
+    /** [baseDp] (tuned for the default 32dp rounding) scaled to the chosen Corner rounding; 0 when sharp. */
+    fun scaled(baseDp: Float): Float = baseDp * globalDp() / 32f
+
     /** The global Corner rounding in dp (0 when rounded edges are off). */
     fun globalDp(): Float = if (!ShizukuSettings.isRoundedEdgesEnabled()) 0f else dp(ShizukuSettings.getCornerRoundingOverride())
 }

@@ -950,7 +950,9 @@ open class ApplicationManagementActivity :
         val progress = (absDx / threshold).coerceIn(0f, 1f)
 
         // Rounded container background
-        val cornerRadius = 16f * density
+        val cornerRadius =
+            af.shizuku.manager.utils.CornerScale
+                .scaled(16f) * density
         swipePaint.color = bgColor
         if (dX > 0) {
             swipeRect.set(v.left.toFloat(), v.top.toFloat() + 2f * density, v.left + dX, v.bottom.toFloat() - 2f * density)
