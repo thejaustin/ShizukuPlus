@@ -233,9 +233,51 @@ class ServerStatusViewHolder(
                 androidx.core.graphics.ColorUtils
                     .setAlphaComponent(textColor, 0x80),
             )
+        // Per-surface look (Experimental). AUTO and MATERIAL keep the tint above; AMOLED is a black
+        // chip with light text and a visible rim; GLASS is a frosted light tint with a bright rim.
+        val chipStyle =
+            af.shizuku.manager.utils.SurfaceStyles
+                .get(af.shizuku.manager.utils.Surface.STATUS_BUTTONS)
         for (chip in listOf(logChip, diagnosticsChip)) {
-            chip.chipBackgroundColor = chipBg
-            chip.chipStrokeColor = chipStroke
+            when (chipStyle) {
+                af.shizuku.manager.utils.SurfaceStyle.AMOLED -> {
+                    val on = android.graphics.Color.WHITE
+                    chip.chipBackgroundColor =
+                        android.content.res.ColorStateList
+                            .valueOf(android.graphics.Color.BLACK)
+                    chip.chipStrokeColor =
+                        android.content.res.ColorStateList.valueOf(
+                            androidx.core.graphics.ColorUtils
+                                .setAlphaComponent(on, 0xB0),
+                        )
+                    chip.setTextColor(on)
+                    chip.chipIconTint =
+                        android.content.res.ColorStateList
+                            .valueOf(on)
+                }
+
+                af.shizuku.manager.utils.SurfaceStyle.GLASS -> {
+                    val frost =
+                        androidx.core.graphics.ColorUtils.compositeColors(
+                            androidx.core.graphics.ColorUtils
+                                .setAlphaComponent(android.graphics.Color.WHITE, 0x40),
+                            bgColor,
+                        )
+                    chip.chipBackgroundColor =
+                        android.content.res.ColorStateList
+                            .valueOf(frost)
+                    chip.chipStrokeColor =
+                        android.content.res.ColorStateList.valueOf(
+                            androidx.core.graphics.ColorUtils
+                                .setAlphaComponent(android.graphics.Color.WHITE, 0x99),
+                        )
+                }
+
+                else -> {
+                    chip.chipBackgroundColor = chipBg
+                    chip.chipStrokeColor = chipStroke
+                }
+            }
         }
 
         // Icon pill uses vivid semantic role colors so it stands out against the card's lighter

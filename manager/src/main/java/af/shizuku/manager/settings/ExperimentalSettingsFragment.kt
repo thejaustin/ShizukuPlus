@@ -47,6 +47,14 @@ class ExperimentalSettingsFragment : BaseSettingsFragment() {
             true
         }
 
+        // Per-surface looks apply to Home and the nav bar, so recreate to show the change.
+        for (key in listOf("style_status_buttons", "style_nav_bar")) {
+            findPreference<androidx.preference.Preference>(key)?.setOnPreferenceChangeListener { _, _ ->
+                view?.post { (activity as? af.shizuku.core.ui.AppActivity)?.recreateWithoutTransition() }
+                true
+            }
+        }
+
         // Developer previews: the riskier in-development features, kept behind the Developer
         // options unlock (About > tap the version 7 times), as before they moved here.
         findPreference<androidx.preference.Preference>("category_experimental")?.isVisible =

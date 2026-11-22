@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_surface_status_buttons_title">Status card buttons</string>
+    <string name="settings_surface_nav_bar_title">Navigation bar</string>
+    <string name="settings_surface_style_auto">Follow theme</string>
+    <string name="settings_surface_style_material">Material</string>
+    <string name="settings_surface_style_amoled">AMOLED</string>
+    <string name="settings_surface_style_glass">Glass</string>
+    <string-array name="surface_styles">
+        <item>@string/settings_surface_style_auto</item>
+        <item>@string/settings_surface_style_material</item>
+        <item>@string/settings_surface_style_amoled</item>
+        <item>@string/settings_surface_style_glass</item>
+    </string-array>
+    <string-array name="surface_styles_values" translatable="false">
+        <item>auto</item>
+        <item>material</item>
+        <item>amoled</item>
+        <item>glass</item>
+    </string-array>
+</resources>

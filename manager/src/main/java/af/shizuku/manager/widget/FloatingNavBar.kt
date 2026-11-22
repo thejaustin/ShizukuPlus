@@ -685,9 +685,13 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             card.radius = baseRadius(activity)
 
             val isNight = ResourceUtils.isNightMode(activity.resources.configuration)
-            val isBlur = ShizukuSettings.isBlurUiEnabled()
+            val isBlur =
+                af.shizuku.manager.utils.SurfaceStyles
+                    .navBarBlur()
             val primary = MaterialColors.getColor(activity, androidx.appcompat.R.attr.colorPrimary, 0xFF4285F4.toInt())
-            val isAmoled = ShizukuSettings.isAmoledPlusEnabled() && isNight
+            val isAmoled =
+                af.shizuku.manager.utils.SurfaceStyles
+                    .navBarAmoled(isNight)
 
             // NEVER use opaque pitch black for the floating nav bar. A floating dock must look
             // like an elevated, frosted glass surface that floats cleanly above the content below.
@@ -930,7 +934,9 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         val nav = root.findViewById<BottomNavigationView>(R.id.floating_nav) ?: return
         val density = activity.resources.displayMetrics.density
         val isNight = ResourceUtils.isNightMode(activity.resources.configuration)
-        val isAmoled = ShizukuSettings.isAmoledPlusEnabled() && isNight
+        val isAmoled =
+            af.shizuku.manager.utils.SurfaceStyles
+                .navBarAmoled(isNight)
         val primary = MaterialColors.getColor(activity, androidx.appcompat.R.attr.colorPrimary, 0xFF4285F4.toInt())
 
         val glassRim =
@@ -1192,7 +1198,13 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
      */
     private fun wrapInBlurTarget(activity: Activity) {
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) return
-        if (!isEnabled() || !ShizukuSettings.isBlurUiEnabled() || itemFor(activity) == null) return
+        if (!isEnabled() ||
+            !af.shizuku.manager.utils.SurfaceStyles
+                .navBarBlur() ||
+            itemFor(activity) == null
+        ) {
+            return
+        }
         val content = activity.findViewById<ViewGroup>(android.R.id.content) ?: return
         if (content.isAttachedToWindow || content.getChildAt(0) is eightbitlab.com.blurview.BlurTarget) return
         val children = (0 until content.childCount).map { content.getChildAt(it) }
