@@ -297,9 +297,24 @@ class CollapsiblePreferenceCategory
         }
 
         private fun updateChildren() {
-            for (i in 0 until preferenceCount) {
-                val child = getPreference(i)
-                child.isVisible = expanded && !unavailableChildKeys.contains(child.key)
+            for (i in 0 until preferenceCount) applyAvailability(getPreference(i))
+        }
+
+        /** Rows we greyed ourselves (Developer options > "Show unavailable settings"), so we only undo our own change. */
+        private val greyedKeys = mutableSetOf<String>()
+
+        private fun applyAvailability(child: Preference) {
+            val unavailable = unavailableChildKeys.contains(child.key)
+            val keepGreyed = unavailable && ShizukuSettings.isShowUnavailableSettings()
+            child.isVisible = expanded && (!unavailable || keepGreyed)
+            val k = child.key ?: return
+            if (keepGreyed) {
+                if (child.isEnabled) {
+                    child.isEnabled = false
+                    greyedKeys.add(k)
+                }
+            } else if (greyedKeys.remove(k)) {
+                child.isEnabled = true
             }
         }
 
@@ -345,7 +360,7 @@ class CollapsiblePreferenceCategory
         override fun addPreference(preference: Preference): Boolean {
             val result = super.addPreference(preference)
             if (result) {
-                preference.isVisible = expanded && !unavailableChildKeys.contains(preference.key)
+                applyAvailability(preference)
             }
             return result
         }
@@ -359,5 +374,11 @@ class CollapsiblePreferenceCategory
 fun androidx.preference.Preference.setAvailable(available: Boolean) {
     val category = parent as? CollapsiblePreferenceCategory
     val k = key
-    if (category != null && k != null) category.setChildAvailable(k, available) else isVisible = available
+    if (category != null && k != null) {
+        category.setChildAvailable(k, available)
+    } else {
+        // Not in a collapsible group: grey it instead of hiding when the Developer option asks for that.
+        isVisible = available || ShizukuSettings.isShowUnavailableSettings()
+        if (!available) isEnabled = !ShizukuSettings.isShowUnavailableSettings() && isEnabled
+    }
 }

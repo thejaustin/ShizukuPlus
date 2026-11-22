@@ -192,6 +192,7 @@ public class ShizukuSettings {
         public static final String KEY_APP_ICON_ALIAS = "app_icon_alias";
         public static final String KEY_SHOW_HOME_CARDS_OUTLINE = "show_home_cards_outline";
         public static final String KEY_DEV_OPTIONS_UNLOCKED = "dev_options_unlocked";
+        public static final String KEY_SHOW_UNAVAILABLE_SETTINGS = "show_unavailable_settings";
         public static final String KEY_CUSTOM_APP_NAME = "custom_app_name";
         public static final String KEY_CUSTOM_APP_NAME_SEED_CLEARED = "custom_app_name_seed_cleared";
         public static final String KEY_AICORE_A11Y_USER_ENABLED = "aicore_a11y_user_enabled";
@@ -1180,6 +1181,12 @@ public class ShizukuSettings {
 
     public static void setNumericalPairingKeyboardEnabled(boolean enabled) {
         getPreferences().edit().putBoolean(Keys.KEY_NUMERICAL_PAIRING_KEYBOARD, enabled).apply();
+    }
+
+    /** Developer option: keep settings that don't apply right now visible but greyed out, instead of hiding them. */
+    public static boolean isShowUnavailableSettings() {
+        SharedPreferences p = getPreferences();
+        return p != null && p.getBoolean(Keys.KEY_SHOW_UNAVAILABLE_SETTINGS, false);
     }
 
     public static boolean isSwipeGesturesEnabled() {

@@ -9,6 +9,13 @@
         android:defaultValue="true">
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="show_unavailable_settings"
+            android:title="@string/settings_show_unavailable_title"
+            android:summary="@string/settings_show_unavailable_summary"
+            android:icon="@drawable/ic_palette_24"
+            android:defaultValue="false" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="notification_system_enabled"
             android:title="@string/settings_notification_system_title"
             android:summary="@string/settings_notification_system_summary"
