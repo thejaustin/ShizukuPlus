@@ -72,7 +72,7 @@ object SurfaceStyles {
             when (get(Surface.NAV_BAR)) {
                 SurfaceStyle.AMOLED -> true
                 SurfaceStyle.MATERIAL, SurfaceStyle.GLASS -> false
-                SurfaceStyle.AUTO -> ShizukuSettings.isAmoledPlusEnabled()
+                SurfaceStyle.AUTO -> false // Auto = regular system dark; AMOLED only when chosen
             }
 
     fun corners(surface: Surface): SurfaceCorners {

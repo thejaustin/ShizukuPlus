@@ -2,7 +2,7 @@
 <resources>
     <string name="settings_surface_status_buttons_title">Status card buttons</string>
     <string name="settings_surface_nav_bar_title">Navigation bar</string>
-    <string name="settings_surface_style_auto">Follow theme</string>
+    <string name="settings_surface_style_auto">Auto (system dark)</string>
     <string name="settings_surface_style_material">Material</string>
     <string name="settings_surface_style_amoled">AMOLED</string>
     <string name="settings_surface_style_glass">Glass</string>
