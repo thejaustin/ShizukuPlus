@@ -14,6 +14,9 @@ import af.shizuku.manager.settings.SettingsActivity
 import af.shizuku.manager.shell.ShellTutorialActivity
 import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
+import af.shizuku.manager.utils.MotionUtils.cancelAllSprings
+import af.shizuku.manager.utils.MotionUtils.springTo
+import androidx.dynamicanimation.animation.SpringAnimation
 import android.app.Activity
 import android.app.ActivityOptions
 import android.app.Application
@@ -31,6 +34,8 @@ import android.widget.ScrollView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.AccessibilityDelegateCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.NestedScrollView
@@ -73,6 +78,19 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             .apply()
     }
 
+    /** One entry of a tab's long-press menu: an existing screen reachable from that tab. */
+    data class Shortcut(
+        @StringRes val titleRes: Int,
+        @DrawableRes val iconRes: Int,
+        val target: Class<out Activity>,
+    )
+
+    private val SC_DOCTOR = Shortcut(R.string.home_service_doctor_title, R.drawable.ic_medical_services_24, ServiceDoctorActivity::class.java)
+    private val SC_TERMINAL = Shortcut(R.string.home_terminal_title, R.drawable.ic_terminal_24, ShellTutorialActivity::class.java)
+    private val SC_ROOT = Shortcut(R.string.settings_main_nav_root_compat_title, R.drawable.ic_root_24, RootCompatibilityActivity::class.java)
+    private val SC_SCRIPTING =
+        Shortcut(R.string.scripting_title, R.drawable.ic_code_24, af.shizuku.manager.scripting.ScriptingActivity::class.java)
+
     data class TabSpec(
         val key: String,
         val id: Int,
@@ -80,6 +98,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         @StringRes val descRes: Int,
         @DrawableRes val iconRes: Int,
         val targetClass: Class<out Activity>,
+        val shortcuts: List<Shortcut> = emptyList(),
     )
 
     val PRESET_CENTER_5 = listOf("apps", "hub", "home", "doctor", "settings")
@@ -90,12 +109,19 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
 
     val ALL_TABS: List<TabSpec> =
         listOf(
-            TabSpec("home", R.id.nav_home, R.string.nav_home, R.string.nav_tab_home_desc, R.drawable.ic_nav_home_24, MainActivity::class.java),
-            TabSpec("apps", R.id.nav_apps, R.string.nav_apps, R.string.nav_tab_apps_desc, R.drawable.ic_nav_apps_24, ApplicationManagementActivity::class.java),
-            TabSpec("hub", R.id.nav_hub, R.string.nav_hub, R.string.nav_tab_hub_desc, R.drawable.ic_nav_hub_24, SystemHubActivity::class.java),
-            TabSpec("doctor", R.id.nav_doctor, R.string.home_service_doctor_title, R.string.nav_tab_doctor_desc, R.drawable.ic_medical_services_24, ServiceDoctorActivity::class.java),
-            TabSpec("terminal", R.id.nav_terminal, R.string.home_terminal_title, R.string.nav_tab_terminal_desc, R.drawable.ic_terminal_24, ShellTutorialActivity::class.java),
-            TabSpec("settings", R.id.nav_settings, R.string.nav_settings, R.string.nav_tab_settings_desc, R.drawable.ic_settings_outline_24, SettingsActivity::class.java),
+            TabSpec("home", R.id.nav_home, R.string.nav_home, R.string.nav_tab_home_desc, R.drawable.ic_nav_home_24, MainActivity::class.java, shortcuts = listOf(SC_DOCTOR, SC_TERMINAL)),
+            TabSpec("apps", R.id.nav_apps, R.string.nav_apps, R.string.nav_tab_apps_desc, R.drawable.ic_nav_apps_24, ApplicationManagementActivity::class.java, shortcuts = listOf(
+                    Shortcut(R.string.home_permission_manager_title, R.drawable.ic_permission_shizuku, af.shizuku.manager.permissionmanager.PermissionManagerActivity::class.java),
+                    Shortcut(R.string.app_profiles_title, R.drawable.ic_settings_suggest_24, af.shizuku.manager.automation.AppProfilesActivity::class.java),
+                    Shortcut(R.string.home_backup_title, R.drawable.ic_restore_24, af.shizuku.manager.backup.AppBackupActivity::class.java),
+                )),
+            TabSpec("hub", R.id.nav_hub, R.string.nav_hub, R.string.nav_tab_hub_desc, R.drawable.ic_nav_hub_24, SystemHubActivity::class.java, shortcuts = listOf(
+                    Shortcut(R.string.home_device_control_title, R.drawable.ic_devices_24, af.shizuku.manager.devicecontrol.DeviceControlActivity::class.java),
+                    SC_SCRIPTING,
+                )),
+            TabSpec("doctor", R.id.nav_doctor, R.string.home_service_doctor_title, R.string.nav_tab_doctor_desc, R.drawable.ic_medical_services_24, ServiceDoctorActivity::class.java, shortcuts = listOf(SC_ROOT)),
+            TabSpec("terminal", R.id.nav_terminal, R.string.home_terminal_title, R.string.nav_tab_terminal_desc, R.drawable.ic_terminal_24, ShellTutorialActivity::class.java, shortcuts = listOf(SC_SCRIPTING)),
+            TabSpec("settings", R.id.nav_settings, R.string.nav_settings, R.string.nav_tab_settings_desc, R.drawable.ic_settings_outline_24, SettingsActivity::class.java, shortcuts = listOf(SC_ROOT, SC_DOCTOR)),
         )
 
     fun tabForKey(key: String): TabSpec? = ALL_TABS.firstOrNull { it.key == key }
@@ -159,7 +185,8 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
             if (key == KEY_ENABLED ||
                 key == KEY_STYLE ||
-                key == KEY_TABS ||
+                // KEY_TABS is the legacy mirror written together with KEY_TAB_ORDER; reacting to
+                // both made every reorder rebuild the bar twice.
                 key == KEY_TAB_ORDER ||
                 key == ShizukuSettings.Keys.KEY_FLOATING_NAV_LABEL_MODE ||
                 key == ShizukuSettings.Keys.KEY_FLOATING_NAV_AUTOHIDE ||
@@ -245,6 +272,10 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         // Ensure menu contains the active tabs in exact order
         val currentMenuIds = (0 until nav.menu.size()).map { nav.menu.getItem(it).itemId }
         if (currentMenuIds != order) {
+            // Item views are about to be replaced; stop springs so none writes to a dead view.
+            (nav.getChildAt(0) as? ViewGroup)?.let { menuView ->
+                for (i in 0 until menuView.childCount) menuView.getChildAt(i).cancelAllSprings()
+            }
             nav.menu.clear()
             activeTabs.forEach { tab ->
                 val item = nav.menu.add(android.view.Menu.NONE, tab.id, android.view.Menu.NONE, tab.titleRes)
@@ -271,6 +302,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             attachLongPressListeners(activity, nav)
         }
         updateBadges(activity, nav)
+        restoreA11yFocus(nav)
         if (isNew && from == 0 && ShizukuSettings.isExpressiveAnimationsEnabled()) playEntrance(root)
         if (isNew) watchScrolling(content, root)
 
@@ -294,8 +326,8 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             val badge = nav.getOrCreateBadge(R.id.nav_apps)
             badge.number = grantedCount
             badge.maxCharacterCount = 3
-            badge.backgroundColor = MaterialColors.getColor(activity, androidx.appcompat.R.attr.colorPrimary, 0xFF4285F4.toInt())
-            badge.badgeTextColor = MaterialColors.getColor(activity, com.google.android.material.R.attr.colorOnPrimary, Color.WHITE)
+            badge.backgroundColor = MaterialColors.getColor(activity, androidx.appcompat.R.attr.colorError, 0xFFB3261E.toInt())
+            badge.badgeTextColor = MaterialColors.getColor(activity, com.google.android.material.R.attr.colorOnError, Color.WHITE)
             badge.isVisible = true
         } else {
             nav.removeBadge(R.id.nav_apps)
@@ -315,78 +347,22 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             itemView.setOnLongClickListener { view ->
                 HapticUtils.gestureThreshold(view)
                 val popup = androidx.appcompat.widget.PopupMenu(activity, view, android.view.Gravity.TOP)
-                when (tab.id) {
-                    R.id.nav_home -> {
-                        popup.menu.add(0, 1, 0, activity.getString(R.string.home_service_doctor_title))
-                        popup.menu.add(0, 2, 1, activity.getString(R.string.home_terminal_title))
-                    }
-                    R.id.nav_apps -> {
-                        popup.menu.add(0, 1, 0, activity.getString(R.string.home_permission_manager_title))
-                        popup.menu.add(0, 2, 1, activity.getString(R.string.app_profiles_title))
-                        popup.menu.add(0, 3, 2, activity.getString(R.string.home_backup_title))
-                    }
-                    R.id.nav_hub -> {
-                        popup.menu.add(0, 1, 0, activity.getString(R.string.home_device_control_title))
-                        popup.menu.add(0, 2, 1, activity.getString(R.string.scripting_title))
-                    }
-                    R.id.nav_doctor -> {
-                        popup.menu.add(0, 1, 0, activity.getString(R.string.settings_main_nav_root_compat_title))
-                        popup.menu.add(0, 2, 1, activity.getString(R.string.home_service_doctor_title))
-                    }
-                    R.id.nav_terminal -> {
-                        popup.menu.add(0, 1, 0, activity.getString(R.string.scripting_title))
-                    }
-                    R.id.nav_settings -> {
-                        popup.menu.add(0, 1, 0, activity.getString(R.string.settings_main_nav_root_compat_title))
-                        popup.menu.add(0, 2, 1, activity.getString(R.string.home_service_doctor_title))
-                    }
+                popup.setForceShowIcon(true)
+                // Shortcuts in group 0; "Customize" sits alone in group 1 below a divider.
+                @Suppress("RestrictedApi")
+                (popup.menu as? androidx.core.internal.view.SupportMenu)?.setGroupDividerEnabled(true)
+                val shortcuts = tab.shortcuts
+                shortcuts.forEachIndexed { i, sc ->
+                    popup.menu.add(0, i, i, sc.titleRes).setIcon(sc.iconRes)
                 }
-                // Customization shortcut accessible from any tab
-                popup.menu.add(0, 999, 99, activity.getString(R.string.nav_customizer_title))
+                popup.menu.add(1, MENU_CUSTOMIZE, shortcuts.size, R.string.nav_customizer_title).setIcon(R.drawable.ic_edit_24)
                 popup.setOnMenuItemClickListener { mi ->
-                    if (mi.itemId == 999) {
+                    if (mi.itemId == MENU_CUSTOMIZE) {
                         if (activity is FragmentActivity) {
                             NavCustomizerSheet.show(activity.supportFragmentManager)
                         }
-                        return@setOnMenuItemClickListener true
-                    }
-                    when (tab.id) {
-                        R.id.nav_home -> {
-                            when (mi.itemId) {
-                                1 -> activity.startWithSceneTransition(Intent(activity, ServiceDoctorActivity::class.java))
-                                2 -> activity.startWithSceneTransition(Intent(activity, ShellTutorialActivity::class.java))
-                            }
-                        }
-                        R.id.nav_apps -> {
-                            when (mi.itemId) {
-                                1 -> activity.startWithSceneTransition(Intent(activity, af.shizuku.manager.permissionmanager.PermissionManagerActivity::class.java))
-                                2 -> activity.startWithSceneTransition(Intent(activity, af.shizuku.manager.automation.AppProfilesActivity::class.java))
-                                3 -> activity.startWithSceneTransition(Intent(activity, af.shizuku.manager.backup.AppBackupActivity::class.java))
-                            }
-                        }
-                        R.id.nav_hub -> {
-                            when (mi.itemId) {
-                                1 -> activity.startWithSceneTransition(Intent(activity, af.shizuku.manager.devicecontrol.DeviceControlActivity::class.java))
-                                2 -> activity.startWithSceneTransition(Intent(activity, af.shizuku.manager.scripting.ScriptingActivity::class.java))
-                            }
-                        }
-                        R.id.nav_doctor -> {
-                            when (mi.itemId) {
-                                1 -> activity.startWithSceneTransition(Intent(activity, RootCompatibilityActivity::class.java))
-                                2 -> activity.startWithSceneTransition(Intent(activity, ServiceDoctorActivity::class.java))
-                            }
-                        }
-                        R.id.nav_terminal -> {
-                            when (mi.itemId) {
-                                1 -> activity.startWithSceneTransition(Intent(activity, af.shizuku.manager.scripting.ScriptingActivity::class.java))
-                            }
-                        }
-                        R.id.nav_settings -> {
-                            when (mi.itemId) {
-                                1 -> activity.startWithSceneTransition(Intent(activity, RootCompatibilityActivity::class.java))
-                                2 -> activity.startWithSceneTransition(Intent(activity, ServiceDoctorActivity::class.java))
-                            }
-                        }
+                    } else {
+                        shortcuts.getOrNull(mi.itemId)?.let { activity.startWithSceneTransition(Intent(activity, it.target)) }
                     }
                     true
                 }
@@ -398,8 +374,19 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         }
     }
 
+    private const val MENU_CUSTOMIZE = 999
+
     /** The long-press menu that's open, so sliding sideways can swap it for a tab drag. */
     private var pendingPopup: androidx.appcompat.widget.PopupMenu? = null
+
+    private fun clearPendingPopup() {
+        val popup = pendingPopup ?: return
+        pendingPopup = null
+        runCatching { popup.dismiss() }
+    }
+
+    /** Tab to give TalkBack focus to once the bar has been rebuilt after a move. */
+    private var pendingA11yFocusKey: String? = null
 
     private fun attachSelectListener(
         activity: Activity,
@@ -435,21 +422,13 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     ) {
         val itemView = nav.findViewById<View>(itemId) ?: return
         val iconView = itemView.findViewById<View>(com.google.android.material.R.id.navigation_bar_item_icon_container) ?: itemView
-        iconView
-            .animate()
-            .scaleX(1.10f)
-            .scaleY(1.10f)
-            .setDuration(120)
-            .setInterpolator(android.view.animation.DecelerateInterpolator())
-            .withEndAction {
-                iconView
-                    .animate()
-                    .scaleX(1.0f)
-                    .scaleY(1.0f)
-                    .setDuration(220)
-                    .setInterpolator(android.view.animation.OvershootInterpolator(2.0f))
-                    .start()
-            }.start()
+        // springTo follows the animation scale, so this is a no-op visually with animations off.
+        val attr = com.google.android.material.R.attr.motionSpringFastSpatial
+        iconView.springTo(SpringAnimation.SCALE_X, 1.10f, attr)
+        iconView.springTo(SpringAnimation.SCALE_Y, 1.10f, attr) {
+            iconView.springTo(SpringAnimation.SCALE_X, 1f, attr)
+            iconView.springTo(SpringAnimation.SCALE_Y, 1f, attr)
+        }
     }
 
     /**
@@ -458,11 +437,18 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
      */
     fun reveal(activity: Activity) {
         val bar = activity.findViewById<View>(R.id.floating_nav_root) ?: return
-        if (bar.translationY == 0f && bar.alpha == 1f) return
-        bar.animate().cancel()
-        bar.translationY = 0f
-        bar.alpha = 1f
+        // Keep watchScrolling's idea of "hidden" in step, or the next scroll-up thinks it's shown.
+        val wasHidden = barStates[bar]?.hidden == true
+        barStates[bar]?.hidden = false
+        if (!wasHidden && bar.translationY == 0f && bar.alpha == 1f) return
+        slideBar(bar, hide = false)
     }
+
+    private class BarState {
+        var hidden = false
+    }
+
+    private val barStates = java.util.WeakHashMap<View, BarState>()
 
     /** First appearance: rise from below with a short fade. Respects the system animation scale. */
     private fun playEntrance(root: View) {
@@ -484,7 +470,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         bar: View,
     ) {
         content.post {
-            var hidden = false
+            val st = BarState().also { barStates[bar] = it }
             var atBottom = false
             // No autohide with TalkBack: a bar that slides away under touch exploration is lost.
             val autohide =
@@ -506,8 +492,8 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                             // Subtle haptic tick and settle into place at base
                             af.shizuku.manager.utils.HapticUtils
                                 .segmentTick(bar)
-                            if (hidden) {
-                                hidden = false
+                            if (st.hidden) {
+                                st.hidden = false
                                 slideBar(bar, hide = false)
                             }
                         } else if (canScrollDown && atBottom && dy < -12) {
@@ -517,11 +503,11 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                         }
 
                         if (autohide) {
-                            if (dy > 12 && !hidden && canScrollDown) {
-                                hidden = true
+                            if (dy > 12 && !st.hidden && canScrollDown) {
+                                st.hidden = true
                                 slideBar(bar, hide = true)
-                            } else if (dy < -12 && hidden) {
-                                hidden = false
+                            } else if (dy < -12 && st.hidden) {
+                                st.hidden = false
                                 slideBar(bar, hide = false)
                             }
                         }
@@ -536,8 +522,8 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                         atBottom = true
                         af.shizuku.manager.utils.HapticUtils
                             .segmentTick(bar)
-                        if (hidden) {
-                            hidden = false
+                        if (st.hidden) {
+                            st.hidden = false
                             slideBar(bar, hide = false)
                         }
                     } else if (canScrollDown && atBottom && dy < -12) {
@@ -545,11 +531,11 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                     }
 
                     if (autohide) {
-                        if (dy > 12 && !hidden && canScrollDown) {
-                            hidden = true
+                        if (dy > 12 && !st.hidden && canScrollDown) {
+                            st.hidden = true
                             slideBar(bar, hide = true)
-                        } else if (dy < -12 && hidden) {
-                            hidden = false
+                        } else if (dy < -12 && st.hidden) {
+                            st.hidden = false
                             slideBar(bar, hide = false)
                         }
                     }
@@ -778,11 +764,20 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                             .build()
                 }
                 else -> {
+                    // Pill is a huge fixed radius; a relative size stays a true pill at any height.
+                    val pill = card.radius >= 900f * density
                     card.shapeAppearanceModel =
                         card.shapeAppearanceModel
                             .toBuilder()
-                            .setAllCornerSizes(card.radius)
-                            .build()
+                            .setAllCornerSizes(
+                                if (pill) {
+                                    com.google.android.material.shape
+                                        .RelativeCornerSize(0.5f)
+                                } else {
+                                    com.google.android.material.shape
+                                        .AbsoluteCornerSize(card.radius)
+                                },
+                            ).build()
                 }
             }
             // No elevation: the shadow of a translucent card renders *through* its fill as a
@@ -1013,6 +1008,8 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                 drag = TabDrag(activity, v).also { it.start(downX) }
             }
 
+            installTabA11y(activity, nav, tab, itemView, inEditMode)
+
             itemView.setOnTouchListener { v, event ->
                 val editing = inEditMode && af.shizuku.manager.home.HomeEditMode.isActive
                 when (event.actionMasked) {
@@ -1055,6 +1052,123 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     }
 
     /**
+     * TalkBack/switch access can't drag: offer Move left / Move right on each tab, label the
+     * long-press as "Shortcuts", and (in Home edit mode) make a plain click open the customizer.
+     */
+    private fun installTabA11y(
+        activity: Activity,
+        nav: BottomNavigationView,
+        tab: TabSpec,
+        itemView: View,
+        inEditMode: Boolean,
+    ) {
+        fun editing() = inEditMode && af.shizuku.manager.home.HomeEditMode.isActive
+
+        fun indexOfTab() = getActiveTabs().indexOfFirst { it.key == tab.key }
+
+        fun step(left: Boolean): Int = if (left == (nav.layoutDirection != View.LAYOUT_DIRECTION_RTL)) -1 else 1
+        ViewCompat.setAccessibilityDelegate(
+            itemView,
+            object : AccessibilityDelegateCompat() {
+                override fun onInitializeAccessibilityNodeInfo(
+                    host: View,
+                    info: AccessibilityNodeInfoCompat,
+                ) {
+                    super.onInitializeAccessibilityNodeInfo(host, info)
+                    val ctx = host.context
+                    if (editing()) {
+                        info.removeAction(AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLICK)
+                        info.addAction(
+                            AccessibilityNodeInfoCompat.AccessibilityActionCompat(
+                                AccessibilityNodeInfoCompat.ACTION_CLICK,
+                                ctx.getString(R.string.nav_customizer_title),
+                            ),
+                        )
+                    } else {
+                        info.removeAction(AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_LONG_CLICK)
+                        info.addAction(
+                            AccessibilityNodeInfoCompat.AccessibilityActionCompat(
+                                AccessibilityNodeInfoCompat.ACTION_LONG_CLICK,
+                                ctx.getString(R.string.nav_tab_shortcuts_action),
+                            ),
+                        )
+                    }
+                    val index = indexOfTab()
+                    val last = getActiveTabs().size - 1
+                    if (index >= 0) {
+                        if (index + step(true) in 0..last) {
+                            info.addAction(
+                                AccessibilityNodeInfoCompat.AccessibilityActionCompat(
+                                    R.id.action_move_card_up,
+                                    ctx.getString(R.string.nav_tab_move_left),
+                                ),
+                            )
+                        }
+                        if (index + step(false) in 0..last) {
+                            info.addAction(
+                                AccessibilityNodeInfoCompat.AccessibilityActionCompat(
+                                    R.id.action_move_card_down,
+                                    ctx.getString(R.string.nav_tab_move_right),
+                                ),
+                            )
+                        }
+                    }
+                }
+
+                override fun performAccessibilityAction(
+                    host: View,
+                    action: Int,
+                    args: Bundle?,
+                ): Boolean {
+                    when (action) {
+                        R.id.action_move_card_up -> return moveTab(tab, step(true))
+                        R.id.action_move_card_down -> return moveTab(tab, step(false))
+                        AccessibilityNodeInfoCompat.ACTION_CLICK ->
+                            if (editing()) {
+                                if (activity is FragmentActivity) NavCustomizerSheet.show(activity.supportFragmentManager)
+                                return true
+                            }
+                    }
+                    return super.performAccessibilityAction(host, action, args)
+                }
+            },
+        )
+    }
+
+    /** Moves [tab] one slot (accessibility path); the prefs listener rebuilds the bar. */
+    private fun moveTab(
+        tab: TabSpec,
+        delta: Int,
+    ): Boolean {
+        val keys = getActiveTabs().map { it.key }.toMutableList()
+        val from = keys.indexOf(tab.key)
+        val to = from + delta
+        if (from < 0 || to !in keys.indices) return false
+        keys.add(to, keys.removeAt(from))
+        pendingA11yFocusKey = tab.key
+        setActiveTabOrder(keys)
+        return true
+    }
+
+    /** After a rebuild, puts TalkBack focus back on the moved tab and says where it landed. */
+    private fun restoreA11yFocus(nav: BottomNavigationView) {
+        val key = pendingA11yFocusKey ?: return
+        pendingA11yFocusKey = null
+        val tab = tabForKey(key) ?: return
+        val position = getActiveTabs().indexOfFirst { it.key == key } + 1
+        if (position <= 0) return
+        val total = getActiveTabs().size
+        nav.post {
+            val view = nav.findViewById<View>(tab.id) ?: return@post
+            view.performAccessibilityAction(AccessibilityNodeInfoCompat.ACTION_ACCESSIBILITY_FOCUS, null)
+            @Suppress("DEPRECATION")
+            view.announceForAccessibility(
+                nav.context.getString(R.string.nav_tab_moved_announcement, nav.context.getString(tab.titleRes), position, total),
+            )
+        }
+    }
+
+    /**
      * One tab being dragged: it lifts and follows the finger, its neighbours slide over to make
      * room, and the order is saved on release. Saving mid-gesture would rebuild the menu views
      * under the finger and cancel the drag after the first swap.
@@ -1068,29 +1182,27 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         private var target = from
         private var startX = 0f
 
+        private val spatial = com.google.android.material.R.attr.motionSpringFastSpatial
+
         fun start(rawX: Float) {
             startX = rawX
             HapticUtils.gestureStart(dragged)
             dragged.translationZ = 8 * activity.resources.displayMetrics.density
-            dragged
-                .animate()
-                .scaleX(1.12f)
-                .scaleY(1.12f)
-                .setDuration(ShizukuSettings.scaledAnimationDuration(150L))
-                .start()
+            dragged.springTo(SpringAnimation.SCALE_X, 1.12f, spatial)
+            dragged.springTo(SpringAnimation.SCALE_Y, 1.12f, spatial)
         }
 
         fun move(rawX: Float) {
             if (from < 0) return
             val minDx = (items.first().left - dragged.left).toFloat()
             val maxDx = (items.last().left - dragged.left).toFloat()
+            // The dragged tab follows the finger directly; only the neighbours are sprung.
             dragged.translationX = (rawX - startX).coerceIn(minDx, maxDx)
             val center = dragged.left + dragged.width / 2f + dragged.translationX
             val slot = items.indexOfFirst { center >= it.left && center < it.right }.takeIf { it >= 0 } ?: return
             if (slot == target) return
             target = slot
             HapticUtils.segmentTick(dragged)
-            val duration = ShizukuSettings.scaledAnimationDuration(180L)
             items.forEachIndexed { i, item ->
                 if (item === dragged) return@forEachIndexed
                 val shift =
@@ -1099,24 +1211,32 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
                         i in target until from -> dragged.width
                         else -> 0
                     }
-                item
-                    .animate()
-                    .translationX(shift.toFloat())
-                    .setDuration(duration)
-                    .start()
+                item.springTo(SpringAnimation.TRANSLATION_X, shift.toFloat(), spatial)
             }
         }
 
         fun end(commit: Boolean) {
             HapticUtils.gestureEnd(dragged)
+            val moved = commit && from >= 0 && target != from
+            val settleX = if (moved) (items[target].left - dragged.left).toFloat() else 0f
+            if (!moved) {
+                items.forEach { if (it !== dragged) it.springTo(SpringAnimation.TRANSLATION_X, 0f, spatial) }
+            }
+            dragged.springTo(SpringAnimation.SCALE_X, 1f, spatial)
+            dragged.springTo(SpringAnimation.SCALE_Y, 1f, spatial)
+            // Settle into the slot, then save: rebuilding the menu earlier would cancel the animation.
+            dragged.springTo(SpringAnimation.TRANSLATION_X, settleX, spatial) { finish(moved) }
+        }
+
+        private fun finish(moved: Boolean) {
             items.forEach {
-                it.animate().cancel()
+                it.cancelAllSprings()
                 it.translationX = 0f
             }
             dragged.translationZ = 0f
             dragged.scaleX = 1f
             dragged.scaleY = 1f
-            if (!commit || from < 0 || target == from) return
+            if (!moved) return
             val keys = getActiveTabs().map { it.key }.toMutableList()
             if (from !in keys.indices || target !in keys.indices) return
             keys.add(target, keys.removeAt(from))
@@ -1260,6 +1380,8 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     }
 
     override fun onActivityPaused(activity: Activity) {
+        // The open shortcut menu holds this activity; don't keep it (or an armed drag) past a pause.
+        clearPendingPopup()
         if (current?.get() === activity) current = null
     }
 
@@ -1291,6 +1413,7 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     ) = Unit
 
     override fun onActivityDestroyed(activity: Activity) {
+        clearPendingPopup()
         if (current?.get() === activity) current = null
     }
 }

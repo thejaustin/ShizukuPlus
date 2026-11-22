@@ -41,6 +41,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -101,21 +102,27 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
             FloatingNavBar.setActiveTabOrder(activeKeys.toList())
         }
 
-        fun moveUp(index: Int) {
+        fun moveUp(
+            index: Int,
+            save: Boolean = true,
+        ) {
             if (index > 0) {
                 HapticUtils.segmentTick(view)
                 val item = activeKeys.removeAt(index)
                 activeKeys.add(index - 1, item)
-                persist()
+                if (save) persist()
             }
         }
 
-        fun moveDown(index: Int) {
+        fun moveDown(
+            index: Int,
+            save: Boolean = true,
+        ) {
             if (index < activeKeys.size - 1) {
                 HapticUtils.segmentTick(view)
                 val item = activeKeys.removeAt(index)
                 activeKeys.add(index + 1, item)
-                persist()
+                if (save) persist()
             }
         }
 
@@ -260,6 +267,10 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
                         canMoveDown = index < activeKeys.size - 1,
                         onMoveUp = { moveUp(index) },
                         onMoveDown = { moveDown(index) },
+                        // While dragging, rows swap locally; the bar is rebuilt once on release.
+                        onDragMoveUp = { moveUp(index, save = false) },
+                        onDragMoveDown = { moveDown(index, save = false) },
+                        onDragEnd = { persist() },
                         onRemove = { removeTab(key) },
                     )
                 }
@@ -458,10 +469,19 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
         canMoveDown: Boolean,
         onMoveUp: () -> Unit,
         onMoveDown: () -> Unit,
+        onDragMoveUp: () -> Unit,
+        onDragMoveDown: () -> Unit,
+        onDragEnd: () -> Unit,
         onRemove: () -> Unit,
     ) {
         val view = LocalView.current
         var accumulatedDragY by remember { mutableFloatStateOf(0f) }
+        // The drag block is keyed on the tab, so it must read the live index and callbacks.
+        val liveIndex by rememberUpdatedState(index)
+        val liveTotal by rememberUpdatedState(totalCount)
+        val liveMoveUp by rememberUpdatedState(onDragMoveUp)
+        val liveMoveDown by rememberUpdatedState(onDragMoveDown)
+        val liveEnd by rememberUpdatedState(onDragEnd)
 
         Surface(
             modifier = Modifier.fillMaxWidth(),
@@ -500,19 +520,21 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
                                     onDragEnd = {
                                         accumulatedDragY = 0f
                                         HapticUtils.gestureEnd(view)
+                                        liveEnd()
                                     },
                                     onDragCancel = {
                                         accumulatedDragY = 0f
+                                        liveEnd()
                                     },
                                     onDrag = { change, dragAmount ->
                                         change.consume()
                                         accumulatedDragY += dragAmount.y
                                         val threshold = 38.dp.toPx()
-                                        if (accumulatedDragY > threshold && index < totalCount - 1) {
-                                            onMoveDown()
+                                        if (accumulatedDragY > threshold && liveIndex < liveTotal - 1) {
+                                            liveMoveDown()
                                             accumulatedDragY -= threshold
-                                        } else if (accumulatedDragY < -threshold && index > 0) {
-                                            onMoveUp()
+                                        } else if (accumulatedDragY < -threshold && liveIndex > 0) {
+                                            liveMoveUp()
                                             accumulatedDragY += threshold
                                         }
                                     },
@@ -522,7 +544,7 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_drag_handle),
-                        contentDescription = "Drag to reorder",
+                        contentDescription = stringResource(R.string.nav_customizer_cd_drag),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                         modifier = Modifier.size(20.dp),
                     )
@@ -606,7 +628,7 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_outline_arrow_upward_24),
-                        contentDescription = "Move up",
+                        contentDescription = stringResource(R.string.nav_customizer_cd_move_up),
                         tint = if (canMoveUp) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.25f),
                         modifier = Modifier.size(18.dp),
                     )
@@ -620,7 +642,7 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_outline_arrow_downward_24),
-                        contentDescription = "Move down",
+                        contentDescription = stringResource(R.string.nav_customizer_cd_move_down),
                         tint = if (canMoveDown) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.25f),
                         modifier = Modifier.size(18.dp),
                     )
@@ -634,7 +656,7 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_close_24),
-                        contentDescription = "Remove tab",
+                        contentDescription = stringResource(R.string.nav_customizer_cd_remove),
                         tint = if (canRemove) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.error.copy(alpha = 0.25f),
                         modifier = Modifier.size(18.dp),
                     )
@@ -704,7 +726,7 @@ class NavCustomizerSheet : BottomSheetDialogFragment() {
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_add_24),
-                        contentDescription = "Add tab",
+                        contentDescription = stringResource(R.string.nav_customizer_cd_add),
                         tint = if (canAdd) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.25f),
                         modifier = Modifier.size(20.dp),
                     )

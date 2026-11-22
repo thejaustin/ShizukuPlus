@@ -2233,4 +2233,13 @@
     <string name="settings_keystore_fallback_in_development">In development: saves your choice, but nothing uses it yet. Planned: keep the ADB key in a software keystore when the hardware one fails</string>
     <string name="settings_offer_crash_report_title">Offer crash report after a crash</string>
     <string name="settings_offer_crash_report_summary">On builds without automatic crash reporting, ask on the next launch whether to send a report of the last crash</string>
+    <string name="nav_customizer_cd_drag">Drag to reorder</string>
+    <string name="nav_customizer_cd_move_up">Move up</string>
+    <string name="nav_customizer_cd_move_down">Move down</string>
+    <string name="nav_customizer_cd_remove">Remove tab</string>
+    <string name="nav_customizer_cd_add">Add tab</string>
+    <string name="nav_tab_move_left">Move left</string>
+    <string name="nav_tab_move_right">Move right</string>
+    <string name="nav_tab_shortcuts_action">Shortcuts</string>
+    <string name="nav_tab_moved_announcement">%1$s moved to position %2$d of %3$d</string>
 </resources>
