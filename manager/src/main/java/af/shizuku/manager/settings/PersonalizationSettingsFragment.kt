@@ -612,6 +612,36 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             else -> DARK_STYLE_STANDARD
         }
 
+    /** Groups that only matter while their switch is on: hidden, not just greyed, to keep the page short. */
+    private val groupVisibilityListener =
+        android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == "floating_nav_enabled" || key == ShizukuSettings.Keys.KEY_SWIPE_GESTURES_ENABLED) syncGroupVisibility()
+        }
+
+    private fun syncGroupVisibility() {
+        val navOn =
+            af.shizuku.manager.widget.FloatingNavBar
+                .isEnabled()
+        for (key in listOf("floating_nav_style", "floating_nav_tabs", "floating_nav_label_mode", "floating_nav_autohide")) {
+            findPreference<Preference>(key)?.setAvailable(navOn)
+        }
+        val swipeOn = ShizukuSettings.isSwipeGesturesEnabled()
+        for (key in listOf("swipe_preview", "swipe_right_row", "swipe_left_row", "long_press_row")) {
+            findPreference<Preference>(key)?.setAvailable(swipeOn)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        syncGroupVisibility()
+        runCatching { ShizukuSettings.getPreferences().registerOnSharedPreferenceChangeListener(groupVisibilityListener) }
+    }
+
+    override fun onStop() {
+        runCatching { ShizukuSettings.getPreferences().unregisterOnSharedPreferenceChangeListener(groupVisibilityListener) }
+        super.onStop()
+    }
+
     private fun syncDependentVisibility() {
         val nightOn = ShizukuSettings.getNightMode() != AppCompatDelegate.MODE_NIGHT_NO
         setChildAvailable(darkStylePreference, nightOn)
