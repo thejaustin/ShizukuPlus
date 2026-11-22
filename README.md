@@ -102,6 +102,8 @@ Nothing leaves your device except update checks, a public app-compatibility list
 *   **What's New timeline**: After an update, What's New shows the releases between the version you had and the one you have now on one timeline, with a "You were here" marker where you left off and the stretch you skipped highlighted along the rail.
 *   **Floating navigation bar**: 2 to 5 tabs from Home, Apps, Hub, Service Doctor, Terminal and Settings, reordered by dragging, with Floating, Docked, Compact and Capsule styles and a few presets.
 *   **AMOLED+**: A true black dark mode.
+*   **Per-surface looks (experimental)**: Settings → Experimental features → Look & motion lets the Home status buttons and the navigation bar each follow your theme or be Material, AMOLED or Glass, with their own corner rounding.
+*   **Show unavailable settings**: Settings that only matter when a parent switch is on are hidden by default; Developer options can grey them out instead so you can see everything that exists.
 *   **Expressive morphing icons**: Setting icons morph from an "off" shape into your chosen shape when you switch them on, with Spin, Morph, Pop, Sweep or Liquid motion. There are Material's shapes plus the original hand-built "classic" ones, and experimental switch designs where the icon itself is the switch.
 *   **Built-in help**: Offline guides with copyable commands and buttons that take you to the right place. Long-press any setting to see what it does and jump to its guide.
 *   **Activity log**: A timeline of what the service and apps did, with search, filters, date groups, repeated events grouped together, and export.
@@ -143,7 +145,7 @@ Shizuku+ makes regular Shizuku apps faster and more compatible without any code 
 
 Everything Shizuku+ adds can be switched off:
 *   **Settings → Advanced & diagnostics → Plus APIs**: the shell interceptor and the Plus APIs that are ready (storage, network, process control)
-*   **Settings → Experimental features**: the Plus APIs and features still being built, all off by default
+*   **Settings → Experimental features**: the Plus APIs and features still being built, plus optional look-and-feel choices (Look & motion, greyscale icons, compact cards), all off by default
 *   **Home**: hide or rearrange cards in edit mode
 *   **Settings → Advanced & diagnostics → Activity log**: turn logging off
 

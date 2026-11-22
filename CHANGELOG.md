@@ -5,6 +5,8 @@ All notable changes to ShizukuPlus are documented here. See [AI_ATTRIBUTIONS.md]
 ## [Unreleased]
 
 ### ✨ Features
+- **Per-surface looks (experimental)** — Settings → Experimental → Look & motion: the Home status buttons and the navigation bar can each follow the theme or use Material, AMOLED or Glass, and the navigation bar has its own corner rounding. Swipe actions and Home edit chips follow Corner rounding too.
+- **Show unavailable settings** — Settings that depend on a switch that is off are now hidden instead of greyed; Developer options → "Show unavailable settings" brings the greyed-out look back.
 - **Crash notice names a likely cause** — When Watchdog restarts Shizuku+, the notice now says if Battery Saver or battery optimization may have caused it, so you know what to change.
 - **Restart after an update, automatically** — A new option in Startup & behavior restarts Shizuku+ on its own after the app updates, so connected apps keep working without you tapping Restart. It is off by default because apps using Shizuku+ lose connection for a few seconds.
 - **Service Doctor asks how much to help at setup** — First-run setup lets you pick Off, Quiet, Balanced or Active, and the "what's new" tour is rewritten in plain language.

@@ -1,4 +1,11 @@
-# Stable release checklist (next stable after v13.7.0)
+# Stable release checklist (next stable after v13.7.0; refreshed 2026-11-22)
+
+This is the single release checklist. The older root `PRE_RELEASE_CHECKLIST.md` was crash-fix history and has been removed.
+
+- [ ] Install the pre-push guard for this repo (`bash pre-push-guard/install-hooks.sh`), then confirm commits still get the co-author trailer.
+- [ ] Fold `## [Unreleased]` into the release section and refresh the date above.
+- [ ] Per-surface looks / nav bar corners / Show unavailable settings: device-check in light, dark, AMOLED+ and high contrast.
+- [ ] Run `check_arrays.py`; new `onboarding_*` strings are English-only until translations refresh.
 
 Built 2026-10-24 from the device / screenshot checklists scattered through `AI_DEVLOG.md`
 (2026-10-22 → 2026-10-24) plus the release mechanics. Tick items as they're verified; anything
