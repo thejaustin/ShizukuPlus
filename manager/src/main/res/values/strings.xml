@@ -2242,4 +2242,9 @@
     <string name="nav_tab_move_right">Move right</string>
     <string name="nav_tab_shortcuts_action">Shortcuts</string>
     <string name="nav_tab_moved_announcement">%1$s moved to position %2$d of %3$d</string>
+    <string name="settings_verify_group_title">App safety checks</string>
+    <string name="settings_verify_group_summary">Local scan, VirusTotal and Pithus lookups shown under each access request. The online ones need an API key.</string>
+    <string name="settings_verify_group_local">Local</string>
+    <string name="settings_verify_group_virustotal">VirusTotal</string>
+    <string name="settings_verify_group_pithus">Pithus</string>
 </resources>

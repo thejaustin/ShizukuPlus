@@ -369,51 +369,19 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
         applyModeConstraints()
     }
 
-    override fun onDestroy() {
-        mockingListener?.let { preferenceManager.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(it) }
-        super.onDestroy()
-    }
-
-    private var mockingListener: android.content.SharedPreferences.OnSharedPreferenceChangeListener? = null
-
-    /**
-     * Expressive controls preview: iptables, Magisk and BusyBox mocking as one multi-select group.
-     * Taps drive the real rows (hidden, not removed), so Magisk's Wallet warning, the server sync
-     * and backup rules all stay exactly as they are.
-     */
-    private fun setUpMockingGroup() {
-        val group = findPreference<ConnectedToggleGroupPreference>("root_mocking_group") ?: return
-        // The category sets every child's visibility when it expands, so hide through it.
-        val category = findPreference<CollapsiblePreferenceCategory>("category_ghost_bridge")
-        val rows =
-            listOf("root_iptables_mocking_enabled", "root_magisk_mocking_enabled", "root_busybox_mocking_enabled")
-                .mapNotNull { findPreference<TwoStatePreference>(it) }
-        val preview = ShizukuSettings.isExpressiveControlsPreviewEnabled() && rows.size == 3 && category != null
-        category?.setChildAvailable(group.key, preview)
-        if (!preview) {
-            group.isVisible = false
-            return
-        }
-        group.labels =
-            listOf(
-                getString(R.string.settings_root_mocking_group_iptables),
-                getString(R.string.settings_root_mocking_group_magisk),
-                getString(R.string.settings_root_mocking_group_busybox),
-            )
-        group.isChecked = { rows[it].isChecked }
-        group.onToggle = { index, checked ->
-            val row = rows[index]
-            if (row.callChangeListener(checked)) row.isChecked = checked
-            group.refresh()
-        }
-        rows.forEach { category?.setChildAvailable(it.key, false) }
-        val keys = rows.map { it.key }.toSet()
-        mockingListener =
-            android.content.SharedPreferences
-                .OnSharedPreferenceChangeListener { _, key ->
-                    if (key in keys) group.refresh()
-                }.also { preferenceManager.sharedPreferences?.registerOnSharedPreferenceChangeListener(it) }
-    }
+    /** Expressive controls preview: iptables, Magisk and BusyBox mocking as one multi-select group (Magisk's Wallet warning etc. stay on the real rows). */
+    private fun setUpMockingGroup() =
+        bindToggleGroup(
+            groupKey = "root_mocking_group",
+            categoryKey = "category_ghost_bridge",
+            rowKeys = listOf("root_iptables_mocking_enabled", "root_magisk_mocking_enabled", "root_busybox_mocking_enabled"),
+            labels =
+                listOf(
+                    getString(R.string.settings_root_mocking_group_iptables),
+                    getString(R.string.settings_root_mocking_group_magisk),
+                    getString(R.string.settings_root_mocking_group_busybox),
+                ),
+        )
 
     /**
      * In ADB mode (uid 2000) the bootloader integration needs an unlocked bootloader, so it's

@@ -235,6 +235,17 @@ class BehaviorSettingsFragment :
         // App safety check: attached last so nothing later replaces their change listeners (the
         // API key veto).
         VerifiedInstallPrefs.attach(this)
+        bindToggleGroup(
+            groupKey = "verify_apk_group",
+            categoryKey = "category_verified_install",
+            rowKeys = listOf("verify_apk_local", "verify_apk_virustotal", "verify_apk_pithus"),
+            labels =
+                listOf(
+                    getString(R.string.settings_verify_group_local),
+                    getString(R.string.settings_verify_group_virustotal),
+                    getString(R.string.settings_verify_group_pithus),
+                ),
+        )
     }
 
     /**

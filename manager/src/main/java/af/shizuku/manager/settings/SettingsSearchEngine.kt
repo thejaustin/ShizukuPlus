@@ -132,14 +132,15 @@ object SettingsSearchEngine {
             if (!devUnlocked && item.categoryKey == DEV_PREVIEWS_CATEGORY) return@filter false
             // Experimental app identity rows stay out of search while the dev toggle is off.
             if (!appIdentityOn && item.key in APP_IDENTITY_KEYS) return@filter false
-            // The mocking button group only exists with the expressive controls preview on.
-            if (!expressivePreview && item.key == "root_mocking_group") return@filter false
+            // Toggle button groups only exists with the expressive controls preview on.
+            if (!expressivePreview && item.key in TOGGLE_GROUP_KEYS) return@filter false
             item.title.lowercase().contains(q) ||
                 (item.summary != null && item.summary.lowercase().contains(q)) ||
                 (item.category != null && item.category.lowercase().contains(q))
         }
     }
 
+    private val TOGGLE_GROUP_KEYS = setOf("root_mocking_group", "verify_apk_group")
     private const val DEV_PREVIEWS_CATEGORY = "category_experimental"
     private val APP_IDENTITY_KEYS = setOf("category_app_identity", "custom_icon_studio", "app_icon_alias", "custom_app_name")
 }

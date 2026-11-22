@@ -163,6 +163,14 @@
 
         <!-- Opt-in checks shown under each access request (RequestPermissionActivity). The online
              ones need an API key: VerifiedInstallPrefs asks for it before they turn on. -->
+        <!-- Expressive controls preview: the three checks below as one button group. -->
+        <af.shizuku.manager.settings.ConnectedToggleGroupPreference
+            android:key="verify_apk_group"
+            android:title="@string/settings_verify_group_title"
+            android:summary="@string/settings_verify_group_summary"
+            android:icon="@drawable/ic_shield_24"
+            app:isPreferenceVisible="false" />
+
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="verify_apk_local"
             android:title="@string/settings_verify_apk_local_title"
