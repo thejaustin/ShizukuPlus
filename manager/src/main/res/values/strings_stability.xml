@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_avf_manager_summary_v2">Not working yet: virtual machines can\'t be created from here. The switch is kept for apps that look for it.</string>
+    <string name="settings_continuity_bridge_summary_v2">Not working yet: handing off between devices isn\'t available. The switch is kept for apps that look for it.</string>
+    <string name="settings_npu_acceleration_summary_v2">Not working yet: AI tasks are not moved to the NPU, and apps are told so.</string>
+    <string name="settings_overlay_fs_proxy_summary_v2">Pretends to apps that /system is writable; nothing is actually remounted. Only has an effect while SU Bridge is on. Shown here because it is on, or because Developer options are unlocked.</string>
+    <string name="settings_root_kernel_ghosting_summary_v2">Tells apps a kernel module loaded when nothing was loaded. Only has an effect while SU Bridge is on.</string>
+    <string name="settings_root_partition_ghosting_summary_v2">Tells flashing and backup apps a partition write worked when nothing was written. Only has an effect while SU Bridge is on.</string>
+    <string name="settings_root_power_ghosting_summary_v2">Swallows reboot and soft-reboot requests from apps: they are told it worked and nothing restarts. Only has an effect while SU Bridge is on.</string>
+</resources>

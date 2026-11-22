@@ -50,7 +50,14 @@ object OwnerActivation {
     fun otherUsers(): List<String>? {
         val (code, out) = runServerShell("pm list users")
         if (code != 0) return null
-        val me = android.os.Process.myUid() / 100000
+        return parseOtherUsers(out, android.os.Process.myUid() / 100000)
+    }
+
+    /** The parsing half of [otherUsers], pure so it can be tested with real `pm list users` output. */
+    internal fun parseOtherUsers(
+        out: String,
+        me: Int,
+    ): List<String>? {
         val users =
             Regex("""UserInfo\{(\d+):([^:}]*)""").findAll(out).map { it.groupValues[1].toInt() to it.groupValues[2] }.toList()
         if (users.isEmpty()) return null

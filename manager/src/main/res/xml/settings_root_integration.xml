@@ -146,28 +146,28 @@
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="overlay_fs_proxy_enabled"
             android:title="@string/settings_overlay_fs_proxy"
-            android:summary="@string/settings_overlay_fs_proxy_summary"
+            android:summary="@string/settings_overlay_fs_proxy_summary_v2"
             android:icon="@drawable/ic_folder_24"
             android:defaultValue="false" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="root_kernel_ghosting_enabled"
             android:title="@string/settings_root_kernel_ghosting"
-            android:summary="@string/settings_root_kernel_ghosting_summary"
+            android:summary="@string/settings_root_kernel_ghosting_summary_v2"
             android:icon="@drawable/ic_settings_suggest_24"
             android:defaultValue="false" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="root_partition_ghosting_enabled"
             android:title="@string/settings_root_partition_ghosting"
-            android:summary="@string/settings_root_partition_ghosting_summary"
+            android:summary="@string/settings_root_partition_ghosting_summary_v2"
             android:icon="@drawable/ic_admin_panel_settings_24"
             android:defaultValue="false" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="root_power_ghosting_enabled"
             android:title="@string/settings_root_power_ghosting"
-            android:summary="@string/settings_root_power_ghosting_summary"
+            android:summary="@string/settings_root_power_ghosting_summary_v2"
             android:icon="@drawable/ic_server_restart"
             android:defaultValue="false" />
 

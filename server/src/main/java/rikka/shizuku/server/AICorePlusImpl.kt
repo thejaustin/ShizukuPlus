@@ -95,7 +95,7 @@ class AICorePlusImpl(
     override fun getSystemContext(): Bundle? {
         val bundle = Bundle()
         bundle.putString("ai_core_version", "2.0")
-        bundle.putBoolean("npu_available", true)
+        bundle.putBoolean("npu_available", false) // scheduleNPULoad is not supported, so don't advertise it
         bundle.putString("android_version", android.os.Build.VERSION.RELEASE)
         bundle.putInt("sdk_int", android.os.Build.VERSION.SDK_INT)
         return bundle

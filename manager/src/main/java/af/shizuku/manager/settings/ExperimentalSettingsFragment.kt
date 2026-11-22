@@ -52,6 +52,12 @@ class ExperimentalSettingsFragment : BaseSettingsFragment() {
         findPreference<androidx.preference.Preference>("category_experimental")?.isVisible =
             ShizukuSettings.isDevOptionsUnlocked()
 
+        // Switches that can't do anything yet stay out of sight unless Developer options are
+        // unlocked or they are already on.
+        hideUnlessUsed(
+            listOf("avf_manager_enabled", "continuity_bridge_enabled", "usb_phone_switch_notify", "software_keystore_fallback_enabled"),
+        )
+
         // Validated by setSpoofTarget; not a Plus row, so sync it here.
         findPreference<rikka.preference.SimpleMenuPreference>(ShizukuSettings.Keys.KEY_SPOOF_TARGET)?.setOnPreferenceChangeListener { _, v ->
             val target = v as? String ?: return@setOnPreferenceChangeListener false

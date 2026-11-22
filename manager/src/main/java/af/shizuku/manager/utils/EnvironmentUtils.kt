@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Build
 import android.os.SystemProperties
 import android.provider.Settings
+import rikka.shizuku.Shizuku
 
 private val appContext: Context
     get() =
@@ -82,9 +83,36 @@ object EnvironmentUtils {
     @Volatile
     private var isRootedCached: Boolean? = null
 
+    @Volatile
+    private var rootCheckedAtMs = 0L
+
+    @Volatile
+    private var rootRefreshRunning = false
+
+    /** True while the running server is uid 0, which is how a temporary root shows up. */
+    @Volatile
+    private var serverIsRoot = false
+
+    // Temporary root (exploit-based, common on recent Samsung builds) can appear or vanish while
+    // the app is open, and often leaves no `su` binary at all. So the su result is re-checked
+    // now and then instead of cached forever, and the running server's uid counts too.
+    private const val ROOT_RECHECK_MS = 30_000L
+
     init {
         // Still prewarm in background to avoid any potential main thread hit during class load
         startRootCheck()
+        runCatching {
+            Shizuku.addBinderReceivedListenerSticky {
+                Thread({
+                    serverIsRoot = runCatching { Shizuku.getUid() == 0 }.getOrDefault(false)
+                    refreshRootNow()
+                }, "root-uid-check").apply { isDaemon = true }.start()
+            }
+            Shizuku.addBinderDeadListener {
+                serverIsRoot = false
+                refreshRootNow()
+            }
+        }
     }
 
     /** Kick off an early root-availability check. Safe to call multiple times. */
@@ -92,24 +120,37 @@ object EnvironmentUtils {
         if (isRootedCached == null) startRootCheck()
     }
 
+    private fun refreshRootNow() {
+        isRootedCached = null
+        startRootCheck()
+    }
+
     private fun startRootCheck() {
-        if (isRootedCached != null) return
+        if (rootRefreshRunning) return
+        rootRefreshRunning = true
         val t =
             Thread({
-                if (isRootedCached == null) {
+                try {
                     isRootedCached =
                         try {
                             checkSuExists()
                         } catch (_: Exception) {
                             false
                         }
+                    rootCheckedAtMs = android.os.SystemClock.elapsedRealtime()
+                } finally {
+                    rootRefreshRunning = false
                 }
             }, "root-check")
         t.isDaemon = true
         t.start()
     }
 
-    /** Returns the cached root-check result, or computes it synchronously if not yet available. */
+    /**
+     * Whether a usable `su` binary exists (root that survives a reboot). The cached result is
+     * refreshed in the background once it is older than 30 s; it is computed synchronously only
+     * the first time.
+     */
     fun isRooted(): Boolean {
         var result = isRootedCached
         if (result == null) {
@@ -120,9 +161,19 @@ object EnvironmentUtils {
                     false
                 }
             isRootedCached = result
+            rootCheckedAtMs = android.os.SystemClock.elapsedRealtime()
+        } else if (android.os.SystemClock.elapsedRealtime() - rootCheckedAtMs > ROOT_RECHECK_MS) {
+            startRootCheck()
         }
         return result
     }
+
+    /**
+     * Whether root is reachable right now, whether it is permanent (an `su` binary) or temporary
+     * (the running server is uid 0). Use this to decide if a root-only feature can work; use
+     * [isRooted] when the answer must also hold after a reboot.
+     */
+    fun isRootAvailableNow(): Boolean = serverIsRoot || isRooted()
 
     /**
      * Locates a usable `su` binary path across custom user settings, standard PATH, and modern

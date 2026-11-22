@@ -54,6 +54,16 @@ class RootIntegrationSettingsFragment : BaseSettingsFragment() {
             }
         }
 
+        // These four only pretend to apps that something worked, so they are for developers.
+        hideUnlessUsed(
+            listOf(
+                "overlay_fs_proxy_enabled",
+                "root_kernel_ghosting_enabled",
+                "root_partition_ghosting_enabled",
+                "root_power_ghosting_enabled",
+            ),
+        )
+
         findPreference<TwoStatePreference>(KEY_COMPANION_FALLBACK)?.apply {
             isChecked = ShizukuSettings.isCompanionFallbackEnabled()
             setOnPreferenceChangeListener { _, newValue ->

@@ -165,7 +165,7 @@
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="avf_manager_enabled"
             android:title="@string/settings_avf_manager_title"
-            android:summary="@string/settings_avf_manager_summary"
+            android:summary="@string/settings_avf_manager_summary_v2"
             android:icon="@drawable/ic_server_24"
             android:defaultValue="false"
             app:infoTitle="@string/help_avf_manager_title"
@@ -175,7 +175,7 @@
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="continuity_bridge_enabled"
             android:title="@string/settings_continuity_bridge_title"
-            android:summary="@string/settings_continuity_bridge_summary"
+            android:summary="@string/settings_continuity_bridge_summary_v2"
             android:icon="@drawable/ic_devices_24"
             android:defaultValue="false"
             app:infoTitle="@string/help_continuity_bridge_title"
@@ -238,7 +238,7 @@
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="npu_acceleration_enabled"
             android:title="@string/settings_npu_acceleration"
-            android:summary="@string/settings_npu_acceleration_summary"
+            android:summary="@string/settings_npu_acceleration_summary_v2"
             android:icon="@drawable/ic_settings_suggest_24"
             android:defaultValue="false"
             android:dependency="ai_core_master_enabled"
