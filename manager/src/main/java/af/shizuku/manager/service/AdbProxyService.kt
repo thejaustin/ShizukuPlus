@@ -154,6 +154,39 @@ class AdbProxyService : Service() {
                 false
             }
         }
+
+        /**
+         * Re-applies TCP mode / On-Device ADB TCP without requiring a manual re-toggle.
+         *
+         * Safe to call any time the binder *might* be up (Shizuku or root) — [enableAdbTcp]
+         * and [execShellCommand] already no-op/fail quietly otherwise. Callers: the
+         * ShizukuStateMachine RUNNING collector (ShizukuApplication) for the normal case, and
+         * BootCompleteReceiver directly on BOOT_COMPLETED so a root-started adbd (no Shizuku
+         * binder, so no RUNNING transition to key off) doesn't have to wait for one.
+         */
+        fun reapplyPersistedTcpSettings(context: android.content.Context) {
+            try {
+                val tcpMode =
+                    ShizukuSettings.getTcpMode() &&
+                        !af.shizuku.manager.utils.NetworkTrust
+                            .shouldBlockTcp(context)
+                val onDeviceAdbTcp = ShizukuSettings.isOnDeviceAdbTcpEnabled()
+                if (tcpMode || onDeviceAdbTcp) {
+                    val desiredPort = if (tcpMode) ShizukuSettings.getTcpPort().takeIf { it in 1..65535 } ?: 5555 else 5555
+                    enableAdbTcp(desiredPort)
+                }
+            } catch (e: Exception) {
+                Timber.tag(TAG).w(e, "TCP mode auto-apply failed")
+            }
+
+            try {
+                if (ShizukuSettings.isAdbProxyEnabled()) {
+                    context.startService(Intent(context, AdbProxyService::class.java))
+                }
+            } catch (e: Exception) {
+                Timber.tag(TAG).w(e, "ADB Proxy Service start failed")
+            }
+        }
     }
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

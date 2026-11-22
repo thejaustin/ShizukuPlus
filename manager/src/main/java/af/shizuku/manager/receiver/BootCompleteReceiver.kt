@@ -143,13 +143,12 @@ class BootCompleteReceiver : BroadcastReceiver() {
                 Timber.tag("BootCompleteReceiver").w(e, "AutomationService start skipped")
             }
         }
-        if (ShizukuSettings.isAdbProxyEnabled()) {
-            try {
-                context.startService(Intent(context, af.shizuku.manager.service.AdbProxyService::class.java))
-            } catch (e: Exception) {
-                Timber.tag("BootCompleteReceiver").w(e, "AdbProxyService auto-start skipped")
-            }
-        }
+        // Re-applies TCP mode / On-Device ADB TCP / Local ADB Proxy directly, not just via the
+        // ShizukuStateMachine RUNNING collector in ShizukuApplication: a root-started adbd never
+        // fires that collector (no Shizuku binder involved), so without this it stayed off until
+        // the user manually re-toggled the setting after every reboot.
+        af.shizuku.manager.service.AdbProxyService
+            .reapplyPersistedTcpSettings(context)
         if (action == Intent.ACTION_MY_PACKAGE_REPLACED && ShizukuSettings.isSuBridgeEnabled()) {
             // The su/rish_shizuku.dex bridge deployed to /data/local/tmp is version-specific
             // bytecode compiled against this exact APK build; previously it was only ever
