@@ -1,7 +1,9 @@
 package af.shizuku.manager.settings
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.AttributeSet
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
@@ -11,7 +13,7 @@ import com.google.android.material.color.MaterialColors
  * The status row at the top of Settings. BaseSettingsFragment's card decoration paints it with
  * colorSecondaryContainer, so its text uses the matching "on" colour: with high-contrast schemes
  * that container is light even in a dark theme, and the usual surface text colours turned
- * unreadable on it (#687).
+ * unreadable on it (#687). The check icon takes the same colour.
  */
 class StatusBannerPreference
     @JvmOverloads
@@ -24,5 +26,6 @@ class StatusBannerPreference
             val on = MaterialColors.getColor(holder.itemView, com.google.android.material.R.attr.colorOnSecondaryContainer)
             (holder.findViewById(android.R.id.title) as? TextView)?.setTextColor(on)
             (holder.findViewById(android.R.id.summary) as? TextView)?.setTextColor(on)
+            (holder.findViewById(android.R.id.icon) as? ImageView)?.imageTintList = ColorStateList.valueOf(on)
         }
     }

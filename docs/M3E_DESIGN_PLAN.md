@@ -63,3 +63,12 @@ persistent nav bar, container transforms for every Home card, Compose-first for 
 Sentence case (about 185 Title Case strings), no "Are you sure…" titles (state the consequence),
 contractions, no periods on one-line messages, exclamation marks only for real celebrations, no
 ampersands in body text, consistent "Developer options".
+
+## Status surfaces and the glass vs AMOLED treatments (2026-11-21)
+
+Checked against the code, not assumed.
+
+- **Home status card** (`ServerStatusViewHolder`): a flat tonal card, no blur or translucency of its own. Its colours come from theme roles, so AMOLED+ reaches it only through the theme's colour roles, not a card-specific branch. The Activity log / Diagnostics chips take the card's own "on" colour for text, icon and a 50% stroke, and an opaque background made from that colour at ~12% composited onto the card colour. Opaque matters: M3 chips draw their own surface under the background, so a translucent fill leaves a dark patch on a light container (#687).
+- **Settings status banner** (`StatusBannerPreference`): painted by `BaseSettingsFragment`'s card decoration with `colorSecondaryContainer`; title, summary and the leading icon all use `colorOnSecondaryContainer`. No chips.
+- **Glass vs AMOLED lives in the floating nav bar** (`FloatingNavBar`), controlled by Blur UI and AMOLED+: the bar is a tinted surface, never opaque black. Blur on = a lighter tint (55% alpha) over real window blur; blur off = denser (85%, or 90% in AMOLED+) so labels stay legible. AMOLED+ in night mode uses a near-black base (#0F1115 blended 8% with primary) instead of slate-charcoal. A docked bar is always opaque.
+- Rule of thumb: never hard-code dark/light text on a status surface; use the matching `on*` attribute of the surface colour.
