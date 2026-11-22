@@ -175,7 +175,7 @@ class AutomationViewHolder(
         if (
             Build.VERSION.SDK_INT < Build.VERSION_CODES.R &&
             !EnvironmentUtils.isTelevision() &&
-            !EnvironmentUtils.isRooted()
+            !EnvironmentUtils.isRootAvailableNow()
         ) {
             binding.text2.apply {
                 isVisible = true

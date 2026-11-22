@@ -121,7 +121,6 @@ object EnvironmentUtils {
     }
 
     private fun refreshRootNow() {
-        isRootedCached = null
         startRootCheck()
     }
 

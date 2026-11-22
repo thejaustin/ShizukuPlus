@@ -301,7 +301,7 @@ class BehaviorSettingsFragment :
      */
     private fun syncModeVisibility() {
         val isRootMode =
-            EnvironmentUtils.isRooted() ||
+            EnvironmentUtils.isRootAvailableNow() ||
                 ShizukuSettings.getLastLaunchMode() == ShizukuSettings.LaunchMethod.ROOT
         val isAdbMode = !isRootMode
 
