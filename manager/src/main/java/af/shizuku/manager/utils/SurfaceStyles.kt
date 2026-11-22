@@ -11,6 +11,38 @@ enum class Surface(
 ) {
     STATUS_BUTTONS("style_status_buttons"),
     NAV_BAR("style_nav_bar"),
+    ;
+
+    /** Key of this surface's own corner choice. */
+    val cornerKey: String get() = key.replace("style_", "corners_")
+}
+
+/** Corner choices per surface. FOLLOW uses the global Corner rounding. */
+enum class SurfaceCorners { FOLLOW, SHARP, SOFT, ROUND, PILL }
+
+/**
+ * The Corner rounding choices as dp, one table for everything that draws its own corners (the nav
+ * bar, icon containers, chips). The theme overlays hold the same numbers for XML and Compose
+ * surfaces; keep them in step.
+ */
+object CornerScale {
+    fun dp(value: String?): Float =
+        when (value) {
+            "sharp" -> 0f
+            "compact" -> 8f
+            "subtle" -> 14f
+            "gentle" -> 20f
+            "moderate" -> 24f
+            "standard" -> 28f
+            "large" -> 36f
+            "expanded" -> 40f
+            "maximum" -> 44f
+            "ultra" -> 52f
+            else -> 32f // "default" and "system"
+        }
+
+    /** The global Corner rounding in dp (0 when rounded edges are off). */
+    fun globalDp(): Float = if (!ShizukuSettings.isRoundedEdgesEnabled()) 0f else dp(ShizukuSettings.getCornerRoundingOverride())
 }
 
 /**
@@ -39,4 +71,24 @@ object SurfaceStyles {
                 SurfaceStyle.MATERIAL, SurfaceStyle.GLASS -> false
                 SurfaceStyle.AUTO -> ShizukuSettings.isAmoledPlusEnabled()
             }
+
+    fun corners(surface: Surface): SurfaceCorners {
+        val value = runCatching { ShizukuSettings.getPreferences()?.getString(surface.cornerKey, null) }.getOrNull()
+        return SurfaceCorners.entries.firstOrNull { it.name.equals(value, ignoreCase = true) } ?: SurfaceCorners.FOLLOW
+    }
+
+    /**
+     * Corner radius in dp for [surface], or [globalDp] when it follows. A pill is a large number on purpose: shape drawables clamp corners to half the height.
+     */
+    fun cornerDp(
+        surface: Surface,
+        globalDp: Float,
+    ): Float =
+        when (corners(surface)) {
+            SurfaceCorners.FOLLOW -> globalDp
+            SurfaceCorners.SHARP -> 0f
+            SurfaceCorners.SOFT -> 12f
+            SurfaceCorners.ROUND -> 24f
+            SurfaceCorners.PILL -> 999f
+        }
 }

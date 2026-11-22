@@ -452,6 +452,18 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
             }.start()
     }
 
+    /**
+     * Brings an autohidden bar back. A page swap inside one activity (settings sub-pages) can land
+     * on a list too short to scroll, so nothing would ever slide the bar in again.
+     */
+    fun reveal(activity: Activity) {
+        val bar = activity.findViewById<View>(R.id.floating_nav_root) ?: return
+        if (bar.translationY == 0f && bar.alpha == 1f) return
+        bar.animate().cancel()
+        bar.translationY = 0f
+        bar.alpha = 1f
+    }
+
     /** First appearance: rise from below with a short fade. Respects the system animation scale. */
     private fun playEntrance(root: View) {
         val rise = 56 * root.resources.displayMetrics.density
@@ -597,19 +609,16 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     /** The bar's corner radius from the rounding settings, before the docked/capsule shapes. */
     private fun baseRadius(context: Context): Float {
         val density = context.resources.displayMetrics.density
-        if (!ShizukuSettings.isRoundedEdgesEnabled()) return 0f
-        if (ShizukuSettings.isOneUiThemeEnabled()) return 36f * density
-        val cornerOverride =
-            ShizukuSettings
-                .getPreferences()
-                .getString(ShizukuSettings.Keys.KEY_CORNER_ROUNDING_OVERRIDE, "default")
-        return when (cornerOverride) {
-            "gentle" -> 20f * density
-            "standard" -> 28f * density
-            "large" -> 36f * density
-            "maximum" -> 44f * density
-            else -> 32f * density
-        }
+        val global =
+            when {
+                !ShizukuSettings.isRoundedEdgesEnabled() -> 0f
+                ShizukuSettings.isOneUiThemeEnabled() -> 36f
+                else ->
+                    af.shizuku.manager.utils.CornerScale
+                        .dp(ShizukuSettings.getCornerRoundingOverride())
+            }
+        return af.shizuku.manager.utils.SurfaceStyles
+            .cornerDp(af.shizuku.manager.utils.Surface.NAV_BAR, global) * density
     }
 
     /** The corner radius a message sitting on the bar uses, so the two read as one stack. */

@@ -48,7 +48,7 @@ class ExperimentalSettingsFragment : BaseSettingsFragment() {
         }
 
         // Per-surface looks apply to Home and the nav bar, so recreate to show the change.
-        for (key in listOf("style_status_buttons", "style_nav_bar")) {
+        for (key in listOf("style_status_buttons", "style_nav_bar", "corners_nav_bar")) {
             findPreference<androidx.preference.Preference>(key)?.setOnPreferenceChangeListener { _, _ ->
                 view?.post { (activity as? af.shizuku.core.ui.AppActivity)?.recreateWithoutTransition() }
                 true

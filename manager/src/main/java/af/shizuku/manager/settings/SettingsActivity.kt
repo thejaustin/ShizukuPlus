@@ -138,6 +138,8 @@ class SettingsActivity :
             ?.registerOnSharedPreferenceChangeListener(prefsListener)
 
         supportFragmentManager.addOnBackStackChangedListener {
+            af.shizuku.manager.widget.FloatingNavBar
+                .reveal(this)
             val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as? BaseSettingsFragment
             val title = currentFragment?.getTitle()?.toString()
             if (title != null) {

@@ -252,13 +252,11 @@ object IconStyleHelper {
                 "classic" -> 2f * density
                 "squircle" -> 14f * density
                 else ->
-                    when (ShizukuSettings.getPreferences().getString(ShizukuSettings.Keys.KEY_CORNER_ROUNDING_OVERRIDE, "default")) {
-                        "gentle" -> 8f * density
-                        "standard" -> 10f * density
-                        "large" -> 14f * density
-                        "maximum" -> 16f * density
-                        else -> 12f * density
-                    }
+                    // About 3/8 of the global rounding, so icon tiles scale with the card corners.
+                    (
+                        af.shizuku.manager.utils.CornerScale
+                            .dp(ShizukuSettings.getCornerRoundingOverride()) * 0.375f
+                    ).coerceIn(2f, 20f) * density
             }
         if (roundedCorner != null) {
             // Keyed for a 40dp container until bounds arrive; the drawable refits it to its size.

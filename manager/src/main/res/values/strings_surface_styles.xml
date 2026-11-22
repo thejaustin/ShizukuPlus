@@ -18,4 +18,24 @@
         <item>amoled</item>
         <item>glass</item>
     </string-array>
+    <string name="settings_surface_nav_bar_corners_title">Navigation bar corners</string>
+    <string name="settings_surface_corners_follow">Follow Corner rounding</string>
+    <string name="settings_surface_corners_sharp">Sharp</string>
+    <string name="settings_surface_corners_soft">Soft</string>
+    <string name="settings_surface_corners_round">Round</string>
+    <string name="settings_surface_corners_pill">Pill</string>
+    <string-array name="surface_corners">
+        <item>@string/settings_surface_corners_follow</item>
+        <item>@string/settings_surface_corners_sharp</item>
+        <item>@string/settings_surface_corners_soft</item>
+        <item>@string/settings_surface_corners_round</item>
+        <item>@string/settings_surface_corners_pill</item>
+    </string-array>
+    <string-array name="surface_corners_values" translatable="false">
+        <item>follow</item>
+        <item>sharp</item>
+        <item>soft</item>
+        <item>round</item>
+        <item>pill</item>
+    </string-array>
 </resources>

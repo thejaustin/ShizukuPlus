@@ -118,6 +118,16 @@
             android:defaultValue="auto"
             android:icon="@drawable/ic_palette_24" />
 
+        <!-- "Follow" keeps the global Corner rounding. -->
+        <rikka.preference.SimpleMenuPreference
+            android:key="corners_nav_bar"
+            app:useSimpleSummaryProvider="true"
+            android:title="@string/settings_surface_nav_bar_corners_title"
+            android:entries="@array/surface_corners"
+            android:entryValues="@array/surface_corners_values"
+            android:defaultValue="follow"
+            android:icon="@drawable/ic_palette_24" />
+
     </af.shizuku.manager.settings.CollapsiblePreferenceCategory>
 
     <af.shizuku.manager.settings.CollapsiblePreferenceCategory
