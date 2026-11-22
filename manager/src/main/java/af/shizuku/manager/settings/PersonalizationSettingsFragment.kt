@@ -6,6 +6,7 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.ShizukuSettings.Keys.*
 import af.shizuku.manager.app.ThemeHelper
 import af.shizuku.manager.ktx.toHtml
+import af.shizuku.manager.utils.TranslationCoverage
 import af.shizuku.manager.utils.CustomTabsHelper
 import android.os.Build
 import android.os.Bundle
@@ -591,7 +592,18 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
         setupLocalePreference(languagePreference)
 
         translationPreference.apply {
-            setCustomSummary(context.getString(R.string.settings_translation_summary, context.getString(R.string.app_name)))
+            val cov = TranslationCoverage.of(ShizukuSettings.getLocale())?.takeIf { it[0] < 100 }
+            setCustomSummary(
+                if (cov != null) {
+                    context.getString(
+                        R.string.settings_translation_summary_partial,
+                        ShizukuSettings.getLocale().getDisplayName(ShizukuSettings.getLocale()),
+                        cov[0], cov[1],
+                    )
+                } else {
+                    context.getString(R.string.settings_translation_summary, context.getString(R.string.app_name))
+                },
+            )
             widgetLayoutResource = R.layout.preference_widget_open_in_new
             setOnPreferenceClickListener {
                 CustomTabsHelper.launchUrlOrCopy(context, context.getString(R.string.translation_url))
@@ -626,7 +638,7 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             findPreference<Preference>(key)?.setAvailable(navOn)
         }
         val swipeOn = ShizukuSettings.isSwipeGesturesEnabled()
-        for (key in listOf("swipe_preview", "swipe_right_row", "swipe_left_row", "long_press_row")) {
+        for (key in listOf("swipe_preview", "swipe_right_row", "swipe_left_row")) {
             findPreference<Preference>(key)?.setAvailable(swipeOn)
         }
     }
@@ -704,9 +716,13 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                 }
             val localizedLocaleName = rawLocalizedLocaleName.replaceFirstChar { if (it.isLowerCase()) it.uppercase(currentLocale) else it.toString() }
 
+            val coverage = TranslationCoverage.of(locale)
+                ?.takeIf { it[0] < 100 }
+                ?.let { getString(R.string.translation_coverage_line, it[0], it[1]) }
+            val coverageHtml = coverage?.let { "<br><small>$it</small>" }.orEmpty()
             localizedLocales.add(
                 if (index != currentLocaleIndex) {
-                    "$localeName<br><small>$localizedLocaleName</small>".toHtml()
+                    "$localeName<br><small>$localizedLocaleName</small>$coverageHtml".toHtml()
                 } else {
                     localizedLocaleName
                 },

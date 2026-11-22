@@ -21,7 +21,8 @@ class ThemeDelegateImpl : ThemeDelegate {
             ShizukuSettings.isBoldTypographyEnabled() + ShizukuSettings.isExpandedHeadersEnabled() +
             ShizukuSettings.getCornerRoundingOverride() + ShizukuSettings.isAmoledPlusEnabled() +
             ShizukuSettings.isHighContrastEnabled() + ShizukuSettings.isExpressiveAnimationsEnabled() +
-            ShizukuSettings.isExperimentalColorSchemesEnabled() + contrastLevel(context)
+            ShizukuSettings.isExperimentalColorSchemesEnabled() + contrastLevel(context) +
+            (ShizukuSettings.getPreferences()?.let { listOf("style_status_buttons", "style_nav_bar", "corners_nav_bar").joinToString { k -> it.getString(k, "") ?: "" } } ?: "")
     }
 
     override fun isUsingSystemColor(): Boolean = ThemeHelper.isUsingSystemColor()

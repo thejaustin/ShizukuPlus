@@ -6,7 +6,7 @@
     <string name="server_clients_connected">%1$d applications connected</string>
 
     <!-- To translators: you can leave your here -->
-    <string name="translation_url">https://github.com/thejaustin/ShizukuPlus</string>
+    <string name="translation_url">https://crowdin.com/project/ShizukuPlus</string>
 
     <!-- UI Settings - Expressive -->
     <string name="settings_expressive_shapes">Expressive container shapes</string>
@@ -557,6 +557,8 @@
     <string name="settings_auto_disable_usb_debugging_summary">Disable USB debugging when stopping Shizuku</string>
     <string name="settings_language">Language</string>
     <string name="settings_translation">Participate in translation</string>
+    <string name="translation_coverage_line">Human %1$d%% · machine %2$d%%</string>
+    <string name="settings_translation_summary_partial">%1$s is %2$d%% human-translated and %3$d%% machine-drafted. Help us replace the drafts with real translations on Crowdin.</string>
     <string name="settings_translation_summary">Help us translate %s into your language</string>
     <string name="settings_version">Version</string>
     <string name="settings_developer_options_revealed">Developer Options revealed!</string>

@@ -120,7 +120,7 @@ private fun SupportDropdown(
             contentPadding = ButtonDefaults.ContentPadding,
         ) {
             Text(
-                stringResource(names.first { it.first == selected }.second),
+                stringResource((names.firstOrNull { it.first == selected } ?: names.first()).second),
                 style = MaterialTheme.typography.labelLarge,
             )
             Icon(
