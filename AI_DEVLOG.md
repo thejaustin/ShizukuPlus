@@ -120,6 +120,17 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-11-23 — Claude (Sonnet 5.5) (temp-root crash review, server binder hardening) [fix/server-binder-hardening]
+
+- **What the 2026-11-22 crash was:** a system_server Watchdog kill ("Blocked in handler on ActivityManager:procStart ... 69s", thread in `AppZygote.startProcess` waiting on `webview_zygote`), then a reboot. Not the server, not the starter. Caused by a jam of WebView/Google-app launches under memory pressure (4.7 GB swap used, 2.8 GB free) and low CPU clocks.
+- **Clocks:** the `hypercool` KernelSU module capped CPUs (and set `walt_hispeed_load=99`); it is removed and a real reboot restored `hispeed_load=90`. After that the caps were still ~1.2 GHz because `thermalservice` was at status 2 (MODERATE): that was real heat, not a module. KernelSU-Tuner's scripts set no CPU/thermal values.
+- **The 19:35:36 "kill af.shizuku.plus.api ... and try again" was a consequence, not a cause:** the send failed with `DeadObjectException` from `getContentProviderExternal`, i.e. system_server was already dead (sensorservice/netd death messages 2 ms later). The server then force-stopped the manager anyway.
+- **Does not support the "server start launches every Shizuku app" theory:** `sendBinderToClient()` only targets already-running packages. The only launch is the manager (and its secondary flavor) via its provider.
+- **`ensureAdbTcpPersistence` NPE (line 418):** root cause is a null calling package passed to the settings provider; `SettingsProvider.isChangeAllowed()` NPEs inside system_server on Android 16, so `adb_allowed_connection_time` was never written. Also wrote it on root starts (no ADB dependency) and never released the provider.
+- **Fixes (server only):** pass `com.android.shell` as the calling package, restrict the write to an ADB-started server (uid 2000), release the settings provider; `sendBinderToManager` no longer force-stops the manager when a binder died mid-send or when the manager isn't installed in that user (Secure Folder / work profile).
+- **Not changed (unproven or manager-side):** `.parallel()` in `sendBinderToClient`; 11 repeated WARN "failed to send binder to moe.shizuku.privileged.api" (compat hub provider replies null; the #319 un-cache means every foreground event retries; a short negative cache would quiet it); manager-side `startRoot()` libsu `submit{}` timeout fallback and skipping `StockShizukuCompat.isOriginalRunning()` while STARTING are still waiting for the user's go-ahead.
+- **Device notes:** root vanishes on every reboot (no boot-time root start can succeed); `rish` hangs when no server is running, use loopback adb; the log capture file is `/sdcard/shizuku_root_test_logcat.txt`.
+
 ### 2026-11-03 (cont'd) — Antigravity (Gemini 3.8 Flash) (Dependabot advisory audit, Bouncy Castle 1.86 upgrade, CI graph scoping & TLS fallback) [master]
 
 - **Dependabot Security Alerts & Root Cause Analysis:**

@@ -408,20 +408,32 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             int uid = android.os.Process.myUid();
             int userId = UserHandleCompat.getUserId(uid);
 
-            // 1. Keep ADB authorization alive across USB disconnect
-            IContentProvider settingsProvider = ActivityManagerApis.getContentProviderExternal(
-                    "settings", userId, null, "com.android.shell");
-            if (settingsProvider != null) {
-                try {
-                    Bundle authTimeout = new Bundle();
-                    authTimeout.putString("value", "0");
-                    IContentProviderUtils.callCompat(
-                            settingsProvider, null, "settings",
-                            "PUT_global", "adb_allowed_connection_time", authTimeout);
-                    // Note: Never forcefully overwrite adb_enabled to "1", as that overrides
-                    // user Developer Options preference and causes issues for apps checking debugging status.
-                } catch (Exception e) {
-                    LOGGER.w("failed to update adb settings via ContentProvider", e);
+            // 1. Keep ADB authorization alive across USB disconnect. Only an ADB-started server
+            // (uid 2000) depends on that authorization; a root server doesn't, so it leaves the
+            // user's ADB trust timeout alone.
+            if (uid == 2000) {
+                IContentProvider settingsProvider = ActivityManagerApis.getContentProviderExternal(
+                        "settings", userId, null, "com.android.shell");
+                if (settingsProvider != null) {
+                    try {
+                        Bundle authTimeout = new Bundle();
+                        authTimeout.putString("value", "0");
+                        // A null calling package made SettingsProvider.isChangeAllowed() throw an
+                        // NPE inside system_server on Android 16, so the write never happened.
+                        IContentProviderUtils.callCompat(
+                                settingsProvider, "com.android.shell", "settings",
+                                "PUT_global", "adb_allowed_connection_time", authTimeout);
+                        // Note: Never forcefully overwrite adb_enabled to "1", as that overrides
+                        // user Developer Options preference and causes issues for apps checking debugging status.
+                    } catch (Exception e) {
+                        LOGGER.w("failed to update adb settings via ContentProvider", e);
+                    } finally {
+                        try {
+                            ActivityManagerApis.removeContentProviderExternal("settings", null);
+                        } catch (Throwable t) {
+                            LOGGER.w(t, "removeContentProviderExternal(settings)");
+                        }
+                    }
                 }
             }
 
@@ -3214,12 +3226,33 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         return (ai != null && isSignedLikeManager(other)) ? other : null;
     }
 
+    /** Set by [sendBinderToUserApp] on this thread when its last call failed because a binder died mid-call. */
+    private static final ThreadLocal<Boolean> sLastSendBinderDied = new ThreadLocal<>();
+
+    /**
+     * Force-stopping the manager and retrying only helps a failure the server can fix. It does not
+     * when system_server or the target died mid-call (the logs of the 2026-11-22 crash show the kill
+     * firing 2 ms after system_server was already gone), or in a profile where the manager is not
+     * installed (Secure Folder, work profile): that is not a failed delivery.
+     */
+    private static boolean worthForceStoppingManager(int userId) {
+        if (Boolean.TRUE.equals(sLastSendBinderDied.get())) {
+            LOGGER.w("not restarting %s in user %d: a binder died during the send", MANAGER_APPLICATION_ID, userId);
+            return false;
+        }
+        if (Android17Compat.getApplicationInfo(MANAGER_APPLICATION_ID, 0, userId) == null) {
+            LOGGER.d("%s is not installed in user %d, nothing to restart", MANAGER_APPLICATION_ID, userId);
+            return false;
+        }
+        return true;
+    }
+
     private static void sendBinderToManager(Binder binder) {
         String secondaryPkg = getSecondaryManagerPackage();
         java.util.List<Integer> failedUserIds = new java.util.ArrayList<>();
         for (int userId : UserManagerApis.getUserIdsNoThrow()) {
             boolean success = sendBinderToUserApp(binder, MANAGER_APPLICATION_ID, userId);
-            if (!success) {
+            if (!success && worthForceStoppingManager(userId)) {
                 failedUserIds.add(userId);
             }
             if (secondaryPkg != null) {
@@ -3264,7 +3297,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
             sendBinderToUserApp(binder, secondaryPkg, userId);
         }
         boolean success = sendBinderToUserApp(binder, MANAGER_APPLICATION_ID, userId);
-        if (!success) {
+        if (!success && worthForceStoppingManager(userId)) {
             // For unknown reason, sometimes this could happens
             // Kill Shizuku app and try again could work
             try {
@@ -3302,6 +3335,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     }
 
     static boolean sendBinderToUserApp(Binder binder, String packageName, int userId) {
+        sLastSendBinderDied.set(Boolean.FALSE);
         try {
             DeviceIdleControllerApis.addPowerSaveTempWhitelistApp(packageName, 30 * 1000, userId,
                     316/* PowerExemptionManager#REASON_SHELL */, "shell");
@@ -3367,6 +3401,9 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                 return false;
             }
         } catch (Throwable tr) {
+            if (tr instanceof android.os.DeadObjectException) {
+                sLastSendBinderDied.set(Boolean.TRUE);
+            }
             LOGGER.w(tr, "failed to send binder to user app %s in user %d", packageName, userId);
             return false;
         } finally {
