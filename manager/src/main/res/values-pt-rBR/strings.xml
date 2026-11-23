@@ -242,7 +242,6 @@
     <string name="settings_lp_hide_from_list">Ocultar da lista</string>
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Bem-vindo ao Shizuku+</string>
-    <string name="onboarding_welcome_desc">Um Shizuku aprimorado com recursos poderosos de gerenciamento de aplicativos. Gestos de deslizar, ações rápidas e experiências personalizáveis — tudo em um só lugar.</string>
     <string name="onboarding_swipe_title">Gestos Padrão</string>
     <string name="onboarding_swipe_desc">Por padrão, na lista de gerenciamento de aplicativos, deslize para a direita para abrir um aplicativo ou deslize para a esquerda para ver sua página de configurações do sistema.</string>
     <string name="onboarding_gestures_title">Gestos Personalizados</string>

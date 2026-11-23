@@ -257,7 +257,6 @@
     <string name="settings_lp_hide_from_list">목록에서 숨기기</string>
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Shizuku+에 오신 것을 환영합니다</string>
-    <string name="onboarding_welcome_desc">강력한 앱 관리 기능을 갖춘 향상된 Shizuku입니다. 스와이프 제스처, 빠른 동작, 사용자 지정 가능한 경험이 모두 한곳에 있습니다.</string>
     <string name="onboarding_swipe_title">기본 제스처</string>
     <string name="onboarding_swipe_desc">기본적으로 앱 관리 목록에서 오른쪽으로 스와이프하면 앱이 열리고, 왼쪽으로 스와이프하면 해당 시스템 설정 페이지가 열립니다.</string>
     <string name="onboarding_gestures_title">사용자 지정 제스처</string>

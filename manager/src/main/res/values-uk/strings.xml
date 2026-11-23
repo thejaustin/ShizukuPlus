@@ -251,7 +251,6 @@
     <string name="settings_lp_hide_from_list">Приховати зі списку</string>
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Ласкаво просимо до Shizuku+</string>
-    <string name="onboarding_welcome_desc">Вдосконалений Shizuku з потужними функціями керування додатками. Свайпи, швидкі дії та кастомізація — усе в одному місці.</string>
     <string name="onboarding_swipe_title">Жести за замовчуванням</string>
     <string name="onboarding_swipe_desc">За замовчуванням у списку додатків свайп вправо відкриває додаток, а свайп вліво — відкриває сторінку його системних налаштувань.</string>
     <string name="onboarding_gestures_title">Кастомні жести</string>

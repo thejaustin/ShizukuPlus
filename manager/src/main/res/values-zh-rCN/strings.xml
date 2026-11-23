@@ -254,7 +254,6 @@
     <string name="settings_lp_hide_from_list">从列表中隐藏</string>
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">欢迎使用 Shizuku+</string>
-    <string name="onboarding_welcome_desc">功能增强的 Shizuku，带来强大的应用管理能力。滑动手势、快捷操作与可定制体验，尽在一处。</string>
     <string name="onboarding_swipe_title">默认手势</string>
     <string name="onboarding_swipe_desc">默认情况下，在应用管理列表中右滑可打开应用，左滑可查看其系统设置页面。</string>
     <string name="onboarding_gestures_title">自定义手势</string>
@@ -280,9 +279,7 @@
     <string name="onboarding_security_doctor_title">网络护盾与服务诊断</string>
     <string name="onboarding_security_doctor_desc">自动双栈防护可在不受信任的 Wi-Fi 上保护你正在使用的调试端口，同时服务诊断会监控后台健康状态。</string>
     <string name="onboarding_network_guard_title">网络信任护盾</string>
-    <string name="onboarding_network_guard_desc">在开放或不受信任的网络上阻止启动 TCP</string>
     <string name="onboarding_watchdog_title">看门狗后台保活</string>
-    <string name="onboarding_watchdog_desc">服务被杀后自动修复并重新唤醒</string>
     <string name="onboarding_take_tour">功能导览</string>
     <string name="onboarding_take_tour_summary">探索全新的 M3 表现力外观、首页布局与网络信任护盾</string>
     <!-- Swipe hint overlay -->

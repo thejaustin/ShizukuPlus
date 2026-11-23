@@ -136,9 +136,7 @@
     <string name="onboarding_security_doctor_title">網路護盾與服務診斷</string>
     <string name="onboarding_security_doctor_desc">自動雙棧防護可在不受信任的 Wi-Fi 上保護你正在使用的偵錯連接埠，同時服務診斷會監控背景健康狀態。</string>
     <string name="onboarding_network_guard_title">網路信任護盾</string>
-    <string name="onboarding_network_guard_desc">在開放或不受信任的網路上封鎖啟動 TCP</string>
     <string name="onboarding_watchdog_title">看門狗背景保活</string>
-    <string name="onboarding_watchdog_desc">服務被終止後自動修復並重新喚醒</string>
     <string name="onboarding_take_tour">功能導覽</string>
     <string name="onboarding_take_tour_summary">探索全新的 M3 表現力外觀、首頁版面與網路信任護盾</string>
     <!-- Swipe hint overlay -->

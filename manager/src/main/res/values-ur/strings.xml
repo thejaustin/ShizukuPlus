@@ -228,7 +228,6 @@
     <string name="settings_lp_hide_from_list">فہرست سے چھپائیں</string>
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Shizuku+ میں خوش آمدید</string>
-    <string name="onboarding_welcome_desc">طاقتور ایپ مینجمنٹ فیچرز کے ساتھ بہتر Shizuku۔ Swipe gestures، quick actions اور حسبِ ضرورت تجربہ — سب ایک جگہ۔</string>
     <string name="onboarding_swipe_title">ڈیفالٹ Gestures</string>
     <string name="onboarding_swipe_desc">ڈیفالٹ طور پر app management list میں دائیں swipe سے ایپ کھلتی ہے اور بائیں swipe سے اس کا system ترتیبات page کھلتا ہے۔</string>
     <string name="onboarding_gestures_title">حسبِ ضرورت Gestures</string>

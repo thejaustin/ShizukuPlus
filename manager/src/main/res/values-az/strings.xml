@@ -282,7 +282,6 @@
     <string name="settings_lp_hide_from_list">Siyahıdan gizlət</string>
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Shizuku+ tətbiqinə xoş gəlmisiniz</string>
-    <string name="onboarding_welcome_desc">Güclü tətbiq idarəetmə xüsusiyyətlərinə malik təkmilləşdirilmiş Shizuku. Sürüşdürmə jestləri, sürətli əməliyyatlar və fərdiləşdirilə bilən təcrübələr — hamısı bir yerdə.</string>
     <string name="onboarding_swipe_title">İlkin Jestlər</string>
     <string name="onboarding_swipe_desc">İlkin olaraq, tətbiq idarəetmə siyahısında tətbiqi açmaq üçün sağa, sistem tənzimləmələri səhifəsinə baxmaq üçün sola sürüşdürün.</string>
     <string name="onboarding_gestures_title">Fərdi Jestlər</string>
@@ -308,9 +307,7 @@
     <string name="onboarding_security_doctor_title">Şəbəkə Qalxanı &amp; Həkim</string>
     <string name="onboarding_security_doctor_desc">Avtomatik ikili girov mühafizəsi etibarsız Wi-Fi şəbəkələrində aktiv sazlama portunuzu qoruyur, Xidmət Həkimi isə arxa fon sağlamlığına nəzarət edir.</string>
     <string name="onboarding_network_guard_title">Şəbəkə Etibar Qalxanı</string>
-    <string name="onboarding_network_guard_desc">Açıq və ya etibarsız şəbəkələrdə TCP işəsalmalarını bloklayın</string>
     <string name="onboarding_watchdog_title">Gözətçi Arxa Fon Canlı Tutma</string>
-    <string name="onboarding_watchdog_desc">Server dayandırılarsa, onu avtomatik bərpa edin və yenidən başladın</string>
     <string name="onboarding_take_tour">Xüsusiyyət Turu</string>
     <string name="onboarding_take_tour_summary">Yeni M3 Expressive görünüşünü, əsas ekran düzənini və şəbəkə etibar qalxanını kəşf edin</string>
     <string name="onboarding_returning_welcome_title">Shizuku+ Tətbiqinə Yenidən Xoş Gəlmisiniz</string>
