@@ -116,6 +116,7 @@ public class ShizukuSettings {
         public static final String KEY_HIDE_BACKUP_SETTINGS = "hide_backup_settings";
         public static final String KEY_CUSTOM_APP_LABEL = "custom_app_label";
         public static final String KEY_ON_DEVICE_ADB_TCP = "on_device_adb_tcp";
+        public static final String KEY_ADB_AUTH_TIMEOUT = "adb_auth_timeout";
         public static final String KEY_FORCE_START_WADB = "force_start_wadb";
         public static final String KEY_USB_PHONE_SWITCH_NOTIFY = "usb_phone_switch_notify";
         public static final String KEY_SU_BRIDGE_ENABLED = "su_bridge_enabled";
@@ -1841,6 +1842,17 @@ public class ShizukuSettings {
         if (p != null) p.edit().putBoolean(Keys.KEY_ADB_PROXY_ENABLED, enable).apply();
     }
 
+    /**
+     * How long Android keeps an ADB authorization before asking again: "system" (leave Android's own
+     * setting alone, the default), "never", or a number of hours. Only an ADB-started server can
+     * apply it.
+     */
+    public static String getAdbAuthTimeout() {
+        SharedPreferences p = getPreferences();
+        String v = p == null ? null : p.getString(Keys.KEY_ADB_AUTH_TIMEOUT, "system");
+        return v == null || v.isEmpty() ? "system" : v;
+    }
+
     public static boolean isOnDeviceAdbTcpEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_ON_DEVICE_ADB_TCP, false);
@@ -2131,6 +2143,7 @@ public class ShizukuSettings {
                 service.updatePlusFeatureEnabled("spoof_device", isSpoofDeviceEnabled());
                 service.setPlusSetting("spoof_target", getSpoofTarget());
                 service.setPlusSetting("plus_log_access", getPlusLogAccess());
+                service.setPlusSetting("adb_auth_timeout", getAdbAuthTimeout());
                 service.setPlusSetting("plus_log_show_commands", String.valueOf(isPlusLogShowCommandsEnabled()));
                 service.updatePlusFeatureEnabled("enable_activity_log", isActivityLogEnabled());
                 service.updatePlusFeatureEnabled("binder_firewall", isBinderFirewallEffective());

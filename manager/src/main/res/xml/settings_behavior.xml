@@ -104,6 +104,15 @@
             android:title="@string/settings_legacy_pairing"
             android:icon="@drawable/ic_numeric_1_circle_outline_24" />
 
+        <ListPreference
+            android:key="adb_auth_timeout"
+            android:title="@string/settings_adb_auth_timeout"
+            android:summary="@string/settings_adb_auth_timeout_summary"
+            android:icon="@drawable/ic_adb_24"
+            android:entries="@array/adb_auth_timeout_entries"
+            android:entryValues="@array/adb_auth_timeout_values"
+            android:defaultValue="system" />
+
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="on_device_adb_tcp"
             android:title="@string/settings_on_device_adb_tcp"

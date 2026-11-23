@@ -351,4 +351,19 @@
         <item>own</item>
         <item>all</item>
     </string-array>
+
+    <string-array name="adb_auth_timeout_entries">
+        <item>@string/adb_auth_timeout_system</item>
+        <item>@string/adb_auth_timeout_1d</item>
+        <item>@string/adb_auth_timeout_7d</item>
+        <item>@string/adb_auth_timeout_30d</item>
+        <item>@string/adb_auth_timeout_never</item>
+    </string-array>
+    <string-array name="adb_auth_timeout_values" translatable="false">
+        <item>system</item>
+        <item>24</item>
+        <item>168</item>
+        <item>720</item>
+        <item>never</item>
+    </string-array>
 </resources>

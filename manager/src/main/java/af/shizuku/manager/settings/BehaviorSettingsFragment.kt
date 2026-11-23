@@ -208,6 +208,27 @@ class BehaviorSettingsFragment :
             true
         }
 
+        findPreference<androidx.preference.ListPreference>("adb_auth_timeout")?.apply {
+            summaryProvider = androidx.preference.ListPreference.SimpleSummaryProvider.getInstance()
+            setOnPreferenceChangeListener { pref, newValue ->
+                if (newValue == "never") {
+                    MaterialAlertDialogBuilder(requireContext())
+                        .setTitle(R.string.adb_auth_timeout_never_warning_title)
+                        .setMessage(R.string.adb_auth_timeout_never_warning)
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .setPositiveButton(R.string.adb_auth_timeout_never_confirm) { _, _ ->
+                            (pref as androidx.preference.ListPreference).value = "never"
+                            ShizukuSettings.syncAllPlusFeaturesToServer()
+                        }.show()
+                    false
+                } else {
+                    // Persist first (return true), then push to the server.
+                    view?.post { ShizukuSettings.syncAllPlusFeaturesToServer() }
+                    true
+                }
+            }
+        }
+
         findPreference<TwoStatePreference>("on_device_adb_tcp")?.setOnPreferenceChangeListener { _, newValue ->
             if (newValue is Boolean) {
                 lifecycleScope.launch(Dispatchers.IO) {

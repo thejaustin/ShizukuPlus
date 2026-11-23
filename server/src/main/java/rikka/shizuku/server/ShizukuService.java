@@ -403,39 +403,63 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         }
     }
 
+    /**
+     * Applies the user's ADB authorization time limit ("system" leaves Android's own value alone,
+     * "never" writes 0, otherwise a number of hours). Only an ADB-started server (uid 2000) depends
+     * on that authorization, so a root server never touches it. Returns true when a value was written.
+     */
+    private boolean applyAdbAuthTimeout(String setting) {
+        if (android.os.Process.myUid() != 2000 || setting == null || "system".equals(setting)) return false;
+        String millis;
+        if ("never".equals(setting)) {
+            millis = "0";
+        } else {
+            try {
+                long hours = Long.parseLong(setting);
+                if (hours <= 0 || hours > 24 * 365) return false;
+                millis = String.valueOf(hours * 3600_000L);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+        int userId = UserHandleCompat.getUserId(android.os.Process.myUid());
+        IContentProvider settingsProvider;
+        try {
+            settingsProvider = ActivityManagerApis.getContentProviderExternal(
+                    "settings", userId, null, "com.android.shell");
+        } catch (Exception e) {
+            LOGGER.w("failed to get settings provider", e);
+            return false;
+        }
+        if (settingsProvider == null) return false;
+        try {
+            Bundle extras = new Bundle();
+            extras.putString("value", millis);
+            // A null calling package made SettingsProvider.isChangeAllowed() throw an NPE inside
+            // system_server on Android 16, so the write used to silently never happen.
+            IContentProviderUtils.callCompat(settingsProvider, "com.android.shell", "settings",
+                    "PUT_global", "adb_allowed_connection_time", extras);
+            LOGGER.i("ADB authorization time limit set to %s", setting);
+            return true;
+        } catch (Exception e) {
+            LOGGER.w("failed to update adb_allowed_connection_time", e);
+            return false;
+        } finally {
+            try {
+                ActivityManagerApis.removeContentProviderExternal("settings", null);
+            } catch (Throwable t) {
+                LOGGER.w(t, "removeContentProviderExternal(settings)");
+            }
+        }
+    }
+
     private void ensureAdbTcpPersistence() {
         try {
             int uid = android.os.Process.myUid();
             int userId = UserHandleCompat.getUserId(uid);
 
-            // 1. Keep ADB authorization alive across USB disconnect. Only an ADB-started server
-            // (uid 2000) depends on that authorization; a root server doesn't, so it leaves the
-            // user's ADB trust timeout alone.
-            if (uid == 2000) {
-                IContentProvider settingsProvider = ActivityManagerApis.getContentProviderExternal(
-                        "settings", userId, null, "com.android.shell");
-                if (settingsProvider != null) {
-                    try {
-                        Bundle authTimeout = new Bundle();
-                        authTimeout.putString("value", "0");
-                        // A null calling package made SettingsProvider.isChangeAllowed() throw an
-                        // NPE inside system_server on Android 16, so the write never happened.
-                        IContentProviderUtils.callCompat(
-                                settingsProvider, "com.android.shell", "settings",
-                                "PUT_global", "adb_allowed_connection_time", authTimeout);
-                        // Note: Never forcefully overwrite adb_enabled to "1", as that overrides
-                        // user Developer Options preference and causes issues for apps checking debugging status.
-                    } catch (Exception e) {
-                        LOGGER.w("failed to update adb settings via ContentProvider", e);
-                    } finally {
-                        try {
-                            ActivityManagerApis.removeContentProviderExternal("settings", null);
-                        } catch (Throwable t) {
-                            LOGGER.w(t, "removeContentProviderExternal(settings)");
-                        }
-                    }
-                }
-            }
+            // 1. The ADB authorization time limit is user-controlled ("adb_auth_timeout"); the manager
+            // syncs it after connecting (see setPlusSetting), so nothing is written here.
 
             // 2. Only ensure active TCP port if persistent TCP mode is configured/enabled by the user
             if (uid == 2000 || uid == 0) {
@@ -1454,7 +1478,15 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     public void setPlusSetting(String key, String value) {
         enforceManagerPermission("setPlusSetting");
         LOGGER.i("Plus Setting Update: " + key + " -> " + (MANAGER_ONLY_PLUS_SETTINGS.contains(key) ? "(private)" : value));
-        plusSettingsMap.put(key, value);
+        String previous = plusSettingsMap.put(key, value);
+        if ("adb_auth_timeout".equals(key) && !java.util.Objects.equals(previous, value)) {
+            final String setting = value;
+            new Thread(() -> {
+                if (applyAdbAuthTimeout(setting)) {
+                    dispatchLog("android", "ADB authorization time limit: " + setting);
+                }
+            }, "adb-auth-timeout").start();
+        }
     }
 
     @Override

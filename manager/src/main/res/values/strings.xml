@@ -771,6 +771,16 @@
     <!-- Root Integration (renamed from Legacy Compatibility) -->
     <string name="settings_adb_proxy">Local ADB Proxy Server</string>
     <string name="settings_adb_proxy_summary">Emulate an ADB server on port 15555 to support apps requiring Wireless ADB without keeping the system feature active.</string>
+    <string name="settings_adb_auth_timeout">ADB authorization time limit</string>
+    <string name="settings_adb_auth_timeout_summary">How long Android trusts a computer or app you allowed over ADB before asking again. Applies when Shizuku was started with ADB. "System default" leaves Android\'s own setting alone.</string>
+    <string name="adb_auth_timeout_system">System default</string>
+    <string name="adb_auth_timeout_1d">1 day</string>
+    <string name="adb_auth_timeout_7d">7 days</string>
+    <string name="adb_auth_timeout_30d">30 days</string>
+    <string name="adb_auth_timeout_never">Never expire</string>
+    <string name="adb_auth_timeout_never_warning_title">Keep ADB authorization forever?</string>
+    <string name="adb_auth_timeout_never_warning">Anyone who ever got your approval for ADB debugging stays trusted until you revoke it under Developer options. That keeps Shizuku starting without asking again, but a lost or shared computer keeps its access. A time limit is safer.</string>
+    <string name="adb_auth_timeout_never_confirm">Keep forever</string>
     <string name="settings_on_device_adb_tcp">On-device ADB over TCP</string>
     <string name="settings_on_device_adb_tcp_summary">Enable ADB TCP mode (port 5555) directly on the device. Requires Shizuku with root. Useful for ADB tools without WiFi.</string>
     <string name="settings_force_start_wadb">Bypass Wi-Fi check for WADB</string>
