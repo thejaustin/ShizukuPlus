@@ -82,6 +82,7 @@ public class ShizukuSettings {
         public static final String KEY_OVERLAY_MANAGER_PLUS_ENABLED = "overlay_manager_plus_enabled";
         public static final String KEY_NETWORK_GOVERNOR_PLUS_ENABLED = "network_governor_plus_enabled";
         public static final String KEY_ACTIVITY_MANAGER_PLUS_ENABLED = "activity_manager_plus_enabled";
+        public static final String KEY_TASK_MANAGER_PLUS_ENABLED = "task_manager_plus_enabled";
         public static final String KEY_STATUS_BAR_GOVERNOR_PLUS_ENABLED = "status_bar_governor_plus_enabled";
         public static final String KEY_PACKAGE_GOVERNOR_PLUS_ENABLED = "package_governor_plus_enabled";
         public static final String KEY_DISPLAY_TUNER_PLUS_ENABLED = "display_tuner_plus_enabled";
@@ -1612,6 +1613,11 @@ public class ShizukuSettings {
         return p == null || p.getBoolean(Keys.KEY_ACTIVITY_MANAGER_PLUS_ENABLED, true);
     }
 
+    public static boolean isTaskManagerPlusEnabled() {
+        SharedPreferences p = getPreferences();
+        return p == null || p.getBoolean(Keys.KEY_TASK_MANAGER_PLUS_ENABLED, true);
+    }
+
     public static boolean isAdbProxyEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_ADB_PROXY_ENABLED, false);
@@ -2129,6 +2135,7 @@ public class ShizukuSettings {
                 service.updatePlusFeatureEnabled("package_governor_plus", isPackageGovernorPlusEnabled());
                 service.updatePlusFeatureEnabled("display_tuner_plus", isDisplayTunerPlusEnabled());
                 service.updatePlusFeatureEnabled("activity_manager_plus", isActivityManagerPlusEnabled());
+                service.updatePlusFeatureEnabled("task_manager_plus", isTaskManagerPlusEnabled());
                 service.updatePlusFeatureEnabled("su_bridge", isSuBridgeEnabled());
                 service.setPlusSetting("custom_su_path", getCustomSuPath());
                 service.updatePlusFeatureEnabled("root_magisk_mocking", isRootMagiskMockingEnabled());

@@ -639,6 +639,8 @@
     <string name="settings_network_governor_plus_title">DNS Governor</string>
     <string name="settings_continuity_bridge_title">Continuity bridge</string>
     <string name="settings_activity_manager_plus_title">Process control</string>
+    <string name="settings_task_manager_plus_title">Recent tasks</string>
+    <string name="settings_task_manager_plus_summary">Lets launchers and recents screens list, preview, open and remove recent tasks.</string>
     <string name="settings_status_bar_governor_plus_title">Status bar control</string>
     <string name="settings_package_governor_plus_title">Package governor</string>
     <string name="settings_avf_manager_title">VM Manager</string>
@@ -722,6 +724,8 @@
     <string name="help_network_governor_plus_title">About Network &amp; DNS Governor</string>
     <string name="help_network_governor_plus_detail">The Network Governor provides privileged access to the INetworkPolicyManager and Private DNS settings. It can enforce POLICY_REJECT_ALL for individual apps, providing a robust, system-level firewall that works even on Wi-Fi and 5G connections without an active VPN tunnel.</string>
 
+    <string name="help_task_manager_plus_title">About Recent Tasks access</string>
+    <string name="help_task_manager_plus_detail">Recent Tasks access lets apps you have allowed show your recent apps with thumbnails, bring one back to the front, or swipe one away. It only reads what the system recents screen already shows and never touches accounts or profiles.</string>
     <string name="help_activity_manager_plus_title">About Deep Process Control</string>
     <string name="help_activity_manager_plus_detail">Deep Process Control allows the server to bypass standard app-hibernation and standby restrictions. It can force apps into the RESTRICTED standby bucket or perform a true deepForceStop (killing all services and background jobs), which is essential for aggressive battery-saving tools.</string>
 

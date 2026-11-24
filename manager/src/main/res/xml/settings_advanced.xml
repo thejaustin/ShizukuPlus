@@ -39,6 +39,16 @@
             app:badgeType="plus" />
 
         <af.shizuku.manager.settings.PlusFeaturePreference
+            android:key="task_manager_plus_enabled"
+            android:title="@string/settings_task_manager_plus_title"
+            android:summary="@string/settings_task_manager_plus_summary"
+            android:icon="@drawable/ic_bolt_24"
+            android:defaultValue="true"
+            app:infoTitle="@string/help_task_manager_plus_title"
+            app:infoDetail="@string/help_task_manager_plus_detail"
+            app:badgeType="plus" />
+
+        <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="status_bar_governor_plus_enabled"
             android:title="@string/settings_status_bar_governor_plus_title"
             android:summary="@string/settings_status_bar_governor_plus_summary"
