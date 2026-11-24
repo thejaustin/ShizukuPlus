@@ -28,6 +28,7 @@ class TaskManagerPlusImpl : ITaskManagerPlus.Stub() {
 
         const val KEY_TASK_IDS = "taskIds"
         const val KEY_COMPONENTS = "components"
+        const val KEY_WINDOWING_MODES = "windowingModes"
         const val KEY_BUFFER = "buffer"
     }
 
@@ -60,12 +61,26 @@ class TaskManagerPlusImpl : ITaskManagerPlus.Stub() {
                     recent.map { (it.topActivity ?: it.baseIntent?.component)?.flattenToString().orEmpty() }
                         .toTypedArray(),
                 )
+                putIntArray(KEY_WINDOWING_MODES, recent.map { windowingMode(it) }.toIntArray())
             }
         } catch (e: Exception) {
             Log.e(TAG, "Couldn't read recent tasks", e)
             Bundle()
         }
     }
+
+    /**
+     * TaskInfo.getWindowingMode() is a direct method on recent SDKs; older ones only expose it
+     * through the nested WindowConfiguration. WINDOWING_MODE_UNDEFINED (0) if neither works, so a
+     * caller can tell "fullscreen" from "couldn't read it" apart from everything else.
+     */
+    private fun windowingMode(task: ActivityManager.RecentTaskInfo): Int = runCatching {
+        task.javaClass.getMethod("getWindowingMode").invoke(task) as Int
+    }.recoverCatching {
+        val windowConfiguration = task.javaClass.getField("configuration").get(task)
+            .let { it!!.javaClass.getField("windowConfiguration").get(it) }
+        windowConfiguration!!.javaClass.getMethod("getWindowingMode").invoke(windowConfiguration) as Int
+    }.getOrDefault(0)
 
     override fun getTaskThumbnail(taskId: Int): Bundle {
         return try {
