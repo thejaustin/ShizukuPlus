@@ -120,6 +120,14 @@ Things discussed or sketched that we never formally decided to build.
 
 ## Session History (newest first)
 
+### 2026-11-24 — Claude (Sonnet 5.5) (Task Manager Plus API) [feat/task-manager-plus]
+
+- **What:** first-class recents API so Plus apps (first consumer: AutoCat's replacement recents screen) stop reimplementing hidden-API reflection. New `ITaskManagerPlus` (`getRecentTasks(maxNum, flags)`, `getTaskThumbnail(taskId)`, `startTaskFromRecents(taskId, options)`, `removeTask(taskId)`), `IShizukuService.getTaskManagerPlus() = 130`, server `TaskManagerPlusImpl.kt` (moved from AutoCat's `UserService`; Android 17 `ITaskSnapshotManager` + older `IActivityTaskManager` snapshot lookup), client `ShizukuPlusAPI.Tasks`.
+- **Gate:** feature key `task_manager_plus` (manager row `task_manager_plus_enabled`, default ON; server default-on branch in `isFeatureEnabled` until flags sync), scope `activity_manager`.
+- **Bundle keys:** `taskIds` (int[]), `components` (String[], parallel), `buffer` (HardwareBuffer). Server duplicates the literals (it does not depend on api:api).
+- **api submodule:** AIDL + client changes live in the `api` repo (commit on branch `feat/task-manager-plus`, NOT pushed); this repo's gitlink points at it. Push the api branch before CI can check this out.
+- **Unverified:** nothing compiled (no local build); getRecentTasks uses the calling app's user id, not an explicit userId param as AutoCat did.
+
 ### 2026-11-23 — Claude (Sonnet 5.5) (temp-root crash review, server binder hardening) [fix/server-binder-hardening]
 
 - **What the 2026-11-22 crash was:** a system_server Watchdog kill ("Blocked in handler on ActivityManager:procStart ... 69s", thread in `AppZygote.startProcess` waiting on `webview_zygote`), then a reboot. Not the server, not the starter. Caused by a jam of WebView/Google-app launches under memory pressure (4.7 GB swap used, 2.8 GB free) and low CPU clocks.
