@@ -65,6 +65,7 @@ import af.shizuku.server.IPrivilegedDataSource;
 import af.shizuku.server.IBackupRestorePlus;
 import af.shizuku.server.IApkPatcher;
 import af.shizuku.server.IDeviceControlPlus;
+import af.shizuku.server.ITaskManagerPlus;
 import rikka.hidden.compat.ActivityManagerApis;
 import rikka.hidden.compat.DeviceIdleControllerApis;
 import rikka.hidden.compat.PackageManagerApis;
@@ -253,6 +254,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     private final Lazy<OverlayManagerPlusImpl> overlayManagerPlus = new Lazy<>(OverlayManagerPlusImpl::new);
     private final Lazy<NetworkGovernorPlusImpl> networkGovernorPlus = new Lazy<>(NetworkGovernorPlusImpl::new);
     private final Lazy<ActivityManagerPlusImpl> activityManagerPlus = new Lazy<>(ActivityManagerPlusImpl::new);
+    private final Lazy<TaskManagerPlusImpl> taskManagerPlus = new Lazy<>(TaskManagerPlusImpl::new);
     private final Lazy<StatusBarGovernorPlusImpl> statusBarGovernorPlus = new Lazy<>(StatusBarGovernorPlusImpl::new);
     private final Lazy<PackageGovernorPlusImpl> packageGovernorPlus = new Lazy<>(PackageGovernorPlusImpl::new);
     private final Lazy<DisplayTunerPlusImpl> displayTunerPlus = new Lazy<>(DisplayTunerPlusImpl::new);
@@ -1127,7 +1129,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         // root_magisk_mocking default to OFF there, so they must not be ON here either: a server
         // started by the watchdog or at boot would otherwise run them even for a user who turned
         // them off. Only features that default on in the manager default on here.
-        if (key.equals("shell_interceptor")) {
+        if (key.equals("shell_interceptor") || key.equals("task_manager_plus")) {
             return true;
         }
         return featureEnabledMap.getOrDefault(key, false);
@@ -3574,6 +3576,14 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         if (isAppScopeDisabled(Binder.getCallingUid(), null, "activity_manager")) return null;
         if (!isFeatureEnabled("activity_manager_plus")) return null;
         return activityManagerPlus.get();
+    }
+
+    @Override
+    public ITaskManagerPlus getTaskManagerPlus() {
+        enforceCallingPermission("getTaskManagerPlus");
+        if (isAppScopeDisabled(Binder.getCallingUid(), null, "activity_manager")) return null;
+        if (!isFeatureEnabled("task_manager_plus")) return null;
+        return taskManagerPlus.get();
     }
 
     @Override
