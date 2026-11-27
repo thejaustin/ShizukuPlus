@@ -52,12 +52,46 @@ object SettingsHelper {
         } catch (e: SecurityException) {
             timber.log.Timber.w("Direct write of %s refused: %s", key, e.message)
         }
+        if (putGlobalAsDeviceOwner(context, key, value)) return true
         if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
             Thread { putGlobalViaShell(key, value) }.start()
             return false
         }
         return putGlobalViaShell(key, value)
     }
+
+    /**
+     * The Device Owner may change adb_enabled and adb_wifi_enabled through DevicePolicyManager
+     * without WRITE_SECURE_SETTINGS or a running service, which lets a Device Owner Shizuku+ bring
+     * wireless debugging back after a reboot. Limited to those two keys; Android may still refuse
+     * (newer releases, vendor firmware), so every failure is soft.
+     */
+    private fun putGlobalAsDeviceOwner(
+        context: Context,
+        key: String,
+        value: Long,
+    ): Boolean {
+        if (key != Settings.Global.ADB_ENABLED && key != "adb_wifi_enabled") return false
+        if (!isDeviceOwner(context)) return false
+        return runCatching {
+            val dpm = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as android.app.admin.DevicePolicyManager
+            dpm.setGlobalSetting(ComponentName(context, af.shizuku.manager.admin.DhizukuAdminReceiver::class.java), key, value.toString())
+            true
+        }.getOrElse {
+            timber.log.Timber.w(it, "Device Owner write of %s refused", key)
+            false
+        }
+    }
+
+    /** Whether Shizuku+ itself is the Device Owner (Dhizuku mode). */
+    fun isDeviceOwner(context: Context): Boolean =
+        runCatching {
+            (context.getSystemService(Context.DEVICE_POLICY_SERVICE) as android.app.admin.DevicePolicyManager)
+                .isDeviceOwnerApp(context.packageName)
+        }.getOrDefault(false)
+
+    /** Whether this app can switch the adb settings itself: WRITE_SECURE_SETTINGS or Device Owner. */
+    fun canToggleAdb(context: Context): Boolean = hasWriteSecureSettings(context) || isDeviceOwner(context)
 
     private fun putGlobalViaShell(
         key: String,
