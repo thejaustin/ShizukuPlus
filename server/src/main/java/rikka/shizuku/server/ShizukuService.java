@@ -3306,23 +3306,32 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
                     LOGGER.e(tr, "failed to kill package");
                 }
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                LOGGER.w(e, "Interrupted while sleeping before retry");
-                Thread.currentThread().interrupt();
-            }
-            for (int userId : failedUserIds) {
-                try {
-                    boolean success = sendBinderToUserApp(binder, MANAGER_APPLICATION_ID, userId);
-                    if (success) {
-                        LOGGER.i("retry succeeded for user %d", userId);
-                    } else {
-                        LOGGER.w("retry failed for user %d", userId);
+            // On the main looper (the boot path) a blocking sleep would hold up everything queued
+            // behind it, including the third-party pass; post the retry instead.
+            Runnable retryAll = () -> {
+                for (int userId : failedUserIds) {
+                    try {
+                        boolean success = sendBinderToUserApp(binder, MANAGER_APPLICATION_ID, userId);
+                        if (success) {
+                            LOGGER.i("retry succeeded for user %d", userId);
+                        } else {
+                            LOGGER.w("retry failed for user %d", userId);
+                        }
+                    } catch (Throwable tr) {
+                        LOGGER.w(tr, "retry failed");
                     }
-                } catch (Throwable tr) {
-                    LOGGER.w(tr, "retry failed");
                 }
+            };
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                HandlerUtil.getMainHandler().postDelayed(retryAll, 1000);
+            } else {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    LOGGER.w(e, "Interrupted while sleeping before retry");
+                    Thread.currentThread().interrupt();
+                }
+                retryAll.run();
             }
         }
     }
