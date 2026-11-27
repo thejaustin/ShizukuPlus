@@ -136,6 +136,9 @@ jobs:
   build:
     needs: [pre-push-guard]
     runs-on: ubuntu-latest
+    # Signing secrets live in this environment, which only master can deploy to, so a workflow run
+    # from any other branch can't read them.
+    environment: release
 
     env:
       ANDROID_HOME: "/usr/local/lib/android/sdk"

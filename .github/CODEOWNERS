@@ -1,0 +1,3 @@
+# Workflow and release-signing changes need the owner's review.
+/.github/ @thejaustin
+/SECURITY.md @thejaustin
