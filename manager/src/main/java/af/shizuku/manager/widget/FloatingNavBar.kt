@@ -626,16 +626,25 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
         flexible: Boolean,
     ): Int {
         val unlabeled = labelMode == "unlabeled"
+        // Labels are one text line: when the system font is larger (or taller per line, like
+        // some OEM fonts), a fixed height clips their descenders, so every labeled style grows
+        // with the font scale. Unlabeled bars have no text to protect.
+        val labelGrowth =
+            if (unlabeled) {
+                0
+            } else {
+                (16 * (context.resources.configuration.fontScale - 1f)).coerceAtLeast(0f).toInt()
+            }
         return when (style) {
-            STYLE_COMPACT -> if (unlabeled) 58 else 72
-            STYLE_CAPSULE -> if (unlabeled) 60 else 70
+            STYLE_COMPACT -> if (unlabeled) 58 else 72 + labelGrowth
+            STYLE_CAPSULE -> if (unlabeled) 60 else 74 + labelGrowth
             // M3 Expressive flexible navigation bar: 64dp, growing with the label's 16sp line at
             // larger text sizes so labels stay whole (the spec asks for that up to 200%).
             else ->
                 when {
                     unlabeled -> 64
-                    flexible -> 64 + (16 * (context.resources.configuration.fontScale - 1f)).coerceAtLeast(0f).toInt()
-                    else -> 80
+                    flexible -> 64 + labelGrowth
+                    else -> 80 + labelGrowth
                 }
         }
     }
