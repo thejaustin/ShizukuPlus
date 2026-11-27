@@ -556,8 +556,10 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
         mainHandler.post(() -> {
             grantManagerEssentialPermissions();
             migratePermissionGrants();
-            sendBinderToClient();
+            // The manager first: the client pass makes a burst of provider calls, and one slow or
+            // frozen app in it would otherwise hold up the manager's connection behind it.
             sendBinderToManager();
+            sendBinderToClient();
         });
 
         // No proactive auto-grant: granting every shell-grantable permission (WRITE_SECURE_SETTINGS,
