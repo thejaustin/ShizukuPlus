@@ -9,6 +9,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityManager
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -21,6 +22,8 @@ import androidx.transition.TransitionManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.dockedtoolbar.DockedToolbarLayout
+import com.google.android.material.floatingtoolbar.FloatingToolbarLayout
 
 /**
  * "Search and filters at the bottom" (Personalization): the app list's search, filters and sort
@@ -28,6 +31,10 @@ import com.google.android.material.color.MaterialColors
  * While apps are selected the dock shows the selection actions instead, which otherwise sit in the
  * toolbar's overflow menu. The controls keep their views and ids, so the activity's listeners
  * work unchanged.
+ *
+ * The dock's surface is the "Dock style" setting: the original card, or the same content hosted in
+ * Material Components' FloatingToolbarLayout / DockedToolbarLayout. Positioning, keyboard lift and
+ * auto-hide act on the host view, so all three share them.
  */
 class AppsBottomDock(
     private val activity: Activity,
@@ -41,7 +48,31 @@ class AppsBottomDock(
 
     private fun dp(v: Int) = (v * density).toInt()
 
-    val dock = MaterialCardView(activity)
+    private val style = ShizukuSettings.getAppsDockStyle()
+    private val docked = style == "docked"
+
+    /** The card, or a plain host holding the toolbar layout; this is what gets placed and animated. */
+    val dock: ViewGroup =
+        if (style == "floating" || docked) {
+            FrameLayout(activity).apply {
+                clipChildren = false
+                clipToPadding = false
+            }
+        } else {
+            MaterialCardView(activity)
+        }
+    private val card = dock as? MaterialCardView
+
+    /** Where the content goes: the card itself, or the toolbar layout inside the host. */
+    private val surface: ViewGroup =
+        when {
+            docked -> DockedToolbarLayout(activity, null, 0, R.style.Widget_App_DockedToolbar)
+            style == "floating" -> FloatingToolbarLayout(activity, null, 0, R.style.Widget_App_FloatingToolbar)
+            else -> dock
+        }
+
+    /** Bottom padding a docked toolbar gives itself to sit above the system bars (0 otherwise). */
+    private var dockInset = 0
     private val selectionRow: LinearLayout
     private val selectionCount: TextView
     private val hideButton: MaterialButton
@@ -84,28 +115,33 @@ class AppsBottomDock(
                     },
                 )
             }
-        dock.apply {
+        card?.apply {
             radius = dp(28).toFloat()
             cardElevation = dp(3).toFloat()
             strokeWidth = 0
             setCardBackgroundColor(
                 MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurfaceContainerHigh),
             )
-            addView(
-                LinearLayout(activity).apply {
-                    orientation = LinearLayout.VERTICAL
-                    setPadding(0, dp(4), 0, dp(4))
-                    addView(controls)
-                    addView(selectionRow)
-                },
-            )
+        }
+        surface.addView(
+            LinearLayout(activity).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(0, dp(4), 0, dp(4))
+                addView(controls)
+                addView(selectionRow)
+            },
+        )
+        if (surface !== dock) {
+            dock.addView(surface, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
         }
         coordinator.addView(
             dock,
             CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
                 gravity = Gravity.BOTTOM
-                marginStart = dp(12)
-                marginEnd = dp(12)
+                if (!docked) {
+                    marginStart = dp(12)
+                    marginEnd = dp(12)
+                }
             },
         )
         dock.addOnLayoutChangeListener { _, _, top, _, bottom, _, oldTop, _, oldBottom ->
@@ -153,7 +189,14 @@ class AppsBottomDock(
         val nav = content?.findViewById<View>(R.id.floating_nav_root)
         val navShown = nav != null && nav.visibility == View.VISIBLE && nav.height > 0
         val navReach = if (navShown) content!!.height - nav!!.top else 0
-        val newBase = maxOf(systemBottom, navReach) + dp(8)
+        // A docked toolbar sits on the screen edge and pads itself above the system bars; only the
+        // floating pill (if shown) lifts it.
+        val newBase = if (docked) navReach else maxOf(systemBottom, navReach) + dp(8)
+        val newInset = if (docked && !navShown) systemBottom else 0
+        if (newInset != dockInset) {
+            dockInset = newInset
+            surface.setPadding(surface.paddingLeft, surface.paddingTop, surface.paddingRight, newInset)
+        }
         val lp = dock.layoutParams as CoordinatorLayout.LayoutParams
         var changed = newBase != baseBottom
         baseBottom = newBase
@@ -161,7 +204,7 @@ class AppsBottomDock(
         // With the floating pill shown, the dock takes its width, corners and surface so the two
         // read as one stack instead of a full-width bar crowding the pill.
         val navCard = nav as? MaterialCardView
-        if (navShown && navCard != null) {
+        if (navShown && navCard != null && !docked) {
             if (lp.width != navCard.width) {
                 lp.width = navCard.width
                 lp.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
@@ -169,10 +212,12 @@ class AppsBottomDock(
                 lp.marginEnd = 0
                 changed = true
             }
-            dock.radius = navCard.radius
-            dock.setCardBackgroundColor(navCard.cardBackgroundColor)
-            dock.strokeColor = navCard.strokeColor
-            dock.strokeWidth = navCard.strokeWidth
+            card?.apply {
+                radius = navCard.radius
+                setCardBackgroundColor(navCard.cardBackgroundColor)
+                strokeColor = navCard.strokeColor
+                strokeWidth = navCard.strokeWidth
+            }
         }
         if (changed) dock.requestLayout()
         // The pill may not be laid out yet on the first pass; measure again once it is.
@@ -215,7 +260,8 @@ class AppsBottomDock(
     private fun watchKeyboard() {
         fun lift(insets: WindowInsetsCompat) {
             val ime = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
-            imeLift = maxOf(0, ime + dp(8) - baseBottom)
+            // Docked: no gap above the keyboard, and its own bottom padding hides behind it.
+            imeLift = maxOf(0, ime + (if (docked) 0 else dp(8)) - baseBottom - dockInset)
             applyTranslation()
         }
         ViewCompat.setOnApplyWindowInsetsListener(dock) { _, insets ->

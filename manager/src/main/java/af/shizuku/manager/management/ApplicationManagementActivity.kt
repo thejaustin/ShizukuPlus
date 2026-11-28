@@ -68,6 +68,7 @@ open class ApplicationManagementActivity :
     /** Set when search and filters live in the bottom dock (Personalization). */
     private var bottomDock: AppsBottomDock? = null
     private var dockSettingAtCreate = false
+    private var dockStyleAtCreate = ""
     private var firstLoad = true
     private var backCallback: androidx.activity.OnBackPressedCallback? = null
     private var swipeRightAction = "none"
@@ -304,6 +305,7 @@ open class ApplicationManagementActivity :
         recyclerView.clipToPadding = false
 
         dockSettingAtCreate = ShizukuSettings.isAppsControlsAtBottom()
+        dockStyleAtCreate = ShizukuSettings.getAppsDockStyle()
         if (dockSettingAtCreate) {
             val coordinator = rootView.findViewById<androidx.coordinatorlayout.widget.CoordinatorLayout>(R.id.coordinator_root)
             val controls = rootView.findViewById<View>(R.id.app_controls)
@@ -1207,7 +1209,9 @@ open class ApplicationManagementActivity :
     override fun onResume() {
         super.onResume()
         // The dock setting changed in Personalization while this screen was in the back stack.
-        if (ShizukuSettings.isAppsControlsAtBottom() != dockSettingAtCreate) {
+        if (ShizukuSettings.isAppsControlsAtBottom() != dockSettingAtCreate ||
+            (dockSettingAtCreate && ShizukuSettings.getAppsDockStyle() != dockStyleAtCreate)
+        ) {
             recreate()
             return
         }

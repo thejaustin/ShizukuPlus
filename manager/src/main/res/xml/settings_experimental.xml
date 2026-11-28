@@ -144,6 +144,16 @@
             android:defaultValue="false"
             app:badgeType="experimental" />
 
+        <af.shizuku.manager.settings.ConnectedButtonGroupPreference
+            android:key="apps_dock_style"
+            android:title="@string/settings_apps_dock_style"
+            android:summary="@string/settings_apps_dock_style_summary"
+            android:icon="@drawable/ic_space_dashboard_24"
+            android:entries="@array/apps_dock_styles"
+            android:entryValues="@array/apps_dock_styles_value"
+            android:defaultValue="card"
+            android:dependency="apps_controls_bottom" />
+
         <af.shizuku.manager.settings.PlusFeaturePreference
             android:key="usb_phone_switch_notify"
             android:title="@string/settings_usb_phone_switch_notify"

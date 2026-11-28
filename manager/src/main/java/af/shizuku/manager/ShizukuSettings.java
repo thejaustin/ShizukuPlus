@@ -174,6 +174,7 @@ public class ShizukuSettings {
         public static final String KEY_ONEUI_THEME = "oneui_theme_enabled";
         public static final String KEY_ONE_HANDED_MODE = "one_handed_mode";
         public static final String KEY_APPS_CONTROLS_BOTTOM = "apps_controls_bottom";
+        public static final String KEY_APPS_DOCK_STYLE = "apps_dock_style";
         public static final String KEY_BOLD_TYPOGRAPHY = "bold_typography";
         public static final String KEY_EXPANDED_HEADERS = "expanded_headers_enabled";
         public static final String KEY_CORNER_ROUNDING_OVERRIDE = "corner_rounding_override";
@@ -2584,6 +2585,11 @@ public class ShizukuSettings {
     /** Apps screen: search, filters and sort in a dock above the navigation bar instead of on top. */
     public static boolean isAppsControlsAtBottom() {
         return getPreferences().getBoolean(Keys.KEY_APPS_CONTROLS_BOTTOM, false);
+    }
+
+    /** Surface of the Apps screen's bottom dock: "card" (default), "floating" or "docked" toolbar. */
+    public static String getAppsDockStyle() {
+        return getPreferences().getString(Keys.KEY_APPS_DOCK_STYLE, "card");
     }
 
     public static boolean isFloatingNavAutohideEnabled() {
