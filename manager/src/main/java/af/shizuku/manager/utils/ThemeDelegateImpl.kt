@@ -22,6 +22,7 @@ class ThemeDelegateImpl : ThemeDelegate {
             ShizukuSettings.getCornerRoundingOverride() + ShizukuSettings.isAmoledPlusEnabled() +
             ShizukuSettings.isHighContrastEnabled() + ShizukuSettings.isExpressiveAnimationsEnabled() +
             ShizukuSettings.isExperimentalColorSchemesEnabled() + contrastLevel(context) +
+            ShizukuSettings.isExpressiveDialogsEnabled() +
             (ShizukuSettings.getPreferences()?.let { listOf("style_status_buttons", "style_nav_bar", "corners_nav_bar").joinToString { k -> it.getString(k, "") ?: "" } } ?: "")
     }
 
@@ -113,12 +114,18 @@ class ThemeDelegateImpl : ThemeDelegate {
             theme.applyStyle(if (dark) R.style.ThemeOverlay_HighContrast_Dark else R.style.ThemeOverlay_HighContrast, true)
         }
 
-        if (ShizukuSettings.isExpressiveControlsPreviewEnabled()) {
+        // View progress indicators: the overlay swaps in MDC's Wavy styles (waveAmplitude,
+        // wavelength, waveSpeed, indicatorTrackGapSize), so no per-layout code is needed.
+        if (ShizukuSettings.isWavyProgressEnabled()) {
             theme.applyStyle(R.style.ThemeOverlay_Expressive_Progress, true)
         }
 
-        if (!ShizukuSettings.isExpressiveAnimationsEnabled()) {
+        if (!ShizukuSettings.isExpressiveMotionScheme()) {
             theme.applyStyle(R.style.ThemeOverlay_Motion_Standard, true)
+        }
+
+        if (!ShizukuSettings.isExpressiveDialogsEnabled()) {
+            theme.applyStyle(R.style.ThemeOverlay_Dialogs_Classic, true)
         }
 
         val blackStyle = ThemeHelper.getThemeStyleRes(context)

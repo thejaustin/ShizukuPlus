@@ -176,6 +176,17 @@
 
     <!-- Every switch: check / X on the thumb (M3 "icon on both states"), tinted by MDC's state
          colours. A ?colorOnPrimary tint used to paint the check the same colour as the thumb. -->
+    <!-- Apps dock hosts: the dock places itself (see AppsBottomDock.place), so MDC's own inset handling is off. -->
+    <style name="Widget.App.FloatingToolbar" parent="Widget.Material3.FloatingToolbar">
+        <item name="marginLeftSystemWindowInsets">false</item>
+        <item name="marginRightSystemWindowInsets">false</item>
+        <item name="marginBottomSystemWindowInsets">false</item>
+    </style>
+
+    <style name="Widget.App.DockedToolbar" parent="Widget.Material3.DockedToolbar">
+        <item name="android:fitsSystemWindows">false</item>
+    </style>
+
     <style name="Widget.App.MaterialSwitch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
         <item name="thumbIcon">@drawable/m3_switch_thumb_icon</item>
     </style>

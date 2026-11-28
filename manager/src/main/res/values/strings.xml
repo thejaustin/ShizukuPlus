@@ -16,16 +16,34 @@
     <string name="settings_icon_style">Icon style</string>
     <string name="settings_shape_style">Container shape style</string>
     <string name="settings_animation_intensity">Animation intensity</string>
+    <string name="settings_expressive_motion_scheme">Springy motion</string>
+    <string name="settings_expressive_motion_scheme_summary">Bouncy Material 3 Expressive springs. Turn off for the calmer Standard motion. Animations above still decide whether anything moves</string>
+    <string name="settings_motion_preview_expressive">Expressive</string>
+    <string name="settings_motion_preview_standard">Standard</string>
+    <string name="settings_wavy_progress">Wavy progress</string>
+    <string name="settings_wavy_progress_summary">Progress bars and spinners draw the Material 3 Expressive wave instead of a flat line. Reopen screens to see the change</string>
+    <string name="settings_motion_preview_still">Animations are off, so this stays still</string>
 
     <!-- UI Settings - Display -->
     <string name="settings_edge_to_edge">Edge-to-edge layout</string>
     <string name="settings_blur_ui">Frosted glass effect</string>
+    <string name="settings_expressive_dialogs">Expressive dialogs</string>
+    <string name="settings_expressive_dialogs_summary">Material 3 Expressive layout and buttons for dialogs. Turn off for classic Material 3 dialogs.</string>
+    <string name="settings_expressive_dialogs_preview">Preview dialog</string>
+    <string name="settings_expressive_dialogs_preview_summary">Opens a sample dialog in the current style</string>
+    <string name="settings_expressive_dialogs_preview_title">Sample dialog</string>
+    <string name="settings_expressive_dialogs_preview_message">This is how alert dialogs look with your current settings.</string>
 
     <!-- UI Settings - One UI Theme -->
     <string name="settings_oneui_theme">One UI style</string>
     <string name="settings_oneui_theme_summary">Samsung-style large titles, rounder corners and bolder type. Your colors stay as set above.</string>
     <string name="settings_one_handed_mode">One-handed mode</string>
     <string name="settings_one_handed_mode_summary">Shift interactive content toward the bottom of the screen for comfortable thumb reach</string>
+    <string name="settings_apps_dock_style">Dock style</string>
+    <string name="settings_apps_dock_style_summary">Surface of the bottom dock on the Apps screen: the current card, a Material floating toolbar, or a toolbar docked to the bottom edge</string>
+    <string name="settings_apps_dock_style_card">Card</string>
+    <string name="settings_apps_dock_style_floating">Floating</string>
+    <string name="settings_apps_dock_style_docked">Docked</string>
     <string name="settings_apps_controls_bottom">Search and filters at the bottom</string>
     <string name="settings_apps_controls_bottom_summary">On the Apps screen, keep search, filters and sort in a bar above the navigation bar, and show selection actions there too</string>
 

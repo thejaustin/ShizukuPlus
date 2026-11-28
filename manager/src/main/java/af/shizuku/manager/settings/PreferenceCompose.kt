@@ -32,7 +32,7 @@ internal fun PreferenceComposeTheme(content: @Composable () -> Unit) {
     AppTheme(
         isExpressiveMotion =
             af.shizuku.manager.ShizukuSettings
-                .isExpressiveAnimationsEnabled(),
+                .isExpressiveMotionScheme(),
         isBlackNightTheme = ThemeHelper.isBlackNightTheme(context),
         isAmoledPlus = ShizukuSettings.isAmoledPlusEnabled(),
         isOneUi = ShizukuSettings.isOneUiThemeEnabled(),

@@ -342,6 +342,18 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                 true
             }
         }
+        // View indicators take their style from the theme overlay, so rebuild the screens.
+        findPreference<Preference>(ShizukuSettings.Keys.KEY_WAVY_PROGRESS)?.setOnPreferenceChangeListener { _, _ ->
+            applyTheme(requiresRecreate = true)
+            true
+        }
+
+        // Springy vs Standard scheme: Compose screens pick it up live via onThemeChanged; View
+        // components read it when the next screen is created.
+        findPreference<Preference>(ShizukuSettings.Keys.KEY_EXPRESSIVE_MOTION_SCHEME)?.setOnPreferenceChangeListener { _, _ ->
+            applyTheme(requiresRecreate = false)
+            true
+        }
         syncIntensityAvailability()
 
         // Off / Theme / Status color stands in for the status card outline switch + its style.
@@ -514,6 +526,24 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                 view?.post { applyTheme(requiresRecreate = true) }
                 true
             }
+        }
+
+        findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_EXPRESSIVE_DIALOGS)?.let { pref ->
+            pref.isChecked = ShizukuSettings.isExpressiveDialogsEnabled()
+            // Dialog styles resolve from the activity theme, so the overlay needs a recreate.
+            pref.setOnPreferenceChangeListener { _, _ ->
+                view?.post { applyTheme(requiresRecreate = true) }
+                true
+            }
+        }
+        findPreference<Preference>("expressive_dialogs_preview")?.setOnPreferenceClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.settings_expressive_dialogs_preview_title)
+                .setMessage(R.string.settings_expressive_dialogs_preview_message)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+            true
         }
 
         oneUiThemePreference = requireNotNull(findPreference(KEY_ONEUI_THEME))

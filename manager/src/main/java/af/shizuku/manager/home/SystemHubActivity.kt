@@ -21,7 +21,7 @@ class SystemHubActivity : AppActivity() {
             AppTheme(
                 isExpressiveMotion =
                     af.shizuku.manager.ShizukuSettings
-                        .isExpressiveAnimationsEnabled(),
+                        .isExpressiveMotionScheme(),
                 darkTheme = isSystemInDarkTheme(),
                 isBlackNightTheme = ThemeHelper.isBlackNightTheme(context),
                 isAmoledPlus = ShizukuSettings.isAmoledPlusEnabled(),

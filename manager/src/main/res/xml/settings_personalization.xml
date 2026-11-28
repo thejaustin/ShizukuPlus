@@ -214,6 +214,28 @@
             android:entries="@array/animation_intensities"
             android:entryValues="@array/animation_intensities_value" />
 
+        <!-- Springy Expressive scheme vs the Standard one. Only picks the style: Animations mode Off
+             and a 0 animator scale still win, and Off already falls back to Standard. -->
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="expressive_motion_scheme"
+            android:title="@string/settings_expressive_motion_scheme"
+            android:summary="@string/settings_expressive_motion_scheme_summary"
+            android:icon="@drawable/ic_animation_24"
+            android:defaultValue="true" />
+
+        <af.shizuku.manager.settings.MotionPreviewPreference
+            android:key="motion_preview" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="wavy_progress"
+            android:title="@string/settings_wavy_progress"
+            android:summary="@string/settings_wavy_progress_summary"
+            android:icon="@drawable/ic_speed_24"
+            android:defaultValue="false" />
+
+        <af.shizuku.manager.settings.WavyProgressPreviewPreference
+            android:key="wavy_progress_preview" />
+
         <af.shizuku.manager.settings.ConnectedButtonGroupPreference
             android:key="haptics_mode"
             android:persistent="false"
@@ -247,6 +269,19 @@
             android:title="@string/settings_blur_ui"
             android:icon="@drawable/ic_opacity_24"
             android:defaultValue="false" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="expressive_dialogs"
+            android:title="@string/settings_expressive_dialogs"
+            android:summary="@string/settings_expressive_dialogs_summary"
+            android:icon="@drawable/ic_space_dashboard_24"
+            android:defaultValue="true" />
+
+        <androidx.preference.Preference
+            android:key="expressive_dialogs_preview"
+            android:title="@string/settings_expressive_dialogs_preview"
+            android:summary="@string/settings_expressive_dialogs_preview_summary"
+            android:icon="@drawable/ic_visibility_24" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="edge_to_edge_enabled"

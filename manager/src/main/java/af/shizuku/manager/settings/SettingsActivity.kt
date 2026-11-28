@@ -158,7 +158,7 @@ class SettingsActivity :
             af.shizuku.core.ui.compose.AppTheme(
                 isExpressiveMotion =
                     af.shizuku.manager.ShizukuSettings
-                        .isExpressiveAnimationsEnabled(),
+                        .isExpressiveMotionScheme(),
                 isBlackNightTheme =
                     af.shizuku.manager.app.ThemeHelper
                         .isBlackNightTheme(this),

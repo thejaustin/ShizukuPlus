@@ -170,9 +170,11 @@ public class ShizukuSettings {
         public static final String KEY_ANIMATION_INTENSITY = "animation_intensity";
         public static final String KEY_EDGE_TO_EDGE = "edge_to_edge_enabled";
         public static final String KEY_BLUR_UI = "blur_ui_enabled";
+        public static final String KEY_EXPRESSIVE_DIALOGS = "expressive_dialogs";
         public static final String KEY_ONEUI_THEME = "oneui_theme_enabled";
         public static final String KEY_ONE_HANDED_MODE = "one_handed_mode";
         public static final String KEY_APPS_CONTROLS_BOTTOM = "apps_controls_bottom";
+        public static final String KEY_APPS_DOCK_STYLE = "apps_dock_style";
         public static final String KEY_BOLD_TYPOGRAPHY = "bold_typography";
         public static final String KEY_EXPANDED_HEADERS = "expanded_headers_enabled";
         public static final String KEY_CORNER_ROUNDING_OVERRIDE = "corner_rounding_override";
@@ -220,6 +222,10 @@ public class ShizukuSettings {
         /** Experimental: M3 shared-axis transitions between screens and settings pages (off = Explode / cuts). */
         public static final String KEY_EXPERIMENTAL_SCREEN_TRANSITIONS = "experimental_screen_transitions";
         public static final String KEY_EXPRESSIVE_CONTROLS_PREVIEW = "expressive_controls_preview";
+        /** Personalization: Material 3 Expressive (springy) vs Standard motion scheme. Default on. */
+        public static final String KEY_EXPRESSIVE_MOTION_SCHEME = "expressive_motion_scheme";
+        /** Personalization: wavy vs flat progress indicators. Default off (flat). */
+        public static final String KEY_WAVY_PROGRESS = "wavy_progress";
         /** Experimental: dropping a Home card you moved by holding it leaves edit mode again. */
         public static final String KEY_HOME_QUICK_MOVE = "home_quick_move";
         /** Whether the terminal export includes the SU Bridge su wrapper (off: rish only). */
@@ -446,6 +452,16 @@ public class ShizukuSettings {
         return getPreferences().getBoolean(Keys.KEY_EXPRESSIVE_ANIMATIONS, true);
     }
 
+    /**
+     * Whether Compose/View components use the Expressive MotionScheme. The "Motion style" toggle only
+     * chooses the scheme's character (springy vs standard); it never turns motion on. Animations mode
+     * Off (and animator scale 0, via getAnimationDurationScale) still wins, and Off falls back to Standard.
+     */
+    public static boolean isExpressiveMotionScheme() {
+        return isExpressiveAnimationsEnabled()
+                && getPreferences().getBoolean(Keys.KEY_EXPRESSIVE_MOTION_SCHEME, true);
+    }
+
     public static boolean isHapticFeedbackEnabled() {
         if (isFollowSystemHapticsEnabled() && sContext != null) {
             int systemHaptic = Settings.System.getInt(
@@ -509,6 +525,11 @@ public class ShizukuSettings {
 
     public static boolean isBlurUiEnabled() {
         return getPreferences().getBoolean(Keys.KEY_BLUR_UI, false);
+    }
+
+    /** Alert dialogs use Material 3 Expressive's layout and buttons (the default); off = classic Material 3. */
+    public static boolean isExpressiveDialogsEnabled() {
+        return getPreferences().getBoolean(Keys.KEY_EXPRESSIVE_DIALOGS, true);
     }
 
     public static boolean isAmoledPlusEnabled() {
@@ -2495,6 +2516,13 @@ public class ShizukuSettings {
         return p != null && p.getBoolean(Keys.KEY_HOME_COMPACT_CARDS, false);
     }
 
+    /** Wavy progress indicators: the Personalization toggle, or the older Expressive controls preview. */
+    public static boolean isWavyProgressEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && (p.getBoolean(Keys.KEY_WAVY_PROGRESS, false)
+                || p.getBoolean(Keys.KEY_EXPRESSIVE_CONTROLS_PREVIEW, false));
+    }
+
     public static boolean isExpressiveControlsPreviewEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_EXPRESSIVE_CONTROLS_PREVIEW, false);
@@ -2557,6 +2585,11 @@ public class ShizukuSettings {
     /** Apps screen: search, filters and sort in a dock above the navigation bar instead of on top. */
     public static boolean isAppsControlsAtBottom() {
         return getPreferences().getBoolean(Keys.KEY_APPS_CONTROLS_BOTTOM, false);
+    }
+
+    /** Surface of the Apps screen's bottom dock: "card" (default), "floating" or "docked" toolbar. */
+    public static String getAppsDockStyle() {
+        return getPreferences().getString(Keys.KEY_APPS_DOCK_STYLE, "card");
     }
 
     public static boolean isFloatingNavAutohideEnabled() {
