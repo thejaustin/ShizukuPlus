@@ -6,8 +6,8 @@ import af.shizuku.manager.ShizukuSettings
 import af.shizuku.manager.ShizukuSettings.Keys.*
 import af.shizuku.manager.app.ThemeHelper
 import af.shizuku.manager.ktx.toHtml
-import af.shizuku.manager.utils.TranslationCoverage
 import af.shizuku.manager.utils.CustomTabsHelper
+import af.shizuku.manager.utils.TranslationCoverage
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
@@ -598,7 +598,8 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                     context.getString(
                         R.string.settings_translation_summary_partial,
                         ShizukuSettings.getLocale().getDisplayName(ShizukuSettings.getLocale()),
-                        cov[0], cov[1],
+                        cov[0],
+                        cov[1],
                     )
                 } else {
                     context.getString(R.string.settings_translation_summary, context.getString(R.string.app_name))
@@ -716,9 +717,11 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                 }
             val localizedLocaleName = rawLocalizedLocaleName.replaceFirstChar { if (it.isLowerCase()) it.uppercase(currentLocale) else it.toString() }
 
-            val coverage = TranslationCoverage.of(locale)
-                ?.takeIf { it[0] < 100 }
-                ?.let { getString(R.string.translation_coverage_line, it[0], it[1]) }
+            val coverage =
+                TranslationCoverage
+                    .of(locale)
+                    ?.takeIf { it[0] < 100 }
+                    ?.let { getString(R.string.translation_coverage_line, it[0], it[1]) }
             val coverageHtml = coverage?.let { "<br><small>$it</small>" }.orEmpty()
             localizedLocales.add(
                 if (index != currentLocaleIndex) {

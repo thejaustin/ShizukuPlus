@@ -110,7 +110,9 @@ object ShizukuReceiverStarter {
             val app = context.applicationContext
             rootStarts.execute { rootStart(app, forceStart) }
         } else if (ShizukuSettings.getLastLaunchMode() == LaunchMethod.ADB) {
-            if (af.shizuku.manager.utils.SettingsHelper.canToggleAdb(context)) {
+            if (af.shizuku.manager.utils.SettingsHelper
+                    .canToggleAdb(context)
+            ) {
                 AdbStartWorker.enqueue(context, explicit = forceStart)
             } else {
                 // Fallback: if TCP mode or force-start WADB is enabled, or an ADB TCP/saved port is active,
@@ -136,7 +138,8 @@ object ShizukuReceiverStarter {
             } else if (ShizukuSettings.getTcpMode() ||
                 af.shizuku.manager.utils.EnvironmentUtils
                     .getAdbTcpPort() > 0 ||
-                af.shizuku.manager.utils.SettingsHelper.canToggleAdb(context)
+                af.shizuku.manager.utils.SettingsHelper
+                    .canToggleAdb(context)
             ) {
                 Timber.tag(AppConstants.TAG).i("Unknown launch mode, falling back to ADB start")
                 AdbStartWorker.enqueue(context, explicit = forceStart)
@@ -731,7 +734,8 @@ object ShizukuReceiverStarter {
         if (ShizukuStateMachine.isRunning()) return
         if (!ShizukuSettings.isRootToAdbFallbackEnabled()) return
         val canTryAdb =
-            af.shizuku.manager.utils.SettingsHelper.canToggleAdb(context) ||
+            af.shizuku.manager.utils.SettingsHelper
+                .canToggleAdb(context) ||
                 ShizukuSettings.getTcpMode() ||
                 af.shizuku.manager.utils.EnvironmentUtils
                     .getAdbTcpPort() > 0

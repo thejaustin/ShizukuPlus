@@ -209,7 +209,9 @@ class BehaviorSettingsFragment :
         }
 
         findPreference<androidx.preference.ListPreference>("adb_auth_timeout")?.apply {
-            summaryProvider = androidx.preference.ListPreference.SimpleSummaryProvider.getInstance()
+            summaryProvider =
+                androidx.preference.ListPreference.SimpleSummaryProvider
+                    .getInstance()
             setOnPreferenceChangeListener { pref, newValue ->
                 if (newValue == "never") {
                     MaterialAlertDialogBuilder(requireContext())
