@@ -163,12 +163,13 @@ class AdbPairDialogFragment : DialogFragment() {
 
     private fun inMultiScreen(): Boolean {
         val activity = activity ?: return false
-        return activity.isInMultiWindowMode || (
-            activity.window
-                ?.decorView
-                ?.display
-                ?.displayId ?: -1
-        ) > 0
+        return activity.isInMultiWindowMode ||
+            (
+                activity.window
+                    ?.decorView
+                    ?.display
+                    ?.displayId ?: -1
+            ) > 0
     }
 
     private fun render() {
