@@ -22,6 +22,7 @@ class ThemeDelegateImpl : ThemeDelegate {
             ShizukuSettings.getCornerRoundingOverride() + ShizukuSettings.isAmoledPlusEnabled() +
             ShizukuSettings.isHighContrastEnabled() + ShizukuSettings.isExpressiveAnimationsEnabled() +
             ShizukuSettings.isExperimentalColorSchemesEnabled() + contrastLevel(context) +
+            ShizukuSettings.isExpressiveDialogsEnabled() +
             (ShizukuSettings.getPreferences()?.let { listOf("style_status_buttons", "style_nav_bar", "corners_nav_bar").joinToString { k -> it.getString(k, "") ?: "" } } ?: "")
     }
 
@@ -121,6 +122,10 @@ class ThemeDelegateImpl : ThemeDelegate {
 
         if (!ShizukuSettings.isExpressiveMotionScheme()) {
             theme.applyStyle(R.style.ThemeOverlay_Motion_Standard, true)
+        }
+
+        if (!ShizukuSettings.isExpressiveDialogsEnabled()) {
+            theme.applyStyle(R.style.ThemeOverlay_Dialogs_Classic, true)
         }
 
         val blackStyle = ThemeHelper.getThemeStyleRes(context)

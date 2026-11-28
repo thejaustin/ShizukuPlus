@@ -170,6 +170,7 @@ public class ShizukuSettings {
         public static final String KEY_ANIMATION_INTENSITY = "animation_intensity";
         public static final String KEY_EDGE_TO_EDGE = "edge_to_edge_enabled";
         public static final String KEY_BLUR_UI = "blur_ui_enabled";
+        public static final String KEY_EXPRESSIVE_DIALOGS = "expressive_dialogs";
         public static final String KEY_ONEUI_THEME = "oneui_theme_enabled";
         public static final String KEY_ONE_HANDED_MODE = "one_handed_mode";
         public static final String KEY_APPS_CONTROLS_BOTTOM = "apps_controls_bottom";
@@ -523,6 +524,11 @@ public class ShizukuSettings {
 
     public static boolean isBlurUiEnabled() {
         return getPreferences().getBoolean(Keys.KEY_BLUR_UI, false);
+    }
+
+    /** Alert dialogs use Material 3 Expressive's layout and buttons (the default); off = classic Material 3. */
+    public static boolean isExpressiveDialogsEnabled() {
+        return getPreferences().getBoolean(Keys.KEY_EXPRESSIVE_DIALOGS, true);
     }
 
     public static boolean isAmoledPlusEnabled() {

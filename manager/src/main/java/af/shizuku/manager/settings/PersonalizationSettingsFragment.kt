@@ -528,6 +528,24 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
             }
         }
 
+        findPreference<TwoStatePreference>(ShizukuSettings.Keys.KEY_EXPRESSIVE_DIALOGS)?.let { pref ->
+            pref.isChecked = ShizukuSettings.isExpressiveDialogsEnabled()
+            // Dialog styles resolve from the activity theme, so the overlay needs a recreate.
+            pref.setOnPreferenceChangeListener { _, _ ->
+                view?.post { applyTheme(requiresRecreate = true) }
+                true
+            }
+        }
+        findPreference<Preference>("expressive_dialogs_preview")?.setOnPreferenceClickListener {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.settings_expressive_dialogs_preview_title)
+                .setMessage(R.string.settings_expressive_dialogs_preview_message)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+            true
+        }
+
         oneUiThemePreference = requireNotNull(findPreference(KEY_ONEUI_THEME))
         oneUiThemePreference.isChecked = ShizukuSettings.isOneUiThemeEnabled()
         oneUiThemePreference.setOnPreferenceChangeListener { _, newValue ->

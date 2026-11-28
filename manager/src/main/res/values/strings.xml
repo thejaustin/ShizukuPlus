@@ -27,6 +27,12 @@
     <!-- UI Settings - Display -->
     <string name="settings_edge_to_edge">Edge-to-edge layout</string>
     <string name="settings_blur_ui">Frosted glass effect</string>
+    <string name="settings_expressive_dialogs">Expressive dialogs</string>
+    <string name="settings_expressive_dialogs_summary">Material 3 Expressive layout and buttons for dialogs. Turn off for classic Material 3 dialogs.</string>
+    <string name="settings_expressive_dialogs_preview">Preview dialog</string>
+    <string name="settings_expressive_dialogs_preview_summary">Opens a sample dialog in the current style</string>
+    <string name="settings_expressive_dialogs_preview_title">Sample dialog</string>
+    <string name="settings_expressive_dialogs_preview_message">This is how alert dialogs look with your current settings.</string>
 
     <!-- UI Settings - One UI Theme -->
     <string name="settings_oneui_theme">One UI style</string>

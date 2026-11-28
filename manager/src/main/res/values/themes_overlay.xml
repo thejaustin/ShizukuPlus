@@ -54,6 +54,16 @@
         <item name="colorOutlineVariant">#616161</item>
     </style>
 
+    <!--
+        Classic (non-Expressive) alert dialogs, applied when "expressive_dialogs" is off. The base
+        Theme.Material3Expressive.* themes already select MDC's ThemeOverlay.Material3Expressive.MaterialAlertDialog
+        (and ...Dialog.Alert for framework AlertDialog), so these point back at the plain Material 3 ones.
+    -->
+    <style name="ThemeOverlay.Dialogs.Classic">
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
+        <item name="alertDialogTheme">@style/ThemeOverlay.Material3.Dialog.Alert</item>
+    </style>
+
     <style name="ThemeOverlay.DynamicColors.Light" parent="ThemeOverlay.Material3.DynamicColors.Light.Shizuku"/>
 
     <style name="ThemeOverlay.DynamicColors.Dark" parent="ThemeOverlay.Material3.DynamicColors.Dark.Shizuku"/>

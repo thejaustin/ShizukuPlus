@@ -271,6 +271,19 @@
             android:defaultValue="false" />
 
         <af.shizuku.manager.settings.GrayableIconSwitchPreference
+            android:key="expressive_dialogs"
+            android:title="@string/settings_expressive_dialogs"
+            android:summary="@string/settings_expressive_dialogs_summary"
+            android:icon="@drawable/ic_space_dashboard_24"
+            android:defaultValue="true" />
+
+        <androidx.preference.Preference
+            android:key="expressive_dialogs_preview"
+            android:title="@string/settings_expressive_dialogs_preview"
+            android:summary="@string/settings_expressive_dialogs_preview_summary"
+            android:icon="@drawable/ic_visibility_24" />
+
+        <af.shizuku.manager.settings.GrayableIconSwitchPreference
             android:key="edge_to_edge_enabled"
             android:title="@string/settings_edge_to_edge"
             android:icon="@drawable/ic_fullscreen_24"
