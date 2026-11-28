@@ -139,7 +139,7 @@ object ShizukuReceiverStarter {
                 af.shizuku.manager.utils.EnvironmentUtils
                     .getAdbTcpPort() > 0 ||
                 af.shizuku.manager.utils.SettingsHelper
-                    .canToggleAdb(context)
+                    .hasWriteSecureSettings(context)
             ) {
                 Timber.tag(AppConstants.TAG).i("Unknown launch mode, falling back to ADB start")
                 AdbStartWorker.enqueue(context, explicit = forceStart)
