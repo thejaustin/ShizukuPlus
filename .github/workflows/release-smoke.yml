@@ -63,7 +63,7 @@ jobs:
 
       - name: Setup Gradle
         if: steps.changed.outputs.run == 'true'
-        uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
 
       # Throwaway key: signing.gradle only refuses a CI release build without signing.properties.
       # This APK is never uploaded, so it can't be mistaken for a real release.
