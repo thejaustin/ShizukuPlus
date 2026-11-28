@@ -40,7 +40,7 @@ jobs:
       # Translations are only uploaded on request and never auto-approved, so machine drafts
       # from scripts/i18n/local_translate.py can't overwrite translators' approved work.
       - name: Upload sources
-        uses: crowdin/github-action@8f01d54f70f1713ee3f09d82c2bbb2daeac28689 # v2
+        uses: crowdin/github-action@d651c77756acbe11a31d77a6fb79d8a239e1e05a # v3.6.0
         with:
           upload_sources: true
           upload_translations: ${{ github.event.inputs.upload_translations == 'true' }}
@@ -78,7 +78,7 @@ jobs:
           token: ${{ secrets.CROWDIN_PR_TOKEN || github.token }}
 
       - name: Download approved translations
-        uses: crowdin/github-action@8f01d54f70f1713ee3f09d82c2bbb2daeac28689 # v2
+        uses: crowdin/github-action@d651c77756acbe11a31d77a6fb79d8a239e1e05a # v3.6.0
         with:
           upload_sources: false
           download_translations: true
@@ -169,7 +169,7 @@ jobs:
       # Read-only: prints translated and approved percentages per language, so the repo can be
       # compared with Crowdin without a Crowdin login.
       - name: Crowdin status
-        uses: crowdin/github-action@8f01d54f70f1713ee3f09d82c2bbb2daeac28689 # v2
+        uses: crowdin/github-action@d651c77756acbe11a31d77a6fb79d8a239e1e05a # v3.6.0
         with:
           command: status
           command_args: '--branch master'
