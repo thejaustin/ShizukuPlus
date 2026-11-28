@@ -10,6 +10,10 @@ updates:
       day: monday
     open-pull-requests-limit: 5
     labels: [dependencies]
+    ignore:
+      # 1.3.0 breaks configuration (MissingValueException in collectModifiers); stay on 1.2.x.
+      - dependency-name: "dev.rikka.tools.autoresconfig"
+        versions: ["1.3.x"]
     groups:
       # Build tooling is bumped on its own: one bad AGP/KSP/plugin bump used to sink the whole
       # grouped PR (#701). Only patches are grouped; minor/major tooling bumps arrive one by one.

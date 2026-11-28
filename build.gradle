@@ -27,7 +27,7 @@ plugins {
     id "com.google.devtools.ksp" apply false
     id "org.jetbrains.kotlin.plugin.compose" apply false
     id "org.jetbrains.kotlin.plugin.serialization" apply false
-    id "io.gitlab.arturbosch.detekt" version "1.23.6" apply false
+    id "io.gitlab.arturbosch.detekt" version "1.23.8" apply false
 }
 
 allprojects {
@@ -91,7 +91,7 @@ subprojects {
     }
 
     dependencies {
-        detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6"
+        detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8"
     }
 
     plugins.withId("com.android.base") {
