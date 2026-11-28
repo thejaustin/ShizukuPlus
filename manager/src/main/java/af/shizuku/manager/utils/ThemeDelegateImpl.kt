@@ -113,7 +113,9 @@ class ThemeDelegateImpl : ThemeDelegate {
             theme.applyStyle(if (dark) R.style.ThemeOverlay_HighContrast_Dark else R.style.ThemeOverlay_HighContrast, true)
         }
 
-        if (ShizukuSettings.isExpressiveControlsPreviewEnabled()) {
+        // View progress indicators: the overlay swaps in MDC's Wavy styles (waveAmplitude,
+        // wavelength, waveSpeed, indicatorTrackGapSize), so no per-layout code is needed.
+        if (ShizukuSettings.isWavyProgressEnabled()) {
             theme.applyStyle(R.style.ThemeOverlay_Expressive_Progress, true)
         }
 

@@ -381,12 +381,24 @@ fun ServerMetricsScreen(
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    LinearProgressIndicator(
-                        progress = { memoryProgress },
-                        modifier = Modifier.fillMaxWidth().height(12.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                    )
+                    if (ShizukuSettings.isWavyProgressEnabled()) {
+                        @OptIn(ExperimentalMaterial3ExpressiveApi::class)
+                        LinearWavyProgressIndicator(
+                            progress = { memoryProgress },
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            // Animations off or scale 0: draw the wave but keep it still.
+                            waveSpeed = if (ShizukuSettings.scaledAnimationDuration(200) > 0) 10.dp else 0.dp,
+                        )
+                    } else {
+                        LinearProgressIndicator(
+                            progress = { memoryProgress },
+                            modifier = Modifier.fillMaxWidth().height(12.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(memoryDetails, style = MaterialTheme.typography.labelLarge)
                     if (memoryHistory.size >= 2) {

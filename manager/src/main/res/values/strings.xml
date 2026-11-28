@@ -20,6 +20,8 @@
     <string name="settings_expressive_motion_scheme_summary">Bouncy Material 3 Expressive springs. Turn off for the calmer Standard motion. Animations above still decide whether anything moves</string>
     <string name="settings_motion_preview_expressive">Expressive</string>
     <string name="settings_motion_preview_standard">Standard</string>
+    <string name="settings_wavy_progress">Wavy progress</string>
+    <string name="settings_wavy_progress_summary">Progress bars and spinners draw the Material 3 Expressive wave instead of a flat line. Reopen screens to see the change</string>
     <string name="settings_motion_preview_still">Animations are off, so this stays still</string>
 
     <!-- UI Settings - Display -->

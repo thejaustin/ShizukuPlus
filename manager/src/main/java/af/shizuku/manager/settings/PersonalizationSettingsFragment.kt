@@ -342,6 +342,12 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                 true
             }
         }
+        // View indicators take their style from the theme overlay, so rebuild the screens.
+        findPreference<Preference>(ShizukuSettings.Keys.KEY_WAVY_PROGRESS)?.setOnPreferenceChangeListener { _, _ ->
+            applyTheme(requiresRecreate = true)
+            true
+        }
+
         // Springy vs Standard scheme: Compose screens pick it up live via onThemeChanged; View
         // components read it when the next screen is created.
         findPreference<Preference>(ShizukuSettings.Keys.KEY_EXPRESSIVE_MOTION_SCHEME)?.setOnPreferenceChangeListener { _, _ ->

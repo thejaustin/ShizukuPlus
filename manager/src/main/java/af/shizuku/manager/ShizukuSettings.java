@@ -222,6 +222,8 @@ public class ShizukuSettings {
         public static final String KEY_EXPRESSIVE_CONTROLS_PREVIEW = "expressive_controls_preview";
         /** Personalization: Material 3 Expressive (springy) vs Standard motion scheme. Default on. */
         public static final String KEY_EXPRESSIVE_MOTION_SCHEME = "expressive_motion_scheme";
+        /** Personalization: wavy vs flat progress indicators. Default off (flat). */
+        public static final String KEY_WAVY_PROGRESS = "wavy_progress";
         /** Experimental: dropping a Home card you moved by holding it leaves edit mode again. */
         public static final String KEY_HOME_QUICK_MOVE = "home_quick_move";
         /** Whether the terminal export includes the SU Bridge su wrapper (off: rish only). */
@@ -2505,6 +2507,13 @@ public class ShizukuSettings {
     public static boolean isHomeCompactCardsEnabled() {
         SharedPreferences p = getPreferences();
         return p != null && p.getBoolean(Keys.KEY_HOME_COMPACT_CARDS, false);
+    }
+
+    /** Wavy progress indicators: the Personalization toggle, or the older Expressive controls preview. */
+    public static boolean isWavyProgressEnabled() {
+        SharedPreferences p = getPreferences();
+        return p != null && (p.getBoolean(Keys.KEY_WAVY_PROGRESS, false)
+                || p.getBoolean(Keys.KEY_EXPRESSIVE_CONTROLS_PREVIEW, false));
     }
 
     public static boolean isExpressiveControlsPreviewEnabled() {
