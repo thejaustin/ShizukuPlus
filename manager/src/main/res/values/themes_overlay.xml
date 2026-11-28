@@ -59,7 +59,7 @@
         Theme.Material3Expressive.* themes already select MDC's ThemeOverlay.Material3Expressive.MaterialAlertDialog
         (and ...Dialog.Alert for framework AlertDialog), so these point back at the plain Material 3 ones.
     -->
-    <style name="ThemeOverlay.Dialogs.Classic">
+    <style name="ThemeOverlay.Dialogs.Classic" parent="">
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
         <item name="alertDialogTheme">@style/ThemeOverlay.Material3.Dialog.Alert</item>
     </style>
