@@ -16,6 +16,11 @@
     <string name="settings_icon_style">Icon style</string>
     <string name="settings_shape_style">Container shape style</string>
     <string name="settings_animation_intensity">Animation intensity</string>
+    <string name="settings_expressive_motion_scheme">Springy motion</string>
+    <string name="settings_expressive_motion_scheme_summary">Bouncy Material 3 Expressive springs. Turn off for the calmer Standard motion. Animations above still decide whether anything moves</string>
+    <string name="settings_motion_preview_expressive">Expressive</string>
+    <string name="settings_motion_preview_standard">Standard</string>
+    <string name="settings_motion_preview_still">Animations are off, so this stays still</string>
 
     <!-- UI Settings - Display -->
     <string name="settings_edge_to_edge">Edge-to-edge layout</string>

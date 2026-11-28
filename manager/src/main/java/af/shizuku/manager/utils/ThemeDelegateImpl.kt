@@ -117,7 +117,7 @@ class ThemeDelegateImpl : ThemeDelegate {
             theme.applyStyle(R.style.ThemeOverlay_Expressive_Progress, true)
         }
 
-        if (!ShizukuSettings.isExpressiveAnimationsEnabled()) {
+        if (!ShizukuSettings.isExpressiveMotionScheme()) {
             theme.applyStyle(R.style.ThemeOverlay_Motion_Standard, true)
         }
 

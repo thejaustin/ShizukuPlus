@@ -342,6 +342,12 @@ class PersonalizationSettingsFragment : BaseSettingsFragment() {
                 true
             }
         }
+        // Springy vs Standard scheme: Compose screens pick it up live via onThemeChanged; View
+        // components read it when the next screen is created.
+        findPreference<Preference>(ShizukuSettings.Keys.KEY_EXPRESSIVE_MOTION_SCHEME)?.setOnPreferenceChangeListener { _, _ ->
+            applyTheme(requiresRecreate = false)
+            true
+        }
         syncIntensityAvailability()
 
         // Off / Theme / Status color stands in for the status card outline switch + its style.

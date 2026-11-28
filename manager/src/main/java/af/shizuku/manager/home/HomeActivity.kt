@@ -350,7 +350,7 @@ open class HomeActivity :
             af.shizuku.core.ui.compose.AppTheme(
                 isExpressiveMotion =
                     af.shizuku.manager.ShizukuSettings
-                        .isExpressiveAnimationsEnabled(),
+                        .isExpressiveMotionScheme(),
                 darkTheme = androidx.compose.foundation.isSystemInDarkTheme(),
                 isBlackNightTheme =
                     af.shizuku.manager.app.ThemeHelper

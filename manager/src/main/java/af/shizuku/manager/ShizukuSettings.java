@@ -220,6 +220,8 @@ public class ShizukuSettings {
         /** Experimental: M3 shared-axis transitions between screens and settings pages (off = Explode / cuts). */
         public static final String KEY_EXPERIMENTAL_SCREEN_TRANSITIONS = "experimental_screen_transitions";
         public static final String KEY_EXPRESSIVE_CONTROLS_PREVIEW = "expressive_controls_preview";
+        /** Personalization: Material 3 Expressive (springy) vs Standard motion scheme. Default on. */
+        public static final String KEY_EXPRESSIVE_MOTION_SCHEME = "expressive_motion_scheme";
         /** Experimental: dropping a Home card you moved by holding it leaves edit mode again. */
         public static final String KEY_HOME_QUICK_MOVE = "home_quick_move";
         /** Whether the terminal export includes the SU Bridge su wrapper (off: rish only). */
@@ -444,6 +446,16 @@ public class ShizukuSettings {
 
     public static boolean isExpressiveAnimationsEnabled() {
         return getPreferences().getBoolean(Keys.KEY_EXPRESSIVE_ANIMATIONS, true);
+    }
+
+    /**
+     * Whether Compose/View components use the Expressive MotionScheme. The "Motion style" toggle only
+     * chooses the scheme's character (springy vs standard); it never turns motion on. Animations mode
+     * Off (and animator scale 0, via getAnimationDurationScale) still wins, and Off falls back to Standard.
+     */
+    public static boolean isExpressiveMotionScheme() {
+        return isExpressiveAnimationsEnabled()
+                && getPreferences().getBoolean(Keys.KEY_EXPRESSIVE_MOTION_SCHEME, true);
     }
 
     public static boolean isHapticFeedbackEnabled() {
