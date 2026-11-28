@@ -6,7 +6,9 @@ plugins {
 
 android {
     namespace = "af.shizuku.manager.database"
-    compileSdk = 37
+    compileSdk {
+        version = release(37) { minorApiLevel = 2 }
+    }
 
     defaultConfig {
         minSdk = 24
