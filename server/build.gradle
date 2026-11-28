@@ -12,7 +12,7 @@ android {
 
 dependencies {
     implementation libs.androidx.annotation
-    implementation "com.google.code.gson:gson:2.13.1"
+    implementation "com.google.code.gson:gson:2.15.0"
     api "dev.rikka.rikkax.parcelablelist:parcelablelist:2.0.1"
 
     implementation project(":aidl")
@@ -34,7 +34,7 @@ dependencies {
     // Pinned below the catalog's mockk on purpose: with 1.14.11 the 67 Kotest suites here are
     // silently skipped (only the 4 JUnit 4 tests run and the build still passes). Re-check the
     // test count in test-results before moving this.
-    testImplementation "io.mockk:mockk:1.13.13"
+    testImplementation "io.mockk:mockk:1.14.12"
     // The existing tests use JUnit 4 annotations (as :manager does); without it they do not compile.
     testImplementation "junit:junit:4.13.2"
     // Runs the JUnit 4 tests (AICorePlusImplTest) under useJUnitPlatform(); without it they're skipped.
