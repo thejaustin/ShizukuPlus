@@ -16,7 +16,6 @@ import af.shizuku.manager.utils.HapticUtils
 import af.shizuku.manager.utils.MotionUtils.applySpringTouch
 import af.shizuku.manager.utils.MotionUtils.cancelAllSprings
 import af.shizuku.manager.utils.MotionUtils.springTo
-import androidx.dynamicanimation.animation.SpringAnimation
 import android.app.Activity
 import android.app.ActivityOptions
 import android.app.Application
@@ -35,10 +34,11 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.AccessibilityDelegateCompat
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.widget.NestedScrollView
+import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -110,15 +110,33 @@ object FloatingNavBar : Application.ActivityLifecycleCallbacks {
     val ALL_TABS: List<TabSpec> =
         listOf(
             TabSpec("home", R.id.nav_home, R.string.nav_home, R.string.nav_tab_home_desc, R.drawable.ic_nav_home_24, MainActivity::class.java, shortcuts = listOf(SC_DOCTOR, SC_TERMINAL)),
-            TabSpec("apps", R.id.nav_apps, R.string.nav_apps, R.string.nav_tab_apps_desc, R.drawable.ic_nav_apps_24, ApplicationManagementActivity::class.java, shortcuts = listOf(
-                    Shortcut(R.string.home_permission_manager_title, R.drawable.ic_permission_shizuku, af.shizuku.manager.permissionmanager.PermissionManagerActivity::class.java),
-                    Shortcut(R.string.app_profiles_title, R.drawable.ic_settings_suggest_24, af.shizuku.manager.automation.AppProfilesActivity::class.java),
-                    Shortcut(R.string.home_backup_title, R.drawable.ic_restore_24, af.shizuku.manager.backup.AppBackupActivity::class.java),
-                )),
-            TabSpec("hub", R.id.nav_hub, R.string.nav_hub, R.string.nav_tab_hub_desc, R.drawable.ic_nav_hub_24, SystemHubActivity::class.java, shortcuts = listOf(
-                    Shortcut(R.string.home_device_control_title, R.drawable.ic_devices_24, af.shizuku.manager.devicecontrol.DeviceControlActivity::class.java),
-                    SC_SCRIPTING,
-                )),
+            TabSpec(
+                "apps",
+                R.id.nav_apps,
+                R.string.nav_apps,
+                R.string.nav_tab_apps_desc,
+                R.drawable.ic_nav_apps_24,
+                ApplicationManagementActivity::class.java,
+                shortcuts =
+                    listOf(
+                        Shortcut(R.string.home_permission_manager_title, R.drawable.ic_permission_shizuku, af.shizuku.manager.permissionmanager.PermissionManagerActivity::class.java),
+                        Shortcut(R.string.app_profiles_title, R.drawable.ic_settings_suggest_24, af.shizuku.manager.automation.AppProfilesActivity::class.java),
+                        Shortcut(R.string.home_backup_title, R.drawable.ic_restore_24, af.shizuku.manager.backup.AppBackupActivity::class.java),
+                    ),
+            ),
+            TabSpec(
+                "hub",
+                R.id.nav_hub,
+                R.string.nav_hub,
+                R.string.nav_tab_hub_desc,
+                R.drawable.ic_nav_hub_24,
+                SystemHubActivity::class.java,
+                shortcuts =
+                    listOf(
+                        Shortcut(R.string.home_device_control_title, R.drawable.ic_devices_24, af.shizuku.manager.devicecontrol.DeviceControlActivity::class.java),
+                        SC_SCRIPTING,
+                    ),
+            ),
             TabSpec("doctor", R.id.nav_doctor, R.string.home_service_doctor_title, R.string.nav_tab_doctor_desc, R.drawable.ic_medical_services_24, ServiceDoctorActivity::class.java, shortcuts = listOf(SC_ROOT)),
             TabSpec("terminal", R.id.nav_terminal, R.string.home_terminal_title, R.string.nav_tab_terminal_desc, R.drawable.ic_terminal_24, ShellTutorialActivity::class.java, shortcuts = listOf(SC_SCRIPTING)),
             TabSpec("settings", R.id.nav_settings, R.string.nav_settings, R.string.nav_tab_settings_desc, R.drawable.ic_settings_outline_24, SettingsActivity::class.java, shortcuts = listOf(SC_ROOT, SC_DOCTOR)),
