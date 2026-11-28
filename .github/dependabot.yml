@@ -11,7 +11,25 @@ updates:
     open-pull-requests-limit: 5
     labels: [dependencies]
     groups:
+      # Build tooling is bumped on its own: one bad AGP/KSP/plugin bump used to sink the whole
+      # grouped PR (#701). Only patches are grouped; minor/major tooling bumps arrive one by one.
+      gradle-build-tooling:
+        patterns:
+          - "com.android.*"
+          - "com.google.devtools.ksp"
+          - "io.sentry.android.gradle"
+          - "io.gitlab.arturbosch.detekt"
+          - "com.diffplug.spotless"
+          - "dev.rikka.tools.*"
+        update-types: [patch]
       gradle-minor-patch:
+        exclude-patterns:
+          - "com.android.*"
+          - "com.google.devtools.ksp"
+          - "io.sentry.android.gradle"
+          - "io.gitlab.arturbosch.detekt"
+          - "com.diffplug.spotless"
+          - "dev.rikka.tools.*"
         update-types: [minor, patch]
 
   - package-ecosystem: github-actions
